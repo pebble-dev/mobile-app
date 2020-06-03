@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bootUrlWarningTitle">Boot URL change requested</string>
+    <string name="bootUrlWarningBody">An external source requested to change the boot URL, ensure you trust this source as changing to a malicious source shares all web services data with it!\n%s</string>
+</resources>

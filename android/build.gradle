@@ -1,0 +1,47 @@
+buildscript {
+    ext.kotlin_version = '1.3.72'
+
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.6.3'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+
+        maven {
+            url = "https://maven.pkg.github.com/crc-32/libpebblecommon"
+            credentials {
+                Properties properties = new Properties()
+                if (rootProject.file('local.properties').canRead()) {
+                    properties.load(rootProject.file("local.properties").newDataInputStream())
+                }
+
+                // Set in local.properties
+                username = System.getenv("GITHUB_ACTOR") != null ? System.getenv("GITHUB_ACTOR") : properties.getProperty("GITHUB_ACTOR", null) // github username
+                password = System.getenv("GITHUB_TOKEN") != null ? System.getenv("GITHUB_TOKEN") : properties.getProperty("GITHUB_TOKEN", null) // personal access token
+                if (username == null || password == null) throw new GradleScriptException("Set github username and token in local.properties! (GITHUB_ACTOR and GITHUB_TOKEN)", null)
+            }
+        }
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(':app')
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
