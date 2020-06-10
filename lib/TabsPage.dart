@@ -2,9 +2,9 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:fossil/DevOptionsPage.dart';
-import 'package:fossil/icons/rebble_icons_stroke_only_icons.dart';
 import 'package:fossil/setup/PairPage.dart';
 
+import 'icons/rebble_icons_stroke_icons.dart';
 import 'maintabs/StoreTab.dart';
 
 class TabsPage extends StatefulWidget {
@@ -21,7 +21,7 @@ class _TabsPageState extends State<TabsPage> {
             appBar: AppBar(
               title: Text("Fossil"),
               actions: <Widget>[
-                IconButton(icon: Icon(RebbleIconsStrokeOnly.devices), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PairPage())),),
+                IconButton(icon: Icon(RebbleIconsStroke.devices), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PairPage())),),
                 IconButton(icon: Icon(Icons.code), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => DevOptionsPage())),)
               ],
             ),
@@ -57,8 +57,7 @@ class _TabsPageState extends State<TabsPage> {
                     ))),
             body: TabBarView(
               children: <Widget>[
-                Scaffold(
-                  body: Column(
+                Column(
                     children: <Widget>[
                       RaisedButton(
                         onPressed: () {},
@@ -85,8 +84,7 @@ class _TabsPageState extends State<TabsPage> {
                         ),
                       )
                     ],
-                  ),
-                ), //TODO
+                  ), //TODO
                 Scaffold(), //TODO
                 StoreTab(),
                 Scaffold(), //TODO

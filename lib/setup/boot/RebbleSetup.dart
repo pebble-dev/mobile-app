@@ -1,9 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fossil/icons/rebble_icons_stroke_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../icons/rebble_icons_stroke_only_icons.dart';
 import 'RebbleSetupFail.dart';
 import 'RebbleSetupSuccess.dart';
 
@@ -16,7 +16,7 @@ class RebbleSetup extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Activate Rebble services"),
-        leading: IconButton(icon: Icon(RebbleIconsStrokeOnly.caret_left), onPressed: () => Navigator.maybePop(context),),
+        leading: IconButton(icon: Icon(RebbleIconsStroke.caret_left), onPressed: () => Navigator.maybePop(context),),
       ),
       body: Column(
         children: <Widget>[

@@ -2,10 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fossil/TabsPage.dart';
-import 'file:///D:/AndroidStudioProjects/fossil/fossil/lib/util/WebServices.dart';
+import 'package:fossil/util/WebServices.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../icons/rebble_icons_stroke_only_icons.dart';
 
 class RebbleSetupSuccess extends StatefulWidget {
 

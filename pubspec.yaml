@@ -60,12 +60,15 @@ flutter:
   #   - images/a_dot_ham.jpeg
 
   fonts:
-      - family:  RebbleIconsStrokeOnly
+      - family:  RebbleIconsStroke
         fonts:
-          - asset: fonts/RebbleIconsStrokeOnly.ttf
-      - family:  RebbleIconsFillOnly
+          - asset: fonts/RebbleIconsStroke.ttf
+      - family:  RebbleIconsFill
         fonts:
-          - asset: fonts/RebbleIconsFillOnly.ttf
+          - asset: fonts/RebbleIconsFill.ttf
+      - family:  PebbleWatchIcons
+        fonts:
+          - asset: fonts/PebbleWatchIcons.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

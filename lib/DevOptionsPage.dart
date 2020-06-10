@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'file:///D:/AndroidStudioProjects/fossil/fossil/lib/util/DevConnection.dart';
-import 'package:fossil/icons/rebble_icons_stroke_only_icons.dart';
+import 'package:fossil/util/DevConnection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'icons/rebble_icons_stroke_icons.dart';
 
 class DevOptionsPage extends StatefulWidget {
   @override
@@ -48,7 +49,7 @@ class _DevOptionsPageState extends State<DevOptionsPage> {
       }
     }
     return Scaffold(
-      appBar: AppBar(title: Text("Developer Options"), leading: IconButton(icon: Icon(RebbleIconsStrokeOnly.caret_left), onPressed: () {Navigator.maybePop(context);},),),
+      appBar: AppBar(title: Text("Developer Options"), leading: IconButton(icon: Icon(RebbleIconsStroke.caret_left), onPressed: () {Navigator.maybePop(context);},),),
       body: ListView(
           children: ListTile.divideTiles(
         context: context,

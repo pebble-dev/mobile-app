@@ -1,11 +1,8 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'file:///D:/AndroidStudioProjects/fossil/fossil/lib/util/WebServices.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../TabsPage.dart';
-import '../../icons/rebble_icons_stroke_only_icons.dart';
 
 class RebbleSetupFail extends StatelessWidget {
 

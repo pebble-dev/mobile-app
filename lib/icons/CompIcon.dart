@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:fossil/icons/rebble_icons_stroke_only_icons.dart';
 
 class CompIcon extends StatelessWidget {
   CompIcon(this.stroke, this.fill);

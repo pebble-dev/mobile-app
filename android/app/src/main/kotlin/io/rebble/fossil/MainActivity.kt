@@ -189,18 +189,12 @@ class MainActivity: FlutterActivity() {
         val packetIO = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/packetIO")
         val bootWaiter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger,"io.rebble.fossil/bootWaiter")
 
-        flutter.setMethodCallHandler { call, result ->
-            when (call.method) {
-                "targetPebble" -> result.success(watchService?.targetPebble(deviceList[call.arguments as Int]))
-                "isConnected" -> result.success(watchService?.isConnected())
-                "targetPebbleAddr" -> result.success(watchService?.targetPebble(call.arguments as Long))
-            }
-        };
-
         scanEvent.setStreamHandler(object : EventChannel.StreamHandler {
             override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
                 flutter.setMethodCallHandler { call, result ->
                     when (call.method) {
+                        "isConnected" -> result.success(watchService?.isConnected())
+                        "targetPebbleAddr" -> result.success(watchService?.targetPebble(call.arguments as Long))
                         "scanDevices" -> watchService?.scanDevices { res ->
                             deviceList = res
                             events?.success(JSONObject(mapOf(Pair("event", "scanFinish"))).toString())

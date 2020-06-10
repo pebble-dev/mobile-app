@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fossil/icons/rebble_icons_stroke_icons.dart';
 
 import 'boot/RebbleSetup.dart';
-import '../icons/rebble_icons_stroke_only_icons.dart';
 
 class MoreSetup extends StatefulWidget {
   @override
@@ -14,13 +14,13 @@ class _MoreSetupState extends State<MoreSetup> {
     return Scaffold(
       appBar: AppBar(
         title: Text("More setup"),
-        leading: IconButton(icon: Icon(RebbleIconsStrokeOnly.caret_left), onPressed: () => Navigator.maybePop(context),),
+        leading: IconButton(icon: Icon(RebbleIconsStroke.caret_left), onPressed: () => Navigator.maybePop(context),),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RebbleSetup())),
         label: Row(children: <Widget>[
           Text("LET'S GET STARTED"),
-          Icon(RebbleIconsStrokeOnly.caret_right)],
+          Icon(RebbleIconsStroke.caret_right)],
           mainAxisAlignment: MainAxisAlignment.center,
         ),
       ),

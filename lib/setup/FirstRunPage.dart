@@ -1,8 +1,8 @@
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'file:///D:/AndroidStudioProjects/fossil/fossil/lib/setup/PairPage.dart';
-import 'package:fossil/icons/rebble_icons_stroke_only_icons.dart';
+import 'package:fossil/icons/rebble_icons_stroke_icons.dart';
+import 'package:fossil/setup/PairPage.dart';
 
 class CircleContainer extends StatelessWidget {
   CircleContainer({
@@ -134,7 +134,7 @@ class _FirstRunPageState extends State<FirstRunPage> {
                   FloatingActionButton.extended(
                       label: Row(children: <Widget>[
                         Text("LET'S GET STARTED"),
-                        Icon(RebbleIconsStrokeOnly.caret_right)],
+                        Icon(RebbleIconsStroke.caret_right)],
                         mainAxisAlignment: MainAxisAlignment.center,
                       ),
                       onPressed: () {
