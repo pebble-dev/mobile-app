@@ -5,7 +5,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fossil/DevOptionsPage.dart';
-import 'file:///D:/AndroidStudioProjects/fossil/fossil/lib/setup/FirstRunPage.dart';
+import 'package:fossil/setup/FirstRunPage.dart';
 import 'package:fossil/TabsPage.dart';
 import 'package:fossil/theme.dart';
 import 'package:fossil/util/PairedStorage.dart';
