@@ -23,7 +23,11 @@ class RebbleSetupFail extends StatelessWidget {
             SharedPreferences.getInstance().then((value) => {
               value.setBool("firstRun", false),
               value.setBool("bootSetup", false)
-            }).then((value) => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TabsPage())));
+            }).then((value) => Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => TabsPage()),
+                    (Route<dynamic> route) => false // it has to be this or a back button shows on the main page
+            ));
           },
           label: Text("OKAY")
       ),
