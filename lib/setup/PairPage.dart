@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:fossil/TabsPage.dart';
 import 'package:fossil/icons/CompIcon.dart';
 import 'package:fossil/icons/WatchIcon.dart';
-import 'package:fossil/icons/pebble_watch_icons_icons.dart';
 import 'package:fossil/icons/rebble_icons_stroke_icons.dart';
 import 'package:fossil/util/PairedStorage.dart';
 import '../theme.dart';
@@ -87,53 +86,64 @@ class _PairPageState extends State<PairPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Pair"),
-          leading: IconButton(icon: Icon(RebbleIconsStroke.caret_left), onPressed: () => Navigator.maybePop(context),),
-          actions: <Widget>[
-            _scanning
-                ? Container(
-                width: 55,
-                height: 55,
-                padding: EdgeInsets.all(6),
-                child: CircularProgressIndicator())
-                : IconButton(
-              icon: Icon(Icons.refresh),
-              onPressed: _refreshDevices,
-            ),
-          ],
+          backgroundColor: CTheme.colorScheme.surface,
+          title: Text("Pair a watch"),
+          leading: BackButton(),
         ),
         body: ListView(
-            children: _pebbles
-                .map((e) => Card(
-              child: InkWell(
+            children: <Widget>[
+              Offstage(
+                  offstage: !_scanning,
+                  child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Center(child: CircularProgressIndicator())
+                  )
+              ),
+              Column(children: _pebbles
+                  .map((e) => InkWell(
                 child: Container(
                     child: Row(children: <Widget>[
                       Container(
-                        child: PebbleWatchIcon.Two(Colors.teal, Colors.lightGreenAccent, size: 75),
-                        width: 75,
-                        height: 75,
+                        child: Center(child: PebbleWatchIcon.Two(Colors.teal, Colors.lightGreenAccent)),
+                        width: 56,
+                        height: 56,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                          color: CTheme.colorScheme.primary
+                            color: Theme.of(context).dividerColor,
+                            shape: BoxShape.circle
                         ),
                       ),
                       SizedBox(width: 16),
                       Column(
                         children: <Widget>[
-                          Text(e.name, style: TextStyle(fontSize: 19)),
-                          SizedBox(height: 2),
+                          Text(e.name, style: TextStyle(fontSize: 16)),
+                          SizedBox(height: 4),
                           Text(e.address.toRadixString(16).padLeft(6, '0')),
                         ],
                         crossAxisAlignment: CrossAxisAlignment.start,
                       ),
+                      Expanded(child: Container(width: 0.0, height: 0.0)),
+                      Icon(RebbleIconsStroke.caret_right, color: CTheme.colorScheme.secondary),
                     ]),
-                    margin: EdgeInsets.all(8)),
+                    margin: EdgeInsets.all(16)),
                 onTap: () {
                   _targetPebble(e);
                 },
+              ))
+                  .toList()
               ),
-            ))
-                .toList())
+              Offstage(
+                  offstage: _scanning,
+                  child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: FlatButton(
+                        child: Text("SEARCH AGAIN"),
+                        textColor: CTheme.colorScheme.secondary,
+                        onPressed: _refreshDevices,
+                      )
+                  )
+              ),
+              FlatButton(child: Text("SKIP"), onPressed: ()=>{} ,)
+            ])
     );
   }
 }
