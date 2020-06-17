@@ -10,7 +10,7 @@ class _WatchLayer {
 }
 
 class WatchIcon extends StatelessWidget{
-  WatchIcon(this.layers, {this.size = 40.0});
+  WatchIcon(this.layers, {this.size = 48.0});
   final List<_WatchLayer> layers;
   final double size;
   @override
@@ -22,21 +22,28 @@ class WatchIcon extends StatelessWidget{
 }
 
 class PebbleWatchIcon { // First layer = bottom layer, last layer = top layer (draw order)
-  static WatchIcon Classic(Color bodyColor, {double size = 40.0}) => WatchIcon([
+  static WatchIcon Classic(Color bodyColor, {double size = 48.0}) => WatchIcon([
     _WatchLayer(PebbleWatchIcons.classic_body_fill, bodyColor),
     _WatchLayer(PebbleWatchIcons.classic_body_stroke, Colors.black),
 
     _WatchLayer(PebbleWatchIcons.classic_screen_fill, Colors.white),
     _WatchLayer(PebbleWatchIcons.classic_screen_stroke, Colors.black),
   ], size: size,);
-  static WatchIcon Time(Color bodyColor, {double size = 40.0}) => WatchIcon([
+  static WatchIcon Time(Color bodyColor, {double size = 48.0}) => WatchIcon([
     _WatchLayer(PebbleWatchIcons.time_body_fill, bodyColor),
     _WatchLayer(PebbleWatchIcons.time_body_stroke, Colors.black),
 
     _WatchLayer(PebbleWatchIcons.time_screen_fill, Colors.white),
     _WatchLayer(PebbleWatchIcons.time_screen_stroke, Colors.black),
   ], size: size,);
-  static WatchIcon Two(Color bodyColor, Color buttonsColor, {Color bezelColor = Colors.black, double size = 40.0}) => WatchIcon([
+  static WatchIcon Round(Color bodyColor, {Color bodyStrokeColor = Colors.black, double size = 48.0}) => WatchIcon([
+    _WatchLayer(PebbleWatchIcons.time_round_body_fill, bodyColor),
+    _WatchLayer(PebbleWatchIcons.time_round_body_stroke, bodyStrokeColor),
+
+    _WatchLayer(PebbleWatchIcons.time_round_screen_fill, Colors.white),
+    _WatchLayer(PebbleWatchIcons.time_round_screen_stroke, Colors.black),
+  ], size: size,);
+  static WatchIcon Two(Color bodyColor, Color buttonsColor, {Color bezelColor = Colors.black, double size = 48.0}) => WatchIcon([
     _WatchLayer(PebbleWatchIcons.pebble_2_buttons_stroke, buttonsColor),
 
     _WatchLayer(PebbleWatchIcons.pebble_2_body_fill, bodyColor),
