@@ -35,6 +35,10 @@ class RebbleSetup extends StatelessWidget {
                 });
               }
             }),
+          ),
+          FlatButton(
+            child: Text("SKIP"),
+            onPressed: () => { Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RebbleSetupSuccess())) },
           )
         ],
       ),
