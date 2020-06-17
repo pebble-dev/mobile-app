@@ -1,7 +1,6 @@
-
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fossil/icons/rebble_icons_stroke_icons.dart';
+import 'package:fossil/icons/WatchIcon.dart';
 import 'package:fossil/setup/PairPage.dart';
 
 class CircleContainer extends StatelessWidget {
@@ -36,22 +35,17 @@ class CircleContainer extends StatelessWidget {
 }
 
 class CarouselIcon extends StatelessWidget {
-  CarouselIcon({this.icon, this.margin});
-  final IconData icon;
-  final EdgeInsets margin;
+  CarouselIcon({this.icon});
+  final Widget icon;
   @override
   Widget build(BuildContext context) {
-    CircleContainer child = CircleContainer(
-      child: Icon(icon, size: 92,),
-      diameter: 140,
+    return CircleContainer(
+      diameter: 128.0,
+      margin: EdgeInsets.symmetric(horizontal:8.0),
+      child: Center(
+          child: icon
+      ),
     );
-
-    if (margin != null) {
-      return Container(
-        margin: margin,
-        child: child,
-      );
-    }else return child;
   }
 
 }
@@ -64,10 +58,11 @@ class FirstRunPage extends StatefulWidget {
 class _FirstRunPageState extends State<FirstRunPage> {
   static final EdgeInsets _iconMargin = EdgeInsets.all(4);
   static List<Widget> _iconScrollerSet = [
-    CarouselIcon(icon: Icons.launch, margin: _iconMargin),
-    CarouselIcon(icon: Icons.warning, margin: _iconMargin),
-    CarouselIcon(icon: Icons.event, margin: _iconMargin),
-    CarouselIcon(icon: Icons.add_a_photo, margin: _iconMargin)];
+    CarouselIcon(icon: PebbleWatchIcon.Classic(PebbleWatchColor.Red, size: 96.0)),
+    CarouselIcon(icon: PebbleWatchIcon.Time(PebbleWatchColor.Red, size: 96.0)),
+    CarouselIcon(icon: PebbleWatchIcon.Round(PebbleWatchColor.White, bodyStrokeColor: Colors.black, size: 96.0)),
+    CarouselIcon(icon: PebbleWatchIcon.Two(PebbleWatchColor.White, PebbleWatchColor.Turquoise, bezelColor: PebbleWatchColor.Turquoise, size: 96.0)),
+  ];
   List<Widget> _iconScroller = _iconScrollerSet;
 
   ScrollController _scrollController = new ScrollController();
@@ -96,11 +91,13 @@ class _FirstRunPageState extends State<FirstRunPage> {
               children: <Widget>[
                 CircleContainer(
                   child: Image(image: AssetImage("images/app_large.png"),),
-                  diameter: 170,
+                  diameter: 120,
                   color: Theme.of(context).accentColor,
-                  padding: EdgeInsets.all(25),
+                  padding: EdgeInsets.all(20),
                 ),
+                SizedBox(height: 16.0), // spacer
                 Container(margin: EdgeInsets.symmetric(vertical: 8), child: Text("Welcome to Rebble!", style: Theme.of(context).textTheme.headline4)),
+                SizedBox(height: 24.0), // spacer
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   controller: _scrollController..addListener(() {
@@ -122,21 +119,19 @@ class _FirstRunPageState extends State<FirstRunPage> {
             width: MediaQuery.of(context).size.width,
             bottom: 0,
             child: Container(
-              margin: EdgeInsets.fromLTRB(10, 20, 10, 20),
+              margin: EdgeInsets.fromLTRB(16, 16, 16, 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  OutlineButton(
+                  FlatButton(
                     child: Text("SKIP"),
                     onPressed: () {
                     },
                   ),
                   FloatingActionButton.extended(
-                      label: Row(children: <Widget>[
-                        Text("LET'S GET STARTED"),
-                        Icon(RebbleIconsStroke.caret_right)],
-                        mainAxisAlignment: MainAxisAlignment.center,
-                      ),
+                      icon: Text("LET'S GET STARTED"),
+                      label: Icon(RebbleIconsStroke.caret_right),
+                      backgroundColor: Theme.of(context).accentColor,
                       onPressed: () {
                         Navigator.push(context, MaterialPageRoute(builder: (context) => PairPage()));
                       }
