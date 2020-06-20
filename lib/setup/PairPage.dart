@@ -131,18 +131,28 @@ class _PairPageState extends State<PairPage> {
               ))
                   .toList()
               ),
-              Offstage(
-                  offstage: _scanning,
-                  child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: FlatButton(
-                        child: Text("SEARCH AGAIN"),
-                        textColor: CTheme.colorScheme.secondary,
-                        onPressed: _refreshDevices,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal:16.0),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Offstage(
+                          offstage: _scanning,
+                          child: FlatButton(
+                            child: Text("SEARCH AGAIN"),
+                            padding: EdgeInsets.symmetric(horizontal:32.0),
+                            textColor: CTheme.colorScheme.secondary,
+                            onPressed: _refreshDevices,
+                          )
+                      ),
+                      FlatButton(
+                        child: Text("SKIP"),
+                        padding: EdgeInsets.symmetric(horizontal:32.0),
+                        onPressed: ()=>{} ,
                       )
-                  )
-              ),
-              FlatButton(child: Text("SKIP"), onPressed: ()=>{} ,)
+                    ]
+                )
+              )
             ])
     );
   }
