@@ -132,7 +132,7 @@ class _PairPageState extends State<PairPage> {
                   .toList()
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal:16.0),
+                padding: EdgeInsets.symmetric(horizontal:0.0),
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
