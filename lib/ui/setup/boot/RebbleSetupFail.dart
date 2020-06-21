@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fossil/ui/home/HomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RebbleSetupFail extends StatelessWidget {

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fossil/ui/common/icons/RebbleIconsStroke.dart';
 
-import 'boot/RebbleSetup.dart';
-
 class MoreSetup extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _MoreSetupState();

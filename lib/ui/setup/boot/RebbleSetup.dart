@@ -3,9 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:fossil/ui/common/icons/RebbleIconsStroke.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'RebbleSetupFail.dart';
-import 'RebbleSetupSuccess.dart';
-
 String _getBootUrl = "https://boot.rebble.io/";
 
 class RebbleSetup extends StatelessWidget {

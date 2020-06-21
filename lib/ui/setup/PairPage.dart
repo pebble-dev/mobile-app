@@ -7,8 +7,6 @@ import 'package:fossil/domain/entities/PebbleDevice.dart';
 import 'package:fossil/infrastructure/datasources/PairedStorage.dart';
 import 'package:fossil/ui/common/icons/RebbleIconsStroke.dart';
 import 'package:fossil/ui/common/icons/WatchIcon.dart';
-import 'package:fossil/ui/home/homepage.dart';
-import 'MoreSetup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PairPage extends StatefulWidget {

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fossil/ui/common/icons/RebbleIconsStroke.dart';
 import 'package:fossil/ui/common/icons/WatchIcon.dart';
 
-import 'PairPage.dart';
-
 class CircleContainer extends StatelessWidget {
   CircleContainer(
       {this.child, this.diameter, this.color, this.margin, this.padding});
@@ -136,7 +134,7 @@ class _FirstRunPageState extends State<FirstRunPage> {
                     icon: Text("LET'S GET STARTED"),
                     label: Icon(RebbleIconsStroke.caret_right),
                     backgroundColor: Theme.of(context).primaryColor,
-                    onPressed: () => Navigator.pushNamed(context, '/pairpage'),
+                    onPressed: () => Navigator.pushNamed(context, '/pair'),
                   ),
                 ],
               ),

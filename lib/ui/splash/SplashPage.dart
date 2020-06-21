@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fossil/infrastructure/datasources/PairedStorage.dart';
 import 'package:fossil/main.dart';
-import 'package:fossil/ui/home/HomePage.dart';
-import 'package:fossil/ui/setup/FirstRunPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 

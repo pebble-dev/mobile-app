@@ -32,6 +32,8 @@ class Router {
         return MaterialPageRoute(builder: (_) => PairPage());
       case '/setup':
         return MaterialPageRoute(builder: (_) => RebbleSetup());
+      case '/pair':
+        return MaterialPageRoute(builder: (_) => PairPage());
 
       default:
         return _errorRoute(settings);
