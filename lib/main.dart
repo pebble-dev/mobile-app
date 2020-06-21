@@ -59,7 +59,6 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  Timer _timer;
   static const protocolC = MethodChannel('io.rebble.fossil/protocol');
 
   void _openHome() {
@@ -109,12 +108,8 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    _timer = new Timer(const Duration(milliseconds: 3000), () {
-      /*SharedPreferences.getInstance().then((prefs) => {
-            if (!prefs.containsKey("boot")) {_askToBoot()} else {_openHome()}
-          });*/
-      _openHome();
-    });
+    _openHome(); // Let's not do a timed splash screen here, it's a waste of
+                 // the user's time and there are better platform ways to do it
   }
 
   @override
@@ -122,12 +117,9 @@ class _SplashPageState extends State<SplashPage> {
     return Scaffold(
       backgroundColor: Color.fromRGBO(50, 50, 50, 1),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Image(
-          image: AssetImage('images/rebble.png'),
-          width: 128,
-        ),
+        // This page shouldnt be visible for more than a split second, but if
+        // it ever is, let the user know it's not broken
+        child: CircularProgressIndicator(),
       ),
     );
   }
