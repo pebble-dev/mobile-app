@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fossil/ui/DevOptionsPage.dart';
 import 'package:fossil/ui/common/icons/RebbleIconsStroke.dart';
 import 'package:fossil/ui/home/tabs/StoreTab.dart';
+import 'package:fossil/ui/home/tabs/TestPage.dart';
 import 'package:fossil/ui/setup/PairPage.dart';
 
 class HomePage extends StatefulWidget {
@@ -14,39 +15,20 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   List<Widget> _tabs = <Widget>[
-    Column(
-      children: <Widget>[
-        RaisedButton(
-          onPressed: () {},
-          child: Text("Button"),
-        ),
-        Text("This is some text."),
-        Card(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Text("This is a card, with an icon button:"),
-                ],
-              ),
-              IconButton(
-                icon: Icon(
-                  RebbleIconsStroke.notifications_megaphone,
-                  size: 25.0,
-                ),
-                onPressed: () {},
-              )
-            ],
-          ),
-        )
-      ],
-    ), //TODO
+    TestPage(),
     PairPage(),
     StoreTab(),
     Placeholder(), //TODO
     Placeholder(), //TODO
   ];
+
+  Map<String, IconData> _tabBarOptions = {
+    "Test": RebbleIconsStroke.send_to_watch_checked,
+    "Devices": RebbleIconsStroke.devices,
+    "Store": RebbleIconsStroke.rebble_store,
+    "Notifications": RebbleIconsStroke.notifications,
+    "More": RebbleIconsStroke.menu_horizontal,
+  };
 
   void _onTabTap(int index) {
     setState(() {
@@ -58,7 +40,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        //backgroundColor: CTheme.colorScheme.surface,
         title: Text("Fossil"),
         actions: <Widget>[
           IconButton(
@@ -70,31 +51,19 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          onTap: _onTabTap,
-          currentIndex: _currentIndex,
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-                icon: Icon(RebbleIconsStroke.send_to_watch_checked, size: 25.0),
-                title: Text("Test"),
-                backgroundColor: Theme.of(context).colorScheme.surface),
-            BottomNavigationBarItem(
-              icon: Icon(RebbleIconsStroke.devices, size: 25.0),
-              title: Text("Devices"),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(RebbleIconsStroke.rebble_store, size: 25.0),
-              title: Text("Store"),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(RebbleIconsStroke.notifications, size: 25.0),
-              title: Text("Notifications"),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(RebbleIconsStroke.menu_horizontal, size: 25.0),
-              title: Text("More"),
-            ),
-          ]),
+        type: BottomNavigationBarType.fixed,
+        onTap: _onTabTap,
+        currentIndex: _currentIndex,
+        items: _tabBarOptions.entries
+            .map(
+              (entry) => BottomNavigationBarItem(
+                icon: Icon(entry.value, size: 25.0),
+                title: Text(entry.key),
+                backgroundColor: Theme.of(context).colorScheme.surface,
+              ),
+            )
+            .toList(),
+      ),
       body: _tabs[_currentIndex],
     );
   }

@@ -6,13 +6,12 @@ class StoreTab extends StatefulWidget {
   State<StatefulWidget> createState() => new _StoreTabState();
 }
 
-class _StoreTabState extends State<StoreTab>{
+class _StoreTabState extends State<StoreTab> {
   @override
   Widget build(BuildContext context) {
     return WebView(
-      onWebViewCreated: (c) {
-        c.loadUrl("https://store-beta.rebble.io/?native=true&platform=android");
-      },
+      initialUrl: "https://store-beta.rebble.io/?native=true&platform=android",
+      javascriptMode: JavascriptMode.unrestricted,
     );
   }
 }
