@@ -1,10 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:fossil/ui/DevOptionsPage.dart';
 import 'package:fossil/ui/common/icons/RebbleIconsStroke.dart';
+import 'package:fossil/ui/devoptions/DevOptionsPage.dart';
 import 'package:fossil/ui/home/tabs/StoreTab.dart';
-import 'package:fossil/ui/home/tabs/TestPage.dart';
+import 'package:fossil/ui/home/tabs/TestTab.dart';
 import 'package:fossil/ui/setup/PairPage.dart';
 
 class HomePage extends StatefulWidget {
@@ -15,7 +15,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   List<Widget> _tabs = <Widget>[
-    TestPage(),
+    TestTab(),
     PairPage(),
     StoreTab(),
     Placeholder(), //TODO
@@ -43,11 +43,9 @@ class _HomePageState extends State<HomePage> {
         title: Text("Fossil"),
         actions: <Widget>[
           IconButton(
-            icon: Icon(RebbleIconsStroke.developer_connection_console,
-                size: 25.0),
-            onPressed: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => DevOptionsPage())),
-          )
+              icon: Icon(RebbleIconsStroke.developer_connection_console,
+                  size: 25.0),
+              onPressed: () => Navigator.pushNamed(context, '/devoptions'))
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

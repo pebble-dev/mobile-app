@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fossil/ui/home/homepage.dart';
+import 'package:fossil/ui/home/HomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RebbleSetupFail extends StatelessWidget {
@@ -26,12 +26,10 @@ class RebbleSetupFail extends StatelessWidget {
                       value.setBool("firstRun", false),
                       value.setBool("bootSetup", false)
                     })
-                .then((value) => Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomePage()),
-                    (Route<dynamic> route) =>
-                        false // it has to be this or a back button shows on the main page
-                    ));
+                .then(
+                  (value) => Navigator.pushNamedAndRemoveUntil(
+                      context, '/home', (route) => false),
+                );
           },
           label: Text("OKAY")),
     );

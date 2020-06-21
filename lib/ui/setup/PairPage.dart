@@ -88,11 +88,9 @@ class _PairPageState extends State<PairPage> {
                   })); // Register + set as default if no default set
           SharedPreferences.getInstance().then((value) {
             if (!value.containsKey("firstRun")) {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => MoreSetup()));
+              Navigator.pushReplacementNamed(context, '/moresetup');
             } else {
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => HomePage()));
+              Navigator.pushReplacementNamed(context, '/home');
             }
           });
         });

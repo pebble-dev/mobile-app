@@ -20,8 +20,7 @@ class _MoreSetupState extends State<MoreSetup> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => RebbleSetup())),
+        onPressed: () => Navigator.pushReplacementNamed(context, '/setup'),
         label: Row(
           children: <Widget>[
             Text("LET'S GET STARTED"),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fossil/infrastructure/datasources/WebServices.dart';
-import 'package:fossil/ui/home/homepage.dart';
+import 'package:fossil/ui/home/HomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RebbleSetupSuccess extends StatefulWidget {
@@ -42,12 +42,8 @@ class _RebbleSetupSuccessState extends State<RebbleSetupSuccess> {
                       value.setBool("firstRun", false),
                       value.setBool("bootSetup", true)
                     })
-                .then((value) => Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomePage()),
-                    (Route<dynamic> route) =>
-                        false // it has to be this or a back button shows on the main page
-                    ));
+                .then((value) => Navigator.pushNamedAndRemoveUntil(
+                    context, '/home', (route) => false));
           },
           label: Text("ON TO REBBLE!")),
     );

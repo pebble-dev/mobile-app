@@ -31,27 +31,18 @@ class RebbleSetup extends StatelessWidget {
               if (value) {
                 launch(_getBootUrl);
                 _bootWaiter.invokeMethod("waitForBoot").then((value) {
-                  if (value) {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RebbleSetupSuccess()));
-                  } else {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RebbleSetupFail()));
-                  }
+                  if (value)
+                    Navigator.pushReplacementNamed(context, '/setupsuccess');
+                  else
+                    Navigator.pushReplacementNamed(context, '/setupfail');
                 });
               }
             }),
           ),
           FlatButton(
             child: Text("SKIP"),
-            onPressed: () => {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => RebbleSetupSuccess()))
-            },
+            onPressed: () =>
+                Navigator.pushReplacementNamed(context, '/setupsuccess'),
           )
         ],
       ),

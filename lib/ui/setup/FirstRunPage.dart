@@ -133,15 +133,11 @@ class _FirstRunPageState extends State<FirstRunPage> {
                     onPressed: () {},
                   ),
                   FloatingActionButton.extended(
-                      icon: Text("LET'S GET STARTED"),
-                      label: Icon(RebbleIconsStroke.caret_right),
-                      backgroundColor: Theme.of(context).primaryColor,
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => PairPage()));
-                      })
+                    icon: Text("LET'S GET STARTED"),
+                    label: Icon(RebbleIconsStroke.caret_right),
+                    backgroundColor: Theme.of(context).primaryColor,
+                    onPressed: () => Navigator.pushNamed(context, '/pairpage'),
+                  ),
                 ],
               ),
             ),

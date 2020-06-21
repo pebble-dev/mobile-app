@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fossil/ui/common/icons/RebbleIconsStroke.dart';
 
-class TestPage extends StatelessWidget {
+class TestTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
