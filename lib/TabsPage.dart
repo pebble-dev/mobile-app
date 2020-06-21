@@ -34,8 +34,8 @@ class _TabsPageState extends State<TabsPage> {
               ),
               IconButton(
                 icon: Icon(
-                  Icons.brightness_medium,
-                  color: Color(0xFFF9A285),
+                  RebbleIconsStroke.notifications_megaphone,
+                  size: 25.0,
                 ),
                 onPressed: () {},
               )
@@ -60,15 +60,14 @@ class _TabsPageState extends State<TabsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: CTheme.colorScheme.surface,
+        //backgroundColor: CTheme.colorScheme.surface,
         title: Text("Fossil"),
         actions: <Widget>[
           IconButton(icon: Icon(RebbleIconsStroke.developer_connection_console, size: 25.0), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => DevOptionsPage())),)
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: CTheme.colorScheme.surface,
-          selectedItemColor: CTheme.colorScheme.secondary,
+          backgroundColor: RebbleTheme.colorScheme.surface,
           type: BottomNavigationBarType.fixed,
           onTap: _onTabTap,
           currentIndex: _currentIndex,
@@ -76,7 +75,7 @@ class _TabsPageState extends State<TabsPage> {
             BottomNavigationBarItem(
               icon: Icon(RebbleIconsStroke.send_to_watch_checked, size: 25.0),
               title: Text("Test"),
-              backgroundColor: CTheme.colorScheme.surface
+              backgroundColor: RebbleTheme.colorScheme.surface
             ),
             BottomNavigationBarItem(
               icon: Icon(RebbleIconsStroke.devices, size: 25.0),

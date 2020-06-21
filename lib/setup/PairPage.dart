@@ -86,7 +86,6 @@ class _PairPageState extends State<PairPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: CTheme.colorScheme.surface,
           title: Text("Pair a watch"),
           leading: BackButton(),
         ),
@@ -122,7 +121,7 @@ class _PairPageState extends State<PairPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                       ),
                       Expanded(child: Container(width: 0.0, height: 0.0)),
-                      Icon(RebbleIconsStroke.caret_right, color: CTheme.colorScheme.secondary),
+                      Icon(RebbleIconsStroke.caret_right, color: RebbleTheme.colorScheme.secondary),
                     ]),
                     margin: EdgeInsets.all(16)),
                 onTap: () {
@@ -141,7 +140,7 @@ class _PairPageState extends State<PairPage> {
                           child: FlatButton(
                             child: Text("SEARCH AGAIN"),
                             padding: EdgeInsets.symmetric(horizontal:32.0),
-                            textColor: CTheme.colorScheme.secondary,
+                            textColor: Theme.of(context).accentColor,
                             onPressed: _refreshDevices,
                           )
                       ),

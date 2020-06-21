@@ -92,7 +92,7 @@ class _FirstRunPageState extends State<FirstRunPage> {
                 CircleContainer(
                   child: Image(image: AssetImage("images/app_large.png"),),
                   diameter: 120,
-                  color: Theme.of(context).accentColor,
+                  color: Theme.of(context).primaryColor,
                   padding: EdgeInsets.all(20),
                 ),
                 SizedBox(height: 16.0), // spacer
@@ -131,7 +131,7 @@ class _FirstRunPageState extends State<FirstRunPage> {
                   FloatingActionButton.extended(
                       icon: Text("LET'S GET STARTED"),
                       label: Icon(RebbleIconsStroke.caret_right),
-                      backgroundColor: Theme.of(context).accentColor,
+                      backgroundColor: Theme.of(context).primaryColor,
                       onPressed: () {
                         Navigator.push(context, MaterialPageRoute(builder: (context) => PairPage()));
                       }
