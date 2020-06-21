@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:fossil/util/interfacing/PebbleDevice.dart';
 
 class DeviceListTab extends StatefulWidget {
   @override

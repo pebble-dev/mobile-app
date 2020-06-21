@@ -16,7 +16,7 @@ class RebbleTheme {
     onError: Colors.white70,
     brightness: Brightness.dark,
   );
-  
+
   static final appTheme = ThemeData(
     brightness: Brightness.dark,
     colorScheme: RebbleTheme.colorScheme,
@@ -26,20 +26,17 @@ class RebbleTheme {
     buttonColor: RebbleTheme.colorScheme.primary,
 
     appBarTheme: AppBarTheme(
-        brightness: Brightness.dark,
-        color: RebbleTheme.colorScheme.surface
+      brightness: Brightness.dark,
+      color: RebbleTheme.colorScheme.surface,
     ),
-    /*bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        brightness: Brightness.dark,
-        color: RebbleTheme.colorScheme.surface
-    ),*/
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: RebbleTheme.colorScheme.surface,
+    ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: RebbleTheme.colorScheme.primary,
       foregroundColor: Colors.white,
     ),
-    iconTheme: IconThemeData(
-        color: RebbleTheme.colorScheme.secondary
-    ),
+    iconTheme: IconThemeData(color: RebbleTheme.colorScheme.secondary),
 
     // This makes the visual density adapt to the platform that you run
     // the app on. For desktop platforms, the controls will be smaller and

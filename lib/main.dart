@@ -1,18 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fossil/DevOptionsPage.dart';
-import 'package:fossil/setup/FirstRunPage.dart';
-import 'package:fossil/TabsPage.dart';
-import 'package:fossil/theme.dart';
-import 'package:fossil/util/PairedStorage.dart';
+import 'package:fossil/infrastructure/datasources/PairedStorage.dart';
+import 'package:fossil/ui/home/homepage.dart';
+import 'package:fossil/ui/setup/FirstRunPage.dart';
+import 'package:fossil/ui/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import 'setup/PairPage.dart';
 
 String getBootUrl = "https://boot.rebble.io/";
 
@@ -42,15 +38,21 @@ class _SplashPageState extends State<SplashPage> {
 
   void _openHome() {
     SharedPreferences.getInstance().then((prefs) => {
-      if (!prefs.containsKey("firstRun")) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => FirstRunPage()))
-      }else {
-        PairedStorage.getDefault().then((value) {
-          if (value != null) protocolC.invokeMethod("targetPebbleAddr", value.address);
-        }),
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TabsPage()))
-      }
-    });
+          if (!prefs.containsKey("firstRun"))
+            {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => FirstRunPage()))
+            }
+          else
+            {
+              PairedStorage.getDefault().then((value) {
+                if (value != null)
+                  protocolC.invokeMethod("targetPebbleAddr", value.address);
+              }),
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => HomePage()))
+            }
+        });
   }
 
   void _askToBoot() {
@@ -88,7 +90,7 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
     _openHome(); // Let's not do a timed splash screen here, it's a waste of
-                 // the user's time and there are better platform ways to do it
+    // the user's time and there are better platform ways to do it
   }
 
   @override

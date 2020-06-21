@@ -1,19 +1,17 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:fossil/DevOptionsPage.dart';
-import 'package:fossil/setup/PairPage.dart';
-import 'package:fossil/theme.dart';
+import 'package:fossil/ui/DevOptionsPage.dart';
+import 'package:fossil/ui/common/icons/RebbleIconsStroke.dart';
+import 'package:fossil/ui/home/tabs/StoreTab.dart';
+import 'package:fossil/ui/setup/PairPage.dart';
 
-import 'icons/rebble_icons_stroke_icons.dart';
-import 'maintabs/StoreTab.dart';
-
-class TabsPage extends StatefulWidget {
+class HomePage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => new _TabsPageState();
+  State<StatefulWidget> createState() => new _HomePageState();
 }
 
-class _TabsPageState extends State<TabsPage> {
+class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   List<Widget> _tabs = <Widget>[
     Column(
@@ -63,20 +61,23 @@ class _TabsPageState extends State<TabsPage> {
         //backgroundColor: CTheme.colorScheme.surface,
         title: Text("Fossil"),
         actions: <Widget>[
-          IconButton(icon: Icon(RebbleIconsStroke.developer_connection_console, size: 25.0), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => DevOptionsPage())),)
+          IconButton(
+            icon: Icon(RebbleIconsStroke.developer_connection_console,
+                size: 25.0),
+            onPressed: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => DevOptionsPage())),
+          )
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: RebbleTheme.colorScheme.surface,
           type: BottomNavigationBarType.fixed,
           onTap: _onTabTap,
           currentIndex: _currentIndex,
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(RebbleIconsStroke.send_to_watch_checked, size: 25.0),
-              title: Text("Test"),
-              backgroundColor: RebbleTheme.colorScheme.surface
-            ),
+                icon: Icon(RebbleIconsStroke.send_to_watch_checked, size: 25.0),
+                title: Text("Test"),
+                backgroundColor: Theme.of(context).colorScheme.surface),
             BottomNavigationBarItem(
               icon: Icon(RebbleIconsStroke.devices, size: 25.0),
               title: Text("Devices"),

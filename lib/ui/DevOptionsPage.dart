@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fossil/util/DevConnection.dart';
+import 'package:fossil/infrastructure/datasources/DevConnection.dart';
+import 'package:fossil/ui/common/icons/RebbleIconsStroke.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'icons/rebble_icons_stroke_icons.dart';
 
 class DevOptionsPage extends StatefulWidget {
   @override
@@ -32,7 +31,8 @@ class _DevOptionsPageState extends State<DevOptionsPage> {
     _devConControl.setCB((bool isConnected) {
       setState(() {
         _isDevConnected = isConnected;
-      });}, (bool isRunning) {
+      });
+    }, (bool isRunning) {
       setState(() {
         _isDevRunning = true;
       });
@@ -43,13 +43,21 @@ class _DevOptionsPageState extends State<DevOptionsPage> {
   Widget build(BuildContext context) {
     if (_devConnection) {
       _devConControl.start();
-    }else{
+    } else {
       if (_devConControl.isConnected) {
         _devConControl.close();
       }
     }
     return Scaffold(
-      appBar: AppBar(title: Text("Developer Options"), leading: IconButton(icon: Icon(RebbleIconsStroke.caret_left), onPressed: () {Navigator.maybePop(context);},),),
+      appBar: AppBar(
+        title: Text("Developer Options"),
+        leading: IconButton(
+          icon: Icon(RebbleIconsStroke.caret_left),
+          onPressed: () {
+            Navigator.maybePop(context);
+          },
+        ),
+      ),
       body: ListView(
           children: ListTile.divideTiles(
         context: context,
@@ -57,44 +65,65 @@ class _DevOptionsPageState extends State<DevOptionsPage> {
           ListTile(
               contentPadding:
                   EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-              title: Text("Apps", style: TextStyle(fontSize: 25),)),
+              title: Text(
+                "Apps",
+                style: TextStyle(fontSize: 25),
+              )),
           SwitchListTile(
             value: _devConnection,
             title: Text("Developer Connection"),
-            subtitle: Text("Extremely insecure, resets outside of page" + (_isDevRunning ? "\nRunning..." + (_isDevConnected ? " **CONNECTED**" : "") : "")),
+            subtitle: Text("Extremely insecure, resets outside of page" +
+                (_isDevRunning
+                    ? "\nRunning..." + (_isDevConnected ? " **CONNECTED**" : "")
+                    : "")),
             isThreeLine: _isDevConnected,
             onChanged: (checked) {
               setState(() => _devConnection = checked);
-            },),
+            },
+          ),
           ListTile(
               contentPadding:
                   EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-              title: Text("Boot", style: TextStyle(fontSize: 25),)),
+              title: Text(
+                "Boot",
+                style: TextStyle(fontSize: 25),
+              )),
           ListTile(
-              contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+              contentPadding:
+                  EdgeInsets.symmetric(vertical: 10, horizontal: 15),
               title: Text("URL"),
-              subtitle: TextField(controller: _bootUrlC, onChanged: (value) => setState(() {SharedPreferences.getInstance().then((_) => _.setString("boot", value));}))),
+              subtitle: TextField(
+                  controller: _bootUrlC,
+                  onChanged: (value) => setState(() {
+                        SharedPreferences.getInstance()
+                            .then((_) => _.setString("boot", value));
+                      }))),
           SwitchListTile(
               value: _overrideS2Config,
               title: Text("Override stage2 config"),
               subtitle: Text("If enabled, will ignore boot URL"),
               onChanged: (checked) {
                 setState(() => _overrideS2Config = checked);
-                SharedPreferences.getInstance().then((_) => _.setBool("overrideBoot", checked));
+                SharedPreferences.getInstance()
+                    .then((_) => _.setBool("overrideBoot", checked));
               }),
           ListTile(
             contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
             title: Text("Stage2 Override"),
             subtitle: Column(
               children: <Widget>[
-                TextField(controller: _bootOverrideC, maxLines: 8, minLines: 4,),
+                TextField(
+                  controller: _bootOverrideC,
+                  maxLines: 8,
+                  minLines: 4,
+                ),
                 Container(
                     alignment: Alignment.centerRight,
                     child: RaisedButton(
                         child: Text("Save"),
-                        onPressed: () => SharedPreferences.getInstance().then((_) => _.setString("overrideBootValue", _bootOverrideC.text))
-                    )
-                )
+                        onPressed: () => SharedPreferences.getInstance().then(
+                            (_) => _.setString(
+                                "overrideBootValue", _bootOverrideC.text))))
               ],
             ),
           )
