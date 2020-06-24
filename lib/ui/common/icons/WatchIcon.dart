@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:fossil/ui/common/icons/PebbleWatchIcons.dart';
+import 'package:fossil/ui/common/icons/fonts/PebbleWatchIcons.dart';
 
 class _WatchLayer {
   _WatchLayer(this.layer, this.color);

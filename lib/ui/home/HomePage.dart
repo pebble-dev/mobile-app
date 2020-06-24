@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:fossil/ui/common/icons/RebbleIconsStroke.dart';
+import 'package:fossil/ui/common/icons/fonts/RebbleIconsStroke.dart';
 import 'package:fossil/ui/home/tabs/StoreTab.dart';
 import 'package:fossil/ui/home/tabs/TestTab.dart';
 import 'package:fossil/ui/setup/PairPage.dart';

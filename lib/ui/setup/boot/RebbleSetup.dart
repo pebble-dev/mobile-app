@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fossil/ui/common/icons/RebbleIconsStroke.dart';
+import 'package:fossil/ui/common/icons/fonts/RebbleIconsStroke.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 String _getBootUrl = "https://boot.rebble.io/";

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fossil/domain/entities/PebbleDevice.dart';
 import 'package:fossil/infrastructure/datasources/PairedStorage.dart';
-import 'package:fossil/ui/common/icons/RebbleIconsStroke.dart';
+import 'package:fossil/ui/common/icons/fonts/RebbleIconsStroke.dart';
 import 'package:fossil/ui/common/icons/WatchIcon.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
