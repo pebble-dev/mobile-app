@@ -38,15 +38,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Fossil"),
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(RebbleIconsStroke.developer_connection_console,
-                  size: 25.0),
-              onPressed: () => Navigator.pushNamed(context, '/devoptions'))
-        ],
-      ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         onTap: _onTabTap,
