@@ -22,7 +22,7 @@ class _HomePageState extends State<HomePage> {
   ];
 
   Map<String, IconData> _tabBarOptions = {
-    "Test": RebbleIconsStroke.send_to_watch_checked,
+    "Testing": RebbleIconsStroke.send_to_watch_checked,
     "Devices": RebbleIconsStroke.devices,
     "Store": RebbleIconsStroke.rebble_store,
     "Notifications": RebbleIconsStroke.notifications,
