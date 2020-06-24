@@ -21,8 +21,8 @@ class CompIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-        Icon(stroke, color: strokeColor,),
-        Icon(fill, color: fillColor,)
+        Icon(fill, color: fillColor,), // Draws underneath
+        Icon(stroke, color: strokeColor,), // Draws on top
       ],
     );
   }
