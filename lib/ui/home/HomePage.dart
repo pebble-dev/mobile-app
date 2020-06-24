@@ -13,9 +13,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
-  List<Widget> _tabs = <Widget>[
+  List<Widget> _tabs = <Widget>[ //TODO: replace this
     TestTab(),
-    PairPage(),
+    PairPage(), // setup page is not the same as devices tab but it works for now
     StoreTab(),
     Placeholder(), //TODO
     Placeholder(), //TODO
@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
         items: _tabBarOptions.entries
             .map(
               (entry) => BottomNavigationBarItem(
-                icon: Icon(entry.value, size: 25.0),
+                icon: Icon(entry.value),
                 title: Text(entry.key),
                 backgroundColor: Theme.of(context).colorScheme.surface,
               ),

@@ -69,7 +69,6 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(50, 50, 50, 1),
       body: Center(
         // This page shouldnt be visible for more than a split second, but if
         // it ever is, let the user know it's not broken
