@@ -1,36 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:fossil/ui/common/icons/CompIcon.dart';
+import 'package:fossil/ui/common/icons/fonts/RebbleIconsFill.dart';
 import 'package:fossil/ui/common/icons/fonts/RebbleIconsStroke.dart';
+import 'package:fossil/ui/Router.dart';
 
 class TestTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        RaisedButton(
-          onPressed: () {},
-          child: Text("Button"),
-        ),
-        Text("This is some text."),
-        Card(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Text("This is a card, with an icon button:"),
-                ],
-              ),
-              IconButton(
-                icon: Icon(
-                  RebbleIconsStroke.notifications_megaphone,
-                  size: 25.0,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Testing"),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            RaisedButton(
+              onPressed: () {},
+              child: Text("Button"),
+            ),
+            Text("This is some text."),
+            Card(
+              margin: EdgeInsets.all(16.0),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(),
+                    Text("Some debug options", style: Theme.of(context).textTheme.headline5,),
+                    SizedBox(height: 8.0),
+                    FlatButton.icon(
+                        label: Text("Open developer options"),
+                        icon: Icon(RebbleIconsStroke.developer_connection_console, size: 25.0),
+                        textColor: Theme.of(context).accentColor,
+                        onPressed: () => Navigator.pushNamed(context, '/devoptions')
+                    ),
+                    FlatButton.icon(
+                        label: Text("Here's another button"),
+                        icon: Icon(RebbleIconsStroke.settings, size: 25.0),
+                        textColor: Theme.of(context).accentColor,
+                        onPressed: () => {}
+                    ),
+                  ],
                 ),
-                onPressed: () {},
-              )
-            ],
-          ),
-        )
-      ],
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
