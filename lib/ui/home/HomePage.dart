@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:fossil/ui/Theme.dart';
 import 'package:fossil/ui/common/icons/fonts/RebbleIconsStroke.dart';
 import 'package:fossil/ui/home/tabs/StoreTab.dart';
 import 'package:fossil/ui/home/tabs/TestTab.dart';
@@ -13,7 +14,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
-  List<Widget> _tabs = <Widget>[ //TODO: replace this
+  List<Widget> _tabs = <Widget>[
+    //TODO: replace this
     TestTab(),
     PairPage(), // setup page is not the same as devices tab but it works for now
     StoreTab(),
@@ -40,6 +42,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
+        backgroundColor: RebbleTheme.colorScheme.surface,
         onTap: _onTabTap,
         currentIndex: _currentIndex,
         items: _tabBarOptions.entries
