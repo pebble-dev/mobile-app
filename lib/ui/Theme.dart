@@ -29,9 +29,9 @@ class RebbleTheme {
       brightness: Brightness.dark,
       color: RebbleTheme.colorScheme.surface,
     ),
-    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+    /*bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: RebbleTheme.colorScheme.surface,
-    ),
+    ),*/
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: RebbleTheme.colorScheme.primary,
       foregroundColor: Colors.white,
