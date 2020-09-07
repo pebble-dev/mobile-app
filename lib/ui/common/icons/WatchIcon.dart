@@ -73,30 +73,30 @@ class PebbleWatchIcon {
 
 class PebbleWatchColor {
   // Defining colors used for different Pebble models
-  static const Color Black = Color(0xFF444444); // Body color for black watches
-  static const Color Red = Color(0xFFE03A3A); // Body color for red classics
-  static const Color White =
-      Color(0xFFFFFFFF); // Body color for white classic/P2
-  static const Color Grey = Color(0xFF999999); // Body color for grey classic
+  static const Color Black =
+      Color(0xFF444444); // Body color for black and gunmetal watches
+  static const Color Red = Color(0xFFD33434); // Body color for red classic/time
+  static const Color White = Color(0xFFFFFFFF); // Body color for white watches
+  static const Color Grey = Color(0xFFADADAD); // Body color for grey classic
   static const Color Orange =
-      Color(0xFFFA8921); // Body color for orange classic
+      Color(0xFFF4953D); // Body color for orange classic
   static const Color HotPink =
-      Color(0xFFFF60A3); // They sure made a lot of these huh
+      Color(0xFFFF3F8F); // They sure made a lot of these huh
   static const Color FreshGreen =
-      Color(0xFFC7EC42); // Body color for green classics
+      Color(0xFFA7EF6F); // Body color for green classics
   static const Color FlyBlue =
-      Color(0xFF03E0FF); // Body color for blue classics
+      Color(0xFF41CBF7); // Body color for blue classics
 
   static const Color Silver =
-      Color(0xFFC4C4C4); // Body color for silver watches
-  static const Color Gold = Color(0xFFECC284); // Body color for gold time steel
+      Color(0xFFE0E0E0); // Body color for silver watches
+  static const Color Gold = Color(0xFFEACB7B); // Body color for gold time steel
   static const Color RoseGold =
       Color(0xFFD7A17F); // Body stroke color for gold time round
 
   static const Color Turquoise =
-      Color(0xFF3B8E94); // Button+screen stroke for turq/white P2HR
+      Color(0xFF00A99F); // Button+screen stroke for turq/white P2HR
   static const Color Flame =
-      Color(0xFFE03A3A); // Button color for red/black P2HR
+      Color(0xFFD33434); // Button color for red/black P2HR
   static const Color Lime =
-      Color(0xFFBFE051); // Button color for green/black P2HR
+      Color(0xFF8BE346); // Button color for green/black P2HR
 }
