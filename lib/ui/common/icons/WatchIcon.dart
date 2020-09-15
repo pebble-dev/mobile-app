@@ -134,3 +134,20 @@ enum PebbleWatchModel {
   pebble_2_lime,
   pebble_2_aqua
 }
+
+Map<PebbleWatchModel, Widget> watchDictionary = {
+  PebbleWatchModel.classic_black:
+      PebbleWatchIcon.Classic(PebbleWatchColor.Black),
+  PebbleWatchModel.classic_white:
+      PebbleWatchIcon.Classic(PebbleWatchColor.White),
+  PebbleWatchModel.classic_red: PebbleWatchIcon.Classic(PebbleWatchColor.Red),
+  PebbleWatchModel.classic_grey: PebbleWatchIcon.Classic(PebbleWatchColor.Grey),
+  PebbleWatchModel.classic_orange:
+      PebbleWatchIcon.Classic(PebbleWatchColor.Orange),
+  PebbleWatchModel.classic_fresh_green:
+      PebbleWatchIcon.Classic(PebbleWatchColor.FreshGreen),
+  PebbleWatchModel.classic_hot_pink:
+      PebbleWatchIcon.Classic(PebbleWatchColor.HotPink),
+  PebbleWatchModel.classic_fly_blue:
+      PebbleWatchIcon.Classic(PebbleWatchColor.FlyBlue),
+};
