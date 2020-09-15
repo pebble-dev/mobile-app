@@ -1,3 +1,3 @@
-# Fossil
+# Rebble app
 
-A multi platform Pebble companion app
+A multi platform watch companion app for Pebble/RebbleOS devices
