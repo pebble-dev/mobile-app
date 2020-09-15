@@ -46,4 +46,7 @@ class PebbleWatchIcons {
   static const IconData pebble_2_buttons_stroke = IconData(0xe816, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData pebble_2_screen_stroke = IconData(0xe817, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData pebble_2_screen_fill = IconData(0xe818, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData rebble_logo_body_stroke = IconData(0xe819, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData rebble_logo_body_fill = IconData(0xe81a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData rebble_logo_hands = IconData(0xe81b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }
