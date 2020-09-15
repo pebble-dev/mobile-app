@@ -100,3 +100,37 @@ class PebbleWatchColor {
   static const Color Lime =
       Color(0xFF8BE346); // Button color for green/black P2HR
 }
+
+enum PebbleWatchModel {
+  classic_black,
+  classic_white,
+  classic_red,
+  classic_grey,
+  classic_orange,
+  classic_fresh_green,
+  classic_hot_pink,
+  classic_fly_blue,
+  //
+  classic_steel_silver,
+  classic_steel_gunmetal,
+  //
+  time_black,
+  time_white,
+  time_red,
+  //
+  time_steel_silver,
+  time_steel_gunmetal,
+  time_steel_gold,
+  //
+  time_round_silver,
+  time_round_black,
+  time_round_rose_gold,
+  time_round_black_silver_polish,
+  time_round_black_gold_polish,
+  // i actually don't know every color of PTR released, please extend if necessary
+  pebble_2_black,
+  pebble_2_white,
+  pebble_2_flame,
+  pebble_2_lime,
+  pebble_2_aqua
+}
