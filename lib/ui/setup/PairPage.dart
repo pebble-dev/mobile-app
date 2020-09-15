@@ -115,8 +115,8 @@ class _PairPageState extends State<PairPage> {
                             child: Row(children: <Widget>[
                               Container(
                                 child: Center(
-                                    child: PebbleWatchIcon.Two(
-                                        Colors.teal, Colors.lightGreenAccent)),
+                                    child: watchDictionary[
+                                        PebbleWatchModel.time_round_rose_gold]),
                                 width: 56,
                                 height: 56,
                                 decoration: BoxDecoration(

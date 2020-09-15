@@ -48,15 +48,16 @@ class _FirstRunPageState extends State<FirstRunPage> {
   static final EdgeInsets _iconMargin = EdgeInsets.all(4);
   static List<Widget> _iconScrollerSet = [
     CarouselIcon(
-        icon: PebbleWatchIcon.Classic(PebbleWatchColor.Red, size: 96.0)),
-    CarouselIcon(icon: PebbleWatchIcon.Time(PebbleWatchColor.Red, size: 96.0)),
+        icon: PebbleWatchIcon.classic(PebbleWatchColor.Red, size: 96.0)),
+    CarouselIcon(icon: PebbleWatchIcon.time(PebbleWatchColor.Red, size: 96.0)),
     CarouselIcon(
-        icon: PebbleWatchIcon.Round(PebbleWatchColor.White,
+        icon: PebbleWatchIcon.timeRound(PebbleWatchColor.White,
             bodyStrokeColor: Colors.black, size: 96.0)),
     CarouselIcon(
-        icon: PebbleWatchIcon.Two(
-            PebbleWatchColor.White, PebbleWatchColor.Turquoise,
-            bezelColor: PebbleWatchColor.Turquoise, size: 96.0)),
+        icon: PebbleWatchIcon.pebbleTwo(PebbleWatchColor.White,
+            buttonsColor: PebbleWatchColor.Aqua,
+            bezelColor: PebbleWatchColor.Aqua,
+            size: 96.0)),
   ];
   List<Widget> _iconScroller = _iconScrollerSet;
 
