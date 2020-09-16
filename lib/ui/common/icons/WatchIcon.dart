@@ -9,8 +9,8 @@ class _WatchLayer {
   final Color color;
 }
 
-class WatchIcon extends StatelessWidget {
-  WatchIcon(this.layers, {this.size = 48.0});
+class _WatchIcon extends StatelessWidget {
+  _WatchIcon(this.layers, {this.size = 48.0});
   final List<_WatchLayer> layers;
   final double size;
   @override
@@ -27,9 +27,10 @@ class WatchIcon extends StatelessWidget {
   }
 }
 
-class PebbleWatchIcon {
+class PebbleWatchIcon extends StatelessWidget {
   // First layer = bottom layer, last layer = top layer (draw order)
-  static WatchIcon classic(Color bodyColor, {double size = 48.0}) => WatchIcon(
+  static _WatchIcon classic(Color bodyColor, {double size = 48.0}) =>
+      _WatchIcon(
         [
           _WatchLayer(PebbleWatchIcons.classic_body_fill, bodyColor),
           _WatchLayer(PebbleWatchIcons.classic_body_stroke, Colors.black),
@@ -38,8 +39,8 @@ class PebbleWatchIcon {
         ],
         size: size,
       );
-  static WatchIcon classicSteel(Color bodyColor, {double size = 48.0}) =>
-      WatchIcon(
+  static _WatchIcon classicSteel(Color bodyColor, {double size = 48.0}) =>
+      _WatchIcon(
         [
           _WatchLayer(PebbleWatchIcons.classic_steel_body_fill, bodyColor),
           _WatchLayer(PebbleWatchIcons.classic_steel_body_stroke, Colors.black),
@@ -49,7 +50,7 @@ class PebbleWatchIcon {
         ],
         size: size,
       );
-  static WatchIcon time(Color bodyColor, {double size = 48.0}) => WatchIcon(
+  static _WatchIcon time(Color bodyColor, {double size = 48.0}) => _WatchIcon(
         [
           _WatchLayer(PebbleWatchIcons.time_body_fill, bodyColor),
           _WatchLayer(PebbleWatchIcons.time_body_stroke, Colors.black),
@@ -58,16 +59,16 @@ class PebbleWatchIcon {
         ],
         size: size,
       );
-  static WatchIcon timeSteel(Color bodyColor, {double size = 48.0}) =>
-      WatchIcon([
+  static _WatchIcon timeSteel(Color bodyColor, {double size = 48.0}) =>
+      _WatchIcon([
         _WatchLayer(PebbleWatchIcons.time_steel_body_fill, bodyColor),
         _WatchLayer(PebbleWatchIcons.time_steel_body_stroke, Colors.black),
         _WatchLayer(PebbleWatchIcons.time_steel_screen_fill, Colors.white),
         _WatchLayer(PebbleWatchIcons.time_steel_screen_stroke, Colors.black),
       ]);
-  static WatchIcon timeRound(Color bodyColor,
+  static _WatchIcon timeRound(Color bodyColor,
           {Color bodyStrokeColor = Colors.black, double size = 48.0}) =>
-      WatchIcon(
+      _WatchIcon(
         [
           _WatchLayer(PebbleWatchIcons.time_round_body_fill, bodyColor),
           _WatchLayer(PebbleWatchIcons.time_round_body_stroke, bodyStrokeColor),
@@ -76,11 +77,11 @@ class PebbleWatchIcon {
         ],
         size: size,
       );
-  static WatchIcon pebbleTwo(Color bodyColor,
+  static _WatchIcon pebbleTwo(Color bodyColor,
           {Color buttonsColor = Colors.black,
           Color bezelColor = Colors.black,
           double size = 48.0}) =>
-      WatchIcon(
+      _WatchIcon(
         [
           _WatchLayer(PebbleWatchIcons.pebble_2_buttons_stroke, buttonsColor),
           _WatchLayer(PebbleWatchIcons.pebble_2_body_fill, bodyColor),
@@ -90,11 +91,90 @@ class PebbleWatchIcon {
         ],
         size: size,
       );
-  static WatchIcon rebbleLogo({size = 48.0}) => WatchIcon([
+  static _WatchIcon rebbleLogo({size = 48.0}) => _WatchIcon([
         _WatchLayer(PebbleWatchIcons.rebble_logo_body_fill, Colors.white),
         _WatchLayer(PebbleWatchIcons.rebble_logo_body_stroke, Colors.black),
         _WatchLayer(PebbleWatchIcons.rebble_logo_hands, Color(0xFFFA5521)),
       ]);
+
+  PebbleWatchIcon({@required this.model});
+
+  PebbleWatchModel model;
+
+  @override
+  Widget build(BuildContext context) {
+    // i'm so sorry for this
+
+    switch (model) {
+      case PebbleWatchModel.classic_black:
+        return PebbleWatchIcon.classic(PebbleWatchColor.Black);
+      case PebbleWatchModel.classic_white:
+        return PebbleWatchIcon.classic(PebbleWatchColor.White);
+      case PebbleWatchModel.classic_red:
+        return PebbleWatchIcon.classic(PebbleWatchColor.Red);
+      case PebbleWatchModel.classic_grey:
+        return PebbleWatchIcon.classic(PebbleWatchColor.Grey);
+      case PebbleWatchModel.classic_orange:
+        return PebbleWatchIcon.classic(PebbleWatchColor.Orange);
+      case PebbleWatchModel.classic_fresh_green:
+        return PebbleWatchIcon.classic(PebbleWatchColor.FreshGreen);
+      case PebbleWatchModel.classic_hot_pink:
+        return PebbleWatchIcon.classic(PebbleWatchColor.HotPink);
+      case PebbleWatchModel.classic_fly_blue:
+        return PebbleWatchIcon.classic(PebbleWatchColor.FlyBlue);
+      //
+      case PebbleWatchModel.classic_steel_silver:
+        return PebbleWatchIcon.classicSteel(PebbleWatchColor.Silver);
+      case PebbleWatchModel.classic_steel_gunmetal:
+        return PebbleWatchIcon.classicSteel(PebbleWatchColor.Grey);
+      //
+      case PebbleWatchModel.time_black:
+        return PebbleWatchIcon.time(PebbleWatchColor.Black);
+      case PebbleWatchModel.time_white:
+        return PebbleWatchIcon.time(PebbleWatchColor.White);
+      case PebbleWatchModel.time_red:
+        return PebbleWatchIcon.time(PebbleWatchColor.Red);
+      //
+      case PebbleWatchModel.time_steel_silver:
+        return PebbleWatchIcon.timeSteel(PebbleWatchColor.Silver);
+      case PebbleWatchModel.time_steel_gunmetal:
+        return PebbleWatchIcon.timeSteel(PebbleWatchColor.Grey);
+      case PebbleWatchModel.time_steel_gold:
+        return PebbleWatchIcon.timeSteel(PebbleWatchColor.Gold);
+      //
+      case PebbleWatchModel.time_round_silver:
+        return PebbleWatchIcon.timeRound(PebbleWatchColor.White);
+      case PebbleWatchModel.time_round_black:
+        return PebbleWatchIcon.timeRound(PebbleWatchColor.Black);
+      case PebbleWatchModel.time_round_rose_gold:
+        return PebbleWatchIcon.timeRound(PebbleWatchColor.White,
+            bodyStrokeColor: PebbleWatchColor.RoseGold);
+      case PebbleWatchModel.time_round_black_silver_polish:
+        return PebbleWatchIcon.timeRound(PebbleWatchColor.Black,
+            bodyStrokeColor: PebbleWatchColor.Silver);
+      case PebbleWatchModel.time_round_black_gold_polish:
+        return PebbleWatchIcon.timeRound(PebbleWatchColor.Black,
+            bodyStrokeColor: PebbleWatchColor.Gold);
+      //
+      case PebbleWatchModel.pebble_2_black:
+        return PebbleWatchIcon.pebbleTwo(PebbleWatchColor.Black);
+      case PebbleWatchModel.pebble_2_white:
+        return PebbleWatchIcon.pebbleTwo(PebbleWatchColor.White);
+      case PebbleWatchModel.pebble_2_flame:
+        return PebbleWatchIcon.pebbleTwo(PebbleWatchColor.Black,
+            buttonsColor: PebbleWatchColor.Flame);
+      case PebbleWatchModel.pebble_2_lime:
+        return PebbleWatchIcon.pebbleTwo(PebbleWatchColor.Black,
+            buttonsColor: PebbleWatchColor.Lime);
+      case PebbleWatchModel.pebble_2_aqua:
+        return PebbleWatchIcon.pebbleTwo(PebbleWatchColor.White,
+            buttonsColor: PebbleWatchColor.Aqua,
+            bezelColor: PebbleWatchColor.Aqua);
+      //
+      case PebbleWatchModel.rebble_logo:
+        return PebbleWatchIcon.rebbleLogo();
+    }
+  }
 }
 
 class PebbleWatchColor {
@@ -162,67 +242,3 @@ enum PebbleWatchModel {
   //
   rebble_logo
 }
-
-/*const*/ Map<PebbleWatchModel, Widget> watchDictionary = {
-  PebbleWatchModel.classic_black:
-      PebbleWatchIcon.classic(PebbleWatchColor.Black),
-  PebbleWatchModel.classic_white:
-      PebbleWatchIcon.classic(PebbleWatchColor.White),
-  PebbleWatchModel.classic_red: PebbleWatchIcon.classic(PebbleWatchColor.Red),
-  PebbleWatchModel.classic_grey: PebbleWatchIcon.classic(PebbleWatchColor.Grey),
-  PebbleWatchModel.classic_orange:
-      PebbleWatchIcon.classic(PebbleWatchColor.Orange),
-  PebbleWatchModel.classic_fresh_green:
-      PebbleWatchIcon.classic(PebbleWatchColor.FreshGreen),
-  PebbleWatchModel.classic_hot_pink:
-      PebbleWatchIcon.classic(PebbleWatchColor.HotPink),
-  PebbleWatchModel.classic_fly_blue:
-      PebbleWatchIcon.classic(PebbleWatchColor.FlyBlue),
-  //
-  PebbleWatchModel.classic_steel_silver:
-      PebbleWatchIcon.classicSteel(PebbleWatchColor.Silver),
-  PebbleWatchModel.classic_steel_gunmetal:
-      PebbleWatchIcon.classicSteel(PebbleWatchColor.Grey),
-  //
-  PebbleWatchModel.time_black: PebbleWatchIcon.time(PebbleWatchColor.Black),
-  PebbleWatchModel.time_white: PebbleWatchIcon.time(PebbleWatchColor.White),
-  PebbleWatchModel.time_red: PebbleWatchIcon.time(PebbleWatchColor.Red),
-  //
-  PebbleWatchModel.time_steel_silver:
-      PebbleWatchIcon.timeSteel(PebbleWatchColor.Silver),
-  PebbleWatchModel.time_steel_gunmetal:
-      PebbleWatchIcon.timeSteel(PebbleWatchColor.Grey),
-  PebbleWatchModel.time_steel_gold:
-      PebbleWatchIcon.timeSteel(PebbleWatchColor.Gold),
-  //
-  PebbleWatchModel.time_round_silver:
-      PebbleWatchIcon.timeRound(PebbleWatchColor.White),
-  PebbleWatchModel.time_round_black:
-      PebbleWatchIcon.timeRound(PebbleWatchColor.Black),
-  PebbleWatchModel.time_round_rose_gold: PebbleWatchIcon.timeRound(
-      PebbleWatchColor.White,
-      bodyStrokeColor: PebbleWatchColor.RoseGold),
-  PebbleWatchModel.time_round_black_silver_polish: PebbleWatchIcon.timeRound(
-      PebbleWatchColor.Black,
-      bodyStrokeColor: PebbleWatchColor.Silver),
-  PebbleWatchModel.time_round_black_gold_polish: PebbleWatchIcon.timeRound(
-      PebbleWatchColor.Black,
-      bodyStrokeColor: PebbleWatchColor.Gold),
-  //
-  PebbleWatchModel.pebble_2_black:
-      PebbleWatchIcon.pebbleTwo(PebbleWatchColor.Black),
-  PebbleWatchModel.pebble_2_white:
-      PebbleWatchIcon.pebbleTwo(PebbleWatchColor.White),
-  PebbleWatchModel.pebble_2_flame: PebbleWatchIcon.pebbleTwo(
-      PebbleWatchColor.Black,
-      buttonsColor: PebbleWatchColor.Flame),
-  PebbleWatchModel.pebble_2_lime: PebbleWatchIcon.pebbleTwo(
-      PebbleWatchColor.Black,
-      buttonsColor: PebbleWatchColor.Lime),
-  PebbleWatchModel.pebble_2_aqua: PebbleWatchIcon.pebbleTwo(
-      PebbleWatchColor.White,
-      buttonsColor: PebbleWatchColor.Aqua,
-      bezelColor: PebbleWatchColor.Aqua),
-  //
-  PebbleWatchModel.rebble_logo: PebbleWatchIcon.rebbleLogo()
-};

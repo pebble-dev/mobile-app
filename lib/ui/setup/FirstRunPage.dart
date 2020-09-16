@@ -84,7 +84,7 @@ class _FirstRunPageState extends State<FirstRunPage> {
       body: Stack(
         children: <Widget>[
           Positioned(
-            top: MediaQuery.of(context).size.height / 4,
+            top: (MediaQuery.of(context).size.height / 5),
             width: MediaQuery.of(context).size.width,
             child: Column(
               children: <Widget>[
