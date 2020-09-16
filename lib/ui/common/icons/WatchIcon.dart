@@ -65,7 +65,7 @@ class PebbleWatchIcon extends StatelessWidget {
         _WatchLayer(PebbleWatchIcons.time_steel_body_stroke, Colors.black),
         _WatchLayer(PebbleWatchIcons.time_steel_screen_fill, Colors.white),
         _WatchLayer(PebbleWatchIcons.time_steel_screen_stroke, Colors.black),
-      ]);
+      ], size: size);
   static _WatchIcon timeRound(Color bodyColor,
           {Color bodyStrokeColor = Colors.black, double size = 48.0}) =>
       _WatchIcon(
@@ -95,11 +95,12 @@ class PebbleWatchIcon extends StatelessWidget {
         _WatchLayer(PebbleWatchIcons.rebble_logo_body_fill, Colors.white),
         _WatchLayer(PebbleWatchIcons.rebble_logo_body_stroke, Colors.black),
         _WatchLayer(PebbleWatchIcons.rebble_logo_hands, Color(0xFFFA5521)),
-      ]);
+      ], size: size);
 
-  PebbleWatchIcon({@required this.model});
+  PebbleWatchIcon(@required this.model, {this.size = 48.0});
 
-  PebbleWatchModel model;
+  final PebbleWatchModel model;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
@@ -107,72 +108,74 @@ class PebbleWatchIcon extends StatelessWidget {
 
     switch (model) {
       case PebbleWatchModel.classic_black:
-        return PebbleWatchIcon.classic(PebbleWatchColor.Black);
+        return PebbleWatchIcon.classic(PebbleWatchColor.Black, size: size);
       case PebbleWatchModel.classic_white:
-        return PebbleWatchIcon.classic(PebbleWatchColor.White);
+        return PebbleWatchIcon.classic(PebbleWatchColor.White, size: size);
       case PebbleWatchModel.classic_red:
-        return PebbleWatchIcon.classic(PebbleWatchColor.Red);
+        return PebbleWatchIcon.classic(PebbleWatchColor.Red, size: size);
       case PebbleWatchModel.classic_grey:
-        return PebbleWatchIcon.classic(PebbleWatchColor.Grey);
+        return PebbleWatchIcon.classic(PebbleWatchColor.Grey, size: size);
       case PebbleWatchModel.classic_orange:
-        return PebbleWatchIcon.classic(PebbleWatchColor.Orange);
+        return PebbleWatchIcon.classic(PebbleWatchColor.Orange, size: size);
       case PebbleWatchModel.classic_fresh_green:
-        return PebbleWatchIcon.classic(PebbleWatchColor.FreshGreen);
+        return PebbleWatchIcon.classic(PebbleWatchColor.FreshGreen, size: size);
       case PebbleWatchModel.classic_hot_pink:
-        return PebbleWatchIcon.classic(PebbleWatchColor.HotPink);
+        return PebbleWatchIcon.classic(PebbleWatchColor.HotPink, size: size);
       case PebbleWatchModel.classic_fly_blue:
-        return PebbleWatchIcon.classic(PebbleWatchColor.FlyBlue);
+        return PebbleWatchIcon.classic(PebbleWatchColor.FlyBlue, size: size);
       //
       case PebbleWatchModel.classic_steel_silver:
-        return PebbleWatchIcon.classicSteel(PebbleWatchColor.Silver);
+        return PebbleWatchIcon.classicSteel(PebbleWatchColor.Silver,
+            size: size);
       case PebbleWatchModel.classic_steel_gunmetal:
-        return PebbleWatchIcon.classicSteel(PebbleWatchColor.Grey);
+        return PebbleWatchIcon.classicSteel(PebbleWatchColor.Grey, size: size);
       //
       case PebbleWatchModel.time_black:
-        return PebbleWatchIcon.time(PebbleWatchColor.Black);
+        return PebbleWatchIcon.time(PebbleWatchColor.Black, size: size);
       case PebbleWatchModel.time_white:
-        return PebbleWatchIcon.time(PebbleWatchColor.White);
+        return PebbleWatchIcon.time(PebbleWatchColor.White, size: size);
       case PebbleWatchModel.time_red:
-        return PebbleWatchIcon.time(PebbleWatchColor.Red);
+        return PebbleWatchIcon.time(PebbleWatchColor.Red, size: size);
       //
       case PebbleWatchModel.time_steel_silver:
-        return PebbleWatchIcon.timeSteel(PebbleWatchColor.Silver);
+        return PebbleWatchIcon.timeSteel(PebbleWatchColor.Silver, size: size);
       case PebbleWatchModel.time_steel_gunmetal:
-        return PebbleWatchIcon.timeSteel(PebbleWatchColor.Grey);
+        return PebbleWatchIcon.timeSteel(PebbleWatchColor.Grey, size: size);
       case PebbleWatchModel.time_steel_gold:
-        return PebbleWatchIcon.timeSteel(PebbleWatchColor.Gold);
+        return PebbleWatchIcon.timeSteel(PebbleWatchColor.Gold, size: size);
       //
       case PebbleWatchModel.time_round_silver:
-        return PebbleWatchIcon.timeRound(PebbleWatchColor.White);
+        return PebbleWatchIcon.timeRound(PebbleWatchColor.White, size: size);
       case PebbleWatchModel.time_round_black:
-        return PebbleWatchIcon.timeRound(PebbleWatchColor.Black);
+        return PebbleWatchIcon.timeRound(PebbleWatchColor.Black, size: size);
       case PebbleWatchModel.time_round_rose_gold:
         return PebbleWatchIcon.timeRound(PebbleWatchColor.White,
-            bodyStrokeColor: PebbleWatchColor.RoseGold);
+            bodyStrokeColor: PebbleWatchColor.RoseGold, size: size);
       case PebbleWatchModel.time_round_black_silver_polish:
         return PebbleWatchIcon.timeRound(PebbleWatchColor.Black,
-            bodyStrokeColor: PebbleWatchColor.Silver);
+            bodyStrokeColor: PebbleWatchColor.Silver, size: size);
       case PebbleWatchModel.time_round_black_gold_polish:
         return PebbleWatchIcon.timeRound(PebbleWatchColor.Black,
-            bodyStrokeColor: PebbleWatchColor.Gold);
+            bodyStrokeColor: PebbleWatchColor.Gold, size: size);
       //
       case PebbleWatchModel.pebble_2_black:
-        return PebbleWatchIcon.pebbleTwo(PebbleWatchColor.Black);
+        return PebbleWatchIcon.pebbleTwo(PebbleWatchColor.Black, size: size);
       case PebbleWatchModel.pebble_2_white:
-        return PebbleWatchIcon.pebbleTwo(PebbleWatchColor.White);
+        return PebbleWatchIcon.pebbleTwo(PebbleWatchColor.White, size: size);
       case PebbleWatchModel.pebble_2_flame:
         return PebbleWatchIcon.pebbleTwo(PebbleWatchColor.Black,
-            buttonsColor: PebbleWatchColor.Flame);
+            buttonsColor: PebbleWatchColor.Flame, size: size);
       case PebbleWatchModel.pebble_2_lime:
         return PebbleWatchIcon.pebbleTwo(PebbleWatchColor.Black,
-            buttonsColor: PebbleWatchColor.Lime);
+            buttonsColor: PebbleWatchColor.Lime, size: size);
       case PebbleWatchModel.pebble_2_aqua:
         return PebbleWatchIcon.pebbleTwo(PebbleWatchColor.White,
             buttonsColor: PebbleWatchColor.Aqua,
-            bezelColor: PebbleWatchColor.Aqua);
+            bezelColor: PebbleWatchColor.Aqua,
+            size: size);
       //
       case PebbleWatchModel.rebble_logo:
-        return PebbleWatchIcon.rebbleLogo();
+        return PebbleWatchIcon.rebbleLogo(size: size);
     }
   }
 }
