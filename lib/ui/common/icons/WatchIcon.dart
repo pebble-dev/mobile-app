@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:fossil/ui/Theme.dart';
 import 'package:fossil/ui/common/icons/fonts/PebbleWatchIcons.dart';
 
 class _WatchLayer {
@@ -144,31 +143,45 @@ class PebbleWatchIcon extends StatelessWidget {
       case PebbleWatchModel.time_steel_gold:
         return PebbleWatchIcon.timeSteel(PebbleWatchColor.Gold, size: size);
       //
-      case PebbleWatchModel.time_round_silver:
+      case PebbleWatchModel.time_round_silver_14:
         return PebbleWatchIcon.timeRound(PebbleWatchColor.White, size: size);
-      case PebbleWatchModel.time_round_black:
+      case PebbleWatchModel.time_round_silver_20:
+        return PebbleWatchIcon.timeRound(PebbleWatchColor.White, size: size);
+      case PebbleWatchModel.time_round_black_14:
         return PebbleWatchIcon.timeRound(PebbleWatchColor.Black, size: size);
-      case PebbleWatchModel.time_round_rose_gold:
+      case PebbleWatchModel.time_round_black_20:
+        return PebbleWatchIcon.timeRound(PebbleWatchColor.Black, size: size);
+      case PebbleWatchModel.time_round_rose_gold_14:
         return PebbleWatchIcon.timeRound(PebbleWatchColor.White,
             bodyStrokeColor: PebbleWatchColor.RoseGold, size: size);
-      case PebbleWatchModel.time_round_black_silver_polish:
+      case PebbleWatchModel.time_round_black_silver_polish_20:
         return PebbleWatchIcon.timeRound(PebbleWatchColor.Black,
             bodyStrokeColor: PebbleWatchColor.Silver, size: size);
-      case PebbleWatchModel.time_round_black_gold_polish:
+      case PebbleWatchModel.time_round_black_gold_polish_20:
         return PebbleWatchIcon.timeRound(PebbleWatchColor.Black,
             bodyStrokeColor: PebbleWatchColor.Gold, size: size);
+      case PebbleWatchModel.time_round_rainbow_silver_14:
+        return PebbleWatchIcon.timeRound(PebbleWatchColor.White,
+            bodyStrokeColor: PebbleWatchColor.Rainbow, size: size);
+      case PebbleWatchModel.time_round_rainbow_black_20:
+        return PebbleWatchIcon.timeRound(PebbleWatchColor.Black,
+            bodyStrokeColor: PebbleWatchColor.Rainbow, size: size);
       //
-      case PebbleWatchModel.pebble_2_black:
+      case PebbleWatchModel.pebble_2_hr_black:
         return PebbleWatchIcon.pebbleTwo(PebbleWatchColor.Black, size: size);
-      case PebbleWatchModel.pebble_2_white:
+      case PebbleWatchModel.pebble_2_se_black:
+        return PebbleWatchIcon.pebbleTwo(PebbleWatchColor.Black, size: size);
+      case PebbleWatchModel.pebble_2_hr_white:
         return PebbleWatchIcon.pebbleTwo(PebbleWatchColor.White, size: size);
-      case PebbleWatchModel.pebble_2_flame:
+      case PebbleWatchModel.pebble_2_se_white:
+        return PebbleWatchIcon.pebbleTwo(PebbleWatchColor.White, size: size);
+      case PebbleWatchModel.pebble_2_hr_flame:
         return PebbleWatchIcon.pebbleTwo(PebbleWatchColor.Black,
             buttonsColor: PebbleWatchColor.Flame, size: size);
-      case PebbleWatchModel.pebble_2_lime:
+      case PebbleWatchModel.pebble_2_hr_lime:
         return PebbleWatchIcon.pebbleTwo(PebbleWatchColor.Black,
             buttonsColor: PebbleWatchColor.Lime, size: size);
-      case PebbleWatchModel.pebble_2_aqua:
+      case PebbleWatchModel.pebble_2_hr_aqua:
         return PebbleWatchIcon.pebbleTwo(PebbleWatchColor.White,
             buttonsColor: PebbleWatchColor.Aqua,
             bezelColor: PebbleWatchColor.Aqua,
