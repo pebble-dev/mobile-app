@@ -97,7 +97,7 @@ class PebbleWatchIcon extends StatelessWidget {
         _WatchLayer(PebbleWatchIcons.rebble_logo_hands, Color(0xFFFA5521)),
       ], size: size);
 
-  PebbleWatchIcon(@required this.model, {this.size = 48.0});
+  PebbleWatchIcon(this.model, {this.size = 48.0});
 
   final PebbleWatchModel model;
   final double size;
