@@ -201,6 +201,8 @@ class PebbleWatchColor {
   static const Color Gold = Color(0xFFEACB7B); // Body color for gold time steel
   static const Color RoseGold =
       Color(0xFFD7A17F); // Body stroke color for gold time round
+  static const Color Rainbow = Color(
+      0xFF51C4CB); // Unreleased spalding prototype, let's call it an easter egg
 
   static const Color Aqua =
       Color(0xFF00A99F); // Button+screen stroke for turq/white P2HR
@@ -211,37 +213,53 @@ class PebbleWatchColor {
 }
 
 enum PebbleWatchModel {
-  classic_black,
-  classic_white,
-  classic_red,
-  classic_grey,
-  classic_orange,
-  classic_fresh_green,
-  classic_hot_pink,
-  classic_fly_blue,
+  // This enum is meant to match the official Pebble app's configuration, so
+  // that the model number the watch reports can be used without additional
+  // logic to find the model
+
+  rebble_logo, // COLOR_UNKNOWN 0
   //
-  classic_steel_silver,
-  classic_steel_gunmetal,
+  classic_black, // COLOR_BLACK 1
+  classic_white, // COLOR_WHITE 2
+  classic_red, // COLOR_RED 3
+  classic_orange, // COLOR_ORANGE 4
+  classic_grey, // COLOR_GRAY 5
   //
-  time_black,
-  time_white,
-  time_red,
+  classic_steel_silver, // COLOR_BIANCA_SILVER 6
+  classic_steel_gunmetal, // COLOR_BIANCA_BLACK 7
   //
-  time_steel_silver,
-  time_steel_gunmetal,
-  time_steel_gold,
+  classic_fly_blue, // COLOR_TINTIN_BLUE 8
+  classic_fresh_green, // COLOR_TINTIN_GREEN 9
+  classic_hot_pink, // COLOR_TINTIN_PINK 10
   //
-  time_round_silver,
-  time_round_black,
-  time_round_rose_gold,
-  time_round_black_silver_polish,
-  time_round_black_gold_polish,
-  // i actually don't know every color of PTR released, please extend if necessary
-  pebble_2_black,
-  pebble_2_white,
-  pebble_2_flame,
-  pebble_2_lime,
-  pebble_2_aqua,
+  time_white, // COLOR_SNOWY_WHITE 11
+  time_black, // COLOR_SNOWY_BLACK 12
+  time_red, // COLOR_SNOWY_RED 13
   //
-  rebble_logo
+  time_steel_silver, // COLOR_BOBBY_SILVER 14
+  time_steel_gunmetal, // COLOR_BOBBY_BLACK 15
+  time_steel_gold, // COLOR_BOBBY_GOLD 16
+  //
+  time_round_silver_14, // COLOR_SPALDING_SILVER_14 17
+  time_round_black_14, // COLOR_SPALDING_BLACK_14 18
+  time_round_silver_20, // COLOR_SPALDING_SILVER_20 19
+  time_round_black_20, // COLOR_SPALDING_BLACK_20 20
+  time_round_rose_gold_14, // COLOR_SPALDING_ROSE_GOLD_14 21
+  time_round_rainbow_silver_14, // COLOR_SPALDING_SILVER_RAINBOW_14 22
+  time_round_rainbow_black_20, // COLOR_SPALDING_BLACK_RAINBOW_20 23
+  //
+  pebble_2_se_black, // COLOR_SILK_SE_BLACK 24
+  pebble_2_hr_black, // COLOR_SILK_HR_BLACK 25
+  pebble_2_se_white, // COLOR_SILK_SE_WHITE 26
+  pebble_2_hr_lime, // COLOR_SILK_HR_GREEN 27
+  pebble_2_hr_flame, // COLOR_SILK_HR_RED 28
+  pebble_2_hr_white, // COLOR_SILK_HR_WHITE 29
+  pebble_2_hr_aqua, // COLOR_SILK_HR_TURQOISE 30
+  //
+  time_2_black, // COLOR_ROBERT_BLACK 31
+  time_2_silver, // COLOR_ROBERT_SILVER 32
+  time_2_gold, // COLOR_ROBERT_GOLD 33
+  // these have to go at the bottom for proper enum values
+  time_round_black_silver_polish_20, // COLOR_SPALDING_POLISHED_SILVER_20 34
+  time_round_black_gold_polish_20, // COLOR_SPALDING_POLISHED_GOLD_20 35
 }
