@@ -23,6 +23,7 @@ if (flutterVersionName == null) {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
@@ -70,4 +71,6 @@ dependencies {
     releaseImplementation "io.rebble.libpebblecommon:libpebblecommon-android:$libpebblecommon_version"
     debugImplementation "io.rebble.libpebblecommon:libpebblecommon-android-debug:$libpebblecommon_version"
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
+    implementation 'com.google.dagger:dagger:2.29.1'
+    kapt 'com.google.dagger:dagger-compiler:2.29.1'
 }

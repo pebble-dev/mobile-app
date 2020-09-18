@@ -73,7 +73,10 @@ class WatchService : Service() {
 
     @ExperimentalStdlibApi
     override fun onCreate() {
+        val injectionComponent = (applicationContext as FossilApplication).component
+
         super.onCreate()
+
         // TODO: BLE
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
