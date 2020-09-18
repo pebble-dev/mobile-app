@@ -58,7 +58,11 @@ class BlueCommon(private val context: Context, private val packetCallback: (Byte
                     Log.d(logTag, "Scanning ended")
                     isScanning = false
                     bluetoothAdapter.cancelDiscovery()
-                    context.unregisterReceiver(this)
+                    try {
+                        context.unregisterReceiver(this)
+                    } catch (e: IllegalArgumentException) {
+                        // Receiver was not registered in the first place. Do nothing.
+                    }
                     resultCallback(pebbleList)
                 }else {
                     scanRetries++
