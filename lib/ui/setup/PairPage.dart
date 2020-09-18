@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -15,7 +16,6 @@ class PairPage extends StatefulWidget {
 }
 
 final MethodChannel _platform = MethodChannel('io.rebble.fossil/protocol');
-final EventChannel _scanEvent = EventChannel('io.rebble.fossil/scanEvent');
 
 class _PairPageState extends State<PairPage> {
   List<PebbleDevice> _pebbles = [];
@@ -28,38 +28,27 @@ class _PairPageState extends State<PairPage> {
       return () async {
         print(call.method);
         switch (call.method) {
-          case "updatePairScanResults":
+          case "addPairScanResult":
             setState(() {
-              List a = jsonDecode(call.arguments);
-              print(a[0]);
-              if (a.length == 0) {
-                _pebbles = [];
-              } else {
-                _pebbles = a
-                    .asMap()
-                    .entries
-                    .map((e) => PebbleDevice(
-                        e.value['name'],
-                        int.parse(
-                            (e.value['address'] as String).replaceAll(':', ''),
-                            radix: 16)))
-                    .toList();
-              }
+              dynamic a = jsonDecode(call.arguments as String);
+              log(call.arguments as String);
+              _pebbles.add(PebbleDevice(
+                  a['name'],
+                  int.parse((a['address'] as String).replaceAll(':', ''), radix: 16),
+                  a['version'],
+                  a['serialNumber'],
+                  a['color'],
+                  a['runningPRF'],
+                  a['firstUse']));
+            });
+            break;
+          case "finishPairScan":
+            setState(() {
+              _scanning = false;
             });
             break;
         }
       }();
-    });
-
-    _scanEvent.receiveBroadcastStream().listen((event) {
-      Map<String, dynamic> ev = jsonDecode(event);
-      switch (ev['event']) {
-        case 'scanFinish':
-          setState(() {
-            _scanning = false;
-          });
-          break;
-      }
     });
 
     _platform.invokeMethod("scanDevices");
@@ -69,6 +58,7 @@ class _PairPageState extends State<PairPage> {
     if (!_scanning) {
       setState(() {
         _scanning = true;
+        _pebbles = [];
         _platform.invokeMethod("scanDevices");
       });
     }
@@ -103,11 +93,6 @@ class _PairPageState extends State<PairPage> {
           leading: BackButton(),
         ),
         body: ListView(children: <Widget>[
-          Offstage(
-              offstage: !_scanning,
-              child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Center(child: CircularProgressIndicator()))),
           Column(
               children: _pebbles
                   .map((e) => InkWell(
@@ -130,7 +115,26 @@ class _PairPageState extends State<PairPage> {
                                   SizedBox(height: 4),
                                   Text(e.address
                                       .toRadixString(16)
-                                      .padLeft(6, '0')),
+                                      .padLeft(6, '0').toUpperCase()),
+                                  Wrap(
+                                    spacing: 4,
+                                    children: [
+                                      Offstage(
+                                        offstage: !e.runningPRF || e.firstUse,
+                                        child: Chip(
+                                          backgroundColor: Colors.deepOrange,
+                                          label: Text("Recovery"),
+                                        )
+                                      ),
+                                      Offstage(
+                                          offstage: !e.firstUse,
+                                          child: Chip(
+                                            backgroundColor: Color(0xffd4af37),
+                                            label: Text("New!"),
+                                          )
+                                      ),
+                                    ],
+                                  ),
                                 ],
                                 crossAxisAlignment: CrossAxisAlignment.start,
                               ),
@@ -146,6 +150,11 @@ class _PairPageState extends State<PairPage> {
                         },
                       ))
                   .toList()),
+          Offstage(
+              offstage: !_scanning,
+              child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Center(child: CircularProgressIndicator()))),
           Padding(
               padding: EdgeInsets.symmetric(horizontal: 0.0),
               child: Column(

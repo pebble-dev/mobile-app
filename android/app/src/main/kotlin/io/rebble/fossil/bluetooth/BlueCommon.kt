@@ -1,24 +1,35 @@
-package io.rebble.fossil
+package io.rebble.fossil.bluetooth
 
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.le.BluetoothLeScanner
+import android.bluetooth.le.ScanCallback
+import android.bluetooth.le.ScanFilter
+import android.bluetooth.le.ScanResult
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Handler
+import androidx.annotation.RequiresApi
 import io.flutter.Log
 
+@ExperimentalUnsignedTypes
 class BlueCommon(private val context: Context, private val packetCallback: (ByteArray) -> Unit) : BroadcastReceiver() {
     private val logTag = "BlueCommon"
 
     val bluetoothAdapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter()
-    private var pebbleList: MutableList<BluetoothDevice> = mutableListOf()
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    private val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
+    private var pebbleList: MutableList<BluePebbleDevice> = mutableListOf()
     private val scanHandler = Handler()
     var driver: BlueIO? = null
 
     private var isScanning = false
     private var scanRetries = 0
     private var onConChange: ((Boolean) -> Unit)? = null
+    private var resultCallback: ((BluePebbleDevice) -> Unit)? = null
 
     override fun onReceive(context: Context, intent: Intent) {
         when(intent.action!!) {
@@ -32,18 +43,18 @@ class BlueCommon(private val context: Context, private val packetCallback: (Byte
                 if (deviceName.startsWith("Pebble") && !deviceName.contains("LE")) {
                     Log.d(logTag, "Found Pebble in scan: $deviceName")
                     if (pebbleList.size > 0) {
-                        if(pebbleList.firstOrNull { p -> p.address == deviceHardwareAddress } == null) {
-                            pebbleList.add(device)
+                        if(pebbleList.firstOrNull { p -> p.bluetoothDevice.address == deviceHardwareAddress } == null) {
+                            pebbleList.add(BluePebbleDevice(device))
                         }
                     }else{
-                        pebbleList.add(device)
+                        pebbleList.add(BluePebbleDevice(device))
                     }
                 }
             }
         }
     }
 
-    fun scanDevices(resultCallback: (List<BluetoothDevice>) -> Unit) {
+    fun scanDevicesClassic(resultCallback: (List<BluePebbleDevice>) -> Unit) {
         val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
         pebbleList.clear()
         Log.d(logTag, "Scanning for pebbles")
@@ -62,10 +73,66 @@ class BlueCommon(private val context: Context, private val packetCallback: (Byte
                     resultCallback(pebbleList)
                 }else {
                     scanRetries++
-                    scanDevices(resultCallback)
+                    scanDevicesClassic(resultCallback)
                 }
             }, 8000)
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    private val leScanCallback: ScanCallback = object : ScanCallback() {
+        override fun onScanResult(callbackType: Int, result: ScanResult) {
+            super.onScanResult(callbackType, result)
+            if (result.device.name != null && result.device.type == BluetoothDevice.DEVICE_TYPE_LE && result.device.name.startsWith("Pebble ")) {
+                resultCallback?.invoke(BluePebbleDevice(result))
+            }
+        }
+    }
+
+    private val legacyLeScanCallback = object : BluetoothAdapter.LeScanCallback {
+        override fun onLeScan(device: BluetoothDevice?, rssi: Int, scanRecord: ByteArray?) {
+            if (device != null && device.type == BluetoothDevice.DEVICE_TYPE_LE && scanRecord != null) {
+                if (device.name != null && device.name.startsWith("Pebble ")) {
+                    resultCallback?.invoke(BluePebbleDevice(device, scanRecord))
+                }
+            }
+        }
+
+    }
+
+    private fun startLEScan() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            bluetoothLeScanner.startScan(leScanCallback)
+        }else {
+            bluetoothAdapter.startLeScan(legacyLeScanCallback)
+        }
+    }
+
+    private fun stopLEScan() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            bluetoothLeScanner.stopScan(leScanCallback)
+        }else {
+            bluetoothAdapter.stopLeScan(legacyLeScanCallback)
+        }
+    }
+
+    fun scanDevicesLE(resultCallback: (BluePebbleDevice) -> Unit, endCallback: () -> Unit) {
+        this.resultCallback = resultCallback
+        pebbleList.clear()
+        Log.d(logTag, "Scanning for LE pebbles")
+        scanHandler.postDelayed({
+            if (pebbleList.size > 0 || scanRetries >= 3) {
+                scanRetries = 0
+                isScanning = false
+                stopLEScan()
+                endCallback()
+            }else {
+                scanRetries++
+                scanDevicesLE(resultCallback, endCallback)
+            }
+        }, 8000)
+        isScanning = true
+        startLEScan()
     }
 
     fun targetPebble(addr: Long): Boolean {

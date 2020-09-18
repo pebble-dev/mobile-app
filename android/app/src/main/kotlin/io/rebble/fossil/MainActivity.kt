@@ -22,6 +22,7 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
+import io.rebble.fossil.bluetooth.BluePebbleDevice
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URI
@@ -181,38 +182,51 @@ class MainActivity: FlutterActivity() {
         handleIntent(intent)
     }
 
-    var deviceList: List<BluetoothDevice> = listOf()
+    private var deviceList: MutableList<BluePebbleDevice> = mutableListOf()
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         val flutter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/protocol")
-        val scanEvent = EventChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/scanEvent")
         val packetIO = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/packetIO")
         val bootWaiter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger,"io.rebble.fossil/bootWaiter")
 
-        scanEvent.setStreamHandler(object : EventChannel.StreamHandler {
-            override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-                flutter.setMethodCallHandler { call, result ->
-                    when (call.method) {
-                        "isConnected" -> result.success(watchService?.isConnected())
-                        "targetPebbleAddr" -> result.success(watchService?.targetPebble(call.arguments as Long))
-                        "scanDevices" -> watchService?.scanDevices { res ->
-                            deviceList = res
-                            events?.success(JSONObject(mapOf(Pair("event", "scanFinish"))).toString())
-                            val scanList = JSONArray(
-                                    res.map { el -> JSONObject()
-                                            .put("name", el.name)
-                                            .put("address", el.address) }).toString()
-                            flutter.invokeMethod("updatePairScanResults", scanList)
-                            result.success(null)
+        flutter.setMethodCallHandler { call, result ->
+            when (call.method) {
+                "isConnected" -> result.success(watchService?.isConnected())
+                "targetPebbleAddr" -> result.success(watchService?.targetPebble(call.arguments as Long))
+                "scanDevices" -> {
+                    deviceList.clear()
+                    watchService?.scanDevices({ el ->
+                        val oldIn = deviceList.indexOfFirst({p -> p.bluetoothDevice.address == el.bluetoothDevice.address})
+                        if (oldIn < 0 && el.leMeta?.serialNumber != "??") {
+                            deviceList.add(el)
+                            Log.d("--DEBUG--", el.leMeta.toString())
+                            val json = JSONObject()
+                                    .put("name", el.bluetoothDevice.name)
+                                    .put("address", el.bluetoothDevice.address)
+                            if (el.leMeta?.major != null) {
+                                json.put("version", "${el.leMeta.major}.${el.leMeta.minor}.${el.leMeta.patch}")
+                            }
+                            if (el.leMeta?.serialNumber != null) {
+                                json.put("serialNumber", el.leMeta.serialNumber)
+                            }
+                            if (el.leMeta?.color != null) {
+                                json.put("color", el.leMeta.color)
+                            }
+                            if (el.leMeta?.runningPRF != null) {
+                                json.put("runningPRF", el.leMeta.runningPRF)
+                            }
+                            if (el.leMeta?.firstUse != null) {
+                                json.put("firstUse", el.leMeta.firstUse)
+                            }
+                            flutter.invokeMethod("addPairScanResult", json.toString())
                         }
+                    }) {
+                        flutter.invokeMethod("finishPairScan", null)
                     }
+                    result.success(null)
                 }
             }
-
-            override fun onCancel(arguments: Any?) {
-
-            }
-        })
+        }
 
         packetIO.setMethodCallHandler { call, result ->
             when (call.method) {

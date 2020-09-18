@@ -1,24 +1,21 @@
-package io.rebble.fossil
+package io.rebble.fossil.bluetooth
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.Handler
 import android.widget.Toast
 import io.flutter.Log
+import io.rebble.fossil.bluetooth.BlueIO
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.*
-import kotlin.math.log
 
-class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val context: Context, private val packetCallback: (ByteArray) -> Unit) : BlueIO{
+class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val context: Context, private val packetCallback: (ByteArray) -> Unit) : BlueIO {
     private val logTag = "BlueSerial"
     
     private val packetReceiveHandler = Handler()
