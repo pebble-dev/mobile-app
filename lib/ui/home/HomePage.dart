@@ -1,11 +1,15 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:fossil/ui/Theme.dart';
+import 'package:fossil/ui/common/icons/WatchIcon.dart';
 import 'package:fossil/ui/common/icons/fonts/RebbleIconsStroke.dart';
 import 'package:fossil/ui/home/tabs/StoreTab.dart';
 import 'package:fossil/ui/home/tabs/TestTab.dart';
+import 'package:fossil/ui/setup/FirstRunPage.dart';
 import 'package:fossil/ui/setup/PairPage.dart';
+import 'package:fossil/ui/test/WatchCarousel.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -19,7 +23,7 @@ class _HomePageState extends State<HomePage> {
     TestTab(),
     PairPage(), // setup page is not the same as devices tab but it works for now
     StoreTab(),
-    Placeholder(), //TODO
+    WatchCarousel(),
     Placeholder(), //TODO
   ];
 
