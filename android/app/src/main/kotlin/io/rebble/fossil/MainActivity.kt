@@ -22,6 +22,8 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
+import io.rebble.libpebblecommon.blobdb.PushNotification
+import io.rebble.libpebblecommon.services.notification.NotificationService
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URI
@@ -183,11 +185,13 @@ class MainActivity: FlutterActivity() {
 
     var deviceList: List<BluetoothDevice> = listOf()
 
+    @OptIn(ExperimentalStdlibApi::class)
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         val flutter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/protocol")
         val scanEvent = EventChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/scanEvent")
         val packetIO = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/packetIO")
         val bootWaiter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger,"io.rebble.fossil/bootWaiter")
+        val notificationTester = MethodChannel(flutterEngine.dartExecutor.binaryMessenger,"io.rebble.fossil/notificationTest")
 
         scanEvent.setStreamHandler(object : EventChannel.StreamHandler {
             override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
@@ -228,6 +232,19 @@ class MainActivity: FlutterActivity() {
                         result.success(success)
                         bootIntentCallback = null
                     }
+            }
+        }
+
+        notificationTester.setMethodCallHandler { call, result ->
+            when (call.method) {
+                "sendTestNotification" -> {
+                    NotificationService.send(
+                            PushNotification(
+                                    "Test Notification"
+
+                            )
+                    ) {}
+                }
             }
         }
     }
