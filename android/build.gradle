@@ -31,6 +31,8 @@ allprojects {
                 if (username == null || password == null) throw new GradleScriptException("Set github username and token in local.properties! (GITHUB_ACTOR and GITHUB_TOKEN)", null)
             }
         }
+
+        mavenLocal()
     }
 }
 
