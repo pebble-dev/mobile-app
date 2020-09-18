@@ -83,7 +83,7 @@ class BlueCommon(private val context: Context, private val packetCallback: (Byte
     private val leScanCallback: ScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             super.onScanResult(callbackType, result)
-            if (result.device.name != null && result.device.type == BluetoothDevice.DEVICE_TYPE_LE && result.device.name.startsWith("Pebble ")) {
+            if (result.device.name != null && result.device.type == BluetoothDevice.DEVICE_TYPE_LE && (result.device.name.startsWith("Pebble ") || result.device.name.startsWith("Pebble-LE"))) {
                 resultCallback?.invoke(BluePebbleDevice(result))
             }
         }
@@ -92,7 +92,7 @@ class BlueCommon(private val context: Context, private val packetCallback: (Byte
     private val legacyLeScanCallback = object : BluetoothAdapter.LeScanCallback {
         override fun onLeScan(device: BluetoothDevice?, rssi: Int, scanRecord: ByteArray?) {
             if (device != null && device.type == BluetoothDevice.DEVICE_TYPE_LE && scanRecord != null) {
-                if (device.name != null && device.name.startsWith("Pebble ")) {
+                if (device.name != null && (device.name.startsWith("Pebble ") || device.name.startsWith("Pebble-LE"))) {
                     resultCallback?.invoke(BluePebbleDevice(device, scanRecord))
                 }
             }
