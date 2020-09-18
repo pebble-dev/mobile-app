@@ -90,6 +90,13 @@ class PebbleWatchIcon extends StatelessWidget {
         ],
         size: size,
       );
+  static _WatchIcon timeTwo(Color bodyColor, {double size = 48.0}) =>
+      _WatchIcon([
+        _WatchLayer(PebbleWatchIcons.time_steel_body_fill, bodyColor),
+        _WatchLayer(PebbleWatchIcons.time_steel_body_stroke, Colors.black),
+        _WatchLayer(PebbleWatchIcons.time_2_screen_fill, Colors.white),
+        _WatchLayer(PebbleWatchIcons.time_2_screen_stroke, Colors.black),
+      ], size: size);
   static _WatchIcon rebbleLogo({size = 48.0}) => _WatchIcon([
         _WatchLayer(PebbleWatchIcons.rebble_logo_body_fill, Colors.white),
         _WatchLayer(PebbleWatchIcons.rebble_logo_body_stroke, Colors.black),
@@ -187,7 +194,14 @@ class PebbleWatchIcon extends StatelessWidget {
             bezelColor: PebbleWatchColor.Aqua,
             size: size);
       //
-      case PebbleWatchModel.rebble_logo:
+      case PebbleWatchModel.time_2_silver:
+        return PebbleWatchIcon.timeTwo(PebbleWatchColor.Silver, size: size);
+      case PebbleWatchModel.time_2_gunmetal:
+        return PebbleWatchIcon.timeTwo(PebbleWatchColor.Grey, size: size);
+      case PebbleWatchModel.time_2_gold:
+        return PebbleWatchIcon.timeTwo(PebbleWatchColor.Gold, size: size);
+      //
+      default:
         return PebbleWatchIcon.rebbleLogo(size: size);
     }
   }
@@ -269,7 +283,7 @@ enum PebbleWatchModel {
   pebble_2_hr_white, // COLOR_SILK_HR_WHITE 29
   pebble_2_hr_aqua, // COLOR_SILK_HR_TURQOISE 30
   //
-  time_2_black, // COLOR_ROBERT_BLACK 31
+  time_2_gunmetal, // COLOR_ROBERT_BLACK 31
   time_2_silver, // COLOR_ROBERT_SILVER 32
   time_2_gold, // COLOR_ROBERT_GOLD 33
   // these have to go at the bottom for proper enum values
