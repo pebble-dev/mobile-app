@@ -3,26 +3,23 @@ package io.rebble.fossil
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.os.Handler
 import android.widget.Toast
 import io.flutter.Log
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.util.*
-import kotlin.math.log
+import java.util.UUID
 
-class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val context: Context, private val packetCallback: (ByteArray) -> Unit) : BlueIO{
+class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val context: Context, private val packetCallback: suspend (ByteArray) -> Unit) : BlueIO{
     private val logTag = "BlueSerial"
-    
-    private val packetReceiveHandler = Handler()
-    
 
     private var targetPebble: BluetoothDevice? = null
     private var serialSocket: BluetoothSocket? = null
@@ -34,7 +31,7 @@ class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val con
 
     private var runThread = false
 
-    private val blueSerialIO = Thread {
+    private val blueSerialIO = GlobalScope.launch(Dispatchers.IO, CoroutineStart.LAZY) {
         val buf: ByteBuffer = ByteBuffer.allocate(8192)
 
         while (runThread) {
@@ -63,7 +60,7 @@ class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val con
                 buf.rewind()
                 val packet = ByteArray(length.toInt() + 2*(Short.SIZE_BYTES))
                 buf.get(packet, 0, packet.size)
-                packetCallback(packet)
+                packetCallback.invoke(packet)
             } catch (e: IOException) {
                 if (!serialSocket?.isConnected!!) {
                     Log.i(logTag, "Socket closed / broke (got message ${e.message}), quitting IO thread")
@@ -77,13 +74,16 @@ class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val con
             if (serialSocket != null) {
                 serialSocket?.close()
             }
-        }catch (e: IOException) {
+        } catch (e: IOException) {
             e.printStackTrace()
         }
     }
 
-    override fun sendPacket(bytes: ByteArray) {
-        outputStream?.write(bytes)
+    override suspend fun sendPacket(bytes: ByteArray) {
+        @Suppress("BlockingMethodInNonBlockingContext")
+        withContext(Dispatchers.IO) {
+            outputStream?.write(bytes)
+        }
     }
 
     override fun readStream(buffer: ByteBuffer, offset: Int, count: Int): Int {
@@ -97,7 +97,6 @@ class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val con
         return bytes
     }
 
-    
 
     override fun targetPebble(device: BluetoothDevice): Boolean {
         targetPebble = device
@@ -137,5 +136,4 @@ class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val con
         blueSerialIO.start()
         return true
     }
-
 }

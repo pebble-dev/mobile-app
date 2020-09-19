@@ -24,6 +24,8 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 import io.rebble.libpebblecommon.blobdb.PushNotification
 import io.rebble.libpebblecommon.services.notification.NotificationService
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URI
@@ -238,12 +240,16 @@ class MainActivity: FlutterActivity() {
         notificationTester.setMethodCallHandler { call, result ->
             when (call.method) {
                 "sendTestNotification" -> {
-                    NotificationService.send(
-                            PushNotification(
-                                    "Test Notification"
+                    GlobalScope.launch {
+                        watchService?.notificationService?.send(
+                                PushNotification(
+                                        "Test Notification"
 
-                            )
-                    ) {}
+                                )
+                        )
+
+                        println("Notification sent")
+                    }
                 }
             }
         }
