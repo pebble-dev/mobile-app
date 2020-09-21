@@ -5,10 +5,14 @@ import android.service.notification.StatusBarNotification
 import io.flutter.Log
 import io.rebble.fossil.FossilApplication
 import io.rebble.libpebblecommon.services.notification.NotificationService
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 class NotificationListener : NotificationListenerService() {
+    private val coroutineScope = CoroutineScope(SupervisorJob())
+
     private var isListening = false
     private val logTag: String = "FossilNotifService"
 
@@ -24,6 +28,12 @@ class NotificationListener : NotificationListenerService() {
         super.onCreate()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        coroutineScope.cancel()
+    }
+
     override fun onListenerConnected() {
         isListening = true
     }
@@ -33,7 +43,7 @@ class NotificationListener : NotificationListenerService() {
     }
 
     private fun sendNotif(parsedNotification: ParsedNotification) {
-        GlobalScope.launch {
+        coroutineScope.launch {
             notificationService.send(parsedNotification.toBluetoothPacket())
         }
     }

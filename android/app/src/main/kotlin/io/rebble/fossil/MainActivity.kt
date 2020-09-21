@@ -15,6 +15,7 @@ import android.text.TextUtils
 import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.lifecycleScope
 import io.flutter.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -22,7 +23,6 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 import io.rebble.libpebblecommon.blobdb.PushNotification
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
@@ -240,7 +240,7 @@ class MainActivity : FlutterActivity() {
         notificationTester.setMethodCallHandler { call, result ->
             when (call.method) {
                 "sendTestNotification" -> {
-                    GlobalScope.launch {
+                    lifecycleScope.launch {
                         watchService?.notificationService?.send(
                                 PushNotification(
                                         "Test Notification"

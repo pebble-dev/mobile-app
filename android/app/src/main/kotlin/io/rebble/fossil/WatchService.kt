@@ -1,7 +1,6 @@
 package io.rebble.fossil
 
 import android.Manifest
-import android.app.Service
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Intent
@@ -12,15 +11,16 @@ import android.os.IBinder
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.lifecycleScope
 import io.flutter.Log
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.notification.NotificationService
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 
 @ExperimentalUnsignedTypes
-class WatchService : Service() {
+class WatchService : LifecycleService() {
     private val pBinder = ProtBinder()
     private val logTag: String = "FossilWatchService"
     private val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
@@ -41,6 +41,7 @@ class WatchService : Service() {
     }
 
     override fun onBind(intent: Intent): IBinder {
+        super.onBind(intent)
         return pBinder
     }
 
@@ -72,6 +73,7 @@ class WatchService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
         startForeground(1, mainNotifBuilder.build())
         return START_STICKY
     }
@@ -104,7 +106,7 @@ class WatchService : Service() {
     }
 
     fun sendDevPacket(packet: ByteArray) {
-        GlobalScope.launch {
+        lifecycleScope.launch {
             blueCommon.driver?.sendPacket(packet)
         }
     }
