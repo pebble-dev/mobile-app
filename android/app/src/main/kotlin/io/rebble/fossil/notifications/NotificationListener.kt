@@ -1,4 +1,4 @@
-package io.rebble.fossil
+package io.rebble.fossil.notifications
 
 import android.app.Notification
 import android.content.Intent
