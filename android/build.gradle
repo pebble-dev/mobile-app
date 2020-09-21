@@ -26,8 +26,10 @@ allprojects {
                 }
 
                 // Set in local.properties
-                username = System.getenv("GITHUB_ACTOR") != null ? System.getenv("GITHUB_ACTOR") : properties.getProperty("GITHUB_ACTOR", null) // github username
-                password = System.getenv("GITHUB_TOKEN") != null ? System.getenv("GITHUB_TOKEN") : properties.getProperty("GITHUB_TOKEN", null) // personal access token
+                username = System.getenv("GITHUB_ACTOR") != null ? System.getenv("GITHUB_ACTOR") : properties.getProperty("GITHUB_ACTOR", null)
+                // github username
+                password = System.getenv("GITHUB_TOKEN") != null ? System.getenv("GITHUB_TOKEN") : properties.getProperty("GITHUB_TOKEN", null)
+                // personal access token
                 if (username == null || password == null) throw new GradleScriptException("Set github username and token in local.properties! (GITHUB_ACTOR and GITHUB_TOKEN)", null)
             }
         }

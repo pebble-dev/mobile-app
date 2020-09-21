@@ -6,19 +6,15 @@ import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.widget.Toast
 import io.flutter.Log
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.util.UUID
+import java.util.*
 
-class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val context: Context, private val packetCallback: suspend (ByteArray) -> Unit) : BlueIO{
+class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val context: Context, private val packetCallback: suspend (ByteArray) -> Unit) : BlueIO {
     private val logTag = "BlueSerial"
 
     private var targetPebble: BluetoothDevice? = null
@@ -58,7 +54,7 @@ class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val con
                 Log.d(logTag, "Got packet: EP $endpoint | Length $length")
 
                 buf.rewind()
-                val packet = ByteArray(length.toInt() + 2*(Short.SIZE_BYTES))
+                val packet = ByteArray(length.toInt() + 2 * (Short.SIZE_BYTES))
                 buf.get(packet, 0, packet.size)
                 packetCallback.invoke(packet)
             } catch (e: IOException) {
@@ -123,7 +119,7 @@ class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val con
         serialSocket = targetPebble?.createRfcommSocketToServiceRecord(btSerialUUID)
         try {
             serialSocket?.connect()
-        }catch (e: IOException) {
+        } catch (e: IOException) {
             Log.e(logTag, "Error setting up socket to Pebble: '${e.message}' (Probably didn't pair)")
             Toast.makeText(context, "Failed to connect to Pebble", Toast.LENGTH_SHORT).show()
             targetPebble = null

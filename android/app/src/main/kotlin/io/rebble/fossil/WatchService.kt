@@ -4,7 +4,10 @@ import android.Manifest
 import android.app.Service
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Binder
 import android.os.Build
@@ -39,7 +42,7 @@ class WatchService : Service() {
             .setSmallIcon(R.drawable.ic_notification_disconnected)
 
     inner class ProtBinder : Binder() {
-        fun getService() : WatchService {
+        fun getService(): WatchService {
             return this@WatchService
         }
     }
@@ -60,7 +63,7 @@ class WatchService : Service() {
     }
 
     @ExperimentalStdlibApi
-    private val notifBroadcastReceiver = object: BroadcastReceiver() {
+    private val notifBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val notif = intent?.getBundleExtra("notification") ?: return
             //TODO centralize coroutine creation

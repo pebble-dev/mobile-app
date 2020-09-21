@@ -2,24 +2,25 @@ package io.rebble.fossil
 
 import android.app.Notification
 import android.content.Intent
-import android.os.Binder
-import android.os.Build
 import android.os.Bundle
-import android.os.IBinder
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import io.flutter.Log
-import javax.security.auth.Subject
 
-class NotificationListener: NotificationListenerService() {
+class NotificationListener : NotificationListenerService() {
     private var isListening = false
     private val logTag: String = "FossilNotifService"
     private var onNotif: ((StatusBarNotification) -> Unit)? = null
     private var onNotifRemoved: ((StatusBarNotification) -> Unit)? = null
 
-    override fun onListenerConnected() {isListening = true}
-    override fun onListenerDisconnected() {isListening = false}
+    override fun onListenerConnected() {
+        isListening = true
+    }
+
+    override fun onListenerDisconnected() {
+        isListening = false
+    }
 
     private var notifStates: MutableMap<String, MutableMap<Int, String>> = mutableMapOf() //TODO: Remove dismissed notifs from me
 
@@ -40,9 +41,11 @@ class NotificationListener: NotificationListenerService() {
             if (sbn.packageName == applicationContext.packageName) return // Don't show a notification if it's us
 
             val pm = getApplicationContext().getPackageManager()!!
-            val sender = sbn.notification.extras[Notification.EXTRA_TITLE] as? String ?: pm.getApplicationLabel(pm.getApplicationInfo(sbn.packageName, 0)) as String
+            val sender = sbn.notification.extras[Notification.EXTRA_TITLE] as? String
+                    ?: pm.getApplicationLabel(pm.getApplicationInfo(sbn.packageName, 0)) as String
             Log.d(logTag, sbn.notification.extras.toString())
-            val subject = sbn.notification.extras[Notification.EXTRA_TEXT] as? String ?: sbn.notification.extras[Notification.EXTRA_BIG_TEXT] as? String ?: ""
+            val subject = sbn.notification.extras[Notification.EXTRA_TEXT] as? String
+                    ?: sbn.notification.extras[Notification.EXTRA_BIG_TEXT] as? String ?: ""
             val content = ""
 
             // If the content is the exact same as it was before (and the notif isnt new / previously dismissed), ignore the new notif
@@ -50,10 +53,10 @@ class NotificationListener: NotificationListenerService() {
             if (notifStates.containsKey(sbn.packageName) && notifStates[sbn.packageName]!!.containsKey(sbn.id)) {
                 if (notifStates[sbn.packageName]!![sbn.id]!! == sender + subject + content) {
                     return
-                }else {
+                } else {
                     notifStates[sbn.packageName]!!.set(sbn.id, sender + subject + content)
                 }
-            }else {
+            } else {
                 if (!notifStates.containsKey(sbn.packageName)) notifStates[sbn.packageName] = mutableMapOf()
                 notifStates[sbn.packageName]!![sbn.id] = sender + subject + content
             }

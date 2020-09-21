@@ -27,7 +27,7 @@ class BlueCommon @Inject constructor(private val context: Context) : BroadcastRe
     private var externalIncomingPacketHandler: (suspend (ByteArray) -> Unit)? = null
 
     override fun onReceive(context: Context, intent: Intent) {
-        when(intent.action!!) {
+        when (intent.action!!) {
             BluetoothDevice.ACTION_FOUND -> {
                 // Discovery has found a device. Get the BluetoothDevice
                 // object and its info from the Intent.
@@ -38,10 +38,10 @@ class BlueCommon @Inject constructor(private val context: Context) : BroadcastRe
                 if (deviceName.startsWith("Pebble") && !deviceName.contains("LE")) {
                     Log.d(logTag, "Found Pebble in scan: $deviceName")
                     if (pebbleList.size > 0) {
-                        if(pebbleList.firstOrNull { p -> p.address == deviceHardwareAddress } == null) {
+                        if (pebbleList.firstOrNull { p -> p.address == deviceHardwareAddress } == null) {
                             pebbleList.add(device)
                         }
-                    }else{
+                    } else {
                         pebbleList.add(device)
                     }
                 }
@@ -56,7 +56,7 @@ class BlueCommon @Inject constructor(private val context: Context) : BroadcastRe
         context.registerReceiver(this, filter)
         // Scan for 8 seconds, then stop and send back what we found
         //TODO: Could make this live-update the list?
-        if(bluetoothAdapter.startDiscovery() || isScanning) {
+        if (bluetoothAdapter.startDiscovery() || isScanning) {
             isScanning = true
             scanHandler.postDelayed({
                 if (pebbleList.size > 0 || scanRetries >= 3) {
@@ -70,7 +70,7 @@ class BlueCommon @Inject constructor(private val context: Context) : BroadcastRe
                         // Receiver was not registered in the first place. Do nothing.
                     }
                     resultCallback(pebbleList)
-                }else {
+                } else {
                     scanRetries++
                     scanDevices(resultCallback)
                 }
@@ -83,7 +83,7 @@ class BlueCommon @Inject constructor(private val context: Context) : BroadcastRe
         var btaddr = ""
         for (i in hex.indices) {
             btaddr += hex[i]
-            if ((i+1) % 2 == 0 && i+1 < hex.length) btaddr += ":"
+            if ((i + 1) % 2 == 0 && i + 1 < hex.length) btaddr += ":"
         }
 
         val targetPebble = bluetoothAdapter.getRemoteDevice(btaddr)
