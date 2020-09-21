@@ -30,7 +30,7 @@ class NotificationListener : NotificationListenerService() {
         isListening = false
     }
 
-    private var notifStates: MutableMap<String, MutableMap<Int, ParsedNotification>> = mutableMapOf() //TODO: Remove dismissed notifs from me
+    private var notifStates: MutableMap<NotificationKey, ParsedNotification> = mutableMapOf() //TODO: Remove dismissed notifs from me
 
     private fun sendNotif(parsedNotification: ParsedNotification) {
         GlobalScope.launch {
@@ -44,27 +44,23 @@ class NotificationListener : NotificationListenerService() {
             if (sbn.packageName == applicationContext.packageName) return // Don't show a notification if it's us
 
             val parsedNotification = sbn.parseData(applicationContext)
+            val key = NotificationKey(sbn)
 
             // If the content is the exact same as it was before (and the notif isnt new / previously dismissed), ignore the new notif
-            //TODO: This can likely be considerably cleaner
-            if (notifStates.containsKey(sbn.packageName) && notifStates[sbn.packageName]!!.containsKey(sbn.id)) {
-                if (notifStates[sbn.packageName]!![sbn.id]!! == parsedNotification) {
-                    return
-                } else {
-                    notifStates[sbn.packageName]!!.set(sbn.id, parsedNotification)
-                }
-            } else {
-                if (!notifStates.containsKey(sbn.packageName)) notifStates[sbn.packageName] = mutableMapOf()
-                notifStates[sbn.packageName]!![sbn.id] = parsedNotification
+            val existingNotification = notifStates.put(key, parsedNotification)
+            if (existingNotification == parsedNotification) {
+                return
             }
 
             sendNotif(parsedNotification)
         }
     }
 
-    override fun onNotificationRemoved(sbn: StatusBarNotification?) {
+    override fun onNotificationRemoved(sbn: StatusBarNotification) {
         if (isListening) {
-            Log.d(logTag, "Notification removed: ${sbn?.packageName}")
+            Log.d(logTag, "Notification removed: ${sbn.packageName}")
+
+            notifStates.remove(NotificationKey(sbn))
             //TODO: Dismissing on watch
         }
     }
