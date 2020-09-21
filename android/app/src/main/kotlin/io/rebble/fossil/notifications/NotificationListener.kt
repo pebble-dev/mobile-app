@@ -12,6 +12,8 @@ class NotificationListener : NotificationListenerService() {
     private var isListening = false
     private val logTag: String = "FossilNotifService"
 
+    private var notifStates: MutableMap<NotificationKey, ParsedNotification> = mutableMapOf()
+
     private lateinit var notificationService: NotificationService
 
     override fun onCreate() {
@@ -29,8 +31,6 @@ class NotificationListener : NotificationListenerService() {
     override fun onListenerDisconnected() {
         isListening = false
     }
-
-    private var notifStates: MutableMap<NotificationKey, ParsedNotification> = mutableMapOf() //TODO: Remove dismissed notifs from me
 
     private fun sendNotif(parsedNotification: ParsedNotification) {
         GlobalScope.launch {
