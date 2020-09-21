@@ -14,7 +14,12 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.*
 
-class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val context: Context, private val packetCallback: suspend (ByteArray) -> Unit) : BlueIO {
+class BlueSerial(
+        private val bluetoothAdapter: BluetoothAdapter,
+        private val context: Context,
+        private val coroutineExceptionHandler: CoroutineExceptionHandler,
+        private val packetCallback: suspend (ByteArray) -> Unit
+) : BlueIO {
     private val logTag = "BlueSerial"
 
     private var coroutineScope: CoroutineScope? = null
@@ -71,7 +76,7 @@ class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val con
     }
 
     private fun connectPebble(): Boolean {
-        val scope = CoroutineScope(SupervisorJob())
+        val scope = CoroutineScope(SupervisorJob() + coroutineExceptionHandler)
         this.coroutineScope = scope
 
         val btSerialUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")

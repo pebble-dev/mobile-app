@@ -23,7 +23,9 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 import io.rebble.libpebblecommon.blobdb.PushNotification
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URI
@@ -31,6 +33,8 @@ import kotlin.system.exitProcess
 
 @ExperimentalUnsignedTypes
 class MainActivity : FlutterActivity() {
+    private lateinit var coroutineScope: CoroutineScope
+
     var watchService: WatchService? = null
     var isBound = false
     var bootIntentCallback: ((Boolean) -> Unit)? = null
@@ -137,6 +141,10 @@ class MainActivity : FlutterActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val injectionComponent = (applicationContext as FossilApplication).component
+
+        coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
+
         super.onCreate(savedInstanceState)
         GeneratedPluginRegistrant.registerWith(this.flutterEngine!!)
 
@@ -240,7 +248,7 @@ class MainActivity : FlutterActivity() {
         notificationTester.setMethodCallHandler { call, result ->
             when (call.method) {
                 "sendTestNotification" -> {
-                    lifecycleScope.launch {
+                    coroutineScope.launch {
                         watchService?.notificationService?.send(
                                 PushNotification(
                                         "Test Notification"

@@ -16,11 +16,15 @@ import androidx.lifecycle.lifecycleScope
 import io.flutter.Log
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.notification.NotificationService
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 
 
 @ExperimentalUnsignedTypes
 class WatchService : LifecycleService() {
+    private lateinit var coroutineScope: CoroutineScope
+
     private val pBinder = ProtBinder()
     private val logTag: String = "FossilWatchService"
     private val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
@@ -50,6 +54,7 @@ class WatchService : LifecycleService() {
     override fun onCreate() {
         val injectionComponent = (applicationContext as FossilApplication).component
 
+        coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
         blueCommon = injectionComponent.createBlueCommon()
         notificationService = injectionComponent.createNotificationService()
         protocolHandler = injectionComponent.createProtocolHandler()
@@ -106,7 +111,7 @@ class WatchService : LifecycleService() {
     }
 
     fun sendDevPacket(packet: ByteArray) {
-        lifecycleScope.launch {
+        coroutineScope.launch {
             blueCommon.driver?.sendPacket(packet)
         }
     }

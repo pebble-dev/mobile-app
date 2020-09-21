@@ -11,7 +11,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 class NotificationListener : NotificationListenerService() {
-    private val coroutineScope = CoroutineScope(SupervisorJob())
+    private lateinit var coroutineScope: CoroutineScope
 
     private var isListening = false
     private val logTag: String = "FossilNotifService"
@@ -22,6 +22,10 @@ class NotificationListener : NotificationListenerService() {
 
     override fun onCreate() {
         val injectionComponent = (applicationContext as FossilApplication).component
+
+        coroutineScope = CoroutineScope(
+                SupervisorJob() + injectionComponent.createExceptionHandler()
+        )
 
         notificationService = injectionComponent.createNotificationService()
 
