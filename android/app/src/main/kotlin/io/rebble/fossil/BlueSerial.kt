@@ -137,7 +137,7 @@ class BlueSerial(
                         break
                     }
                 }
-                Thread.sleep(10)
+                delay(10)
             }
 
             try {
