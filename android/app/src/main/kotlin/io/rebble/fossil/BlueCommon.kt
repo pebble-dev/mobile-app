@@ -8,11 +8,15 @@ import android.content.IntentFilter
 import android.os.Handler
 import io.flutter.Log
 import io.rebble.libpebblecommon.BluetoothConnection
+import kotlinx.coroutines.CoroutineExceptionHandler
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class BlueCommon @Inject constructor(private val context: Context) : BroadcastReceiver(), BluetoothConnection {
+class BlueCommon @Inject constructor(
+        private val context: Context,
+        private val coroutineExceptionHandler: CoroutineExceptionHandler
+) : BroadcastReceiver(), BluetoothConnection {
     private val logTag = "BlueCommon"
 
     val bluetoothAdapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter()
@@ -96,7 +100,13 @@ class BlueCommon @Inject constructor(private val context: Context) : BroadcastRe
                 TODO("BLE")
             }
             device.type != BluetoothDevice.DEVICE_TYPE_UNKNOWN -> { // Serial only device or serial/LE
-                driver = BlueSerial(bluetoothAdapter, context, this::handlePacketReceivedFromDriver)
+                driver = BlueSerial(
+                        bluetoothAdapter,
+                        context,
+                        coroutineExceptionHandler,
+                        this::handlePacketReceivedFromDriver
+                )
+
                 onConChange?.let { driver!!.setOnConnectionChange(it) }
                 driver!!.targetPebble(device)
             }

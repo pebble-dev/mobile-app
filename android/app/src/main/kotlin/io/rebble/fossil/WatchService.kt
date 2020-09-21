@@ -1,33 +1,30 @@
 package io.rebble.fossil
 
 import android.Manifest
-import android.app.Service
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
-import android.provider.Telephony
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.lifecycleScope
 import io.flutter.Log
 import io.rebble.libpebblecommon.ProtocolHandler
-import io.rebble.libpebblecommon.blobdb.NotificationSource
-import io.rebble.libpebblecommon.blobdb.PushNotification
 import io.rebble.libpebblecommon.services.notification.NotificationService
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 
 
 @ExperimentalUnsignedTypes
-class WatchService : Service() {
+class WatchService : LifecycleService() {
+    private lateinit var coroutineScope: CoroutineScope
+
     private val pBinder = ProtBinder()
     private val logTag: String = "FossilWatchService"
     private val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
@@ -48,36 +45,16 @@ class WatchService : Service() {
     }
 
     override fun onBind(intent: Intent): IBinder {
+        super.onBind(intent)
         return pBinder
     }
 
-    private fun packageToSource(pkg: String?): NotificationSource {
-        //TODO: Check for other email clients
-        return when (pkg) {
-            "com.google.android.gm" -> NotificationSource.Email
-            "com.facebook.katana" -> NotificationSource.Facebook
-            "com.twitter.android", "com.twitter.android.lite" -> NotificationSource.Twitter
-            Telephony.Sms.getDefaultSmsPackage(this) -> NotificationSource.SMS
-            else -> NotificationSource.Generic
-        }
-    }
-
-    @ExperimentalStdlibApi
-    private val notifBroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val notif = intent?.getBundleExtra("notification") ?: return
-            //TODO centralize coroutine creation
-            GlobalScope.launch {
-                val res = notificationService.send(PushNotification(notif["subject"] as String, notif["sender"] as String, notif["content"] as String, packageToSource(notif["pkg"] as String)))
-                Log.d("FossilNotifRet", "Got resp from BlobDB: ${res::class.simpleName}")
-            }
-        }
-    }
 
     @ExperimentalStdlibApi
     override fun onCreate() {
         val injectionComponent = (applicationContext as FossilApplication).component
 
+        coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
         blueCommon = injectionComponent.createBlueCommon()
         notificationService = injectionComponent.createNotificationService()
         protocolHandler = injectionComponent.createProtocolHandler()
@@ -96,12 +73,12 @@ class WatchService : Service() {
         if (!bluetoothAdapter.isEnabled) {
             Log.w(logTag, "Bluetooth - Not enabled")
         }
-        LocalBroadcastManager.getInstance(applicationContext).registerReceiver(notifBroadcastReceiver, IntentFilter("io.rebble.fossil.NOTIFICATION_BROADCAST"))
 
         startIO()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
         startForeground(1, mainNotifBuilder.build())
         return START_STICKY
     }
@@ -134,7 +111,7 @@ class WatchService : Service() {
     }
 
     fun sendDevPacket(packet: ByteArray) {
-        GlobalScope.launch {
+        coroutineScope.launch {
             blueCommon.driver?.sendPacket(packet)
         }
     }

@@ -14,8 +14,15 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.*
 
-class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val context: Context, private val packetCallback: suspend (ByteArray) -> Unit) : BlueIO {
+class BlueSerial(
+        private val bluetoothAdapter: BluetoothAdapter,
+        private val context: Context,
+        private val coroutineExceptionHandler: CoroutineExceptionHandler,
+        private val packetCallback: suspend (ByteArray) -> Unit
+) : BlueIO {
     private val logTag = "BlueSerial"
+
+    private var coroutineScope: CoroutineScope? = null
 
     private var targetPebble: BluetoothDevice? = null
     private var serialSocket: BluetoothSocket? = null
@@ -26,54 +33,6 @@ class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val con
     private var onConChange: ((Boolean) -> Unit)? = null
 
     private var runThread = false
-
-    private val blueSerialIO = GlobalScope.launch(Dispatchers.IO, CoroutineStart.LAZY) {
-        val buf: ByteBuffer = ByteBuffer.allocate(8192)
-
-        while (runThread) {
-            try {
-                /* READ PACKET META */
-                var count = readStream(buf, 0, 4)
-                while (count < 4) {
-                    count = readStream(buf, count, 4 - count)
-                }
-                val metBuf = ByteBuffer.wrap(buf.array())
-                metBuf.order(ByteOrder.BIG_ENDIAN)
-                val length = metBuf.short
-                val endpoint = metBuf.short
-                if (length < 0 || length > buf.capacity()) {
-                    Log.w(logTag, "Invalid length in packet (EP $endpoint): got $length")
-                    continue
-                }
-
-                /* READ PACKET CONTENT */
-                count = readStream(buf, 4, length.toInt())
-                while (count < length) {
-                    count += readStream(buf, count + 4, length - count)
-                }
-                Log.d(logTag, "Got packet: EP $endpoint | Length $length")
-
-                buf.rewind()
-                val packet = ByteArray(length.toInt() + 2 * (Short.SIZE_BYTES))
-                buf.get(packet, 0, packet.size)
-                packetCallback.invoke(packet)
-            } catch (e: IOException) {
-                if (!serialSocket?.isConnected!!) {
-                    Log.i(logTag, "Socket closed / broke (got message ${e.message}), quitting IO thread")
-                    break
-                }
-            }
-            Thread.sleep(10)
-        }
-
-        try {
-            if (serialSocket != null) {
-                serialSocket?.close()
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
 
     override suspend fun sendPacket(bytes: ByteArray) {
         @Suppress("BlockingMethodInNonBlockingContext")
@@ -104,6 +63,8 @@ class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val con
         runThread = false
         targetPebble = null
         onConChange?.invoke(false)
+        coroutineScope?.cancel()
+        coroutineScope = null
     }
 
     override fun getTarget(): BluetoothDevice? {
@@ -115,6 +76,9 @@ class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val con
     }
 
     private fun connectPebble(): Boolean {
+        val scope = CoroutineScope(SupervisorJob() + coroutineExceptionHandler)
+        this.coroutineScope = scope
+
         val btSerialUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")
         serialSocket = targetPebble?.createRfcommSocketToServiceRecord(btSerialUUID)
         try {
@@ -129,7 +93,60 @@ class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val con
         inputStream = serialSocket!!.inputStream
         runThread = true
         onConChange?.invoke(true)
-        blueSerialIO.start()
+        with(scope) {
+            startPebbleCoroutine()
+        }
+
         return true
+    }
+
+    private fun CoroutineScope.startPebbleCoroutine() {
+        launch(Dispatchers.IO) {
+            val buf: ByteBuffer = ByteBuffer.allocate(8192)
+
+            while (runThread) {
+                try {
+                    /* READ PACKET META */
+                    var count = readStream(buf, 0, 4)
+                    while (count < 4) {
+                        count = readStream(buf, count, 4 - count)
+                    }
+                    val metBuf = ByteBuffer.wrap(buf.array())
+                    metBuf.order(ByteOrder.BIG_ENDIAN)
+                    val length = metBuf.short
+                    val endpoint = metBuf.short
+                    if (length < 0 || length > buf.capacity()) {
+                        Log.w(logTag, "Invalid length in packet (EP $endpoint): got $length")
+                        continue
+                    }
+
+                    /* READ PACKET CONTENT */
+                    count = readStream(buf, 4, length.toInt())
+                    while (count < length) {
+                        count += readStream(buf, count + 4, length - count)
+                    }
+                    Log.d(logTag, "Got packet: EP $endpoint | Length $length")
+
+                    buf.rewind()
+                    val packet = ByteArray(length.toInt() + 2 * (Short.SIZE_BYTES))
+                    buf.get(packet, 0, packet.size)
+                    packetCallback.invoke(packet)
+                } catch (e: IOException) {
+                    if (!serialSocket?.isConnected!!) {
+                        Log.i(logTag, "Socket closed / broke (got message ${e.message}), quitting IO thread")
+                        break
+                    }
+                }
+                delay(10)
+            }
+
+            try {
+                if (serialSocket != null) {
+                    serialSocket?.close()
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
     }
 }
