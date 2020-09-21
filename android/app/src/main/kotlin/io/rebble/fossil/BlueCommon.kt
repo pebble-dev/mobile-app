@@ -7,8 +7,12 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Handler
 import io.flutter.Log
+import io.rebble.libpebblecommon.BluetoothConnection
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class BlueCommon(private val context: Context, private val packetCallback: (ByteArray) -> Unit) : BroadcastReceiver() {
+@Singleton
+class BlueCommon @Inject constructor(private val context: Context) : BroadcastReceiver(), BluetoothConnection {
     private val logTag = "BlueCommon"
 
     val bluetoothAdapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter()
@@ -19,6 +23,8 @@ class BlueCommon(private val context: Context, private val packetCallback: (Byte
     private var isScanning = false
     private var scanRetries = 0
     private var onConChange: ((Boolean) -> Unit)? = null
+
+    private var externalIncomingPacketHandler: (suspend (ByteArray) -> Unit)? = null
 
     override fun onReceive(context: Context, intent: Intent) {
         when(intent.action!!) {
@@ -58,7 +64,11 @@ class BlueCommon(private val context: Context, private val packetCallback: (Byte
                     Log.d(logTag, "Scanning ended")
                     isScanning = false
                     bluetoothAdapter.cancelDiscovery()
-                    context.unregisterReceiver(this)
+                    try {
+                        context.unregisterReceiver(this)
+                    } catch (e: IllegalArgumentException) {
+                        // Receiver was not registered in the first place. Do nothing.
+                    }
                     resultCallback(pebbleList)
                 }else {
                     scanRetries++
@@ -86,7 +96,7 @@ class BlueCommon(private val context: Context, private val packetCallback: (Byte
                 TODO("BLE")
             }
             device.type != BluetoothDevice.DEVICE_TYPE_UNKNOWN -> { // Serial only device or serial/LE
-                driver = BlueSerial(bluetoothAdapter, context, packetCallback)
+                driver = BlueSerial(bluetoothAdapter, context, this::handlePacketReceivedFromDriver)
                 onConChange?.let { driver!!.setOnConnectionChange(it) }
                 driver!!.targetPebble(device)
             }
@@ -97,5 +107,17 @@ class BlueCommon(private val context: Context, private val packetCallback: (Byte
     fun setOnConnectionChange(f: (Boolean) -> Unit) {
         onConChange = f
         driver?.setOnConnectionChange(f)
+    }
+
+    override suspend fun sendPacket(data: ByteArray) {
+        driver?.sendPacket(data)
+    }
+
+    override fun setReceiveCallback(callback: suspend (ByteArray) -> Unit) {
+        externalIncomingPacketHandler = callback
+    }
+
+    private suspend fun handlePacketReceivedFromDriver(packet: ByteArray) {
+        externalIncomingPacketHandler?.invoke(packet)
     }
 }

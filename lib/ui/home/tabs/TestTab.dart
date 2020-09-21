@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fossil/ui/common/icons/CompIcon.dart';
 import 'package:fossil/ui/common/icons/fonts/RebbleIconsFill.dart';
 import 'package:fossil/ui/common/icons/fonts/RebbleIconsStroke.dart';
 import 'package:fossil/ui/Router.dart';
 
 class TestTab extends StatelessWidget {
+  static const notificationTest = MethodChannel('io.rebble.fossil/notificationTest');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +18,9 @@ class TestTab extends StatelessWidget {
         child: Column(
           children: <Widget>[
             RaisedButton(
-              onPressed: () {},
+              onPressed: () {
+                notificationTest.invokeMethod('sendTestNotification');
+              },
               child: Text("Button"),
             ),
             Text("This is some text."),

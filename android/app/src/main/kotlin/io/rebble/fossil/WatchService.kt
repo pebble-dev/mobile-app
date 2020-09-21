@@ -1,8 +1,6 @@
 package io.rebble.fossil
 
 import android.Manifest
-import android.app.AlertDialog
-import android.app.Notification
 import android.app.Service
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -11,9 +9,7 @@ import android.content.pm.PackageManager
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
-import android.provider.Settings
 import android.provider.Telephony
-import android.text.TextUtils
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -23,6 +19,8 @@ import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.blobdb.NotificationSource
 import io.rebble.libpebblecommon.blobdb.PushNotification
 import io.rebble.libpebblecommon.services.notification.NotificationService
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
 @ExperimentalUnsignedTypes
@@ -30,11 +28,11 @@ class WatchService : Service() {
     private val pBinder = ProtBinder()
     private val logTag: String = "FossilWatchService"
     private val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-    private var protocolHandler: ProtocolHandler? = null
 
-    private val blueCommon = BlueCommon(this) {
-        protocolHandler?.handle(it)
-    }
+    private lateinit var protocolHandler: ProtocolHandler
+    private lateinit var blueCommon: BlueCommon
+    lateinit var notificationService: NotificationService
+        private set
 
     private val mainNotifBuilder = NotificationCompat.Builder(this, "device_status")
             .setContentTitle("Disconnected")
@@ -65,15 +63,24 @@ class WatchService : Service() {
     private val notifBroadcastReceiver = object: BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val notif = intent?.getBundleExtra("notification") ?: return
-            NotificationService.send(PushNotification(notif["subject"] as String, notif["sender"] as String, notif["content"] as String, packageToSource(notif["pkg"] as String))) {
-                Log.d("FossilNotifRet", "Got resp from BlobDB: ${it::class.simpleName}")
+            //TODO centralize coroutine creation
+            GlobalScope.launch {
+                val res = notificationService.send(PushNotification(notif["subject"] as String, notif["sender"] as String, notif["content"] as String, packageToSource(notif["pkg"] as String)))
+                Log.d("FossilNotifRet", "Got resp from BlobDB: ${res::class.simpleName}")
             }
         }
     }
 
     @ExperimentalStdlibApi
     override fun onCreate() {
+        val injectionComponent = (applicationContext as FossilApplication).component
+
+        blueCommon = injectionComponent.createBlueCommon()
+        notificationService = injectionComponent.createNotificationService()
+        protocolHandler = injectionComponent.createProtocolHandler()
+
         super.onCreate()
+
         // TODO: BLE
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -88,9 +95,7 @@ class WatchService : Service() {
         }
         LocalBroadcastManager.getInstance(applicationContext).registerReceiver(notifBroadcastReceiver, IntentFilter("io.rebble.fossil.NOTIFICATION_BROADCAST"))
 
-        startIO { res ->
-            protocolHandler?.handle(res)
-        }
+        startIO()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -107,8 +112,7 @@ class WatchService : Service() {
         NotificationManagerCompat.from(this).notify(1, mainNotifBuilder.build())
     }
 
-    private fun startIO(packetCallback: (ByteArray) -> Unit) {
-        protocolHandler = ProtocolHandler {bytes -> blueCommon.driver?.sendPacket(bytes)}
+    private fun startIO() {
         blueCommon.setOnConnectionChange { connected -> setNotification(connected) }
     }
 
@@ -127,7 +131,9 @@ class WatchService : Service() {
     }
 
     fun sendDevPacket(packet: ByteArray) {
-        blueCommon.driver?.sendPacket(packet)
+        GlobalScope.launch {
+            blueCommon.driver?.sendPacket(packet)
+        }
     }
 
     fun isConnected(): Boolean {
