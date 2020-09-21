@@ -19,11 +19,9 @@ import io.flutter.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
-import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 import io.rebble.libpebblecommon.blobdb.PushNotification
-import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -32,7 +30,7 @@ import java.net.URI
 import kotlin.system.exitProcess
 
 @ExperimentalUnsignedTypes
-class MainActivity: FlutterActivity() {
+class MainActivity : FlutterActivity() {
     var watchService: WatchService? = null
     var isBound = false
     var bootIntentCallback: ((Boolean) -> Unit)? = null
@@ -98,7 +96,7 @@ class MainActivity: FlutterActivity() {
                                     .setMessage(getString(R.string.bootUrlWarningBody, boot.toString()))
                                     .setPositiveButton("Allow", dialogClickListener)
                                     .setNegativeButton("Deny", dialogClickListener).show()
-                        }catch (e: IllegalArgumentException) {
+                        } catch (e: IllegalArgumentException) {
                             Toast.makeText(this, "Boot URL not updated, was invalid", Toast.LENGTH_LONG).show()
                         }
                     }
@@ -168,8 +166,8 @@ class MainActivity: FlutterActivity() {
             alertDialogBuilder.setTitle("Allow notification reading")
             alertDialogBuilder.setMessage("To see notifications on your watch, you need to give the app access to read incoming notifications on your device")
 
-            alertDialogBuilder.setPositiveButton("Allow") { _,_ -> startActivity(Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")) }
-            alertDialogBuilder.setNegativeButton("Deny") { _,_ -> Toast.makeText(applicationContext, "Running without showing notifications", Toast.LENGTH_LONG).show() }
+            alertDialogBuilder.setPositiveButton("Allow") { _, _ -> startActivity(Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")) }
+            alertDialogBuilder.setNegativeButton("Deny") { _, _ -> Toast.makeText(applicationContext, "Running without showing notifications", Toast.LENGTH_LONG).show() }
             alertDialogBuilder.create().show()
         }
 
@@ -192,8 +190,8 @@ class MainActivity: FlutterActivity() {
         val flutter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/protocol")
         val scanEvent = EventChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/scanEvent")
         val packetIO = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/packetIO")
-        val bootWaiter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger,"io.rebble.fossil/bootWaiter")
-        val notificationTester = MethodChannel(flutterEngine.dartExecutor.binaryMessenger,"io.rebble.fossil/notificationTest")
+        val bootWaiter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/bootWaiter")
+        val notificationTester = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/notificationTest")
 
         scanEvent.setStreamHandler(object : EventChannel.StreamHandler {
             override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
@@ -205,9 +203,11 @@ class MainActivity: FlutterActivity() {
                             deviceList = res
                             events?.success(JSONObject(mapOf(Pair("event", "scanFinish"))).toString())
                             val scanList = JSONArray(
-                                    res.map { el -> JSONObject()
-                                            .put("name", el.name)
-                                            .put("address", el.address) }).toString()
+                                    res.map { el ->
+                                        JSONObject()
+                                                .put("name", el.name)
+                                                .put("address", el.address)
+                                    }).toString()
                             flutter.invokeMethod("updatePairScanResults", scanList)
                             result.success(null)
                         }
@@ -230,7 +230,7 @@ class MainActivity: FlutterActivity() {
         bootWaiter.setMethodCallHandler { call, result ->
             when (call.method) {
                 "waitForBoot" ->
-                    bootIntentCallback = {success ->
+                    bootIntentCallback = { success ->
                         result.success(success)
                         bootIntentCallback = null
                     }
