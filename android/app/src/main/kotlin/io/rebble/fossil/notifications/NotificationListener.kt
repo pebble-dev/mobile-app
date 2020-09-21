@@ -1,18 +1,30 @@
 package io.rebble.fossil.notifications
 
 import android.app.Notification
-import android.content.Intent
-import android.os.Bundle
+import android.provider.Telephony
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import io.flutter.Log
+import io.rebble.fossil.FossilApplication
+import io.rebble.libpebblecommon.blobdb.NotificationSource
+import io.rebble.libpebblecommon.blobdb.PushNotification
+import io.rebble.libpebblecommon.services.notification.NotificationService
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class NotificationListener : NotificationListenerService() {
     private var isListening = false
     private val logTag: String = "FossilNotifService"
-    private var onNotif: ((StatusBarNotification) -> Unit)? = null
-    private var onNotifRemoved: ((StatusBarNotification) -> Unit)? = null
+
+    private lateinit var notificationService: NotificationService
+
+    override fun onCreate() {
+        val injectionComponent = (applicationContext as FossilApplication).component
+
+        notificationService = injectionComponent.createNotificationService()
+
+        super.onCreate()
+    }
 
     override fun onListenerConnected() {
         isListening = true
@@ -25,14 +37,9 @@ class NotificationListener : NotificationListenerService() {
     private var notifStates: MutableMap<String, MutableMap<Int, String>> = mutableMapOf() //TODO: Remove dismissed notifs from me
 
     private fun sendNotif(pkg: String, sender: String, subject: String, content: String) {
-        val intent = Intent("io.rebble.fossil.NOTIFICATION_BROADCAST")
-        val bundle = Bundle()
-        bundle.putString("pkg", pkg)
-        bundle.putString("sender", sender)
-        bundle.putString("subject", subject)
-        bundle.putString("content", content)
-        intent.putExtra("notification", bundle)
-        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
+        GlobalScope.launch {
+            notificationService.send(PushNotification(subject, sender, content, packageToSource(pkg)))
+        }
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
@@ -71,6 +78,17 @@ class NotificationListener : NotificationListenerService() {
         if (isListening) {
             Log.d(logTag, "Notification removed: ${sbn?.packageName}")
             //TODO: Dismissing on watch
+        }
+    }
+
+    private fun packageToSource(pkg: String?): NotificationSource {
+        //TODO: Check for other email clients
+        return when (pkg) {
+            "com.google.android.gm" -> NotificationSource.Email
+            "com.facebook.katana" -> NotificationSource.Facebook
+            "com.twitter.android", "com.twitter.android.lite" -> NotificationSource.Twitter
+            Telephony.Sms.getDefaultSmsPackage(this) -> NotificationSource.SMS
+            else -> NotificationSource.Generic
         }
     }
 }

@@ -72,7 +72,6 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     releaseImplementation "io.rebble.libpebblecommon:libpebblecommon-android:$libpebblecommon_version"
     debugImplementation "io.rebble.libpebblecommon:libpebblecommon-android-debug:$libpebblecommon_version"
-    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     implementation 'com.google.dagger:dagger:2.29.1'
     kapt 'com.google.dagger:dagger-compiler:2.29.1'
 }
