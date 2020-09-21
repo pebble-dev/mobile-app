@@ -101,7 +101,7 @@ class BlueSerial(
     }
 
     private fun CoroutineScope.startPebbleCoroutine() {
-        launch(Dispatchers.IO, CoroutineStart.LAZY) {
+        launch(Dispatchers.IO) {
             val buf: ByteBuffer = ByteBuffer.allocate(8192)
 
             while (runThread) {
