@@ -6,27 +6,6 @@ import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
 
 import 'package:flutter/services.dart';
 
-class BooleanWrapper {
-  bool value;
-
-  // ignore: unused_element
-  Map<dynamic, dynamic> _toMap() {
-    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
-    pigeonMap['value'] = value;
-    return pigeonMap;
-  }
-
-  // ignore: unused_element
-  static BooleanWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
-    if (pigeonMap == null) {
-      return null;
-    }
-    final BooleanWrapper result = BooleanWrapper();
-    result.value = pigeonMap['value'];
-    return result;
-  }
-}
-
 class ListOfPebbleDevices {
   List list;
 
@@ -44,6 +23,27 @@ class ListOfPebbleDevices {
     }
     final ListOfPebbleDevices result = ListOfPebbleDevices();
     result.list = pigeonMap['list'];
+    return result;
+  }
+}
+
+class BooleanWrapper {
+  bool value;
+
+  // ignore: unused_element
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
+    pigeonMap['value'] = value;
+    return pigeonMap;
+  }
+
+  // ignore: unused_element
+  static BooleanWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    if (pigeonMap == null) {
+      return null;
+    }
+    final BooleanWrapper result = BooleanWrapper();
+    result.value = pigeonMap['value'];
     return result;
   }
 }
@@ -86,27 +86,35 @@ class ListWrapper {
   }
 }
 
-abstract class AppLifecycleCallbacks {
-  void bootComplete(BooleanWrapper arg);
+class NotificationsControl {
+  Future<void> sendTestNotification() async {
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.NotificationsControl.sendTestNotification',
+        StandardMessageCodec());
 
-  static void setup(AppLifecycleCallbacks api) {
-    {
-      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
-          'dev.flutter.pigeon.AppLifecycleCallbacks.bootComplete',
-          StandardMessageCodec());
-      channel.setMessageHandler((dynamic message) async {
-        final Map<dynamic, dynamic> mapMessage =
-            message as Map<dynamic, dynamic>;
-        final BooleanWrapper input = BooleanWrapper._fromMap(mapMessage);
-        api.bootComplete(input);
-      });
+    final Map<dynamic, dynamic> replyMap = await channel.send(null);
+    if (replyMap == null) {
+      throw PlatformException(
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      // noop
     }
   }
 }
 
 class ScanControl {
   Future<void> startScan() async {
-    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.ScanControl.startScan', StandardMessageCodec());
 
     final Map<dynamic, dynamic> replyMap = await channel.send(null);
@@ -114,7 +122,7 @@ class ScanControl {
       throw PlatformException(
           code: 'channel-error',
           message: 'Unable to establish connection on channel.',
-        details: null);
+          details: null);
     } else if (replyMap['error'] != null) {
       final Map<dynamic, dynamic> error = replyMap['error'];
       throw PlatformException(
@@ -182,31 +190,6 @@ class AppLifecycleControl {
           details: error['details']);
     } else {
       return BooleanWrapper._fromMap(replyMap['result']);
-    }
-  }
-}
-
-class Notifications {
-  Future<void> sendTestNotification() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
-        'dev.flutter.pigeon.Notifications.sendTestNotification',
-        StandardMessageCodec());
-
-    final Map<dynamic, dynamic> replyMap = await channel.send(null);
-    if (replyMap == null) {
-      throw PlatformException(
-          code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null);
-    } else if (replyMap['error'] != null) {
-      final Map<dynamic, dynamic> error = replyMap['error'];
-      throw PlatformException(
-          code: error['code'],
-          message: error['message'],
-          details: error['details']);
-    } else {
-      // noop
     }
     
   }

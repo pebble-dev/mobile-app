@@ -12,9 +12,9 @@ class Notifications @Inject constructor(
         binaryMessenger: BinaryMessenger,
         private val notificationService: NotificationService,
         private val coroutineScope: CoroutineScope
-) : FlutterBridge, Pigeons.Notifications {
+) : FlutterBridge, Pigeons.NotificationsControl {
     init {
-        Pigeons.Notifications.setup(binaryMessenger, this)
+        Pigeons.NotificationsControl.setup(binaryMessenger, this)
     }
 
     override fun sendTestNotification() {

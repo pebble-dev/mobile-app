@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fossil/infrastructure/pigeons/pigeons.dart';
-import 'package:fossil/ui/common/icons/CompIcon.dart';
-import 'package:fossil/ui/common/icons/fonts/RebbleIconsFill.dart';
 import 'package:fossil/ui/common/icons/fonts/RebbleIconsStroke.dart';
-import 'package:fossil/ui/Router.dart';
 
 class TestTab extends StatelessWidget {
-  final Notifications notifications = Notifications();
+  final NotificationsControl notifications = NotificationsControl();
 
   @override
   Widget build(BuildContext context) {

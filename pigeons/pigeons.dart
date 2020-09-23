@@ -50,7 +50,7 @@ abstract class ConnectionControl {
 }
 
 @HostApi()
-abstract class Notifications {
+abstract class NotificationsControl {
   void sendTestNotification();
 }
 

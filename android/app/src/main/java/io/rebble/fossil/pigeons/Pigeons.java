@@ -19,34 +19,6 @@ public class Pigeons {
     /**
      * Generated class from Pigeon that represents data sent in messages.
      */
-    public static class BooleanWrapper {
-        private Boolean value;
-
-        public Boolean getValue() {
-            return value;
-        }
-
-        public void setValue(Boolean setterArg) {
-            this.value = setterArg;
-        }
-
-        HashMap toMap() {
-            HashMap<String, Object> toMapResult = new HashMap<>();
-            toMapResult.put("value", value);
-            return toMapResult;
-        }
-
-        static BooleanWrapper fromMap(HashMap map) {
-            BooleanWrapper fromMapResult = new BooleanWrapper();
-            Object value = map.get("value");
-            fromMapResult.value = (Boolean) value;
-            return fromMapResult;
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
     public static class ListOfPebbleDevices {
         private ArrayList list;
 
@@ -68,6 +40,34 @@ public class Pigeons {
             ListOfPebbleDevices fromMapResult = new ListOfPebbleDevices();
             Object list = map.get("list");
             fromMapResult.list = (ArrayList) list;
+            return fromMapResult;
+        }
+    }
+
+    /**
+     * Generated class from Pigeon that represents data sent in messages.
+     */
+    public static class BooleanWrapper {
+        private Boolean value;
+
+        public Boolean getValue() {
+            return value;
+        }
+
+        public void setValue(Boolean setterArg) {
+            this.value = setterArg;
+        }
+
+        HashMap toMap() {
+            HashMap<String, Object> toMapResult = new HashMap<>();
+            toMapResult.put("value", value);
+            return toMapResult;
+        }
+
+        static BooleanWrapper fromMap(HashMap map) {
+            BooleanWrapper fromMapResult = new BooleanWrapper();
+            Object value = map.get("value");
+            fromMapResult.value = (Boolean) value;
             return fromMapResult;
         }
     }
@@ -129,26 +129,33 @@ public class Pigeons {
     }
 
     /**
-     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
+     * Generated interface from Pigeon that represents a handler of messages from Flutter.
      */
-    public static class AppLifecycleCallbacks {
-        private final BinaryMessenger binaryMessenger;
+    public interface NotificationsControl {
+        void sendTestNotification();
 
-        public AppLifecycleCallbacks(BinaryMessenger argBinaryMessenger) {
-            this.binaryMessenger = argBinaryMessenger;
-        }
-
-        public interface Reply<T> {
-            void reply(T reply);
-        }
-
-        public void bootComplete(BooleanWrapper argInput, Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AppLifecycleCallbacks.bootComplete", new StandardMessageCodec());
-            HashMap inputMap = argInput.toMap();
-            channel.send(inputMap, channelReply -> {
-                callback.reply(null);
-            });
+        /**
+         * Sets up an instance of `NotificationsControl` to handle messages through the `binaryMessenger`
+         */
+        static void setup(BinaryMessenger binaryMessenger, NotificationsControl api) {
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.NotificationsControl.sendTestNotification", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            api.sendTestNotification();
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
         }
     }
 
@@ -242,37 +249,6 @@ public class Pigeons {
                         try {
                             BooleanWrapper output = api.waitForBoot();
                             wrapped.put("result", output.toMap());
-                        } catch (Exception exception) {
-                            wrapped.put("error", wrapError(exception));
-                        }
-                        reply.reply(wrapped);
-                    });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface Notifications {
-        void sendTestNotification();
-
-        /**
-         * Sets up an instance of `Notifications` to handle messages through the `binaryMessenger`
-         */
-        static void setup(BinaryMessenger binaryMessenger, Notifications api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.Notifications.sendTestNotification", new StandardMessageCodec());
-                if (api != null) {
-                    channel.setMessageHandler((message, reply) -> {
-                        HashMap<String, HashMap> wrapped = new HashMap<>();
-                        try {
-                            api.sendTestNotification();
-                            wrapped.put("result", null);
                         } catch (Exception exception) {
                             wrapped.put("error", wrapError(exception));
                         }
