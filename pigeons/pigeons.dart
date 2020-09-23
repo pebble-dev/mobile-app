@@ -48,3 +48,8 @@ abstract class ConnectionControl {
 
   void sendRawPacket(ListWrapper listOfBytes);
 }
+
+@HostApi()
+abstract class Notifications {
+  void sendTestNotification();
+}

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fossil/infrastructure/pigeons/pigeons.dart';
 import 'package:fossil/ui/common/icons/CompIcon.dart';
 import 'package:fossil/ui/common/icons/fonts/RebbleIconsFill.dart';
 import 'package:fossil/ui/common/icons/fonts/RebbleIconsStroke.dart';
 import 'package:fossil/ui/Router.dart';
 
 class TestTab extends StatelessWidget {
-  static const notificationTest = MethodChannel('io.rebble.fossil/notificationTest');
+  final Notifications notifications = Notifications();
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,7 @@ class TestTab extends StatelessWidget {
           children: <Widget>[
             RaisedButton(
               onPressed: () {
-                notificationTest.invokeMethod('sendTestNotification');
+                notifications.sendTestNotification();
               },
               child: Text("Button"),
             ),

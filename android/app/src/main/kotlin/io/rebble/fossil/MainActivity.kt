@@ -21,9 +21,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 import io.rebble.fossil.bridges.FlutterBridge
-import io.rebble.libpebblecommon.blobdb.PushNotification
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import java.net.URI
 import kotlin.system.exitProcess
@@ -199,7 +197,6 @@ class MainActivity : FlutterActivity() {
     @OptIn(ExperimentalStdlibApi::class)
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         val bootWaiter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/bootWaiter")
-        val notificationTester = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/notificationTest")
 
         bootWaiter.setMethodCallHandler { call, result ->
             when (call.method) {
@@ -208,23 +205,6 @@ class MainActivity : FlutterActivity() {
                         result.success(success)
                         bootIntentCallback = null
                     }
-            }
-        }
-
-        notificationTester.setMethodCallHandler { call, result ->
-            when (call.method) {
-                "sendTestNotification" -> {
-                    coroutineScope.launch {
-                        watchService?.notificationService?.send(
-                                PushNotification(
-                                        "Test Notification"
-
-                                )
-                        )
-
-                        println("Notification sent")
-                    }
-                }
             }
         }
     }

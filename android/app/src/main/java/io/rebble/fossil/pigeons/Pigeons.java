@@ -202,6 +202,37 @@ public class Pigeons {
     /**
      * Generated interface from Pigeon that represents a handler of messages from Flutter.
      */
+    public interface Notifications {
+        void sendTestNotification();
+
+        /**
+         * Sets up an instance of `Notifications` to handle messages through the `binaryMessenger`
+         */
+        static void setup(BinaryMessenger binaryMessenger, Notifications api) {
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.Notifications.sendTestNotification", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            api.sendTestNotification();
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+        }
+    }
+
+    /**
+     * Generated interface from Pigeon that represents a handler of messages from Flutter.
+     */
     public interface ConnectionControl {
         BooleanWrapper isConnected();
 
