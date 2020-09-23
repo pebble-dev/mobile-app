@@ -5,7 +5,7 @@ import java.nio.ByteBuffer
 
 class BlueGATTClient : BlueIO {
     override val isConnected get() = TODO("NOT IMPLEMENTED")
-    override fun sendPacket(bytes: ByteArray) {
+    override suspend fun sendPacket(bytes: ByteArray) {
         TODO("Not yet implemented")
     }
 

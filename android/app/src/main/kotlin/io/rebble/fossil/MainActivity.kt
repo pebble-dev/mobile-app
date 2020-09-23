@@ -15,21 +15,27 @@ import android.text.TextUtils
 import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.lifecycleScope
 import io.flutter.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
-import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 import io.rebble.fossil.bluetooth.BluePebbleDevice
+import io.rebble.libpebblecommon.blobdb.PushNotification
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URI
 import kotlin.system.exitProcess
 
 @ExperimentalUnsignedTypes
-class MainActivity: FlutterActivity() {
+class MainActivity : FlutterActivity() {
+    private lateinit var coroutineScope: CoroutineScope
+
     var watchService: WatchService? = null
     var isBound = false
     var bootIntentCallback: ((Boolean) -> Unit)? = null
@@ -95,7 +101,7 @@ class MainActivity: FlutterActivity() {
                                     .setMessage(getString(R.string.bootUrlWarningBody, boot.toString()))
                                     .setPositiveButton("Allow", dialogClickListener)
                                     .setNegativeButton("Deny", dialogClickListener).show()
-                        }catch (e: IllegalArgumentException) {
+                        } catch (e: IllegalArgumentException) {
                             Toast.makeText(this, "Boot URL not updated, was invalid", Toast.LENGTH_LONG).show()
                         }
                     }
@@ -136,6 +142,10 @@ class MainActivity: FlutterActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val injectionComponent = (applicationContext as FossilApplication).component
+
+        coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
+
         super.onCreate(savedInstanceState)
         GeneratedPluginRegistrant.registerWith(this.flutterEngine!!)
 
@@ -165,8 +175,8 @@ class MainActivity: FlutterActivity() {
             alertDialogBuilder.setTitle("Allow notification reading")
             alertDialogBuilder.setMessage("To see notifications on your watch, you need to give the app access to read incoming notifications on your device")
 
-            alertDialogBuilder.setPositiveButton("Allow") { _,_ -> startActivity(Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")) }
-            alertDialogBuilder.setNegativeButton("Deny") { _,_ -> Toast.makeText(applicationContext, "Running without showing notifications", Toast.LENGTH_LONG).show() }
+            alertDialogBuilder.setPositiveButton("Allow") { _, _ -> startActivity(Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")) }
+            alertDialogBuilder.setNegativeButton("Deny") { _, _ -> Toast.makeText(applicationContext, "Running without showing notifications", Toast.LENGTH_LONG).show() }
             alertDialogBuilder.create().show()
         }
 
@@ -184,10 +194,12 @@ class MainActivity: FlutterActivity() {
 
     private var deviceList: MutableList<BluePebbleDevice> = mutableListOf()
 
+    @OptIn(ExperimentalStdlibApi::class)
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         val flutter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/protocol")
         val packetIO = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/packetIO")
-        val bootWaiter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger,"io.rebble.fossil/bootWaiter")
+        val bootWaiter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/bootWaiter")
+        val notificationTester = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/notificationTest")
 
         flutter.setMethodCallHandler { call, result ->
             when (call.method) {
@@ -238,10 +250,27 @@ class MainActivity: FlutterActivity() {
         bootWaiter.setMethodCallHandler { call, result ->
             when (call.method) {
                 "waitForBoot" ->
-                    bootIntentCallback = {success ->
+                    bootIntentCallback = { success ->
                         result.success(success)
                         bootIntentCallback = null
                     }
+            }
+        }
+
+        notificationTester.setMethodCallHandler { call, result ->
+            when (call.method) {
+                "sendTestNotification" -> {
+                    coroutineScope.launch {
+                        watchService?.notificationService?.send(
+                                PushNotification(
+                                        "Test Notification"
+
+                                )
+                        )
+
+                        println("Notification sent")
+                    }
+                }
             }
         }
     }
