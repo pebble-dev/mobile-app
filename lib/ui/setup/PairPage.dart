@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fossil/domain/entities/PebbleDevice.dart';
 import 'package:fossil/infrastructure/datasources/PairedStorage.dart';
 import 'package:fossil/infrastructure/pigeons/pigeons.dart';
@@ -15,7 +14,7 @@ class PairPage extends StatefulWidget {
   State<StatefulWidget> createState() => new _PairPageState();
 }
 
-final MethodChannel _platform = MethodChannel('io.rebble.fossil/protocol');
+final ConnectionControl connectionControl = ConnectionControl();
 final ScanControl scanControl = ScanControl();
 
 class _PairPageState extends State<PairPage> implements ScanCallbacks {
@@ -41,24 +40,25 @@ class _PairPageState extends State<PairPage> implements ScanCallbacks {
   }
 
   void _targetPebble(PebbleDevice dev) {
-    _platform.invokeMethod("targetPebbleAddr", dev.address).then((value) {
-      if (value as bool)
-        setState(() {
-          PairedStorage.register(dev)
-              .then((_) => PairedStorage.getDefault().then((def) {
-                    if (def == null) {
-                      PairedStorage.setDefault(dev.address);
-                    }
-                  })); // Register + set as default if no default set
-          SharedPreferences.getInstance().then((value) {
-            if (!value.containsKey("firstRun")) {
-              Navigator.pushReplacementNamed(context, '/moresetup');
-            } else {
-              Navigator.pushReplacementNamed(context, '/home');
-            }
-          });
+    NumberWrapper addressWrapper = NumberWrapper();
+    addressWrapper.value = dev.address;
+    connectionControl.connectToWatch(addressWrapper).then((value) => {
+          setState(() {
+            PairedStorage.register(dev)
+                .then((_) => PairedStorage.getDefault().then((def) {
+                      if (def == null) {
+                        PairedStorage.setDefault(dev.address);
+                      }
+                    })); // Register + set as default if no default set
+            SharedPreferences.getInstance().then((value) {
+              if (!value.containsKey("firstRun")) {
+                Navigator.pushReplacementNamed(context, '/moresetup');
+              } else {
+                Navigator.pushReplacementNamed(context, '/home');
+              }
+            });
+          })
         });
-    });
   }
 
   @override

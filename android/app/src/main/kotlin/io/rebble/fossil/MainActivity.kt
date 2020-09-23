@@ -198,47 +198,39 @@ class MainActivity : FlutterActivity() {
 
     @OptIn(ExperimentalStdlibApi::class)
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
-        val flutter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/protocol")
         val packetIO = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/packetIO")
         val bootWaiter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/bootWaiter")
         val notificationTester = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/notificationTest")
 
-        flutter.setMethodCallHandler { call, result ->
+        packetIO.setMethodCallHandler { call, result ->
             when (call.method) {
-                "isConnected" -> result.success(watchService?.isConnected())
-                "targetPebbleAddr" -> result.success(watchService?.targetPebble(call.arguments as Long))
+                "send" ->
+                    watchService?.sendDevPacket(call.arguments as ByteArray)
             }
+        }
 
-            packetIO.setMethodCallHandler { call, result ->
-                when (call.method) {
-                    "send" ->
-                        watchService?.sendDevPacket(call.arguments as ByteArray)
-                }
+        bootWaiter.setMethodCallHandler { call, result ->
+            when (call.method) {
+                "waitForBoot" ->
+                    bootIntentCallback = { success ->
+                        result.success(success)
+                        bootIntentCallback = null
+                    }
             }
+        }
 
-            bootWaiter.setMethodCallHandler { call, result ->
-                when (call.method) {
-                    "waitForBoot" ->
-                        bootIntentCallback = { success ->
-                            result.success(success)
-                            bootIntentCallback = null
-                        }
-                }
-            }
+        notificationTester.setMethodCallHandler { call, result ->
+            when (call.method) {
+                "sendTestNotification" -> {
+                    coroutineScope.launch {
+                        watchService?.notificationService?.send(
+                                PushNotification(
+                                        "Test Notification"
 
-            notificationTester.setMethodCallHandler { call, result ->
-                when (call.method) {
-                    "sendTestNotification" -> {
-                        coroutineScope.launch {
-                            watchService?.notificationService?.send(
-                                    PushNotification(
-                                            "Test Notification"
+                                )
+                        )
 
-                                    )
-                            )
-
-                            println("Notification sent")
-                        }
+                        println("Notification sent")
                     }
                 }
             }

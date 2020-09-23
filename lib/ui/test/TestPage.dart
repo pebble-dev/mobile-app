@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class TestPage extends StatelessWidget {
-  static final MethodChannel platform =
-      MethodChannel('io.rebble.fossil/protocol');
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

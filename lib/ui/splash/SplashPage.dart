@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fossil/infrastructure/datasources/PairedStorage.dart';
+import 'package:fossil/infrastructure/pigeons/pigeons.dart';
 import 'package:fossil/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,7 +11,7 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  static const protocolC = MethodChannel('io.rebble.fossil/protocol');
+  final ConnectionControl connectionControl = ConnectionControl();
 
   void _openHome() {
     SharedPreferences.getInstance().then((prefs) => {
@@ -20,8 +20,12 @@ class _SplashPageState extends State<SplashPage> {
           else
             {
               PairedStorage.getDefault().then((value) {
-                if (value != null)
-                  protocolC.invokeMethod("targetPebbleAddr", value.address);
+                if (value != null) {
+                  NumberWrapper addressWrapper = NumberWrapper();
+                  addressWrapper.value = value.address;
+
+                  connectionControl.connectToWatch(addressWrapper);
+                }
               }),
               Navigator.pushReplacementNamed(context, '/home')
             }

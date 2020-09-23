@@ -25,3 +25,19 @@ abstract class ScanCallbacks {
 abstract class ScanControl {
   void startScan();
 }
+
+/// Pigeon only supports classes as return/receive type.
+/// That is why we must wrap primitive types into wrapper
+class BooleanWrapper {
+  bool value;
+}
+
+class NumberWrapper {
+  int value;
+}
+
+@HostApi()
+abstract class ConnectionControl {
+  BooleanWrapper isConnected();
+  void connectToWatch(NumberWrapper macAddress);
+}
