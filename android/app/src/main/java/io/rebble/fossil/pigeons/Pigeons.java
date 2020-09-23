@@ -19,27 +19,27 @@ public class Pigeons {
     /**
      * Generated class from Pigeon that represents data sent in messages.
      */
-    public static class ListOfPebbleDevices {
-        private ArrayList list;
+    public static class ListWrapper {
+        private ArrayList value;
 
-        public ArrayList getList() {
-            return list;
+        public ArrayList getValue() {
+            return value;
         }
 
-        public void setList(ArrayList setterArg) {
-            this.list = setterArg;
+        public void setValue(ArrayList setterArg) {
+            this.value = setterArg;
         }
 
         HashMap toMap() {
             HashMap<String, Object> toMapResult = new HashMap<>();
-            toMapResult.put("list", list);
+            toMapResult.put("value", value);
             return toMapResult;
         }
 
-        static ListOfPebbleDevices fromMap(HashMap map) {
-            ListOfPebbleDevices fromMapResult = new ListOfPebbleDevices();
-            Object list = map.get("list");
-            fromMapResult.list = (ArrayList) list;
+        static ListWrapper fromMap(HashMap map) {
+            ListWrapper fromMapResult = new ListWrapper();
+            Object value = map.get("value");
+            fromMapResult.value = (ArrayList) value;
             return fromMapResult;
         }
     }
@@ -96,34 +96,6 @@ public class Pigeons {
             NumberWrapper fromMapResult = new NumberWrapper();
             Object value = map.get("value");
             fromMapResult.value = (value == null) ? null : ((value instanceof Integer) ? (Integer) value : (Long) value);
-            return fromMapResult;
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static class ListWrapper {
-        private ArrayList value;
-
-        public ArrayList getValue() {
-            return value;
-        }
-
-        public void setValue(ArrayList setterArg) {
-            this.value = setterArg;
-        }
-
-        HashMap toMap() {
-            HashMap<String, Object> toMapResult = new HashMap<>();
-            toMapResult.put("value", value);
-            return toMapResult;
-        }
-
-        static ListWrapper fromMap(HashMap map) {
-            ListWrapper fromMapResult = new ListWrapper();
-            Object value = map.get("value");
-            fromMapResult.value = (ArrayList) value;
             return fromMapResult;
         }
     }
@@ -204,7 +176,7 @@ public class Pigeons {
             void reply(T reply);
         }
 
-        public void onScanUpdate(ListOfPebbleDevices argInput, Reply<Void> callback) {
+        public void onScanUpdate(ListWrapper argInput, Reply<Void> callback) {
             BasicMessageChannel<Object> channel =
                     new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ScanCallbacks.onScanUpdate", new StandardMessageCodec());
             HashMap inputMap = argInput.toMap();

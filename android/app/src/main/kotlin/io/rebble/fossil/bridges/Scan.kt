@@ -3,6 +3,7 @@ package io.rebble.fossil.bridges
 import io.flutter.plugin.common.BinaryMessenger
 import io.rebble.fossil.bluetooth.BlueCommon
 import io.rebble.fossil.bluetooth.BluePebbleDevice
+import io.rebble.fossil.pigeons.ListWrapper
 import io.rebble.fossil.pigeons.Pigeons
 import javax.inject.Inject
 
@@ -32,19 +33,11 @@ class Scan @Inject constructor(
             if (oldIn < 0 && el.leMeta?.serialNumber != "??") {
                 println("Valid device")
                 deviceList.add(el)
-                scanCallbacks.onScanUpdate(ListOfPebbleDevices(deviceList.map { it.toPigeon() })) {}
+                scanCallbacks.onScanUpdate(ListWrapper(deviceList.map { it.toPigeon() })) {}
             }
         })
         {
             scanCallbacks.onScanStopped {}
         }
-    }
-}
-
-private fun ListOfPebbleDevices(
-        list: List<Map<String, Any>>
-): Pigeons.ListOfPebbleDevices {
-    return Pigeons.ListOfPebbleDevices().also {
-        it.list = ArrayList(list)
     }
 }

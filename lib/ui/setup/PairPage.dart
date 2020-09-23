@@ -77,10 +77,9 @@ class _PairPageState extends State<PairPage> implements ScanCallbacks {
   }
 
   @override
-  void onScanUpdate(ListOfPebbleDevices arg) {
-    log("Update $arg");
+  void onScanUpdate(ListWrapper arg) {
     setState(() {
-      _pebbles = (arg.list.cast<Map>())
+      _pebbles = (arg.value.cast<Map>())
           .map((element) => PebbleDevice.fromPigeon(element))
           .toList();
     });
