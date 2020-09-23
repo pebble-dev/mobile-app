@@ -19,34 +19,6 @@ public class Pigeons {
     /**
      * Generated class from Pigeon that represents data sent in messages.
      */
-    public static class ListOfPebbleDevices {
-        private ArrayList list;
-
-        public ArrayList getList() {
-            return list;
-        }
-
-        public void setList(ArrayList setterArg) {
-            this.list = setterArg;
-        }
-
-        HashMap toMap() {
-            HashMap<String, Object> toMapResult = new HashMap<>();
-            toMapResult.put("list", list);
-            return toMapResult;
-        }
-
-        static ListOfPebbleDevices fromMap(HashMap map) {
-            ListOfPebbleDevices fromMapResult = new ListOfPebbleDevices();
-            Object list = map.get("list");
-            fromMapResult.list = (ArrayList) list;
-            return fromMapResult;
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
     public static class BooleanWrapper {
         private Boolean value;
 
@@ -68,6 +40,34 @@ public class Pigeons {
             BooleanWrapper fromMapResult = new BooleanWrapper();
             Object value = map.get("value");
             fromMapResult.value = (Boolean) value;
+            return fromMapResult;
+        }
+    }
+
+    /**
+     * Generated class from Pigeon that represents data sent in messages.
+     */
+    public static class ListOfPebbleDevices {
+        private ArrayList list;
+
+        public ArrayList getList() {
+            return list;
+        }
+
+        public void setList(ArrayList setterArg) {
+            this.list = setterArg;
+        }
+
+        HashMap toMap() {
+            HashMap<String, Object> toMapResult = new HashMap<>();
+            toMapResult.put("list", list);
+            return toMapResult;
+        }
+
+        static ListOfPebbleDevices fromMap(HashMap map) {
+            ListOfPebbleDevices fromMapResult = new ListOfPebbleDevices();
+            Object list = map.get("list");
+            fromMapResult.list = (ArrayList) list;
             return fromMapResult;
         }
     }
@@ -125,6 +125,30 @@ public class Pigeons {
             Object value = map.get("value");
             fromMapResult.value = (ArrayList) value;
             return fromMapResult;
+        }
+    }
+
+    /**
+     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
+     */
+    public static class AppLifecycleCallbacks {
+        private final BinaryMessenger binaryMessenger;
+
+        public AppLifecycleCallbacks(BinaryMessenger argBinaryMessenger) {
+            this.binaryMessenger = argBinaryMessenger;
+        }
+
+        public interface Reply<T> {
+            void reply(T reply);
+        }
+
+        public void bootComplete(BooleanWrapper argInput, Reply<Void> callback) {
+            BasicMessageChannel<Object> channel =
+                    new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AppLifecycleCallbacks.bootComplete", new StandardMessageCodec());
+            HashMap inputMap = argInput.toMap();
+            channel.send(inputMap, channelReply -> {
+                callback.reply(null);
+            });
         }
     }
 
@@ -196,6 +220,37 @@ public class Pigeons {
             channel.send(null, channelReply -> {
                 callback.reply(null);
             });
+        }
+    }
+
+    /**
+     * Generated interface from Pigeon that represents a handler of messages from Flutter.
+     */
+    public interface AppLifecycleControl {
+        BooleanWrapper waitForBoot();
+
+        /**
+         * Sets up an instance of `AppLifecycleControl` to handle messages through the `binaryMessenger`
+         */
+        static void setup(BinaryMessenger binaryMessenger, AppLifecycleControl api) {
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AppLifecycleControl.waitForBoot", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            BooleanWrapper output = api.waitForBoot();
+                            wrapped.put("result", output.toMap());
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
         }
     }
 

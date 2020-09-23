@@ -53,3 +53,8 @@ abstract class ConnectionControl {
 abstract class Notifications {
   void sendTestNotification();
 }
+
+@HostApi()
+abstract class AppLifecycleControl {
+  BooleanWrapper waitForBoot();
+}

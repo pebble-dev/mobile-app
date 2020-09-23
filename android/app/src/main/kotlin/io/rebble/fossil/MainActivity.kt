@@ -12,13 +12,11 @@ import android.os.IBinder
 import android.provider.Settings
 import android.text.TextUtils
 import android.widget.Toast
-import androidx.annotation.NonNull
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import io.flutter.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 import io.rebble.fossil.bridges.FlutterBridge
 import kotlinx.coroutines.CoroutineScope
@@ -191,22 +189,6 @@ class MainActivity : FlutterActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleIntent(intent)
-    }
-
-
-    @OptIn(ExperimentalStdlibApi::class)
-    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
-        val bootWaiter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/bootWaiter")
-
-        bootWaiter.setMethodCallHandler { call, result ->
-            when (call.method) {
-                "waitForBoot" ->
-                    bootIntentCallback = { success ->
-                        result.success(success)
-                        bootIntentCallback = null
-                    }
-            }
-        }
     }
 
     public override fun getFlutterEngine(): FlutterEngine? {
