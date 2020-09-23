@@ -1,14 +1,5 @@
 import 'package:pigeon/pigeon.dart';
 
-class SearchRequest {
-  String query;
-}
-
-class SearchReply {
-  String result;
-}
-
-
 /// Pigeon only supports classes as return/receive type.
 /// That is why we must wrap primitive types into wrapper
 class BooleanWrapper {
