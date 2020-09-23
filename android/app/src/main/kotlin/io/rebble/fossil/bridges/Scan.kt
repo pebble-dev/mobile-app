@@ -1,0 +1,50 @@
+package io.rebble.fossil.bridges
+
+import io.flutter.plugin.common.BinaryMessenger
+import io.rebble.fossil.bluetooth.BlueCommon
+import io.rebble.fossil.bluetooth.BluePebbleDevice
+import io.rebble.fossil.pigeons.Pigeons
+import javax.inject.Inject
+
+@OptIn(ExperimentalUnsignedTypes::class)
+class Scan @Inject constructor(
+        binaryMessenger: BinaryMessenger,
+        private val blueCommon: BlueCommon
+) : FlutterBridge, Pigeons.ScanControl {
+    private val scanCallbacks = Pigeons.ScanCallbacks(binaryMessenger)
+
+    init {
+        Pigeons.ScanControl.setup(binaryMessenger, this)
+    }
+
+    override fun startScan() {
+        val deviceList: MutableList<BluePebbleDevice> = mutableListOf()
+
+        deviceList.clear()
+        println("Calling scan started")
+        scanCallbacks.onScanStarted {
+            println("Scan started called")
+        }
+
+        blueCommon.scanDevicesLE({ el ->
+            println("Found device $el")
+            val oldIn = deviceList.indexOfFirst { p -> p.bluetoothDevice.address == el.bluetoothDevice.address }
+            if (oldIn < 0 && el.leMeta?.serialNumber != "??") {
+                println("Valid device")
+                deviceList.add(el)
+                scanCallbacks.onScanUpdate(ListOfPebbleDevices(deviceList.map { it.toPigeon() })) {}
+            }
+        })
+        {
+            scanCallbacks.onScanStopped {}
+        }
+    }
+}
+
+private fun ListOfPebbleDevices(
+        list: List<Map<String, Any>>
+): Pigeons.ListOfPebbleDevices {
+    return Pigeons.ListOfPebbleDevices().also {
+        it.list = ArrayList(list)
+    }
+}

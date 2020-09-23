@@ -8,4 +8,7 @@ import io.rebble.fossil.bridges.Scan
 
 @Module
 abstract class FlutterBridgesModule {
+    @Binds
+    @IntoSet
+    abstract fun bindScanBridge(scan: Scan): FlutterBridge
 }
