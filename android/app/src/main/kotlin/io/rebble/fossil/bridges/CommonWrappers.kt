@@ -1,4 +1,4 @@
-package io.rebble.fossil.bluetooth
+package io.rebble.fossil.bridges
 
 import io.rebble.fossil.pigeons.Pigeons
 

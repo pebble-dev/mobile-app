@@ -2,7 +2,6 @@ package io.rebble.fossil.bridges
 
 import io.flutter.plugin.common.BinaryMessenger
 import io.rebble.fossil.bluetooth.BlueCommon
-import io.rebble.fossil.bluetooth.BooleanWrapper
 import io.rebble.fossil.pigeons.Pigeons
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
