@@ -20,6 +20,8 @@ interface AppComponent {
     fun createProtocolHandler(): ProtocolHandler
     fun createExceptionHandler(): GlobalExceptionHandler
 
+    fun createActivitySubcomponentFactory(): ActivitySubcomponent.Factory
+
     @Component.Factory
     interface Factory {
         fun build(@BindsInstance application: Application): AppComponent

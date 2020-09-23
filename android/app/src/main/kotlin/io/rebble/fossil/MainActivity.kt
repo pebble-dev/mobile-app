@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.AlertDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.bluetooth.BluetoothDevice
 import android.content.*
 import android.content.pm.PackageManager
 import android.os.Build
@@ -19,22 +18,20 @@ import androidx.lifecycle.lifecycleScope
 import io.flutter.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
-import io.rebble.fossil.bluetooth.BluePebbleDevice
+import io.rebble.fossil.bridges.FlutterBridge
 import io.rebble.libpebblecommon.blobdb.PushNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-import org.json.JSONArray
-import org.json.JSONObject
 import java.net.URI
 import kotlin.system.exitProcess
 
-@ExperimentalUnsignedTypes
+@OptIn(ExperimentalUnsignedTypes::class)
 class MainActivity : FlutterActivity() {
     private lateinit var coroutineScope: CoroutineScope
+    private lateinit var flutterBridges: Set<FlutterBridge>
 
     var watchService: WatchService? = null
     var isBound = false
@@ -143,11 +140,17 @@ class MainActivity : FlutterActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val injectionComponent = (applicationContext as FossilApplication).component
+        val activityComponent = injectionComponent.createActivitySubcomponentFactory()
+                .create(this)
 
         coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
 
         super.onCreate(savedInstanceState)
         GeneratedPluginRegistrant.registerWith(this.flutterEngine!!)
+
+        // Bridges need to be created after super.onCreate() to ensure
+        // flutter stuff is ready
+        flutterBridges = activityComponent.createFlutterBridges()
 
         handleIntent(intent)
 
@@ -275,4 +278,7 @@ class MainActivity : FlutterActivity() {
         }
     }
 
+    public override fun getFlutterEngine(): FlutterEngine? {
+        return super.getFlutterEngine()
+    }
 }
