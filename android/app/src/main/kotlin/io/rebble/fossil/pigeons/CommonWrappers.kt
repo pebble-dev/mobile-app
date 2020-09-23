@@ -1,6 +1,4 @@
-package io.rebble.fossil.bridges
-
-import io.rebble.fossil.pigeons.Pigeons
+package io.rebble.fossil.pigeons
 
 fun BooleanWrapper(value: Boolean) = Pigeons.BooleanWrapper().also {
     it.value = value
@@ -9,3 +7,5 @@ fun BooleanWrapper(value: Boolean) = Pigeons.BooleanWrapper().also {
 fun NumberWrapper(value: Number) = Pigeons.NumberWrapper().also {
     it.value = value.toLong()
 }
+
+fun Pigeons.BooleanWrapper.toMapExt() = toMap()
