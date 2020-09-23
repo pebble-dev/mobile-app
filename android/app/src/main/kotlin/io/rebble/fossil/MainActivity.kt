@@ -198,16 +198,8 @@ class MainActivity : FlutterActivity() {
 
     @OptIn(ExperimentalStdlibApi::class)
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
-        val packetIO = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/packetIO")
         val bootWaiter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/bootWaiter")
         val notificationTester = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/notificationTest")
-
-        packetIO.setMethodCallHandler { call, result ->
-            when (call.method) {
-                "send" ->
-                    watchService?.sendDevPacket(call.arguments as ByteArray)
-            }
-        }
 
         bootWaiter.setMethodCallHandler { call, result ->
             when (call.method) {

@@ -36,8 +36,15 @@ class NumberWrapper {
   int value;
 }
 
+class ListWrapper {
+  List value;
+}
+
 @HostApi()
 abstract class ConnectionControl {
   BooleanWrapper isConnected();
+
   void connectToWatch(NumberWrapper macAddress);
+
+  void sendRawPacket(ListWrapper listOfBytes);
 }

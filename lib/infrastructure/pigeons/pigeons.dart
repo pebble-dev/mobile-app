@@ -62,6 +62,25 @@ class NumberWrapper {
   }
 }
 
+class ListWrapper {
+  List value;
+  // ignore: unused_element
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
+    pigeonMap['value'] = value;
+    return pigeonMap;
+  }
+  // ignore: unused_element
+  static ListWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    if (pigeonMap == null){
+      return null;
+    }
+    final ListWrapper result = ListWrapper();
+    result.value = pigeonMap['value'];
+    return result;
+  }
+}
+
 class ScanControl {
   Future<void> startScan() async {
     const BasicMessageChannel<dynamic> channel =
@@ -143,6 +162,28 @@ class ConnectionControl {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =
         BasicMessageChannel<dynamic>('dev.flutter.pigeon.ConnectionControl.connectToWatch', StandardMessageCodec());
+    
+    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      // noop
+    }
+    
+  }
+  Future<void> sendRawPacket(ListWrapper arg) async {
+    final Map<dynamic, dynamic> requestMap = arg._toMap();
+    const BasicMessageChannel<dynamic> channel =
+        BasicMessageChannel<dynamic>('dev.flutter.pigeon.ConnectionControl.sendRawPacket', StandardMessageCodec());
     
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
     if (replyMap == null) {

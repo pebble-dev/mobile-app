@@ -10,35 +10,39 @@ import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.StandardMessageCodec;
 
-/** Generated class from Pigeon. */
+/**
+ * Generated class from Pigeon.
+ */
 @SuppressWarnings("unused")
 public class Pigeons {
 
-  /** Generated class from Pigeon that represents data sent in messages. */
-  public static class ListOfPebbleDevices {
-      private ArrayList list;
+    /**
+     * Generated class from Pigeon that represents data sent in messages.
+     */
+    public static class ListOfPebbleDevices {
+        private ArrayList list;
 
-      public ArrayList getList() {
-          return list;
-      }
+        public ArrayList getList() {
+            return list;
+        }
 
-      public void setList(ArrayList setterArg) {
-          this.list = setterArg;
-      }
+        public void setList(ArrayList setterArg) {
+            this.list = setterArg;
+        }
 
-      HashMap toMap() {
-          HashMap<String, Object> toMapResult = new HashMap<>();
-          toMapResult.put("list", list);
-          return toMapResult;
-      }
+        HashMap toMap() {
+            HashMap<String, Object> toMapResult = new HashMap<>();
+            toMapResult.put("list", list);
+            return toMapResult;
+        }
 
-      static ListOfPebbleDevices fromMap(HashMap map) {
-          ListOfPebbleDevices fromMapResult = new ListOfPebbleDevices();
-          Object list = map.get("list");
-          fromMapResult.list = (ArrayList) list;
-          return fromMapResult;
-      }
-  }
+        static ListOfPebbleDevices fromMap(HashMap map) {
+            ListOfPebbleDevices fromMapResult = new ListOfPebbleDevices();
+            Object list = map.get("list");
+            fromMapResult.list = (ArrayList) list;
+            return fromMapResult;
+        }
+    }
 
     /**
      * Generated class from Pigeon that represents data sent in messages.
@@ -92,6 +96,34 @@ public class Pigeons {
             NumberWrapper fromMapResult = new NumberWrapper();
             Object value = map.get("value");
             fromMapResult.value = (value == null) ? null : ((value instanceof Integer) ? (Integer) value : (Long) value);
+            return fromMapResult;
+        }
+    }
+
+    /**
+     * Generated class from Pigeon that represents data sent in messages.
+     */
+    public static class ListWrapper {
+        private ArrayList value;
+
+        public ArrayList getValue() {
+            return value;
+        }
+
+        public void setValue(ArrayList setterArg) {
+            this.value = setterArg;
+        }
+
+        HashMap toMap() {
+            HashMap<String, Object> toMapResult = new HashMap<>();
+            toMapResult.put("value", value);
+            return toMapResult;
+        }
+
+        static ListWrapper fromMap(HashMap map) {
+            ListWrapper fromMapResult = new ListWrapper();
+            Object value = map.get("value");
+            fromMapResult.value = (ArrayList) value;
             return fromMapResult;
         }
     }
@@ -175,6 +207,8 @@ public class Pigeons {
 
         void connectToWatch(NumberWrapper arg);
 
+        void sendRawPacket(ListWrapper arg);
+
         /**
          * Sets up an instance of `ConnectionControl` to handle messages through the `binaryMessenger`
          */
@@ -207,6 +241,26 @@ public class Pigeons {
                             @SuppressWarnings("ConstantConditions")
                             NumberWrapper input = NumberWrapper.fromMap((HashMap) message);
                             api.connectToWatch(input);
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ConnectionControl.sendRawPacket", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            ListWrapper input = ListWrapper.fromMap((HashMap) message);
+                            api.sendRawPacket(input);
                             wrapped.put("result", null);
                         } catch (Exception exception) {
                             wrapped.put("error", wrapError(exception));
