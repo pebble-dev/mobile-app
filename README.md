@@ -8,7 +8,7 @@ A multi platform watch companion app for Pebble/RebbleOS devices
 
 Type safe communication between Flutter and native code is performed 
 using [Pigeon](https://pub.dev/packages/pigeon). To add new communication interfaces, edit
-[pigeons/pigeons.dart](blob/master/pigeons/pigeons.dart) file and then re-compile interface
+[pigeons/pigeons.dart](pigeons/pigeons.dart) file and then re-compile interface
 with the following command:
 
 ```
