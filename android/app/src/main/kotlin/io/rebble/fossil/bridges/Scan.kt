@@ -22,16 +22,11 @@ class Scan @Inject constructor(
         val deviceList: MutableList<BluePebbleDevice> = mutableListOf()
 
         deviceList.clear()
-        println("Calling scan started")
-        scanCallbacks.onScanStarted {
-            println("Scan started called")
-        }
+        scanCallbacks.onScanStarted {}
 
         blueCommon.scanDevicesLE({ el ->
-            println("Found device $el")
             val oldIn = deviceList.indexOfFirst { p -> p.bluetoothDevice.address == el.bluetoothDevice.address }
             if (oldIn < 0 && el.leMeta?.serialNumber != "??") {
-                println("Valid device")
                 deviceList.add(el)
                 scanCallbacks.onScanUpdate(ListWrapper(deviceList.map { it.toPigeon() })) {}
             }
