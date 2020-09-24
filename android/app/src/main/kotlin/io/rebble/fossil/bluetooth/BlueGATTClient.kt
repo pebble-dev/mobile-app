@@ -43,7 +43,7 @@ class BlueGATTClient(private val gatt: BluetoothGatt, private val readyForNextPa
         }
     }
 
-    fun sendBytes(bytes: ByteArray): Boolean {
+    suspend fun sendBytes(bytes: ByteArray): Boolean {
         var writeWorked = true
         sendLock.lock()
         dataCharacteristic?.value = bytes

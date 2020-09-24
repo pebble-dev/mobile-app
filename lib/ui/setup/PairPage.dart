@@ -1,13 +1,12 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fossil/domain/entities/PebbleDevice.dart';
 import 'package:fossil/infrastructure/datasources/PairedStorage.dart';
-import 'package:fossil/ui/common/icons/fonts/RebbleIconsStroke.dart';
+import 'package:fossil/infrastructure/pigeons/pigeons.dart';
 import 'package:fossil/ui/common/icons/WatchIcon.dart';
+import 'package:fossil/ui/common/icons/fonts/RebbleIconsStroke.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PairPage extends StatefulWidget {
@@ -15,43 +14,19 @@ class PairPage extends StatefulWidget {
   State<StatefulWidget> createState() => new _PairPageState();
 }
 
-final MethodChannel _platform = MethodChannel('io.rebble.fossil/protocol');
+final ConnectionControl connectionControl = ConnectionControl();
+final ScanControl scanControl = ScanControl();
 
-class _PairPageState extends State<PairPage> {
+class _PairPageState extends State<PairPage> implements ScanCallbacks {
   List<PebbleDevice> _pebbles = [];
-  bool _scanning = true;
+  bool _scanning = false;
 
   @override
   void initState() {
     super.initState();
-    _platform.setMethodCallHandler((call) {
-      return () async {
-        print(call.method);
-        switch (call.method) {
-          case "addPairScanResult":
-            setState(() {
-              dynamic a = jsonDecode(call.arguments as String);
-              log(call.arguments as String);
-              _pebbles.add(PebbleDevice(
-                  a['name'],
-                  int.parse((a['address'] as String).replaceAll(':', ''), radix: 16),
-                  a['version'],
-                  a['serialNumber'],
-                  a['color'],
-                  a['runningPRF'],
-                  a['firstUse']));
-            });
-            break;
-          case "finishPairScan":
-            setState(() {
-              _scanning = false;
-            });
-            break;
-        }
-      }();
-    });
-
-    _platform.invokeMethod("scanDevices");
+    ScanCallbacks.setup(this);
+    log("Prestart");
+    scanControl.startScan();
   }
 
   void _refreshDevices() {
@@ -59,29 +34,54 @@ class _PairPageState extends State<PairPage> {
       setState(() {
         _scanning = true;
         _pebbles = [];
-        _platform.invokeMethod("scanDevices");
+        scanControl.startScan();
       });
     }
   }
 
   void _targetPebble(PebbleDevice dev) {
-    _platform.invokeMethod("targetPebbleAddr", dev.address).then((value) {
-      if (value as bool)
-        setState(() {
-          PairedStorage.register(dev)
-              .then((_) => PairedStorage.getDefault().then((def) {
-                    if (def == null) {
-                      PairedStorage.setDefault(dev.address);
-                    }
-                  })); // Register + set as default if no default set
-          SharedPreferences.getInstance().then((value) {
-            if (!value.containsKey("firstRun")) {
-              Navigator.pushReplacementNamed(context, '/moresetup');
-            } else {
-              Navigator.pushReplacementNamed(context, '/home');
-            }
-          });
+    NumberWrapper addressWrapper = NumberWrapper();
+    addressWrapper.value = dev.address;
+    connectionControl.connectToWatch(addressWrapper).then((value) => {
+          setState(() {
+            PairedStorage.register(dev)
+                .then((_) => PairedStorage.getDefault().then((def) {
+                      if (def == null) {
+                        PairedStorage.setDefault(dev.address);
+                      }
+                    })); // Register + set as default if no default set
+            SharedPreferences.getInstance().then((value) {
+              if (!value.containsKey("firstRun")) {
+                Navigator.pushReplacementNamed(context, '/moresetup');
+              } else {
+                Navigator.pushReplacementNamed(context, '/home');
+              }
+            });
+          })
         });
+  }
+
+  @override
+  void onScanStarted() {
+    log("Scan started");
+    setState(() {
+      _scanning = true;
+    });
+  }
+
+  @override
+  void onScanStopped() {
+    setState(() {
+      _scanning = false;
+    });
+  }
+
+  @override
+  void onScanUpdate(ListWrapper arg) {
+    setState(() {
+      _pebbles = (arg.value.cast<Map>())
+          .map((element) => PebbleDevice.fromPigeon(element))
+          .toList();
     });
   }
 
@@ -100,7 +100,8 @@ class _PairPageState extends State<PairPage> {
                             child: Row(children: <Widget>[
                               Container(
                                 child: Center(
-                                    child: PebbleWatchIcon(PebbleWatchModel.values[e.color])),
+                                    child: PebbleWatchIcon(
+                                        PebbleWatchModel.values[e.color])),
                                 width: 56,
                                 height: 56,
                                 decoration: BoxDecoration(
@@ -114,24 +115,23 @@ class _PairPageState extends State<PairPage> {
                                   SizedBox(height: 4),
                                   Text(e.address
                                       .toRadixString(16)
-                                      .padLeft(6, '0').toUpperCase()),
+                                      .padLeft(6, '0')
+                                      .toUpperCase()),
                                   Wrap(
                                     spacing: 4,
                                     children: [
                                       Offstage(
-                                        offstage: !e.runningPRF || e.firstUse,
-                                        child: Chip(
-                                          backgroundColor: Colors.deepOrange,
-                                          label: Text("Recovery"),
-                                        )
-                                      ),
+                                          offstage: !e.runningPRF || e.firstUse,
+                                          child: Chip(
+                                            backgroundColor: Colors.deepOrange,
+                                            label: Text("Recovery"),
+                                          )),
                                       Offstage(
                                           offstage: !e.firstUse,
                                           child: Chip(
                                             backgroundColor: Color(0xffd4af37),
                                             label: Text("New!"),
-                                          )
-                                      ),
+                                          )),
                                     ],
                                   ),
                                 ],

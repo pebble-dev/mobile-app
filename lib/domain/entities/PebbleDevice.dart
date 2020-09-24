@@ -1,4 +1,5 @@
 import 'dart:core';
+
 import 'package:fossil/domain/entities/BaseObj.dart';
 
 class PebbleDevice extends BaseObj {
@@ -9,7 +10,26 @@ class PebbleDevice extends BaseObj {
   int color;
   bool runningPRF;
   bool firstUse;
-  PebbleDevice(this.name, this.address, this.version, this.serialNumber, this.color, this.runningPRF, this.firstUse);
+
+  PebbleDevice(this.name, this.address, this.version, this.serialNumber,
+      this.color, this.runningPRF, this.firstUse);
+
   PebbleDevice.stored(this.name, this.address, this.serialNumber, this.color);
-  Map<String, dynamic> toJson() => {'name': name, 'address': address, 'serialNumber': serialNumber, 'color': color};
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'address': address,
+        'serialNumber': serialNumber,
+        'color': color
+      };
+
+  PebbleDevice.fromPigeon(Map<dynamic, dynamic> pigeon)
+      : this(
+            pigeon["name"],
+            pigeon["address"],
+            pigeon["version"],
+            pigeon["serialNumber"],
+            pigeon["color"],
+            pigeon["runningPRF"],
+            pigeon["firstUse"]);
 }
