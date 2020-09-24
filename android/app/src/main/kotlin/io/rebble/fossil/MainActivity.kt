@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.AlertDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.bluetooth.BluetoothDevice
 import android.content.*
 import android.content.pm.PackageManager
 import android.os.Build
@@ -13,23 +12,23 @@ import android.os.IBinder
 import android.provider.Settings
 import android.text.TextUtils
 import android.widget.Toast
-import androidx.annotation.NonNull
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.lifecycleScope
 import io.flutter.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugin.common.EventChannel
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
-import io.rebble.fossil.bluetooth.BluePebbleDevice
-import org.json.JSONArray
-import org.json.JSONObject
+import io.rebble.fossil.bridges.FlutterBridge
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.plus
 import java.net.URI
 import kotlin.system.exitProcess
 
-@ExperimentalUnsignedTypes
-class MainActivity: FlutterActivity() {
+@OptIn(ExperimentalUnsignedTypes::class)
+class MainActivity : FlutterActivity() {
+    private lateinit var coroutineScope: CoroutineScope
+    private lateinit var flutterBridges: Set<FlutterBridge>
+
     var watchService: WatchService? = null
     var isBound = false
     var bootIntentCallback: ((Boolean) -> Unit)? = null
@@ -95,7 +94,7 @@ class MainActivity: FlutterActivity() {
                                     .setMessage(getString(R.string.bootUrlWarningBody, boot.toString()))
                                     .setPositiveButton("Allow", dialogClickListener)
                                     .setNegativeButton("Deny", dialogClickListener).show()
-                        }catch (e: IllegalArgumentException) {
+                        } catch (e: IllegalArgumentException) {
                             Toast.makeText(this, "Boot URL not updated, was invalid", Toast.LENGTH_LONG).show()
                         }
                     }
@@ -136,8 +135,18 @@ class MainActivity: FlutterActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val injectionComponent = (applicationContext as FossilApplication).component
+        val activityComponent = injectionComponent.createActivitySubcomponentFactory()
+                .create(this)
+
+        coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
+
         super.onCreate(savedInstanceState)
         GeneratedPluginRegistrant.registerWith(this.flutterEngine!!)
+
+        // Bridges need to be created after super.onCreate() to ensure
+        // flutter stuff is ready
+        flutterBridges = activityComponent.createFlutterBridges()
 
         handleIntent(intent)
 
@@ -165,8 +174,8 @@ class MainActivity: FlutterActivity() {
             alertDialogBuilder.setTitle("Allow notification reading")
             alertDialogBuilder.setMessage("To see notifications on your watch, you need to give the app access to read incoming notifications on your device")
 
-            alertDialogBuilder.setPositiveButton("Allow") { _,_ -> startActivity(Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")) }
-            alertDialogBuilder.setNegativeButton("Deny") { _,_ -> Toast.makeText(applicationContext, "Running without showing notifications", Toast.LENGTH_LONG).show() }
+            alertDialogBuilder.setPositiveButton("Allow") { _, _ -> startActivity(Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")) }
+            alertDialogBuilder.setNegativeButton("Deny") { _, _ -> Toast.makeText(applicationContext, "Running without showing notifications", Toast.LENGTH_LONG).show() }
             alertDialogBuilder.create().show()
         }
 
@@ -182,68 +191,7 @@ class MainActivity: FlutterActivity() {
         handleIntent(intent)
     }
 
-    private var deviceList: MutableList<BluePebbleDevice> = mutableListOf()
-
-    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
-        val flutter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/protocol")
-        val packetIO = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/packetIO")
-        val bootWaiter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger,"io.rebble.fossil/bootWaiter")
-
-        flutter.setMethodCallHandler { call, result ->
-            when (call.method) {
-                "isConnected" -> result.success(watchService?.isConnected())
-                "targetPebbleAddr" -> result.success(watchService?.targetPebble(call.arguments as Long))
-                "scanDevices" -> {
-                    deviceList.clear()
-                    watchService?.scanDevices({ el ->
-                        val oldIn = deviceList.indexOfFirst({p -> p.bluetoothDevice.address == el.bluetoothDevice.address})
-                        if (oldIn < 0 && el.leMeta?.serialNumber != "??") {
-                            deviceList.add(el)
-                            Log.d("--DEBUG--", el.leMeta.toString())
-                            val json = JSONObject()
-                                    .put("name", el.bluetoothDevice.name)
-                                    .put("address", el.bluetoothDevice.address)
-                            if (el.leMeta?.major != null) {
-                                json.put("version", "${el.leMeta.major}.${el.leMeta.minor}.${el.leMeta.patch}")
-                            }
-                            if (el.leMeta?.serialNumber != null) {
-                                json.put("serialNumber", el.leMeta.serialNumber)
-                            }
-                            if (el.leMeta?.color != null) {
-                                json.put("color", el.leMeta.color)
-                            }
-                            if (el.leMeta?.runningPRF != null) {
-                                json.put("runningPRF", el.leMeta.runningPRF)
-                            }
-                            if (el.leMeta?.firstUse != null) {
-                                json.put("firstUse", el.leMeta.firstUse)
-                            }
-                            flutter.invokeMethod("addPairScanResult", json.toString())
-                        }
-                    }) {
-                        flutter.invokeMethod("finishPairScan", null)
-                    }
-                    result.success(null)
-                }
-            }
-        }
-
-        packetIO.setMethodCallHandler { call, result ->
-            when (call.method) {
-                "send" ->
-                    watchService?.sendDevPacket(call.arguments as ByteArray)
-            }
-        }
-
-        bootWaiter.setMethodCallHandler { call, result ->
-            when (call.method) {
-                "waitForBoot" ->
-                    bootIntentCallback = {success ->
-                        result.success(success)
-                        bootIntentCallback = null
-                    }
-            }
-        }
+    public override fun getFlutterEngine(): FlutterEngine? {
+        return super.getFlutterEngine()
     }
-
 }

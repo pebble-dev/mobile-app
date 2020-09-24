@@ -1,14 +1,12 @@
 package io.rebble.fossil.bluetooth
 
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.le.ScanRecord
 import android.bluetooth.le.ScanResult
 import android.os.Build
 import androidx.annotation.RequiresApi
-import java.nio.ByteBuffer
+import androidx.collection.ArrayMap
 
-@ExperimentalUnsignedTypes
+@OptIn(ExperimentalUnsignedTypes::class)
 class BluePebbleDevice {
     val bluetoothDevice: BluetoothDevice
     val leMeta: LEMeta?
@@ -27,6 +25,31 @@ class BluePebbleDevice {
     constructor(device: BluetoothDevice, scanRecord: ByteArray) {
         bluetoothDevice = device
         leMeta = LEMeta(scanRecord)
+    }
+
+    fun toPigeon(): Map<String, Any> {
+        val map = ArrayMap<String, Any>()
+
+        map["name"] = bluetoothDevice.name
+        map["address"] = bluetoothDevice.address.replace(":", "").toLong(16)
+
+        if (leMeta?.major != null) {
+            map["version"] = "${leMeta.major}.${leMeta.minor}.${leMeta.patch}"
+        }
+        if (leMeta?.serialNumber != null) {
+            map["serialNumber"] = leMeta.serialNumber
+        }
+        if (leMeta?.color != null) {
+            map["color"] = leMeta.color
+        }
+        if (leMeta?.runningPRF != null) {
+            map["runningPRF"] = leMeta.runningPRF
+        }
+        if (leMeta?.firstUse != null) {
+            map["firstUse"] = leMeta.firstUse
+        }
+
+        return map
     }
 
     override fun toString(): String {

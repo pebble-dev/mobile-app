@@ -14,9 +14,16 @@ import android.os.Build
 import android.os.Handler
 import androidx.annotation.RequiresApi
 import io.flutter.Log
+import io.rebble.libpebblecommon.BluetoothConnection
+import kotlinx.coroutines.CoroutineExceptionHandler
+import javax.inject.Inject
+import javax.inject.Singleton
 
-@ExperimentalUnsignedTypes
-class BlueCommon(private val context: Context, private val packetCallback: (ByteArray) -> Unit) : BroadcastReceiver() {
+@Singleton
+class BlueCommon @Inject constructor(
+        private val context: Context,
+        private val coroutineExceptionHandler: CoroutineExceptionHandler
+) : BroadcastReceiver(), BluetoothConnection {
     private val logTag = "BlueCommon"
 
     val bluetoothAdapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter()
@@ -31,8 +38,10 @@ class BlueCommon(private val context: Context, private val packetCallback: (Byte
     private var onConChange: ((Boolean) -> Unit)? = null
     private var resultCallback: ((BluePebbleDevice) -> Unit)? = null
 
+    private var externalIncomingPacketHandler: (suspend (ByteArray) -> Unit)? = null
+
     override fun onReceive(context: Context, intent: Intent) {
-        when(intent.action!!) {
+        when (intent.action!!) {
             BluetoothDevice.ACTION_FOUND -> {
                 // Discovery has found a device. Get the BluetoothDevice
                 // object and its info from the Intent.
@@ -43,10 +52,10 @@ class BlueCommon(private val context: Context, private val packetCallback: (Byte
                 if (deviceName.startsWith("Pebble") && !deviceName.contains("LE")) {
                     Log.d(logTag, "Found Pebble in scan: $deviceName")
                     if (pebbleList.size > 0) {
-                        if(pebbleList.firstOrNull { p -> p.bluetoothDevice.address == deviceHardwareAddress } == null) {
+                        if (pebbleList.firstOrNull { p -> p.bluetoothDevice.address == deviceHardwareAddress } == null) {
                             pebbleList.add(BluePebbleDevice(device))
                         }
-                    }else{
+                    } else {
                         pebbleList.add(BluePebbleDevice(device))
                     }
                 }
@@ -61,7 +70,7 @@ class BlueCommon(private val context: Context, private val packetCallback: (Byte
         context.registerReceiver(this, filter)
         // Scan for 8 seconds, then stop and send back what we found
         //TODO: Could make this live-update the list?
-        if(bluetoothAdapter.startDiscovery() || isScanning) {
+        if (bluetoothAdapter.startDiscovery() || isScanning) {
             isScanning = true
             scanHandler.postDelayed({
                 if (pebbleList.size > 0 || scanRetries >= 3) {
@@ -69,9 +78,13 @@ class BlueCommon(private val context: Context, private val packetCallback: (Byte
                     Log.d(logTag, "Scanning ended")
                     isScanning = false
                     bluetoothAdapter.cancelDiscovery()
-                    context.unregisterReceiver(this)
+                    try {
+                        context.unregisterReceiver(this)
+                    } catch (e: IllegalArgumentException) {
+                        // Receiver was not registered in the first place. Do nothing.
+                    }
                     resultCallback(pebbleList)
-                }else {
+                } else {
                     scanRetries++
                     scanDevicesClassic(resultCallback)
                 }
@@ -140,7 +153,7 @@ class BlueCommon(private val context: Context, private val packetCallback: (Byte
         var btaddr = ""
         for (i in hex.indices) {
             btaddr += hex[i]
-            if ((i+1) % 2 == 0 && i+1 < hex.length) btaddr += ":"
+            if ((i + 1) % 2 == 0 && i + 1 < hex.length) btaddr += ":"
         }
 
         val targetPebble = bluetoothAdapter.getRemoteDevice(btaddr)
@@ -153,7 +166,13 @@ class BlueCommon(private val context: Context, private val packetCallback: (Byte
                 TODO("BLE")
             }
             device.type != BluetoothDevice.DEVICE_TYPE_UNKNOWN -> { // Serial only device or serial/LE
-                driver = BlueSerial(bluetoothAdapter, context, packetCallback)
+                driver = BlueSerial(
+                        bluetoothAdapter,
+                        context,
+                        coroutineExceptionHandler,
+                        this::handlePacketReceivedFromDriver
+                )
+
                 onConChange?.let { driver!!.setOnConnectionChange(it) }
                 driver!!.targetPebble(device)
             }
@@ -164,5 +183,17 @@ class BlueCommon(private val context: Context, private val packetCallback: (Byte
     fun setOnConnectionChange(f: (Boolean) -> Unit) {
         onConChange = f
         driver?.setOnConnectionChange(f)
+    }
+
+    override suspend fun sendPacket(data: ByteArray) {
+        driver?.sendPacket(data)
+    }
+
+    override fun setReceiveCallback(callback: suspend (ByteArray) -> Unit) {
+        externalIncomingPacketHandler = callback
+    }
+
+    private suspend fun handlePacketReceivedFromDriver(packet: ByteArray) {
+        externalIncomingPacketHandler?.invoke(packet)
     }
 }

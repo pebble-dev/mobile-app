@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:fossil/ui/common/icons/CompIcon.dart';
-import 'package:fossil/ui/common/icons/fonts/RebbleIconsFill.dart';
+import 'package:fossil/infrastructure/pigeons/pigeons.dart';
 import 'package:fossil/ui/common/icons/fonts/RebbleIconsStroke.dart';
-import 'package:fossil/ui/Router.dart';
 
 class TestTab extends StatelessWidget {
+  final NotificationsControl notifications = NotificationsControl();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +15,9 @@ class TestTab extends StatelessWidget {
         child: Column(
           children: <Widget>[
             RaisedButton(
-              onPressed: () {},
+              onPressed: () {
+                notifications.sendTestNotification();
+              },
               child: Text("Button"),
             ),
             Text("This is some text."),

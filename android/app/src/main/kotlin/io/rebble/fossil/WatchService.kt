@@ -4,7 +4,7 @@ import android.Manifest
 import android.app.Service
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.content.*
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Binder
 import android.os.Build
@@ -13,64 +13,57 @@ import android.provider.Telephony
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.lifecycleScope
 import io.flutter.Log
 import io.rebble.fossil.bluetooth.BlueCommon
 import io.rebble.fossil.bluetooth.BluePebbleDevice
 import io.rebble.libpebblecommon.ProtocolHandler
-import io.rebble.libpebblecommon.blobdb.NotificationSource
-import io.rebble.libpebblecommon.blobdb.PushNotification
 import io.rebble.libpebblecommon.services.notification.NotificationService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 
 @ExperimentalUnsignedTypes
-class WatchService : Service() {
+class WatchService : LifecycleService() {
+    private lateinit var coroutineScope: CoroutineScope
+
     private val pBinder = ProtBinder()
     private val logTag: String = "FossilWatchService"
     private val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-    private var protocolHandler: ProtocolHandler? = null
 
-    private val blueCommon = BlueCommon(this) {
-        protocolHandler?.handle(it)
-    }
+    private lateinit var protocolHandler: ProtocolHandler
+    private lateinit var blueCommon: BlueCommon
+    lateinit var notificationService: NotificationService
+        private set
 
     private val mainNotifBuilder = NotificationCompat.Builder(this, "device_status")
             .setContentTitle("Disconnected")
             .setSmallIcon(R.drawable.ic_notification_disconnected)
 
     inner class ProtBinder : Binder() {
-        fun getService() : WatchService {
+        fun getService(): WatchService {
             return this@WatchService
         }
     }
 
     override fun onBind(intent: Intent): IBinder {
+        super.onBind(intent)
         return pBinder
     }
 
-    private fun packageToSource(pkg: String?): NotificationSource {
-        //TODO: Check for other email clients
-        return when (pkg) {
-            "com.google.android.gm" -> NotificationSource.Email
-            "com.facebook.katana" -> NotificationSource.Facebook
-            "com.twitter.android", "com.twitter.android.lite" -> NotificationSource.Twitter
-            Telephony.Sms.getDefaultSmsPackage(this) -> NotificationSource.SMS
-            else -> NotificationSource.Generic
-        }
-    }
-
-    @ExperimentalStdlibApi
-    private val notifBroadcastReceiver = object: BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val notif = intent?.getBundleExtra("notification") ?: return
-            NotificationService.send(PushNotification(notif["subject"] as String, notif["sender"] as String, notif["content"] as String, packageToSource(notif["pkg"] as String))) {
-                Log.d("FossilNotifRet", "Got resp from BlobDB: ${it::class.simpleName}")
-            }
-        }
-    }
 
     @ExperimentalStdlibApi
     override fun onCreate() {
+        val injectionComponent = (applicationContext as FossilApplication).component
+
+        coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
+        blueCommon = injectionComponent.createBlueCommon()
+        notificationService = injectionComponent.createNotificationService()
+        protocolHandler = injectionComponent.createProtocolHandler()
+
         super.onCreate()
+
         // TODO: BLE
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -83,14 +76,12 @@ class WatchService : Service() {
         if (!bluetoothAdapter.isEnabled) {
             Log.w(logTag, "Bluetooth - Not enabled")
         }
-        LocalBroadcastManager.getInstance(applicationContext).registerReceiver(notifBroadcastReceiver, IntentFilter("io.rebble.fossil.NOTIFICATION_BROADCAST"))
 
-        startIO { res ->
-            protocolHandler?.handle(res)
-        }
+        startIO()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
         startForeground(1, mainNotifBuilder.build())
         return START_STICKY
     }
@@ -104,8 +95,7 @@ class WatchService : Service() {
         NotificationManagerCompat.from(this).notify(1, mainNotifBuilder.build())
     }
 
-    private fun startIO(packetCallback: (ByteArray) -> Unit) {
-        protocolHandler = ProtocolHandler {bytes -> blueCommon.driver?.sendPacket(bytes)}
+    private fun startIO() {
         blueCommon.setOnConnectionChange { connected -> setNotification(connected) }
     }
 
@@ -128,7 +118,9 @@ class WatchService : Service() {
     }
 
     fun sendDevPacket(packet: ByteArray) {
-        blueCommon.driver?.sendPacket(packet)
+        coroutineScope.launch {
+            blueCommon.driver?.sendPacket(packet)
+        }
     }
 
     fun isConnected(): Boolean {
