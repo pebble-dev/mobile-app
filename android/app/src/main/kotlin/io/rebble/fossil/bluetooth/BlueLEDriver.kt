@@ -14,7 +14,7 @@ import java.util.*
 import kotlin.coroutines.coroutineContext
 import kotlin.experimental.or
 
-class BlueLEDriver(private val targetPebble: BluetoothDevice, private val context: Context, private val packetCallback: (ByteArray) -> Unit) : BlueIO {
+class BlueLEDriver(private val targetPebble: BluetoothDevice, private val context: Context, private val packetCallback: suspend (ByteArray) -> Unit) : BlueIO {
     private val logTag = "BlueLE"
     private var connectivityWatcher: ConnectivityWatcher? = null
     private var gattClient: BlueGATTClient? = null
@@ -39,7 +39,7 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
     var connectionState = LEConnectionState.IDLE
     private var gatt: BluetoothGatt? = null
 
-    override fun sendPacket(bytes: ByteArray) {
+    override suspend fun sendPacket(bytes: ByteArray) {
         if (gattClient == null) return
         GlobalScope.launch {
             while (!gattClient!!.sendLock.isLocked && isConnected) {
@@ -145,7 +145,7 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
         }
     }
 
-    override fun startConnection(): Boolean {
+    override fun connectPebble(): Boolean {
         if (connectionState != LEConnectionState.IDLE) return false
         connectionState = LEConnectionState.CONNECTING
         gatt = targetPebble.connectGatt(context, false, gattCallbacks)

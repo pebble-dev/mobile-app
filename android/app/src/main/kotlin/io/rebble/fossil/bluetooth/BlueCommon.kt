@@ -163,9 +163,9 @@ class BlueCommon @Inject constructor(
             device.type == BluetoothDevice.DEVICE_TYPE_LE -> { // LE only device
                 scanHandler.removeCallbacksAndMessages(null);
                 stopLEScan()
-                driver = BlueLEDriver(device, context, packetCallback)
+                driver = BlueLEDriver(device, context, this::handlePacketReceivedFromDriver)
                 onConChange?.let { driver!!.setOnConnectionChange(it) }
-                driver!!.startConnection()
+                driver!!.connectPebble()
             }
             device.type != BluetoothDevice.DEVICE_TYPE_UNKNOWN -> { // Serial only device or serial/LE
                 driver = BlueSerialDriver(
@@ -177,7 +177,7 @@ class BlueCommon @Inject constructor(
                 )
 
                 onConChange?.let { driver!!.setOnConnectionChange(it) }
-                driver!!.startConnection()
+                driver!!.connectPebble()
             }
             else -> false // Can't contact device
         }

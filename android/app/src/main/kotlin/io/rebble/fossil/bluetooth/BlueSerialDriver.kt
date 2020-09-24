@@ -68,7 +68,7 @@ class BlueSerialDriver(
         onConChange = f
     }
 
-    private fun connectPebble(): Boolean {
+    override fun connectPebble(): Boolean {
         val scope = CoroutineScope(SupervisorJob() + coroutineExceptionHandler)
         this.coroutineScope = scope
 
