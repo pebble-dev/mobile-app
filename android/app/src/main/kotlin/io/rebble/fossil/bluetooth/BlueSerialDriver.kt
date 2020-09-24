@@ -15,18 +15,16 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.*
 
-class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val context: Context, private val packetCallback: (ByteArray) -> Unit) : BlueIO {
+class BlueSerialDriver(private val targetPebble: BluetoothDevice, private val bluetoothAdapter: BluetoothAdapter, private val context: Context, private val packetCallback: (ByteArray) -> Unit) : BlueIO {
     private val logTag = "BlueSerial"
-    
-    private val packetReceiveHandler = Handler()
-    
 
-    private var targetPebble: BluetoothDevice? = null
+    private val packetReceiveHandler = Handler()
+
     private var serialSocket: BluetoothSocket? = null
     private var inputStream: InputStream? = null
     private var outputStream: OutputStream? = null
 
-    override val isConnected get() = targetPebble != null
+    override val isConnected get() = serialSocket?.isConnected ?: false
     private var onConChange: ((Boolean) -> Unit)? = null
 
     private var runThread = false
@@ -94,17 +92,9 @@ class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val con
         return bytes
     }
 
-    
-
-    override fun targetPebble(device: BluetoothDevice): Boolean {
-        targetPebble = device
-        return connectPebble()
-    }
-
     override fun closePebble() {
         serialSocket?.close()
         runThread = false
-        targetPebble = null
         onConChange?.invoke(false)
     }
 
@@ -116,15 +106,14 @@ class BlueSerial(private val bluetoothAdapter: BluetoothAdapter, private val con
         onConChange = f
     }
 
-    private fun connectPebble(): Boolean {
+    override fun startConnection(): Boolean {
         val btSerialUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")
-        serialSocket = targetPebble?.createRfcommSocketToServiceRecord(btSerialUUID)
+        serialSocket = targetPebble.createRfcommSocketToServiceRecord(btSerialUUID)
         try {
             serialSocket?.connect()
-        }catch (e: IOException) {
+        } catch (e: IOException) {
             Log.e(logTag, "Error setting up socket to Pebble: '${e.message}' (Probably didn't pair)")
             Toast.makeText(context, "Failed to connect to Pebble", Toast.LENGTH_SHORT).show()
-            targetPebble = null
             return false
         }
         outputStream = serialSocket!!.outputStream

@@ -2,9 +2,7 @@ package io.rebble.fossil.bluetooth
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
-import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanResult
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -150,12 +148,16 @@ class BlueCommon(private val context: Context, private val packetCallback: (Byte
     fun targetPebble(device: BluetoothDevice): Boolean {
         return when {
             device.type == BluetoothDevice.DEVICE_TYPE_LE -> { // LE only device
-                TODO("BLE")
+                scanHandler.removeCallbacksAndMessages(null);
+                stopLEScan()
+                driver = BlueLEDriver(device, context, packetCallback)
+                onConChange?.let { driver!!.setOnConnectionChange(it) }
+                driver!!.startConnection()
             }
             device.type != BluetoothDevice.DEVICE_TYPE_UNKNOWN -> { // Serial only device or serial/LE
-                driver = BlueSerial(bluetoothAdapter, context, packetCallback)
+                driver = BlueSerialDriver(device, bluetoothAdapter, context, packetCallback)
                 onConChange?.let { driver!!.setOnConnectionChange(it) }
-                driver!!.targetPebble(device)
+                driver!!.startConnection()
             }
             else -> false // Can't contact device
         }

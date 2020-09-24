@@ -8,7 +8,7 @@ interface BlueIO {
 
     fun sendPacket(bytes: ByteArray)
     fun readStream(buffer: ByteBuffer, offset: Int, count: Int): Int
-    fun targetPebble(device: BluetoothDevice): Boolean
+    fun startConnection(): Boolean
     fun closePebble()
     fun getTarget(): BluetoothDevice?
 
