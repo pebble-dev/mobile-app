@@ -21,6 +21,7 @@ import io.flutter.plugins.GeneratedPluginRegistrant
 import io.rebble.fossil.bridges.FlutterBridge
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.plus
+import java.lang.NullPointerException
 import java.net.URI
 import kotlin.system.exitProcess
 
@@ -117,19 +118,23 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun isNotificationServiceEnabled(): Boolean {
-        val pkgName = packageName
-        val flat: String = Settings.Secure.getString(contentResolver,
-                "enabled_notification_listeners")
-        if (!TextUtils.isEmpty(flat)) {
-            val names = flat.split(":").toTypedArray()
-            for (i in names.indices) {
-                val cn = ComponentName.unflattenFromString(names[i])
-                if (cn != null) {
-                    if (TextUtils.equals(pkgName, cn.packageName)) {
-                        return true
+        try {
+            val pkgName = packageName
+            val flat: String = Settings.Secure.getString(contentResolver,
+                    "enabled_notification_listeners")
+            if (!TextUtils.isEmpty(flat)) {
+                val names = flat.split(":").toTypedArray()
+                for (i in names.indices) {
+                    val cn = ComponentName.unflattenFromString(names[i])
+                    if (cn != null) {
+                        if (TextUtils.equals(pkgName, cn.packageName)) {
+                            return true
+                        }
                     }
                 }
             }
+        } catch (e: NullPointerException) {
+            return false
         }
         return false
     }
