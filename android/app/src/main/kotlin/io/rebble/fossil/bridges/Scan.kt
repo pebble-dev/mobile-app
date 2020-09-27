@@ -26,7 +26,7 @@ class Scan @Inject constructor(
 
         blueCommon.scanDevicesLE({ el ->
             val oldIn = deviceList.indexOfFirst { p -> p.bluetoothDevice.address == el.bluetoothDevice.address }
-            if (oldIn < 0 && el.leMeta?.serialNumber != "??") {
+            if (oldIn < 0) {
                 deviceList.add(el)
                 scanCallbacks.onScanUpdate(ListWrapper(deviceList.map { it.toPigeon() })) {}
             }

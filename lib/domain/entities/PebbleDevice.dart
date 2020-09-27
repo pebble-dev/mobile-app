@@ -27,9 +27,9 @@ class PebbleDevice extends BaseObj {
       : this(
             pigeon["name"],
             pigeon["address"],
-            pigeon["version"],
-            pigeon["serialNumber"],
-            pigeon["color"],
-            pigeon["runningPRF"],
-            pigeon["firstUse"]);
+            pigeon["version"] != null ? pigeon["version"] : "",
+            pigeon["serialNumber"] != null ? pigeon["serialNumber"] : "",
+            pigeon["color"] != null ? pigeon["color"] : 0,
+            pigeon["runningPRF"] != null ? pigeon["runningPRF"] : false,
+            pigeon["firstUse"] != null ? pigeon["firstUse"] : false);
 }
