@@ -1,16 +1,14 @@
 package io.rebble.fossil.bluetooth
 
 import android.bluetooth.BluetoothDevice
-import java.nio.ByteBuffer
+import kotlinx.coroutines.flow.Flow
 
 interface BlueIO {
-    val isConnected: Boolean
+    fun startSingleWatchConnection(device: BluetoothDevice): Flow<SingleConnectionStatus>
+    suspend fun sendPacket(bytes: ByteArray): Boolean
+}
 
-    suspend fun sendPacket(bytes: ByteArray)
-    fun readStream(buffer: ByteBuffer, offset: Int, count: Int): Int
-    fun connectPebble(): Boolean
-    fun closePebble()
-    fun getTarget(): BluetoothDevice?
-
-    fun setOnConnectionChange(f: (Boolean) -> Unit)
+sealed class SingleConnectionStatus {
+    class Connecting(val watch: BluetoothDevice) : SingleConnectionStatus()
+    class Connected(val watch: BluetoothDevice) : SingleConnectionStatus()
 }
