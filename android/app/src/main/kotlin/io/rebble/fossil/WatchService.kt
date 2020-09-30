@@ -1,15 +1,12 @@
 package io.rebble.fossil
 
 import android.Manifest
-import android.app.Service
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
-import android.provider.Telephony
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -17,11 +14,9 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import io.flutter.Log
 import io.rebble.fossil.bluetooth.BlueCommon
-import io.rebble.fossil.bluetooth.BluePebbleDevice
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 
 @ExperimentalUnsignedTypes
@@ -97,33 +92,5 @@ class WatchService : LifecycleService() {
 
     private fun startIO() {
         blueCommon.setOnConnectionChange { connected -> setNotification(connected) }
-    }
-
-    // Public methods for activity / flutter
-
-    fun scanDevices(resultCallback: (BluePebbleDevice) -> Unit, endCallback: () -> Unit) {
-        blueCommon.scanDevicesLE(resultCallback, endCallback)
-    }
-
-    fun scanDevicesClassic(resultCallback: (List<BluePebbleDevice>) -> Unit) {
-        blueCommon.scanDevicesClassic(resultCallback)
-    }
-
-    fun targetPebble(device: BluetoothDevice): Boolean {
-        return blueCommon.targetPebble(device)
-    }
-
-    fun targetPebble(addr: Long): Boolean {
-        return blueCommon.targetPebble(addr)
-    }
-
-    fun sendDevPacket(packet: ByteArray) {
-        coroutineScope.launch {
-            blueCommon.driver?.sendPacket(packet)
-        }
-    }
-
-    fun isConnected(): Boolean {
-        return blueCommon.driver?.isConnected ?: false
     }
 }
