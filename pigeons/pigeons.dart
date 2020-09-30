@@ -25,7 +25,9 @@ abstract class ScanCallbacks {
 
 @HostApi()
 abstract class ScanControl {
-  void startScan();
+  void startBleScan();
+
+  void startClassicScan();
 }
 
 @HostApi()

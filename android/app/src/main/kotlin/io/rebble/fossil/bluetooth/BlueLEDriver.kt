@@ -4,14 +4,11 @@ import android.bluetooth.*
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import io.rebble.fossil.BuildConfig
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.nio.ByteBuffer
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.util.*
-import kotlin.coroutines.coroutineContext
+import kotlin.coroutines.suspendCoroutine
 import kotlin.experimental.or
 
 class BlueLEDriver(private val targetPebble: BluetoothDevice, private val context: Context, private val packetCallback: suspend (ByteArray) -> Unit) : BlueIO {
@@ -25,7 +22,7 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
         }
     }
 
-    override val isConnected: Boolean get() = connectionState == LEConnectionState.CONNECTED
+    val isConnected: Boolean get() = connectionState == LEConnectionState.CONNECTED
 
     enum class LEConnectionState {
         IDLE,
@@ -39,32 +36,28 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
     var connectionState = LEConnectionState.IDLE
     private var gatt: BluetoothGatt? = null
 
-    override suspend fun sendPacket(bytes: ByteArray) {
-        if (gattClient == null) return
-        GlobalScope.launch {
-            while (!gattClient!!.sendLock.isLocked && isConnected) {
-                delay(500)
-            }
-            if (isConnected) gattClient!!.sendBytes(bytes)
+    override suspend fun sendPacket(bytes: ByteArray): Boolean {
+        if (gattClient == null) return false
+
+        while (!gattClient!!.sendLock.isLocked && isConnected) {
+            delay(500)
+        }
+        return if (isConnected) {
+            gattClient!!.sendBytes(bytes)
+            true
+        } else {
+            false
         }
     }
 
-    override fun readStream(buffer: ByteBuffer, offset: Int, count: Int): Int {
-        return -1
-    }
-
-    override fun closePebble() {
+    fun closePebble() {
         gatt?.close()
         gatt = null
         connectionState = LEConnectionState.CLOSED
     }
 
-    override fun getTarget(): BluetoothDevice? {
+    fun getTarget(): BluetoothDevice? {
         return targetPebble
-    }
-
-    override fun setOnConnectionChange(f: (Boolean) -> Unit) {
-
     }
 
     private fun resolveGattError(status: Int): String {
@@ -145,14 +138,14 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
         }
     }
 
-    override fun connectPebble(): Boolean {
-        if (connectionState != LEConnectionState.IDLE) return false
+    override fun startSingleWatchConnection(device: BluetoothDevice): Flow<SingleConnectionStatus> = flow {
+        if (connectionState != LEConnectionState.IDLE) return@flow
         connectionState = LEConnectionState.CONNECTING
         gatt = targetPebble.connectGatt(context, false, gattCallbacks)
 
         if (gatt == null) {
             Log.e(logTag, "connectGatt failed")
-            return false
+            return@flow
         } else {
             connectivityWatcher = ConnectivityWatcher(gatt!!) {
                 if (!it.paired || targetPebble.bondState == BluetoothDevice.BOND_NONE) {
@@ -191,7 +184,11 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
                 }
             }
             gatt!!.discoverServices()
-            return true
+            emit(SingleConnectionStatus.Connected(device))
+
+            // Wait forever - eventually this needs to be changed to stop waiting when BLE
+            // disconnects, but I don't want to mess with this code too much
+            suspendCoroutine { }
         }
     }
 }
