@@ -16,9 +16,6 @@ import javax.inject.Singleton
 @OptIn(ExperimentalCoroutinesApi::class)
 @Singleton
 class BleScanner @Inject constructor() {
-    private val _isScanning = MutableStateFlow<Boolean>(false)
-    val isScanning: StateFlow<Boolean> get() = _isScanning
-
     private var stopTrigger: CompletableDeferred<Unit>? = null
 
     fun getScanFlow(): Flow<List<BluePebbleDevice>> = flow {
