@@ -1,13 +1,9 @@
 package io.rebble.fossil.bluetooth
 
 import android.bluetooth.BluetoothDevice
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.os.Handler
-import io.flutter.Log
 import io.rebble.fossil.bluetooth.scan.BleScanner
+import io.rebble.fossil.bluetooth.scan.ClassicScanner
 import io.rebble.libpebblecommon.BluetoothConnection
 import kotlinx.coroutines.CoroutineExceptionHandler
 import javax.inject.Inject
@@ -17,73 +13,17 @@ import javax.inject.Singleton
 class BlueCommon @Inject constructor(
         private val context: Context,
         private val coroutineExceptionHandler: CoroutineExceptionHandler,
-        private val bleScanner: BleScanner
-) : BroadcastReceiver(), BluetoothConnection {
+        private val bleScanner: BleScanner,
+        private val classicScanner: ClassicScanner
+) : BluetoothConnection {
     private val logTag = "BlueCommon"
 
     val bluetoothAdapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter()
-    private var pebbleList: MutableList<BluePebbleDevice> = mutableListOf()
-    private val scanHandler = Handler()
     var driver: BlueIO? = null
 
-    private var isScanning = false
-    private var scanRetries = 0
     private var onConChange: ((Boolean) -> Unit)? = null
-    private var resultCallback: ((BluePebbleDevice) -> Unit)? = null
 
     private var externalIncomingPacketHandler: (suspend (ByteArray) -> Unit)? = null
-
-    override fun onReceive(context: Context, intent: Intent) {
-        when (intent.action!!) {
-            BluetoothDevice.ACTION_FOUND -> {
-                // Discovery has found a device. Get the BluetoothDevice
-                // object and its info from the Intent.
-                val device: BluetoothDevice =
-                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)!!
-                val deviceName = if (device.name == null) "" else device.name
-                val deviceHardwareAddress = device.address
-                if (deviceName.startsWith("Pebble") && !deviceName.contains("LE")) {
-                    Log.d(logTag, "Found Pebble in scan: $deviceName")
-                    if (pebbleList.size > 0) {
-                        if (pebbleList.firstOrNull { p -> p.bluetoothDevice.address == deviceHardwareAddress } == null) {
-                            pebbleList.add(BluePebbleDevice(device))
-                        }
-                    } else {
-                        pebbleList.add(BluePebbleDevice(device))
-                    }
-                }
-            }
-        }
-    }
-
-    fun scanDevicesClassic(resultCallback: (List<BluePebbleDevice>) -> Unit) {
-        val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
-        pebbleList.clear()
-        Log.d(logTag, "Scanning for pebbles")
-        context.registerReceiver(this, filter)
-        // Scan for 8 seconds, then stop and send back what we found
-        //TODO: Could make this live-update the list?
-        if (bluetoothAdapter.startDiscovery() || isScanning) {
-            isScanning = true
-            scanHandler.postDelayed({
-                if (pebbleList.size > 0 || scanRetries >= 3) {
-                    scanRetries = 0
-                    Log.d(logTag, "Scanning ended")
-                    isScanning = false
-                    bluetoothAdapter.cancelDiscovery()
-                    try {
-                        context.unregisterReceiver(this)
-                    } catch (e: IllegalArgumentException) {
-                        // Receiver was not registered in the first place. Do nothing.
-                    }
-                    resultCallback(pebbleList)
-                } else {
-                    scanRetries++
-                    scanDevicesClassic(resultCallback)
-                }
-            }, 8000)
-        }
-    }
 
     fun targetPebble(addr: Long): Boolean {
         val hex = "%X".format(addr).padStart(12, '0')
@@ -99,10 +39,10 @@ class BlueCommon @Inject constructor(
 
     fun targetPebble(device: BluetoothDevice): Boolean {
         bleScanner.stopScan()
+        classicScanner.stopScan()
 
         return when {
             device.type == BluetoothDevice.DEVICE_TYPE_LE -> { // LE only device
-                scanHandler.removeCallbacksAndMessages(null)
                 driver = BlueLEDriver(device, context, this::handlePacketReceivedFromDriver)
                 onConChange?.let { driver!!.setOnConnectionChange(it) }
                 driver!!.connectPebble()
