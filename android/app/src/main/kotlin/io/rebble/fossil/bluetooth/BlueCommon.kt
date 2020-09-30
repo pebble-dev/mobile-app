@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Handler
 import io.flutter.Log
+import io.rebble.fossil.bluetooth.scan.BleScanner
 import io.rebble.libpebblecommon.BluetoothConnection
 import kotlinx.coroutines.CoroutineExceptionHandler
 import javax.inject.Inject
@@ -15,7 +16,8 @@ import javax.inject.Singleton
 @Singleton
 class BlueCommon @Inject constructor(
         private val context: Context,
-        private val coroutineExceptionHandler: CoroutineExceptionHandler
+        private val coroutineExceptionHandler: CoroutineExceptionHandler,
+        private val bleScanner: BleScanner
 ) : BroadcastReceiver(), BluetoothConnection {
     private val logTag = "BlueCommon"
 
@@ -96,6 +98,8 @@ class BlueCommon @Inject constructor(
     }
 
     fun targetPebble(device: BluetoothDevice): Boolean {
+        bleScanner.stopScan()
+
         return when {
             device.type == BluetoothDevice.DEVICE_TYPE_LE -> { // LE only device
                 scanHandler.removeCallbacksAndMessages(null)

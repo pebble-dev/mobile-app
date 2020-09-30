@@ -11,8 +11,10 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Singleton
 class BleScanner @Inject constructor() {
     private val _isScanning = MutableStateFlow<Boolean>(false)
     val isScanning: StateFlow<Boolean> get() = _isScanning
