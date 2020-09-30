@@ -1,16 +1,11 @@
 package io.rebble.fossil.bluetooth
 
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.le.ScanCallback
-import android.bluetooth.le.ScanResult
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
 import android.os.Handler
-import androidx.annotation.RequiresApi
 import io.flutter.Log
 import io.rebble.libpebblecommon.BluetoothConnection
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -25,8 +20,6 @@ class BlueCommon @Inject constructor(
     private val logTag = "BlueCommon"
 
     val bluetoothAdapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter()
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    private val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
     private var pebbleList: MutableList<BluePebbleDevice> = mutableListOf()
     private val scanHandler = Handler()
     var driver: BlueIO? = null
@@ -90,62 +83,6 @@ class BlueCommon @Inject constructor(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    private val leScanCallback: ScanCallback = object : ScanCallback() {
-        override fun onScanResult(callbackType: Int, result: ScanResult) {
-            super.onScanResult(callbackType, result)
-            if (result.device.name != null && result.device.type == BluetoothDevice.DEVICE_TYPE_LE && (result.device.name.startsWith("Pebble ") || result.device.name.startsWith("Pebble-LE"))) {
-                resultCallback?.invoke(BluePebbleDevice(result))
-            }
-        }
-    }
-
-    private val legacyLeScanCallback = object : BluetoothAdapter.LeScanCallback {
-        override fun onLeScan(device: BluetoothDevice?, rssi: Int, scanRecord: ByteArray?) {
-            if (device != null && device.type == BluetoothDevice.DEVICE_TYPE_LE && scanRecord != null) {
-                if (device.name != null && (device.name.startsWith("Pebble ") || device.name.startsWith("Pebble-LE"))) {
-                    resultCallback?.invoke(BluePebbleDevice(device, scanRecord))
-                }
-            }
-        }
-
-    }
-
-    private fun startLEScan() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            bluetoothLeScanner.startScan(leScanCallback)
-        }else {
-            bluetoothAdapter.startLeScan(legacyLeScanCallback)
-        }
-    }
-
-    private fun stopLEScan() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            bluetoothLeScanner.stopScan(leScanCallback)
-        }else {
-            bluetoothAdapter.stopLeScan(legacyLeScanCallback)
-        }
-    }
-
-    fun scanDevicesLE(resultCallback: (BluePebbleDevice) -> Unit, endCallback: () -> Unit) {
-        this.resultCallback = resultCallback
-        pebbleList.clear()
-        Log.d(logTag, "Scanning for LE pebbles")
-        scanHandler.postDelayed({
-            if (pebbleList.size > 0 || scanRetries >= 3) {
-                scanRetries = 0
-                isScanning = false
-                stopLEScan()
-                endCallback()
-            }else {
-                scanRetries++
-                scanDevicesLE(resultCallback, endCallback)
-            }
-        }, 8000)
-        isScanning = true
-        startLEScan()
-    }
-
     fun targetPebble(addr: Long): Boolean {
         val hex = "%X".format(addr).padStart(12, '0')
         var btaddr = ""
@@ -161,8 +98,7 @@ class BlueCommon @Inject constructor(
     fun targetPebble(device: BluetoothDevice): Boolean {
         return when {
             device.type == BluetoothDevice.DEVICE_TYPE_LE -> { // LE only device
-                scanHandler.removeCallbacksAndMessages(null);
-                stopLEScan()
+                scanHandler.removeCallbacksAndMessages(null)
                 driver = BlueLEDriver(device, context, this::handlePacketReceivedFromDriver)
                 onConChange?.let { driver!!.setOnConnectionChange(it) }
                 driver!!.connectPebble()

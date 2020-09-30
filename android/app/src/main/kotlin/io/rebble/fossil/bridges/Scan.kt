@@ -1,16 +1,19 @@
 package io.rebble.fossil.bridges
 
 import io.flutter.plugin.common.BinaryMessenger
-import io.rebble.fossil.bluetooth.BlueCommon
-import io.rebble.fossil.bluetooth.BluePebbleDevice
+import io.rebble.fossil.bluetooth.scan.BleScanner
 import io.rebble.fossil.pigeons.ListWrapper
 import io.rebble.fossil.pigeons.Pigeons
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class Scan @Inject constructor(
         binaryMessenger: BinaryMessenger,
-        private val blueCommon: BlueCommon
+        private val bleScanner: BleScanner,
+        private val coroutineScope: CoroutineScope
 ) : FlutterBridge, Pigeons.ScanControl {
     private val scanCallbacks = Pigeons.ScanCallbacks(binaryMessenger)
 
@@ -19,20 +22,14 @@ class Scan @Inject constructor(
     }
 
     override fun startScan() {
-        val deviceList: MutableList<BluePebbleDevice> = mutableListOf()
+        coroutineScope.launch {
+            scanCallbacks.onScanStarted { }
 
-        deviceList.clear()
-        scanCallbacks.onScanStarted {}
-
-        blueCommon.scanDevicesLE({ el ->
-            val oldIn = deviceList.indexOfFirst { p -> p.bluetoothDevice.address == el.bluetoothDevice.address }
-            if (oldIn < 0) {
-                deviceList.add(el)
-                scanCallbacks.onScanUpdate(ListWrapper(deviceList.map { it.toPigeon() })) {}
+            bleScanner.getScanFlow().collect { foundDevices ->
+                scanCallbacks.onScanUpdate(ListWrapper(foundDevices.map { it.toPigeon() })) {}
             }
-        })
-        {
-            scanCallbacks.onScanStopped {}
+
+            scanCallbacks.onScanStopped { }
         }
     }
 }
