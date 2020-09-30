@@ -1,0 +1,10 @@
+name: Check PR
+
+on: [pull_request]
+
+jobs:
+  eclint:
+    runs-on: ubuntu-latest
+    name: "Check codestyle"
+    steps:
+      - uses: zbeekman/EditorConfig-Action@v1.1.1
