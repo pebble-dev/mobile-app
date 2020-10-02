@@ -1,5 +1,7 @@
 package io.rebble.fossil
 
+import android.content.Intent
+import androidx.core.content.ContextCompat
 import io.flutter.app.FlutterApplication
 import io.rebble.fossil.di.AppComponent
 import io.rebble.fossil.di.DaggerAppComponent
@@ -12,5 +14,7 @@ class FossilApplication : FlutterApplication() {
         component = DaggerAppComponent.factory().build(this)
 
         super.onCreate()
+
+        ContextCompat.startForegroundService(this, Intent(this, WatchService::class.java))
     }
 }
