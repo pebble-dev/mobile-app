@@ -1,5 +1,6 @@
 package io.rebble.fossil.di
 
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import dagger.Module
 import dagger.Provides
@@ -10,6 +11,11 @@ import kotlinx.coroutines.CoroutineScope
 
 @Module
 class ActivityModule {
+    @Provides
+    fun provideLifecycle(mainActivity: MainActivity): Lifecycle {
+        return mainActivity.lifecycle
+    }
+
     @Provides
     fun provideCoroutineScope(mainActivity: MainActivity): CoroutineScope {
         return mainActivity.lifecycleScope

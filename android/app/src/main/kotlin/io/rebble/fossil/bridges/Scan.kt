@@ -1,6 +1,5 @@
 package io.rebble.fossil.bridges
 
-import io.flutter.plugin.common.BinaryMessenger
 import io.rebble.fossil.bluetooth.scan.BleScanner
 import io.rebble.fossil.bluetooth.scan.ClassicScanner
 import io.rebble.fossil.pigeons.ListWrapper
@@ -12,15 +11,16 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class Scan @Inject constructor(
-        binaryMessenger: BinaryMessenger,
+        bridgeLifecycleController: BridgeLifecycleController,
         private val bleScanner: BleScanner,
         private val classicScanner: ClassicScanner,
         private val coroutineScope: CoroutineScope
 ) : FlutterBridge, Pigeons.ScanControl {
-    private val scanCallbacks = Pigeons.ScanCallbacks(binaryMessenger)
+    private val scanCallbacks =
+            bridgeLifecycleController.createCallbacks(Pigeons::ScanCallbacks)
 
     init {
-        Pigeons.ScanControl.setup(binaryMessenger, this)
+        bridgeLifecycleController.setupControl(Pigeons.ScanControl::setup, this)
     }
 
     override fun startBleScan() {

@@ -1,6 +1,5 @@
 package io.rebble.fossil.bridges
 
-import io.flutter.plugin.common.BinaryMessenger
 import io.rebble.fossil.bluetooth.BlueCommon
 import io.rebble.fossil.bluetooth.ConnectionLooper
 import io.rebble.fossil.bluetooth.ConnectionState
@@ -13,13 +12,13 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class Connection @Inject constructor(
-        binaryMessenger: BinaryMessenger,
+        bridgeLifecycleController: BridgeLifecycleController,
         private val connectionLooper: ConnectionLooper,
         private val blueCommon: BlueCommon,
         private val coroutineScope: CoroutineScope
 ) : FlutterBridge, Pigeons.ConnectionControl {
     init {
-        Pigeons.ConnectionControl.setup(binaryMessenger, this)
+        bridgeLifecycleController.setupControl(Pigeons.ConnectionControl::setup, this)
     }
 
     override fun isConnected(): Pigeons.BooleanWrapper {
