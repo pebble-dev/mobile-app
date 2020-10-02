@@ -28,7 +28,6 @@ class BridgeLifecycleController @Inject constructor(
     }
 
     init {
-        println("Init controller")
         lifecycle.addObserver(object : LifecycleEventObserver {
             override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
                 if (event == Lifecycle.Event.ON_DESTROY) {
