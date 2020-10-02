@@ -6,7 +6,6 @@ import android.util.Log
 import io.rebble.fossil.bluetooth.classic.BlueSerialDriver
 import io.rebble.fossil.bluetooth.scan.BleScanner
 import io.rebble.fossil.bluetooth.scan.ClassicScanner
-import io.rebble.fossil.util.macAddressToString
 import io.rebble.libpebblecommon.BluetoothConnection
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.Flow
@@ -26,10 +25,6 @@ class BlueCommon @Inject constructor(
     var driver: BlueIO? = null
 
     private var externalIncomingPacketHandler: (suspend (ByteArray) -> Unit)? = null
-
-    fun startSingleWatchConnection(macAddress: Long): Flow<SingleConnectionStatus> {
-        return startSingleWatchConnection(macAddress.macAddressToString())
-    }
 
     fun startSingleWatchConnection(macAddress: String): Flow<SingleConnectionStatus> {
         bleScanner.stopScan()

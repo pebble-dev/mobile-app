@@ -23,7 +23,7 @@ class ConnectionLooper @Inject constructor(
 
     private var currentConnection: Job? = null
 
-    fun connectToWatch(macAddress: Long) {
+    fun connectToWatch(macAddress: String) {
         coroutineScope.launch {
             try {
                 currentConnection?.cancelAndJoin()

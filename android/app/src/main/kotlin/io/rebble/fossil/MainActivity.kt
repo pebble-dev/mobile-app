@@ -12,6 +12,7 @@ import android.os.IBinder
 import android.provider.Settings
 import android.text.TextUtils
 import android.widget.Toast
+import androidx.collection.ArrayMap
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import io.flutter.Log
@@ -21,7 +22,6 @@ import io.flutter.plugins.GeneratedPluginRegistrant
 import io.rebble.fossil.bridges.FlutterBridge
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.plus
-import java.lang.NullPointerException
 import java.net.URI
 import kotlin.system.exitProcess
 
@@ -33,6 +33,8 @@ class MainActivity : FlutterActivity() {
     var watchService: WatchService? = null
     var isBound = false
     var bootIntentCallback: ((Boolean) -> Unit)? = null
+
+    val activityResultCallbacks = ArrayMap<Int, (resultCode: Int, data: Intent) -> Unit>()
 
     private val watchServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName,
@@ -194,6 +196,12 @@ class MainActivity : FlutterActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleIntent(intent)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        activityResultCallbacks[requestCode]?.invoke(resultCode, data)
     }
 
     public override fun getFlutterEngine(): FlutterEngine? {
