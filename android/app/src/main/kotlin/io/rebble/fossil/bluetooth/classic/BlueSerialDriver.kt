@@ -2,7 +2,6 @@ package io.rebble.fossil.bluetooth.classic
 
 import android.bluetooth.BluetoothDevice
 import android.content.Context
-import io.flutter.Log
 import io.rebble.fossil.bluetooth.BlueIO
 import io.rebble.fossil.bluetooth.SingleConnectionStatus
 import kotlinx.coroutines.Dispatchers
@@ -10,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -23,7 +23,6 @@ class BlueSerialDriver(
         private val context: Context,
         private val packetCallback: suspend (ByteArray) -> Unit
 ) : BlueIO {
-    private val logTag = "BlueSerial"
     private var outputStream: OutputStream? = null
 
     override fun startSingleWatchConnection(device: BluetoothDevice): Flow<SingleConnectionStatus> = flow {
@@ -52,14 +51,14 @@ class BlueSerialDriver(
                 val length = metBuf.short
                 val endpoint = metBuf.short
                 if (length < 0 || length > buf.capacity()) {
-                    Log.w(logTag, "Invalid length in packet (EP $endpoint): got $length")
+                    Timber.w("Invalid length in packet (EP $endpoint): got $length")
                     continue
                 }
 
                 /* READ PACKET CONTENT */
                 inputStream.readFully(buf, 4, length.toInt())
 
-                Log.d(logTag, "Got packet: EP $endpoint | Length $length")
+                Timber.d("Got packet: EP $endpoint | Length $length")
 
                 buf.rewind()
                 val packet = ByteArray(length.toInt() + 2 * (Short.SIZE_BYTES))

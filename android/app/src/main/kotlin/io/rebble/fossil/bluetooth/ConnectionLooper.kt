@@ -1,10 +1,10 @@
 package io.rebble.fossil.bluetooth
 
-import android.util.Log
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,24 +23,37 @@ class ConnectionLooper @Inject constructor(
 
     private var currentConnection: Job? = null
 
-    fun connectToWatch(macAddress: Long) {
+    fun connectToWatch(macAddress: String) {
         coroutineScope.launch {
             try {
                 currentConnection?.cancelAndJoin()
                 currentConnection = coroutineContext[Job]
 
+                var retryTime = HALF_OF_INITAL_RETRY_TIME
                 while (isActive) {
                     try {
                         blueCommon.startSingleWatchConnection(macAddress).collect {
                             _connectionState.value = it.toConnectionStatus()
+                            if (it is SingleConnectionStatus.Connected) {
+                                retryTime = HALF_OF_INITAL_RETRY_TIME
+                            }
                         }
                     } catch (e: Exception) {
-                        Log.e(TAG, "Watch connection error", e)
+                        Timber.e(e, "Watch connection error")
                     }
 
-                    // TODO exponential backoff
-                    Log.d(TAG, "Watch connection failed, waiting and reconnecting")
-                    delay(5000)
+
+                    val lastWatch = connectionState.value.watchOrNull
+                    _connectionState.value = ConnectionState.Connecting(lastWatch)
+
+                    retryTime *= 2
+                    if (retryTime > MAX_RETRY_TIME) {
+                        Timber.d("Watch failed to connect after numerous attempts. Abort connection.")
+
+                        break
+                    }
+                    Timber.d("Watch connection failed, waiting and reconnecting after $retryTime ms")
+                    delay(retryTime)
                 }
             } finally {
                 _connectionState.value = ConnectionState.Disconnected
@@ -60,4 +73,5 @@ private fun SingleConnectionStatus.toConnectionStatus(): ConnectionState {
     }
 }
 
-private const val TAG = "ConnectionLooper"
+private const val HALF_OF_INITAL_RETRY_TIME = 2_000L // initial retry = 4 seconds
+private const val MAX_RETRY_TIME = 10 * 3600 * 1000L // 10 hours

@@ -76,6 +76,8 @@ flutter {
 def libpebblecommon_version = '0.0.6'
 def coroutinesVersion = "1.3.9"
 def lifecycleVersion = "2.2.0"
+def timberVersion = "4.7.1"
+def androidxCoreVersion = '1.3.2'
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -87,6 +89,8 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9'
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-service:$lifecycleVersion"
+    implementation "com.jakewharton.timber:timber:$timberVersion"
+    implementation "androidx.core:core-ktx:$androidxCoreVersion"
 
     implementation 'com.google.dagger:dagger:2.29.1'
     kapt 'com.google.dagger:dagger-compiler:2.29.1'

@@ -2,13 +2,13 @@ package io.rebble.fossil.bluetooth
 
 import android.bluetooth.BluetoothDevice
 import android.content.Context
-import android.util.Log
 import io.rebble.fossil.bluetooth.classic.BlueSerialDriver
 import io.rebble.fossil.bluetooth.scan.BleScanner
 import io.rebble.fossil.bluetooth.scan.ClassicScanner
 import io.rebble.libpebblecommon.BluetoothConnection
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.Flow
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,23 +19,10 @@ class BlueCommon @Inject constructor(
         private val bleScanner: BleScanner,
         private val classicScanner: ClassicScanner
 ) : BluetoothConnection {
-    private val logTag = "BlueCommon"
-
     val bluetoothAdapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter()
     var driver: BlueIO? = null
 
     private var externalIncomingPacketHandler: (suspend (ByteArray) -> Unit)? = null
-
-    fun startSingleWatchConnection(macAddress: Long): Flow<SingleConnectionStatus> {
-        val hex = "%X".format(macAddress).padStart(12, '0')
-        var btaddr = ""
-        for (i in hex.indices) {
-            btaddr += hex[i]
-            if ((i + 1) % 2 == 0 && i + 1 < hex.length) btaddr += ":"
-        }
-
-        return startSingleWatchConnection(btaddr)
-    }
 
     fun startSingleWatchConnection(macAddress: String): Flow<SingleConnectionStatus> {
         bleScanner.stopScan()
@@ -43,7 +30,7 @@ class BlueCommon @Inject constructor(
 
         val bluetoothDevice = bluetoothAdapter.getRemoteDevice(macAddress)
 
-        Log.d(logTag, "Found Pebble device $bluetoothDevice'")
+        Timber.d("Found Pebble device $bluetoothDevice'")
 
         val driver = getTargetTransport(bluetoothDevice)
         this@BlueCommon.driver = driver

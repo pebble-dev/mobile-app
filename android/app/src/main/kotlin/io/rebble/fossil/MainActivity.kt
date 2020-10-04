@@ -2,26 +2,25 @@ package io.rebble.fossil
 
 import android.Manifest
 import android.app.AlertDialog
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.*
+import android.content.ComponentName
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.IBinder
 import android.provider.Settings
 import android.text.TextUtils
 import android.widget.Toast
+import androidx.collection.ArrayMap
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
-import io.flutter.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugins.GeneratedPluginRegistrant
 import io.rebble.fossil.bridges.FlutterBridge
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.plus
-import java.lang.NullPointerException
 import java.net.URI
 import kotlin.system.exitProcess
 
@@ -30,23 +29,10 @@ class MainActivity : FlutterActivity() {
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var flutterBridges: Set<FlutterBridge>
 
-    var watchService: WatchService? = null
     var isBound = false
     var bootIntentCallback: ((Boolean) -> Unit)? = null
 
-    private val watchServiceConnection = object : ServiceConnection {
-        override fun onServiceConnected(className: ComponentName,
-                                        service: IBinder) {
-            val binder = service as WatchService.ProtBinder
-            watchService = binder.getService()
-            Log.d("Binding", "Done")
-            isBound = true
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-            isBound = false
-        }
-    }
+    val activityResultCallbacks = ArrayMap<Int, (resultCode: Int, data: Intent) -> Unit>()
 
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
@@ -56,11 +42,6 @@ class MainActivity : FlutterActivity() {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "Requires location permission for bluetooth LE", Toast.LENGTH_LONG).show()
                     exitProcess(1)
-                } else {
-                    if (!isBound) {
-                        val intent = Intent(this, WatchService::class.java)
-                        bindService(intent, watchServiceConnection, Context.BIND_AUTO_CREATE)
-                    }
                 }
             }
         }
@@ -104,19 +85,6 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel("device_status", "Device Status", importance)
-            // Register the channel with the system
-            val notificationManager: NotificationManager =
-                    getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
-
     private fun isNotificationServiceEnabled(): Boolean {
         try {
             val pkgName = packageName
@@ -155,8 +123,6 @@ class MainActivity : FlutterActivity() {
 
         handleIntent(intent)
 
-        createNotificationChannel()
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 val builder = AlertDialog.Builder(this)
@@ -183,17 +149,17 @@ class MainActivity : FlutterActivity() {
             alertDialogBuilder.setNegativeButton("Deny") { _, _ -> Toast.makeText(applicationContext, "Running without showing notifications", Toast.LENGTH_LONG).show() }
             alertDialogBuilder.create().show()
         }
-
-        val intent = Intent(this, WatchService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent)
-        }
-        bindService(intent, watchServiceConnection, Context.BIND_AUTO_CREATE)
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleIntent(intent)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        activityResultCallbacks[requestCode]?.invoke(resultCode, data)
     }
 
     public override fun getFlutterEngine(): FlutterEngine? {

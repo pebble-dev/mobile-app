@@ -1,5 +1,8 @@
 package io.rebble.fossil.bridges
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import io.flutter.plugin.common.BasicMessageChannel
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.StandardMessageCodec
@@ -15,7 +18,8 @@ import javax.inject.Inject
 class AppLifecycle @Inject constructor(
         binaryMessenger: BinaryMessenger,
         mainActivity: MainActivity,
-        coroutineScope: CoroutineScope
+        coroutineScope: CoroutineScope,
+        lifecycle: Lifecycle
 ) : FlutterBridge {
     private val bootTrigger = CompletableDeferred<Boolean>()
 
@@ -41,5 +45,13 @@ class AppLifecycle @Inject constructor(
             wrapped["result"] = output.toMapExt()
             wrapped
         }
+
+        lifecycle.addObserver(object : LifecycleEventObserver {
+            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                if (event == Lifecycle.Event.ON_DESTROY) {
+                    channel.setMessageHandler(null)
+                }
+            }
+        })
     }
 }

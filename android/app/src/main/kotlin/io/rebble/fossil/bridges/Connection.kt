@@ -1,25 +1,66 @@
 package io.rebble.fossil.bridges
 
-import io.flutter.plugin.common.BinaryMessenger
+import android.annotation.TargetApi
+import android.app.Activity
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.le.ScanFilter
+import android.bluetooth.le.ScanResult
+import android.companion.AssociationRequest
+import android.companion.BluetoothDeviceFilter
+import android.companion.BluetoothLeDeviceFilter
+import android.companion.CompanionDeviceManager
+import android.content.Context
+import android.content.Intent
+import android.content.IntentSender
+import android.os.Build
+import io.rebble.fossil.MainActivity
 import io.rebble.fossil.bluetooth.BlueCommon
 import io.rebble.fossil.bluetooth.ConnectionLooper
 import io.rebble.fossil.bluetooth.ConnectionState
+import io.rebble.fossil.bluetooth.watchOrNull
 import io.rebble.fossil.pigeons.BooleanWrapper
 import io.rebble.fossil.pigeons.Pigeons
+import io.rebble.fossil.util.macAddressToLong
+import io.rebble.fossil.util.macAddressToString
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class Connection @Inject constructor(
-        binaryMessenger: BinaryMessenger,
+        bridgeLifecycleController: BridgeLifecycleController,
         private val connectionLooper: ConnectionLooper,
         private val blueCommon: BlueCommon,
-        private val coroutineScope: CoroutineScope
+        private val coroutineScope: CoroutineScope,
+        private val activity: MainActivity
 ) : FlutterBridge, Pigeons.ConnectionControl {
+    private val connectionCallbacks = bridgeLifecycleController
+            .createCallbacks(Pigeons::ConnectionCallbacks)
+
     init {
-        Pigeons.ConnectionControl.setup(binaryMessenger, this)
+        bridgeLifecycleController.setupControl(Pigeons.ConnectionControl::setup, this)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            activity.activityResultCallbacks[REQUEST_CODE_COMPANION_DEVICE_MANAGER] =
+                    this::processCompanionDeviceResult
+        }
+
+        coroutineScope.launch(Dispatchers.Main) {
+            connectionLooper.connectionState.collect {
+                connectionCallbacks.onWatchConnectionStateChanged(
+                        Pigeons.WatchConnectionState().apply {
+                            isConnected = it is ConnectionState.Connected
+                            isConnecting = it is ConnectionState.Connecting
+                            currentWatchAddress = it.watchOrNull?.address?.macAddressToLong()
+                        }
+                ) {}
+            }
+        }
     }
 
     override fun isConnected(): Pigeons.BooleanWrapper {
@@ -27,9 +68,96 @@ class Connection @Inject constructor(
     }
 
     override fun connectToWatch(arg: Pigeons.NumberWrapper) {
-        val address = arg.value
+        try {
+            val address = arg.value.macAddressToString()
 
-        connectionLooper.connectToWatch(address)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                associateWithCompanionDeviceManager(address)
+            } else {
+                openConnectionToWatch(address)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun disconnect() {
+        connectionLooper.closeConnection()
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private fun associateWithCompanionDeviceManager(macAddress: String) {
+        val companionDeviceManager =
+                activity.getSystemService(Context.COMPANION_DEVICE_SERVICE) as CompanionDeviceManager
+
+        val existingBoundDevices = companionDeviceManager.associations
+        if (existingBoundDevices.contains(macAddress)) {
+            openConnectionToWatch(macAddress)
+            return
+        }
+
+        val deviceType = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(macAddress).type
+        val filter = if (deviceType == BluetoothDevice.DEVICE_TYPE_LE) {
+            BluetoothLeDeviceFilter.Builder()
+                    .setScanFilter(ScanFilter.Builder().setDeviceAddress(macAddress).build())
+                    .build()
+        } else {
+            BluetoothDeviceFilter.Builder()
+                    .setAddress(macAddress)
+                    .build()
+        }
+
+
+        val associationRequest = AssociationRequest.Builder()
+                .addDeviceFilter(filter)
+                .setSingleDevice(true)
+                .build()
+
+        companionDeviceManager.associate(associationRequest, object : CompanionDeviceManager.Callback() {
+            override fun onDeviceFound(chooserLauncher: IntentSender) {
+                activity.startIntentSenderForResult(
+                        chooserLauncher,
+                        REQUEST_CODE_COMPANION_DEVICE_MANAGER,
+                        null,
+                        0,
+                        0,
+                        0
+                )
+            }
+
+            override fun onFailure(error: CharSequence?) {
+                Timber.e("Device association failure")
+            }
+        }, null)
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private fun processCompanionDeviceResult(resultCode: Int, data: Intent) {
+        if (resultCode != Activity.RESULT_OK) {
+            return
+        }
+
+        val deviceToPair: Any =
+                data.getParcelableExtra(CompanionDeviceManager.EXTRA_DEVICE)!!
+
+        val address = when (deviceToPair) {
+            is BluetoothDevice -> {
+                deviceToPair.address
+            }
+            is ScanResult -> {
+                deviceToPair.device.address
+            }
+            else -> {
+                throw IllegalStateException("Unknown device type: $deviceToPair")
+            }
+        }
+
+        openConnectionToWatch(address)
+    }
+
+    private fun openConnectionToWatch(macAddress: String) {
+        println("Open watch $macAddress")
+        connectionLooper.connectToWatch(macAddress)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -40,3 +168,5 @@ class Connection @Inject constructor(
         }
     }
 }
+
+private const val REQUEST_CODE_COMPANION_DEVICE_MANAGER = 1557
