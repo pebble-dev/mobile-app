@@ -2,8 +2,6 @@ package io.rebble.fossil
 
 import android.Manifest
 import android.app.AlertDialog
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.DialogInterface
@@ -87,19 +85,6 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel("device_status", "Device Status", importance)
-            // Register the channel with the system
-            val notificationManager: NotificationManager =
-                    getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
-
     private fun isNotificationServiceEnabled(): Boolean {
         try {
             val pkgName = packageName
@@ -137,8 +122,6 @@ class MainActivity : FlutterActivity() {
         flutterBridges = activityComponent.createFlutterBridges()
 
         handleIntent(intent)
-
-        createNotificationChannel()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

@@ -1,7 +1,11 @@
 package io.rebble.fossil
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.bluetooth.BluetoothAdapter
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
@@ -44,6 +48,8 @@ class WatchService : LifecycleService() {
 
         super.onCreate()
 
+        createNotificationChannel()
+
         if (!bluetoothAdapter.isEnabled) {
             Log.w(logTag, "Bluetooth - Not enabled")
         }
@@ -67,26 +73,22 @@ class WatchService : LifecycleService() {
                 @DrawableRes val icon: Int
                 val titleText: String?
                 val deviceName: String?
-                val notificationPriority: Int
 
                 when (it) {
                     is ConnectionState.Disconnected -> {
                         icon = R.drawable.ic_notification_disconnected
                         titleText = "Disconnected"
                         deviceName = null
-                        notificationPriority = NotificationCompat.PRIORITY_LOW
                     }
                     is ConnectionState.Connecting -> {
                         icon = R.drawable.ic_notification_disconnected
                         titleText = "Connecting"
                         deviceName = null
-                        notificationPriority = NotificationCompat.PRIORITY_DEFAULT
                     }
                     is ConnectionState.Connected -> {
                         icon = R.drawable.ic_notification_connected
                         titleText = "Connected to device"
                         deviceName = it.watch.name
-                        notificationPriority = NotificationCompat.PRIORITY_DEFAULT
                     }
                 }
 
@@ -94,10 +96,22 @@ class WatchService : LifecycleService() {
                         .setContentTitle(titleText)
                         .setContentText(deviceName)
                         .setSmallIcon(icon)
-                        .setPriority(notificationPriority)
 
                 startForeground(1, mainNotifBuilder.build())
             }
+        }
+    }
+
+    private fun createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val importance = NotificationManager.IMPORTANCE_MIN
+            val channel = NotificationChannel("device_status", "Device Status", importance)
+            // Register the channel with the system
+            val notificationManager: NotificationManager =
+                    getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
         }
     }
 }
