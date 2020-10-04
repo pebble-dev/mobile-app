@@ -29,20 +29,31 @@ class ConnectionLooper @Inject constructor(
                 currentConnection?.cancelAndJoin()
                 currentConnection = coroutineContext[Job]
 
+                var retryTime = HALF_OF_INITAL_RETRY_TIME
                 while (isActive) {
                     try {
                         blueCommon.startSingleWatchConnection(macAddress).collect {
                             _connectionState.value = it.toConnectionStatus()
+                            if (it is SingleConnectionStatus.Connected) {
+                                retryTime = HALF_OF_INITAL_RETRY_TIME
+                            }
                         }
                     } catch (e: Exception) {
                         Log.e(TAG, "Watch connection error", e)
                     }
 
-                    // TODO exponential backoff
-                    Log.d(TAG, "Watch connection failed, waiting and reconnecting")
+
                     val lastWatch = connectionState.value.watchOrNull
                     _connectionState.value = ConnectionState.Connecting(lastWatch)
-                    delay(5000)
+
+                    retryTime *= 2
+                    if (retryTime > MAX_RETRY_TIME) {
+                        Log.d(TAG, "Watch failed to connect after numerous attempts. Abort connection.")
+
+                        break
+                    }
+                    Log.d(TAG, "Watch connection failed, waiting and reconnecting after $retryTime ms")
+                    delay(retryTime)
                 }
             } finally {
                 _connectionState.value = ConnectionState.Disconnected
@@ -62,4 +73,6 @@ private fun SingleConnectionStatus.toConnectionStatus(): ConnectionState {
     }
 }
 
+private const val HALF_OF_INITAL_RETRY_TIME = 2_000L // initial retry = 4 seconds
+private const val MAX_RETRY_TIME = 10 * 3600 * 1000L // 10 hours
 private const val TAG = "ConnectionLooper"
