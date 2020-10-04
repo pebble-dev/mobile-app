@@ -3,9 +3,7 @@ package io.rebble.fossil.log
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.io.*
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -75,6 +73,15 @@ class FileLoggingTree(context: Context, appTag: String) : AppTaggedDebugTree(app
             writer = BufferedWriter(FileWriter(file, true))
         } catch (ignored: IOException) {
             writer = null
+        }
+    }
+
+    fun waitForLogsToWrite() {
+        runBlocking {
+            withContext(loggingDispatcher) {
+                writer?.close()
+                writer = null
+            }
         }
     }
 
