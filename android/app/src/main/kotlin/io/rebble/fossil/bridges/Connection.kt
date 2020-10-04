@@ -14,7 +14,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Build
-import io.flutter.Log
 import io.rebble.fossil.MainActivity
 import io.rebble.fossil.bluetooth.BlueCommon
 import io.rebble.fossil.bluetooth.ConnectionLooper
@@ -29,6 +28,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -122,7 +122,7 @@ class Connection @Inject constructor(
             }
 
             override fun onFailure(error: CharSequence?) {
-                Log.e("Connection", "Device association failure")
+                Timber.e("Device association failure")
             }
         }, null)
     }

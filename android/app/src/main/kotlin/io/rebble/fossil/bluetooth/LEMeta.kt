@@ -1,7 +1,6 @@
 package io.rebble.fossil.bluetooth
 
-import android.util.Log
-import io.rebble.fossil.util.toHexString
+import timber.log.Timber
 import java.nio.BufferUnderflowException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -40,7 +39,7 @@ data class LEMeta(private val scanRecord: ByteArray) {
             }
         }
         if (!seekComplete) {
-            Log.e("LEMeta", "No manufacturer specific data in GAP")
+            Timber.e("No manufacturer specific data in GAP")
             vendor = -1
             payloadType = 0
             serialNumber = "??"
@@ -62,7 +61,7 @@ data class LEMeta(private val scanRecord: ByteArray) {
                 recordRaw.get(serialChars)
                 serialNumber = String(serialChars)
             } else {
-                Log.e("LEMeta", "Mandatory manufacturer specific data malformed")
+                Timber.e("Mandatory manufacturer specific data malformed")
                 vendor = -1
                 payloadType = 0
                 serialNumber = "??"
@@ -74,7 +73,7 @@ data class LEMeta(private val scanRecord: ByteArray) {
             try {
                 _hardwarePlatform = recordRaw.get().toUByte()
             } catch (e: BufferUnderflowException) {
-                Log.w("LEMeta", "Extra manufacturer specific data not present")
+                Timber.w("Extra manufacturer specific data not present")
                 hasExtras = false
             }
 

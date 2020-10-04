@@ -10,7 +10,6 @@ import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
-import io.flutter.Log
 import io.rebble.fossil.bluetooth.ConnectionLooper
 import io.rebble.fossil.bluetooth.ConnectionState
 import io.rebble.libpebblecommon.ProtocolHandler
@@ -20,12 +19,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import timber.log.Timber
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WatchService : LifecycleService() {
     private lateinit var coroutineScope: CoroutineScope
 
-    private val logTag: String = "FossilWatchService"
     private val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
     private lateinit var protocolHandler: ProtocolHandler
@@ -51,7 +50,7 @@ class WatchService : LifecycleService() {
         createNotificationChannel()
 
         if (!bluetoothAdapter.isEnabled) {
-            Log.w(logTag, "Bluetooth - Not enabled")
+            Timber.w("Bluetooth - Not enabled")
         }
 
         startNotificationLoop()

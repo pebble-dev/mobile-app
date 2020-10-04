@@ -2,19 +2,18 @@ package io.rebble.fossil.notifications
 
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
-import io.flutter.Log
 import io.rebble.fossil.FossilApplication
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class NotificationListener : NotificationListenerService() {
     private lateinit var coroutineScope: CoroutineScope
 
     private var isListening = false
-    private val logTag: String = "FossilNotifService"
 
     private var notifStates: MutableMap<NotificationKey, ParsedNotification> = mutableMapOf()
 
@@ -72,7 +71,7 @@ class NotificationListener : NotificationListenerService() {
 
     override fun onNotificationRemoved(sbn: StatusBarNotification) {
         if (isListening) {
-            Log.d(logTag, "Notification removed: ${sbn.packageName}")
+            Timber.d("Notification removed: ${sbn.packageName}")
 
             notifStates.remove(NotificationKey(sbn))
             //TODO: Dismissing on watch

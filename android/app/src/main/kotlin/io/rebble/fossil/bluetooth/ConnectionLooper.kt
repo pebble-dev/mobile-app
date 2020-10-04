@@ -1,10 +1,10 @@
 package io.rebble.fossil.bluetooth
 
-import android.util.Log
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -39,7 +39,7 @@ class ConnectionLooper @Inject constructor(
                             }
                         }
                     } catch (e: Exception) {
-                        Log.e(TAG, "Watch connection error", e)
+                        Timber.e(e, "Watch connection error")
                     }
 
 
@@ -48,11 +48,11 @@ class ConnectionLooper @Inject constructor(
 
                     retryTime *= 2
                     if (retryTime > MAX_RETRY_TIME) {
-                        Log.d(TAG, "Watch failed to connect after numerous attempts. Abort connection.")
+                        Timber.d("Watch failed to connect after numerous attempts. Abort connection.")
 
                         break
                     }
-                    Log.d(TAG, "Watch connection failed, waiting and reconnecting after $retryTime ms")
+                    Timber.d("Watch connection failed, waiting and reconnecting after $retryTime ms")
                     delay(retryTime)
                 }
             } finally {
@@ -75,4 +75,3 @@ private fun SingleConnectionStatus.toConnectionStatus(): ConnectionState {
 
 private const val HALF_OF_INITAL_RETRY_TIME = 2_000L // initial retry = 4 seconds
 private const val MAX_RETRY_TIME = 10 * 3600 * 1000L // 10 hours
-private const val TAG = "ConnectionLooper"

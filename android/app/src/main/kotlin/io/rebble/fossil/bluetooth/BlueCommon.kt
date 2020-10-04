@@ -2,13 +2,13 @@ package io.rebble.fossil.bluetooth
 
 import android.bluetooth.BluetoothDevice
 import android.content.Context
-import android.util.Log
 import io.rebble.fossil.bluetooth.classic.BlueSerialDriver
 import io.rebble.fossil.bluetooth.scan.BleScanner
 import io.rebble.fossil.bluetooth.scan.ClassicScanner
 import io.rebble.libpebblecommon.BluetoothConnection
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.Flow
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,8 +19,6 @@ class BlueCommon @Inject constructor(
         private val bleScanner: BleScanner,
         private val classicScanner: ClassicScanner
 ) : BluetoothConnection {
-    private val logTag = "BlueCommon"
-
     val bluetoothAdapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter()
     var driver: BlueIO? = null
 
@@ -32,7 +30,7 @@ class BlueCommon @Inject constructor(
 
         val bluetoothDevice = bluetoothAdapter.getRemoteDevice(macAddress)
 
-        Log.d(logTag, "Found Pebble device $bluetoothDevice'")
+        Timber.d("Found Pebble device $bluetoothDevice'")
 
         val driver = getTargetTransport(bluetoothDevice)
         this@BlueCommon.driver = driver
