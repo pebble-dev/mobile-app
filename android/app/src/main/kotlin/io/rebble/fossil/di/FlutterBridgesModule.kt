@@ -22,4 +22,8 @@ abstract class FlutterBridgesModule {
     @Binds
     @IntoSet
     abstract fun bindAppLifecycleBridge(appLifecycle: AppLifecycle): FlutterBridge
+
+    @Binds
+    @IntoSet
+    abstract fun bindDebugBridge(debug: Debug): FlutterBridge
 }

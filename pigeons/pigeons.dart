@@ -59,3 +59,8 @@ abstract class NotificationsControl {
 abstract class AppLifecycleControl {
   BooleanWrapper waitForBoot();
 }
+
+@HostApi()
+abstract class DebugControl {
+  void collectLogs();
+}
