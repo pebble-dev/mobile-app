@@ -11,22 +11,12 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  final ConnectionControl connectionControl = ConnectionControl();
-
   void _openHome() {
     SharedPreferences.getInstance().then((prefs) => {
           if (!prefs.containsKey("firstRun"))
             Navigator.pushReplacementNamed(context, '/firstrun')
           else
             {
-              PairedStorage.getDefault().then((value) {
-                if (value != null) {
-                  NumberWrapper addressWrapper = NumberWrapper();
-                  addressWrapper.value = value.address;
-
-                  connectionControl.connectToWatch(addressWrapper);
-                }
-              }),
               Navigator.pushReplacementNamed(context, '/home')
             }
         });

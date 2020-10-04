@@ -12,10 +12,12 @@ import io.rebble.fossil.bluetooth.ConnectionState
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class WatchService : LifecycleService() {
     private lateinit var coroutineScope: CoroutineScope
 
@@ -32,7 +34,6 @@ class WatchService : LifecycleService() {
             .setSmallIcon(R.drawable.ic_notification_disconnected)
 
 
-    @ExperimentalStdlibApi
     override fun onCreate() {
         val injectionComponent = (applicationContext as FossilApplication).component
 
@@ -48,6 +49,11 @@ class WatchService : LifecycleService() {
         }
 
         startNotificationLoop()
+
+        if (connectionLooper.connectionState.value is ConnectionState.Disconnected) {
+            injectionComponent.createPairedStorage()
+                    .getMacAddressOfDefaultPebble()?.let { connectionLooper.connectToWatch(it) }
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
