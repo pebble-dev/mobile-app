@@ -370,6 +370,8 @@ public class Pigeons {
 
         void connectToWatch(NumberWrapper arg);
 
+        void disconnect();
+
         void sendRawPacket(ListWrapper arg);
 
         /**
@@ -404,6 +406,24 @@ public class Pigeons {
                             @SuppressWarnings("ConstantConditions")
                             NumberWrapper input = NumberWrapper.fromMap((HashMap) message);
                             api.connectToWatch(input);
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ConnectionControl.disconnect", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            api.disconnect();
                             wrapped.put("result", null);
                         } catch (Exception exception) {
                             wrapped.put("error", wrapError(exception));

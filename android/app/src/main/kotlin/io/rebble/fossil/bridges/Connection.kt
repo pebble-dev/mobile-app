@@ -81,6 +81,10 @@ class Connection @Inject constructor(
         }
     }
 
+    override fun disconnect() {
+        connectionLooper.closeConnection()
+    }
+
     @TargetApi(Build.VERSION_CODES.O)
     private fun associateWithCompanionDeviceManager(macAddress: String) {
         val companionDeviceManager =

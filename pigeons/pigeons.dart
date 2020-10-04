@@ -47,6 +47,8 @@ abstract class ConnectionControl {
 
   void connectToWatch(NumberWrapper macAddress);
 
+  void disconnect();
+
   void sendRawPacket(ListWrapper listOfBytes);
 }
 
