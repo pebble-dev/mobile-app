@@ -40,6 +40,8 @@ class ConnectionLooper @Inject constructor(
 
                     // TODO exponential backoff
                     Log.d(TAG, "Watch connection failed, waiting and reconnecting")
+                    val lastWatch = connectionState.value.watchOrNull
+                    _connectionState.value = ConnectionState.Connecting(lastWatch)
                     delay(5000)
                 }
             } finally {
