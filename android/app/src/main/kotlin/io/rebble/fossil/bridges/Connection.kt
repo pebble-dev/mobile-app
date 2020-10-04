@@ -19,11 +19,15 @@ import io.rebble.fossil.MainActivity
 import io.rebble.fossil.bluetooth.BlueCommon
 import io.rebble.fossil.bluetooth.ConnectionLooper
 import io.rebble.fossil.bluetooth.ConnectionState
+import io.rebble.fossil.bluetooth.watchOrNull
 import io.rebble.fossil.pigeons.BooleanWrapper
 import io.rebble.fossil.pigeons.Pigeons
+import io.rebble.fossil.util.macAddressToLong
 import io.rebble.fossil.util.macAddressToString
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,6 +39,9 @@ class Connection @Inject constructor(
         private val coroutineScope: CoroutineScope,
         private val activity: MainActivity
 ) : FlutterBridge, Pigeons.ConnectionControl {
+    private val connectionCallbacks = bridgeLifecycleController
+            .createCallbacks(Pigeons::ConnectionCallbacks)
+
     init {
         bridgeLifecycleController.setupControl(Pigeons.ConnectionControl::setup, this)
 
@@ -43,6 +50,17 @@ class Connection @Inject constructor(
                     this::processCompanionDeviceResult
         }
 
+        coroutineScope.launch(Dispatchers.Main) {
+            connectionLooper.connectionState.collect {
+                connectionCallbacks.onWatchConnectionStateChanged(
+                        Pigeons.WatchConnectionState().apply {
+                            isConnected = it is ConnectionState.Connected
+                            isConnecting = it is ConnectionState.Connecting
+                            currentWatchAddress = it.watchOrNull?.address?.macAddressToLong()
+                        }
+                ) {}
+            }
+        }
     }
 
     override fun isConnected(): Pigeons.BooleanWrapper {

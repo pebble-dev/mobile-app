@@ -14,6 +14,12 @@ class ListWrapper {
   List value;
 }
 
+class WatchConnectionState {
+  bool isConnected;
+  bool isConnecting;
+  int currentWatchAddress;
+}
+
 @FlutterApi()
 abstract class ScanCallbacks {
   void onScanUpdate(ListWrapper pebbles);
@@ -21,6 +27,11 @@ abstract class ScanCallbacks {
   void onScanStarted();
 
   void onScanStopped();
+}
+
+@FlutterApi()
+abstract class ConnectionCallbacks {
+  void onWatchConnectionStateChanged(WatchConnectionState newState);
 }
 
 @HostApi()

@@ -75,6 +75,60 @@ public class Pigeons {
     /**
      * Generated class from Pigeon that represents data sent in messages.
      */
+    public static class WatchConnectionState {
+        private Boolean isConnected;
+
+        public Boolean getIsConnected() {
+            return isConnected;
+        }
+
+        public void setIsConnected(Boolean setterArg) {
+            this.isConnected = setterArg;
+        }
+
+        private Boolean isConnecting;
+
+        public Boolean getIsConnecting() {
+            return isConnecting;
+        }
+
+        public void setIsConnecting(Boolean setterArg) {
+            this.isConnecting = setterArg;
+        }
+
+        private Long currentWatchAddress;
+
+        public Long getCurrentWatchAddress() {
+            return currentWatchAddress;
+        }
+
+        public void setCurrentWatchAddress(Long setterArg) {
+            this.currentWatchAddress = setterArg;
+        }
+
+        HashMap toMap() {
+            HashMap<String, Object> toMapResult = new HashMap<>();
+            toMapResult.put("isConnected", isConnected);
+            toMapResult.put("isConnecting", isConnecting);
+            toMapResult.put("currentWatchAddress", currentWatchAddress);
+            return toMapResult;
+        }
+
+        static WatchConnectionState fromMap(HashMap map) {
+            WatchConnectionState fromMapResult = new WatchConnectionState();
+            Object isConnected = map.get("isConnected");
+            fromMapResult.isConnected = (Boolean) isConnected;
+            Object isConnecting = map.get("isConnecting");
+            fromMapResult.isConnecting = (Boolean) isConnecting;
+            Object currentWatchAddress = map.get("currentWatchAddress");
+            fromMapResult.currentWatchAddress = (currentWatchAddress == null) ? null : ((currentWatchAddress instanceof Integer) ? (Integer) currentWatchAddress : (Long) currentWatchAddress);
+            return fromMapResult;
+        }
+    }
+
+    /**
+     * Generated class from Pigeon that represents data sent in messages.
+     */
     public static class NumberWrapper {
         private Long value;
 
@@ -250,6 +304,30 @@ public class Pigeons {
                     channel.setMessageHandler(null);
                 }
             }
+        }
+    }
+
+    /**
+     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
+     */
+    public static class ConnectionCallbacks {
+        private final BinaryMessenger binaryMessenger;
+
+        public ConnectionCallbacks(BinaryMessenger argBinaryMessenger) {
+            this.binaryMessenger = argBinaryMessenger;
+        }
+
+        public interface Reply<T> {
+            void reply(T reply);
+        }
+
+        public void onWatchConnectionStateChanged(WatchConnectionState argInput, Reply<Void> callback) {
+            BasicMessageChannel<Object> channel =
+                    new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ConnectionCallbacks.onWatchConnectionStateChanged", new StandardMessageCodec());
+            HashMap inputMap = argInput.toMap();
+            channel.send(inputMap, channelReply -> {
+                callback.reply(null);
+            });
         }
     }
 
