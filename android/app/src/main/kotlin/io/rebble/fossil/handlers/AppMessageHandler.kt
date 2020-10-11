@@ -9,6 +9,8 @@ import io.rebble.fossil.middleware.getPebbleDictionary
 import io.rebble.fossil.middleware.toPacket
 import io.rebble.fossil.util.coroutines.asFlow
 import io.rebble.libpebblecommon.packets.AppMessage
+import io.rebble.libpebblecommon.packets.AppRunStateMessage
+import io.rebble.libpebblecommon.services.app.AppRunStateService
 import io.rebble.libpebblecommon.services.appmessage.AppMessageService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
@@ -20,6 +22,7 @@ import javax.inject.Inject
 class AppMessageHandler @Inject constructor(
         private val context: Context,
         private val appMessageService: AppMessageService,
+        private val appRunStateService: AppRunStateService,
         private val coroutineScope: CoroutineScope
 ) {
     init {
@@ -28,6 +31,9 @@ class AppMessageHandler @Inject constructor(
         listenForOutgoingDataMessages()
         listenForOutgoingAckMessages()
         listenForOutgoingNackMessages()
+
+        listenForOutgoingAppStartMessages()
+        listenForOutgoingAppStopMessages()
     }
 
     private fun sendPushIntent(message: AppMessage.AppMessagePush) {
@@ -88,7 +94,6 @@ class AppMessageHandler @Inject constructor(
 
                 appMessageService.send(packet)
             }
-
         }
     }
 
@@ -109,7 +114,6 @@ class AppMessageHandler @Inject constructor(
     }
 
     private fun listenForOutgoingNackMessages() {
-
         coroutineScope.launch {
             IntentFilter(Constants.INTENT_APP_NACK).asFlow(context).collect { intent ->
                 val transactionId: Int = intent.getIntExtra(Constants.TRANSACTION_ID, 0)
@@ -119,6 +123,26 @@ class AppMessageHandler @Inject constructor(
                 )
 
                 appMessageService.send(packet)
+            }
+        }
+    }
+
+    private fun listenForOutgoingAppStartMessages() {
+        coroutineScope.launch {
+            IntentFilter(Constants.INTENT_APP_START).asFlow(context).collect { intent ->
+                val uuid = intent.getSerializableExtra(Constants.APP_UUID) as UUID
+                val packet = AppRunStateMessage.AppRunStateStart(uuid)
+                appRunStateService.send(packet)
+            }
+        }
+    }
+
+    private fun listenForOutgoingAppStopMessages() {
+        coroutineScope.launch {
+            IntentFilter(Constants.INTENT_APP_STOP).asFlow(context).collect { intent ->
+                val uuid = intent.getSerializableExtra(Constants.APP_UUID) as UUID
+                val packet = AppRunStateMessage.AppRunStateStop(uuid)
+                appRunStateService.send(packet)
             }
         }
     }
