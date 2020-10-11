@@ -23,7 +23,7 @@ import timber.log.Timber
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WatchService : LifecycleService() {
-    private lateinit var coroutineScope: CoroutineScope
+    lateinit var coroutineScope: CoroutineScope
 
     private val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
@@ -44,6 +44,11 @@ class WatchService : LifecycleService() {
         notificationService = injectionComponent.createNotificationService()
         protocolHandler = injectionComponent.createProtocolHandler()
         connectionLooper = injectionComponent.createConnectionLooper()
+
+        val serviceComponent = injectionComponent.createServiceSubcomponentFactory()
+                .create(this)
+
+        serviceComponent.createAppMessageHandler()
 
         super.onCreate()
 

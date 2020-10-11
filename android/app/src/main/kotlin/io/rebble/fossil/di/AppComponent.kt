@@ -25,6 +25,7 @@ interface AppComponent {
     fun createPairedStorage(): PairedStorage
 
     fun createActivitySubcomponentFactory(): ActivitySubcomponent.Factory
+    fun createServiceSubcomponentFactory(): ServiceSubcomponent.Factory
 
     @Component.Factory
     interface Factory {
