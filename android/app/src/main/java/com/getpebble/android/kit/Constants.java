@@ -381,5 +381,5 @@ public final class Constants {
 
     /* package */ static final Uri URI_CONTENT_PRIMARY = Uri.parse("content://com.getpebble.android.provider/state");
 
-    /* package */ static final Uri URI_CONTENT_BASALT = Uri.parse("content://com.getpebble.android.provider.basalt/state");
+    public static final Uri URI_CONTENT_BASALT = Uri.parse("content://com.getpebble.android.provider.basalt/state");
 }
