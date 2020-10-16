@@ -4,6 +4,8 @@ import android.app.Application
 import dagger.BindsInstance
 import dagger.Component
 import io.rebble.fossil.bluetooth.BlueCommon
+import io.rebble.fossil.bluetooth.ConnectionLooper
+import io.rebble.fossil.datasources.PairedStorage
 import io.rebble.fossil.errors.GlobalExceptionHandler
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.notification.NotificationService
@@ -19,6 +21,8 @@ interface AppComponent {
     fun createBlueCommon(): BlueCommon
     fun createProtocolHandler(): ProtocolHandler
     fun createExceptionHandler(): GlobalExceptionHandler
+    fun createConnectionLooper(): ConnectionLooper
+    fun createPairedStorage(): PairedStorage
 
     fun createActivitySubcomponentFactory(): ActivitySubcomponent.Factory
 

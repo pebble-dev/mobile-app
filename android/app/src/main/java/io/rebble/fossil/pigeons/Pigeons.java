@@ -75,6 +75,60 @@ public class Pigeons {
     /**
      * Generated class from Pigeon that represents data sent in messages.
      */
+    public static class WatchConnectionState {
+        private Boolean isConnected;
+
+        public Boolean getIsConnected() {
+            return isConnected;
+        }
+
+        public void setIsConnected(Boolean setterArg) {
+            this.isConnected = setterArg;
+        }
+
+        private Boolean isConnecting;
+
+        public Boolean getIsConnecting() {
+            return isConnecting;
+        }
+
+        public void setIsConnecting(Boolean setterArg) {
+            this.isConnecting = setterArg;
+        }
+
+        private Long currentWatchAddress;
+
+        public Long getCurrentWatchAddress() {
+            return currentWatchAddress;
+        }
+
+        public void setCurrentWatchAddress(Long setterArg) {
+            this.currentWatchAddress = setterArg;
+        }
+
+        HashMap toMap() {
+            HashMap<String, Object> toMapResult = new HashMap<>();
+            toMapResult.put("isConnected", isConnected);
+            toMapResult.put("isConnecting", isConnecting);
+            toMapResult.put("currentWatchAddress", currentWatchAddress);
+            return toMapResult;
+        }
+
+        static WatchConnectionState fromMap(HashMap map) {
+            WatchConnectionState fromMapResult = new WatchConnectionState();
+            Object isConnected = map.get("isConnected");
+            fromMapResult.isConnected = (Boolean) isConnected;
+            Object isConnecting = map.get("isConnecting");
+            fromMapResult.isConnecting = (Boolean) isConnecting;
+            Object currentWatchAddress = map.get("currentWatchAddress");
+            fromMapResult.currentWatchAddress = (currentWatchAddress == null) ? null : ((currentWatchAddress instanceof Integer) ? (Integer) currentWatchAddress : (Long) currentWatchAddress);
+            return fromMapResult;
+        }
+    }
+
+    /**
+     * Generated class from Pigeon that represents data sent in messages.
+     */
     public static class NumberWrapper {
         private Long value;
 
@@ -135,7 +189,9 @@ public class Pigeons {
      * Generated interface from Pigeon that represents a handler of messages from Flutter.
      */
     public interface ScanControl {
-        void startScan();
+        void startBleScan();
+
+        void startClassicScan();
 
         /**
          * Sets up an instance of `ScanControl` to handle messages through the `binaryMessenger`
@@ -143,12 +199,30 @@ public class Pigeons {
         static void setup(BinaryMessenger binaryMessenger, ScanControl api) {
             {
                 BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ScanControl.startScan", new StandardMessageCodec());
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ScanControl.startBleScan", new StandardMessageCodec());
                 if (api != null) {
                     channel.setMessageHandler((message, reply) -> {
                         HashMap<String, HashMap> wrapped = new HashMap<>();
                         try {
-                            api.startScan();
+                            api.startBleScan();
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ScanControl.startClassicScan", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            api.startClassicScan();
                             wrapped.put("result", null);
                         } catch (Exception exception) {
                             wrapped.put("error", wrapError(exception));
@@ -234,12 +308,69 @@ public class Pigeons {
     }
 
     /**
+     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
+     */
+    public static class ConnectionCallbacks {
+        private final BinaryMessenger binaryMessenger;
+
+        public ConnectionCallbacks(BinaryMessenger argBinaryMessenger) {
+            this.binaryMessenger = argBinaryMessenger;
+        }
+
+        public interface Reply<T> {
+            void reply(T reply);
+        }
+
+        public void onWatchConnectionStateChanged(WatchConnectionState argInput, Reply<Void> callback) {
+            BasicMessageChannel<Object> channel =
+                    new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ConnectionCallbacks.onWatchConnectionStateChanged", new StandardMessageCodec());
+            HashMap inputMap = argInput.toMap();
+            channel.send(inputMap, channelReply -> {
+                callback.reply(null);
+            });
+        }
+    }
+
+    /**
+     * Generated interface from Pigeon that represents a handler of messages from Flutter.
+     */
+    public interface DebugControl {
+        void collectLogs();
+
+        /**
+         * Sets up an instance of `DebugControl` to handle messages through the `binaryMessenger`
+         */
+        static void setup(BinaryMessenger binaryMessenger, DebugControl api) {
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.DebugControl.collectLogs", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            api.collectLogs();
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+        }
+    }
+
+    /**
      * Generated interface from Pigeon that represents a handler of messages from Flutter.
      */
     public interface ConnectionControl {
         BooleanWrapper isConnected();
 
         void connectToWatch(NumberWrapper arg);
+
+        void disconnect();
 
         void sendRawPacket(ListWrapper arg);
 
@@ -275,6 +406,24 @@ public class Pigeons {
                             @SuppressWarnings("ConstantConditions")
                             NumberWrapper input = NumberWrapper.fromMap((HashMap) message);
                             api.connectToWatch(input);
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ConnectionControl.disconnect", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            api.disconnect();
                             wrapped.put("result", null);
                         } catch (Exception exception) {
                             wrapped.put("error", wrapError(exception));

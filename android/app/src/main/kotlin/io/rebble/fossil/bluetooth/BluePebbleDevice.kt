@@ -5,6 +5,7 @@ import android.bluetooth.le.ScanResult
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.collection.ArrayMap
+import io.rebble.fossil.util.macAddressToLong
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class BluePebbleDevice {
@@ -31,7 +32,7 @@ class BluePebbleDevice {
         val map = ArrayMap<String, Any>()
 
         map["name"] = bluetoothDevice.name
-        map["address"] = bluetoothDevice.address.replace(":", "").toLong(16)
+        map["address"] = bluetoothDevice.address.macAddressToLong()
 
         if (leMeta?.major != null) {
             map["version"] = "${leMeta.major}.${leMeta.minor}.${leMeta.patch}"

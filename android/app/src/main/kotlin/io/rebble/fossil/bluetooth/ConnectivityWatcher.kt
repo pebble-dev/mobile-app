@@ -3,13 +3,11 @@ package io.rebble.fossil.bluetooth
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
-import android.util.Log
-import io.rebble.fossil.util.toHexString
+import timber.log.Timber
 import kotlin.experimental.and
 import kotlin.properties.Delegates
 
 class ConnectivityWatcher(val gatt: BluetoothGatt, val onConnectivityChanged: (ConnectivityStatus) -> Unit) {
-    private val logTag = "ConnectivityWatcher"
     private var isSubscribed = false
     var lastStatus: ConnectivityStatus? = null
 
@@ -65,26 +63,26 @@ class ConnectivityWatcher(val gatt: BluetoothGatt, val onConnectivityChanged: (C
     fun subscribe(): Boolean {
         val pairService = gatt.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)
         if (pairService == null) {
-            Log.e(logTag, "pairService is null")
+            Timber.e("pairService is null")
             return false
         } else {
             val connectivityCharacteristic = pairService.getCharacteristic(BlueGATTConstants.UUIDs.CONNECTIVITY_CHARACTERISTIC)
             if (connectivityCharacteristic == null) {
-                Log.e(logTag, "connectivityCharacteristic is null")
+                Timber.e("connectivityCharacteristic is null")
             } else {
                 val configDescriptor = connectivityCharacteristic.getDescriptor(BlueGATTConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR)
                 if (configDescriptor == null) {
-                    Log.e(logTag, "configDescriptor for connectivityCharacteristic is null")
+                    Timber.e("configDescriptor for connectivityCharacteristic is null")
                     return false
                 } else {
                     configDescriptor.setValue(BlueGATTConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)
                     if (!gatt.writeDescriptor(configDescriptor)) {
-                        Log.e(logTag, "Failed to write subscribe value to connectivityCharacteristic's configDescriptor")
+                        Timber.e("Failed to write subscribe value to connectivityCharacteristic's configDescriptor")
                         return false
                     } else {
-                        Log.d(logTag, "Requesting subscribe to connectivity characteristic")
+                        Timber.d("Requesting subscribe to connectivity characteristic")
                         if (!gatt.setCharacteristicNotification(connectivityCharacteristic, true)) {
-                            Log.e(logTag, "BluetoothGatt refused to subscribe to connectivity characteristic")
+                            Timber.e("BluetoothGatt refused to subscribe to connectivity characteristic")
                             return false
                         }
                     }
@@ -97,17 +95,17 @@ class ConnectivityWatcher(val gatt: BluetoothGatt, val onConnectivityChanged: (C
     fun onDescriptorWrite(gatt: BluetoothGatt?, descriptor: BluetoothGattDescriptor?, status: Int) {
         if (descriptor?.characteristic?.uuid == BlueGATTConstants.UUIDs.CONNECTIVITY_CHARACTERISTIC && descriptor?.uuid == BlueGATTConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Log.d(logTag, "Subscribed to connectivity characteristic")
+                Timber.d("Subscribed to connectivity characteristic")
                 isSubscribed = true
                 val currentConnectivity = descriptor?.characteristic?.value
                 if (currentConnectivity == null) {
-                    Log.d(logTag, "Connectivity descriptor value null")
+                    Timber.d("Connectivity descriptor value null")
                 } else {
                     lastStatus = ConnectivityStatus(currentConnectivity)
                     onConnectivityChanged(lastStatus!!)
                 }
             } else {
-                Log.e(logTag, "Subscribe to connectivity characteristic failed")
+                Timber.e("Subscribe to connectivity characteristic failed")
                 isSubscribed = false
             }
         }

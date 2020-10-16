@@ -3,6 +3,10 @@ package io.rebble.fossil.bluetooth
 import android.bluetooth.*
 import android.content.Context
 import android.os.Build
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import timber.log.Timber
 import android.os.Handler
 import android.os.Looper.getMainLooper
 import android.util.Log
@@ -11,11 +15,11 @@ import io.rebble.fossil.util.toHexString
 import kotlinx.coroutines.channels.Channel
 import java.nio.ByteBuffer
 import java.util.*
+import kotlin.coroutines.suspendCoroutine
 import kotlin.experimental.or
 
 
 class BlueLEDriver(private val targetPebble: BluetoothDevice, private val context: Context, private val packetCallback: suspend (ByteArray) -> Unit) : BlueIO {
-    private val logTag = "BlueLE"
     private var connectivityWatcher: ConnectivityWatcher? = null
     private var connectionParamManager: ConnectionParamManager? = null
     private var gattDriver: BlueGATTIO? = null
@@ -29,7 +33,7 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
     //TODO: Remove
     var mainHandler: Handler = Handler(getMainLooper())
 
-    override val isConnected: Boolean get() = connectionState == LEConnectionState.CONNECTED
+    val isConnected: Boolean get() = connectionState == LEConnectionState.CONNECTED
 
     enum class LEConnectionState {
         IDLE,
@@ -43,21 +47,17 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
     var connectionState = LEConnectionState.IDLE
     private var gatt: BluetoothGatt? = null
 
-    private val bondChannel = Channel<Boolean>()
-
-    override suspend fun sendPacket(bytes: ByteArray) {
+    override suspend fun sendPacket(bytes: ByteArray): Boolean {
         gattDriver?.sendPacket(bytes) {
             if (!it) {
                 closePebble()
             }
         }
+        //TODO return properly based on success?
+        return true
     }
 
-    override fun readStream(buffer: ByteBuffer, offset: Int, count: Int): Int {
-        return -1
-    }
-
-    override fun closePebble() {
+    fun closePebble() {
         mainHandler.post {
             //TODO: Remove
             Toast.makeText(context, "Watch connection failed", Toast.LENGTH_LONG).show()
@@ -67,12 +67,8 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
         connectionState = LEConnectionState.CLOSED
     }
 
-    override fun getTarget(): BluetoothDevice? {
+    fun getTarget(): BluetoothDevice? {
         return targetPebble
-    }
-
-    override fun setOnConnectionChange(f: (Boolean) -> Unit) {
-
     }
 
     private fun resolveGattError(status: Int): String {
@@ -96,7 +92,7 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
         if (supportsPinningWithoutSlaveSecurity) bArr[1] = bArr[1] or 0b10
         if (belowLollipop) bArr[1] = bArr[1] or 0b1000
         if (clientMode) bArr[1] = bArr[1] or 0b10000
-        Log.d(logTag, "Pair trigger flags ${bArr.toHexString()}")
+        Timber.d("Pair trigger flags ${bArr.toHexString()}")
         return bArr
     }
 
@@ -106,7 +102,7 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 when (newState) {
                     BluetoothGatt.STATE_CONNECTED -> {
-                        Log.i(logTag, "Pebble connected (initial)")
+                        Timber.i("Pebble connected (initial)")
                         gattDriver = BlueGATTClient(gatt!!)
 
                         connectionParamManager = ConnectionParamManager(gatt) {
@@ -117,10 +113,10 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
                         }
 
                         connectivityWatcher = ConnectivityWatcher(gatt) {
-                            Log.d(logTag, "Connectivity status changed: ${it}")
+                            Timber.d("Connectivity status changed: ${it}")
                             if (connectionState == LEConnectionState.PAIRING) {
                                 if (it.pairingErrorCode == ConnectivityWatcher.PairingErrorCode.CONFIRM_VALUE_FAILED) {
-                                    Log.e(logTag, "Failed to pair")
+                                    Timber.e("Failed to pair")
                                     closePebble()
                                 } else if (it.paired) {
                                     connectionState = LEConnectionState.CONNECTING_GATT
@@ -133,7 +129,7 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
                             } else if (connectionState == LEConnectionState.CONNECTING_GATT) {
                                 if (it.paired) {
                                     if (targetPebble.bondState != BluetoothDevice.BOND_BONDED) {
-                                        Log.w(logTag, "Watch bonded, phone not bonded")
+                                        Timber.w("Watch bonded, phone not bonded")
                                     } else {
                                         connectionState = LEConnectionState.CONNECTING_GATT
                                         gatt.discoverServices()
@@ -141,26 +137,26 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
                                 } else {
                                     connectionState = LEConnectionState.PAIRING
                                     if (targetPebble.bondState == BluetoothDevice.BOND_BONDED) {
-                                        Log.w(logTag, "Phone bonded, watch not bonded")
+                                        Timber.w("Phone bonded, watch not bonded")
                                     }
                                     val pairService = gatt.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)
                                     if (pairService == null) {
-                                        Log.e(logTag, "pairService is null")
+                                        Timber.e("pairService is null")
                                     } else {
                                         val pairTrigger = pairService.getCharacteristic(BlueGATTConstants.UUIDs.PAIRING_TRIGGER_CHARACTERISTIC)
                                         if (pairTrigger == null) {
-                                            Log.e(logTag, "pairTrigger is null")
+                                            Timber.e("pairTrigger is null")
                                         } else {
-                                            Log.d(logTag, "Pairing device")
+                                            Timber.d("Pairing device")
                                             if (pairTrigger.properties and BluetoothGattCharacteristic.PROPERTY_WRITE > 0) {
                                                 pairTrigger.setValue(pairTriggerFlagsToBytes(it.supportsPinningWithoutSlaveSecurity, Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP, true))
                                                 if (!gatt.writeCharacteristic(pairTrigger)) {
-                                                    Log.e(logTag, "Failed to write to pair characteristic")
+                                                    Timber.e("Failed to write to pair characteristic")
                                                     closePebble()
                                                 }
                                             }
                                             if (!gatt.device?.createBond()!!) {
-                                                Log.e(logTag, "Failed to create bond")
+                                                Timber.e("Failed to create bond")
                                                 closePebble()
                                             }
                                         }
@@ -173,17 +169,17 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
                     }
 
                     BluetoothGatt.STATE_DISCONNECTED -> {
-                        Log.i(logTag, "Pebble disconnected")
+                        Timber.i("Pebble disconnected")
                         connectionState = LEConnectionState.IDLE
                     }
                 }
             } else {
-                Log.e(logTag, "Connection error: ${resolveGattError(status)}")
+                Timber.e("Connection error: ${resolveGattError(status)}")
             }
         }
         override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
             if (gatt?.device?.address != targetPebble.address) return
-            Log.d(logTag, "Services discovered")
+            Timber.d("Services discovered")
             if (connectionState == LEConnectionState.CONNECTING) {
                 if (gatt?.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)?.getCharacteristic(BlueGATTConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC) != null) {
                     connectionParamManager?.subscribe()
@@ -209,41 +205,82 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
 
         override fun onMtuChanged(gatt: BluetoothGatt?, mtu: Int, status: Int) {
             if (gatt?.device?.address != targetPebble.address) return
-            Log.d(logTag, "MTU Changed, new mtu ${mtu}")
+            Timber.d("MTU Changed, new mtu ${mtu}")
             gattDriver?.setMTU(mtu)
         }
 
         override fun onDescriptorWrite(gatt: BluetoothGatt?, descriptor: BluetoothGattDescriptor?, status: Int) {
             if (gatt?.device?.address != targetPebble.address) return
-            Log.d(logTag, "onDescriptorWrite ${descriptor?.uuid}")
+            Timber.d("onDescriptorWrite ${descriptor?.uuid}")
             connectivityWatcher?.onDescriptorWrite(gatt, descriptor, status)
         }
 
         override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
             if (gatt?.device?.address != targetPebble.address) return
-            Log.d(logTag, "onCharacteristicChanged ${characteristic?.uuid}")
+            Timber.d("onCharacteristicChanged ${characteristic?.uuid}")
             gattDriver?.onCharacteristicChanged(gatt, characteristic)
             connectivityWatcher?.onCharacteristicChanged(gatt, characteristic)
         }
 
         override fun onCharacteristicWrite(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
             if (gatt?.device?.address != targetPebble.address) return
-            Log.d(logTag, "onCharacteristicWrite ${characteristic?.uuid}")
+            Timber.d("onCharacteristicWrite ${characteristic?.uuid}")
             gattDriver?.onCharacteristicWrite(gatt, characteristic, status)
             connectionParamManager?.onCharacteristicWrite(gatt, characteristic, status)
         }
     }
 
-    override fun connectPebble(): Boolean {
-        if (connectionState != LEConnectionState.IDLE) return false
+    override fun startSingleWatchConnection(device: BluetoothDevice): Flow<SingleConnectionStatus> = flow {
+        if (connectionState != LEConnectionState.IDLE) return@flow
         connectionState = LEConnectionState.CONNECTING
         gatt = targetPebble.connectGatt(context, false, gattCallbacks)
 
         if (gatt == null) {
-            Log.e(logTag, "connectGatt failed")
-            return false
+            Timber.e("connectGatt failed")
+            return@flow
         } else {
-            return true
+            connectivityWatcher = ConnectivityWatcher(gatt!!) {
+                if (!it.paired || targetPebble.bondState == BluetoothDevice.BOND_NONE) {
+                    if (connectionState == LEConnectionState.PAIRING) {
+                        if (it.pairingErrorCode == ConnectivityWatcher.PairingErrorCode.CONFIRM_VALUE_FAILED) {
+                            Timber.e("Failed to pair")
+                            closePebble()
+                        }
+                    } else if (connectionState != LEConnectionState.CONNECTED) {
+                        connectionState = LEConnectionState.PAIRING
+                        val pairService = gatt?.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)
+                        if (pairService == null) {
+                            Timber.e("pairService is null")
+                        } else {
+                            val pairTrigger = pairService.getCharacteristic(BlueGATTConstants.UUIDs.PAIRING_TRIGGER_CHARACTERISTIC)
+                            if (pairTrigger == null) {
+                                Timber.e("pairTrigger is null")
+                            } else {
+                                if (pairTrigger.properties and BluetoothGattCharacteristic.PROPERTY_WRITE > 0) {
+                                    pairTrigger.setValue(pairTriggerFlagsToBytes(it.supportsPinningWithoutSlaveSecurity, Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP, false))
+                                    if (!gatt!!.writeCharacteristic(pairTrigger)) {
+                                        Timber.e("Failed to write to pair characteristic")
+                                        closePebble()
+                                    }
+                                }
+                                if (!gatt?.device?.createBond()!!) {
+                                    Timber.e("Failed to create bond")
+                                    closePebble()
+                                } else {
+                                    connectionState = LEConnectionState.CONNECTING_GATT
+                                    gatt!!.discoverServices()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            gatt!!.discoverServices()
+            emit(SingleConnectionStatus.Connected(device))
+
+            // Wait forever - eventually this needs to be changed to stop waiting when BLE
+            // disconnects, but I don't want to mess with this code too much
+            suspendCoroutine { }
         }
     }
 }

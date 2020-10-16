@@ -1,39 +1,34 @@
 package io.rebble.fossil
 
-import android.Manifest
-import android.app.Service
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
+import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Binder
 import android.os.Build
-import android.os.IBinder
-import android.provider.Telephony
-import android.widget.Toast
+import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
-import io.flutter.Log
-import io.rebble.fossil.bluetooth.BlueCommon
-import io.rebble.fossil.bluetooth.BluePebbleDevice
+import io.rebble.fossil.bluetooth.ConnectionLooper
+import io.rebble.fossil.bluetooth.ConnectionState
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import timber.log.Timber
 
-@ExperimentalUnsignedTypes
+@OptIn(ExperimentalCoroutinesApi::class)
 class WatchService : LifecycleService() {
     private lateinit var coroutineScope: CoroutineScope
 
-    private val pBinder = ProtBinder()
-    private val logTag: String = "FossilWatchService"
     private val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
     private lateinit var protocolHandler: ProtocolHandler
-    private lateinit var blueCommon: BlueCommon
+    private lateinit var connectionLooper: ConnectionLooper
     lateinit var notificationService: NotificationService
         private set
 
@@ -41,89 +36,81 @@ class WatchService : LifecycleService() {
             .setContentTitle("Disconnected")
             .setSmallIcon(R.drawable.ic_notification_disconnected)
 
-    inner class ProtBinder : Binder() {
-        fun getService(): WatchService {
-            return this@WatchService
-        }
-    }
 
-    override fun onBind(intent: Intent): IBinder {
-        super.onBind(intent)
-        return pBinder
-    }
-
-
-    @ExperimentalStdlibApi
     override fun onCreate() {
         val injectionComponent = (applicationContext as FossilApplication).component
 
         coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
-        blueCommon = injectionComponent.createBlueCommon()
         notificationService = injectionComponent.createNotificationService()
         protocolHandler = injectionComponent.createProtocolHandler()
+        connectionLooper = injectionComponent.createConnectionLooper()
 
         super.onCreate()
 
-        // TODO: BLE
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Requires location permission for bluetooth LE", Toast.LENGTH_LONG).show()
-                stopSelf()
-                return
-            }
-        }
+        createNotificationChannel()
 
         if (!bluetoothAdapter.isEnabled) {
-            Log.w(logTag, "Bluetooth - Not enabled")
+            Timber.w("Bluetooth - Not enabled")
         }
 
-        startIO()
+        startNotificationLoop()
+
+        if (connectionLooper.connectionState.value is ConnectionState.Disconnected) {
+            injectionComponent.createPairedStorage()
+                    .getMacAddressOfDefaultPebble()?.let { connectionLooper.connectToWatch(it) }
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        startForeground(1, mainNotifBuilder.build())
         return START_STICKY
     }
 
-    private fun setNotification(connected: Boolean) {
-        mainNotifBuilder
-                .setContentTitle(if (connected) "Connected to device" else "Disconnected")
-                .setContentText(if (connected) blueCommon.driver!!.getTarget()?.name else null)
-                .setSmallIcon(if (connected) R.drawable.ic_notification_connected else R.drawable.ic_notification_disconnected)
-                .setPriority(if (connected) NotificationCompat.PRIORITY_LOW else NotificationCompat.PRIORITY_DEFAULT)
-        NotificationManagerCompat.from(this).notify(1, mainNotifBuilder.build())
-    }
-
-    private fun startIO() {
-        blueCommon.setOnConnectionChange { connected -> setNotification(connected) }
-    }
-
-    // Public methods for activity / flutter
-
-    fun scanDevices(resultCallback: (BluePebbleDevice) -> Unit, endCallback: () -> Unit) {
-        blueCommon.scanDevicesLE(resultCallback, endCallback)
-    }
-
-    fun scanDevicesClassic(resultCallback: (List<BluePebbleDevice>) -> Unit) {
-        blueCommon.scanDevicesClassic(resultCallback)
-    }
-
-    fun targetPebble(device: BluetoothDevice): Boolean {
-        return blueCommon.targetPebble(device)
-    }
-
-    fun targetPebble(addr: Long): Boolean {
-        return blueCommon.targetPebble(addr)
-    }
-
-    fun sendDevPacket(packet: ByteArray) {
+    private fun startNotificationLoop() {
         coroutineScope.launch {
-            blueCommon.driver?.sendPacket(packet)
+            connectionLooper.connectionState.collect {
+                @DrawableRes val icon: Int
+                val titleText: String?
+                val deviceName: String?
+
+                when (it) {
+                    is ConnectionState.Disconnected -> {
+                        icon = R.drawable.ic_notification_disconnected
+                        titleText = "Disconnected"
+                        deviceName = null
+                    }
+                    is ConnectionState.Connecting -> {
+                        icon = R.drawable.ic_notification_disconnected
+                        titleText = "Connecting"
+                        deviceName = null
+                    }
+                    is ConnectionState.Connected -> {
+                        icon = R.drawable.ic_notification_connected
+                        titleText = "Connected to device"
+                        deviceName = it.watch.name
+                    }
+                }
+
+                mainNotifBuilder
+                        .setContentTitle(titleText)
+                        .setContentText(deviceName)
+                        .setSmallIcon(icon)
+
+                startForeground(1, mainNotifBuilder.build())
+            }
         }
     }
 
-    fun isConnected(): Boolean {
-        return blueCommon.driver?.isConnected ?: false
+    private fun createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val importance = NotificationManager.IMPORTANCE_MIN
+            val channel = NotificationChannel("device_status", "Device Status", importance)
+            // Register the channel with the system
+            val notificationManager: NotificationManager =
+                    getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 }

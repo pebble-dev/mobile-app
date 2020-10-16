@@ -26,15 +26,25 @@ class _PairPageState extends State<PairPage> implements ScanCallbacks {
     super.initState();
     ScanCallbacks.setup(this);
     log("Prestart");
-    scanControl.startScan();
+    scanControl.startBleScan();
   }
 
-  void _refreshDevices() {
+  void _refreshDevicesBle() {
     if (!_scanning) {
       setState(() {
         _scanning = true;
         _pebbles = [];
-        scanControl.startScan();
+        scanControl.startBleScan();
+      });
+    }
+  }
+
+  void _refreshDevicesClassic() {
+    if (!_scanning) {
+      setState(() {
+        _scanning = true;
+        _pebbles = [];
+        scanControl.startClassicScan();
       });
     }
   }
@@ -160,13 +170,29 @@ class _PairPageState extends State<PairPage> implements ScanCallbacks {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Offstage(
-                        offstage: _scanning,
-                        child: FlatButton(
-                          child: Text("SEARCH AGAIN"),
-                          padding: EdgeInsets.symmetric(horizontal: 32.0),
-                          textColor: Theme.of(context).accentColor,
-                          onPressed: _refreshDevices,
-                        )),
+                      offstage: _scanning,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          FlatButton(
+                            child: Text("SEARCH AGAIN WITH BLE"),
+                            padding: EdgeInsets.symmetric(horizontal: 32.0),
+                            textColor: Theme
+                                .of(context)
+                                .accentColor,
+                            onPressed: _refreshDevicesBle,
+                          ),
+                          FlatButton(
+                            child: Text("SEARCH AGAIN WITH BT CLASSIC"),
+                            padding: EdgeInsets.symmetric(horizontal: 32.0),
+                            textColor: Theme
+                                .of(context)
+                                .accentColor,
+                            onPressed: _refreshDevicesClassic,
+                          )
+                        ],
+                      ),
+                    ),
                     FlatButton(
                       child: Text("SKIP"),
                       padding: EdgeInsets.symmetric(horizontal: 32.0),
