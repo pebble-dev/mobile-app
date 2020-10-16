@@ -33,6 +33,7 @@ class ConnectivityWatcher(val gatt: BluetoothGatt, val onConnectivityChanged: (C
             hasRemoteAttemptedToUseStalePairing = flags and 0b100000 > 0
             pairingErrorCode = PairingErrorCode.getByValue(characteristicValue[3])
         }
+        override fun toString(): String = "< ConnectivityStatus connected = ${connected} paired = ${paired} encrypted = ${encrypted} hasBondedGateway = ${hasBondedGateway} supportsPinningWithoutSlaveSecurity = ${supportsPinningWithoutSlaveSecurity} hasRemoteAttemptedToUseStalePairing = ${hasRemoteAttemptedToUseStalePairing} pairingErrorCode = ${pairingErrorCode}>"
     }
 
     enum class PairingErrorCode(val value: Byte) {
