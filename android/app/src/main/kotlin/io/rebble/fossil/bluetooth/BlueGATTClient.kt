@@ -16,10 +16,11 @@ class BlueGATTClient(private var gatt: BluetoothGatt, private val gattPacketCall
 
     private val ackReadChannel = Channel<GATTPacket>(Channel.BUFFERED)
     private val dataReadChannel = Channel<GATTPacket>(Channel.BUFFERED)
-    private val packetWriteChannel = Channel<GATTPacket>(Channel.BUFFERED)
+    private val packetWriteChannel = Channel<GATTPacket>(0)
     private val ackWriteChannel = Channel<GATTPacket>(0)
 
     override var isConnected = false
+    private var ackWritePending = false
 
     private var mtu = 23
     private var seq: Short = 0
@@ -48,6 +49,9 @@ class BlueGATTClient(private var gatt: BluetoothGatt, private val gattPacketCall
         launch(Dispatchers.IO) {
             while (true) {
                 val packet = packetWriteChannel.receive()
+                while (ackWritePending) {
+                    delay(50)
+                }
                 dataWriteCharacteristic.value = packet.toByteArray()
                 if (!gatt.writeCharacteristic(dataWriteCharacteristic)) {
                     Timber.e("Failed to write to data characteristic")
@@ -72,6 +76,7 @@ class BlueGATTClient(private var gatt: BluetoothGatt, private val gattPacketCall
                         success = true
                     }
                 }
+                ackWritePending = !ackWriteChannel.isEmpty
             }
         }
     }
@@ -89,20 +94,12 @@ class BlueGATTClient(private var gatt: BluetoothGatt, private val gattPacketCall
     }
 
     private suspend fun sendAck(sequence: Short, reset: Boolean = false) {
+        ackWritePending = true
         ackWriteChannel.send(GATTPacket(if (reset) GATTPacket.PacketType.RESET_ACK else GATTPacket.PacketType.ACK, sequence))
     }
 
     suspend fun sendBytesToDevice(bytes: ByteArray): Boolean {
         val mtu = this.mtu
-        try {
-            withTimeout(4000L) {
-                while (!ackWriteChannel.isEmpty) {
-                    delay(10L)
-                }
-            }
-        } catch (e: TimeoutCancellationException) {
-            Timber.w("Timed out waiting for ACK to write, continuing anyways")
-        }
 
         val count = ceil(bytes.size.toFloat() / mtu.toFloat()).toInt()
         val buf = ByteBuffer.wrap(bytes)
@@ -112,7 +109,10 @@ class BlueGATTClient(private var gatt: BluetoothGatt, private val gattPacketCall
 
             val thisSeq = getSeq()
             packetWriteChannel.offer(GATTPacket(GATTPacket.PacketType.DATA, thisSeq, payload))
-            if (!waitForAck(thisSeq, GATTPacket.PacketType.ACK)) return false
+            if (!waitForAck(thisSeq, GATTPacket.PacketType.ACK)) {
+                if (ackWritePending) Timber.w("Blocked by ackWritePending and timed out")
+                return false
+            }
         }
         return true
     }
