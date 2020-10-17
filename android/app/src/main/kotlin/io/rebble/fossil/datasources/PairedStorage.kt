@@ -32,8 +32,13 @@ class PairedStorage @Inject constructor(private val context: Context) {
 
         val devices = deviceJsons.map { JSONObject(it) }
 
-        return devices.first {
-            it.getBoolean("isDefault")
-        }.getJSONObject("device").getLong("address").macAddressToString()
+        try {
+            val dev = devices.first {
+                it.getBoolean("isDefault")
+            }
+            return dev.getJSONObject("device").getLong("address").macAddressToString()
+        } catch (e: NoSuchElementException) {
+            return null
+        }
     }
 }

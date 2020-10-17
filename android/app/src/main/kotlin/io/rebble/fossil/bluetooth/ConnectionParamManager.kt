@@ -58,7 +58,7 @@ class ConnectionParamManager(val gatt: BluetoothGatt, val onParamsComplete: () -
                 Log.d(logTag, "Requesting mgmt settings from pebble")
                 val mgmtData = ByteBuffer.allocate(2)
                 mgmtData.put(0)
-                mgmtData.put(0) // disablePebbleParamManagement
+                mgmtData.put(1) // disablePebbleParamManagement
 
                 val service = gatt?.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)
                 if (service == null) {
@@ -87,5 +87,10 @@ class ConnectionParamManager(val gatt: BluetoothGatt, val onParamsComplete: () -
                 onParamsComplete()
             }
         }
+    }
+
+    fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
+        if (characteristic?.value == null) return
+        //TODO sometime
     }
 }

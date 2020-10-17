@@ -2,20 +2,22 @@ package io.rebble.fossil.bluetooth
 
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
-import timber.log.Timber
 import android.util.Log
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import java.lang.Exception
-import java.util.concurrent.locks.ReentrantLock
+import timber.log.Timber
+import java.nio.ByteBuffer
+import kotlin.math.ceil
 
-class BlueGATTClient(private var gatt: BluetoothGatt) : BlueGATTIO {
+class BlueGATTClient(private var gatt: BluetoothGatt, private val gattPacketCallback: suspend (GATTPacket) -> Unit) : BlueGATTIO {
     private val logTag = "BlueGATTClient"
-    val sendLock = ReentrantLock()
-    private lateinit var dataCharacteristic: BluetoothGattCharacteristic
+    private lateinit var dataReadCharacteristic: BluetoothGattCharacteristic
+    private lateinit var dataWriteCharacteristic: BluetoothGattCharacteristic
 
-    private val packetReadChannel = Channel<GATTPacket>()
-    private val packetWriteChannel = Channel<GATTPacket>()
+    private val ackReadChannel = Channel<GATTPacket>(Channel.BUFFERED)
+    private val dataReadChannel = Channel<GATTPacket>(Channel.BUFFERED)
+    private val packetWriteChannel = Channel<GATTPacket>(Channel.BUFFERED)
+    private val ackWriteChannel = Channel<GATTPacket>(0)
 
     override var isConnected = false
 
@@ -32,44 +34,87 @@ class BlueGATTClient(private var gatt: BluetoothGatt) : BlueGATTIO {
         this.mtu = newMTU
     }
 
+    private suspend fun packetReader() = coroutineScope {
+        launch(Dispatchers.IO) {
+            while (true) {
+                val packet = dataReadChannel.receive()
+                sendAck(packet.sequence)
+                gattPacketCallback(packet)
+            }
+        }
+    }
+
     private suspend fun packetWriter() = coroutineScope {
         launch(Dispatchers.IO) {
             while (true) {
                 val packet = packetWriteChannel.receive()
-                sendLock.lock()
-                dataCharacteristic.value = packet.toByteArray()
-                if (!gatt.writeCharacteristic(dataCharacteristic)) {
-                    Log.e(logTag, "Failed to write to data characteristic")
+                dataWriteCharacteristic.value = packet.toByteArray()
+                if (!gatt.writeCharacteristic(dataWriteCharacteristic)) {
+                    Timber.e("Failed to write to data characteristic")
+                    //TODO: retry/disconnect?
                 }
             }
         }
     }
 
-    suspend fun waitForAck(ackSeq: Short, ackType: GATTPacket.PacketType): Boolean = runBlocking<Boolean> {
-        try {
-            return@runBlocking withTimeout(4000L) {
-                var packet = packetReadChannel.receive()
-                while (packet.sequence != ackSeq) {
-                    packetReadChannel.offer(packet)
-                    packet = packetReadChannel.receive()
+    private suspend fun ackWriter() = coroutineScope {
+        launch(Dispatchers.IO) {
+            while (true) {
+                val ack = ackWriteChannel.receive()
+                Timber.d("Sending ACK for ${ack.sequence}")
+                dataWriteCharacteristic.value = ack.toByteArray()
+                var tries = 0
+                var success = false
+                while (++tries < 3 && success == false) {
+                    if (!gatt.writeCharacteristic(dataWriteCharacteristic)) {
+                        Timber.e("Failed to write to data characteristic")
+                    } else {
+                        success = true
+                    }
                 }
-                return@withTimeout true
+            }
+        }
+    }
+
+    private suspend fun waitForAck(ackSeq: Short, ackType: GATTPacket.PacketType): Boolean {
+        try {
+            return withTimeout(10000L) {
+                val packet = ackReadChannel.receive()
+                return@withTimeout packet.sequence == ackSeq
             }
         } catch (e: TimeoutCancellationException) {
-            return@runBlocking false
-        } catch (e: CancellationException) {
-            return@runBlocking false
+            Timber.e("Timed out waiting for ACK")
+            return false
         }
+    }
+
+    private suspend fun sendAck(sequence: Short, reset: Boolean = false) {
+        ackWriteChannel.send(GATTPacket(if (reset) GATTPacket.PacketType.RESET_ACK else GATTPacket.PacketType.ACK, sequence))
     }
 
     suspend fun sendBytesToDevice(bytes: ByteArray): Boolean {
-        if (bytes.size + 1 > mtu) {
-            Log.e(logTag, "Data too large for MTU")
-            return false
+        val mtu = this.mtu
+        try {
+            withTimeout(4000L) {
+                while (!ackWriteChannel.isEmpty) {
+                    delay(10L)
+                }
+            }
+        } catch (e: TimeoutCancellationException) {
+            Timber.w("Timed out waiting for ACK to write, continuing anyways")
         }
-        val thisSeq = getSeq()
-        packetWriteChannel.offer(GATTPacket(GATTPacket.PacketType.DATA, thisSeq, bytes))
-        return waitForAck(thisSeq, GATTPacket.PacketType.ACK)
+
+        val count = ceil(bytes.size.toFloat() / mtu.toFloat()).toInt()
+        val buf = ByteBuffer.wrap(bytes)
+        for (i in 0..count - 1) {
+            val payload = ByteArray(mtu)
+            buf.get(payload)
+
+            val thisSeq = getSeq()
+            packetWriteChannel.offer(GATTPacket(GATTPacket.PacketType.DATA, thisSeq, payload))
+            if (!waitForAck(thisSeq, GATTPacket.PacketType.ACK)) return false
+        }
+        return true
     }
 
     override fun requestReset() {
@@ -79,16 +124,26 @@ class BlueGATTClient(private var gatt: BluetoothGatt) : BlueGATTIO {
 
     override fun onCharacteristicWrite(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
         if (!isConnected) return
-        if (characteristic?.uuid == dataCharacteristic.uuid) {
-            sendLock.unlock()
+        if (characteristic?.uuid == dataWriteCharacteristic.uuid) {
             if (status != BluetoothGatt.GATT_SUCCESS) Log.e(logTag, "Data characteristic write failed!")
         }
     }
 
 
     override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
-        if (characteristic?.uuid == BlueGATTConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC && characteristic != null) {
-            packetReadChannel.offer(GATTPacket(characteristic.value))
+        if (characteristic?.uuid == BlueGATTConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_READ && characteristic != null) {
+            val packet = GATTPacket(characteristic.value)
+            when (packet.type) {
+                GATTPacket.PacketType.RESET_ACK, GATTPacket.PacketType.ACK -> {
+                    ackReadChannel.offer(packet)
+                }
+                GATTPacket.PacketType.DATA -> {
+                    dataReadChannel.offer(packet)
+                }
+                GATTPacket.PacketType.RESET -> {
+                    GlobalScope.launch { sendAck(packet.sequence, true) } //XXX
+                }
+            }
         }
     }
 
@@ -99,66 +154,45 @@ class BlueGATTClient(private var gatt: BluetoothGatt) : BlueGATTIO {
     }
 
     override fun connectPebble(): Boolean {
-        val service = gatt.getService(BlueGATTConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID)
+        val service = gatt.getService(BlueGATTConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID_CLIENT)
         if (service == null) {
             Timber.e("GATT device service null")
             return false
         } else {
-            dataCharacteristic = service.getCharacteristic(BlueGATTConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC)
-            if (dataCharacteristic == null) {
-                Timber.e("GATT device characteristic null")
-                val _dataCharacteristic = service.getCharacteristic(BlueGATTConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC)
-                if (_dataCharacteristic == null) {
-                    Log.e(logTag, "GATT device characteristic null")
+            val _dataReadCharacteristic = service.getCharacteristic(BlueGATTConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_READ)
+            if (_dataReadCharacteristic == null) {
+                Timber.e("GATT device read characteristic null")
+                return false
+            } else {
+                val configDescriptor = _dataReadCharacteristic.getDescriptor(BlueGATTConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR)
+                if (configDescriptor == null) {
+                    Timber.e("Data characteristic config descriptor null")
+                    return false
+                }
+                configDescriptor.setValue(BlueGATTConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)
+                if (!gatt.writeDescriptor(configDescriptor)) {
+                    Timber.e("Failed to subscribe to data characteristic")
+                    return false
+                } else if (!gatt.setCharacteristicNotification(_dataReadCharacteristic, true)) {
+                    Timber.e("Failed to set notify on data characteristic")
                     return false
                 } else {
-                    val configDescriptor = dataCharacteristic?.getDescriptor(BlueGATTConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR)
-                    if (configDescriptor == null) {
-                        Timber.e("Data characteristic config descriptor null")
-                        return false
-                    }
-                    configDescriptor.setValue(BlueGATTConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)
-                    if (!gatt.writeDescriptor(configDescriptor)) {
-                        Timber.e("Failed to subscribe to data characteristic")
-                        return false
-                    } else if (!gatt.setCharacteristicNotification(dataCharacteristic, true)) {
-                        Timber.e("Failed to set notify on data characteristic")
+                    val _dataWriteCharacteristic = service.getCharacteristic(BlueGATTConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_WRITE)
+                    if (_dataWriteCharacteristic == null) {
+                        Timber.e("GATT device write characteristic null")
                         return false
                     } else {
-                        Timber.e("Success but not because we're not finished!!")
+                        dataReadCharacteristic = _dataReadCharacteristic
+                        dataWriteCharacteristic = _dataWriteCharacteristic
+                        isConnected = true
+                        GlobalScope.launch { ackWriter() }
+                        GlobalScope.launch { packetWriter() }
+                        GlobalScope.launch { packetReader() }
                         return true
                     }
                 }
             }
-            GlobalScope.launch { packetWriter() }
         }
-
-        val configDescriptor = dataCharacteristic.getDescriptor(BlueGATTConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR)
-        if (configDescriptor == null) {
-            Log.e(logTag, "Data characteristic config descriptor null")
-            return false
-        }
-        configDescriptor.setValue(BlueGATTConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)
-        if (!gatt.writeDescriptor(configDescriptor)) {
-            Log.e(logTag, "Failed to subscribe to data characteristic")
-            return false
-        } else if (!gatt.setCharacteristicNotification(dataCharacteristic, true)) {
-            Log.e(logTag, "Failed to set notify on data characteristic")
-            return false
-        } else {
-            Log.e(logTag, "Success but not because we're not finished!!")
-            isConnected = true
-            return true
-        }
-    }
-
-    suspend fun sendBytes(bytes: ByteArray): Boolean {
-        var writeWorked = true
-        sendLock.lock()
-        dataCharacteristic?.value = bytes
-        writeWorked = gatt.writeCharacteristic(dataCharacteristic)
-        if (!writeWorked) sendLock.unlock()
-        return writeWorked
     }
 
 }
