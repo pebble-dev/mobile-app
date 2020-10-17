@@ -3,11 +3,9 @@ package io.rebble.fossil.bluetooth
 import android.bluetooth.*
 import android.content.Context
 import android.os.Build
-import android.os.Handler
-import android.os.Looper.getMainLooper
-import android.widget.Toast
 import io.rebble.fossil.util.toBytes
 import io.rebble.fossil.util.toHexString
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import timber.log.Timber
@@ -27,8 +25,7 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
         }
     }
 
-    //TODO: Remove
-    var mainHandler: Handler = Handler(getMainLooper())
+    val connectionStatusChannel = Channel<Boolean>(0)
 
     val isConnected: Boolean get() = connectionState == LEConnectionState.CONNECTED
 
@@ -56,13 +53,10 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
     }
 
     fun closePebble() {
-        mainHandler.post {
-            //TODO: Remove
-            Toast.makeText(context, "Watch connection failed", Toast.LENGTH_LONG).show()
-        }
         gatt?.close()
         gatt = null
         connectionState = LEConnectionState.CLOSED
+        connectionStatusChannel.offer(false)
     }
 
     fun getTarget(): BluetoothDevice? {
@@ -274,7 +268,11 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
             return@flow
         } else {
             //gatt!!.discoverServices()
-            emit(SingleConnectionStatus.Connected(device))
+            if (connectionStatusChannel.receive()) {
+                emit(SingleConnectionStatus.Connected(device))
+            } else {
+                return@flow
+            }
 
             // Wait forever - eventually this needs to be changed to stop waiting when BLE
             // disconnects, but I don't want to mess with this code too much
@@ -284,10 +282,7 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
 
     private fun connect() {
         if (gattDriver?.connectPebble()!!) {
-            mainHandler.post {
-                //TODO: connection success callback etc.
-                Toast.makeText(context, "Watch connection success", Toast.LENGTH_LONG).show()
-            }
+            connectionStatusChannel.offer(true)
             gatt?.requestMtu(339)
             connectionState = LEConnectionState.CONNECTED
         } else {
