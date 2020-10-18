@@ -62,6 +62,10 @@ class BlueCommon @Inject constructor(
     }
 
     private suspend fun handlePacketReceivedFromDriver(packet: ByteArray) {
-        externalIncomingPacketHandler?.invoke(packet)
+        try {
+            externalIncomingPacketHandler?.invoke(packet)
+        } catch (e: Exception) {
+            Timber.e(e, "Packet receive failed")
+        }
     }
 }

@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.IOException
@@ -17,6 +18,8 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.*
 import kotlin.coroutines.coroutineContext
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 @Suppress("BlockingMethodInNonBlockingContext")
 class BlueSerialDriver(
@@ -90,14 +93,26 @@ class BlueSerialDriver(
 
     private suspend fun InputStream.readFully(buffer: ByteBuffer, offset: Int, count: Int) {
         return withContext(Dispatchers.IO) {
-            var totalRead = 0
-            while (totalRead < count) {
-                val read = read(buffer.array(), offset + totalRead, count - totalRead)
-                if (read < 0) {
-                    throw IOException("Reached end of stream")
+            suspendCancellableCoroutine<Unit> { continuation ->
+                continuation.invokeOnCancellation {
+                    close()
                 }
 
-                totalRead += read
+                try {
+                    var totalRead = 0
+                    while (coroutineContext.isActive && totalRead < count) {
+                        val read = read(buffer.array(), offset + totalRead, count - totalRead)
+                        if (read < 0) {
+                            throw IOException("Reached end of stream")
+                        }
+
+                        totalRead += read
+                    }
+
+                    continuation.resume(Unit)
+                } catch (e: Exception) {
+                    continuation.resumeWithException(e)
+                }
             }
         }
     }
