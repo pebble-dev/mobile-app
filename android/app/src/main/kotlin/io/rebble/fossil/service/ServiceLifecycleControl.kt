@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 class ServiceLifecycleControl @Inject constructor(
@@ -22,6 +23,8 @@ class ServiceLifecycleControl @Inject constructor(
     init {
         GlobalScope.launch(Dispatchers.Main) {
             connectionLooper.connectionState.collect {
+                Timber.d("Watch connection status %s", it)
+
                 val shouldServiceBeRunning = it !is ConnectionState.Disconnected
 
                 if (shouldServiceBeRunning != serviceRunning) {
