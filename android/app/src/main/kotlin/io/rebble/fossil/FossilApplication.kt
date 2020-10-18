@@ -1,7 +1,5 @@
 package io.rebble.fossil
 
-import android.content.Intent
-import androidx.core.content.ContextCompat
 import io.flutter.app.FlutterApplication
 import io.rebble.fossil.di.AppComponent
 import io.rebble.fossil.di.DaggerAppComponent
@@ -21,7 +19,18 @@ class FossilApplication : FlutterApplication() {
 
         initLogging()
 
-        ContextCompat.startForegroundService(this, Intent(this, WatchService::class.java))
+        component.initNotificationChannels()
+        beginConnectingToDefaultWatch()
+    }
+
+    private fun beginConnectingToDefaultWatch() {
+        component.initServiceLifecycleControl()
+
+        val macAddressOfDefaultPebble = component.createPairedStorage()
+                .getMacAddressOfDefaultPebble()
+        if (macAddressOfDefaultPebble != null) {
+            component.createConnectionLooper().connectToWatch(macAddressOfDefaultPebble)
+        }
     }
 
     private fun initLogging() {

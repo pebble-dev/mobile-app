@@ -3,7 +3,7 @@ package io.rebble.fossil.di
 import androidx.lifecycle.lifecycleScope
 import dagger.Module
 import dagger.Provides
-import io.rebble.fossil.WatchService
+import io.rebble.fossil.service.WatchService
 import kotlinx.coroutines.CoroutineScope
 
 @Module

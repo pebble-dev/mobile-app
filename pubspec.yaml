@@ -41,7 +41,7 @@ dev_dependencies:
   flutter_launcher_icons: "^0.7.5"
   flutter_test:
     sdk: flutter
-  pigeon: "0.1.6"
+  pigeon: "0.1.12"
 
 flutter_icons:
   ios: true

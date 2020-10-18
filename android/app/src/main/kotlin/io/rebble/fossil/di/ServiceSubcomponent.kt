@@ -2,8 +2,8 @@ package io.rebble.fossil.di
 
 import dagger.BindsInstance
 import dagger.Subcomponent
-import io.rebble.fossil.WatchService
 import io.rebble.fossil.handlers.AppMessageHandler
+import io.rebble.fossil.service.WatchService
 import javax.inject.Scope
 
 @PerService

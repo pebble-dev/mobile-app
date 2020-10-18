@@ -1,15 +1,15 @@
-package io.rebble.fossil
+package io.rebble.fossil.service
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.bluetooth.BluetoothAdapter
-import android.content.Context
 import android.content.Intent
-import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
+import io.rebble.fossil.FossilApplication
+import io.rebble.fossil.NOTIFICATION_CHANNEL_WATCH_CONNECTED
+import io.rebble.fossil.NOTIFICATION_CHANNEL_WATCH_CONNECTING
+import io.rebble.fossil.R
 import io.rebble.fossil.bluetooth.ConnectionLooper
 import io.rebble.fossil.bluetooth.ConnectionState
 import io.rebble.libpebblecommon.ProtocolHandler
@@ -32,10 +32,6 @@ class WatchService : LifecycleService() {
     lateinit var notificationService: NotificationService
         private set
 
-    private val mainNotifBuilder = NotificationCompat.Builder(this, "device_status")
-            .setContentTitle("Disconnected")
-            .setSmallIcon(R.drawable.ic_notification_disconnected)
-
 
     override fun onCreate() {
         val injectionComponent = (applicationContext as FossilApplication).component
@@ -52,18 +48,11 @@ class WatchService : LifecycleService() {
 
         super.onCreate()
 
-        createNotificationChannel()
-
         if (!bluetoothAdapter.isEnabled) {
             Timber.w("Bluetooth - Not enabled")
         }
 
         startNotificationLoop()
-
-        if (connectionLooper.connectionState.value is ConnectionState.Disconnected) {
-            injectionComponent.createPairedStorage()
-                    .getMacAddressOfDefaultPebble()?.let { connectionLooper.connectToWatch(it) }
-        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -77,45 +66,37 @@ class WatchService : LifecycleService() {
                 @DrawableRes val icon: Int
                 val titleText: String?
                 val deviceName: String?
+                val channel: String
 
                 when (it) {
                     is ConnectionState.Disconnected -> {
-                        icon = R.drawable.ic_notification_disconnected
-                        titleText = "Disconnected"
-                        deviceName = null
+                        // There is no disconnected notification
+                        // service will be stopped
+                        return@collect
                     }
                     is ConnectionState.Connecting -> {
                         icon = R.drawable.ic_notification_disconnected
                         titleText = "Connecting"
                         deviceName = null
+                        channel = NOTIFICATION_CHANNEL_WATCH_CONNECTING
                     }
                     is ConnectionState.Connected -> {
                         icon = R.drawable.ic_notification_connected
                         titleText = "Connected to device"
                         deviceName = it.watch.name
+                        channel = NOTIFICATION_CHANNEL_WATCH_CONNECTED
                     }
                 }
 
-                mainNotifBuilder
+                val mainNotifBuilder = NotificationCompat
+                        .Builder(this@WatchService, channel)
+                        .setSmallIcon(R.drawable.ic_notification_disconnected)
                         .setContentTitle(titleText)
                         .setContentText(deviceName)
                         .setSmallIcon(icon)
 
                 startForeground(1, mainNotifBuilder.build())
             }
-        }
-    }
-
-    private fun createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManager.IMPORTANCE_MIN
-            val channel = NotificationChannel("device_status", "Device Status", importance)
-            // Register the channel with the system
-            val notificationManager: NotificationManager =
-                    getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
         }
     }
 }

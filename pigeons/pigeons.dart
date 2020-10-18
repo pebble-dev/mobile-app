@@ -34,6 +34,11 @@ abstract class ConnectionCallbacks {
   void onWatchConnectionStateChanged(WatchConnectionState newState);
 }
 
+@FlutterApi()
+abstract class PairCallbacks {
+  void onWatchPairComplete(NumberWrapper address);
+}
+
 @HostApi()
 abstract class ScanControl {
   void startBleScan();
