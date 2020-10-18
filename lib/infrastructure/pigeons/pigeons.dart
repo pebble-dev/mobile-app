@@ -7,6 +7,24 @@ import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
 
 import 'package:flutter/services.dart';
 
+class NumberWrapper {
+  int value;
+
+  // ignore: unused_element
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
+    pigeonMap['value'] = value;
+    return pigeonMap;
+  }
+
+  // ignore: unused_element
+  static NumberWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    final NumberWrapper result = NumberWrapper();
+    result.value = pigeonMap['value'];
+    return result;
+  }
+}
+
 class ListWrapper {
   List value;
 
@@ -63,22 +81,6 @@ class WatchConnectionState {
   }
 }
 
-class NumberWrapper {
-  int value;
-  // ignore: unused_element
-  Map<dynamic, dynamic> _toMap() {
-    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
-    pigeonMap['value'] = value;
-    return pigeonMap;
-  }
-  // ignore: unused_element
-  static NumberWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
-    final NumberWrapper result = NumberWrapper();
-    result.value = pigeonMap['value'];
-    return result;
-  }
-}
-
 class NotificationsControl {
   Future<void> sendTestNotification() async {
     const BasicMessageChannel<dynamic> channel =
@@ -99,21 +101,42 @@ class NotificationsControl {
     } else {
       // noop
     }
-    
+  }
+}
+
+abstract class PairCallbacks {
+  void onWatchPairComplete(NumberWrapper arg);
+
+  static void setup(PairCallbacks api) {
+    {
+      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+          'dev.flutter.pigeon.PairCallbacks.onWatchPairComplete',
+          StandardMessageCodec());
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((dynamic message) async {
+          final Map<dynamic, dynamic> mapMessage =
+              message as Map<dynamic, dynamic>;
+          final NumberWrapper input = NumberWrapper._fromMap(mapMessage);
+          api.onWatchPairComplete(input);
+        });
+      }
+    }
   }
 }
 
 class ScanControl {
   Future<void> startBleScan() async {
-    const BasicMessageChannel<dynamic> channel =
-        BasicMessageChannel<dynamic>('dev.flutter.pigeon.ScanControl.startBleScan', StandardMessageCodec());
-    
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.ScanControl.startBleScan', StandardMessageCodec());
+
     final Map<dynamic, dynamic> replyMap = await channel.send(null);
     if (replyMap == null) {
       throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null);
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
     } else if (replyMap['error'] != null) {
       final Map<dynamic, dynamic> error = replyMap['error'];
       throw PlatformException(
@@ -154,22 +177,25 @@ abstract class ScanCallbacks {
   void onScanStopped();
   static void setup(ScanCallbacks api) {
     {
-      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+      const BasicMessageChannel<dynamic> channel =
+      BasicMessageChannel<dynamic>(
           'dev.flutter.pigeon.ScanCallbacks.onScanUpdate',
           StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((dynamic message) async {
-          final Map<dynamic, dynamic> mapMessage =
-              message as Map<dynamic, dynamic>;
+          final Map<dynamic, dynamic> mapMessage = message as Map<
+              dynamic,
+              dynamic>;
           final ListWrapper input = ListWrapper._fromMap(mapMessage);
           api.onScanUpdate(input);
         });
       }
     }
     {
-      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+      const BasicMessageChannel<dynamic> channel =
+      BasicMessageChannel<dynamic>(
           'dev.flutter.pigeon.ScanCallbacks.onScanStarted',
           StandardMessageCodec());
       if (api == null) {

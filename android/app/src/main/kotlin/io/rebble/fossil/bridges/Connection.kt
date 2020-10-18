@@ -20,6 +20,7 @@ import io.rebble.fossil.bluetooth.ConnectionLooper
 import io.rebble.fossil.bluetooth.ConnectionState
 import io.rebble.fossil.bluetooth.watchOrNull
 import io.rebble.fossil.pigeons.BooleanWrapper
+import io.rebble.fossil.pigeons.NumberWrapper
 import io.rebble.fossil.pigeons.Pigeons
 import io.rebble.fossil.util.macAddressToLong
 import io.rebble.fossil.util.macAddressToString
@@ -41,6 +42,8 @@ class Connection @Inject constructor(
 ) : FlutterBridge, Pigeons.ConnectionControl {
     private val connectionCallbacks = bridgeLifecycleController
             .createCallbacks(Pigeons::ConnectionCallbacks)
+    private val pairCallbacks = bridgeLifecycleController
+            .createCallbacks(Pigeons::PairCallbacks)
 
     init {
         bridgeLifecycleController.setupControl(Pigeons.ConnectionControl::setup, this)
@@ -156,6 +159,7 @@ class Connection @Inject constructor(
     }
 
     private fun openConnectionToWatch(macAddress: String) {
+        pairCallbacks.onWatchPairComplete(NumberWrapper(macAddress.macAddressToLong())) {}
         connectionLooper.connectToWatch(macAddress)
     }
 

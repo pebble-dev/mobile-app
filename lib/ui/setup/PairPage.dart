@@ -17,7 +17,8 @@ class PairPage extends StatefulWidget {
 final ConnectionControl connectionControl = ConnectionControl();
 final ScanControl scanControl = ScanControl();
 
-class _PairPageState extends State<PairPage> implements ScanCallbacks {
+class _PairPageState extends State<PairPage>
+    implements ScanCallbacks, PairCallbacks {
   List<PebbleDevice> _pebbles = [];
   bool _scanning = false;
 
@@ -25,6 +26,7 @@ class _PairPageState extends State<PairPage> implements ScanCallbacks {
   void initState() {
     super.initState();
     ScanCallbacks.setup(this);
+    PairCallbacks.setup(this);
     log("Prestart");
     scanControl.startBleScan();
   }
@@ -52,23 +54,7 @@ class _PairPageState extends State<PairPage> implements ScanCallbacks {
   void _targetPebble(PebbleDevice dev) {
     NumberWrapper addressWrapper = NumberWrapper();
     addressWrapper.value = dev.address;
-    connectionControl.connectToWatch(addressWrapper).then((value) => {
-          setState(() {
-            PairedStorage.register(dev)
-                .then((_) => PairedStorage.getDefault().then((def) {
-                      if (def == null) {
-                        PairedStorage.setDefault(dev.address);
-                      }
-                    })); // Register + set as default if no default set
-            SharedPreferences.getInstance().then((value) {
-              if (!value.containsKey("firstRun")) {
-                Navigator.pushReplacementNamed(context, '/moresetup');
-              } else {
-                Navigator.pushReplacementNamed(context, '/home');
-              }
-            });
-          })
-        });
+    connectionControl.connectToWatch(addressWrapper);
   }
 
   @override
@@ -92,6 +78,33 @@ class _PairPageState extends State<PairPage> implements ScanCallbacks {
       _pebbles = (arg.value.cast<Map>())
           .map((element) => PebbleDevice.fromPigeon(element))
           .toList();
+    });
+  }
+
+  @override
+  void onWatchPairComplete(NumberWrapper address) {
+    PebbleDevice dev = _pebbles.firstWhere(
+        (element) => element.address == address.value,
+        orElse: () => null);
+
+    if (dev == null) {
+      return;
+    }
+
+    setState(() {
+      PairedStorage.register(dev)
+          .then((_) => PairedStorage.getDefault().then((def) {
+                if (def == null) {
+                  PairedStorage.setDefault(dev.address);
+                }
+              })); // Register + set as default if no default set
+      SharedPreferences.getInstance().then((value) {
+        if (!value.containsKey("firstRun")) {
+          Navigator.pushReplacementNamed(context, '/moresetup');
+        } else {
+          Navigator.pushReplacementNamed(context, '/home');
+        }
+      });
     });
   }
 
@@ -204,6 +217,8 @@ class _PairPageState extends State<PairPage> implements ScanCallbacks {
 
   @override
   void dispose() {
+    super.dispose();
     ConnectionCallbacks.setup(null);
+    PairCallbacks.setup(null);
   }
 }
