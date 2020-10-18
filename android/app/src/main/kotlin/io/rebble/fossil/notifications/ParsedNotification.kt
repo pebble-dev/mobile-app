@@ -1,7 +1,8 @@
 package io.rebble.fossil.notifications
 
-import io.rebble.libpebblecommon.blobdb.NotificationSource
-import io.rebble.libpebblecommon.blobdb.PushNotification
+import io.rebble.libpebblecommon.packets.blobdb.NotificationSource
+import io.rebble.libpebblecommon.packets.blobdb.PushNotification
+
 
 data class ParsedNotification(
         val subject: String,

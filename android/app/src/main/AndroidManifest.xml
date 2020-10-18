@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="io.rebble.fossil">
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
@@ -100,5 +101,11 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <provider
+            android:authorities="com.getpebble.android.provider.basalt"
+            android:name=".providers.PebbleKitProvider"
+            tools:ignore="ExportedContentProvider"
+            android:exported="true" />
     </application>
 </manifest>

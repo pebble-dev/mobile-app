@@ -1,7 +1,7 @@
 package io.rebble.fossil.bridges
 
 import io.rebble.fossil.pigeons.Pigeons
-import io.rebble.libpebblecommon.blobdb.PushNotification
+import io.rebble.libpebblecommon.packets.blobdb.PushNotification
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
