@@ -201,4 +201,9 @@ class _PairPageState extends State<PairPage> implements ScanCallbacks {
                   ]))
         ]));
   }
+
+  @override
+  void dispose() {
+    ConnectionCallbacks.setup(null);
+  }
 }

@@ -98,4 +98,9 @@ class _TestTabState extends State<TestTab> implements ConnectionCallbacks {
       connectionState = newState;
     });
   }
+
+  @override
+  void dispose() {
+    ConnectionCallbacks.setup(null);
+  }
 }
