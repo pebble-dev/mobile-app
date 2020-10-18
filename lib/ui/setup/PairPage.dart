@@ -218,7 +218,7 @@ class _PairPageState extends State<PairPage>
   @override
   void dispose() {
     super.dispose();
-    ConnectionCallbacks.setup(null);
+    ScanCallbacks.setup(null);
     PairCallbacks.setup(null);
   }
 }
