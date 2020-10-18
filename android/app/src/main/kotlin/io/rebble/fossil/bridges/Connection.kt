@@ -12,6 +12,7 @@ import android.companion.BluetoothLeDeviceFilter
 import android.companion.CompanionDeviceManager
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.IntentSender
 import android.os.Build
 import io.rebble.fossil.MainActivity
@@ -22,6 +23,7 @@ import io.rebble.fossil.bluetooth.watchOrNull
 import io.rebble.fossil.pigeons.BooleanWrapper
 import io.rebble.fossil.pigeons.NumberWrapper
 import io.rebble.fossil.pigeons.Pigeons
+import io.rebble.fossil.util.coroutines.asFlow
 import io.rebble.fossil.util.macAddressToLong
 import io.rebble.fossil.util.macAddressToString
 import kotlinx.coroutines.CoroutineScope
@@ -45,6 +47,8 @@ class Connection @Inject constructor(
     private val pairCallbacks = bridgeLifecycleController
             .createCallbacks(Pigeons::PairCallbacks)
 
+    private var lastSelectedDeviceAddress: String? = null
+
     init {
         bridgeLifecycleController.setupControl(Pigeons.ConnectionControl::setup, this)
 
@@ -64,6 +68,24 @@ class Connection @Inject constructor(
                 ) {}
             }
         }
+
+        coroutineScope.launch {
+            IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED).asFlow(activity)
+                    .collect { intent ->
+                        val device = intent
+                                .getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+                                ?: return@collect
+                        val newBondState = intent.getIntExtra(
+                                BluetoothDevice.EXTRA_BOND_STATE,
+                                BluetoothDevice.BOND_NONE
+                        )
+
+                        if (device.address == lastSelectedDeviceAddress &&
+                                newBondState == BluetoothDevice.BOND_BONDED) {
+                            openConnectionToWatch(device.address)
+                        }
+                    }
+        }
     }
 
     override fun isConnected(): Pigeons.BooleanWrapper {
@@ -71,16 +93,21 @@ class Connection @Inject constructor(
     }
 
     override fun connectToWatch(arg: Pigeons.NumberWrapper) {
-        try {
-            val address = arg.value.macAddressToString()
+        val address = arg.value.macAddressToString()
+        lastSelectedDeviceAddress = address
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                associateWithCompanionDeviceManager(address)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            associateWithCompanionDeviceManager(address)
+        } else {
+            val bluetoothDevice = BluetoothAdapter.getDefaultAdapter()?.getRemoteDevice(address)
+                    ?: return
+
+            if (bluetoothDevice.type == BluetoothDevice.DEVICE_TYPE_CLASSIC &&
+                    bluetoothDevice.bondState != BluetoothDevice.BOND_BONDED) {
+                bluetoothDevice.createBond()
             } else {
                 openConnectionToWatch(address)
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 
@@ -145,6 +172,10 @@ class Connection @Inject constructor(
 
         val address = when (deviceToPair) {
             is BluetoothDevice -> {
+                if (deviceToPair.bondState != BluetoothDevice.BOND_BONDED) {
+                    deviceToPair.createBond()
+                    return
+                }
                 deviceToPair.address
             }
             is ScanResult -> {
