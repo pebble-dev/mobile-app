@@ -3,7 +3,6 @@ package io.rebble.fossil.service
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.ContextCompat
-import io.rebble.fossil.WatchService
 import io.rebble.fossil.bluetooth.ConnectionLooper
 import io.rebble.fossil.bluetooth.ConnectionState
 import kotlinx.coroutines.Dispatchers
