@@ -156,7 +156,6 @@ class Connection @Inject constructor(
     }
 
     private fun openConnectionToWatch(macAddress: String) {
-        println("Open watch $macAddress")
         connectionLooper.connectToWatch(macAddress)
     }
 

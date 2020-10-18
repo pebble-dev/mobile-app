@@ -59,11 +59,6 @@ class WatchService : LifecycleService() {
         }
 
         startNotificationLoop()
-
-        if (connectionLooper.connectionState.value is ConnectionState.Disconnected) {
-            injectionComponent.createPairedStorage()
-                    .getMacAddressOfDefaultPebble()?.let { connectionLooper.connectToWatch(it) }
-        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -80,9 +75,9 @@ class WatchService : LifecycleService() {
 
                 when (it) {
                     is ConnectionState.Disconnected -> {
-                        icon = R.drawable.ic_notification_disconnected
-                        titleText = "Disconnected"
-                        deviceName = null
+                        // There is no disconnected notification
+                        // service will be stopped
+                        return@collect
                     }
                     is ConnectionState.Connecting -> {
                         icon = R.drawable.ic_notification_disconnected
