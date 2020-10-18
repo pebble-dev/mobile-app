@@ -10,6 +10,8 @@ class TestTab extends StatefulWidget {
 class _TestTabState extends State<TestTab> implements ConnectionCallbacks {
   WatchConnectionState connectionState = new WatchConnectionState();
   final NotificationsControl notifications = NotificationsControl();
+
+  final ConnectionControl connectionControl = ConnectionControl();
   final DebugControl debug = DebugControl();
 
   @override
@@ -39,7 +41,13 @@ class _TestTabState extends State<TestTab> implements ConnectionCallbacks {
               onPressed: () {
                 notifications.sendTestNotification();
               },
-              child: Text("Button"),
+              child: Text("Test Notification"),
+            ),
+            RaisedButton(
+              onPressed: () {
+                connectionControl.disconnect();
+              },
+              child: Text("Disconnect"),
             ),
             RaisedButton(
               onPressed: () {
