@@ -19,6 +19,7 @@ class FossilApplication : FlutterApplication() {
 
         initLogging()
 
+        component.initNotificationChannels()
         beginConnectingToDefaultWatch()
     }
 

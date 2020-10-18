@@ -3,6 +3,7 @@ package io.rebble.fossil.di
 import android.app.Application
 import dagger.BindsInstance
 import dagger.Component
+import io.rebble.fossil.NotificationChannelManager
 import io.rebble.fossil.bluetooth.BlueCommon
 import io.rebble.fossil.bluetooth.ConnectionLooper
 import io.rebble.fossil.datasources.PairedStorage
@@ -25,6 +26,7 @@ interface AppComponent {
     fun createConnectionLooper(): ConnectionLooper
     fun createPairedStorage(): PairedStorage
     fun initServiceLifecycleControl(): ServiceLifecycleControl
+    fun initNotificationChannels(): NotificationChannelManager
 
     fun createActivitySubcomponentFactory(): ActivitySubcomponent.Factory
     fun createServiceSubcomponentFactory(): ServiceSubcomponent.Factory
