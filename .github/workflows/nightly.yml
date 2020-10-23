@@ -16,6 +16,8 @@ jobs:
       - run: flutter pub get
 #      - run: flutter analyze
       - run: flutter build apk --debug
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v1
         with: 
           name: debug-apk
