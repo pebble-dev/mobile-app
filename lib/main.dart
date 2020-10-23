@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fossil/ui/Localize.dart';
-import 'package:fossil/ui/Router.dart';
+import 'package:fossil/ui/Router.dart' as router;
 import 'package:fossil/ui/Theme.dart';
 
 String getBootUrl = "https://boot.rebble.io/";
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: RebbleTheme.appTheme,
       //home: SplashPage(),
       initialRoute: '/',
-      onGenerateRoute: Router.generateRoute,
+      onGenerateRoute: router.Router.generateRoute,
       // List all of the app's supported locales here
       supportedLocales: [
         Locale('en'),
