@@ -14,7 +14,7 @@ jobs:
           channel: 'stable'
       
       - run: flutter pub get
-      - run: flutter analyze
+#      - run: flutter analyze
       - run: flutter build apk --debug
       - uses: actions/upload-artifact@v1
         with: 
