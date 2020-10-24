@@ -2,6 +2,8 @@ package io.rebble.fossil.bluetooth
 
 import io.rebble.fossil.util.shl
 import io.rebble.fossil.util.shr
+import io.rebble.fossil.util.toHexString
+import timber.log.Timber
 import java.nio.ByteBuffer
 import kotlin.experimental.and
 import kotlin.experimental.or
@@ -24,7 +26,7 @@ class GATTPacket {
 
     val data: ByteArray
     val type: PacketType
-    val sequence: Short
+    val sequence: UShort
 
     companion object {
         private val typeMask: Byte = 0b111
@@ -32,13 +34,16 @@ class GATTPacket {
     }
 
     constructor(data: ByteArray) {
+        Timber.w("${data.toHexString()} -> ${ubyteArrayOf((data[0] and sequenceMask).toUByte()).toHexString()} -> ${ubyteArrayOf((data[0] and sequenceMask).toUByte() shr 3).toHexString()}")
         this.data = data
-        sequence = ((data[0] and sequenceMask) shr 3).toShort()
+        sequence = ((data[0] and sequenceMask).toUByte() shr 3).toUShort()
+        if (sequence < 0U || sequence > 31U) throw IllegalArgumentException("Sequence must be between 0 and 31 inclusive")
         type = PacketType.fromHeader(data[0])
     }
 
-    constructor(type: PacketType, sequence: Short, data: ByteArray? = null) {
+    constructor(type: PacketType, sequence: UShort, data: ByteArray? = null) {
         this.sequence = sequence
+        if (sequence < 0U || sequence > 31U) throw IllegalArgumentException("Sequence must be between 0 and 31 inclusive")
         this.type = type
 
         if (data != null) {
@@ -49,7 +54,7 @@ class GATTPacket {
 
         val dataBuf = ByteBuffer.wrap(this.data)
 
-        dataBuf.put((type.value or (((sequence shl 3) and sequenceMask.toShort()).toByte())))
+        dataBuf.put((type.value or (((sequence shl 3) and sequenceMask.toUShort()).toByte())))
         if (data != null) {
             dataBuf.put(data)
         }

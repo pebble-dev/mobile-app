@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import timber.log.Timber
 import java.nio.ByteBuffer
-import java.util.*
 import kotlin.coroutines.suspendCoroutine
 
 
@@ -61,16 +60,6 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
 
     fun getTarget(): BluetoothDevice? {
         return targetPebble
-    }
-
-    private fun resolveGattError(status: Int): String {
-        val err = BluetoothGatt::class.java.declaredFields.find { p ->
-            p.type.name == "int" &&
-                    p.name.startsWith("GATT_") &&
-                    p.getInt(null) == status
-        }
-        return err?.name?.replace("GATT", "")?.replace("_", "")?.toLowerCase(Locale.ROOT)?.capitalize()
-                ?: "Unknown error"
     }
 
     /**
@@ -202,7 +191,7 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
                     }
                 }
             } else {
-                Timber.e("Connection error: ${resolveGattError(status)} (${status})")
+                Timber.e("Connection error: ${GattStatus(status)})")
             }
         }
         override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {

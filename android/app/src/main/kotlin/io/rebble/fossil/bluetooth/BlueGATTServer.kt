@@ -1,6 +1,6 @@
 package io.rebble.fossil.bluetooth
 
-import android.bluetooth.*
+/*import android.bluetooth.*
 import android.content.Context
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -148,4 +148,4 @@ class BlueGATTServer(val context: Context, val targetDevice: BluetoothDevice, pr
         return bluetoothGattServer?.notifyCharacteristicChanged(targetDevice, dataCharacteristic, false)
                 ?: false
     }
-}
+}*/

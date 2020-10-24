@@ -2,7 +2,6 @@ package io.rebble.fossil.bluetooth
 
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
-import android.util.Log
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import timber.log.Timber
@@ -19,19 +18,20 @@ class BlueGATTClient(private var gatt: BluetoothGatt, private val gattPacketCall
     private val packetWriteChannel = Channel<GATTPacket>(0)
 
     override var isConnected = false
-    private val ackPending: MutableMap<Short, CompletableDeferred<GATTPacket>> = mutableMapOf()
+    private val ackPending: MutableMap<UShort, CompletableDeferred<GATTPacket>> = mutableMapOf()
+    private var sendPending: CompletableDeferred<Boolean>? = null
 
     private var mtu = 23
-    private var seq: Short = 0
-    private var remoteSeq: Short = 0
+    private var seq: UShort = 0U
+    private var remoteSeq: UShort = 0U
 
-    private fun getSeq(): Short {
-        if (seq + 1 > 31) seq = 0
+    private fun getSeq(): UShort {
+        if (seq == 32U.toUShort()) seq = 0U
         return seq++
     }
 
-    private fun getExpectedRemoteSeq(): Short {
-        if (remoteSeq + 1 > 31) remoteSeq = 0
+    private fun getExpectedRemoteSeq(): UShort {
+        if (remoteSeq == 32U.toUShort()) remoteSeq = 0U
         return remoteSeq++
     }
 
@@ -59,9 +59,10 @@ class BlueGATTClient(private var gatt: BluetoothGatt, private val gattPacketCall
                 val packet = packetWriteChannel.receive()
                 var success = false
                 var tries = 0
+                if (packet.type == GATTPacket.PacketType.DATA) Timber.d("Writing data packet ${packet.sequence}")
                 while (++tries <= 3 && !success) {
                     dataWriteCharacteristic.value = packet.toByteArray()
-                    if (!gatt.writeCharacteristic(dataWriteCharacteristic)) {
+                    if (!requestWritePacket()) {
                         Timber.e("Failed to write to data characteristic")
                         //TODO: retry/disconnect?
                     }
@@ -81,19 +82,13 @@ class BlueGATTClient(private var gatt: BluetoothGatt, private val gattPacketCall
         }
     }
 
-    /*private suspend fun waitForAck(ackSeq: Short, ackType: GATTPacket.PacketType): Boolean {
-        try {
-            return withTimeout(10000L) {
-                val packet = ackReadChannel.receive()
-                return@withTimeout packet.sequence == ackSeq
-            }
-        } catch (e: TimeoutCancellationException) {
-            Timber.e("Timed out waiting for ACK")
-            return false
-        }
-    }*/
+    private suspend fun requestWritePacket(): Boolean {
+        sendPending?.await()
+        sendPending = CompletableDeferred()
+        return gatt.writeCharacteristic(dataWriteCharacteristic)
+    }
 
-    private suspend fun sendAck(sequence: Short, reset: Boolean = false) {
+    private suspend fun sendAck(sequence: UShort, reset: Boolean = false) {
         Timber.d("Sending ACK for ${sequence}")
         packetWriteChannel.send(GATTPacket(if (reset) GATTPacket.PacketType.RESET_ACK else GATTPacket.PacketType.ACK, sequence))
     }
@@ -128,9 +123,11 @@ class BlueGATTClient(private var gatt: BluetoothGatt, private val gattPacketCall
     }
 
     override fun onCharacteristicWrite(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
+        val gattStatus = GattStatus(status)
         if (!isConnected) return
+        sendPending?.complete(true)
         if (characteristic?.uuid == dataWriteCharacteristic.uuid) {
-            if (status != BluetoothGatt.GATT_SUCCESS) Log.e(logTag, "Data characteristic write failed!")
+            if (!gattStatus.isSuccess()) Timber.e(logTag, "Data characteristic write failed: ${gattStatus}")
         }
     }
 
@@ -147,7 +144,7 @@ class BlueGATTClient(private var gatt: BluetoothGatt, private val gattPacketCall
                     dataReadChannel.offer(packet)
                 }
                 GATTPacket.PacketType.RESET -> {
-                    remoteSeq = 0
+                    remoteSeq = 0U
                     GlobalScope.launch { sendAck(packet.sequence, true) } //XXX
                 }
             }
