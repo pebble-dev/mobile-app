@@ -1,151 +1,308 @@
 package io.rebble.fossil.bluetooth
 
-/*import android.bluetooth.*
+import android.bluetooth.*
 import android.content.Context
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.receiveOrNull
 import timber.log.Timber
 import kotlin.experimental.and
 
-class BlueGATTServer(val context: Context, val targetDevice: BluetoothDevice, private val gattPacketCallback: suspend (GATTPacket) -> Unit) : BlueGATTIO {
+class BlueGATTServer(private val context: Context, private val gattPacketCallback: suspend (GATTPacket) -> Unit) : BlueGATTIO {
+    private lateinit var dataReadCharacteristic: BluetoothGattCharacteristic
+    private lateinit var dataWriteCharacteristic: BluetoothGattCharacteristic
+
+    private val dataReadChannel = Channel<GATTPacket>(Channel.BUFFERED)
+    private val packetWriteChannel = Channel<GATTPacket>(0)
+
     override var isConnected = false
-    var bluetoothGattServer: BluetoothGattServer? = null
-    var dataCharacteristic: BluetoothGattCharacteristic? = null
+    private val ackPending: MutableMap<UShort, CompletableDeferred<GATTPacket>> = mutableMapOf()
+    private var sendPending: CompletableDeferred<Boolean>? = null
+    private var targetDevice: BluetoothDevice? = null
 
-    private var mtu = 23
-    private var seq: Short = 0
+    private var mtu = BlueGATTConstants.DEFAULT_MTU
+    private var seq: UShort = 0U
+    private var remoteSeq: UShort = 0U
 
-    private fun getSeq(): Short {
-        seq++
-        if (seq > 31) seq = 0
-        return seq
-    }
+    private lateinit var bluetoothGattServer: BluetoothGattServer
+    private var dataCharacteristic: BluetoothGattCharacteristic
 
-    fun openServer() {
-        if (bluetoothGattServer == null) {
-            val bluetoothManager = context.applicationContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-            bluetoothGattServer = bluetoothManager.openGattServer(context, bluetoothGattServerCallbacks)
-            if (bluetoothGattServer != null) {
-                val gattService = BluetoothGattService(BlueGATTConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID_SERVER, BluetoothGattService.SERVICE_TYPE_PRIMARY)
-                gattService.addCharacteristic(BluetoothGattCharacteristic(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID, BluetoothGattCharacteristic.PROPERTY_READ, BluetoothGattCharacteristic.PERMISSION_READ_ENCRYPTED))
+    private val gattServerCallbacks = object : BluetoothGattServerCallback() {
+        override fun onServiceAdded(status: Int, service: BluetoothGattService?) {
+            val gattStatus = GattStatus(status)
+            // No idea why this is needed, but stock app does this
+            if (service?.uuid == BlueGATTConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID_SERVER && gattStatus.isSuccess()) {
+                val padService = BluetoothGattService(BlueGATTConstants.UUIDs.FAKE_SERVICE_UUID, BluetoothGattService.SERVICE_TYPE_PRIMARY)
+                padService.addCharacteristic(BluetoothGattCharacteristic(BlueGATTConstants.UUIDs.FAKE_SERVICE_UUID, BluetoothGattCharacteristic.PROPERTY_READ, BluetoothGattCharacteristic.PERMISSION_READ))
+                bluetoothGattServer.addService(padService)
+            } else if (service?.uuid == BlueGATTConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID_SERVER) {
+                Timber.e("Failed to add service! Status: ${gattStatus}")
+            }
+        }
 
-                dataCharacteristic = BluetoothGattCharacteristic(BlueGATTConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_READ,
-                        BluetoothGattCharacteristic.PROPERTY_NOTIFY or BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE,
-                        BluetoothGattCharacteristic.PERMISSION_WRITE_ENCRYPTED)
-                dataCharacteristic!!.addDescriptor(BluetoothGattDescriptor(BlueGATTConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR, BluetoothGattDescriptor.PERMISSION_WRITE))
-                gattService.addCharacteristic(dataCharacteristic)
+        override fun onCharacteristicWriteRequest(device: BluetoothDevice?, requestId: Int, characteristic: BluetoothGattCharacteristic?, preparedWrite: Boolean, responseNeeded: Boolean, offset: Int, value: ByteArray?) {
+            if (targetDevice?.address == device!!.address) {
+                if (value != null) {
+                    val packet = GATTPacket(value)
+                    when (packet.type) {
+                        GATTPacket.PacketType.RESET_ACK, GATTPacket.PacketType.ACK -> {
+                            ackPending.remove(packet.sequence)?.complete(packet)
+                            Timber.d("Got ACK for ${packet.sequence}")
+                        }
+                        GATTPacket.PacketType.DATA -> {
+                            dataReadChannel.offer(packet)
+                        }
+                        GATTPacket.PacketType.RESET -> {
+                            remoteSeq = 0U
+                            GlobalScope.launch { sendAck(packet.sequence, true) } //XXX
+                        }
+                    }
+                } else {
+                    Timber.w("Data was null, ignoring")
+                }
+            } else {
+                Timber.w("Device was not target device, ignoring")
+            }
+        }
 
-                bluetoothGattServer?.addService(gattService)
-                if (bluetoothGattServer?.getService(gattService.uuid) != null) {
-                    Timber.i("Server started successfully")
+        override fun onCharacteristicReadRequest(device: BluetoothDevice?, requestId: Int, offset: Int, characteristic: BluetoothGattCharacteristic?) {
+            if (targetDevice?.address == device!!.address) {
+                if (characteristic?.uuid == BlueGATTConstants.UUIDs.META_CHARACTERISTIC_SERVER) {
+                    if (!bluetoothGattServer.sendResponse(device, requestId, 0, offset, BlueGATTConstants.SERVER_META_RESPONSE)) {
+                        Timber.e("Error sending meta response to device")
+                        //TODO: possibly disconnect?
+                    }
+                }
+            } else {
+                Timber.w("Device was not target device, ignoring")
+            }
+        }
+
+        override fun onDescriptorWriteRequest(device: BluetoothDevice?, requestId: Int, descriptor: BluetoothGattDescriptor?, preparedWrite: Boolean, responseNeeded: Boolean, offset: Int, value: ByteArray?) {
+            if (targetDevice?.address == device!!.address) {
+                if (descriptor?.uuid == BlueGATTConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER) {
+                    if (value != null) {
+                        if ((value[0] and 1) > 0) { // if notifications enabled
+                            //TODO: start sending packets
+                            Timber.d("!! START SEND PACKETS !!")
+                        } else {
+                            Timber.d("Device requested disable notifications")
+                            //TODO: disconnect
+                        }
+                    } else {
+                        Timber.w("Data was null, ignoring")
+                    }
+                }
+            } else {
+                Timber.w("Device was not target device, ignoring")
+            }
+        }
+
+        override fun onNotificationSent(device: BluetoothDevice?, status: Int) {
+            if (targetDevice?.address == device!!.address) {
+                sendPending?.complete(GattStatus(status).isSuccess())
+            }
+        }
+
+        override fun onConnectionStateChange(device: BluetoothDevice?, status: Int, newState: Int) {
+            super.onConnectionStateChange(device, status, newState)
+            val gattStatus = GattStatus(status)
+            if (gattStatus.isSuccess()) {
+                when (newState) {
+                    BluetoothGatt.STATE_CONNECTED -> {
+                        if (targetDevice != null) {
+                            Timber.w("New device attempted connection when targetDevice is already set, ignoring")
+                        } else {
+                            Timber.d("Device connected")
+                            targetDevice = device
+                        }
+                    }
+
+                    BluetoothGatt.STATE_DISCONNECTED -> {
+                        if (targetDevice?.address == device!!.address) {
+                            Timber.d("Device disconnected, resetting")
+                            targetDevice = null
+                            mtu = BlueGATTConstants.DEFAULT_MTU
+                            seq = 0U
+                            remoteSeq = 0U
+                            sendPending?.cancel()
+                            ackPending.clear()
+                            isConnected = false
+                            GlobalScope.launch {
+                                while (!dataReadChannel.isEmpty) {
+                                    dataReadChannel.receiveOrNull()
+                                }
+                                while (!packetWriteChannel.isEmpty) {
+                                    packetWriteChannel.receiveOrNull()
+                                }
+                            }
+                            //TODO: fully reset for next watch to connect cleanly
+                        }
+                    }
                 }
             }
         }
     }
 
-    override fun sendPacket(bytes: ByteArray, callback: (Boolean) -> Unit) {
-        val packet = GATTPacket(GATTPacket.PacketType.DATA, getSeq(), bytes)
-        if (!notifyDevice(packet.toByteArray())) {
-            callback(false)
-        } else {
-            //TODO Callback
+    init {
+        val bluetoothManager = context.getApplicationContext().getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        bluetoothGattServer = bluetoothManager.openGattServer(context, gattServerCallbacks)!!
+
+        val gattService = BluetoothGattService(BlueGATTConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID_SERVER, BluetoothGattService.SERVICE_TYPE_PRIMARY)
+        gattService.addCharacteristic(BluetoothGattCharacteristic(BlueGATTConstants.UUIDs.META_CHARACTERISTIC_SERVER, BluetoothGattCharacteristic.PROPERTY_READ, BluetoothGattCharacteristic.PERMISSION_READ_ENCRYPTED))
+        dataCharacteristic = BluetoothGattCharacteristic(BlueGATTConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER, BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE or BluetoothGattCharacteristic.PROPERTY_NOTIFY, BluetoothGattCharacteristic.PERMISSION_WRITE_ENCRYPTED)
+        dataCharacteristic.addDescriptor(BluetoothGattDescriptor(BlueGATTConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR, BluetoothGattDescriptor.PERMISSION_WRITE))
+        gattService.addCharacteristic(dataCharacteristic)
+        if (bluetoothGattServer.getService(BlueGATTConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID_SERVER) != null) {
+            Timber.w("Service already registered, clearing services and then re-registering")
+            this.bluetoothGattServer.clearServices()
         }
+        if (bluetoothGattServer.addService(gattService)) {
+            Timber.d("Server set up and ready for connection")
+        } else {
+            Timber.e("Failed to add service")
+        }
+        GlobalScope.launch { packetWriter() }
+        GlobalScope.launch { packetReader() }
     }
 
-    override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
-
+    private fun getSeq(): UShort {
+        if (seq == 32U.toUShort()) seq = 0U
+        return seq++
     }
 
-    override fun onCharacteristicWrite(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
-
+    private fun getExpectedRemoteSeq(): UShort {
+        if (remoteSeq == 32U.toUShort()) remoteSeq = 0U
+        return remoteSeq++
     }
 
     override fun setMTU(newMTU: Int) {
         this.mtu = newMTU
     }
 
-    override fun requestReset() {
-        notifyDevice(GATTPacket(GATTPacket.PacketType.RESET, getSeq()).toByteArray())
+    private suspend fun packetReader() = coroutineScope {
+        launch(Dispatchers.IO) {
+            while (true) {
+                val packet = dataReadChannel.receive()
+                val expected = getExpectedRemoteSeq()
+                Timber.d("Packet ${packet.sequence}, Expected ${expected}")
+                if (packet.sequence == expected) {
+                    sendAck(packet.sequence)
+                    gattPacketCallback(packet)
+                }
+            }
+        }
     }
 
-    val bluetoothGattServerCallbacks = object : BluetoothGattServerCallback() {
-        override fun onConnectionStateChange(device: BluetoothDevice?, status: Int, newState: Int) {
-            if (device != null && device.address != targetDevice?.address) return
-            if (status != BluetoothGatt.GATT_SUCCESS) {
-                Timber.w("ConnectionState error status of ${status}")
-            }
-            if (newState == BluetoothGattServer.STATE_CONNECTED) {
-                Timber.i("Device connected to server")
-            } else if (newState == BluetoothGattServer.STATE_DISCONNECTED) {
-                Timber.i("Device disconnected from server")
-            }
-        }
-
-        override fun onDescriptorWriteRequest(device: BluetoothDevice?, requestId: Int, descriptor: BluetoothGattDescriptor?, preparedWrite: Boolean, responseNeeded: Boolean, offset: Int, value: ByteArray?) {
-            if (device?.address != targetDevice.address) return
-            Timber.d("onDescriptorWriteRequest") //TODO: Remove
-            if (descriptor?.characteristic?.uuid == BlueGATTConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_READ) {
-                if (value == null) {
-                    Timber.e("GATT packet was null")
-                } else {
-                    val notifsEnabled = value[0] and 1 > 0
-                    if (!notifsEnabled) {
-                        Timber.w("Notifications disabled, disconnecting")
-                        TODO("Disconnect")
+    private suspend fun packetWriter() = coroutineScope {
+        launch(Dispatchers.IO) {
+            while (true) {
+                val packet = packetWriteChannel.receive()
+                var success = false
+                var tries = 0
+                if (packet.type == GATTPacket.PacketType.DATA) Timber.d("Writing data packet ${packet.sequence}")
+                if (packet.data.size >= mtu) {
+                    Timber.e("Packet size too large for MTU")
+                }
+                while (++tries <= 3 && !success) {
+                    dataWriteCharacteristic.value = packet.toByteArray()
+                    if (!requestWritePacket()) {
+                        Timber.e("Failed to write to data characteristic")
+                        //TODO: retry/disconnect?
+                    }
+                    try {
+                        withTimeout(1000) {
+                            ackPending[packet.sequence]?.await()
+                            success = true
+                        }
+                    } catch (e: TimeoutCancellationException) {
+                        tries++
                     }
                 }
-            }
-        }
-
-        override fun onCharacteristicWriteRequest(device: BluetoothDevice?, requestId: Int, characteristic: BluetoothGattCharacteristic?, preparedWrite: Boolean, responseNeeded: Boolean, offset: Int, value: ByteArray?) {
-            if (device?.address != targetDevice?.address) return
-            if (value == null) {
-                Timber.e("Received packet was null")
-                return;
-            }
-            Timber.d("Got packet back") //TODO: Remove
-
-            GlobalScope.launch { gattPacketCallback(GATTPacket(value)) } //XXX
-        }
-
-        override fun onCharacteristicReadRequest(device: BluetoothDevice?, requestId: Int, offset: Int, characteristic: BluetoothGattCharacteristic?) {
-            if (device?.address != targetDevice?.address) return
-            Timber.d("onCharacteristicReadRequest") //TODO: Remove
-
-            if (characteristic?.uuid == BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID) {
-                val metaResponse = byteArrayOf(0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1) // minSupportedGattVer, maxSupportedGattVer, ??
-                if (!(bluetoothGattServer?.sendResponse(device, requestId, 0, offset, metaResponse)
-                                ?: false)) {
-                    Timber.e("Error sending response!")
-                    TODO("Disconnect and request reconnect?")
+                if (!success) {
+                    Timber.e("Gave up sending packet, waiting for ACK timed out on all attempts")
                 }
             }
         }
+    }
 
-        override fun onServiceAdded(status: Int, service: BluetoothGattService?) {
-            if (service?.uuid == BlueGATTConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID_SERVER && status == BluetoothGatt.GATT_SUCCESS) {
-                Timber.d("Added GATT device service")
-                val padService = BluetoothGattService(BlueGATTConstants.UUIDs.FAKE_SERVICE_UUID, 0)
-                padService.addCharacteristic(BluetoothGattCharacteristic(BlueGATTConstants.UUIDs.FAKE_SERVICE_UUID, BluetoothGattCharacteristic.PROPERTY_READ, BluetoothGattCharacteristic.PERMISSION_READ))
-                bluetoothGattServer?.addService(padService)
+    private suspend fun requestWritePacket(): Boolean {
+        sendPending?.await()
+        sendPending = CompletableDeferred()
+        if (targetDevice != null) {
+            return bluetoothGattServer.notifyCharacteristicChanged(targetDevice, dataCharacteristic, false)
+        }
+        return false
+    }
+
+    private suspend fun sendAck(sequence: UShort, reset: Boolean = false) {
+        Timber.d("Sending ACK for ${sequence}")
+        packetWriteChannel.send(GATTPacket(if (reset) GATTPacket.PacketType.RESET_ACK else GATTPacket.PacketType.ACK, sequence))
+    }
+
+    suspend fun sendBytesToDevice(bytes: ByteArray): Boolean {
+        val mtu = this.mtu
+
+        val splitBytes = BlueLEDriver.splitBytesByMTU(bytes, mtu)
+
+        splitBytes.forEach {
+            val thisSeq = getSeq()
+            val result = CompletableDeferred<GATTPacket>()
+            ackPending[thisSeq] = result
+            packetWriteChannel.send(GATTPacket(GATTPacket.PacketType.DATA, thisSeq, it))
+            try {
+                withTimeout(3100) {
+                    result.await()
+                }
+            } catch (e: TimeoutCancellationException) {
+                return false
             }
         }
+        return true
+    }
 
-        override fun onNotificationSent(device: BluetoothDevice?, status: Int) {
-            if (device?.address != targetDevice?.address) return
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                Timber.v("Sent packet successfully")
+    override fun requestReset() {
+        val thisSeq = getSeq()
+        GlobalScope.launch { packetWriteChannel.send(GATTPacket(GATTPacket.PacketType.RESET, thisSeq)) }
+    }
+
+    override fun onCharacteristicWrite(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
+        val gattStatus = GattStatus(status)
+        if (!isConnected) return
+        sendPending?.complete(true)
+        if (characteristic?.uuid == dataWriteCharacteristic.uuid) {
+            if (!gattStatus.isSuccess()) Timber.e("Data characteristic write failed: ${gattStatus}")
+        }
+    }
+
+
+    override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
+        if (characteristic?.uuid == BlueGATTConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_READ && characteristic != null) {
+            val packet = GATTPacket(characteristic.value)
+            when (packet.type) {
+                GATTPacket.PacketType.RESET_ACK, GATTPacket.PacketType.ACK -> {
+                    ackPending.remove(packet.sequence)?.complete(packet)
+                    Timber.d("Got ACK for ${packet.sequence}")
+                }
+                GATTPacket.PacketType.DATA -> {
+                    dataReadChannel.offer(packet)
+                }
+                GATTPacket.PacketType.RESET -> {
+                    remoteSeq = 0U
+                    GlobalScope.launch { sendAck(packet.sequence, true) } //XXX
+                }
             }
+        }
+    }
+
+    override fun sendPacket(bytes: ByteArray, callback: (Boolean) -> Unit) {
+        GlobalScope.launch {
+            callback(sendBytesToDevice(bytes))
         }
     }
 
     override fun connectPebble(): Boolean {
-        return bluetoothGattServer != null //TODO
+        return true
     }
 
-    private fun notifyDevice(bytes: ByteArray): Boolean {
-        dataCharacteristic?.setValue(bytes)
-        return bluetoothGattServer?.notifyCharacteristicChanged(targetDevice, dataCharacteristic, false)
-                ?: false
-    }
-}*/
+}

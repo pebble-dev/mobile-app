@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import io.rebble.fossil.FossilApplication
@@ -31,9 +32,18 @@ class WatchService : LifecycleService() {
     private lateinit var connectionLooper: ConnectionLooper
     lateinit var notificationService: NotificationService
         private set
+    private var mainNotifBuilder: NotificationCompat.Builder? = null
 
 
     override fun onCreate() {
+        mainNotifBuilder = NotificationCompat
+                .Builder(this@WatchService, NOTIFICATION_CHANNEL_WATCH_CONNECTING)
+                .setSmallIcon(R.drawable.ic_notification_disconnected)
+                .setContentTitle("Waiting to connect")
+                .setContentText(null)
+                .setSmallIcon(R.drawable.ic_notification_disconnected)
+        startForeground(1, mainNotifBuilder!!.build())
+
         val injectionComponent = (applicationContext as FossilApplication).component
 
         coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
@@ -57,7 +67,8 @@ class WatchService : LifecycleService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        return START_NOT_STICKY
+        startForeground(1, mainNotifBuilder!!.build())
+        return START_STICKY
     }
 
     private fun startNotificationLoop() {
@@ -88,14 +99,13 @@ class WatchService : LifecycleService() {
                     }
                 }
 
-                val mainNotifBuilder = NotificationCompat
+                mainNotifBuilder = NotificationCompat
                         .Builder(this@WatchService, channel)
                         .setSmallIcon(R.drawable.ic_notification_disconnected)
                         .setContentTitle(titleText)
                         .setContentText(deviceName)
                         .setSmallIcon(icon)
-
-                startForeground(1, mainNotifBuilder.build())
+                NotificationManagerCompat.from(this@WatchService).notify(1, mainNotifBuilder!!.build())
             }
         }
     }

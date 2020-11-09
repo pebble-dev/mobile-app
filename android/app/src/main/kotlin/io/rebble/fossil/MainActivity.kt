@@ -26,7 +26,7 @@ import kotlin.system.exitProcess
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class MainActivity : FlutterActivity() {
-    private lateinit var coroutineScope: CoroutineScope
+    lateinit var coroutineScope: CoroutineScope
     private lateinit var flutterBridges: Set<FlutterBridge>
 
     var isBound = false

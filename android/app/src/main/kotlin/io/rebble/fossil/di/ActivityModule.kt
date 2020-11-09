@@ -1,7 +1,6 @@
 package io.rebble.fossil.di
 
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
 import dagger.Module
 import dagger.Provides
 import io.flutter.embedding.engine.FlutterEngine
@@ -18,7 +17,7 @@ class ActivityModule {
 
     @Provides
     fun provideCoroutineScope(mainActivity: MainActivity): CoroutineScope {
-        return mainActivity.lifecycleScope
+        return mainActivity.coroutineScope
     }
 
     @Provides

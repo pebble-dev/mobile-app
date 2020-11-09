@@ -5,9 +5,6 @@ import android.bluetooth.BluetoothGattCharacteristic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import timber.log.Timber
-import java.nio.ByteBuffer
-import kotlin.math.ceil
-import kotlin.math.min
 
 class BlueGATTClient(private var gatt: BluetoothGatt, private val gattPacketCallback: suspend (GATTPacket) -> Unit) : BlueGATTIO {
     private val logTag = "BlueGATTClient"
@@ -21,7 +18,7 @@ class BlueGATTClient(private var gatt: BluetoothGatt, private val gattPacketCall
     private val ackPending: MutableMap<UShort, CompletableDeferred<GATTPacket>> = mutableMapOf()
     private var sendPending: CompletableDeferred<Boolean>? = null
 
-    private var mtu = 23
+    private var mtu = BlueGATTConstants.DEFAULT_MTU
     private var seq: UShort = 0U
     private var remoteSeq: UShort = 0U
 
@@ -60,6 +57,9 @@ class BlueGATTClient(private var gatt: BluetoothGatt, private val gattPacketCall
                 var success = false
                 var tries = 0
                 if (packet.type == GATTPacket.PacketType.DATA) Timber.d("Writing data packet ${packet.sequence}")
+                if (packet.data.size >= mtu) {
+                    Timber.e("Packet size too large for MTU")
+                }
                 while (++tries <= 3 && !success) {
                     dataWriteCharacteristic.value = packet.toByteArray()
                     if (!requestWritePacket()) {
@@ -96,16 +96,13 @@ class BlueGATTClient(private var gatt: BluetoothGatt, private val gattPacketCall
     suspend fun sendBytesToDevice(bytes: ByteArray): Boolean {
         val mtu = this.mtu
 
-        val count = ceil(bytes.size.toFloat() / mtu.toFloat()).toInt()
-        val buf = ByteBuffer.wrap(bytes)
-        for (i in 0..count - 1) {
-            val payload = ByteArray(min(mtu, buf.array().size - buf.position()))
-            buf.get(payload)
+        val splitBytes = BlueLEDriver.splitBytesByMTU(bytes, mtu)
 
+        splitBytes.forEach {
             val thisSeq = getSeq()
             val result = CompletableDeferred<GATTPacket>()
             ackPending[thisSeq] = result
-            packetWriteChannel.send(GATTPacket(GATTPacket.PacketType.DATA, thisSeq, payload))
+            packetWriteChannel.send(GATTPacket(GATTPacket.PacketType.DATA, thisSeq, it))
             try {
                 withTimeout(3100) {
                     result.await()

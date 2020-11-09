@@ -46,12 +46,18 @@ class BleScanner @Inject constructor() {
                             if (device.name != null &&
                                     device.type == BluetoothDevice.DEVICE_TYPE_LE &&
                                     (device.name.startsWith("Pebble ") ||
-                                            device.name.startsWith("Pebble-LE")) &&
-                                    !foundDevices.any { it.bluetoothDevice.address == device.address }) {
-
-                                val bluePebbleDevice = BluePebbleDevice(result)
-                                foundDevices = foundDevices + bluePebbleDevice
-                                emit(foundDevices)
+                                            device.name.startsWith("Pebble-LE"))) {
+                                val i = foundDevices.indexOfFirst { it.bluetoothDevice.address == device.address }
+                                if (i < 0) {
+                                    val bluePebbleDevice = BluePebbleDevice(result)
+                                    foundDevices = foundDevices + bluePebbleDevice
+                                    emit(foundDevices)
+                                } else if (foundDevices[i].leMeta?.color != null) {
+                                    val fd = foundDevices as MutableList
+                                    fd[i] = BluePebbleDevice(result)
+                                    foundDevices = fd
+                                    emit(foundDevices)
+                                }
                             }
                         }
                         stopTrigger.onAwait {

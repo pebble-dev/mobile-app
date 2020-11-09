@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.flow
 import timber.log.Timber
 import java.nio.ByteBuffer
 import kotlin.coroutines.suspendCoroutine
+import kotlin.math.ceil
+import kotlin.math.min
 
 
 class BlueLEDriver(private val targetPebble: BluetoothDevice, private val context: Context, private val packetCallback: suspend (ByteArray) -> Unit) : BlueIO {
@@ -21,6 +23,23 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
     init {
         if (targetPebble.type == BluetoothDevice.DEVICE_TYPE_CLASSIC || targetPebble.type == BluetoothDevice.DEVICE_TYPE_UNKNOWN) {
             throw IllegalArgumentException("Non-LE device should not use LE driver")
+        }
+    }
+
+    companion object {
+        fun splitBytesByMTU(bytes: ByteArray, mtu: Int): List<ByteArray> {
+            val count = ceil(bytes.size.toFloat() / (mtu.toFloat() - 1)).toInt()
+            val buf = ByteBuffer.wrap(bytes)
+            val splitList = mutableListOf<ByteArray>()
+            for (i in 0..count - 1) {
+                var payload = ByteArray(min(mtu, buf.array().size - buf.position()))
+                buf.get(payload)
+                if (payload.size < mtu - 1) {
+                    payload += ByteArray((mtu - 1) - payload.size)
+                }
+                splitList.add(payload)
+            }
+            return splitList
         }
     }
 
@@ -62,11 +81,6 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
         return targetPebble
     }
 
-    /**
-     * @param supportsPinningWithoutSlaveSecurity ??
-     * @param belowLollipop Used by official app to indicate a device below lollipop?
-     * @param clientMode Forces phone-as-client mode
-     */
     /**
      * @param supportsPinningWithoutSlaveSecurity ??
      * @param belowLollipop Used by official app to indicate a device below lollipop?
@@ -119,11 +133,11 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
                 when (newState) {
                     BluetoothGatt.STATE_CONNECTED -> {
                         Timber.i("Pebble connected (initial)")
-                        gattDriver = BlueGATTClient(gatt!!) {
-
+                        gattDriver = /*BlueGATTClient(gatt!!)*/ BlueGATTServer(context) {
+                            packetCallback(it.toByteArray().sliceArray(1..it.toByteArray().size - 1))
                         }
 
-                        connectionParamManager = ConnectionParamManager(gatt) {
+                        connectionParamManager = ConnectionParamManager(gatt!!) {
                             connectionState = LEConnectionState.CONNECTING_CONNECTIVITY
                             if (!connectivityWatcher?.subscribe()!!) {
                                 closePebble()
@@ -167,7 +181,7 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
                                         } else {
                                             Timber.d("Pairing device")
                                             if (pairTrigger.properties and BluetoothGattCharacteristic.PROPERTY_WRITE > 0) {
-                                                pairTrigger.setValue(pairTriggerFlagsToBytes(it.supportsPinningWithoutSlaveSecurity, Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP, true))
+                                                pairTrigger.setValue(pairTriggerFlagsToBytes(it.supportsPinningWithoutSlaveSecurity, Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP, gattDriver is BlueGATTClient))
                                                 if (!gatt.writeCharacteristic(pairTrigger)) {
                                                     Timber.e("Failed to write to pair characteristic")
                                                     closePebble()
