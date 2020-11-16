@@ -1,6 +1,5 @@
 package io.rebble.fossil.di
 
-import androidx.lifecycle.lifecycleScope
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -17,7 +16,7 @@ abstract class ServiceModule {
     companion object {
         @Provides
         fun provideCoroutineScope(watchService: WatchService): CoroutineScope {
-            return watchService.lifecycleScope
+            return watchService.coroutineScope
         }
     }
 
