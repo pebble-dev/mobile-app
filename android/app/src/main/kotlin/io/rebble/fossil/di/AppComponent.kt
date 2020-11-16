@@ -10,6 +10,7 @@ import io.rebble.fossil.datasources.PairedStorage
 import io.rebble.fossil.errors.GlobalExceptionHandler
 import io.rebble.fossil.service.ServiceLifecycleControl
 import io.rebble.libpebblecommon.ProtocolHandler
+import io.rebble.libpebblecommon.services.ProtocolService
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import javax.inject.Singleton
 
@@ -27,6 +28,8 @@ interface AppComponent {
     fun createPairedStorage(): PairedStorage
     fun initServiceLifecycleControl(): ServiceLifecycleControl
     fun initNotificationChannels(): NotificationChannelManager
+
+    fun initLibPebbleCommonServices(): Set<ProtocolService>
 
     fun createActivitySubcomponentFactory(): ActivitySubcomponent.Factory
     fun createServiceSubcomponentFactory(): ServiceSubcomponent.Factory
