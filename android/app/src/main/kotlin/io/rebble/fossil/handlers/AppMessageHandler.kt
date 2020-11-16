@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import com.getpebble.android.kit.Constants
 import com.getpebble.android.kit.util.PebbleDictionary
+import io.rebble.fossil.di.PerService
 import io.rebble.fossil.middleware.getPebbleDictionary
 import io.rebble.fossil.middleware.toPacket
 import io.rebble.fossil.util.coroutines.asFlow
@@ -19,12 +20,13 @@ import java.util.*
 import javax.inject.Inject
 
 @OptIn(ExperimentalUnsignedTypes::class, ExperimentalStdlibApi::class)
+@PerService
 class AppMessageHandler @Inject constructor(
         private val context: Context,
         private val appMessageService: AppMessageService,
         private val appRunStateService: AppRunStateService,
         private val coroutineScope: CoroutineScope
-) {
+) : PebbleMessageHandler {
     init {
         listenForIncomingPackets()
 
