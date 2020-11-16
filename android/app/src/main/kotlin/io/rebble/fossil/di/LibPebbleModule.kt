@@ -4,7 +4,6 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoSet
-import io.rebble.fossil.bluetooth.BlueCommon
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.ProtocolHandlerImpl
 import io.rebble.libpebblecommon.services.ProtocolService
@@ -21,9 +20,7 @@ abstract class LibPebbleModule {
     companion object {
         @Provides
         @Singleton
-        fun provideProtocolHandler(
-                blueCommon: BlueCommon
-        ): ProtocolHandler = ProtocolHandlerImpl(blueCommon)
+        fun provideProtocolHandler(): ProtocolHandler = ProtocolHandlerImpl()
 
         @Provides
         @Singleton

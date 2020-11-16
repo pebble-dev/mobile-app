@@ -26,6 +26,7 @@ import io.rebble.fossil.pigeons.Pigeons
 import io.rebble.fossil.util.coroutines.asFlow
 import io.rebble.fossil.util.macAddressToLong
 import io.rebble.fossil.util.macAddressToString
+import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,7 +41,8 @@ class Connection @Inject constructor(
         private val connectionLooper: ConnectionLooper,
         private val blueCommon: BlueCommon,
         private val coroutineScope: CoroutineScope,
-        private val activity: MainActivity
+        private val activity: MainActivity,
+        private val protocolHandler: ProtocolHandler
 ) : FlutterBridge, Pigeons.ConnectionControl {
     private val connectionCallbacks = bridgeLifecycleController
             .createCallbacks(Pigeons::ConnectionCallbacks)
@@ -197,8 +199,8 @@ class Connection @Inject constructor(
     @Suppress("UNCHECKED_CAST")
     override fun sendRawPacket(arg: Pigeons.ListWrapper) {
         coroutineScope.launch {
-            val byteArray = (arg.value as List<Number>).map { it.toByte() }.toByteArray()
-            blueCommon.sendPacket(byteArray)
+            val byteArray = (arg.value as List<Number>).map { it.toByte().toUByte() }.toUByteArray()
+            protocolHandler.send(byteArray)
         }
     }
 }
