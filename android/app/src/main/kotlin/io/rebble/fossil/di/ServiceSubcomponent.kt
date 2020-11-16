@@ -3,6 +3,7 @@ package io.rebble.fossil.di
 import dagger.BindsInstance
 import dagger.Subcomponent
 import io.rebble.fossil.handlers.AppMessageHandler
+import io.rebble.fossil.handlers.SystemHandler
 import io.rebble.fossil.service.WatchService
 import javax.inject.Scope
 
@@ -14,6 +15,7 @@ import javax.inject.Scope
 )
 interface ServiceSubcomponent {
     fun createAppMessageHandler(): AppMessageHandler
+    fun createSystemHandler(): SystemHandler
 
     @Subcomponent.Factory
     interface Factory {
