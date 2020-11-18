@@ -1,30 +1,22 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:cobble/ui/common/icons/CompIcon.dart';
-import 'package:cobble/ui/common/icons/fonts/RebbleIconsFill.dart';
-import 'package:cobble/ui/common/icons/fonts/RebbleIconsStroke.dart';
-import 'package:cobble/ui/Router.dart';
+import 'package:cobble/domain/calendar/CalendarList.dart';
+import 'package:cobble/domain/connection/ConnectionStateProvider.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.dart';
+import 'package:cobble/ui/common/icons/fonts/RebbleIconsStroke.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/all.dart';
 
-class TestTab extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => _TestTabState();
-}
-
-class _TestTabState extends State<TestTab> implements ConnectionCallbacks {
-  WatchConnectionState connectionState = new WatchConnectionState();
+class TestTab extends HookWidget {
   final NotificationsControl notifications = NotificationsControl();
 
   final ConnectionControl connectionControl = ConnectionControl();
   final DebugControl debug = DebugControl();
 
   @override
-  void initState() {
-    ConnectionCallbacks.setup(this);
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final connectionState = useProvider(connectionStateProvider.state);
+    final calendars = useProvider(calendarListProvider.state);
+
     String statusText;
     if (connectionState.isConnecting == true) {
       statusText = "Connecting to ${connectionState.currentWatchAddress}";
@@ -97,24 +89,12 @@ class _TestTabState extends State<TestTab> implements ConnectionCallbacks {
                   ],
                 ),
               ),
-            )
+            ),
+            Text("Calendars: "),
+            ...calendars.map((e) => Text(e.name)).toList()
           ],
         ),
       ),
     );
-  }
-
-  @override
-  void onWatchConnectionStateChanged(WatchConnectionState newState) {
-    setState(() {
-      connectionState = newState;
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    ConnectionCallbacks.setup(null);
   }
 }
