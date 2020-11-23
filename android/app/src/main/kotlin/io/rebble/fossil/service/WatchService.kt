@@ -54,7 +54,7 @@ class WatchService : LifecycleService() {
         val serviceComponent = injectionComponent.createServiceSubcomponentFactory()
                 .create(this)
 
-        serviceComponent.createAppMessageHandler()
+        serviceComponent.initAllMessageHandlers()
 
         super.onCreate()
 

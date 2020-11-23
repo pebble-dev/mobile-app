@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface BlueIO {
     fun startSingleWatchConnection(device: BluetoothDevice): Flow<SingleConnectionStatus>
-    suspend fun sendPacket(bytes: ByteArray): Boolean
 }
 
 sealed class SingleConnectionStatus {

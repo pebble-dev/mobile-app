@@ -5,17 +5,21 @@ import android.content.Context
 import android.os.Build
 import io.rebble.fossil.util.toBytes
 import io.rebble.fossil.util.toHexString
+import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import timber.log.Timber
 import java.nio.ByteBuffer
-import kotlin.coroutines.suspendCoroutine
 import kotlin.math.ceil
 import kotlin.math.min
 
 
-class BlueLEDriver(private val targetPebble: BluetoothDevice, private val context: Context, private val packetCallback: suspend (ByteArray) -> Unit) : BlueIO {
+class BlueLEDriver(
+        private val targetPebble: BluetoothDevice,
+        private val context: Context,
+        private val protocolHandler: ProtocolHandler
+) : BlueIO {
     private var connectivityWatcher: ConnectivityWatcher? = null
     private var connectionParamManager: ConnectionParamManager? = null
     private var gattDriver: BlueGATTIO? = null
@@ -60,8 +64,8 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
     var connectionState = LEConnectionState.IDLE
     private var gatt: BluetoothGatt? = null
 
-    override suspend fun sendPacket(bytes: ByteArray): Boolean {
-        gattDriver?.sendPacket(bytes) {
+    private fun sendPacket(bytes: UByteArray): Boolean {
+        gattDriver?.sendPacket(bytes.toByteArray()) {
             if (!it) {
                 closePebble()
             }
@@ -109,7 +113,7 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
 
             packetBuf!!.put(payload)
             if (remaining == 0) {
-                packetCallback(packetBuf!!.array().copyOf())
+                protocolHandler.receivePacket(packetBuf!!.array().toUByteArray())
                 packetBuf = null
             }
         } else {
@@ -121,7 +125,7 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
                 packetBuf = ByteBuffer.allocate(length)
                 packetBuf!!.put(payload)
             } else {
-                packetCallback(payload)
+                protocolHandler.receivePacket(payload.toUByteArray())
             }
         }
     }
@@ -134,7 +138,7 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
                     BluetoothGatt.STATE_CONNECTED -> {
                         Timber.i("Pebble connected (initial)")
                         gattDriver = /*BlueGATTClient(gatt!!)*/ BlueGATTServer(context) {
-                            packetCallback(it.toByteArray().sliceArray(1..it.toByteArray().size - 1))
+                            protocolHandler.receivePacket(it.toByteArray().sliceArray(1..it.toByteArray().size - 1).toUByteArray())
                         }
 
                         connectionParamManager = ConnectionParamManager(gatt!!) {
@@ -279,7 +283,7 @@ class BlueLEDriver(private val targetPebble: BluetoothDevice, private val contex
 
             // Wait forever - eventually this needs to be changed to stop waiting when BLE
             // disconnects, but I don't want to mess with this code too much
-            suspendCoroutine { }
+            protocolHandler.startPacketSendingLoop(::sendPacket)
         }
     }
 

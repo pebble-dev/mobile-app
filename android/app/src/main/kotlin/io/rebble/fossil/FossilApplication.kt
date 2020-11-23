@@ -20,6 +20,8 @@ class FossilApplication : FlutterApplication() {
         initLogging()
 
         component.initNotificationChannels()
+        component.initLibPebbleCommonServices()
+
         beginConnectingToDefaultWatch()
     }
 
