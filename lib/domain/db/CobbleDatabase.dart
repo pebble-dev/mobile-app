@@ -29,6 +29,12 @@ final databaseProvider = FutureProvider.autoDispose<Database>((key) async {
   final dbFolder = await getDatabasesPath();
   final dbPath = join(dbFolder, "cobble.db");
 
-  return openDatabase(dbPath,
+  final db = await openDatabase(dbPath,
       version: 1, onCreate: (db, name) => _createAllTables(db));
+
+  key.onDispose(() {
+    db.close();
+  });
+
+  return db;
 });

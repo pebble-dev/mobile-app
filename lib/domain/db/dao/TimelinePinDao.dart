@@ -1,42 +1,33 @@
+import 'package:cobble/domain/db/CobbleDatabase.dart';
 import 'package:cobble/domain/db/models/TimelinePin.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 
-import '../CobbleDatabase.dart';
-
 class TimelinePinDao {
-  ProviderReference _ref;
+  Future<Database> dbFuture;
 
-  TimelinePinDao(this._ref);
+  TimelinePinDao(this.dbFuture);
 
   void insertOrUpdateTimelinePin(TimelinePin pin) async {
-    final db = await _getDb();
+    final db = await dbFuture;
 
-    try {
-      db.insert(TABLE_TIMELINE_PINS, pin.toMap(),
-          conflictAlgorithm: ConflictAlgorithm.replace);
-    } finally {
-      await db.close();
-    }
+    db.insert(TABLE_TIMELINE_PINS, pin.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<TimelinePin>> getAllPins() async {
-    final db = await _getDb();
+    final db = await dbFuture;
 
-    try {
-      return (await db.query(TABLE_TIMELINE_PINS))
-          .map((e) => TimelinePin.fromMap(e))
-          .toList();
-    } finally {
-      await db.close();
-    }
+    return (await db.query(TABLE_TIMELINE_PINS))
+        .map((e) => TimelinePin.fromMap(e))
+        .toList();
   }
-
-  Future<Database> _getDb() async =>
-      await _ref.container.read(databaseProvider.future);
 }
 
-final timelinePinDaoProvider = Provider((ref) => TimelinePinDao(ref));
+final timelinePinDaoProvider = Provider.autoDispose((ref) {
+  final dbFuture = ref.watch(databaseProvider.future);
+  return TimelinePinDao(dbFuture);
+});
 
 const TABLE_TIMELINE_PINS = "timeline_pin";
