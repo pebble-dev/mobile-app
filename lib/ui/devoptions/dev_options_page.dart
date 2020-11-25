@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cobble/infrastructure/datasources/DevConnection.dart';
-import 'package:cobble/ui/common/icons/fonts/RebbleIconsStroke.dart';
+import 'package:cobble/infrastructure/datasources/dev_connection.dart';
+import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DevOptionsPage extends StatefulWidget {

@@ -1,5 +1,5 @@
-import 'package:cobble/domain/db/CobbleDatabase.dart';
-import 'package:cobble/domain/db/models/TimelinePin.dart';
+import 'package:cobble/domain/db/cobble_database.dart';
+import 'package:cobble/domain/db/models/timeline_pin.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common/sqlite_api.dart';

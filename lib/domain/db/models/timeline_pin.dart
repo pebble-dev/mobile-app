@@ -1,12 +1,12 @@
-import 'package:cobble/domain/db/converters/SqlJsonConverters.dart';
-import 'package:cobble/domain/db/models/NextSyncAction.dart';
-import 'package:cobble/domain/db/models/TimelinePinType.dart';
+import 'package:cobble/domain/db/converters/sql_json_converters.dart';
+import 'package:cobble/domain/db/models/next_sync_action.dart';
+import 'package:cobble/domain/db/models/timeline_pin_type.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid_type/uuid_type.dart';
 
-import 'TimelinePinLayout.dart';
+import 'timeline_pin_layout.dart';
 
-part 'TimelinePin.g.dart';
+part 'timeline_pin.g.dart';
 
 @JsonSerializable()
 @UuidConverter()

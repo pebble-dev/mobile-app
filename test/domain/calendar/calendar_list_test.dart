@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fossil/domain/Preferences.dart';
-import 'package:fossil/domain/calendar/CalendarList.dart';
-import 'package:fossil/domain/calendar/DeviceCalendarPluginProvider.dart';
-import 'package:fossil/domain/calendar/SelectableCalendar.dart';
+import 'package:cobble/domain/calendar/calendar_list.dart';
+import 'package:cobble/domain/calendar/device_calendar_plugin_provider.dart';
+import 'package:cobble/domain/calendar/selectable_calendar.dart';
+import 'package:cobble/domain/preferences.dart';
 import 'package:hooks_riverpod/all.dart';
 
-import '../../fakes/FakeDeviceCalendarPlugin.dart';
-import '../../fakes/MemorySharedPreferences.dart';
+import '../../fakes/fake_device_calendar_plugin.dart';
+import '../../fakes/memory_shared_preferences.dart';
 import '../../util/test_utils.dart';
 
 void main() {

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cobble/infrastructure/datasources/PairedStorage.dart';
-import 'package:cobble/infrastructure/pigeons/pigeons.dart';
 import 'package:cobble/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';

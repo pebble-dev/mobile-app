@@ -2,11 +2,11 @@ import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:cobble/domain/entities/PebbleDevice.dart';
-import 'package:cobble/infrastructure/datasources/PairedStorage.dart';
+import 'package:cobble/domain/entities/pebble_device.dart';
+import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.dart';
-import 'package:cobble/ui/common/icons/WatchIcon.dart';
-import 'package:cobble/ui/common/icons/fonts/RebbleIconsStroke.dart';
+import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
+import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PairPage extends StatefulWidget {

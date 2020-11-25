@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cobble/ui/common/icons/fonts/RebbleIconsStroke.dart';
+import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
 
 class MoreSetup extends StatefulWidget {
   @override

@@ -1,12 +1,11 @@
-import 'package:flutter/widgets.dart';
-import 'package:cobble/domain/entities/BaseObj.dart';
-import 'package:cobble/domain/entities/PebbleDevice.dart';
-import 'package:cobble/infrastructure/datasources/sqlite/SqliteTables.dart';
-import 'package:cobble/infrastructure/datasources/sqlite/filters.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart' as pathlib;
-
+import 'package:cobble/domain/entities/base_obj.dart';
+import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/infrastructure/datasources/sqlite/data_transfer_objects/baseobj_dto.dart';
+import 'package:cobble/infrastructure/datasources/sqlite/filters.dart';
+import 'package:cobble/infrastructure/datasources/sqlite/sqlite_tables.dart';
+import 'package:flutter/widgets.dart';
+import 'package:path/path.dart' as pathlib;
+import 'package:sqflite/sqflite.dart';
 
 class SQLiteDataSource {
   static SQLiteDataSource _databaseHelper; // Singleton DatabaseHelper

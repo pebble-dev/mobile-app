@@ -1,16 +1,12 @@
-import 'dart:math';
-import 'dart:ui';
-
+import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
+import 'package:cobble/ui/home/tabs/about_tab.dart';
+import 'package:cobble/ui/home/tabs/store_tab.dart';
+import 'package:cobble/ui/home/tabs/test_tab.dart';
+import 'package:cobble/ui/setup/pair_page.dart';
+import 'package:cobble/ui/test/watch_carousel.dart';
 import 'package:flutter/material.dart';
-import 'package:cobble/ui/Theme.dart';
-import 'package:cobble/ui/common/icons/WatchIcon.dart';
-import 'package:cobble/ui/common/icons/fonts/RebbleIconsStroke.dart';
-import 'package:cobble/ui/home/tabs/StoreTab.dart';
-import 'package:cobble/ui/home/tabs/TestTab.dart';
-import 'package:cobble/ui/home/tabs/AboutTab.dart';
-import 'package:cobble/ui/setup/FirstRunPage.dart';
-import 'package:cobble/ui/setup/PairPage.dart';
-import 'package:cobble/ui/test/WatchCarousel.dart';
+
+import '../theme.dart';
 
 class HomePage extends StatefulWidget {
   @override

@@ -1,8 +1,7 @@
 import 'package:device_calendar/device_calendar.dart';
+import 'package:cobble/domain/calendar/device_calendar_plugin_provider.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:state_notifier/state_notifier.dart';
-
-import 'DeviceCalendarPluginProvider.dart';
 
 class CalendarPermission extends StateNotifier<bool> {
   DeviceCalendarPlugin _plugin;

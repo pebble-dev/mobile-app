@@ -1,11 +1,11 @@
 import 'package:device_calendar/device_calendar.dart';
+import 'package:cobble/domain/calendar/calendar_permission.dart';
+import 'package:cobble/domain/preferences.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Preferences.dart';
-import 'CalendarPermission.dart';
-import 'DeviceCalendarPluginProvider.dart';
-import 'SelectableCalendar.dart';
+import 'device_calendar_plugin_provider.dart';
+import 'selectable_calendar.dart';
 
 class CalendarList extends StateNotifier<List<SelectableCalendar>> {
   final DeviceCalendarPlugin _deviceCalendarPlugin;

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:cobble/ui/Localize.dart';
-import 'package:cobble/ui/devoptions/DevOptionsPage.dart';
-import 'package:cobble/ui/home/HomePage.dart';
-import 'package:cobble/ui/setup/FirstRunPage.dart';
-import 'package:cobble/ui/setup/MoreSetup.dart';
-import 'package:cobble/ui/setup/PairPage.dart';
-import 'package:cobble/ui/setup/boot/RebbleSetup.dart';
-import 'package:cobble/ui/setup/boot/RebbleSetupFail.dart';
-import 'package:cobble/ui/setup/boot/RebbleSetupSuccess.dart';
-import 'package:cobble/ui/splash/SplashPage.dart';
+import 'package:cobble/ui/devoptions/dev_options_page.dart';
+import 'package:cobble/ui/home/home_page.dart';
+import 'package:cobble/ui/localize.dart';
+import 'package:cobble/ui/setup/boot/rebble_setup.dart';
+import 'package:cobble/ui/setup/boot/rebble_setup_fail.dart';
+import 'package:cobble/ui/setup/boot/rebble_setup_success.dart';
+import 'package:cobble/ui/setup/first_run_page.dart';
+import 'package:cobble/ui/setup/more_setup.dart';
+import 'package:cobble/ui/setup/pair_page.dart';
+import 'package:cobble/ui/splash/splash_page.dart';
 
 class Router {
   static Route<dynamic> generateRoute(RouteSettings settings) {

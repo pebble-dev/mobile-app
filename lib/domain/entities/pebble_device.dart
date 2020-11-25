@@ -1,6 +1,6 @@
 import 'dart:core';
 
-import 'package:cobble/domain/entities/BaseObj.dart';
+import 'package:cobble/domain/entities/base_obj.dart';
 
 class PebbleDevice extends BaseObj {
   String name;

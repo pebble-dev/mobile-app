@@ -1,11 +1,14 @@
 import 'dart:convert';
-import 'package:cobble/domain/entities/PebbleDevice.dart';
+
+import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _StoredDevice {
   bool isDefault;
   final PebbleDevice device;
+
   _StoredDevice(this.device, [this.isDefault = false]);
+
   Map<String, dynamic> toJson() => {'isDefault': isDefault, 'device': device};
 }
 

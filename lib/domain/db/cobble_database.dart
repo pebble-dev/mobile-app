@@ -2,7 +2,7 @@ import 'package:hooks_riverpod/all.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-import 'dao/TimelinePinDao.dart';
+import 'dao/timeline_pin_dao.dart';
 
 void _createAllTables(Database db) async {
   await db.execute("""
