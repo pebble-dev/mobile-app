@@ -16,6 +16,7 @@ class TestTab extends HookWidget {
   Widget build(BuildContext context) {
     final connectionState = useProvider(connectionStateProvider.state);
     final calendars = useProvider(calendarListProvider.state);
+    final calendarSelector = useProvider(calendarListProvider);
 
     String statusText;
     if (connectionState.isConnecting == true) {
@@ -91,7 +92,19 @@ class TestTab extends HookWidget {
               ),
             ),
             Text("Calendars: "),
-            ...calendars.map((e) => Text(e.name)).toList()
+            ...calendars.map((e) {
+              return Row(
+                children: [
+                  Checkbox(
+                    value: e.enabled,
+                    onChanged: (enabled) {
+                      calendarSelector.setCalendarEnabled(e.id, enabled);
+                    },
+                  ),
+                  Text(e.name),
+                ],
+              );
+            }).toList()
           ],
         ),
       ),
