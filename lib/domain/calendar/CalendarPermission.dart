@@ -2,11 +2,12 @@ import 'package:device_calendar/device_calendar.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:state_notifier/state_notifier.dart';
 
+import 'DeviceCalendarPluginProvider.dart';
+
 class CalendarPermission extends StateNotifier<bool> {
   DeviceCalendarPlugin _plugin;
 
-  CalendarPermission() : super(false) {
-    _plugin = DeviceCalendarPlugin();
+  CalendarPermission(this._plugin) : super(false) {
     _plugin.hasPermissions().then((value) {
       state = value.data;
     });
@@ -21,5 +22,7 @@ class CalendarPermission extends StateNotifier<bool> {
   }
 }
 
-final calendarPermissionProvider =
-    StateNotifierProvider((ctx) => CalendarPermission());
+final calendarPermissionProvider = StateNotifierProvider((ctx) {
+  final calendarPlugin = ctx.read(deviceCalendarPluginProvider);
+  return CalendarPermission(calendarPlugin);
+});

@@ -4,52 +4,54 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Preferences.dart';
 import 'CalendarPermission.dart';
+import 'DeviceCalendarPluginProvider.dart';
 import 'SelectableCalendar.dart';
 
 class CalendarList extends StateNotifier<List<SelectableCalendar>> {
-  final bool hasPermission;
-  final Future<SharedPreferences> preferencesFuture;
-  List<String> blacklistedCalendars = List.empty();
+  final DeviceCalendarPlugin _deviceCalendarPlugin;
+  final bool _hasPermission;
+  final Future<SharedPreferences> _preferencesFuture;
+  List<String> _blacklistedCalendars = List.empty();
 
-  CalendarList(this.hasPermission, this.preferencesFuture) : super(const []) {
+  CalendarList(
+      this._deviceCalendarPlugin, this._hasPermission, this._preferencesFuture)
+      : super(const []) {
     _load();
   }
 
   Future<void> _load() async {
-    if (!hasPermission) {
+    if (!_hasPermission) {
       return;
     }
 
-    final preferences = await preferencesFuture;
-    blacklistedCalendars =
+    final preferences = await _preferencesFuture;
+    _blacklistedCalendars =
         preferences.getStringList(_PREFERENCES_KEY_BLACKLISTED_CALENDARS) ??
             List.empty();
 
-    final calendars = await DeviceCalendarPlugin().retrieveCalendars();
+    final calendars = await _deviceCalendarPlugin.retrieveCalendars();
 
     state = calendars.data
         .map((c) => SelectableCalendar(
-            c.name, c.id, !blacklistedCalendars.contains(c.id)))
+            c.name, c.id, !_blacklistedCalendars.contains(c.id)))
         .toList();
-
-    // do something
   }
 
   void setCalendarEnabled(String id, bool enabled) async {
-    if (enabled && blacklistedCalendars.contains(id)) {
+    if (enabled && _blacklistedCalendars.contains(id)) {
       final newBlacklist =
-          blacklistedCalendars.where((element) => element != id).toList();
-      final preferences = await preferencesFuture;
+      _blacklistedCalendars.where((element) => element != id).toList();
+      final preferences = await _preferencesFuture;
 
-      blacklistedCalendars = newBlacklist;
+      _blacklistedCalendars = newBlacklist;
       await preferences.setStringList(
           _PREFERENCES_KEY_BLACKLISTED_CALENDARS, newBlacklist);
       await _load();
-    } else if (!enabled && !blacklistedCalendars.contains(id)) {
-      final newBlacklist = [...blacklistedCalendars, id];
-      final preferences = await preferencesFuture;
+    } else if (!enabled && !_blacklistedCalendars.contains(id)) {
+      final newBlacklist = [..._blacklistedCalendars, id];
+      final preferences = await _preferencesFuture;
 
-      blacklistedCalendars = newBlacklist;
+      _blacklistedCalendars = newBlacklist;
       await preferences.setStringList(
           _PREFERENCES_KEY_BLACKLISTED_CALENDARS, newBlacklist);
       await _load();
@@ -58,10 +60,11 @@ class CalendarList extends StateNotifier<List<SelectableCalendar>> {
 }
 
 final calendarListProvider = StateNotifierProvider<CalendarList>((ref) {
+  final deviceCalendarPlugin = ref.read(deviceCalendarPluginProvider);
   final hasPermission = ref.watch(calendarPermissionProvider.state);
   final sharedPreferences = ref.read(sharedPreferencesProvider);
 
-  return CalendarList(hasPermission, sharedPreferences);
+  return CalendarList(deviceCalendarPlugin, hasPermission, sharedPreferences);
 });
 
 const _PREFERENCES_KEY_BLACKLISTED_CALENDARS = "blacklisted_calendars";
