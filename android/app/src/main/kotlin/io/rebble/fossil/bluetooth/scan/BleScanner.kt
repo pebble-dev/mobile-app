@@ -69,8 +69,8 @@ class BleScanner @Inject constructor() {
                     }
                 }
             } finally {
-                callback.resultChannel.cancel()
                 leScanner.stopScan(callback)
+                //callback.resultChannel.cancel()
                 this@BleScanner.stopTrigger = null
             }
         }

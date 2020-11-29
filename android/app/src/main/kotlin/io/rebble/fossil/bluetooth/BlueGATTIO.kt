@@ -1,14 +1,14 @@
 package io.rebble.fossil.bluetooth
 
-import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
+import java.io.PipedInputStream
 
 interface BlueGATTIO {
     var isConnected: Boolean
-    fun sendPacket(bytes: ByteArray, callback: (Boolean) -> Unit)
-    fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?)
-    fun onCharacteristicWrite(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int)
+    suspend fun sendPacket(bytes: ByteArray): Boolean
+    fun onCharacteristicChanged(value: ByteArray, characteristic: BluetoothGattCharacteristic?)
     fun setMTU(newMTU: Int)
     fun requestReset()
-    fun connectPebble(): Boolean
+    suspend fun connectPebble(): Boolean
+    val packetInputStream: PipedInputStream
 }

@@ -40,7 +40,7 @@ class BlueCommon @Inject constructor(
     fun getTargetTransport(device: BluetoothDevice): BlueIO {
         return when {
             device.type == BluetoothDevice.DEVICE_TYPE_LE -> { // LE only device
-                BlueLEDriver(device, context, protocolHandler)
+                BlueLEDriver(context, protocolHandler)
             }
             device.type != BluetoothDevice.DEVICE_TYPE_UNKNOWN -> { // Serial only device or serial/LE
                 BlueSerialDriver(

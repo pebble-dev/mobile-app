@@ -1,96 +1,48 @@
 package io.rebble.fossil.bluetooth
 
-import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
-import android.bluetooth.BluetoothGattDescriptor
-import android.util.Log
+import com.juul.able.gatt.Gatt
+import com.juul.able.gatt.isSuccess
+import timber.log.Timber
 import java.nio.ByteBuffer
 
-class ConnectionParamManager(val gatt: BluetoothGatt, val onParamsComplete: () -> Unit) {
-    private val logTag = "ConnectionParamManager"
+class ConnectionParamManager(val gatt: Gatt) {
+    private var subscribed = false
 
-    enum class ManagerStatus {
-        UNSUBSCRIBED,
-        SUBSCRIBING,
-        SUBSCRIBED_REQUESTING,
-        DONE
-    }
-
-    private var managerStatus = ManagerStatus.UNSUBSCRIBED
-
-    fun subscribe(): Boolean {
-        if (managerStatus != ManagerStatus.UNSUBSCRIBED) {
-            Log.e(logTag, "Tried subscribing when already subscribed/subscribing")
-            return false
+    suspend fun subscribe(): Boolean {
+        if (subscribed) {
+            Timber.e("Tried subscribing when already subscribed")
         } else {
             val service = gatt.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)
             if (service == null) {
-                Log.e(logTag, "Pairing service null")
-                return false
+                Timber.e("Pairing service null")
             } else {
                 val characteristic = service.getCharacteristic(BlueGATTConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC)
                 if (characteristic == null) {
-                    Log.e(logTag, "Conn params characteristic null")
-                    return false
+                    Timber.e("Conn params characteristic null")
                 } else {
                     val configDescriptor = characteristic.getDescriptor(BlueGATTConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR)
-
-                    configDescriptor.setValue(BlueGATTConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)
-                    if (!gatt.writeDescriptor(configDescriptor)) {
-                        Log.e(logTag, "Failed to write subscribe value")
-                        return false
-                    } else if (!gatt.setCharacteristicNotification(characteristic, true)) {
-                        Log.e(logTag, "BluetoothGatt refused to subscribe")
-                        return false
-                    } else {
-                        managerStatus = ManagerStatus.SUBSCRIBING
-                        return true
-                    }
-                }
-            }
-        }
-    }
-
-    fun onDescriptorWrite(gatt: BluetoothGatt?, descriptor: BluetoothGattDescriptor?, status: Int) {
-        if (managerStatus == ManagerStatus.SUBSCRIBING && descriptor?.characteristic?.uuid == BlueGATTConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                managerStatus = ManagerStatus.SUBSCRIBED_REQUESTING
-                Log.d(logTag, "Requesting mgmt settings from pebble")
-                val mgmtData = ByteBuffer.allocate(2)
-                mgmtData.put(0)
-                mgmtData.put(1) // disablePebbleParamManagement
-
-                val service = gatt?.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)
-                if (service == null) {
-                    Log.e(logTag, "Pairing service null")
-                } else {
-                    val characteristic = service.getCharacteristic(BlueGATTConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC)
-                    if (characteristic == null) {
-                        Log.e(logTag, "Characteristic null")
-                    } else {
-                        characteristic.setValue(mgmtData.array())
-                        if (!gatt.writeCharacteristic(characteristic)) {
-                            Log.e(logTag, "Failed to request mgmt settings (write failed)")
+                    if (gatt.writeDescriptor(configDescriptor, BlueGATTConstants.CHARACTERISTIC_SUBSCRIBE_VALUE).isSuccess) {
+                        if (gatt.setCharacteristicNotification(characteristic, true)) {
+                            val mgmtData = ByteBuffer.allocate(2)
+                            mgmtData.put(0)
+                            mgmtData.put(1) // disablePebbleParamManagement
+                            if (gatt.writeCharacteristic(characteristic, mgmtData.array(), BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT).isSuccess) {
+                                Timber.d("Configured successfully")
+                                return true
+                            } else {
+                                Timber.e("Couldn't write conn param config")
+                            }
+                            return true
+                        } else {
+                            Timber.e("BluetoothGatt refused to subscribe")
                         }
+                    } else {
+                        Timber.e("Failed to write subscribe value")
                     }
                 }
-            } else {
-                Log.e(logTag, "Failed to subscribe")
             }
         }
-    }
-
-    fun onCharacteristicWrite(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
-        if (characteristic?.uuid == BlueGATTConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                managerStatus = ManagerStatus.DONE
-                onParamsComplete()
-            }
-        }
-    }
-
-    fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
-        if (characteristic?.value == null) return
-        //TODO sometime
+        return false
     }
 }

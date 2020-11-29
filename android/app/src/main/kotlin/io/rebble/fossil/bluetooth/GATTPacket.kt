@@ -2,8 +2,6 @@ package io.rebble.fossil.bluetooth
 
 import io.rebble.fossil.util.shl
 import io.rebble.fossil.util.shr
-import io.rebble.fossil.util.toHexString
-import timber.log.Timber
 import java.nio.ByteBuffer
 import kotlin.experimental.and
 import kotlin.experimental.or
@@ -34,7 +32,7 @@ class GATTPacket {
     }
 
     constructor(data: ByteArray) {
-        Timber.w("${data.toHexString()} -> ${ubyteArrayOf((data[0] and sequenceMask).toUByte()).toHexString()} -> ${ubyteArrayOf((data[0] and sequenceMask).toUByte() shr 3).toHexString()}")
+        //Timber.d("${data.toHexString()} -> ${ubyteArrayOf((data[0] and sequenceMask).toUByte()).toHexString()} -> ${ubyteArrayOf((data[0] and sequenceMask).toUByte() shr 3).toHexString()}")
         this.data = data
         sequence = ((data[0] and sequenceMask).toUByte() shr 3).toUShort()
         if (sequence < 0U || sequence > 31U) throw IllegalArgumentException("Sequence must be between 0 and 31 inclusive")

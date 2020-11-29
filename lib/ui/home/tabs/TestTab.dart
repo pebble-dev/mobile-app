@@ -45,6 +45,14 @@ class _TestTabState extends State<TestTab> implements ConnectionCallbacks {
             ),
             RaisedButton(
               onPressed: () {
+                ListWrapper l = ListWrapper();
+                l.value = [0x07, 0x00, 0xD1, 0x07, 0x00, 0xCA, 0xFE, 0x00, 0x00];
+                connectionControl.sendRawPacket(l);
+              },
+              child: Text("Ping"),
+            ),
+            RaisedButton(
+              onPressed: () {
                 connectionControl.disconnect();
               },
               child: Text("Disconnect"),

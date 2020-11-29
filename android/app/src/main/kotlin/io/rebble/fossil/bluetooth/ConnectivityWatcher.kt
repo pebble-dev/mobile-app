@@ -1,15 +1,15 @@
 package io.rebble.fossil.bluetooth
 
-import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
-import android.bluetooth.BluetoothGattDescriptor
+import com.juul.able.gatt.Gatt
+import com.juul.able.gatt.isSuccess
+import kotlinx.coroutines.CompletableDeferred
 import timber.log.Timber
 import kotlin.experimental.and
 import kotlin.properties.Delegates
 
-class ConnectivityWatcher(val gatt: BluetoothGatt, val onConnectivityChanged: (ConnectivityStatus) -> Unit) {
+class ConnectivityWatcher(val gatt: Gatt) {
     private var isSubscribed = false
-    var lastStatus: ConnectivityStatus? = null
 
     @ExperimentalUnsignedTypes
     class ConnectivityStatus(characteristicValue: ByteArray) {
@@ -60,7 +60,9 @@ class ConnectivityWatcher(val gatt: BluetoothGatt, val onConnectivityChanged: (C
         }
     }
 
-    fun subscribe(): Boolean {
+    var connectivityStatus = CompletableDeferred<ConnectivityStatus>()
+
+    suspend fun subscribe(): Boolean {
         val pairService = gatt.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)
         if (pairService == null) {
             Timber.e("pairService is null")
@@ -75,48 +77,41 @@ class ConnectivityWatcher(val gatt: BluetoothGatt, val onConnectivityChanged: (C
                     Timber.e("configDescriptor for connectivityCharacteristic is null")
                     return false
                 } else {
-                    configDescriptor.setValue(BlueGATTConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)
-                    if (!gatt.writeDescriptor(configDescriptor)) {
-                        Timber.e("Failed to write subscribe value to connectivityCharacteristic's configDescriptor")
-                        return false
+                    Timber.d("Requesting subscribe to connectivity characteristic")
+                    if (!gatt.setCharacteristicNotification(connectivityCharacteristic, true)) {
+                        Timber.e("BluetoothGatt refused to subscribe to connectivity characteristic")
                     } else {
-                        Timber.d("Requesting subscribe to connectivity characteristic")
-                        if (!gatt.setCharacteristicNotification(connectivityCharacteristic, true)) {
-                            Timber.e("BluetoothGatt refused to subscribe to connectivity characteristic")
-                            return false
+                        if (!gatt.writeDescriptor(configDescriptor, BlueGATTConstants.CHARACTERISTIC_SUBSCRIBE_VALUE).isSuccess) {
+                            Timber.e("Failed to write subscribe value to connectivityCharacteristic's configDescriptor")
+                        } else {
+                            isSubscribed = true
+                            return true
                         }
                     }
+
                 }
             }
         }
-        return true
+        return false
     }
 
-    fun onDescriptorWrite(gatt: BluetoothGatt?, descriptor: BluetoothGattDescriptor?, status: Int) {
-        if (descriptor?.characteristic?.uuid == BlueGATTConstants.UUIDs.CONNECTIVITY_CHARACTERISTIC && descriptor?.uuid == BlueGATTConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                Timber.d("Subscribed to connectivity characteristic")
-                isSubscribed = true
-                val currentConnectivity = descriptor?.characteristic?.value
-                if (currentConnectivity == null) {
-                    Timber.d("Connectivity descriptor value null")
-                } else {
-                    lastStatus = ConnectivityStatus(currentConnectivity)
-                    onConnectivityChanged(lastStatus!!)
-                }
-            } else {
-                Timber.e("Subscribe to connectivity characteristic failed")
-                isSubscribed = false
-            }
-        }
-    }
-
-    fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
+    fun onCharacteristicChanged(value: ByteArray, characteristic: BluetoothGattCharacteristic?) {
         if (characteristic?.uuid == BlueGATTConstants.UUIDs.CONNECTIVITY_CHARACTERISTIC) {
-            if (isSubscribed && characteristic != null) {
-                lastStatus = ConnectivityStatus(characteristic.value)
-                onConnectivityChanged(lastStatus!!)
+            if (characteristic != null) {
+                val status = ConnectivityStatus(value)
+                //GlobalScope.launch(Dispatchers.IO) { onConnectivityChanged(lastStatus!!) }
+                Timber.d(status.toString())
+                connectivityStatus.complete(status)
             }
+        }
+    }
+
+    suspend fun getStatus(): ConnectivityStatus {
+        try {
+            val status = connectivityStatus.await()
+            return status
+        } finally {
+            connectivityStatus = CompletableDeferred()
         }
     }
 }

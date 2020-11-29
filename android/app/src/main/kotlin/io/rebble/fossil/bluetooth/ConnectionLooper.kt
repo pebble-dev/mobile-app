@@ -31,16 +31,16 @@ class ConnectionLooper @Inject constructor(
 
                 var retryTime = HALF_OF_INITAL_RETRY_TIME
                 while (isActive) {
-                    try {
-                        blueCommon.startSingleWatchConnection(macAddress).collect {
-                            _connectionState.value = it.toConnectionStatus()
-                            if (it is SingleConnectionStatus.Connected) {
-                                retryTime = HALF_OF_INITAL_RETRY_TIME
-                            }
+                    //try {
+                    blueCommon.startSingleWatchConnection(macAddress).collect {
+                        _connectionState.value = it.toConnectionStatus()
+                        if (it is SingleConnectionStatus.Connected) {
+                            retryTime = HALF_OF_INITAL_RETRY_TIME
                         }
-                    } catch (e: Exception) {
-                        Timber.e(e, "Watch connection error")
                     }
+                    //} catch (e: Exception) {
+                    //    Timber.e(e, "Watch connection error")
+                    //}
 
 
                     val lastWatch = connectionState.value.watchOrNull

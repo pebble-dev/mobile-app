@@ -3,19 +3,17 @@ package io.rebble.fossil.bluetooth.classic
 import android.bluetooth.BluetoothDevice
 import io.rebble.fossil.bluetooth.BlueIO
 import io.rebble.fossil.bluetooth.SingleConnectionStatus
+import io.rebble.fossil.bluetooth.readFully
 import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import timber.log.Timber
 import java.io.IOException
-import java.io.InputStream
 import java.io.OutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.*
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 @Suppress("BlockingMethodInNonBlockingContext")
 class BlueSerialDriver(
@@ -91,32 +89,6 @@ class BlueSerialDriver(
         }
 
         return true
-    }
-
-    private suspend fun InputStream.readFully(buffer: ByteBuffer, offset: Int, count: Int) {
-        return withContext(Dispatchers.IO) {
-            suspendCancellableCoroutine<Unit> { continuation ->
-                continuation.invokeOnCancellation {
-                    close()
-                }
-
-                try {
-                    var totalRead = 0
-                    while (coroutineContext.isActive && totalRead < count) {
-                        val read = read(buffer.array(), offset + totalRead, count - totalRead)
-                        if (read < 0) {
-                            throw IOException("Reached end of stream")
-                        }
-
-                        totalRead += read
-                    }
-
-                    continuation.resume(Unit)
-                } catch (e: Exception) {
-                    continuation.resumeWithException(e)
-                }
-            }
-        }
     }
 
 }
