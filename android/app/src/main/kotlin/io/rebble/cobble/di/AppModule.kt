@@ -1,10 +1,10 @@
-package io.rebble.fossil.di
+package io.rebble.cobble.di
 
 import android.app.Application
 import android.content.Context
 import dagger.Binds
 import dagger.Module
-import io.rebble.fossil.errors.GlobalExceptionHandler
+import io.rebble.cobble.errors.GlobalExceptionHandler
 import kotlinx.coroutines.CoroutineExceptionHandler
 
 @Module

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fossil/ui/common/icons/fonts/RebbleIconsStroke.dart';
+import 'package:cobble/ui/common/icons/fonts/RebbleIconsStroke.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 String _getBootUrl = "https://boot.rebble.io/";
 
 class RebbleSetup extends StatelessWidget {
   static final MethodChannel _bootWaiter =
-      MethodChannel("io.rebble.fossil/bootWaiter");
+      MethodChannel("io.rebble.cobble/bootWaiter");
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,4 +1,4 @@
-package io.rebble.fossil
+package io.rebble.cobble
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
@@ -26,7 +26,7 @@ class WatchService : LifecycleService() {
     private lateinit var coroutineScope: CoroutineScope
 
     private val pBinder = ProtBinder()
-    private val logTag: String = "FossilWatchService"
+    private val logTag: String = "CobbleWatchService"
     private val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
     private lateinit var protocolHandler: ProtocolHandler
@@ -52,7 +52,7 @@ class WatchService : LifecycleService() {
 
     @ExperimentalStdlibApi
     override fun onCreate() {
-        val injectionComponent = (applicationContext as FossilApplication).component
+        val injectionComponent = (applicationContext as CobbleApplication).component
 
         coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
         blueCommon = injectionComponent.createBlueCommon()

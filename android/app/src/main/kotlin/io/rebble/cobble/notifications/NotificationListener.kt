@@ -1,9 +1,9 @@
-package io.rebble.fossil.notifications
+package io.rebble.cobble.notifications
 
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import io.flutter.Log
-import io.rebble.fossil.FossilApplication
+import io.rebble.cobble.CobbleApplication
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -14,14 +14,14 @@ class NotificationListener : NotificationListenerService() {
     private lateinit var coroutineScope: CoroutineScope
 
     private var isListening = false
-    private val logTag: String = "FossilNotifService"
+    private val logTag: String = "CobbleNotifService"
 
     private var notifStates: MutableMap<NotificationKey, ParsedNotification> = mutableMapOf()
 
     private lateinit var notificationService: NotificationService
 
     override fun onCreate() {
-        val injectionComponent = (applicationContext as FossilApplication).component
+        val injectionComponent = (applicationContext as CobbleApplication).component
 
         coroutineScope = CoroutineScope(
                 SupervisorJob() + injectionComponent.createExceptionHandler()

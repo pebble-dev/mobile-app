@@ -3,13 +3,13 @@ import 'package:flutter/services.dart';
 
 class TestPage extends StatelessWidget {
   static final MethodChannel platform =
-      MethodChannel('io.rebble.fossil/protocol');
+      MethodChannel('io.rebble.cobble/protocol');
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Fossil"),
+        title: Text("Cobble"),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,

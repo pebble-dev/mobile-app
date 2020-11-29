@@ -1,4 +1,4 @@
-package io.rebble.fossil.notifications
+package io.rebble.cobble.notifications
 
 import android.service.notification.StatusBarNotification
 

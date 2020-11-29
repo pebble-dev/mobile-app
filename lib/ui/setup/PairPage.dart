@@ -3,10 +3,10 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fossil/domain/entities/PebbleDevice.dart';
-import 'package:fossil/infrastructure/datasources/PairedStorage.dart';
-import 'package:fossil/ui/common/icons/fonts/RebbleIconsStroke.dart';
-import 'package:fossil/ui/common/icons/WatchIcon.dart';
+import 'package:cobble/domain/entities/PebbleDevice.dart';
+import 'package:cobble/infrastructure/datasources/PairedStorage.dart';
+import 'package:cobble/ui/common/icons/fonts/RebbleIconsStroke.dart';
+import 'package:cobble/ui/common/icons/WatchIcon.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PairPage extends StatefulWidget {
@@ -14,8 +14,8 @@ class PairPage extends StatefulWidget {
   State<StatefulWidget> createState() => new _PairPageState();
 }
 
-final MethodChannel _platform = MethodChannel('io.rebble.fossil/protocol');
-final EventChannel _scanEvent = EventChannel('io.rebble.fossil/scanEvent');
+final MethodChannel _platform = MethodChannel('io.rebble.cobble/protocol');
+final EventChannel _scanEvent = EventChannel('io.rebble.cobble/scanEvent');
 
 class _PairPageState extends State<PairPage> {
   List<PebbleDevice> _pebbles = [];

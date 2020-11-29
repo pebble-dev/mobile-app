@@ -1,10 +1,10 @@
-package io.rebble.fossil.di
+package io.rebble.cobble.di
 
 import android.app.Application
 import dagger.BindsInstance
 import dagger.Component
-import io.rebble.fossil.BlueCommon
-import io.rebble.fossil.errors.GlobalExceptionHandler
+import io.rebble.cobble.BlueCommon
+import io.rebble.cobble.errors.GlobalExceptionHandler
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import javax.inject.Singleton

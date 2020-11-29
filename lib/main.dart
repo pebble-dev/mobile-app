@@ -1,9 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:fossil/ui/Localize.dart';
-import 'package:fossil/ui/Router.dart';
-import 'package:fossil/ui/Theme.dart';
+import 'package:cobble/ui/Localize.dart';
+import 'package:cobble/ui/Router.dart';
+import 'package:cobble/ui/Theme.dart';
 
 String getBootUrl = "https://boot.rebble.io/";
 
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Fossil',
+      title: 'Cobble',
       theme: RebbleTheme.appTheme,
       //home: SplashPage(),
       initialRoute: '/',

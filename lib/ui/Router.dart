@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:fossil/ui/Localize.dart';
-import 'package:fossil/ui/devoptions/DevOptionsPage.dart';
-import 'package:fossil/ui/home/HomePage.dart';
-import 'package:fossil/ui/setup/FirstRunPage.dart';
-import 'package:fossil/ui/setup/MoreSetup.dart';
-import 'package:fossil/ui/setup/PairPage.dart';
-import 'package:fossil/ui/setup/boot/RebbleSetup.dart';
-import 'package:fossil/ui/setup/boot/RebbleSetupFail.dart';
-import 'package:fossil/ui/setup/boot/RebbleSetupSuccess.dart';
-import 'package:fossil/ui/splash/SplashPage.dart';
+import 'package:cobble/ui/Localize.dart';
+import 'package:cobble/ui/devoptions/DevOptionsPage.dart';
+import 'package:cobble/ui/home/HomePage.dart';
+import 'package:cobble/ui/setup/FirstRunPage.dart';
+import 'package:cobble/ui/setup/MoreSetup.dart';
+import 'package:cobble/ui/setup/PairPage.dart';
+import 'package:cobble/ui/setup/boot/RebbleSetup.dart';
+import 'package:cobble/ui/setup/boot/RebbleSetupFail.dart';
+import 'package:cobble/ui/setup/boot/RebbleSetupSuccess.dart';
+import 'package:cobble/ui/splash/SplashPage.dart';
 
 class Router {
   static Route<dynamic> generateRoute(RouteSettings settings) {

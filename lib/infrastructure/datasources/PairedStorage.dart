@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:fossil/domain/entities/PebbleDevice.dart';
+import 'package:cobble/domain/entities/PebbleDevice.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _StoredDevice {

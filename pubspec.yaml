@@ -1,4 +1,4 @@
-name: fossil
+name: cobble
 description: A Pebble companion app
 
 # The following line prevents the package from being accidentally published to

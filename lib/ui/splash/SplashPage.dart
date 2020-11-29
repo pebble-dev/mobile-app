@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fossil/infrastructure/datasources/PairedStorage.dart';
-import 'package:fossil/main.dart';
+import 'package:cobble/infrastructure/datasources/PairedStorage.dart';
+import 'package:cobble/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -11,7 +11,7 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  static const protocolC = MethodChannel('io.rebble.fossil/protocol');
+  static const protocolC = MethodChannel('io.rebble.cobble/protocol');
 
   void _openHome() {
     SharedPreferences.getInstance().then((prefs) => {

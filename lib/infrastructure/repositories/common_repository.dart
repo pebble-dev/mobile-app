@@ -1,4 +1,4 @@
-import 'package:fossil/infrastructure/datasources/sqlite/SqliteDataSource.dart';
+import 'package:cobble/infrastructure/datasources/sqlite/SqliteDataSource.dart';
 
 class CommonRepository {
   final SQLiteDataSource localDataSource = SQLiteDataSource();

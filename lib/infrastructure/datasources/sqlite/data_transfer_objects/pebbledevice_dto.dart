@@ -1,5 +1,5 @@
-import 'package:fossil/domain/entities/PebbleDevice.dart';
-import 'package:fossil/infrastructure/datasources/sqlite/SqliteTables.dart';
+import 'package:cobble/domain/entities/PebbleDevice.dart';
+import 'package:cobble/infrastructure/datasources/sqlite/SqliteTables.dart';
 
 extension PebbleDeviceSqlExtensions on PebbleDevice {
   Map<String, dynamic> get sqlMap {
