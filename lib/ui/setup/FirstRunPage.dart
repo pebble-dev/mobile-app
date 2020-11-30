@@ -129,7 +129,7 @@ class _FirstRunPageState extends State<FirstRunPage> {
                 children: <Widget>[
                   FlatButton(
                     child: Text("SKIP"),
-                    onPressed: () {},
+                    onPressed: () => Navigator.pushNamed(context, '/home'),
                   ),
                   FloatingActionButton.extended(
                     icon: Text("LET'S GET STARTED"),
