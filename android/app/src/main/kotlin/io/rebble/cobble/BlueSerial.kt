@@ -1,4 +1,4 @@
-package io.rebble.fossil
+package io.rebble.cobble
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice

@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 class DevConnection {
   static final DevConnection _singleton = new DevConnection._internal();
   static final MethodChannel _packetIO =
-      MethodChannel('io.rebble.fossil/packetIO');
+      MethodChannel('io.rebble.cobble/packetIO');
   bool isConnected = false;
   HttpServer _server;
   Function _onServerStatChange; // (isrunning)

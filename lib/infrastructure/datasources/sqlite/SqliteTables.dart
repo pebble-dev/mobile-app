@@ -1,4 +1,4 @@
-import 'package:fossil/domain/entities/PebbleDevice.dart';
+import 'package:cobble/domain/entities/PebbleDevice.dart';
 
 final Map<Type, String> typeToTable = {
   PebbleDevice: TableNames.pebbledevice,

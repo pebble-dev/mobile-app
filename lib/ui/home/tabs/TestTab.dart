@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fossil/ui/common/icons/CompIcon.dart';
-import 'package:fossil/ui/common/icons/fonts/RebbleIconsFill.dart';
-import 'package:fossil/ui/common/icons/fonts/RebbleIconsStroke.dart';
-import 'package:fossil/ui/Router.dart';
+import 'package:cobble/ui/common/icons/CompIcon.dart';
+import 'package:cobble/ui/common/icons/fonts/RebbleIconsFill.dart';
+import 'package:cobble/ui/common/icons/fonts/RebbleIconsStroke.dart';
+import 'package:cobble/ui/Router.dart';
 
 class TestTab extends StatelessWidget {
-  static const notificationTest = MethodChannel('io.rebble.fossil/notificationTest');
+  static const notificationTest = MethodChannel('io.rebble.cobble/notificationTest');
 
   @override
   Widget build(BuildContext context) {

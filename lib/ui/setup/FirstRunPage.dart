@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fossil/ui/common/icons/fonts/RebbleIconsStroke.dart';
-import 'package:fossil/ui/common/icons/WatchIcon.dart';
+import 'package:cobble/ui/common/icons/fonts/RebbleIconsStroke.dart';
+import 'package:cobble/ui/common/icons/WatchIcon.dart';
 
 class CircleContainer extends StatelessWidget {
   CircleContainer(

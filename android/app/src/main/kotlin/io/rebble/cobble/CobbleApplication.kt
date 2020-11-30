@@ -1,10 +1,10 @@
-package io.rebble.fossil
+package io.rebble.cobble
 
 import io.flutter.app.FlutterApplication
-import io.rebble.fossil.di.AppComponent
-import io.rebble.fossil.di.DaggerAppComponent
+import io.rebble.cobble.di.AppComponent
+import io.rebble.cobble.di.DaggerAppComponent
 
-class FossilApplication : FlutterApplication() {
+class CobbleApplication : FlutterApplication() {
     lateinit var component: AppComponent
         private set
 

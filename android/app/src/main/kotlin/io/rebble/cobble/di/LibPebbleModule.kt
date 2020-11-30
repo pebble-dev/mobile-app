@@ -1,9 +1,9 @@
-package io.rebble.fossil.di
+package io.rebble.cobble.di
 
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
-import io.rebble.fossil.BlueCommon
+import io.rebble.cobble.BlueCommon
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.ProtocolHandlerImpl
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService

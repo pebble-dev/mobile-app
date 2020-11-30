@@ -2,15 +2,15 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:fossil/ui/Theme.dart';
-import 'package:fossil/ui/common/icons/WatchIcon.dart';
-import 'package:fossil/ui/common/icons/fonts/RebbleIconsStroke.dart';
-import 'package:fossil/ui/home/tabs/StoreTab.dart';
-import 'package:fossil/ui/home/tabs/TestTab.dart';
+import 'package:cobble/ui/Theme.dart';
+import 'package:cobble/ui/common/icons/WatchIcon.dart';
+import 'package:cobble/ui/common/icons/fonts/RebbleIconsStroke.dart';
+import 'package:cobble/ui/home/tabs/StoreTab.dart';
+import 'package:cobble/ui/home/tabs/TestTab.dart';
 import 'package:fossil/ui/home/tabs/AboutTab.dart';
-import 'package:fossil/ui/setup/FirstRunPage.dart';
-import 'package:fossil/ui/setup/PairPage.dart';
-import 'package:fossil/ui/test/WatchCarousel.dart';
+import 'package:cobble/ui/setup/FirstRunPage.dart';
+import 'package:cobble/ui/setup/PairPage.dart';
+import 'package:cobble/ui/test/WatchCarousel.dart';
 
 class HomePage extends StatefulWidget {
   @override

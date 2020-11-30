@@ -1,4 +1,4 @@
-package io.rebble.fossil
+package io.rebble.cobble
 
 import android.Manifest
 import android.app.AlertDialog
@@ -141,7 +141,7 @@ class MainActivity : FlutterActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val injectionComponent = (applicationContext as FossilApplication).component
+        val injectionComponent = (applicationContext as CobbleApplication).component
 
         coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
 
@@ -195,11 +195,11 @@ class MainActivity : FlutterActivity() {
 
     @OptIn(ExperimentalStdlibApi::class)
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
-        val flutter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/protocol")
-        val scanEvent = EventChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/scanEvent")
-        val packetIO = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/packetIO")
-        val bootWaiter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/bootWaiter")
-        val notificationTester = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.fossil/notificationTest")
+        val flutter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.cobble/protocol")
+        val scanEvent = EventChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.cobble/scanEvent")
+        val packetIO = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.cobble/packetIO")
+        val bootWaiter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.cobble/bootWaiter")
+        val notificationTester = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.cobble/notificationTest")
 
         scanEvent.setStreamHandler(object : EventChannel.StreamHandler {
             override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
