@@ -2,16 +2,18 @@ package io.rebble.fossil.bluetooth
 
 import android.bluetooth.*
 import android.content.Context
+import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import timber.log.Timber
 import java.io.IOException
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import kotlin.experimental.and
 
 class BlueGATTServer(private val targetDevice: BluetoothDevice, private val context: Context) : BlueGATTIO {
-    private val packetWriteChannel = Channel<GATTPacket>(0)
     private val serverReady = CompletableDeferred<Boolean>()
     private val connectionStatusChannel = Channel<Boolean>(0)
 
@@ -28,8 +30,11 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
 
     private var running = false
 
-    override val packetInputStream = PipedInputStream()
-    val packetOutputStream = PipedOutputStream()
+    override val inputStream = PipedInputStream()
+    val packetOutputStream = PipedOutputStream(inputStream)
+
+    private val packetWriteInputStream = PipedInputStream()
+    val outputStream = PipedOutputStream(packetWriteInputStream)
 
     private val gattServerCallbacks = object : BluetoothGattServerCallback() {
         override fun onServiceAdded(status: Int, service: BluetoothGattService?) {
@@ -75,11 +80,10 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                                     Timber.e(e, "Error writing to packetOutputStream")
                                 }
                             }
-
                         }
                         GATTPacket.PacketType.RESET -> {
                             remoteSeq = 0U
-                            GlobalScope.launch(Dispatchers.IO) { sendAck(packet.sequence, true) } //XXX
+                            GlobalScope.launch(Dispatchers.IO) { sendAck(packet.sequence, true) }
                         }
                     }
                 } else {
@@ -164,8 +168,6 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
     }
 
     suspend fun initServer(): Boolean {
-        packetOutputStream.connect(packetInputStream)
-
         val bluetoothManager = context.applicationContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothGattServer = bluetoothManager.openGattServer(context, gattServerCallbacks)!!
 
@@ -201,93 +203,78 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         this.mtu = newMTU
     }
 
+    private suspend fun attemptWrite(packet: GATTPacket) {
+        if (packet.type == GATTPacket.PacketType.DATA || packet.type == GATTPacket.PacketType.RESET) ackPending[packet.sequence] = CompletableDeferred(packet)
+        var success = false
+        var attempt = 0
+        while (!success && attempt < 3) {
+            requestWritePacket(packet.data)
+            if (packet.type == GATTPacket.PacketType.DATA || packet.type == GATTPacket.PacketType.RESET) {
+                try {
+                    withTimeout(1000) {
+                        ackPending[packet.sequence]?.await()
+                        success = true
+                    }
+                } catch (e: CancellationException) {
+                    Timber.w("ACK wait timed out")
+                    attempt++
+                }
+            } else {
+                success = true
+            }
+        }
+        if (!success) {
+            Timber.e("Gave up sending packet")
+        }
+    }
+
     private suspend fun packetWriter() = coroutineScope {
         launch(Dispatchers.IO) {
+            val buf: ByteBuffer = ByteBuffer.allocate(mtu)
             while (true) {
-                val packet = packetWriteChannel.receive()
-                var success = false
-                var tries = 0
-                if (packet.type != GATTPacket.PacketType.ACK) Timber.d("Writing packet ${packet.sequence} of type ${packet.type}")
-                if (packet.data.size > mtu) {
-                    throw IOException("Packet size too large for MTU (${mtu})")
+                packetWriteInputStream.readFully(buf, 0, 4)
+                val metBuf = ByteBuffer.wrap(buf.array())
+                metBuf.order(ByteOrder.BIG_ENDIAN)
+                val length = metBuf.short
+                val endpoint = metBuf.short
+                if (length < 0) {
+                    Timber.w("Invalid length in packet (EP ${ProtocolEndpoint.getByValue(endpoint.toUShort())}): got $length")
+                    continue
                 }
-                while (++tries <= 3 && !success) {
-                    dataCharacteristic.value = packet.toByteArray()
-                    if (!requestWritePacket()) {
-                        Timber.e("Failed to write to data characteristic")
-                        //TODO: retry/disconnect?
-                    }
-                    try {
-                        withTimeout(1000) {
-                            ackPending[packet.sequence]?.await()
-                            success = true
-                        }
-                    } catch (e: TimeoutCancellationException) {
-                        tries++
-                    }
-                }
-                if (!success) {
-                    Timber.e("Gave up sending packet, waiting for ACK timed out on all attempts")
+                Timber.d("Writing packet of EP ${ProtocolEndpoint.getByValue(endpoint.toUShort())} length $length")
+                var written = 0
+                val count = length.toInt().coerceAtMost(mtu)
+                packetWriteInputStream.readFully(buf, 4, count - 4)
+                var thisSeq = getSeq()
+                attemptWrite(GATTPacket(GATTPacket.PacketType.DATA, thisSeq, buf.array()))
+                written += count
+                buf.rewind()
+                while (length - written > 0) {
+                    packetWriteInputStream.readFully(buf, 0, count)
+                    thisSeq = getSeq()
+                    attemptWrite(GATTPacket(GATTPacket.PacketType.DATA, thisSeq, buf.array()))
+                    written += count
+                    buf.rewind()
                 }
             }
         }
     }
 
-    private suspend fun requestWritePacket(): Boolean {
+    private suspend fun requestWritePacket(data: ByteArray): Boolean {
         sendPending?.await()
+        dataCharacteristic.value = data
         sendPending = CompletableDeferred()
         return bluetoothGattServer.notifyCharacteristicChanged(targetDevice, dataCharacteristic, false)
     }
 
     private suspend fun sendAck(sequence: UShort, reset: Boolean = false) {
         Timber.d("Sending ACK for $sequence")
-        packetWriteChannel.send(GATTPacket(if (reset) GATTPacket.PacketType.RESET_ACK else GATTPacket.PacketType.ACK, sequence))
+        requestWritePacket(GATTPacket(if (reset) GATTPacket.PacketType.RESET_ACK else GATTPacket.PacketType.ACK, sequence).data)
     }
 
-    override fun requestReset() {
+    override suspend fun requestReset() {
         val thisSeq = getSeq()
-        GlobalScope.launch { packetWriteChannel.send(GATTPacket(GATTPacket.PacketType.RESET, thisSeq)) }
-    }
-
-
-    override fun onCharacteristicChanged(value: ByteArray, characteristic: BluetoothGattCharacteristic?) {
-        /*if (characteristic?.uuid == BlueGATTConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_READ && characteristic != null) {
-            val packet = GATTPacket(characteristic.value)
-            when (packet.type) {
-                GATTPacket.PacketType.RESET_ACK, GATTPacket.PacketType.ACK -> {
-                    ackPending.remove(packet.sequence)?.complete(packet)
-                    Timber.d("Got ACK for ${packet.sequence}")
-                }
-                GATTPacket.PacketType.DATA -> {
-                    dataReadChannel.offer(packet)
-                }
-                GATTPacket.PacketType.RESET -> {
-                    remoteSeq = 0U
-                    GlobalScope.launch(Dispatchers.IO) { sendAck(packet.sequence, true) } //XXX
-                }
-            }
-        }*/
-    }
-
-    override suspend fun sendPacket(bytes: ByteArray): Boolean {
-        val mtu = this.mtu
-
-        val splitBytes = BlueLEDriver.splitBytesByMTU(bytes, mtu)
-
-        splitBytes.forEach {
-            val thisSeq = getSeq()
-            val result = CompletableDeferred<GATTPacket>()
-            ackPending[thisSeq] = result
-            packetWriteChannel.send(GATTPacket(GATTPacket.PacketType.DATA, thisSeq, it))
-            try {
-                withTimeout(3100) {
-                    result.await()
-                }
-            } catch (e: TimeoutCancellationException) {
-                return false
-            }
-        }
-        return true
+        attemptWrite(GATTPacket(GATTPacket.PacketType.RESET, thisSeq))
     }
 
     override suspend fun connectPebble(): Boolean {
@@ -298,7 +285,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         Timber.d("Server closing connection")
         connectionStatusChannel.offer(false)
         packetOutputStream.close()
-        packetInputStream.close()
+        inputStream.close()
         bluetoothGattServer.close()
     }
 

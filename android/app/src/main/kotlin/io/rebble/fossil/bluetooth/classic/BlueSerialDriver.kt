@@ -2,24 +2,23 @@ package io.rebble.fossil.bluetooth.classic
 
 import android.bluetooth.BluetoothDevice
 import io.rebble.fossil.bluetooth.BlueIO
+import io.rebble.fossil.bluetooth.ProtocolIO
 import io.rebble.fossil.bluetooth.SingleConnectionStatus
-import io.rebble.fossil.bluetooth.readFully
 import io.rebble.libpebblecommon.ProtocolHandler
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import timber.log.Timber
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
-import java.io.OutputStream
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import java.util.*
 
 @Suppress("BlockingMethodInNonBlockingContext")
 class BlueSerialDriver(
         private val protocolHandler: ProtocolHandler
 ) : BlueIO {
-    private var outputStream: OutputStream? = null
+    private var protocolIO: ProtocolIO? = null
 
     override fun startSingleWatchConnection(device: BluetoothDevice): Flow<SingleConnectionStatus> = flow {
         coroutineScope {
@@ -38,56 +37,21 @@ class BlueSerialDriver(
 
             emit(SingleConnectionStatus.Connected(device))
 
-            val inputStream = serialSocket.inputStream
-            outputStream = serialSocket.outputStream
+            protocolIO = ProtocolIO(serialSocket.inputStream, serialSocket.outputStream, protocolHandler)
 
+            protocolIO!!.readLoop()
             try {
-                val buf: ByteBuffer = ByteBuffer.allocate(8192)
-
-                while (coroutineContext.isActive) {
-                    /* READ PACKET META */
-                    inputStream.readFully(buf, 0, 4)
-                    val metBuf = ByteBuffer.wrap(buf.array())
-                    metBuf.order(ByteOrder.BIG_ENDIAN)
-                    val length = metBuf.short
-                    val endpoint = metBuf.short
-                    if (length < 0 || length > buf.capacity()) {
-                        Timber.w("Invalid length in packet (EP $endpoint): got $length")
-                        continue
-                    }
-
-                    /* READ PACKET CONTENT */
-                    inputStream.readFully(buf, 4, length.toInt())
-
-                    Timber.d("Got packet: EP $endpoint | Length $length")
-
-                    buf.rewind()
-                    val packet = ByteArray(length.toInt() + 2 * (Short.SIZE_BYTES))
-                    buf.get(packet, 0, packet.size)
-                    protocolHandler.receivePacket(packet.toUByteArray())
-                }
-            } finally {
-                try {
-                    serialSocket?.close()
-                    inputStream.close()
-                    outputStream?.close()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-
-                outputStream = null
-                sendLoop.cancel()
+                serialSocket?.close()
+            } catch (e: IOException) {
             }
+            sendLoop.cancel()
         }
     }
 
     private suspend fun sendPacket(bytes: UByteArray): Boolean {
-        val outputStream = outputStream ?: return false
+        val protocolIO = protocolIO ?: return false
         @Suppress("BlockingMethodInNonBlockingContext")
-        withContext(Dispatchers.IO) {
-            outputStream.write(bytes.toByteArray())
-        }
-
+        protocolIO.write(bytes.toByteArray())
         return true
     }
 

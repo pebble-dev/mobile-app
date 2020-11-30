@@ -7,6 +7,7 @@ import com.juul.able.device.ConnectGattResult
 import com.juul.able.gatt.Gatt
 import com.juul.able.gatt.GattStatus
 import com.juul.able.gatt.OutOfOrderGattCallbackException
+import com.juul.able.gatt.isSuccess
 import io.rebble.fossil.util.toBytes
 import io.rebble.fossil.util.toHexString
 import io.rebble.libpebblecommon.ProtocolHandler
@@ -15,8 +16,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import java.io.*
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 
 
 class BlueLEDriver(
@@ -27,6 +26,7 @@ class BlueLEDriver(
     private var connectionParamManager: ConnectionParamManager? = null
     private var gattDriver: BlueGATTServer? = null
     private var targetPebble: BluetoothDevice? = null
+    private var protocolIO: ProtocolIO? = null
 
     companion object {
         fun splitBytesByMTU(bytes: ByteArray, mtu: Int): List<ByteArray> {
@@ -56,28 +56,17 @@ class BlueLEDriver(
     private var gatt: Gatt? = null
 
     private suspend fun sendPacket(bytes: UByteArray): Boolean {
-        if (gattDriver != null) {
-            return if (!gattDriver!!.sendPacket(bytes.toByteArray())) {
-                closePebble()
-                false
-            } else {
-                true
-            }
-        }
-        return false
+        val protocolIO = protocolIO ?: return false
+        @Suppress("BlockingMethodInNonBlockingContext")
+        protocolIO.write(bytes.toByteArray())
+        return true
     }
 
-    fun closePebble() {
-        GlobalScope.launch(Dispatchers.IO) {
-            gatt?.disconnect()
-            gatt = null
-            connectionState = LEConnectionState.CLOSED
-            connectionStatusChannel.offer(false)
-        }
-    }
-
-    fun getTarget(): BluetoothDevice? {
-        return targetPebble
+    suspend fun closePebble() {
+        gatt?.disconnect()
+        gatt = null
+        connectionState = LEConnectionState.CLOSED
+        connectionStatusChannel.offer(false)
     }
 
     /**
@@ -93,6 +82,11 @@ class BlueLEDriver(
     }
 
     suspend fun deviceConnectivity() {
+        val mtu = gatt?.requestMtu(339)
+        if (mtu?.isSuccess == true) {
+            Timber.d("MTU Changed, new mtu $mtu")
+            gattDriver!!.setMTU(mtu.mtu)
+        }
         if (connectivityWatcher!!.subscribe()) {
             var status = connectivityWatcher!!.getStatus()
             if (status.connected) {
@@ -192,70 +186,13 @@ class BlueLEDriver(
                             while (true) {
                                 gatt!!.onCharacteristicChanged.collect {
                                     Timber.d("onCharacteristicChanged ${it.characteristic.uuid}")
-                                    gattDriver?.onCharacteristicChanged(it.value, it.characteristic)
                                     connectivityWatcher?.onCharacteristicChanged(it.value, it.characteristic)
                                 }
                             }
                         }
 
-                        /*gattDriver = BlueGATTClient(gatt) {
-                            processGattPacket(it)
-                        }*/
-
                         connectionParamManager = ConnectionParamManager(gatt!!)
-                        connectivityWatcher = ConnectivityWatcher(gatt!!) /*{
-                            Timber.d("Connectivity status changed: ${it}")
-                            if (connectionState == LEConnectionState.PAIRING) {
-                                if (it.pairingErrorCode == ConnectivityWatcher.PairingErrorCode.CONFIRM_VALUE_FAILED) {
-                                    Timber.e("Failed to pair")
-                                    closePebble()
-                                } else if (it.paired) {
-                                    connectionState = LEConnectionState.CONNECTING_GATT
-                                    if (!(gattDriver?.isConnected ?: false)) {
-                                        gatt!!.discoverServices()
-                                    } else {
-                                        connectionState = LEConnectionState.CONNECTED
-                                    }
-                                }
-                            } else if (connectionState == LEConnectionState.CONNECTING_CONNECTIVITY) {
-                                if (it.paired) {
-                                    if (targetPebble!!.bondState != BluetoothDevice.BOND_BONDED) {
-                                        Timber.w("Watch bonded, phone not bonded")
-                                    } else {
-                                        connectionState = LEConnectionState.CONNECTING_GATT
-                                        if (gatt!!.discoverServices() == BluetoothGatt.GATT_SUCCESS) {
-                                            connect()
-                                        }
-                                    }
-                                } else {
-                                    connectionState = LEConnectionState.PAIRING
-                                    if (targetPebble!!.bondState == BluetoothDevice.BOND_BONDED) {
-                                        Timber.w("Phone bonded, watch not bonded")
-                                    }
-                                    val pairService = gatt!!.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)
-                                    if (pairService == null) {
-                                        Timber.e("pairService is null")
-                                    } else {
-                                        val pairTrigger = pairService.getCharacteristic(BlueGATTConstants.UUIDs.PAIRING_TRIGGER_CHARACTERISTIC)
-                                        if (pairTrigger == null) {
-                                            Timber.e("pairTrigger is null")
-                                        } else {
-                                            Timber.d("Pairing device")
-                                            if (pairTrigger.properties and BluetoothGattCharacteristic.PROPERTY_WRITE > 0) {
-                                                if (!gatt!!.writeCharacteristic(pairTrigger, pairTriggerFlagsToBytes(it.supportsPinningWithoutSlaveSecurity, Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP, gattDriver is BlueGATTClient),BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT).isSuccess) {
-                                                    Timber.e("Failed to write to pair characteristic")
-                                                    closePebble()
-                                                }
-                                            }
-                                            if (!device.createBond()) {
-                                                Timber.e("Failed to create bond")
-                                                closePebble()
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }*/
+                        connectivityWatcher = ConnectivityWatcher(gatt!!)
                         val servicesRes: GattStatus = try {
                             gatt!!.discoverServices()
                         } catch (e: OutOfOrderGattCallbackException) {
@@ -265,11 +202,6 @@ class BlueLEDriver(
                         }
                         if (servicesRes == BluetoothGatt.GATT_SUCCESS) {
                             if (gatt?.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)?.getCharacteristic(BlueGATTConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC) != null) {
-                                /*val mtu = gatt?.requestMtu(339)
-                                if (mtu?.isSuccess == true) {
-                                    Timber.d("MTU Changed, new mtu $mtu")
-                                    gattDriver!!.setMTU(mtu.mtu)
-                                }*/
                                 if (connectionParamManager!!.subscribe()) {
                                     Timber.d("Starting connectivity after connparams")
                                     deviceConnectivity()
@@ -291,37 +223,13 @@ class BlueLEDriver(
                 }
             }
             if (connectionStatusChannel.receive()) {
+                val sendLoop = launch { protocolHandler.startPacketSendingLoop(::sendPacket) }
                 emit(SingleConnectionStatus.Connected(device))
-                launch { protocolHandler.startPacketSendingLoop(::sendPacket) }
-                try {
-                    //TODO: Common class for serial and LE as this is unnecessarily reused code
-                    val buf: ByteBuffer = ByteBuffer.allocate(8192)
-                    while (true) {
-                        gattDriver!!.packetInputStream.readFully(buf, 0, 4)
-                        val metBuf = ByteBuffer.wrap(buf.array())
-                        metBuf.order(ByteOrder.BIG_ENDIAN)
-                        val length = metBuf.short
-                        val endpoint = metBuf.short
-                        if (length < 0 || length > buf.capacity()) {
-                            Timber.w("Invalid length in packet (EP $endpoint): got $length")
-                            continue
-                        }
-
-                        /* READ PACKET CONTENT */
-                        gattDriver!!.packetInputStream.readFully(buf, 4, length.toInt())
-
-                        Timber.d("Got packet: EP $endpoint | Length $length")
-
-                        buf.rewind()
-                        val packet = ByteArray(length.toInt() + 2 * (Short.SIZE_BYTES))
-                        buf.get(packet, 0, packet.size)
-                        protocolHandler.receivePacket(packet.toUByteArray())
-                    }
-                } finally {
-                    gattDriver!!.closePebble()
-                    closePebble()
-                    //TODO: cleanup needed?
-                }
+                protocolIO = ProtocolIO(gattDriver!!.inputStream, gattDriver!!.outputStream, protocolHandler)
+                protocolIO!!.readLoop()
+                gattDriver!!.closePebble()
+                closePebble()
+                sendLoop.cancel()
             }
         }
     }
