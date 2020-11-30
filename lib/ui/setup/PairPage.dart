@@ -159,10 +159,11 @@ class _PairPageState extends State<PairPage> {
                           textColor: Theme.of(context).accentColor,
                           onPressed: _refreshDevices,
                         )),
+                    //TODO: Hide Skip when we're on the home screen and the tabs are visible
                     FlatButton(
                       child: Text("SKIP"),
                       padding: EdgeInsets.symmetric(horizontal: 32.0),
-                      onPressed: () => {},
+                      onPressed: () => Navigator.pushNamed(context, '/home'),
                     )
                   ]))
         ]));
