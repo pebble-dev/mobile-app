@@ -1,7 +1,8 @@
 package io.rebble.cobble.errors
 
-import android.util.Log
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
+import timber.log.Timber
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
@@ -10,8 +11,12 @@ import kotlin.coroutines.CoroutineContext
  */
 class GlobalExceptionHandler @Inject constructor() : CoroutineExceptionHandler {
     override fun handleException(context: CoroutineContext, exception: Throwable) {
+        if (exception is CancellationException) {
+            return
+        }
+
         // TODO properly handle exceptions (logging?)
-        Log.e("Cobble", "Coroutine exception", exception)
+        Timber.e(exception, "Coroutine exception")
     }
 
     override val key: CoroutineContext.Key<*>

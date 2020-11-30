@@ -20,7 +20,7 @@ class PairedStorage {
       List<_StoredDevice> pairedList = pairedJson.map((e) {
         dynamic devRaw = jsonDecode(e);
         return _StoredDevice(
-            PebbleDevice(devRaw['device']['name'], devRaw['device']['address']),
+            PebbleDevice.stored(devRaw['device']['name'], devRaw['device']['address'], devRaw['device']['serialNumber'], devRaw['device']['color']),
             devRaw['isDefault']);
       }).toList();
       return pairedList;

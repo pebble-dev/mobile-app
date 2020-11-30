@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:cobble/infrastructure/datasources/PairedStorage.dart';
+import 'package:cobble/infrastructure/pigeons/pigeons.dart';
 import 'package:cobble/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,18 +11,12 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  static const protocolC = MethodChannel('io.rebble.cobble/protocol');
-
   void _openHome() {
     SharedPreferences.getInstance().then((prefs) => {
           if (!prefs.containsKey("firstRun"))
             Navigator.pushReplacementNamed(context, '/firstrun')
           else
             {
-              PairedStorage.getDefault().then((value) {
-                if (value != null)
-                  protocolC.invokeMethod("targetPebbleAddr", value.address);
-              }),
               Navigator.pushReplacementNamed(context, '/home')
             }
         });

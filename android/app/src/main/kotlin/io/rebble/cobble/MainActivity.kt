@@ -2,56 +2,37 @@ package io.rebble.cobble
 
 import android.Manifest
 import android.app.AlertDialog
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.bluetooth.BluetoothDevice
-import android.content.*
+import android.content.ComponentName
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.IBinder
 import android.provider.Settings
 import android.text.TextUtils
 import android.widget.Toast
-import androidx.annotation.NonNull
+import androidx.collection.ArrayMap
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
-import io.flutter.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugin.common.EventChannel
-import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
-import io.rebble.libpebblecommon.blobdb.PushNotification
+import io.rebble.cobble.bridges.FlutterBridge
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-import org.json.JSONArray
-import org.json.JSONObject
 import java.net.URI
 import kotlin.system.exitProcess
 
-@ExperimentalUnsignedTypes
+@OptIn(ExperimentalUnsignedTypes::class)
 class MainActivity : FlutterActivity() {
-    private lateinit var coroutineScope: CoroutineScope
+    lateinit var coroutineScope: CoroutineScope
+    private lateinit var flutterBridges: Set<FlutterBridge>
 
-    var watchService: WatchService? = null
     var isBound = false
     var bootIntentCallback: ((Boolean) -> Unit)? = null
 
-    private val watchServiceConnection = object : ServiceConnection {
-        override fun onServiceConnected(className: ComponentName,
-                                        service: IBinder) {
-            val binder = service as WatchService.ProtBinder
-            watchService = binder.getService()
-            Log.d("Binding", "Done")
-            isBound = true
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-            isBound = false
-        }
-    }
+    val activityResultCallbacks = ArrayMap<Int, (resultCode: Int, data: Intent) -> Unit>()
 
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
@@ -61,11 +42,6 @@ class MainActivity : FlutterActivity() {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "Requires location permission for bluetooth LE", Toast.LENGTH_LONG).show()
                     exitProcess(1)
-                } else {
-                    if (!isBound) {
-                        val intent = Intent(this, WatchService::class.java)
-                        bindService(intent, watchServiceConnection, Context.BIND_AUTO_CREATE)
-                    }
                 }
             }
         }
@@ -109,48 +85,43 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel("device_status", "Device Status", importance)
-            // Register the channel with the system
-            val notificationManager: NotificationManager =
-                    getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
-
     private fun isNotificationServiceEnabled(): Boolean {
-        val pkgName = packageName
-        val flat: String = Settings.Secure.getString(contentResolver,
-                "enabled_notification_listeners")
-        if (!TextUtils.isEmpty(flat)) {
-            val names = flat.split(":").toTypedArray()
-            for (i in names.indices) {
-                val cn = ComponentName.unflattenFromString(names[i])
-                if (cn != null) {
-                    if (TextUtils.equals(pkgName, cn.packageName)) {
-                        return true
+        try {
+            val pkgName = packageName
+            val flat: String = Settings.Secure.getString(contentResolver,
+                    "enabled_notification_listeners")
+            if (!TextUtils.isEmpty(flat)) {
+                val names = flat.split(":").toTypedArray()
+                for (i in names.indices) {
+                    val cn = ComponentName.unflattenFromString(names[i])
+                    if (cn != null) {
+                        if (TextUtils.equals(pkgName, cn.packageName)) {
+                            return true
+                        }
                     }
                 }
             }
+        } catch (e: NullPointerException) {
+            return false
         }
         return false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val injectionComponent = (applicationContext as CobbleApplication).component
+        val activityComponent = injectionComponent.createActivitySubcomponentFactory()
+                .create(this)
 
         coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
 
         super.onCreate(savedInstanceState)
         GeneratedPluginRegistrant.registerWith(this.flutterEngine!!)
 
-        handleIntent(intent)
+        // Bridges need to be created after super.onCreate() to ensure
+        // flutter stuff is ready
+        flutterBridges = activityComponent.createFlutterBridges()
 
-        createNotificationChannel()
+        handleIntent(intent)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -178,12 +149,6 @@ class MainActivity : FlutterActivity() {
             alertDialogBuilder.setNegativeButton("Deny") { _, _ -> Toast.makeText(applicationContext, "Running without showing notifications", Toast.LENGTH_LONG).show() }
             alertDialogBuilder.create().show()
         }
-
-        val intent = Intent(this, WatchService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent)
-        }
-        bindService(intent, watchServiceConnection, Context.BIND_AUTO_CREATE)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -191,76 +156,13 @@ class MainActivity : FlutterActivity() {
         handleIntent(intent)
     }
 
-    var deviceList: List<BluetoothDevice> = listOf()
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        super.onActivityResult(requestCode, resultCode, data)
 
-    @OptIn(ExperimentalStdlibApi::class)
-    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
-        val flutter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.cobble/protocol")
-        val scanEvent = EventChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.cobble/scanEvent")
-        val packetIO = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.cobble/packetIO")
-        val bootWaiter = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.cobble/bootWaiter")
-        val notificationTester = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "io.rebble.cobble/notificationTest")
-
-        scanEvent.setStreamHandler(object : EventChannel.StreamHandler {
-            override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-                flutter.setMethodCallHandler { call, result ->
-                    when (call.method) {
-                        "isConnected" -> result.success(watchService?.isConnected())
-                        "targetPebbleAddr" -> result.success(watchService?.targetPebble(call.arguments as Long))
-                        "scanDevices" -> watchService?.scanDevices { res ->
-                            deviceList = res
-                            events?.success(JSONObject(mapOf(Pair("event", "scanFinish"))).toString())
-                            val scanList = JSONArray(
-                                    res.map { el ->
-                                        JSONObject()
-                                                .put("name", el.name)
-                                                .put("address", el.address)
-                                    }).toString()
-                            flutter.invokeMethod("updatePairScanResults", scanList)
-                            result.success(null)
-                        }
-                    }
-                }
-            }
-
-            override fun onCancel(arguments: Any?) {
-
-            }
-        })
-
-        packetIO.setMethodCallHandler { call, result ->
-            when (call.method) {
-                "send" ->
-                    watchService?.sendDevPacket(call.arguments as ByteArray)
-            }
-        }
-
-        bootWaiter.setMethodCallHandler { call, result ->
-            when (call.method) {
-                "waitForBoot" ->
-                    bootIntentCallback = { success ->
-                        result.success(success)
-                        bootIntentCallback = null
-                    }
-            }
-        }
-
-        notificationTester.setMethodCallHandler { call, result ->
-            when (call.method) {
-                "sendTestNotification" -> {
-                    coroutineScope.launch {
-                        watchService?.notificationService?.send(
-                                PushNotification(
-                                        "Test Notification"
-
-                                )
-                        )
-
-                        println("Notification sent")
-                    }
-                }
-            }
-        }
+        activityResultCallbacks[requestCode]?.invoke(resultCode, data)
     }
 
+    public override fun getFlutterEngine(): FlutterEngine? {
+        return super.getFlutterEngine()
+    }
 }

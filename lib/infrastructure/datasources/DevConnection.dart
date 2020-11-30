@@ -1,11 +1,12 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:flutter/services.dart';
+
+import 'package:cobble/infrastructure/pigeons/pigeons.dart';
+
+final ConnectionControl connectionControl = ConnectionControl();
 
 class DevConnection {
   static final DevConnection _singleton = new DevConnection._internal();
-  static final MethodChannel _packetIO =
-      MethodChannel('io.rebble.cobble/packetIO');
   bool isConnected = false;
   HttpServer _server;
   Function _onServerStatChange; // (isrunning)
@@ -38,7 +39,9 @@ class DevConnection {
         Uint8List indata = event as Uint8List;
         if (indata[0] == 0x01) {
           Uint8List packet = indata.sublist(1);
-          _packetIO.invokeMethod("send", packet);
+          ListWrapper packetDataWrapper = ListWrapper();
+          packetDataWrapper.value = packet.map((e) => e.toInt()).toList();
+          connectionControl.sendRawPacket(packetDataWrapper);
           /*.then((res) {
             Uint8List rpacket = Uint8List(0x00) + (res as Uint8List);
             socket.add(rpacket);

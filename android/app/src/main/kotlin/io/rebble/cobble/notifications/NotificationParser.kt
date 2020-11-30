@@ -4,7 +4,7 @@ import android.app.Notification
 import android.content.Context
 import android.provider.Telephony
 import android.service.notification.StatusBarNotification
-import io.rebble.libpebblecommon.blobdb.NotificationSource
+import io.rebble.libpebblecommon.packets.blobdb.NotificationSource
 
 fun StatusBarNotification.parseData(context: Context): ParsedNotification {
     val pm = context.packageManager

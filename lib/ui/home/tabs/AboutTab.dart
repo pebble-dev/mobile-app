@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fossil/ui/common/icons/fonts/RebbleIconsStroke.dart';
+import 'package:cobble/ui/common/icons/fonts/RebbleIconsStroke.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info/package_info.dart';
 
