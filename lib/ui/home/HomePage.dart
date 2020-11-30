@@ -7,6 +7,7 @@ import 'package:fossil/ui/common/icons/WatchIcon.dart';
 import 'package:fossil/ui/common/icons/fonts/RebbleIconsStroke.dart';
 import 'package:fossil/ui/home/tabs/StoreTab.dart';
 import 'package:fossil/ui/home/tabs/TestTab.dart';
+import 'package:fossil/ui/home/tabs/AboutTab.dart';
 import 'package:fossil/ui/setup/FirstRunPage.dart';
 import 'package:fossil/ui/setup/PairPage.dart';
 import 'package:fossil/ui/test/WatchCarousel.dart';
@@ -25,6 +26,7 @@ class _HomePageState extends State<HomePage> {
     StoreTab(),
     WatchCarousel(),
     Placeholder(), //TODO
+    AboutTab(),
   ];
 
   Map<String, IconData> _tabBarOptions = {
@@ -33,6 +35,7 @@ class _HomePageState extends State<HomePage> {
     "Store": RebbleIconsStroke.rebble_store,
     "Notifications": RebbleIconsStroke.notifications,
     "More": RebbleIconsStroke.menu_horizontal,
+    "About": RebbleIconsStroke.about_app,
   };
 
   void _onTabTap(int index) {
