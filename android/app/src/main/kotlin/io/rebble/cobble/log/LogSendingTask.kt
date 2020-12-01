@@ -56,7 +56,7 @@ fun collectAndShareLogs(context: Context) = GlobalScope.launch(Dispatchers.IO) {
     }
 
     withContext(Dispatchers.Main) {
-        val targetUri = FileProvider.getUriForFile(context, "io.rebble.fossil.files", targetFile)
+        val targetUri = FileProvider.getUriForFile(context, "io.rebble.cobble.files", targetFile)
 
         val activityIntent = Intent(Intent.ACTION_SEND)
 
@@ -64,7 +64,7 @@ fun collectAndShareLogs(context: Context) = GlobalScope.launch(Dispatchers.IO) {
         activityIntent.setType("application/octet-stream")
 
         activityIntent.setClipData(ClipData.newUri(context.getContentResolver(),
-                "Fossil Logs",
+                "Cobble Logs",
                 targetUri))
 
         activityIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

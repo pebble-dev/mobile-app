@@ -4,7 +4,7 @@ import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import io.rebble.cobble.FossilApplication
+import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionState
 import kotlinx.coroutines.*
 
@@ -18,7 +18,7 @@ class BluetoothAclReceiver : BroadcastReceiver() {
         val device: BluetoothDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                 ?: return
 
-        val component = (context.applicationContext as FossilApplication).component
+        val component = (context.applicationContext as CobbleApplication).component
 
         val pairedStorage = component.createPairedStorage()
         val connectionLooper = component.createConnectionLooper()

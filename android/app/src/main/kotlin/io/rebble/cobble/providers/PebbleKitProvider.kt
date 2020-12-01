@@ -6,7 +6,7 @@ import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
 import com.getpebble.android.kit.Constants
-import io.rebble.cobble.FossilApplication
+import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.ConnectionState
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +37,7 @@ class PebbleKitProvider : ContentProvider() {
 
         initialized = true
 
-        val injectionComponent = (context as FossilApplication)
+        val injectionComponent = (context as CobbleApplication)
                 .component
 
         connectionLooper = injectionComponent.createConnectionLooper()

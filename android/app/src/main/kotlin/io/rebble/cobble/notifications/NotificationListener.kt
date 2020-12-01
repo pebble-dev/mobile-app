@@ -2,7 +2,7 @@ package io.rebble.cobble.notifications
 
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
-import io.rebble.cobble.FossilApplication
+import io.rebble.cobble.CobbleApplication
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -20,7 +20,7 @@ class NotificationListener : NotificationListenerService() {
     private lateinit var notificationService: NotificationService
 
     override fun onCreate() {
-        val injectionComponent = (applicationContext as FossilApplication).component
+        val injectionComponent = (applicationContext as CobbleApplication).component
 
         coroutineScope = CoroutineScope(
                 SupervisorJob() + injectionComponent.createExceptionHandler()

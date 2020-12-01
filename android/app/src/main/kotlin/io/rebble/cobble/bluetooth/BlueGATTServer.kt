@@ -256,6 +256,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                     written += count
                     buf.rewind()
                 }
+                if (length - written < 0) throw IOException("Wrote too much")
             }
         }
     }

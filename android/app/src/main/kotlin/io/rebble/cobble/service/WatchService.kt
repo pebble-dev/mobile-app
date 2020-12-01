@@ -7,7 +7,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
-import io.rebble.cobble.FossilApplication
+import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.NOTIFICATION_CHANNEL_WATCH_CONNECTED
 import io.rebble.cobble.NOTIFICATION_CHANNEL_WATCH_CONNECTING
 import io.rebble.cobble.R
@@ -44,7 +44,7 @@ class WatchService : LifecycleService() {
                 .setSmallIcon(R.drawable.ic_notification_disconnected)
         startForeground(1, mainNotifBuilder!!.build())
 
-        val injectionComponent = (applicationContext as FossilApplication).component
+        val injectionComponent = (applicationContext as CobbleApplication).component
 
         coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
         notificationService = injectionComponent.createNotificationService()
