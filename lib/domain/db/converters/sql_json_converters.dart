@@ -10,7 +10,7 @@ class NumberDateTimeConverter implements JsonConverter<DateTime, int> {
 
   @override
   DateTime fromJson(int json) {
-    return DateTime.fromMillisecondsSinceEpoch(json);
+    return DateTime.fromMillisecondsSinceEpoch(json, isUtc: true);
   }
 
   @override
@@ -24,11 +24,19 @@ class UuidConverter implements JsonConverter<Uuid, String> {
 
   @override
   Uuid fromJson(String json) {
+    if (json == null) {
+      return null;
+    }
+
     return Uuid(json);
   }
 
   @override
   String toJson(Uuid object) {
+    if (object == null) {
+      return null;
+    }
+
     return object.toString();
   }
 }

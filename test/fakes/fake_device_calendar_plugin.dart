@@ -6,6 +6,7 @@ import 'package:device_calendar/device_calendar.dart';
 class FakeDeviceCalendarPlugin implements DeviceCalendarPlugin {
   bool reportedHasPermissionsValue = true;
   List<Calendar> reportedCalendars = [];
+  List<Event> reportedEvents = [];
 
   @override
   Future<Result<String>> createCalendar(String calendarName,
@@ -51,6 +52,25 @@ class FakeDeviceCalendarPlugin implements DeviceCalendarPlugin {
   @override
   Future<Result<UnmodifiableListView<Event>>> retrieveEvents(
       String calendarId, RetrieveEventsParams retrieveEventsParams) {
-    throw UnimplementedError("Not supported for tests yet");
+    final filteredEvents = reportedEvents.where(
+      (element) =>
+          element.calendarId == calendarId &&
+          (retrieveEventsParams == null ||
+              (retrieveEventsParams.eventIds == null ||
+                      retrieveEventsParams.eventIds
+                          .contains(element.eventId)) &&
+                  (retrieveEventsParams.startDate == null ||
+                      element.end
+                          .isAtSameMomentAs(retrieveEventsParams.startDate) ||
+                      element.end.isAfter(retrieveEventsParams.startDate)) &&
+                  (retrieveEventsParams.endDate == null ||
+                      element.start
+                          .isAtSameMomentAs(retrieveEventsParams.endDate) ||
+                      element.start.isBefore(retrieveEventsParams.endDate))),
+    );
+
+    final result = Result<UnmodifiableListView<Event>>();
+    result.data = UnmodifiableListView(filteredEvents);
+    return Future.value(result);
   }
 }

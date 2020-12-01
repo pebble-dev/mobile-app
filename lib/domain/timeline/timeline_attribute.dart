@@ -48,6 +48,7 @@ class TimelineAttribute {
           maxLength == other.maxLength;
 
   @override
+  @JsonKey(ignore: true)
   int get hashCode =>
       id.hashCode ^
       string.hashCode ^

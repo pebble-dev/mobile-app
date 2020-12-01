@@ -1,6 +1,6 @@
-import 'package:device_calendar/device_calendar.dart';
 import 'package:cobble/domain/calendar/calendar_permission.dart';
 import 'package:cobble/domain/preferences.dart';
+import 'package:device_calendar/device_calendar.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,6 +17,10 @@ class CalendarList extends StateNotifier<List<SelectableCalendar>> {
       this._deviceCalendarPlugin, this._hasPermission, this._preferencesFuture)
       : super(const []) {
     _load();
+  }
+
+  List<SelectableCalendar> getAllCalendars() {
+    return state;
   }
 
   Future<void> _load() async {

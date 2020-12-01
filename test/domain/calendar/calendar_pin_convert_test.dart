@@ -1,12 +1,14 @@
+import 'package:cobble/domain/calendar/calendar_pin_convert.dart';
+import 'package:cobble/domain/calendar/selectable_calendar.dart';
 import 'package:cobble/domain/timeline/timeline_attribute.dart';
 import 'package:cobble/domain/timeline/timeline_icon.dart';
-import 'package:cobble/domain/calendar/calendar_pin_convert.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-final TEST_CALENDAR = Calendar(
-  id: "10",
-  name: "Test@Calendar",
+final TEST_CALENDAR = SelectableCalendar(
+  "Test@Calendar",
+  "10",
+  true,
 );
 
 void main() {

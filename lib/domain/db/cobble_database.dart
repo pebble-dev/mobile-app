@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 
 import 'dao/timeline_pin_dao.dart';
 
-void _createAllTables(Database db) async {
+void createAllCobbleTables(Database db) async {
   await db.execute("""
     CREATE TABLE $TABLE_TIMELINE_PINS(
       itemId TEXT PRIMARY KEY NOT NULL,
@@ -14,7 +14,7 @@ void _createAllTables(Database db) async {
       duration INT NOT NULL,
       type TEXT NTO NULL,
       isVisible INTEGER NOT NULL,
-      isFLoating INTEGER NOT NULL,
+      isFloating INTEGER NOT NULL,
       isAllDay INTEGER NOT NULL,
       persistQuickView INTEGER NOT NULL,
       layout TEXT NOT NULL,
@@ -30,7 +30,7 @@ final databaseProvider = FutureProvider.autoDispose<Database>((key) async {
   final dbPath = join(dbFolder, "cobble.db");
 
   final db = await openDatabase(dbPath,
-      version: 1, onCreate: (db, name) => _createAllTables(db));
+      version: 1, onCreate: (db, name) => createAllCobbleTables(db));
 
   key.onDispose(() {
     db.close();
