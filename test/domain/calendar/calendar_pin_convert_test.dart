@@ -121,7 +121,7 @@ void main() {
 
     final expectedAttributes = [
       TimelineAttribute.title("The Event"),
-      TimelineAttribute.icon(TimelineIcon.TIMELINE_CALENDAR),
+      TimelineAttribute.tinyIcon(TimelineIcon.TIMELINE_CALENDAR),
       TimelineAttribute.headings([
         "Calendar",
       ]),
@@ -156,7 +156,7 @@ void main() {
 
     final expectedAttributes = [
       TimelineAttribute.title("The Event"),
-      TimelineAttribute.icon(TimelineIcon.TIMELINE_CALENDAR),
+      TimelineAttribute.tinyIcon(TimelineIcon.TIMELINE_CALENDAR),
       TimelineAttribute.body("Going out with some friends"),
       TimelineAttribute.headings([
         "Calendar",
@@ -191,7 +191,7 @@ void main() {
 
     final expectedAttributes = [
       TimelineAttribute.title("The Event"),
-      TimelineAttribute.icon(TimelineIcon.TIMELINE_CALENDAR),
+      TimelineAttribute.tinyIcon(TimelineIcon.TIMELINE_CALENDAR),
       TimelineAttribute.locationName("Rebble headquarters"),
       TimelineAttribute.headings([
         "Calendar",
@@ -229,7 +229,7 @@ void main() {
 
     final expectedAttributes = [
       TimelineAttribute.title("The Event"),
-      TimelineAttribute.icon(TimelineIcon.TIMELINE_CALENDAR),
+      TimelineAttribute.tinyIcon(TimelineIcon.TIMELINE_CALENDAR),
       TimelineAttribute.headings([
         "Attendees",
         "Calendar",
@@ -264,7 +264,7 @@ void main() {
 
     final expectedAttributes = [
       TimelineAttribute.title("The Event"),
-      TimelineAttribute.icon(TimelineIcon.TIMELINE_CALENDAR),
+      TimelineAttribute.tinyIcon(TimelineIcon.TIMELINE_CALENDAR),
       TimelineAttribute.displayRecurring(true),
       TimelineAttribute.headings([
         "Recurrence",

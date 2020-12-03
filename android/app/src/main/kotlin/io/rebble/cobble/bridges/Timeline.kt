@@ -94,7 +94,7 @@ class Timeline @Inject constructor(
                 TimelineItem.Type.Pin,
                 TimelineItem.Flag.makeFlags(flags),
                 pin.layout.toUByte(),
-                parsedAttributes.filter { it.id != 48 }.map { it.toProtocolAttribute() },
+                parsedAttributes.map { it.toProtocolAttribute() },
                 emptyList()
         )
         val packet = BlobCommand.InsertCommand(

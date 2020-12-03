@@ -87,23 +87,26 @@ class TimelineAttribute {
   }
 
   static TimelineAttribute tinyIcon(TimelineIcon icon) {
+    // Pebble requires most significant bit on all icon numbers to be high.
+    // Not sure why it was done that way
+
     return TimelineAttribute(
       id: 4,
-      uint8: icon.toProtocolNumber(),
+      uint32: icon.toProtocolNumber() | 0x80000000,
     );
   }
 
   static TimelineAttribute smallIcon(TimelineIcon icon) {
     return TimelineAttribute(
       id: 5,
-      uint8: icon.toProtocolNumber(),
+      uint32: icon.toProtocolNumber() | 0x80000000,
     );
   }
 
   static TimelineAttribute largeIcon(TimelineIcon icon) {
     return TimelineAttribute(
       id: 6,
-      uint8: icon.toProtocolNumber(),
+      uint32: icon.toProtocolNumber() | 0x80000000,
     );
   }
 
