@@ -1,6 +1,7 @@
 import 'package:cobble/domain/calendar/calendar_list.dart';
-import 'package:cobble/domain/calendar/calendar_syncer.db.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
+import 'package:cobble/domain/timeline/blob_status.dart';
+import 'package:cobble/domain/timeline/timeline_sync_controller.dart';
 import 'package:cobble/domain/timeline/watch_timeline_syncer.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
@@ -20,8 +21,11 @@ class TestTab extends HookWidget {
     final connectionState = useProvider(connectionStateProvider.state);
     final calendars = useProvider(calendarListProvider.state);
     final calendarSelector = useProvider(calendarListProvider);
-    final calendarSyncer = useProvider(calendarSyncerProvider);
+    final syncController = useProvider(timelineSyncControllerProvider);
     final watchTimelineSyncer = useProvider(watchTimelineSyncerProvider);
+
+    final currentlySyncing = useState(false);
+    final currentlyDeleting = useState(false);
 
     String statusText;
     if (connectionState.isConnecting == true) {
@@ -49,13 +53,24 @@ class TestTab extends HookWidget {
               RaisedButton(
                 onPressed: () {
                   ListWrapper l = ListWrapper();
-                l.value = [0x07, 0x00, 0xD1, 0x07, 0x00, 0xCA, 0xFE, 0x00, 0x00];
-                connectionControl.sendRawPacket(l);
-              },
-              child: Text("Ping"),
-            ),
-            RaisedButton(
-              onPressed: () {connectionControl.disconnect();
+                  l.value = [
+                    0x07,
+                    0x00,
+                    0xD1,
+                    0x07,
+                    0x00,
+                    0xCA,
+                    0xFE,
+                    0x00,
+                    0x00
+                  ];
+                  connectionControl.sendRawPacket(l);
+                },
+                child: Text("Ping"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  connectionControl.disconnect();
                 },
                 child: Text("Disconnect"),
               ),
@@ -111,28 +126,57 @@ class TestTab extends HookWidget {
                   ],
                 );
               }).toList(),
-              RaisedButton(
-                onPressed: () {
-                  calendarSyncer.syncDeviceCalendarsToDb();
-                },
-                child: Text("Trigger sync"),
-              ),
-              RaisedButton(
-                onPressed: () {
-                  watchTimelineSyncer.syncPinDatabaseWithWatch();
-                },
-                child: Text("Sync timeline to watch"),
-              ),
-              RaisedButton(
-                onPressed: () {
-                  watchTimelineSyncer.removeAllPins();
-                },
-                child: Text("Delete all pins"),
-              )
+              if (currentlySyncing.value)
+                CircularProgressIndicator()
+              else
+                RaisedButton(
+                  onPressed: () async {
+                    currentlySyncing.value = true;
+                    final errorMsg = await syncController.syncCalendarToWatch();
+                    currentlySyncing.value = false;
+
+                    if (errorMsg != null) {
+                      showSyncError(context, errorMsg);
+                    }
+                  },
+                  child: Text("Sync calendar to watch"),
+                ),
+              if (currentlyDeleting.value)
+                CircularProgressIndicator()
+              else
+                RaisedButton(
+                  onPressed: () async {
+                    currentlyDeleting.value = true;
+                    final status = await watchTimelineSyncer.removeAllPins();
+                    currentlyDeleting.value = false;
+
+                    if (status != statusSuccess) {
+                      showSyncError(context, "Delete error $status");
+                    }
+                  },
+                  child: Text("Delete all pins from watch"),
+                ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void showSyncError(BuildContext context, String errorMsg) {
+    showDialog<void>(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text("Sync error"),
+              content: Text(errorMsg),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ));
   }
 }

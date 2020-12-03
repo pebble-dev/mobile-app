@@ -12,6 +12,8 @@ import 'package:uuid_type/uuid_type.dart';
 import 'calendar_list.dart';
 import 'calendar_pin_convert.dart';
 
+/// Sync controller that handles synchronization between on-device calendar and
+/// internal database.
 class CalendarSyncer {
   final CalendarList _calendarList;
   final DeviceCalendarPlugin _deviceCalendarPlugin;

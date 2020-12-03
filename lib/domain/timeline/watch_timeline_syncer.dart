@@ -4,6 +4,9 @@ import 'package:cobble/domain/timeline/blob_status.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.dart';
 import 'package:hooks_riverpod/all.dart';
 
+/// Sync controller that handles synchronization between internal database and
+/// watch
+
 class WatchTimelineSyncer {
   final TimelinePinDao timelinePinDao;
   final TimelineControl timelineControl = TimelineControl();
@@ -56,8 +59,9 @@ class WatchTimelineSyncer {
   }
 }
 
-final watchTimelineSyncerProvider = Provider<WatchTimelineSyncer>((ref) {
-  final timelinePinDao = ref.read(timelinePinDaoProvider);
+final watchTimelineSyncerProvider =
+    Provider.autoDispose<WatchTimelineSyncer>((ref) {
+  final timelinePinDao = ref.watch(timelinePinDaoProvider);
 
   return WatchTimelineSyncer(timelinePinDao);
 });
