@@ -67,7 +67,7 @@ extension CalendarEventConverter on Event {
         type: TimelinePinType.PIN,
         isVisible: true,
         isFloating: true,
-        isAllDay: false,
+        isAllDay: allDay,
         persistQuickView: false,
         layout: TimelinePinLayout.CALENDAR_PIN,
         attributesJson: attributesJson,
