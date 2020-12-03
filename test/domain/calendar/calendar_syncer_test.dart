@@ -228,7 +228,7 @@ void main() async {
             layout: TimelinePinLayout.CALENDAR_PIN,
             nextSyncAction: NextSyncAction.Nothing,
             attributesJson:
-                """[{"id":48,"uint8":21},{"id":1,"maxLength":64},{"id":25,"listOfString":["Description","Calendar"],"maxLength":128},{"id":26,"listOfString":[null,"Calendar A"],"maxLength":1024}]"""),
+                """[{"id":4,"uint32":2147483669},{"id":1,"maxLength":64},{"id":25,"listOfString":["Calendar"],"maxLength":128},{"id":26,"listOfString":["Calendar A"],"maxLength":1024}]"""),
       );
 
       final calendarSyncer = container.read(calendarSyncerProvider);
@@ -346,7 +346,7 @@ void main() async {
             layout: TimelinePinLayout.CALENDAR_PIN,
             nextSyncAction: NextSyncAction.Nothing,
             attributesJson:
-                """[{"id":48,"uint8":21},{"id":1,"maxLength":64},{"id":25,"listOfString":["Description","Calendar"],"maxLength":128},{"id":26,"listOfString":[null,"Calendar A"],"maxLength":1024}]"""),
+            """[{"id":4,"uint32":2147483669},{"id":1,"maxLength":64},{"id":25,"listOfString":["Calendar"],"maxLength":128},{"id":26,"listOfString":["Calendar A"],"maxLength":1024}]"""),
       );
 
       final calendarSyncer = container.read(calendarSyncerProvider);
@@ -405,7 +405,7 @@ void main() async {
       final insertedEvents = await pinDao.getAllPins();
       expect(insertedEvents.length, 1);
       expect(insertedEvents.first.attributesJson,
-          """[{"id":48,"uint8":21},{"id":1,"string":"Test Event","maxLength":64},{"id":25,"listOfString":["Description","Calendar"],"maxLength":128},{"id":26,"listOfString":["Test Description","Calendar A"],"maxLength":1024}]""");
+          """[{"id":4,"uint32":2147483669},{"id":1,"string":"Test Event","maxLength":64},{"id":3,"string":"Test Description","maxLength":512},{"id":25,"listOfString":["Calendar"],"maxLength":128},{"id":26,"listOfString":["Calendar A"],"maxLength":1024}]""");
     });
   });
 
@@ -509,7 +509,7 @@ void main() async {
 
       expect(
         eventsInDao.first.attributesJson,
-        """[{"id":48,"uint8":21},{"id":1,"string":"Test Event X","maxLength":64},{"id":25,"listOfString":["Description","Calendar"],"maxLength":128},{"id":26,"listOfString":["Test Description X","Calendar A"],"maxLength":1024}]""",
+        """[{"id":4,"uint32":2147483669},{"id":1,"string":"Test Event X","maxLength":64},{"id":3,"string":"Test Description X","maxLength":512},{"id":25,"listOfString":["Calendar"],"maxLength":128},{"id":26,"listOfString":["Calendar A"],"maxLength":1024}]""",
       );
 
       expect(anyChanges, true);
