@@ -21,6 +21,27 @@ extension CalendarEventConverter on Event {
           .join(", "));
     }
 
+    if (recurrenceRule != null) {
+      String recurrenceText = "Unknown";
+      switch (recurrenceRule.recurrenceFrequency) {
+        case RecurrenceFrequency.Daily:
+          recurrenceText = "Repeats daily.";
+          break;
+        case RecurrenceFrequency.Weekly:
+          recurrenceText = "Repeats weekly.";
+          break;
+        case RecurrenceFrequency.Monthly:
+          recurrenceText = "Repeats monthly.";
+          break;
+        case RecurrenceFrequency.Yearly:
+          recurrenceText = "Repeats yearly.";
+          break;
+      }
+
+      headings.add("Recurrence");
+      paragraphs.add(recurrenceText);
+    }
+
     headings.add("Calendar");
     paragraphs.add(calendar.name);
 
@@ -29,6 +50,7 @@ extension CalendarEventConverter on Event {
       TimelineAttribute.title(title),
       if (description != null) TimelineAttribute.body(description),
       if (location != null) TimelineAttribute.locationName(location),
+      if (recurrenceRule != null) TimelineAttribute.displayRecurring(true),
       TimelineAttribute.headings(headings),
       TimelineAttribute.paragraphs(paragraphs)
     ];

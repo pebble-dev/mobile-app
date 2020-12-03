@@ -154,4 +154,40 @@ void main() {
 
     expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
   });
+
+  test("Generate attributes from recurring event", () {
+    final event = Event("10",
+        title: "The Event",
+        start: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          10, //Hour
+          30, // Minute
+        ),
+        end: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          11, //Hour
+          30, // Minute
+        ),
+        recurrenceRule: RecurrenceRule(RecurrenceFrequency.Weekly));
+
+    final expectedAttributes = [
+      TimelineAttribute.title("The Event"),
+      TimelineAttribute.icon(TimelineIcon.TIMELINE_CALENDAR),
+      TimelineAttribute.displayRecurring(true),
+      TimelineAttribute.headings([
+        "Recurrence",
+        "Calendar",
+      ]),
+      TimelineAttribute.paragraphs([
+        "Repeats weekly.",
+        "Test@Calendar",
+      ]),
+    ].toSet();
+
+    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+  });
 }
