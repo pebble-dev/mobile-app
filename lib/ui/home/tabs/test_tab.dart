@@ -1,6 +1,7 @@
 import 'package:cobble/domain/calendar/calendar_list.dart';
 import 'package:cobble/domain/calendar/calendar_syncer.db.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
+import 'package:cobble/domain/timeline/watch_timeline_syncer.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ class TestTab extends HookWidget {
     final calendars = useProvider(calendarListProvider.state);
     final calendarSelector = useProvider(calendarListProvider);
     final calendarSyncer = useProvider(calendarSyncerProvider);
+    final watchTimelineSyncer = useProvider(watchTimelineSyncerProvider);
 
     String statusText;
     if (connectionState.isConnecting == true) {
@@ -114,6 +116,18 @@ class TestTab extends HookWidget {
                   calendarSyncer.syncDeviceCalendarsToDb();
                 },
                 child: Text("Trigger sync"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  watchTimelineSyncer.syncPinDatabaseWithWatch();
+                },
+                child: Text("Sync timeline to watch"),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  watchTimelineSyncer.removeAllPins();
+                },
+                child: Text("Delete all pins"),
               )
             ],
           ),

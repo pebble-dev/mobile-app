@@ -10,6 +10,10 @@ class NumberWrapper {
   int value;
 }
 
+class StringWrapper {
+  String value;
+}
+
 class ListWrapper {
   List value;
 }
@@ -18,6 +22,21 @@ class WatchConnectionState {
   bool isConnected;
   bool isConnecting;
   int currentWatchAddress;
+}
+
+class TimelinePinPigeon {
+  String itemId;
+  String parentId;
+  int timestamp;
+  int type;
+  int duration;
+  bool isVisible;
+  bool isFloating;
+  bool isAllDay;
+  bool persistQuickView;
+  int layout;
+  String attributesJson;
+  String actionsJson;
 }
 
 @FlutterApi()
@@ -70,4 +89,13 @@ abstract class AppLifecycleControl {
 @HostApi()
 abstract class DebugControl {
   void collectLogs();
+}
+
+@HostApi()
+abstract class TimelineControl {
+  NumberWrapper addPin(TimelinePinPigeon pin);
+
+  NumberWrapper removePin(StringWrapper pinUuid);
+
+  NumberWrapper removeAllPins();
 }

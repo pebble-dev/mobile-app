@@ -38,6 +38,17 @@ class TimelinePinDao {
         .toList();
   }
 
+  Future<List<TimelinePin>> getAllPinsWithPendingSyncAction() async {
+    final db = await _dbFuture;
+
+    return (await db.query(
+      TABLE_TIMELINE_PINS,
+      where: "nextSyncAction <> \"Nothing\"",
+    ))
+        .map((e) => TimelinePin.fromMap(e))
+        .toList();
+  }
+
   Future<void> setSyncAction(
       Uuid itemId, NextSyncAction newNextSyncAction) async {
     final db = await _dbFuture;
@@ -57,6 +68,11 @@ class TimelinePinDao {
 
     await db.delete(TABLE_TIMELINE_PINS,
         where: "itemId = ?", whereArgs: [itemId.toString()]);
+  }
+
+  Future<void> deleteAll() async {
+    final db = await _dbFuture;
+    await db.delete(TABLE_TIMELINE_PINS);
   }
 }
 

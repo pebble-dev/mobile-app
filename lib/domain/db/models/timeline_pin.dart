@@ -1,6 +1,7 @@
 import 'package:cobble/domain/db/converters/sql_json_converters.dart';
 import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/db/models/timeline_pin_type.dart';
+import 'package:cobble/infrastructure/pigeons/pigeons.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid_type/uuid_type.dart';
@@ -76,6 +77,25 @@ class TimelinePin {
       this.attributesJson,
       this.actionsJson,
       this.nextSyncAction});
+
+  TimelinePinPigeon toPigeon() {
+    final pigeon = TimelinePinPigeon();
+
+    pigeon.itemId = itemId.toString();
+    pigeon.parentId = parentId.toString();
+    pigeon.timestamp = timestamp.millisecondsSinceEpoch ~/ 1000;
+    pigeon.type = type.toProtocolNumber();
+    pigeon.duration = duration;
+    pigeon.isVisible = isVisible;
+    pigeon.isFloating = isFloating;
+    pigeon.isAllDay = isAllDay;
+    pigeon.persistQuickView = persistQuickView;
+    pigeon.layout = layout.toProtocolNumber();
+    pigeon.attributesJson = attributesJson;
+    pigeon.actionsJson = actionsJson;
+
+    return pigeon;
+  }
 
   Map<String, dynamic> toMap() {
     return _$TimelinePinToJson(this);

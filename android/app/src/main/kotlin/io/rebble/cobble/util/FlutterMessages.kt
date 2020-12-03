@@ -28,15 +28,15 @@ fun BasicMessageChannel<Any>.setCoroutineMessageHandler(
 fun BinaryMessenger.registerAsyncPigeonCallback(
         coroutineScope: CoroutineScope,
         callName: String,
-        callback: suspend () -> Map<*, *>
+        callback: suspend (rawMessage: HashMap<*, *>?) -> Map<*, *>
 ) {
     val channel = BasicMessageChannel(
             this,
             callName,
             StandardMessageCodec()
     )
-    channel.setCoroutineMessageHandler(coroutineScope) { _ ->
-        val result = callback()
+    channel.setCoroutineMessageHandler(coroutineScope) { rawMessage ->
+        val result = callback(rawMessage as HashMap<*, *>?)
 
         hashMapOf("result" to result)
     }
