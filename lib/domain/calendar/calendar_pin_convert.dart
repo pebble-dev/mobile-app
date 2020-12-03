@@ -13,9 +13,9 @@ extension CalendarEventConverter on Event {
     return [
       TimelineAttribute.icon(TimelineIcon.TIMELINE_CALENDAR),
       TimelineAttribute.title(title),
-      // TODO localize
-      TimelineAttribute.headings(["Description", "Calendar"]),
-      TimelineAttribute.paragraphs([description, calendar.name])
+      if (description != null) TimelineAttribute.body(description),
+      TimelineAttribute.headings(["Calendar"]),
+      TimelineAttribute.paragraphs([calendar.name])
     ];
   }
 
