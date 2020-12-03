@@ -14,6 +14,7 @@ extension CalendarEventConverter on Event {
       TimelineAttribute.icon(TimelineIcon.TIMELINE_CALENDAR),
       TimelineAttribute.title(title),
       if (description != null) TimelineAttribute.body(description),
+      if (location != null) TimelineAttribute.locationName(location),
       TimelineAttribute.headings(["Calendar"]),
       TimelineAttribute.paragraphs([calendar.name])
     ];

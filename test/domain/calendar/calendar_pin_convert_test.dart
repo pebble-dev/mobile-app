@@ -80,4 +80,38 @@ void main() {
 
     expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
   });
+  test("Generate attributes from event with location", () {
+    final event = Event("10",
+        title: "The Event",
+        start: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          10, //Hour
+          30, // Minute
+        ),
+        end: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          11, //Hour
+          30, // Minute
+        ));
+
+    event.location = "Rebble headquarters";
+
+    final expectedAttributes = [
+      TimelineAttribute.title("The Event"),
+      TimelineAttribute.icon(TimelineIcon.TIMELINE_CALENDAR),
+      TimelineAttribute.locationName("Rebble headquarters"),
+      TimelineAttribute.headings([
+        "Calendar",
+      ]),
+      TimelineAttribute.paragraphs([
+        "Test@Calendar",
+      ]),
+    ].toSet();
+
+    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+  });
 }
