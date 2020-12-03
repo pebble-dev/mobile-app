@@ -80,6 +80,7 @@ void main() {
 
     expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
   });
+
   test("Generate attributes from event with location", () {
     final event = Event("10",
         title: "The Event",
@@ -108,6 +109,45 @@ void main() {
         "Calendar",
       ]),
       TimelineAttribute.paragraphs([
+        "Test@Calendar",
+      ]),
+    ].toSet();
+
+    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+  });
+
+  test("Generate attributes from event with attendees", () {
+    final event = Event("10",
+        title: "The Event",
+        start: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          10, //Hour
+          30, // Minute
+        ),
+        end: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          11, //Hour
+          30, // Minute
+        ),
+        attendees: [
+          Attendee(name: "John"),
+          Attendee(name: "Jane"),
+          Attendee(name: " "),
+        ]);
+
+    final expectedAttributes = [
+      TimelineAttribute.title("The Event"),
+      TimelineAttribute.icon(TimelineIcon.TIMELINE_CALENDAR),
+      TimelineAttribute.headings([
+        "Attendees",
+        "Calendar",
+      ]),
+      TimelineAttribute.paragraphs([
+        "John, Jane",
         "Test@Calendar",
       ]),
     ].toSet();
