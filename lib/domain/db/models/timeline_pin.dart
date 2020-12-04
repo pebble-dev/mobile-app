@@ -43,7 +43,7 @@ class TimelinePin {
   /// on the watch
   final bool isFloating;
 
-  /// Whether pin spans throughout the whole day (Duration ignored???)
+  /// Whether pin spans throughout the whole day (duration field is ignored)
   final bool isAllDay;
 
   /// ???
