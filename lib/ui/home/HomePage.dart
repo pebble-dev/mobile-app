@@ -7,7 +7,8 @@ import 'package:cobble/ui/common/icons/WatchIcon.dart';
 import 'package:cobble/ui/common/icons/fonts/RebbleIconsStroke.dart';
 import 'package:cobble/ui/home/tabs/StoreTab.dart';
 import 'package:cobble/ui/home/tabs/TestTab.dart';
-import 'package:cobble/ui/home/tabs/AboutTab.dart';
+import 'package:cobble/ui/home/tabs/SettingsTab.dart';
+import 'package:cobble/ui/home/tabs/MyWatchesTab.dart';
 import 'package:cobble/ui/setup/FirstRunPage.dart';
 import 'package:cobble/ui/setup/PairPage.dart';
 import 'package:cobble/ui/test/WatchCarousel.dart';
@@ -22,20 +23,20 @@ class _HomePageState extends State<HomePage> {
   List<Widget> _tabs = <Widget>[
     //TODO: replace this
     TestTab(),
-    PairPage(), // setup page is not the same as devices tab but it works for now
-    StoreTab(),
+    Placeholder(),
     WatchCarousel(),
-    Placeholder(), //TODO
-    AboutTab(),
+    StoreTab(),
+    MyWatchesTab(), // setup page is not the same as devices tab but it works for now
+    SettingsTab(),
   ];
 
   Map<String, IconData> _tabBarOptions = {
     "Testing": RebbleIconsStroke.send_to_watch_checked,
-    "Devices": RebbleIconsStroke.devices,
+    "Health": RebbleIconsStroke.health,
+    "Locker": RebbleIconsStroke.locker,
     "Store": RebbleIconsStroke.rebble_store,
-    "Notifications": RebbleIconsStroke.notifications,
-    "More": RebbleIconsStroke.menu_horizontal,
-    "About": RebbleIconsStroke.about_app,
+    "Watches": RebbleIconsStroke.devices,
+    "Settings": RebbleIconsStroke.settings,
   };
 
   void _onTabTap(int index) {

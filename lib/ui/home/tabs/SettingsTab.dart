@@ -3,13 +3,13 @@ import 'package:cobble/ui/common/icons/fonts/RebbleIconsStroke.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info/package_info.dart';
 
-class AboutTab extends StatefulWidget {
+class SettingsTab extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _AboutTabState();
+  State<StatefulWidget> createState() => _SettingsTabState();
 
 }
 
-class _AboutTabState extends State<AboutTab> {
+class _SettingsTabState extends State<SettingsTab> {
 
   static const communityURL = "http://discord.gg/aRUAYFN";
   static const supportURL = "https://rebble.io/faq/";
@@ -42,7 +42,7 @@ class _AboutTabState extends State<AboutTab> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("About"),
+        title: Text("Settings"),
       ),
       body: SingleChildScrollView(
         child: Column(

@@ -45,4 +45,5 @@ class RebbleIconsStroke {
   static const IconData system_language = IconData(0xe815, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData timeline_pin = IconData(0xe816, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData x_close = IconData(0xe817, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData health = IconData(0xe80b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }
