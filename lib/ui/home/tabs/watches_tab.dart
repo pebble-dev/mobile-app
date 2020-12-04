@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:ui';
 
+import 'package:cobble/ui/common/icons/fonts/RebbleIconsFill.dart';
 import 'package:flutter/material.dart';
 import 'package:cobble/domain/entities/PebbleDevice.dart';
 import 'package:cobble/infrastructure/datasources/PairedStorage.dart';
@@ -77,24 +78,14 @@ class _MyWatchesTabState extends State<MyWatchesTab> {
                 onTap: () {
 
                 },
-              ))
-                  .toList()),
-
-          Padding(
-              padding: EdgeInsets.symmetric(horizontal: 0.0),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    FlatButton(
-                      child: Text("Add Device"),
-                      padding: EdgeInsets.symmetric(horizontal: 32.0),
-                      textColor: Theme
-                          .of(context)
-                          .accentColor,
-                      onPressed: () => Navigator.pushNamed(context, '/pair'),
-                    ),
-                  ]))
-        ]));
+              )).toList()),
+        ]),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => Navigator.pushNamed(context, '/pair'),
+        label: Text('PAIR A WATCH'),
+        icon: Icon(Icons.add),
+      ),
+    );
   }
 
   @override
