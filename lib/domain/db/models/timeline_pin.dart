@@ -39,7 +39,8 @@ class TimelinePin {
   /// ???
   final bool isVisible;
 
-  /// ???
+  /// When set to true, pin is always displayed in UTC timezone
+  /// on the watch
   final bool isFloating;
 
   /// Whether pin spans throughout the whole day (Duration ignored???)

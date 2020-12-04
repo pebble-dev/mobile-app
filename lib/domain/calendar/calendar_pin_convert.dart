@@ -66,7 +66,7 @@ extension CalendarEventConverter on Event {
         duration: end.difference(start).inMinutes,
         type: TimelinePinType.PIN,
         isVisible: true,
-        isFloating: true,
+        isFloating: false,
         isAllDay: allDay,
         persistQuickView: false,
         layout: TimelinePinLayout.CALENDAR_PIN,
