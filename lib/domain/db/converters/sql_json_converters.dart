@@ -27,7 +27,6 @@ class UuidConverter implements JsonConverter<Uuid, String> {
     if (json == null) {
       return null;
     }
-
     return Uuid(json);
   }
 
@@ -36,7 +35,6 @@ class UuidConverter implements JsonConverter<Uuid, String> {
     if (object == null) {
       return null;
     }
-
     return object.toString();
   }
 }
