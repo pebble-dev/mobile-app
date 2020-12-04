@@ -1,8 +1,7 @@
-import 'package:cobble/domain/entities/BaseObj.dart';
-import 'package:cobble/domain/entities/PebbleDevice.dart';
-import 'package:cobble/ui/exceptions/ErrorMessage.dart';
-
+import 'package:cobble/domain/entities/base_obj.dart';
+import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/infrastructure/datasources/sqlite/data_transfer_objects/pebbledevice_dto.dart';
+import 'package:cobble/ui/exceptions/error_message.dart';
 
 extension BaseObjSqlExtensions on BaseObj {
   dynamic get sqlMap {

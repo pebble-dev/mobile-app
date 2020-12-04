@@ -36,6 +36,8 @@ class MainActivity : FlutterActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
         when (requestCode) {
             10 -> {
 
@@ -115,7 +117,6 @@ class MainActivity : FlutterActivity() {
         coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
 
         super.onCreate(savedInstanceState)
-        GeneratedPluginRegistrant.registerWith(this.flutterEngine!!)
 
         // Bridges need to be created after super.onCreate() to ensure
         // flutter stuff is ready

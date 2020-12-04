@@ -17,8 +17,12 @@
     <!-- Required to connect to the watch on startup -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
-    <uses-feature android:name="android.software.companion_device_setup" />
+    <!-- Required for calendar sync -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <!-- Required due to https://github.com/builttoroam/device_calendar/issues/233 -->
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
+    <uses-feature android:name="android.software.companion_device_setup" />
     <application
         android:name=".CobbleApplication"
         android:label="Cobble"

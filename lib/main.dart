@@ -1,20 +1,32 @@
 import 'dart:ui';
+
+import 'package:cobble/ui/localize.dart';
+import 'package:cobble/ui/router.dart' as router;
+import 'package:cobble/ui/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:cobble/ui/Localize.dart';
-import 'package:cobble/ui/Router.dart' as router;
-import 'package:cobble/ui/Theme.dart';
+import 'package:hooks_riverpod/all.dart';
+
+import 'domain/calendar/calendar_permission.dart';
 
 String getBootUrl = "https://boot.rebble.io/";
 
 void main() {
-  runApp(MyApp());
+  runApp(ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class MyApp extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final CalendarPermission calendarPermission =
+        useProvider(calendarPermissionProvider);
+
+    useEffect(() {
+      calendarPermission.requestPermission();
+      return null;
+    }, ["one-time"]);
+
     return MaterialApp(
       title: 'Cobble',
       theme: RebbleTheme.appTheme,
