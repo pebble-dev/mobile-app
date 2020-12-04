@@ -21,6 +21,7 @@ class _PairPageState extends State<PairPage>
     implements ScanCallbacks, PairCallbacks {
   List<PebbleDevice> _pebbles = [];
   bool _scanning = false;
+  bool _firstRun = false;
 
   @override
   void initState() {
@@ -28,6 +29,7 @@ class _PairPageState extends State<PairPage>
     ScanCallbacks.setup(this);
     PairCallbacks.setup(this);
     log("Prestart");
+    _isFirstRun();
     scanControl.startBleScan();
   }
 
@@ -49,6 +51,16 @@ class _PairPageState extends State<PairPage>
         scanControl.startClassicScan();
       });
     }
+  }
+
+  void _isFirstRun() {
+      SharedPreferences.getInstance().then((value) {
+        if (!value.containsKey("firstRun")) {
+         _firstRun = true;
+        } else {
+          _firstRun = false;
+        }
+      });
   }
 
   void _targetPebble(PebbleDevice dev) {
@@ -90,7 +102,6 @@ class _PairPageState extends State<PairPage>
     if (dev == null) {
       return;
     }
-
     setState(() {
       PairedStorage.register(dev)
           .then((_) => PairedStorage.getDefault().then((def) {
@@ -98,13 +109,11 @@ class _PairPageState extends State<PairPage>
                   PairedStorage.setDefault(dev.address);
                 }
               })); // Register + set as default if no default set
-      SharedPreferences.getInstance().then((value) {
-        if (!value.containsKey("firstRun")) {
+        if (_firstRun) {
           Navigator.pushReplacementNamed(context, '/moresetup');
         } else {
           Navigator.pushReplacementNamed(context, '/home');
         }
-      });
     });
   }
 
@@ -207,11 +216,13 @@ class _PairPageState extends State<PairPage>
                       ),
                     ),
                     //TODO: Hide Skip when we're on the home screen and the tabs are visible
-                    FlatButton(
-                      child: Text("SKIP"),
-                      padding: EdgeInsets.symmetric(horizontal: 32.0),
-                      onPressed: () => Navigator.pushNamed(context, '/home'),
-                    )
+                    Offstage(
+                        offstage: !_firstRun,
+                        child: FlatButton(
+                          child: Text("SKIP"),
+                          padding: EdgeInsets.symmetric(horizontal: 32.0),
+                          onPressed: () => Navigator.pushNamed(context, '/home'),
+                        )),
                   ]))
         ]));
   }
