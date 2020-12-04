@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
     Placeholder(),
     WatchCarousel(),
     StoreTab(),
-    MyWatchesTab(), // setup page is not the same as devices tab but it works for now
+    MyWatchesTab(),
     SettingsTab(),
   ];
 

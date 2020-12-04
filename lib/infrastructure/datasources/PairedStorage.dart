@@ -33,10 +33,19 @@ class PairedStorage {
     await _prefs.then((value) => value.setStringList("pairList", pairedJson));
   }
 
-  static Future<void> register(PebbleDevice device,
-          [bool isDefault = false]) async =>
-      _writeNew((await _readCurrent())..add(_StoredDevice(device, isDefault)));
-
+  static Future<void> register(PebbleDevice device, [bool isDefault = false]) async {
+    //Only write device when it doesn't already exist
+    get(device.address).catchError(
+          (onError) {
+            List<_StoredDevice> temp = [];
+            temp.add(new _StoredDevice(device, isDefault));
+        _writeNew(temp);
+      },
+    ).then((value) {
+    }).whenComplete(() {
+    });
+  }
+  
   static Future<void> unregister(int address) async =>
       _writeNew((await _readCurrent())
         ..removeWhere((element) => element.device.address == address));
@@ -44,6 +53,9 @@ class PairedStorage {
   static Future<PebbleDevice> get(int address) async => (await _readCurrent())
       .firstWhere((element) => element.device.address == address)
       .device;
+
+  static Future<List<PebbleDevice>> getAll() async => (await _readCurrent())
+      .map((e) => e.device).toList();
 
   static Future<PebbleDevice> getDefault() async => (await _readCurrent())
       .firstWhere((element) => element.isDefault, orElse: () => null)

@@ -22,8 +22,16 @@ class _MyWatchesTabState extends State<MyWatchesTab> {
     super.initState();
   }
 
+  void getPebbles() {
+    PairedStorage.getAll().then((def) {
+      _pebbles = def;
+      setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    getPebbles();
     return Scaffold(
         appBar: AppBar(
           title: Text("My Watches"),
@@ -64,9 +72,6 @@ class _MyWatchesTabState extends State<MyWatchesTab> {
                       ),
                       Expanded(
                           child: Container(width: 0.0, height: 0.0)),
-                      Icon(RebbleIconsStroke.caret_right,
-                          color:
-                          Theme.of(context).colorScheme.secondary),
                     ]),
                     margin: EdgeInsets.all(16)),
                 onTap: () {
