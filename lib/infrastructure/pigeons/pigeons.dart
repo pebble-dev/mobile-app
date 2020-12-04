@@ -7,6 +7,24 @@ import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
 
 import 'package:flutter/services.dart';
 
+class BooleanWrapper {
+  bool value;
+
+  // ignore: unused_element
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
+    pigeonMap['value'] = value;
+    return pigeonMap;
+  }
+
+  // ignore: unused_element
+  static BooleanWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    final BooleanWrapper result = BooleanWrapper();
+    result.value = pigeonMap['value'];
+    return result;
+  }
+}
+
 class NumberWrapper {
   int value;
 
@@ -25,6 +43,75 @@ class NumberWrapper {
   }
 }
 
+class TimelinePinPigeon {
+  String itemId;
+  String parentId;
+  int timestamp;
+  int type;
+  int duration;
+  bool isVisible;
+  bool isFloating;
+  bool isAllDay;
+  bool persistQuickView;
+  int layout;
+  String attributesJson;
+  String actionsJson;
+
+  // ignore: unused_element
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
+    pigeonMap['itemId'] = itemId;
+    pigeonMap['parentId'] = parentId;
+    pigeonMap['timestamp'] = timestamp;
+    pigeonMap['type'] = type;
+    pigeonMap['duration'] = duration;
+    pigeonMap['isVisible'] = isVisible;
+    pigeonMap['isFloating'] = isFloating;
+    pigeonMap['isAllDay'] = isAllDay;
+    pigeonMap['persistQuickView'] = persistQuickView;
+    pigeonMap['layout'] = layout;
+    pigeonMap['attributesJson'] = attributesJson;
+    pigeonMap['actionsJson'] = actionsJson;
+    return pigeonMap;
+  }
+
+  // ignore: unused_element
+  static TimelinePinPigeon _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    final TimelinePinPigeon result = TimelinePinPigeon();
+    result.itemId = pigeonMap['itemId'];
+    result.parentId = pigeonMap['parentId'];
+    result.timestamp = pigeonMap['timestamp'];
+    result.type = pigeonMap['type'];
+    result.duration = pigeonMap['duration'];
+    result.isVisible = pigeonMap['isVisible'];
+    result.isFloating = pigeonMap['isFloating'];
+    result.isAllDay = pigeonMap['isAllDay'];
+    result.persistQuickView = pigeonMap['persistQuickView'];
+    result.layout = pigeonMap['layout'];
+    result.attributesJson = pigeonMap['attributesJson'];
+    result.actionsJson = pigeonMap['actionsJson'];
+    return result;
+  }
+}
+
+class StringWrapper {
+  String value;
+
+  // ignore: unused_element
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
+    pigeonMap['value'] = value;
+    return pigeonMap;
+  }
+
+  // ignore: unused_element
+  static StringWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    final StringWrapper result = StringWrapper();
+    result.value = pigeonMap['value'];
+    return result;
+  }
+}
+
 class ListWrapper {
   List value;
 
@@ -38,22 +125,6 @@ class ListWrapper {
   // ignore: unused_element
   static ListWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final ListWrapper result = ListWrapper();
-    result.value = pigeonMap['value'];
-    return result;
-  }
-}
-
-class BooleanWrapper {
-  bool value;
-  // ignore: unused_element
-  Map<dynamic, dynamic> _toMap() {
-    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
-    pigeonMap['value'] = value;
-    return pigeonMap;
-  }
-  // ignore: unused_element
-  static BooleanWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
-    final BooleanWrapper result = BooleanWrapper();
     result.value = pigeonMap['value'];
     return result;
   }
@@ -81,51 +152,6 @@ class WatchConnectionState {
   }
 }
 
-class NotificationsControl {
-  Future<void> sendTestNotification() async {
-    const BasicMessageChannel<dynamic> channel =
-        BasicMessageChannel<dynamic>('dev.flutter.pigeon.NotificationsControl.sendTestNotification', StandardMessageCodec());
-    
-    final Map<dynamic, dynamic> replyMap = await channel.send(null);
-    if (replyMap == null) {
-      throw PlatformException(
-          code: 'channel-error',
-          message: 'Unable to establish connection on channel.',
-          details: null);
-    } else if (replyMap['error'] != null) {
-      final Map<dynamic, dynamic> error = replyMap['error'];
-      throw PlatformException(
-          code: error['code'],
-          message: error['message'],
-          details: error['details']);
-    } else {
-      // noop
-    }
-  }
-}
-
-abstract class PairCallbacks {
-  void onWatchPairComplete(NumberWrapper arg);
-
-  static void setup(PairCallbacks api) {
-    {
-      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
-          'dev.flutter.pigeon.PairCallbacks.onWatchPairComplete',
-          StandardMessageCodec());
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((dynamic message) async {
-          final Map<dynamic, dynamic> mapMessage =
-              message as Map<dynamic, dynamic>;
-          final NumberWrapper input = NumberWrapper._fromMap(mapMessage);
-          api.onWatchPairComplete(input);
-        });
-      }
-    }
-  }
-}
-
 class ScanControl {
   Future<void> startBleScan() async {
     const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
@@ -146,18 +172,19 @@ class ScanControl {
     } else {
       // noop
     }
-    
   }
+
   Future<void> startClassicScan() async {
-    const BasicMessageChannel<dynamic> channel =
-        BasicMessageChannel<dynamic>('dev.flutter.pigeon.ScanControl.startClassicScan', StandardMessageCodec());
-    
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.ScanControl.startClassicScan',
+        StandardMessageCodec());
+
     final Map<dynamic, dynamic> replyMap = await channel.send(null);
     if (replyMap == null) {
       throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null);
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
     } else if (replyMap['error'] != null) {
       final Map<dynamic, dynamic> error = replyMap['error'];
       throw PlatformException(
@@ -167,72 +194,21 @@ class ScanControl {
     } else {
       // noop
     }
-    
-  }
-}
-
-abstract class ScanCallbacks {
-  void onScanUpdate(ListWrapper arg);
-  void onScanStarted();
-  void onScanStopped();
-  static void setup(ScanCallbacks api) {
-    {
-      const BasicMessageChannel<dynamic> channel =
-      BasicMessageChannel<dynamic>(
-          'dev.flutter.pigeon.ScanCallbacks.onScanUpdate',
-          StandardMessageCodec());
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((dynamic message) async {
-          final Map<dynamic, dynamic> mapMessage = message as Map<
-              dynamic,
-              dynamic>;
-          final ListWrapper input = ListWrapper._fromMap(mapMessage);
-          api.onScanUpdate(input);
-        });
-      }
-    }
-    {
-      const BasicMessageChannel<dynamic> channel =
-      BasicMessageChannel<dynamic>(
-          'dev.flutter.pigeon.ScanCallbacks.onScanStarted',
-          StandardMessageCodec());
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((dynamic message) async {
-          api.onScanStarted();
-        });
-      }
-    }
-    {
-      const BasicMessageChannel<dynamic> channel =
-      BasicMessageChannel<dynamic>(
-          'dev.flutter.pigeon.ScanCallbacks.onScanStopped',
-          StandardMessageCodec());
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((dynamic message) async {
-          api.onScanStopped();
-        });
-      }
-    }
   }
 }
 
 class AppLifecycleControl {
   Future<BooleanWrapper> waitForBoot() async {
-    const BasicMessageChannel<dynamic> channel =
-        BasicMessageChannel<dynamic>('dev.flutter.pigeon.AppLifecycleControl.waitForBoot', StandardMessageCodec());
-    
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.AppLifecycleControl.waitForBoot',
+        StandardMessageCodec());
+
     final Map<dynamic, dynamic> replyMap = await channel.send(null);
     if (replyMap == null) {
       throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null);
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
     } else if (replyMap['error'] != null) {
       final Map<dynamic, dynamic> error = replyMap['error'];
       throw PlatformException(
@@ -242,45 +218,21 @@ class AppLifecycleControl {
     } else {
       return BooleanWrapper._fromMap(replyMap['result']);
     }
-    
   }
 }
 
-abstract class ConnectionCallbacks {
-  void onWatchConnectionStateChanged(WatchConnectionState arg);
-  static void setup(ConnectionCallbacks api) {
-    {
-      const BasicMessageChannel<dynamic> channel =
-      BasicMessageChannel<dynamic>(
-          'dev.flutter.pigeon.ConnectionCallbacks.onWatchConnectionStateChanged',
-          StandardMessageCodec());
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((dynamic message) async {
-          final Map<dynamic, dynamic> mapMessage = message as Map<
-              dynamic,
-              dynamic>;
-          final WatchConnectionState input = WatchConnectionState._fromMap(
-              mapMessage);
-          api.onWatchConnectionStateChanged(input);
-        });
-      }
-    }
-  }
-}
+class TimelineControl {
+  Future<NumberWrapper> addPin(TimelinePinPigeon arg) async {
+    final Map<dynamic, dynamic> requestMap = arg._toMap();
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.TimelineControl.addPin', StandardMessageCodec());
 
-class DebugControl {
-  Future<void> collectLogs() async {
-    const BasicMessageChannel<dynamic> channel =
-        BasicMessageChannel<dynamic>('dev.flutter.pigeon.DebugControl.collectLogs', StandardMessageCodec());
-    
-    final Map<dynamic, dynamic> replyMap = await channel.send(null);
+    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
     if (replyMap == null) {
       throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null);
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
     } else if (replyMap['error'] != null) {
       final Map<dynamic, dynamic> error = replyMap['error'];
       throw PlatformException(
@@ -288,7 +240,51 @@ class DebugControl {
           message: error['message'],
           details: error['details']);
     } else {
-      // noop
+      return NumberWrapper._fromMap(replyMap['result']);
+    }
+  }
+
+  Future<NumberWrapper> removePin(StringWrapper arg) async {
+    final Map<dynamic, dynamic> requestMap = arg._toMap();
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.TimelineControl.removePin', StandardMessageCodec());
+
+    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
+    if (replyMap == null) {
+      throw PlatformException(
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      return NumberWrapper._fromMap(replyMap['result']);
+    }
+  }
+
+  Future<NumberWrapper> removeAllPins() async {
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.TimelineControl.removeAllPins',
+        StandardMessageCodec());
+
+    final Map<dynamic, dynamic> replyMap = await channel.send(null);
+    if (replyMap == null) {
+      throw PlatformException(
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      return NumberWrapper._fromMap(replyMap['result']);
     }
     
   }
@@ -361,15 +357,16 @@ class ConnectionControl {
   }
   Future<void> sendRawPacket(ListWrapper arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel =
-        BasicMessageChannel<dynamic>('dev.flutter.pigeon.ConnectionControl.sendRawPacket', StandardMessageCodec());
-    
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.ConnectionControl.sendRawPacket',
+        StandardMessageCodec());
+
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
     if (replyMap == null) {
       throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null);
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
     } else if (replyMap['error'] != null) {
       final Map<dynamic, dynamic> error = replyMap['error'];
       throw PlatformException(
@@ -379,7 +376,147 @@ class ConnectionControl {
     } else {
       // noop
     }
-    
   }
 }
 
+class NotificationsControl {
+  Future<void> sendTestNotification() async {
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.NotificationsControl.sendTestNotification',
+        StandardMessageCodec());
+
+    final Map<dynamic, dynamic> replyMap = await channel.send(null);
+    if (replyMap == null) {
+      throw PlatformException(
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      // noop
+    }
+  }
+}
+
+abstract class PairCallbacks {
+  void onWatchPairComplete(NumberWrapper arg);
+
+  static void setup(PairCallbacks api) {
+    {
+      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+          'dev.flutter.pigeon.PairCallbacks.onWatchPairComplete',
+          StandardMessageCodec());
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((dynamic message) async {
+          final Map<dynamic, dynamic> mapMessage =
+              message as Map<dynamic, dynamic>;
+          final NumberWrapper input = NumberWrapper._fromMap(mapMessage);
+          api.onWatchPairComplete(input);
+        });
+      }
+    }
+  }
+}
+
+abstract class ScanCallbacks {
+  void onScanUpdate(ListWrapper arg);
+
+  void onScanStarted();
+
+  void onScanStopped();
+
+  static void setup(ScanCallbacks api) {
+    {
+      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+          'dev.flutter.pigeon.ScanCallbacks.onScanUpdate',
+          StandardMessageCodec());
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((dynamic message) async {
+          final Map<dynamic, dynamic> mapMessage =
+              message as Map<dynamic, dynamic>;
+          final ListWrapper input = ListWrapper._fromMap(mapMessage);
+          api.onScanUpdate(input);
+        });
+      }
+    }
+    {
+      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+          'dev.flutter.pigeon.ScanCallbacks.onScanStarted',
+          StandardMessageCodec());
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((dynamic message) async {
+          api.onScanStarted();
+        });
+      }
+    }
+    {
+      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+          'dev.flutter.pigeon.ScanCallbacks.onScanStopped',
+          StandardMessageCodec());
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((dynamic message) async {
+          api.onScanStopped();
+        });
+      }
+    }
+  }
+}
+
+abstract class ConnectionCallbacks {
+  void onWatchConnectionStateChanged(WatchConnectionState arg);
+
+  static void setup(ConnectionCallbacks api) {
+    {
+      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+          'dev.flutter.pigeon.ConnectionCallbacks.onWatchConnectionStateChanged',
+          StandardMessageCodec());
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((dynamic message) async {
+          final Map<dynamic, dynamic> mapMessage =
+              message as Map<dynamic, dynamic>;
+          final WatchConnectionState input =
+              WatchConnectionState._fromMap(mapMessage);
+          api.onWatchConnectionStateChanged(input);
+        });
+      }
+    }
+  }
+}
+
+class DebugControl {
+  Future<void> collectLogs() async {
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.DebugControl.collectLogs', StandardMessageCodec());
+
+    final Map<dynamic, dynamic> replyMap = await channel.send(null);
+    if (replyMap == null) {
+      throw PlatformException(
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      // noop
+    }
+  }
+}

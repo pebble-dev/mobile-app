@@ -26,4 +26,8 @@ abstract class FlutterBridgesModule {
     @Binds
     @IntoSet
     abstract fun bindDebugBridge(debug: Debug): FlutterBridge
+
+    @Binds
+    @IntoSet
+    abstract fun bindTimelineBridge(timeline: Timeline): FlutterBridge
 }

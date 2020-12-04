@@ -19,6 +19,10 @@ class CalendarList extends StateNotifier<List<SelectableCalendar>> {
     _load();
   }
 
+  List<SelectableCalendar> getAllCalendars() {
+    return state;
+  }
+  
   Future<void> _load() async {
     if (!_hasPermission) {
       return;

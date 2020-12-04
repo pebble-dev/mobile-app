@@ -21,6 +21,5 @@ Map<String, dynamic> _$TimelineAttributeToJson(TimelineAttribute instance) {
   writeNotNull('uint8', instance.uint8);
   writeNotNull('uint32', instance.uint32);
   writeNotNull('maxLength', instance.maxLength);
-  writeNotNull('hashCode', instance.hashCode);
   return val;
 }

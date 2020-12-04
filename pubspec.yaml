@@ -40,6 +40,7 @@ dependencies:
   uuid_type: ^1.0.0
   path: ^1.7.0
   json_annotation: ^3.0.0
+  copy_with_extension: ^1.4.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -53,6 +54,8 @@ dev_dependencies:
   pigeon: "0.1.12"
   build_runner: ^1.0.0
   json_serializable: ^3.2.0
+  copy_with_extension_gen: ^1.4.0
+  sqflite_common_ffi: ^1.1.1
 
 flutter_icons:
   ios: true
