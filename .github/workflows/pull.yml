@@ -7,4 +7,4 @@ jobs:
     runs-on: ubuntu-latest
     name: "Check codestyle"
     steps:
-      - uses: zbeekman/EditorConfig-Action@v1.1.1
+      - uses: zbeekman/EditorConfig-Action@28b76e718c351dd35b22c8f7216192bb9de5c21b
