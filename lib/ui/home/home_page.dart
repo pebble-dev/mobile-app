@@ -1,8 +1,8 @@
 import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
-import 'package:cobble/ui/home/tabs/about_tab.dart';
+import 'package:cobble/ui/home/tabs/settings_tab.dart';
 import 'package:cobble/ui/home/tabs/store_tab.dart';
 import 'package:cobble/ui/home/tabs/test_tab.dart';
-import 'package:cobble/ui/setup/pair_page.dart';
+import 'package:cobble/ui/home/tabs/watches_tab.dart';
 import 'package:cobble/ui/test/watch_carousel.dart';
 import 'package:flutter/material.dart';
 
@@ -18,20 +18,20 @@ class _HomePageState extends State<HomePage> {
   List<Widget> _tabs = <Widget>[
     //TODO: replace this
     TestTab(),
-    PairPage(), // setup page is not the same as devices tab but it works for now
-    StoreTab(),
+    Placeholder(),
     WatchCarousel(),
-    Placeholder(), //TODO
-    AboutTab(),
+    StoreTab(),
+    MyWatchesTab(), // setup page is not the same as devices tab but it works for now
+    SettingsTab(),
   ];
 
   Map<String, IconData> _tabBarOptions = {
     "Testing": RebbleIconsStroke.send_to_watch_checked,
-    "Devices": RebbleIconsStroke.devices,
+    "Health": RebbleIconsStroke.health,
+    "Locker": RebbleIconsStroke.locker,
     "Store": RebbleIconsStroke.rebble_store,
-    "Notifications": RebbleIconsStroke.notifications,
-    "More": RebbleIconsStroke.menu_horizontal,
-    "About": RebbleIconsStroke.about_app,
+    "Watches": RebbleIconsStroke.devices,
+    "Settings": RebbleIconsStroke.settings,
   };
 
   void _onTabTap(int index) {
@@ -51,11 +51,11 @@ class _HomePageState extends State<HomePage> {
         items: _tabBarOptions.entries
             .map(
               (entry) => BottomNavigationBarItem(
-                icon: Icon(entry.value),
-                title: Text(entry.key),
-                backgroundColor: Theme.of(context).colorScheme.surface,
-              ),
-            )
+            icon: Icon(entry.value),
+            title: Text(entry.key),
+            backgroundColor: Theme.of(context).colorScheme.surface,
+          ),
+        )
             .toList(),
       ),
       body: _tabs[_currentIndex],
