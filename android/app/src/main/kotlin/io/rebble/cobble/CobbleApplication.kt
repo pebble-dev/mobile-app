@@ -15,7 +15,7 @@ class CobbleApplication : FlutterApplication() {
     override fun onCreate() {
         component = DaggerAppComponent.factory().build(this)
 
-        super.onCreate()
+         super.onCreate()
 
         initLogging()
 
