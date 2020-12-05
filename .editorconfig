@@ -1,4 +1,4 @@
-[!{*.md,.editorconfig,CodeStyle.xml}]
+[!{*.md,CodeStyle.xml,.*}]
 charset = utf-8
 end_of_line = lf
 indent_size = 4
@@ -14,7 +14,6 @@ ij_smart_tabs = false
 ij_wrap_on_typing = false
 
 [*.dart]
-max_line_length = 80
 tab_width = 2
 
 [*.java]
