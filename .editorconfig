@@ -1,4 +1,4 @@
-[!*.{md,editorconfig,}]
+[*]
 charset = utf-8
 end_of_line = lf
 indent_size = 4
@@ -12,6 +12,9 @@ ij_formatter_on_tag = @formatter:on
 ij_formatter_tags_enabled = false
 ij_smart_tabs = false
 ij_wrap_on_typing = false
+
+[{.editorconfig,CodeStyle.xml}]
+max_line_length = unset
 
 [*.dart]
 tab_width = 2
