@@ -1,6 +1,15 @@
 name: Android Nightly
 
-on: push
+on:
+  push:
+    paths:
+      - 'android/**'
+      - 'lib/**'
+      - 'lang/**'
+      - 'pigeons/**'
+      - 'test/**'
+      - 'fonts/**'
+      - 'pubspec*'
 jobs:
   build:
     runs-on: ubuntu-latest
