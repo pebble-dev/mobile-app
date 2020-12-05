@@ -1,4 +1,4 @@
-[!{*.md,CodeStyle.xml,.*}]
+[!{*.md,CodeStyle.xml}]
 charset = utf-8
 end_of_line = lf
 indent_size = 4
