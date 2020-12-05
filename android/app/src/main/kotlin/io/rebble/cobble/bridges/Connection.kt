@@ -27,11 +27,8 @@ import io.rebble.cobble.util.coroutines.asFlow
 import io.rebble.cobble.util.macAddressToLong
 import io.rebble.cobble.util.macAddressToString
 import io.rebble.libpebblecommon.ProtocolHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -51,24 +48,14 @@ class Connection @Inject constructor(
 
     private var lastSelectedDeviceAddress: String? = null
 
+    private var statusObservingJob: Job? = null
+
     init {
         bridgeLifecycleController.setupControl(Pigeons.ConnectionControl::setup, this)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             activity.activityResultCallbacks[REQUEST_CODE_COMPANION_DEVICE_MANAGER] =
                     this::processCompanionDeviceResult
-        }
-
-        coroutineScope.launch(Dispatchers.Main) {
-            connectionLooper.connectionState.collect {
-                connectionCallbacks.onWatchConnectionStateChanged(
-                        Pigeons.WatchConnectionState().apply {
-                            isConnected = it is ConnectionState.Connected
-                            isConnecting = it is ConnectionState.Connecting
-                            currentWatchAddress = it.watchOrNull?.address?.macAddressToLong()
-                        }
-                ) {}
-            }
         }
 
         coroutineScope.launch {
@@ -202,6 +189,24 @@ class Connection @Inject constructor(
             val byteArray = (arg.value as List<Number>).map { it.toByte().toUByte() }.toUByteArray()
             protocolHandler.send(byteArray)
         }
+    }
+
+    override fun observeConnectionChanges() {
+        statusObservingJob = coroutineScope.launch(Dispatchers.Main) {
+            connectionLooper.connectionState.collect {
+                connectionCallbacks.onWatchConnectionStateChanged(
+                        Pigeons.WatchConnectionState().apply {
+                            isConnected = it is ConnectionState.Connected
+                            isConnecting = it is ConnectionState.Connecting
+                            currentWatchAddress = it.watchOrNull?.address?.macAddressToLong()
+                        }
+                ) {}
+            }
+        }
+    }
+
+    override fun cancelObservingConnectionChanges() {
+        statusObservingJob?.cancel()
     }
 }
 

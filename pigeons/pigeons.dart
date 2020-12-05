@@ -74,6 +74,10 @@ abstract class ConnectionControl {
   void disconnect();
 
   void sendRawPacket(ListWrapper listOfBytes);
+
+  void observeConnectionChanges();
+
+  void cancelObservingConnectionChanges();
 }
 
 @HostApi()
