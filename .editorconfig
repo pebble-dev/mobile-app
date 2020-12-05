@@ -3,7 +3,6 @@ charset = utf-8
 end_of_line = lf
 indent_size = 4
 indent_style = space
-insert_final_newline = false
 max_line_length = 120
 tab_width = 4
 ij_continuation_indent_size = 8
@@ -16,8 +15,14 @@ ij_wrap_on_typing = false
 [{.editorconfig,CodeStyle.xml}]
 max_line_length = unset
 
+[pubspec*]
+max_line_length = unset
+indent_size = unset
+
 [*.dart]
 indent_size = 2
+[test/**.dart]
+max_line_length = 290
 
 [*.java]
 ij_java_align_consecutive_assignments = false
