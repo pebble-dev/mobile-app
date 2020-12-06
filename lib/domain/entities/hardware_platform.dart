@@ -1,3 +1,5 @@
+import 'package:cobble/ui/common/icons/watch_icon.dart';
+
 enum PebbleHardwarePlatform {
   UNKNOWN,
   PEBBLE_ONE_EV1,
@@ -137,61 +139,79 @@ extension PebbleHardwareData on PebbleHardwarePlatform {
 
 enum WatchType { APLITE, BASALT, CHALK, DIORITE, EMERY }
 
-enum WatchModel {
-  Unknown,
-  TintinBlack,
-  TintinWhite,
-  TintinRed,
-  TintinOrange,
-  TintinGrey,
-  BiancaSilver,
-  BiancaBlack,
-  TintinBlue,
-  TintinGreen,
-  TintinPink,
-  SnowyWhite,
-  SnowyBlack,
-  SnowyRed,
-  BobbySilver,
-  BobbyBlack,
-  BobbyGold,
-}
-
-WatchModel watchModelFromNumber(int number) {
+PebbleWatchModel watchModelFromNumber(int number) {
   switch (number) {
     case 1:
-      return WatchModel.TintinBlack;
+      return PebbleWatchModel.classic_black;
     case 2:
-      return WatchModel.TintinWhite;
+      return PebbleWatchModel.classic_white;
     case 3:
-      return WatchModel.TintinRed;
+      return PebbleWatchModel.classic_red;
     case 4:
-      return WatchModel.TintinOrange;
+      return PebbleWatchModel.classic_orange;
     case 5:
-      return WatchModel.TintinGrey;
+      return PebbleWatchModel.classic_red;
     case 6:
-      return WatchModel.BiancaSilver;
+      return PebbleWatchModel.classic_steel_silver;
     case 7:
-      return WatchModel.BiancaBlack;
+      return PebbleWatchModel.classic_steel_gunmetal;
     case 8:
-      return WatchModel.TintinBlue;
+      return PebbleWatchModel.classic_fly_blue;
     case 9:
-      return WatchModel.TintinGreen;
+      return PebbleWatchModel.classic_fresh_green;
     case 10:
-      return WatchModel.TintinPink;
+      return PebbleWatchModel.classic_hot_pink;
     case 11:
-      return WatchModel.SnowyWhite;
+      return PebbleWatchModel.time_white;
     case 12:
-      return WatchModel.SnowyBlack;
+      return PebbleWatchModel.time_black;
     case 13:
-      return WatchModel.SnowyRed;
+      return PebbleWatchModel.time_red;
     case 14:
-      return WatchModel.BobbySilver;
+      return PebbleWatchModel.time_steel_silver;
     case 15:
-      return WatchModel.BobbyBlack;
+      return PebbleWatchModel.time_steel_gunmetal;
     case 16:
-      return WatchModel.BobbyGold;
+      return PebbleWatchModel.time_steel_gold;
+    case 17:
+      return PebbleWatchModel.time_round_silver_14;
+    case 18:
+      return PebbleWatchModel.time_round_black_14;
+    case 19:
+      return PebbleWatchModel.time_round_silver_20;
+    case 20:
+      return PebbleWatchModel.time_round_black_20;
+    case 21:
+      return PebbleWatchModel.time_round_rose_gold_14;
+    case 22:
+      return PebbleWatchModel.time_round_rainbow_silver_14;
+    case 23:
+      return PebbleWatchModel.time_round_rainbow_black_20;
+    case 24:
+      return PebbleWatchModel.pebble_2_se_black;
+    case 25:
+      return PebbleWatchModel.pebble_2_hr_black;
+    case 26:
+      return PebbleWatchModel.pebble_2_se_white;
+    case 27:
+      return PebbleWatchModel.pebble_2_hr_lime;
+    case 28:
+      return PebbleWatchModel.pebble_2_hr_flame;
+    case 29:
+      return PebbleWatchModel.pebble_2_hr_white;
+    case 30:
+      return PebbleWatchModel.pebble_2_hr_aqua;
+    case 31:
+      return PebbleWatchModel.time_2_gunmetal;
+    case 32:
+      return PebbleWatchModel.time_2_silver;
+    case 33:
+      return PebbleWatchModel.time_2_gold;
+    case 34:
+      return PebbleWatchModel.time_round_black_silver_polish_20;
+    case 35:
+      return PebbleWatchModel.time_round_black_gold_polish_20;
     default:
-      return WatchModel.Unknown;
+      return PebbleWatchModel.rebble_logo;
   }
 }

@@ -1,11 +1,11 @@
 import 'package:cobble/domain/calendar/calendar_list.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
-import 'package:cobble/domain/entities/hardware_platform.dart';
 import 'package:cobble/domain/timeline/blob_status.dart';
 import 'package:cobble/domain/timeline/timeline_sync_controller.dart';
 import 'package:cobble/domain/timeline/watch_timeline_syncer.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
+import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/all.dart';
@@ -32,7 +32,7 @@ class TestTab extends HookWidget {
     if (connectionState.isConnecting == true) {
       statusText = "Connecting to ${connectionState.currentWatchAddress}";
     } else if (connectionState.isConnected == true) {
-      WatchModel model = WatchModel.Unknown;
+      PebbleWatchModel model = PebbleWatchModel.rebble_logo;
       String fwVersion = "unknown";
 
       if (connectionState.currentConnectedWatch != null) {

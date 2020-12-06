@@ -1,5 +1,6 @@
 import 'package:cobble/domain/entities/hardware_platform.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.dart';
+import 'package:cobble/ui/common/icons/watch_icon.dart';
 
 class PebbleFirmware {
   final int timestamp;
@@ -29,7 +30,7 @@ class PebbleDevice {
   final int address;
   final PebbleFirmware runningFirmware;
   final PebbleFirmware recoveryFirmware;
-  final WatchModel model;
+  final PebbleWatchModel model;
   final int bootloaderTimestamp;
   final String board;
   final String serial;
