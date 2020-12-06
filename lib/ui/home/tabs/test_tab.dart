@@ -1,5 +1,6 @@
 import 'package:cobble/domain/calendar/calendar_list.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
+import 'package:cobble/domain/entities/hardware_platform.dart';
 import 'package:cobble/domain/timeline/blob_status.dart';
 import 'package:cobble/domain/timeline/timeline_sync_controller.dart';
 import 'package:cobble/domain/timeline/watch_timeline_syncer.dart';
@@ -31,7 +32,17 @@ class TestTab extends HookWidget {
     if (connectionState.isConnecting == true) {
       statusText = "Connecting to ${connectionState.currentWatchAddress}";
     } else if (connectionState.isConnected == true) {
-      statusText = "Connected to ${connectionState.currentWatchAddress}";
+      WatchModel model = WatchModel.Unknown;
+      String fwVersion = "unknown";
+
+      if (connectionState.currentConnectedWatch != null) {
+        model = connectionState.currentConnectedWatch.model;
+        fwVersion =
+            connectionState.currentConnectedWatch.runningFirmware.version;
+      }
+
+      statusText = "Connected to ${connectionState.currentWatchAddress}" +
+          " ($model, firmware $fwVersion)";
     } else {
       statusText = "Disconnected";
     }

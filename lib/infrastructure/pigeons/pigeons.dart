@@ -96,6 +96,7 @@ class StringWrapper {
     pigeonMap['value'] = value;
     return pigeonMap;
   }
+
   // ignore: unused_element
   static StringWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final StringWrapper result = StringWrapper();
@@ -104,14 +105,139 @@ class StringWrapper {
   }
 }
 
+class PebbleFirmwarePigeon {
+  int timestamp;
+  String version;
+  String gitHash;
+  bool isRecovery;
+  int hardwarePlatform;
+  int metadataVersion;
+
+  // ignore: unused_element
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
+    pigeonMap['timestamp'] = timestamp;
+    pigeonMap['version'] = version;
+    pigeonMap['gitHash'] = gitHash;
+    pigeonMap['isRecovery'] = isRecovery;
+    pigeonMap['hardwarePlatform'] = hardwarePlatform;
+    pigeonMap['metadataVersion'] = metadataVersion;
+    return pigeonMap;
+  }
+
+  // ignore: unused_element
+  static PebbleFirmwarePigeon _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    final PebbleFirmwarePigeon result = PebbleFirmwarePigeon();
+    result.timestamp = pigeonMap['timestamp'];
+    result.version = pigeonMap['version'];
+    result.gitHash = pigeonMap['gitHash'];
+    result.isRecovery = pigeonMap['isRecovery'];
+    result.hardwarePlatform = pigeonMap['hardwarePlatform'];
+    result.metadataVersion = pigeonMap['metadataVersion'];
+    return result;
+  }
+}
+
+class PebbleDevicePigeon {
+  String name;
+  int address;
+  PebbleFirmwarePigeon runningFirmware;
+  PebbleFirmwarePigeon recoveryFirmware;
+  int model;
+  int bootloaderTimestamp;
+  String board;
+  String serial;
+  String language;
+  int languageVersion;
+  bool isUnfaithful;
+
+  // ignore: unused_element
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
+    pigeonMap['name'] = name;
+    pigeonMap['address'] = address;
+    pigeonMap['runningFirmware'] =
+        runningFirmware == null ? null : runningFirmware._toMap();
+    pigeonMap['recoveryFirmware'] =
+        recoveryFirmware == null ? null : recoveryFirmware._toMap();
+    pigeonMap['model'] = model;
+    pigeonMap['bootloaderTimestamp'] = bootloaderTimestamp;
+    pigeonMap['board'] = board;
+    pigeonMap['serial'] = serial;
+    pigeonMap['language'] = language;
+    pigeonMap['languageVersion'] = languageVersion;
+    pigeonMap['isUnfaithful'] = isUnfaithful;
+    return pigeonMap;
+  }
+
+  // ignore: unused_element
+  static PebbleDevicePigeon _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    final PebbleDevicePigeon result = PebbleDevicePigeon();
+    result.name = pigeonMap['name'];
+    result.address = pigeonMap['address'];
+    result.runningFirmware = pigeonMap['runningFirmware'] != null
+        ? PebbleFirmwarePigeon._fromMap(pigeonMap['runningFirmware'])
+        : null;
+    result.recoveryFirmware = pigeonMap['recoveryFirmware'] != null
+        ? PebbleFirmwarePigeon._fromMap(pigeonMap['recoveryFirmware'])
+        : null;
+    result.model = pigeonMap['model'];
+    result.bootloaderTimestamp = pigeonMap['bootloaderTimestamp'];
+    result.board = pigeonMap['board'];
+    result.serial = pigeonMap['serial'];
+    result.language = pigeonMap['language'];
+    result.languageVersion = pigeonMap['languageVersion'];
+    result.isUnfaithful = pigeonMap['isUnfaithful'];
+    return result;
+  }
+}
+
+class PebbleScanDevicePigeon {
+  String name;
+  int address;
+  String version;
+  String serialNumber;
+  int color;
+  bool runningPRF;
+  bool firstUse;
+
+  // ignore: unused_element
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
+    pigeonMap['name'] = name;
+    pigeonMap['address'] = address;
+    pigeonMap['version'] = version;
+    pigeonMap['serialNumber'] = serialNumber;
+    pigeonMap['color'] = color;
+    pigeonMap['runningPRF'] = runningPRF;
+    pigeonMap['firstUse'] = firstUse;
+    return pigeonMap;
+  }
+
+  // ignore: unused_element
+  static PebbleScanDevicePigeon _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    final PebbleScanDevicePigeon result = PebbleScanDevicePigeon();
+    result.name = pigeonMap['name'];
+    result.address = pigeonMap['address'];
+    result.version = pigeonMap['version'];
+    result.serialNumber = pigeonMap['serialNumber'];
+    result.color = pigeonMap['color'];
+    result.runningPRF = pigeonMap['runningPRF'];
+    result.firstUse = pigeonMap['firstUse'];
+    return result;
+  }
+}
+
 class ListWrapper {
   List value;
+
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['value'] = value;
     return pigeonMap;
   }
+
   // ignore: unused_element
   static ListWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final ListWrapper result = ListWrapper();
@@ -120,31 +246,40 @@ class ListWrapper {
   }
 }
 
-class WatchConnectionState {
+class WatchConnectionStatePigeon {
   bool isConnected;
   bool isConnecting;
   int currentWatchAddress;
+  PebbleDevicePigeon currentConnectedWatch;
+
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['isConnected'] = isConnected;
     pigeonMap['isConnecting'] = isConnecting;
     pigeonMap['currentWatchAddress'] = currentWatchAddress;
+    pigeonMap['currentConnectedWatch'] =
+    currentConnectedWatch == null ? null : currentConnectedWatch._toMap();
     return pigeonMap;
   }
+
   // ignore: unused_element
-  static WatchConnectionState _fromMap(Map<dynamic, dynamic> pigeonMap) {
-    final WatchConnectionState result = WatchConnectionState();
+  static WatchConnectionStatePigeon _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    final WatchConnectionStatePigeon result = WatchConnectionStatePigeon();
     result.isConnected = pigeonMap['isConnected'];
     result.isConnecting = pigeonMap['isConnecting'];
     result.currentWatchAddress = pigeonMap['currentWatchAddress'];
+    result.currentConnectedWatch =
+    pigeonMap['currentConnectedWatch'] != null ? PebbleDevicePigeon._fromMap(
+        pigeonMap['currentConnectedWatch']) : null;
     return result;
   }
 }
 
 class ScanControl {
   Future<void> startBleScan() async {
-    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.ScanControl.startBleScan', StandardMessageCodec());
 
     final Map<dynamic, dynamic> replyMap = await channel.send(null);
@@ -163,7 +298,6 @@ class ScanControl {
       // noop
     }
   }
-
   Future<void> startClassicScan() async {
     const BasicMessageChannel<dynamic> channel =
     BasicMessageChannel<dynamic>(
@@ -279,21 +413,96 @@ class TimelineControl {
     } else {
       return NumberWrapper._fromMap(replyMap['result']);
     }
-    
+  }
+}
+
+class KeepUnusedHack {
+  Future<void> keepPebbleFirmwarePigeon(PebbleFirmwarePigeon arg) async {
+    final Map<dynamic, dynamic> requestMap = arg._toMap();
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.KeepUnusedHack.keepPebbleFirmwarePigeon',
+        StandardMessageCodec());
+
+    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
+    if (replyMap == null) {
+      throw PlatformException(
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      // noop
+    }
+  }
+
+  Future<void> keepPebbleDevicePigeon(PebbleDevicePigeon arg) async {
+    final Map<dynamic, dynamic> requestMap = arg._toMap();
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.KeepUnusedHack.keepPebbleDevicePigeon',
+        StandardMessageCodec());
+
+    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
+    if (replyMap == null) {
+      throw PlatformException(
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      // noop
+    }
+  }
+
+  Future<void> keepPebbleScanDevicePigeon(PebbleScanDevicePigeon arg) async {
+    final Map<dynamic, dynamic> requestMap = arg._toMap();
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.KeepUnusedHack.keepPebbleScanDevicePigeon',
+        StandardMessageCodec());
+
+    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
+    if (replyMap == null) {
+      throw PlatformException(
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      // noop
+    }
   }
 }
 
 class ConnectionControl {
   Future<BooleanWrapper> isConnected() async {
     const BasicMessageChannel<dynamic> channel =
-        BasicMessageChannel<dynamic>('dev.flutter.pigeon.ConnectionControl.isConnected', StandardMessageCodec());
-    
+    BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.ConnectionControl.isConnected',
+        StandardMessageCodec());
+
     final Map<dynamic, dynamic> replyMap = await channel.send(null);
     if (replyMap == null) {
       throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null);
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
     } else if (replyMap['error'] != null) {
       final Map<dynamic, dynamic> error = replyMap['error'];
       throw PlatformException(
@@ -371,7 +580,6 @@ class ConnectionControl {
       // noop
     }
   }
-
   Future<void> observeConnectionChanges() async {
     const BasicMessageChannel<dynamic> channel =
     BasicMessageChannel<dynamic>(
@@ -394,7 +602,6 @@ class ConnectionControl {
       // noop
     }
   }
-
   Future<void> cancelObservingConnectionChanges() async {
     const BasicMessageChannel<dynamic> channel =
     BasicMessageChannel<dynamic>(
@@ -519,7 +726,8 @@ abstract class ScanCallbacks {
 }
 
 abstract class ConnectionCallbacks {
-  void onWatchConnectionStateChanged(WatchConnectionState arg);
+  void onWatchConnectionStateChanged(WatchConnectionStatePigeon arg);
+
   static void setup(ConnectionCallbacks api) {
     {
       const BasicMessageChannel<dynamic> channel =
@@ -533,8 +741,8 @@ abstract class ConnectionCallbacks {
           final Map<dynamic, dynamic> mapMessage = message as Map<
               dynamic,
               dynamic>;
-          final WatchConnectionState input = WatchConnectionState._fromMap(
-              mapMessage);
+          final WatchConnectionStatePigeon input = WatchConnectionStatePigeon
+              ._fromMap(mapMessage);
           api.onWatchConnectionStateChanged(input);
         });
       }

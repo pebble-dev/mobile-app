@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:cobble/domain/entities/pebble_device.dart';
+import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _StoredDevice {
   bool isDefault;
-  final PebbleDevice device;
+  final PebbleScanDevice device;
 
   _StoredDevice(this.device, [this.isDefault = false]);
 
@@ -23,7 +23,11 @@ class PairedStorage {
       List<_StoredDevice> pairedList = pairedJson.map((e) {
         dynamic devRaw = jsonDecode(e);
         return _StoredDevice(
-            PebbleDevice.stored(devRaw['device']['name'], devRaw['device']['address'], devRaw['device']['serialNumber'], devRaw['device']['color']),
+            PebbleScanDevice.stored(
+                devRaw['device']['name'],
+                devRaw['device']['address'],
+                devRaw['device']['serialNumber'],
+                devRaw['device']['color']),
             devRaw['isDefault']);
       }).toList();
       return pairedList;
@@ -36,7 +40,7 @@ class PairedStorage {
     await _prefs.then((value) => value.setStringList("pairList", pairedJson));
   }
 
-  static Future<void> register(PebbleDevice device,
+  static Future<void> register(PebbleScanDevice device,
           [bool isDefault = false]) async =>
       _writeNew((await _readCurrent())..add(_StoredDevice(device, isDefault)));
 
@@ -44,11 +48,12 @@ class PairedStorage {
       _writeNew((await _readCurrent())
         ..removeWhere((element) => element.device.address == address));
 
-  static Future<PebbleDevice> get(int address) async => (await _readCurrent())
-      .firstWhere((element) => element.device.address == address)
-      .device;
+  static Future<PebbleScanDevice> get(int address) async =>
+      (await _readCurrent())
+          .firstWhere((element) => element.device.address == address)
+          .device;
 
-  static Future<PebbleDevice> getDefault() async => (await _readCurrent())
+  static Future<PebbleScanDevice> getDefault() async => (await _readCurrent())
       .firstWhere((element) => element.isDefault, orElse: () => null)
       ?.device;
 

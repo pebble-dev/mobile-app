@@ -3,6 +3,9 @@ package io.rebble.cobble.handlers
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import io.rebble.cobble.bluetooth.ConnectionLooper
+import io.rebble.cobble.bluetooth.ConnectionState
+import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.di.PerService
 import io.rebble.cobble.util.coroutines.asFlow
 import io.rebble.libpebblecommon.PacketPriority
@@ -21,7 +24,9 @@ import javax.inject.Inject
 class SystemHandler @Inject constructor(
         private val context: Context,
         private val coroutineScope: CoroutineScope,
-        private val systemService: SystemService
+        private val systemService: SystemService,
+        private val connectionLooper: ConnectionLooper,
+        private val watchMetadataStore: WatchMetadataStore
 ) : PebbleMessageHandler {
     init {
         listenForTimeChange()
@@ -29,6 +34,22 @@ class SystemHandler @Inject constructor(
         coroutineScope.launch {
             sendCurrentTime()
         }
+
+        coroutineScope.launch {
+            connectionLooper.connectionState.collect {
+                if (it is ConnectionState.Connected) {
+                    refreshWatchMetadata()
+                }
+            }
+        }
+    }
+
+    private suspend fun refreshWatchMetadata() {
+        val watchInfo = systemService.requestWatchVersion()
+        watchMetadataStore.lastConnectedWatchMetadata.value = watchInfo
+
+        val watchModel = systemService.requestWatchModel()
+        watchMetadataStore.lastConnectedWatchModel.value = watchModel
     }
 
 

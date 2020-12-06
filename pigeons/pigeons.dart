@@ -18,10 +18,44 @@ class ListWrapper {
   List value;
 }
 
-class WatchConnectionState {
+class PebbleFirmwarePigeon {
+  int timestamp;
+  String version;
+  String gitHash;
+  bool isRecovery;
+  int hardwarePlatform;
+  int metadataVersion;
+}
+
+class PebbleDevicePigeon {
+  String name;
+  int address;
+  PebbleFirmwarePigeon runningFirmware;
+  PebbleFirmwarePigeon recoveryFirmware;
+  int model;
+  int bootloaderTimestamp;
+  String board;
+  String serial;
+  String language;
+  int languageVersion;
+  bool isUnfaithful;
+}
+
+class PebbleScanDevicePigeon {
+  String name;
+  int address;
+  String version;
+  String serialNumber;
+  int color;
+  bool runningPRF;
+  bool firstUse;
+}
+
+class WatchConnectionStatePigeon {
   bool isConnected;
   bool isConnecting;
   int currentWatchAddress;
+  PebbleDevicePigeon currentConnectedWatch;
 }
 
 class TimelinePinPigeon {
@@ -41,6 +75,7 @@ class TimelinePinPigeon {
 
 @FlutterApi()
 abstract class ScanCallbacks {
+  /// pebbles = list of PebbleScanDevicePigeon
   void onScanUpdate(ListWrapper pebbles);
 
   void onScanStarted();
@@ -50,7 +85,7 @@ abstract class ScanCallbacks {
 
 @FlutterApi()
 abstract class ConnectionCallbacks {
-  void onWatchConnectionStateChanged(WatchConnectionState newState);
+  void onWatchConnectionStateChanged(WatchConnectionStatePigeon newState);
 }
 
 @FlutterApi()
@@ -102,4 +137,12 @@ abstract class TimelineControl {
   NumberWrapper removePin(StringWrapper pinUuid);
 
   NumberWrapper removeAllPins();
+}
+
+/// This class will keep all classes that appear in lists from being deleted
+/// by pigeon (they are not kept by default because pigeon does not support
+/// generics in lists).
+@HostApi()
+abstract class KeepUnusedHack {
+  void keepPebbleScanDevicePigeon(PebbleScanDevicePigeon cls);
 }
