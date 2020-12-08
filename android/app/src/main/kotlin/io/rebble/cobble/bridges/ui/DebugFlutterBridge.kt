@@ -6,7 +6,7 @@ import io.rebble.cobble.log.collectAndShareLogs
 import io.rebble.cobble.pigeons.Pigeons
 import javax.inject.Inject
 
-class Debug @Inject constructor(
+class DebugFlutterBridge @Inject constructor(
         private val context: Context,
         bridgeLifecycleController: BridgeLifecycleController
 ) : FlutterBridge, Pigeons.DebugControl {

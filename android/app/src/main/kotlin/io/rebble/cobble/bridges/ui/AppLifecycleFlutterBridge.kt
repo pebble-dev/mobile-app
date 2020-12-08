@@ -10,7 +10,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
 
-class AppLifecycle @Inject constructor(
+class AppLifecycleFlutterBridge @Inject constructor(
         binaryMessenger: BinaryMessenger,
         mainActivity: MainActivity,
         coroutineScope: CoroutineScope

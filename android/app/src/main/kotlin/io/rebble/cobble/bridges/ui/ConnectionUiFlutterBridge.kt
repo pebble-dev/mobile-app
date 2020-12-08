@@ -29,7 +29,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ConnectionUi @Inject constructor(
+class ConnectionUiFlutterBridge @Inject constructor(
         bridgeLifecycleController: BridgeLifecycleController,
         private val connectionLooper: ConnectionLooper,
         coroutineScope: CoroutineScope,

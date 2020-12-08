@@ -4,9 +4,9 @@ import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoSet
 import io.rebble.cobble.bridges.FlutterBridge
-import io.rebble.cobble.bridges.ui.AppLifecycle
-import io.rebble.cobble.bridges.ui.ConnectionUi
-import io.rebble.cobble.bridges.ui.Debug
+import io.rebble.cobble.bridges.ui.AppLifecycleFlutterBridge
+import io.rebble.cobble.bridges.ui.ConnectionUiFlutterBridge
+import io.rebble.cobble.bridges.ui.DebugFlutterBridge
 import javax.inject.Qualifier
 
 @Module
@@ -18,17 +18,17 @@ abstract class UiBridgesModule {
     @Binds
     @IntoSet
     @UiBridge
-    abstract fun bindConnectionUiBridge(connection: ConnectionUi): FlutterBridge
+    abstract fun bindConnectionUiBridge(connectionFlutterBridge: ConnectionUiFlutterBridge): FlutterBridge
 
     @Binds
     @IntoSet
     @UiBridge
-    abstract fun bindAppLifecycleBridge(appLifecycle: AppLifecycle): FlutterBridge
+    abstract fun bindAppLifecycleBridge(appLifecycleFlutterBridge: AppLifecycleFlutterBridge): FlutterBridge
 
     @Binds
     @IntoSet
     @UiBridge
-    abstract fun bindDebugBridge(debug: Debug): FlutterBridge
+    abstract fun bindDebugBridge(debugFlutterBridge: DebugFlutterBridge): FlutterBridge
 }
 
 @Qualifier

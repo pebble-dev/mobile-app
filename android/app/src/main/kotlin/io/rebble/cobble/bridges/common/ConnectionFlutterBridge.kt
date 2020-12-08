@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class Connection @Inject constructor(
+class ConnectionFlutterBridge @Inject constructor(
         bridgeLifecycleController: BridgeLifecycleController,
         private val connectionLooper: ConnectionLooper,
         private val coroutineScope: CoroutineScope,

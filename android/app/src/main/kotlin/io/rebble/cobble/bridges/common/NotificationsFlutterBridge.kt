@@ -9,7 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class Notifications @Inject constructor(
+class NotificationsFlutterBridge @Inject constructor(
         bridgeLifecycleController: BridgeLifecycleController,
         private val notificationService: NotificationService,
         private val coroutineScope: CoroutineScope

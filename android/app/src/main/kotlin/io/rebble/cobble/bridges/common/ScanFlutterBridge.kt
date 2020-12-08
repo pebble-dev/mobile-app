@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalUnsignedTypes::class)
-class Scan @Inject constructor(
+class ScanFlutterBridge @Inject constructor(
         bridgeLifecycleController: BridgeLifecycleController,
         private val bleScanner: BleScanner,
         private val classicScanner: ClassicScanner,
