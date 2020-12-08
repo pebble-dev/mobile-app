@@ -4,7 +4,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.le.ScanResult
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.collection.ArrayMap
+import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.macAddressToLong
 
 @OptIn(ExperimentalUnsignedTypes::class)
@@ -28,29 +28,27 @@ class BluePebbleDevice {
         leMeta = LEMeta(scanRecord)
     }
 
-    fun toPigeon(): Map<String, Any> {
-        val map = ArrayMap<String, Any>()
+    fun toPigeon(): Pigeons.PebbleScanDevicePigeon {
+        return Pigeons.PebbleScanDevicePigeon().also {
+            it.name = bluetoothDevice.name
+            it.address = bluetoothDevice.address.macAddressToLong()
 
-        map["name"] = bluetoothDevice.name
-        map["address"] = bluetoothDevice.address.macAddressToLong()
-
-        if (leMeta?.major != null) {
-            map["version"] = "${leMeta.major}.${leMeta.minor}.${leMeta.patch}"
+            if (leMeta?.major != null) {
+                it.version = "${leMeta.major}.${leMeta.minor}.${leMeta.patch}"
+            }
+            if (leMeta?.serialNumber != null) {
+                it.serialNumber = leMeta.serialNumber
+            }
+            if (leMeta?.color != null) {
+                it.color = leMeta.color.toLong()
+            }
+            if (leMeta?.runningPRF != null) {
+                it.runningPRF = leMeta.runningPRF
+            }
+            if (leMeta?.firstUse != null) {
+                it.firstUse = leMeta.firstUse
+            }
         }
-        if (leMeta?.serialNumber != null) {
-            map["serialNumber"] = leMeta.serialNumber
-        }
-        if (leMeta?.color != null) {
-            map["color"] = leMeta.color
-        }
-        if (leMeta?.runningPRF != null) {
-            map["runningPRF"] = leMeta.runningPRF
-        }
-        if (leMeta?.firstUse != null) {
-            map["firstUse"] = leMeta.firstUse
-        }
-
-        return map
     }
 
     override fun toString(): String {

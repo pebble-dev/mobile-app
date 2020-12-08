@@ -1,12 +1,12 @@
 import 'dart:developer';
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
-import 'package:cobble/domain/entities/pebble_device.dart';
+import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PairPage extends StatefulWidget {
@@ -19,7 +19,7 @@ final ScanControl scanControl = ScanControl();
 
 class _PairPageState extends State<PairPage>
     implements ScanCallbacks, PairCallbacks {
-  List<PebbleDevice> _pebbles = [];
+  List<PebbleScanDevice> _pebbles = [];
   bool _scanning = false;
 
   @override
@@ -51,7 +51,7 @@ class _PairPageState extends State<PairPage>
     }
   }
 
-  void _targetPebble(PebbleDevice dev) {
+  void _targetPebble(PebbleScanDevice dev) {
     NumberWrapper addressWrapper = NumberWrapper();
     addressWrapper.value = dev.address;
     connectionControl.connectToWatch(addressWrapper);
@@ -76,14 +76,14 @@ class _PairPageState extends State<PairPage>
   void onScanUpdate(ListWrapper arg) {
     setState(() {
       _pebbles = (arg.value.cast<Map>())
-          .map((element) => PebbleDevice.fromPigeon(element))
+          .map((element) => PebbleScanDevice.fromMap(element))
           .toList();
     });
   }
 
   @override
   void onWatchPairComplete(NumberWrapper address) {
-    PebbleDevice dev = _pebbles.firstWhere(
+    PebbleScanDevice dev = _pebbles.firstWhere(
         (element) => element.address == address.value,
         orElse: () => null);
 

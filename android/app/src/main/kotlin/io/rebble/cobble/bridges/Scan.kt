@@ -4,6 +4,7 @@ import io.rebble.cobble.bluetooth.scan.BleScanner
 import io.rebble.cobble.bluetooth.scan.ClassicScanner
 import io.rebble.cobble.pigeons.ListWrapper
 import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.pigeons.toMapExt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -28,7 +29,9 @@ class Scan @Inject constructor(
             scanCallbacks.onScanStarted { }
 
             bleScanner.getScanFlow().collect { foundDevices ->
-                scanCallbacks.onScanUpdate(ListWrapper(foundDevices.map { it.toPigeon() })) {}
+                scanCallbacks.onScanUpdate(
+                        ListWrapper(foundDevices.map { it.toPigeon().toMapExt() })
+                ) {}
             }
 
             scanCallbacks.onScanStopped { }
@@ -40,7 +43,9 @@ class Scan @Inject constructor(
             scanCallbacks.onScanStarted { }
 
             classicScanner.getScanFlow().collect { foundDevices ->
-                scanCallbacks.onScanUpdate(ListWrapper(foundDevices.map { it.toPigeon() })) {}
+                scanCallbacks.onScanUpdate(
+                        ListWrapper(foundDevices.map { it.toPigeon().toMapExt() })
+                ) {}
             }
 
             scanCallbacks.onScanStopped { }

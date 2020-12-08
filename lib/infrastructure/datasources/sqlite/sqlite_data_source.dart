@@ -1,5 +1,5 @@
 import 'package:cobble/domain/entities/base_obj.dart';
-import 'package:cobble/domain/entities/pebble_device.dart';
+import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/datasources/sqlite/data_transfer_objects/baseobj_dto.dart';
 import 'package:cobble/infrastructure/datasources/sqlite/filters.dart';
 import 'package:cobble/infrastructure/datasources/sqlite/sqlite_tables.dart';
@@ -65,7 +65,7 @@ class SQLiteDataSource {
     List<CompositeFilter> recurCompFilters,
   }) async {
     switch (objType) {
-      case PebbleDevice:
+      case PebbleScanDevice:
         return [];
       default:
         print("SQL ERROR: Object Type Not Supported!!");

@@ -1,7 +1,7 @@
-import 'package:cobble/domain/entities/pebble_device.dart';
+import 'package:cobble/domain/entities/pebble_scan_device.dart';
 
 final Map<Type, String> typeToTable = {
-  PebbleDevice: TableNames.pebbledevice,
+  PebbleScanDevice: TableNames.pebbledevice,
 };
 
 class TableNames {

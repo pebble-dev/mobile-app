@@ -1,10 +1,9 @@
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
-import 'package:cobble/domain/entities/pebble_device.dart';
-import 'package:cobble/ui/common/icons/watch_icon.dart';
+import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
-
+import 'package:cobble/ui/common/icons/watch_icon.dart';
+import 'package:flutter/material.dart';
 
 class MyWatchesTab extends StatefulWidget {
   @override
@@ -12,7 +11,7 @@ class MyWatchesTab extends StatefulWidget {
 }
 
 class _MyWatchesTabState extends State<MyWatchesTab> {
-  List<PebbleDevice> _pebbles = [] ;
+  List<PebbleScanDevice> _pebbles = [];
 
   @override
   void initState() {

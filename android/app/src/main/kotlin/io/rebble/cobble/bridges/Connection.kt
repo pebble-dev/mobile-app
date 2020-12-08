@@ -20,6 +20,8 @@ import io.rebble.cobble.bluetooth.BlueCommon
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.ConnectionState
 import io.rebble.cobble.bluetooth.watchOrNull
+import io.rebble.cobble.data.toPigeon
+import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.pigeons.BooleanWrapper
 import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons
@@ -29,6 +31,7 @@ import io.rebble.cobble.util.macAddressToString
 import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -39,7 +42,8 @@ class Connection @Inject constructor(
         private val blueCommon: BlueCommon,
         private val coroutineScope: CoroutineScope,
         private val activity: MainActivity,
-        private val protocolHandler: ProtocolHandler
+        private val protocolHandler: ProtocolHandler,
+        private val watchMetadataStore: WatchMetadataStore
 ) : FlutterBridge, Pigeons.ConnectionControl {
     private val connectionCallbacks = bridgeLifecycleController
             .createCallbacks(Pigeons::ConnectionCallbacks)
@@ -193,13 +197,23 @@ class Connection @Inject constructor(
 
     override fun observeConnectionChanges() {
         statusObservingJob = coroutineScope.launch(Dispatchers.Main) {
-            connectionLooper.connectionState.collect {
+            combine(
+                    connectionLooper.connectionState,
+                    watchMetadataStore.lastConnectedWatchMetadata,
+                    watchMetadataStore.lastConnectedWatchModel
+            ) { connectionState, watchMetadata, model ->
+                Pigeons.WatchConnectionStatePigeon().apply {
+                    isConnected = connectionState is ConnectionState.Connected
+                    isConnecting = connectionState is ConnectionState.Connecting
+                    val bluetoothDevice = connectionState.watchOrNull
+                    currentWatchAddress = bluetoothDevice?.address?.macAddressToLong()
+                    currentConnectedWatch = bluetoothDevice?.let { device ->
+                        watchMetadata?.toPigeon(device, model)
+                    }
+                }
+            }.collect {
                 connectionCallbacks.onWatchConnectionStateChanged(
-                        Pigeons.WatchConnectionState().apply {
-                            isConnected = it is ConnectionState.Connected
-                            isConnecting = it is ConnectionState.Connecting
-                            currentWatchAddress = it.watchOrNull?.address?.macAddressToLong()
-                        }
+                        it
                 ) {}
             }
         }

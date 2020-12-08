@@ -1,18 +1,34 @@
+import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+class WatchConnectionState {
+  final bool isConnected;
+  final bool isConnecting;
+  final int currentWatchAddress;
+  final PebbleDevice currentConnectedWatch;
+
+  WatchConnectionState(this.isConnected, this.isConnecting,
+      this.currentWatchAddress, this.currentConnectedWatch);
+}
 
 class ConnectionCallbacksStateNotifier
     extends StateNotifier<WatchConnectionState> implements ConnectionCallbacks {
   final _connectionControl = ConnectionControl();
 
-  ConnectionCallbacksStateNotifier() : super(WatchConnectionState()) {
+  ConnectionCallbacksStateNotifier()
+      : super(WatchConnectionState(false, false, null, null)) {
     ConnectionCallbacks.setup(this);
     _connectionControl.observeConnectionChanges();
   }
 
   @override
-  void onWatchConnectionStateChanged(WatchConnectionState arg) {
-    state = arg;
+  void onWatchConnectionStateChanged(WatchConnectionStatePigeon pigeon) {
+    state = WatchConnectionState(
+        pigeon.isConnected,
+        pigeon.isConnecting,
+        pigeon.currentWatchAddress,
+        PebbleDevice.fromPigeon(pigeon.currentConnectedWatch));
   }
 
   void dispose() {
@@ -22,7 +38,7 @@ class ConnectionCallbacksStateNotifier
 }
 
 final connectionStateProvider =
-    StateNotifierProvider.autoDispose<ConnectionCallbacksStateNotifier>((ref) {
+StateNotifierProvider.autoDispose<ConnectionCallbacksStateNotifier>((ref) {
   final notifier = ConnectionCallbacksStateNotifier();
   ref.onDispose(notifier.dispose);
   return notifier;
