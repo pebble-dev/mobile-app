@@ -15,6 +15,7 @@ class PairPage extends StatefulWidget {
 }
 
 final ConnectionControl connectionControl = ConnectionControl();
+final UiConnectionControl uiConnectionControl = UiConnectionControl();
 final ScanControl scanControl = ScanControl();
 
 class _PairPageState extends State<PairPage>
@@ -54,7 +55,7 @@ class _PairPageState extends State<PairPage>
   void _targetPebble(PebbleScanDevice dev) {
     NumberWrapper addressWrapper = NumberWrapper();
     addressWrapper.value = dev.address;
-    connectionControl.connectToWatch(addressWrapper);
+    uiConnectionControl.connectToWatch(addressWrapper);
   }
 
   @override

@@ -104,8 +104,6 @@ abstract class ScanControl {
 abstract class ConnectionControl {
   BooleanWrapper isConnected();
 
-  void connectToWatch(NumberWrapper macAddress);
-
   void disconnect();
 
   void sendRawPacket(ListWrapper listOfBytes);
@@ -113,6 +111,13 @@ abstract class ConnectionControl {
   void observeConnectionChanges();
 
   void cancelObservingConnectionChanges();
+}
+
+/// Connection methods that require UI reside in separate pigeon class.
+/// This allows easier separation between background and UI methods.
+@HostApi()
+abstract class UiConnectionControl {
+  void connectToWatch(NumberWrapper macAddress);
 }
 
 @HostApi()

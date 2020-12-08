@@ -3,53 +3,74 @@
 
 package io.rebble.cobble.pigeons;
 
-import io.flutter.plugin.common.BasicMessageChannel;
-import io.flutter.plugin.common.BinaryMessenger;
-import io.flutter.plugin.common.StandardMessageCodec;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/** Generated class from Pigeon. */
+import io.flutter.plugin.common.BasicMessageChannel;
+import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.common.StandardMessageCodec;
+
+/**
+ * Generated class from Pigeon.
+ */
 @SuppressWarnings("unused")
 public class Pigeons {
 
-  /** Generated class from Pigeon that represents data sent in messages. */
-  public static class BooleanWrapper {
-    private Boolean value;
-    public Boolean getValue() { return value; }
-    public void setValue(Boolean setterArg) { this.value = setterArg; }
+    /**
+     * Generated class from Pigeon that represents data sent in messages.
+     */
+    public static class NumberWrapper {
+        private Long value;
 
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("value", value);
-      return toMapResult;
-    }
-    static BooleanWrapper fromMap(HashMap map) {
-      BooleanWrapper fromMapResult = new BooleanWrapper();
-      Object value = map.get("value");
-      fromMapResult.value = (Boolean)value;
-      return fromMapResult;
-    }
-  }
+        public Long getValue() {
+            return value;
+        }
 
-  /** Generated class from Pigeon that represents data sent in messages. */
-  public static class NumberWrapper {
-    private Long value;
-    public Long getValue() { return value; }
-    public void setValue(Long setterArg) { this.value = setterArg; }
+        public void setValue(Long setterArg) {
+            this.value = setterArg;
+        }
 
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("value", value);
-      return toMapResult;
+        HashMap toMap() {
+            HashMap<String, Object> toMapResult = new HashMap<>();
+            toMapResult.put("value", value);
+            return toMapResult;
+        }
+
+        static NumberWrapper fromMap(HashMap map) {
+            NumberWrapper fromMapResult = new NumberWrapper();
+            Object value = map.get("value");
+            fromMapResult.value = (value == null) ? null : ((value instanceof Integer) ? (Integer) value : (Long) value);
+            return fromMapResult;
+        }
     }
-    static NumberWrapper fromMap(HashMap map) {
-      NumberWrapper fromMapResult = new NumberWrapper();
-      Object value = map.get("value");
-      fromMapResult.value = (value == null) ? null : ((value instanceof Integer) ? (Integer)value : (Long)value);
-      return fromMapResult;
+
+    /**
+     * Generated class from Pigeon that represents data sent in messages.
+     */
+    public static class BooleanWrapper {
+        private Boolean value;
+
+        public Boolean getValue() {
+            return value;
+        }
+
+        public void setValue(Boolean setterArg) {
+            this.value = setterArg;
+        }
+
+        HashMap toMap() {
+            HashMap<String, Object> toMapResult = new HashMap<>();
+            toMapResult.put("value", value);
+            return toMapResult;
+        }
+
+        static BooleanWrapper fromMap(HashMap map) {
+            BooleanWrapper fromMapResult = new BooleanWrapper();
+            Object value = map.get("value");
+            fromMapResult.value = (Boolean) value;
+            return fromMapResult;
+        }
     }
-  }
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class TimelinePinPigeon {
@@ -364,90 +385,166 @@ public class Pigeons {
       Object board = map.get("board");
       fromMapResult.board = (String)board;
       Object serial = map.get("serial");
-      fromMapResult.serial = (String)serial;
-      Object language = map.get("language");
-      fromMapResult.language = (String)language;
-      Object languageVersion = map.get("languageVersion");
-      fromMapResult.languageVersion = (languageVersion == null) ? null : ((languageVersion instanceof Integer) ? (Integer)languageVersion : (Long)languageVersion);
-      Object isUnfaithful = map.get("isUnfaithful");
-      fromMapResult.isUnfaithful = (Boolean)isUnfaithful;
-      return fromMapResult;
+      fromMapResult.serial = (String) serial;
+        Object language = map.get("language");
+        fromMapResult.language = (String) language;
+        Object languageVersion = map.get("languageVersion");
+        fromMapResult.languageVersion = (languageVersion == null) ? null : ((languageVersion instanceof Integer) ? (Integer) languageVersion : (Long) languageVersion);
+        Object isUnfaithful = map.get("isUnfaithful");
+        fromMapResult.isUnfaithful = (Boolean) isUnfaithful;
+        return fromMapResult;
     }
   }
 
-  /** Generated class from Pigeon that represents data sent in messages. */
-  public static class PebbleFirmwarePigeon {
-    private Long timestamp;
-    public Long getTimestamp() { return timestamp; }
-    public void setTimestamp(Long setterArg) { this.timestamp = setterArg; }
+    /**
+     * Generated class from Pigeon that represents data sent in messages.
+     */
+    public static class PebbleFirmwarePigeon {
+        private Long timestamp;
 
-    private String version;
-    public String getVersion() { return version; }
-    public void setVersion(String setterArg) { this.version = setterArg; }
+        public Long getTimestamp() {
+            return timestamp;
+        }
 
-    private String gitHash;
-    public String getGitHash() { return gitHash; }
-    public void setGitHash(String setterArg) { this.gitHash = setterArg; }
+        public void setTimestamp(Long setterArg) {
+            this.timestamp = setterArg;
+        }
 
-    private Boolean isRecovery;
-    public Boolean getIsRecovery() { return isRecovery; }
-    public void setIsRecovery(Boolean setterArg) { this.isRecovery = setterArg; }
+        private String version;
 
-    private Long hardwarePlatform;
-    public Long getHardwarePlatform() { return hardwarePlatform; }
-    public void setHardwarePlatform(Long setterArg) { this.hardwarePlatform = setterArg; }
+        public String getVersion() {
+            return version;
+        }
 
-    private Long metadataVersion;
-    public Long getMetadataVersion() { return metadataVersion; }
-    public void setMetadataVersion(Long setterArg) { this.metadataVersion = setterArg; }
+        public void setVersion(String setterArg) {
+            this.version = setterArg;
+        }
 
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("timestamp", timestamp);
-      toMapResult.put("version", version);
-      toMapResult.put("gitHash", gitHash);
-      toMapResult.put("isRecovery", isRecovery);
-      toMapResult.put("hardwarePlatform", hardwarePlatform);
-      toMapResult.put("metadataVersion", metadataVersion);
-      return toMapResult;
+        private String gitHash;
+
+        public String getGitHash() {
+            return gitHash;
+        }
+
+        public void setGitHash(String setterArg) {
+            this.gitHash = setterArg;
+        }
+
+        private Boolean isRecovery;
+
+        public Boolean getIsRecovery() {
+            return isRecovery;
+        }
+
+        public void setIsRecovery(Boolean setterArg) {
+            this.isRecovery = setterArg;
+        }
+
+        private Long hardwarePlatform;
+
+        public Long getHardwarePlatform() {
+            return hardwarePlatform;
+        }
+
+        public void setHardwarePlatform(Long setterArg) {
+            this.hardwarePlatform = setterArg;
+        }
+
+        private Long metadataVersion;
+
+        public Long getMetadataVersion() {
+            return metadataVersion;
+        }
+
+        public void setMetadataVersion(Long setterArg) {
+            this.metadataVersion = setterArg;
+        }
+
+        HashMap toMap() {
+            HashMap<String, Object> toMapResult = new HashMap<>();
+            toMapResult.put("timestamp", timestamp);
+            toMapResult.put("version", version);
+            toMapResult.put("gitHash", gitHash);
+            toMapResult.put("isRecovery", isRecovery);
+            toMapResult.put("hardwarePlatform", hardwarePlatform);
+            toMapResult.put("metadataVersion", metadataVersion);
+            return toMapResult;
+        }
+
+        static PebbleFirmwarePigeon fromMap(HashMap map) {
+            PebbleFirmwarePigeon fromMapResult = new PebbleFirmwarePigeon();
+            Object timestamp = map.get("timestamp");
+            fromMapResult.timestamp = (timestamp == null) ? null : ((timestamp instanceof Integer) ? (Integer) timestamp : (Long) timestamp);
+            Object version = map.get("version");
+            fromMapResult.version = (String) version;
+            Object gitHash = map.get("gitHash");
+            fromMapResult.gitHash = (String) gitHash;
+            Object isRecovery = map.get("isRecovery");
+            fromMapResult.isRecovery = (Boolean) isRecovery;
+            Object hardwarePlatform = map.get("hardwarePlatform");
+            fromMapResult.hardwarePlatform = (hardwarePlatform == null) ? null : ((hardwarePlatform instanceof Integer) ? (Integer) hardwarePlatform : (Long) hardwarePlatform);
+            Object metadataVersion = map.get("metadataVersion");
+            fromMapResult.metadataVersion = (metadataVersion == null) ? null : ((metadataVersion instanceof Integer) ? (Integer) metadataVersion : (Long) metadataVersion);
+            return fromMapResult;
+        }
     }
-    static PebbleFirmwarePigeon fromMap(HashMap map) {
-      PebbleFirmwarePigeon fromMapResult = new PebbleFirmwarePigeon();
-      Object timestamp = map.get("timestamp");
-      fromMapResult.timestamp = (timestamp == null) ? null : ((timestamp instanceof Integer) ? (Integer)timestamp : (Long)timestamp);
-      Object version = map.get("version");
-      fromMapResult.version = (String)version;
-      Object gitHash = map.get("gitHash");
-      fromMapResult.gitHash = (String)gitHash;
-      Object isRecovery = map.get("isRecovery");
-      fromMapResult.isRecovery = (Boolean)isRecovery;
-      Object hardwarePlatform = map.get("hardwarePlatform");
-      fromMapResult.hardwarePlatform = (hardwarePlatform == null) ? null : ((hardwarePlatform instanceof Integer) ? (Integer)hardwarePlatform : (Long)hardwarePlatform);
-      Object metadataVersion = map.get("metadataVersion");
-      fromMapResult.metadataVersion = (metadataVersion == null) ? null : ((metadataVersion instanceof Integer) ? (Integer)metadataVersion : (Long)metadataVersion);
-      return fromMapResult;
-    }
-  }
 
-  /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
-  public interface ScanControl {
-    void startBleScan();
-    void startClassicScan();
+    /**
+     * Generated interface from Pigeon that represents a handler of messages from Flutter.
+     */
+    public interface UiConnectionControl {
+        void connectToWatch(NumberWrapper arg);
 
-    /** Sets up an instance of `ScanControl` to handle messages through the `binaryMessenger` */
-    static void setup(BinaryMessenger binaryMessenger, ScanControl api) {
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ScanControl.startBleScan", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              api.startBleScan();
-              wrapped.put("result", null);
+        /**
+         * Sets up an instance of `UiConnectionControl` to handle messages through the `binaryMessenger`
+         */
+        static void setup(BinaryMessenger binaryMessenger, UiConnectionControl api) {
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.UiConnectionControl.connectToWatch", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            NumberWrapper input = NumberWrapper.fromMap((HashMap) message);
+                            api.connectToWatch(input);
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
             }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
+        }
+    }
+
+    /**
+     * Generated interface from Pigeon that represents a handler of messages from Flutter.
+     */
+    public interface ScanControl {
+        void startBleScan();
+
+        void startClassicScan();
+
+        /**
+         * Sets up an instance of `ScanControl` to handle messages through the `binaryMessenger`
+         */
+        static void setup(BinaryMessenger binaryMessenger, ScanControl api) {
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ScanControl.startBleScan", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            api.startBleScan();
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
             }
             reply.reply(wrapped);
           });
@@ -610,7 +707,6 @@ public class Pigeons {
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface ConnectionControl {
     BooleanWrapper isConnected();
-    void connectToWatch(NumberWrapper arg);
     void disconnect();
     void sendRawPacket(ListWrapper arg);
     void observeConnectionChanges();
@@ -627,27 +723,6 @@ public class Pigeons {
             try {
               BooleanWrapper output = api.isConnected();
               wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ConnectionControl.connectToWatch", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              NumberWrapper input = NumberWrapper.fromMap((HashMap)message);
-              api.connectToWatch(input);
-              wrapped.put("result", null);
             }
             catch (Exception exception) {
               wrapped.put("error", wrapError(exception));

@@ -7,33 +7,37 @@ import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
 
 import 'package:flutter/services.dart';
 
-class BooleanWrapper {
-  bool value;
+class NumberWrapper {
+  int value;
+
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['value'] = value;
     return pigeonMap;
   }
+
   // ignore: unused_element
-  static BooleanWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
-    final BooleanWrapper result = BooleanWrapper();
+  static NumberWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    final NumberWrapper result = NumberWrapper();
     result.value = pigeonMap['value'];
     return result;
   }
 }
 
-class NumberWrapper {
-  int value;
+class BooleanWrapper {
+  bool value;
+
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['value'] = value;
     return pigeonMap;
   }
+
   // ignore: unused_element
-  static NumberWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
-    final NumberWrapper result = NumberWrapper();
+  static BooleanWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    final BooleanWrapper result = BooleanWrapper();
     result.value = pigeonMap['value'];
     return result;
   }
@@ -112,7 +116,6 @@ class PebbleScanDevicePigeon {
   int color;
   bool runningPRF;
   bool firstUse;
-
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
@@ -125,7 +128,6 @@ class PebbleScanDevicePigeon {
     pigeonMap['firstUse'] = firstUse;
     return pigeonMap;
   }
-
   // ignore: unused_element
   static PebbleScanDevicePigeon _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final PebbleScanDevicePigeon result = PebbleScanDevicePigeon();
@@ -142,14 +144,12 @@ class PebbleScanDevicePigeon {
 
 class ListWrapper {
   List value;
-
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['value'] = value;
     return pigeonMap;
   }
-
   // ignore: unused_element
   static ListWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final ListWrapper result = ListWrapper();
@@ -163,7 +163,6 @@ class WatchConnectionStatePigeon {
   bool isConnecting;
   int currentWatchAddress;
   PebbleDevicePigeon currentConnectedWatch;
-
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
@@ -174,16 +173,15 @@ class WatchConnectionStatePigeon {
         currentConnectedWatch == null ? null : currentConnectedWatch._toMap();
     return pigeonMap;
   }
-
   // ignore: unused_element
   static WatchConnectionStatePigeon _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final WatchConnectionStatePigeon result = WatchConnectionStatePigeon();
     result.isConnected = pigeonMap['isConnected'];
     result.isConnecting = pigeonMap['isConnecting'];
     result.currentWatchAddress = pigeonMap['currentWatchAddress'];
-    result.currentConnectedWatch = pigeonMap['currentConnectedWatch'] != null
-        ? PebbleDevicePigeon._fromMap(pigeonMap['currentConnectedWatch'])
-        : null;
+    result.currentConnectedWatch =
+    pigeonMap['currentConnectedWatch'] != null ? PebbleDevicePigeon._fromMap(
+        pigeonMap['currentConnectedWatch']) : null;
     return result;
   }
 }
@@ -200,16 +198,15 @@ class PebbleDevicePigeon {
   String language;
   int languageVersion;
   bool isUnfaithful;
-
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['name'] = name;
     pigeonMap['address'] = address;
     pigeonMap['runningFirmware'] =
-        runningFirmware == null ? null : runningFirmware._toMap();
+    runningFirmware == null ? null : runningFirmware._toMap();
     pigeonMap['recoveryFirmware'] =
-        recoveryFirmware == null ? null : recoveryFirmware._toMap();
+    recoveryFirmware == null ? null : recoveryFirmware._toMap();
     pigeonMap['model'] = model;
     pigeonMap['bootloaderTimestamp'] = bootloaderTimestamp;
     pigeonMap['board'] = board;
@@ -219,18 +216,17 @@ class PebbleDevicePigeon {
     pigeonMap['isUnfaithful'] = isUnfaithful;
     return pigeonMap;
   }
-
   // ignore: unused_element
   static PebbleDevicePigeon _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final PebbleDevicePigeon result = PebbleDevicePigeon();
     result.name = pigeonMap['name'];
     result.address = pigeonMap['address'];
-    result.runningFirmware = pigeonMap['runningFirmware'] != null
-        ? PebbleFirmwarePigeon._fromMap(pigeonMap['runningFirmware'])
-        : null;
-    result.recoveryFirmware = pigeonMap['recoveryFirmware'] != null
-        ? PebbleFirmwarePigeon._fromMap(pigeonMap['recoveryFirmware'])
-        : null;
+    result.runningFirmware =
+    pigeonMap['runningFirmware'] != null ? PebbleFirmwarePigeon._fromMap(
+        pigeonMap['runningFirmware']) : null;
+    result.recoveryFirmware =
+    pigeonMap['recoveryFirmware'] != null ? PebbleFirmwarePigeon._fromMap(
+        pigeonMap['recoveryFirmware']) : null;
     result.model = pigeonMap['model'];
     result.bootloaderTimestamp = pigeonMap['bootloaderTimestamp'];
     result.board = pigeonMap['board'];
@@ -249,7 +245,6 @@ class PebbleFirmwarePigeon {
   bool isRecovery;
   int hardwarePlatform;
   int metadataVersion;
-
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
@@ -261,7 +256,6 @@ class PebbleFirmwarePigeon {
     pigeonMap['metadataVersion'] = metadataVersion;
     return pigeonMap;
   }
-
   // ignore: unused_element
   static PebbleFirmwarePigeon _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final PebbleFirmwarePigeon result = PebbleFirmwarePigeon();
@@ -275,9 +269,36 @@ class PebbleFirmwarePigeon {
   }
 }
 
+class UiConnectionControl {
+  Future<void> connectToWatch(NumberWrapper arg) async {
+    final Map<dynamic, dynamic> requestMap = arg._toMap();
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.UiConnectionControl.connectToWatch',
+        StandardMessageCodec());
+
+    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
+    if (replyMap == null) {
+      throw PlatformException(
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      // noop
+    }
+  }
+}
+
 class ScanControl {
   Future<void> startBleScan() async {
-    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.ScanControl.startBleScan', StandardMessageCodec());
 
     final Map<dynamic, dynamic> replyMap = await channel.send(null);
@@ -461,28 +482,6 @@ class ConnectionControl {
           details: error['details']);
     } else {
       return BooleanWrapper._fromMap(replyMap['result']);
-    }
-    
-  }
-  Future<void> connectToWatch(NumberWrapper arg) async {
-    final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel =
-        BasicMessageChannel<dynamic>('dev.flutter.pigeon.ConnectionControl.connectToWatch', StandardMessageCodec());
-    
-    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null);
-    } else if (replyMap['error'] != null) {
-      final Map<dynamic, dynamic> error = replyMap['error'];
-      throw PlatformException(
-          code: error['code'],
-          message: error['message'],
-          details: error['details']);
-    } else {
-      // noop
     }
     
   }

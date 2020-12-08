@@ -17,6 +17,10 @@ abstract class FlutterBridgesModule {
 
     @Binds
     @IntoSet
+    abstract fun bindConnectionUiBridge(connection: ConnectionUi): FlutterBridge
+
+    @Binds
+    @IntoSet
     abstract fun bindNotificationsBridge(notifications: Notifications): FlutterBridge
 
     @Binds
