@@ -3,8 +3,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ConnectionCallbacksStateNotifier
     extends StateNotifier<WatchConnectionState> implements ConnectionCallbacks {
+  final _connectionControl = ConnectionControl();
+
   ConnectionCallbacksStateNotifier() : super(WatchConnectionState()) {
     ConnectionCallbacks.setup(this);
+    _connectionControl.observeConnectionChanges();
   }
 
   @override
@@ -14,6 +17,7 @@ class ConnectionCallbacksStateNotifier
 
   void dispose() {
     ConnectionCallbacks.setup(null);
+    _connectionControl.cancelObservingConnectionChanges();
   }
 }
 

@@ -9,14 +9,12 @@ import 'package:flutter/services.dart';
 
 class BooleanWrapper {
   bool value;
-
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['value'] = value;
     return pigeonMap;
   }
-
   // ignore: unused_element
   static BooleanWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final BooleanWrapper result = BooleanWrapper();
@@ -27,14 +25,12 @@ class BooleanWrapper {
 
 class NumberWrapper {
   int value;
-
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['value'] = value;
     return pigeonMap;
   }
-
   // ignore: unused_element
   static NumberWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final NumberWrapper result = NumberWrapper();
@@ -56,7 +52,6 @@ class TimelinePinPigeon {
   int layout;
   String attributesJson;
   String actionsJson;
-
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
@@ -74,7 +69,6 @@ class TimelinePinPigeon {
     pigeonMap['actionsJson'] = actionsJson;
     return pigeonMap;
   }
-
   // ignore: unused_element
   static TimelinePinPigeon _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final TimelinePinPigeon result = TimelinePinPigeon();
@@ -96,14 +90,12 @@ class TimelinePinPigeon {
 
 class StringWrapper {
   String value;
-
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['value'] = value;
     return pigeonMap;
   }
-
   // ignore: unused_element
   static StringWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final StringWrapper result = StringWrapper();
@@ -114,14 +106,12 @@ class StringWrapper {
 
 class ListWrapper {
   List value;
-
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['value'] = value;
     return pigeonMap;
   }
-
   // ignore: unused_element
   static ListWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final ListWrapper result = ListWrapper();
@@ -175,7 +165,8 @@ class ScanControl {
   }
 
   Future<void> startClassicScan() async {
-    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.ScanControl.startClassicScan',
         StandardMessageCodec());
 
@@ -199,7 +190,8 @@ class ScanControl {
 
 class AppLifecycleControl {
   Future<BooleanWrapper> waitForBoot() async {
-    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.AppLifecycleControl.waitForBoot',
         StandardMessageCodec());
 
@@ -224,7 +216,8 @@ class AppLifecycleControl {
 class TimelineControl {
   Future<NumberWrapper> addPin(TimelinePinPigeon arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.TimelineControl.addPin', StandardMessageCodec());
 
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
@@ -243,10 +236,10 @@ class TimelineControl {
       return NumberWrapper._fromMap(replyMap['result']);
     }
   }
-
   Future<NumberWrapper> removePin(StringWrapper arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.TimelineControl.removePin', StandardMessageCodec());
 
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
@@ -265,9 +258,9 @@ class TimelineControl {
       return NumberWrapper._fromMap(replyMap['result']);
     }
   }
-
   Future<NumberWrapper> removeAllPins() async {
-    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.TimelineControl.removeAllPins',
         StandardMessageCodec());
 
@@ -357,7 +350,8 @@ class ConnectionControl {
   }
   Future<void> sendRawPacket(ListWrapper arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.ConnectionControl.sendRawPacket',
         StandardMessageCodec());
 
@@ -377,11 +371,58 @@ class ConnectionControl {
       // noop
     }
   }
+
+  Future<void> observeConnectionChanges() async {
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.ConnectionControl.observeConnectionChanges',
+        StandardMessageCodec());
+
+    final Map<dynamic, dynamic> replyMap = await channel.send(null);
+    if (replyMap == null) {
+      throw PlatformException(
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      // noop
+    }
+  }
+
+  Future<void> cancelObservingConnectionChanges() async {
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.ConnectionControl.cancelObservingConnectionChanges',
+        StandardMessageCodec());
+
+    final Map<dynamic, dynamic> replyMap = await channel.send(null);
+    if (replyMap == null) {
+      throw PlatformException(
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      // noop
+    }
+  }
 }
 
 class NotificationsControl {
   Future<void> sendTestNotification() async {
-    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.NotificationsControl.sendTestNotification',
         StandardMessageCodec());
 
@@ -405,18 +446,19 @@ class NotificationsControl {
 
 abstract class PairCallbacks {
   void onWatchPairComplete(NumberWrapper arg);
-
   static void setup(PairCallbacks api) {
     {
-      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+      const BasicMessageChannel<dynamic> channel =
+      BasicMessageChannel<dynamic>(
           'dev.flutter.pigeon.PairCallbacks.onWatchPairComplete',
           StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((dynamic message) async {
-          final Map<dynamic, dynamic> mapMessage =
-              message as Map<dynamic, dynamic>;
+          final Map<dynamic, dynamic> mapMessage = message as Map<
+              dynamic,
+              dynamic>;
           final NumberWrapper input = NumberWrapper._fromMap(mapMessage);
           api.onWatchPairComplete(input);
         });
@@ -427,29 +469,29 @@ abstract class PairCallbacks {
 
 abstract class ScanCallbacks {
   void onScanUpdate(ListWrapper arg);
-
   void onScanStarted();
-
   void onScanStopped();
-
   static void setup(ScanCallbacks api) {
     {
-      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+      const BasicMessageChannel<dynamic> channel =
+      BasicMessageChannel<dynamic>(
           'dev.flutter.pigeon.ScanCallbacks.onScanUpdate',
           StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((dynamic message) async {
-          final Map<dynamic, dynamic> mapMessage =
-              message as Map<dynamic, dynamic>;
+          final Map<dynamic, dynamic> mapMessage = message as Map<
+              dynamic,
+              dynamic>;
           final ListWrapper input = ListWrapper._fromMap(mapMessage);
           api.onScanUpdate(input);
         });
       }
     }
     {
-      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+      const BasicMessageChannel<dynamic> channel =
+      BasicMessageChannel<dynamic>(
           'dev.flutter.pigeon.ScanCallbacks.onScanStarted',
           StandardMessageCodec());
       if (api == null) {
@@ -461,7 +503,8 @@ abstract class ScanCallbacks {
       }
     }
     {
-      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+      const BasicMessageChannel<dynamic> channel =
+      BasicMessageChannel<dynamic>(
           'dev.flutter.pigeon.ScanCallbacks.onScanStopped',
           StandardMessageCodec());
       if (api == null) {
@@ -477,20 +520,21 @@ abstract class ScanCallbacks {
 
 abstract class ConnectionCallbacks {
   void onWatchConnectionStateChanged(WatchConnectionState arg);
-
   static void setup(ConnectionCallbacks api) {
     {
-      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+      const BasicMessageChannel<dynamic> channel =
+      BasicMessageChannel<dynamic>(
           'dev.flutter.pigeon.ConnectionCallbacks.onWatchConnectionStateChanged',
           StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((dynamic message) async {
-          final Map<dynamic, dynamic> mapMessage =
-              message as Map<dynamic, dynamic>;
-          final WatchConnectionState input =
-              WatchConnectionState._fromMap(mapMessage);
+          final Map<dynamic, dynamic> mapMessage = message as Map<
+              dynamic,
+              dynamic>;
+          final WatchConnectionState input = WatchConnectionState._fromMap(
+              mapMessage);
           api.onWatchConnectionStateChanged(input);
         });
       }
@@ -500,7 +544,8 @@ abstract class ConnectionCallbacks {
 
 class DebugControl {
   Future<void> collectLogs() async {
-    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.DebugControl.collectLogs', StandardMessageCodec());
 
     final Map<dynamic, dynamic> replyMap = await channel.send(null);
@@ -520,3 +565,4 @@ class DebugControl {
     }
   }
 }
+
