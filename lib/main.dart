@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cobble/background/main_background.dart';
 import 'package:cobble/ui/localize.dart';
 import 'package:cobble/ui/router.dart' as router;
 import 'package:cobble/ui/theme.dart';
@@ -9,11 +10,21 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/all.dart';
 
 import 'domain/calendar/calendar_permission.dart';
+import 'infrastructure/pigeons/pigeons.dart';
 
 String getBootUrl = "https://boot.rebble.io/";
 
 void main() {
   runApp(ProviderScope(child: MyApp()));
+  initBackground();
+}
+
+void initBackground() {
+  final CallbackHandle backgroundCallbackHandle =
+      PluginUtilities.getCallbackHandle(main_background);
+  final wrapper = NumberWrapper();
+  wrapper.value = backgroundCallbackHandle.toRawHandle();
+  BackgroundSetupControl().setupBackground(wrapper);
 }
 
 class MyApp extends HookWidget {

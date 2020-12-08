@@ -144,6 +144,11 @@ abstract class TimelineControl {
   NumberWrapper removeAllPins();
 }
 
+@HostApi()
+abstract class BackgroundSetupControl {
+  void setupBackground(NumberWrapper callbackHandle);
+}
+
 /// This class will keep all classes that appear in lists from being deleted
 /// by pigeon (they are not kept by default because pigeon does not support
 /// generics in lists).

@@ -9,14 +9,12 @@ import 'package:flutter/services.dart';
 
 class NumberWrapper {
   int value;
-
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['value'] = value;
     return pigeonMap;
   }
-
   // ignore: unused_element
   static NumberWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final NumberWrapper result = NumberWrapper();
@@ -27,14 +25,12 @@ class NumberWrapper {
 
 class BooleanWrapper {
   bool value;
-
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['value'] = value;
     return pigeonMap;
   }
-
   // ignore: unused_element
   static BooleanWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final BooleanWrapper result = BooleanWrapper();
@@ -600,8 +596,35 @@ class NotificationsControl {
   }
 }
 
+class BackgroundSetupControl {
+  Future<void> setupBackground(NumberWrapper arg) async {
+    final Map<dynamic, dynamic> requestMap = arg._toMap();
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.BackgroundSetupControl.setupBackground',
+        StandardMessageCodec());
+
+    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
+    if (replyMap == null) {
+      throw PlatformException(
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      // noop
+    }
+  }
+}
+
 abstract class PairCallbacks {
   void onWatchPairComplete(NumberWrapper arg);
+
   static void setup(PairCallbacks api) {
     {
       const BasicMessageChannel<dynamic> channel =
