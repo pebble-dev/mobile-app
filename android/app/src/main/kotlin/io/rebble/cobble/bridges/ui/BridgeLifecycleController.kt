@@ -1,4 +1,4 @@
-package io.rebble.cobble.bridges
+package io.rebble.cobble.bridges.ui
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver

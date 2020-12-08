@@ -1,4 +1,4 @@
-package io.rebble.cobble.bridges
+package io.rebble.cobble.bridges.ui
 
 import android.annotation.TargetApi
 import android.app.Activity
@@ -17,6 +17,7 @@ import android.content.IntentSender
 import android.os.Build
 import io.rebble.cobble.MainActivity
 import io.rebble.cobble.bluetooth.ConnectionLooper
+import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.coroutines.asFlow

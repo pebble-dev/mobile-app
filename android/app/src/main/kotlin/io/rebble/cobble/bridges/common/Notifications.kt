@@ -1,5 +1,7 @@
-package io.rebble.cobble.bridges
+package io.rebble.cobble.bridges.common
 
+import io.rebble.cobble.bridges.FlutterBridge
+import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.libpebblecommon.packets.blobdb.PushNotification
 import io.rebble.libpebblecommon.services.notification.NotificationService

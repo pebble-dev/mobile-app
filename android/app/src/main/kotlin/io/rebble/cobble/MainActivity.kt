@@ -17,7 +17,6 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugins.GeneratedPluginRegistrant
 import io.rebble.cobble.bridges.FlutterBridge
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.plus
@@ -120,7 +119,8 @@ class MainActivity : FlutterActivity() {
 
         // Bridges need to be created after super.onCreate() to ensure
         // flutter stuff is ready
-        flutterBridges = activityComponent.createFlutterBridges()
+        flutterBridges = activityComponent.createCommonBridges() +
+                activityComponent.createUiBridges()
 
         handleIntent(intent)
 

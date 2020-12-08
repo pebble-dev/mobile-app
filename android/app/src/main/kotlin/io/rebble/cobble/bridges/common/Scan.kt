@@ -1,7 +1,9 @@
-package io.rebble.cobble.bridges
+package io.rebble.cobble.bridges.common
 
 import io.rebble.cobble.bluetooth.scan.BleScanner
 import io.rebble.cobble.bluetooth.scan.ClassicScanner
+import io.rebble.cobble.bridges.FlutterBridge
+import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.pigeons.ListWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.pigeons.toMapExt
