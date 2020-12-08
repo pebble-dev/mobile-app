@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
+import 'package:hooks_riverpod/all.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StoredDevice {
@@ -25,7 +27,7 @@ class PairedStorage extends StateNotifier<List<StoredDevice>> {
           await _prefs.then((value) => value.getStringList("pairList"));
       List<StoredDevice> pairedList = pairedJson.map((e) {
         dynamic devRaw = jsonDecode(e);
-        return _StoredDevice(
+        return StoredDevice(
             PebbleScanDevice.stored(
                 devRaw['device']['name'],
                 devRaw['device']['address'],
@@ -43,9 +45,12 @@ class PairedStorage extends StateNotifier<List<StoredDevice>> {
     await _prefs.then((value) => value.setStringList("pairList", pairedJson));
   }
 
-  static Future<void> register(PebbleScanDevice device,
-          [bool isDefault = false]) async =>
-      _writeNew((await _readCurrent())..add(_StoredDevice(device, isDefault)));
+  Future<void> register(PebbleScanDevice newDevice,
+      [bool isDefault = false]) async {
+    //Only write device when it doesn't already exist
+    if (state.any((element) => element.device.address == newDevice.address)) {
+      return;
+    }
 
     if (!state.any((element) => element.isDefault)) {
       // Force newly registered device as default
@@ -53,14 +58,11 @@ class PairedStorage extends StateNotifier<List<StoredDevice>> {
       isDefault = true;
     }
 
-  static Future<PebbleScanDevice> get(int address) async =>
-      (await _readCurrent())
-          .firstWhere((element) => element.device.address == address)
-          .device;
+    final storedDevice = StoredDevice(newDevice, isDefault);
 
-  static Future<PebbleScanDevice> getDefault() async => (await _readCurrent())
-      .firstWhere((element) => element.isDefault, orElse: () => null)
-      ?.device;
+    state = [...state, storedDevice];
+    await _storeState();
+  }
 
   Future<void> unregister(int address) async {
     state = state.where((element) => element.device.address != address);
@@ -78,4 +80,9 @@ final pairedStorageProvider = StateNotifierProvider((ref) => PairedStorage());
 final defaultWatchProvider = Provider((ref) => ref
     .watch(pairedStorageProvider.state)
     .firstWhere((element) => element.isDefault, orElse: () => null)
+    ?.device);
+final specificWatchProvider = Provider.family((ref, address) => ref
+    .watch(pairedStorageProvider.state)
+    .firstWhere((element) => element.device.address == address,
+        orElse: () => null)
     ?.device);

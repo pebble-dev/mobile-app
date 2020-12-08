@@ -36,14 +36,18 @@ class MyWatchesTab extends HookWidget {
     final pairedStorage = useProvider(pairedStorageProvider);
     final allWatches = useProvider(pairedStorageProvider.state);
 
-    List<PebbleDevice> allWatchesList =
+    List<PebbleScanDevice> allWatchesList =
         allWatches.map((e) => e.device).toList();
     if (defaultWatch != null && connectionState.isConnected == true) {
+      //TODO: Save the data from the connected watch after first connection(i.e, not here)
+      defaultWatch.color = connectionState.currentConnectedWatch.model.index;
+      defaultWatch.version =
+          connectionState.currentConnectedWatch.runningFirmware.version;
       //Hide the default watch if we're connected to it. We don't need to see it twice!
       allWatchesList.remove(defaultWatch);
     }
 
-    List<PebbleDevice> defaultWatchList;
+    List<PebbleScanDevice> defaultWatchList;
     if (defaultWatch != null) {
       defaultWatchList = [defaultWatch];
     } else {
@@ -52,25 +56,30 @@ class MyWatchesTab extends HookWidget {
 
     String statusText;
     bool isConnected;
+    PebbleWatchModel model = PebbleWatchModel.rebble_logo;
+    String fwVersion = "unknown";
+
     if (connectionState.isConnecting == true) {
       statusText = "Connecting...";
       isConnected = false;
     } else if (connectionState.isConnected == true) {
       statusText = "Connected!";
+      model = connectionState.currentConnectedWatch.model;
+      fwVersion = connectionState.currentConnectedWatch.runningFirmware.version;
       isConnected = true;
     } else {
       statusText = "Disconnected";
       isConnected = false;
     }
 
-    Color _getBrStatusColor(PebbleDevice device) {
+    Color _getBrStatusColor(PebbleScanDevice device) {
       if (connectionState.currentWatchAddress == device.address)
         return _connectedBrColor;
       else
         return _disconnectedColor;
     }
 
-    Color _getStatusColor(PebbleDevice device) {
+    Color _getStatusColor(PebbleScanDevice device) {
       if (connectionState.currentWatchAddress == device.address)
         return _connectedColor;
       else
@@ -82,24 +91,24 @@ class MyWatchesTab extends HookWidget {
       if (inSettings) Navigator.pop(context);
     }
 
-    void _onConnectPressed(PebbleDevice device, inSettings) {
+    void _onConnectPressed(PebbleScanDevice device, inSettings) {
       NumberWrapper addressWrapper = NumberWrapper();
       addressWrapper.value = device.address;
       connectionControl.connectToWatch(addressWrapper);
       if (inSettings) Navigator.pop(context);
     }
 
-    void _onForgetPressed(PebbleDevice device) {
+    void _onForgetPressed(PebbleScanDevice device) {
       pairedStorage.unregister(device.address);
       Navigator.pop(context);
     }
 
-    void _onUpdatePressed(PebbleDevice device) {
+    void _onUpdatePressed(PebbleScanDevice device) {
       Navigator.pop(context);
       //TODO
     }
 
-    void _onSettingsPressed(PebbleDevice device, bool isConnected) {
+    void _onSettingsPressed(PebbleScanDevice device, bool isConnected) {
       showModalBottomSheet(
           context: context,
           isScrollControlled: true,
@@ -128,7 +137,7 @@ class MyWatchesTab extends HookWidget {
                         children: <Widget>[
                           Text(device.name, style: TextStyle(fontSize: 16)),
                           SizedBox(height: 4),
-                          Text(device.address.toString() + " - " + statusText,
+                          Text(device.version.toString() + " - " + statusText,
                               style: TextStyle(color: _getStatusColor(device))),
                           Wrap(
                             spacing: 4,
@@ -232,9 +241,7 @@ class MyWatchesTab extends HookWidget {
                         child: Container(
                             child: Row(children: <Widget>[
                               Container(
-                                child: Center(
-                                    child: PebbleWatchIcon(
-                                        PebbleWatchModel.values[e.color])),
+                                child: Center(child: PebbleWatchIcon(model)),
                                 width: 56,
                                 height: 56,
                                 decoration: BoxDecoration(

@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:ui';
 
+import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
@@ -11,6 +12,7 @@ import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/setup/more_setup.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../common/icons/fonts/rebble_icons.dart';
@@ -33,6 +35,8 @@ final ScanControl scanControl = ScanControl();
 
 class _PairPageState extends State<PairPage>
     implements ScanCallbacks, PairCallbacks {
+  PairedStorage pairedStorage;
+
   List<PebbleScanDevice> _pebbles = [];
   bool _scanning = false;
   bool _firstRun = false;
@@ -74,6 +78,16 @@ class _PairPageState extends State<PairPage>
     }
   }
 
+  void _isFirstRun() {
+    SharedPreferences.getInstance().then((value) {
+      if (!value.containsKey("firstRun")) {
+        _firstRun = true;
+      } else {
+        _firstRun = false;
+      }
+    });
+  }
+
   void _targetPebble(PebbleScanDevice dev) {
     NumberWrapper addressWrapper = NumberWrapper();
     addressWrapper.value = dev.address;
@@ -113,6 +127,7 @@ class _PairPageState extends State<PairPage>
     if (dev == null) {
       return;
     }
+
     setState(() {
       pairedStorage.register(dev);
 
@@ -140,54 +155,51 @@ class _PairPageState extends State<PairPage>
         child: ListView(children: <Widget>[
           Column(
               children: _pebbles
-                  .map((e) =>
-                  InkWell(
-                    child: Container(
-                        child: Row(children: <Widget>[
-                          Container(
-                            child: Center(
-                                child: PebbleWatchIcon(
-                                    PebbleWatchModel.values[e.color])),
-                            width: 56,
-                            height: 56,
-                            decoration: BoxDecoration(
-                                color: Theme
-                                    .of(context)
-                                    .dividerColor,
-                                shape: BoxShape.circle),
-                          ),
-                          SizedBox(width: 16),
-                          Column(
-                            children: <Widget>[
-                              Text(e.name, style: TextStyle(fontSize: 16)),
-                              SizedBox(height: 4),
-                              Text(e.address
-                                  .toRadixString(16)
-                                  .padLeft(6, '0')
-                                  .toUpperCase()),
-                              Wrap(
-                                spacing: 4,
-                                children: [
-                                  Offstage(
-                                      offstage: !e.runningPRF || e.firstUse,
-                                      child: Chip(
-                                        backgroundColor: Colors.deepOrange,
-                                        label: Text("Recovery"),
-                                      )),
-                                  Offstage(
-                                      offstage: !e.firstUse,
-                                      child: Chip(
-                                        backgroundColor: Color(0xffd4af37),
-                                        label: Text("New!"),
-                                      )),
-                                ],
+                  .map((e) => InkWell(
+                        child: Container(
+                            child: Row(children: <Widget>[
+                              Container(
+                                child: Center(
+                                    child: PebbleWatchIcon(
+                                        PebbleWatchModel.values[e.color])),
+                                width: 56,
+                                height: 56,
+                                decoration: BoxDecoration(
+                                    color: Theme.of(context).dividerColor,
+                                    shape: BoxShape.circle),
                               ),
-                            ],
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                          ),
+                              SizedBox(width: 16),
+                              Column(
+                                children: <Widget>[
+                                  Text(e.name, style: TextStyle(fontSize: 16)),
+                                  SizedBox(height: 4),
+                                  Text(e.address
+                                      .toRadixString(16)
+                                      .padLeft(6, '0')
+                                      .toUpperCase()),
+                                  Wrap(
+                                    spacing: 4,
+                                    children: [
+                                      Offstage(
+                                          offstage: !e.runningPRF || e.firstUse,
+                                          child: Chip(
+                                            backgroundColor: Colors.deepOrange,
+                                            label: Text("Recovery"),
+                                          )),
+                                      Offstage(
+                                          offstage: !e.firstUse,
+                                          child: Chip(
+                                            backgroundColor: Color(0xffd4af37),
+                                            label: Text("New!"),
+                                          )),
+                                    ],
+                                  ),
+                                ],
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                              ),
                               Expanded(
                                   child: Container(width: 0.0, height: 0.0)),
-                              Icon(RebbleIcons.caret_right,
+                              Icon(RebbleIconsStroke.caret_right,
                                   color:
                                       Theme.of(context).colorScheme.secondary),
                             ]),
