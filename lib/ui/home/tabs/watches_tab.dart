@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:cobble/domain/connection/connection_state_provider.dart';
-import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';

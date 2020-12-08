@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'dart:ui';
 
-import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
