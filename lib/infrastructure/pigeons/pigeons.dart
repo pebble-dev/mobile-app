@@ -96,7 +96,6 @@ class StringWrapper {
     pigeonMap['value'] = value;
     return pigeonMap;
   }
-
   // ignore: unused_element
   static StringWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final StringWrapper result = StringWrapper();
@@ -230,14 +229,12 @@ class PebbleScanDevicePigeon {
 
 class ListWrapper {
   List value;
-
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['value'] = value;
     return pigeonMap;
   }
-
   // ignore: unused_element
   static ListWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final ListWrapper result = ListWrapper();
@@ -580,6 +577,7 @@ class ConnectionControl {
       // noop
     }
   }
+
   Future<void> observeConnectionChanges() async {
     const BasicMessageChannel<dynamic> channel =
     BasicMessageChannel<dynamic>(
@@ -602,6 +600,7 @@ class ConnectionControl {
       // noop
     }
   }
+
   Future<void> cancelObservingConnectionChanges() async {
     const BasicMessageChannel<dynamic> channel =
     BasicMessageChannel<dynamic>(

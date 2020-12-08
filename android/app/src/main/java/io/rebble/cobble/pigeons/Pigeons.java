@@ -3,12 +3,11 @@
 
 package io.rebble.cobble.pigeons;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.StandardMessageCodec;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /** Generated class from Pigeon. */
 @SuppressWarnings("unused")
@@ -530,33 +529,73 @@ public class Pigeons {
             return fromMapResult;
         }
     }
+  }
 
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static class ListWrapper {
-        private ArrayList value;
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class TimelinePinPigeon {
+    private String itemId;
+    public String getItemId() { return itemId; }
+    public void setItemId(String setterArg) { this.itemId = setterArg; }
 
-        public ArrayList getValue() {
-            return value;
-        }
+    private String parentId;
+    public String getParentId() { return parentId; }
+    public void setParentId(String setterArg) { this.parentId = setterArg; }
 
-        public void setValue(ArrayList setterArg) {
-            this.value = setterArg;
-        }
+    private Long timestamp;
+    public Long getTimestamp() { return timestamp; }
+    public void setTimestamp(Long setterArg) { this.timestamp = setterArg; }
 
-        HashMap toMap() {
-            HashMap<String, Object> toMapResult = new HashMap<>();
-            toMapResult.put("value", value);
-            return toMapResult;
-        }
+    private Long type;
+    public Long getType() { return type; }
+    public void setType(Long setterArg) { this.type = setterArg; }
 
-        static ListWrapper fromMap(HashMap map) {
-            ListWrapper fromMapResult = new ListWrapper();
-            Object value = map.get("value");
-            fromMapResult.value = (ArrayList) value;
-            return fromMapResult;
-        }
+    private Long duration;
+    public Long getDuration() { return duration; }
+    public void setDuration(Long setterArg) { this.duration = setterArg; }
+
+    private Boolean isVisible;
+    public Boolean getIsVisible() { return isVisible; }
+    public void setIsVisible(Boolean setterArg) { this.isVisible = setterArg; }
+
+    private Boolean isFloating;
+    public Boolean getIsFloating() { return isFloating; }
+    public void setIsFloating(Boolean setterArg) { this.isFloating = setterArg; }
+
+    private Boolean isAllDay;
+    public Boolean getIsAllDay() { return isAllDay; }
+    public void setIsAllDay(Boolean setterArg) { this.isAllDay = setterArg; }
+
+    private Boolean persistQuickView;
+    public Boolean getPersistQuickView() { return persistQuickView; }
+    public void setPersistQuickView(Boolean setterArg) { this.persistQuickView = setterArg; }
+
+    private Long layout;
+    public Long getLayout() { return layout; }
+    public void setLayout(Long setterArg) { this.layout = setterArg; }
+
+    private String attributesJson;
+    public String getAttributesJson() { return attributesJson; }
+    public void setAttributesJson(String setterArg) { this.attributesJson = setterArg; }
+
+    private String actionsJson;
+    public String getActionsJson() { return actionsJson; }
+    public void setActionsJson(String setterArg) { this.actionsJson = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("itemId", itemId);
+      toMapResult.put("parentId", parentId);
+      toMapResult.put("timestamp", timestamp);
+      toMapResult.put("type", type);
+      toMapResult.put("duration", duration);
+      toMapResult.put("isVisible", isVisible);
+      toMapResult.put("isFloating", isFloating);
+      toMapResult.put("isAllDay", isAllDay);
+      toMapResult.put("persistQuickView", persistQuickView);
+      toMapResult.put("layout", layout);
+      toMapResult.put("attributesJson", attributesJson);
+      toMapResult.put("actionsJson", actionsJson);
+      return toMapResult;
     }
 
     /**
@@ -736,45 +775,31 @@ public class Pigeons {
                     channel.setMessageHandler(null);
                 }
             }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.TimelineControl.removePin", new StandardMessageCodec());
-                if (api != null) {
-                    channel.setMessageHandler((message, reply) -> {
-                        HashMap<String, HashMap> wrapped = new HashMap<>();
-                        try {
-                            @SuppressWarnings("ConstantConditions")
-                            StringWrapper input = StringWrapper.fromMap((HashMap) message);
-                            NumberWrapper output = api.removePin(input);
-                            wrapped.put("result", output.toMap());
-                        } catch (Exception exception) {
-                            wrapped.put("error", wrapError(exception));
-                        }
-                        reply.reply(wrapped);
-                    });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.TimelineControl.removeAllPins", new StandardMessageCodec());
-                if (api != null) {
-                    channel.setMessageHandler((message, reply) -> {
-                        HashMap<String, HashMap> wrapped = new HashMap<>();
-                        try {
-                            NumberWrapper output = api.removeAllPins();
-                            wrapped.put("result", output.toMap());
-                        } catch (Exception exception) {
-                            wrapped.put("error", wrapError(exception));
-                        }
-                        reply.reply(wrapped);
-                    });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
         }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.TimelineControl.removeAllPins", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              NumberWrapper output = api.removeAllPins();
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
     }
 
     /**
@@ -851,7 +876,34 @@ public class Pigeons {
                     channel.setMessageHandler(null);
                 }
             }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
         }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ConnectionControl.cancelObservingConnectionChanges", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              api.cancelObservingConnectionChanges();
+              wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
     }
 
     /**
