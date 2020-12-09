@@ -93,6 +93,11 @@ abstract class PairCallbacks {
   void onWatchPairComplete(NumberWrapper address);
 }
 
+@FlutterApi()
+abstract class CalendarCallbacks {
+  void doFullCalendarSync();
+}
+
 @HostApi()
 abstract class ScanControl {
   void startBleScan();

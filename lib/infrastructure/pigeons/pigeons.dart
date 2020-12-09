@@ -769,3 +769,21 @@ class DebugControl {
   }
 }
 
+abstract class CalendarCallbacks {
+  void doFullCalendarSync();
+
+  static void setup(CalendarCallbacks api) {
+    {
+      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
+          'dev.flutter.pigeon.CalendarCallbacks.doFullCalendarSync',
+          StandardMessageCodec());
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((dynamic message) async {
+          api.doFullCalendarSync();
+        });
+      }
+    }
+  }
+}

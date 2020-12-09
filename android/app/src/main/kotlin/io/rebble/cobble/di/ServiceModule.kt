@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoSet
 import io.rebble.cobble.handlers.AppMessageHandler
+import io.rebble.cobble.handlers.CalendarHandler
 import io.rebble.cobble.handlers.PebbleMessageHandler
 import io.rebble.cobble.handlers.SystemHandler
 import io.rebble.cobble.service.WatchService
@@ -30,5 +31,11 @@ abstract class ServiceModule {
     @IntoSet
     abstract fun bindSystemMessageHandlerIntoSet(
             systemMessageHandler: SystemHandler
+    ): PebbleMessageHandler
+
+    @Binds
+    @IntoSet
+    abstract fun bindCalendarHandlerIntoSet(
+            calendarHandler: CalendarHandler
     ): PebbleMessageHandler
 }
