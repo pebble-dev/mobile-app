@@ -1,6 +1,6 @@
-import 'package:device_calendar/device_calendar.dart';
 import 'package:cobble/domain/calendar/calendar_permission.dart';
 import 'package:cobble/domain/preferences.dart';
+import 'package:device_calendar/device_calendar.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,22 +9,25 @@ import 'selectable_calendar.dart';
 
 class CalendarList extends StateNotifier<List<SelectableCalendar>> {
   final DeviceCalendarPlugin _deviceCalendarPlugin;
-  final bool _hasPermission;
+  final CalendarPermission _calendarPermission;
   final Future<SharedPreferences> _preferencesFuture;
   List<String> _blacklistedCalendars = List.empty();
 
-  CalendarList(
-      this._deviceCalendarPlugin, this._hasPermission, this._preferencesFuture)
+  Future<void> loadFuture;
+
+  CalendarList(this._deviceCalendarPlugin, this._calendarPermission,
+      this._preferencesFuture)
       : super(const []) {
-    _load();
+    loadFuture = _load();
   }
 
-  List<SelectableCalendar> getAllCalendars() {
+  Future<List<SelectableCalendar>> getAllCalendars() async {
+    await loadFuture;
     return state;
   }
-  
+
   Future<void> _load() async {
-    if (!_hasPermission) {
+    if (!await _calendarPermission.hasCalendarPermission()) {
       return;
     }
 
@@ -65,10 +68,11 @@ class CalendarList extends StateNotifier<List<SelectableCalendar>> {
 
 final calendarListProvider = StateNotifierProvider<CalendarList>((ref) {
   final deviceCalendarPlugin = ref.read(deviceCalendarPluginProvider);
-  final hasPermission = ref.watch(calendarPermissionProvider.state);
+  final calendarPermissions = ref.watch(calendarPermissionProvider);
   final sharedPreferences = ref.read(sharedPreferencesProvider);
 
-  return CalendarList(deviceCalendarPlugin, hasPermission, sharedPreferences);
+  return CalendarList(
+      deviceCalendarPlugin, calendarPermissions, sharedPreferences);
 });
 
 const _PREFERENCES_KEY_BLACKLISTED_CALENDARS = "blacklisted_calendars";

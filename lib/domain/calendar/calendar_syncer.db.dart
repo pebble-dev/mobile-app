@@ -24,14 +24,9 @@ class CalendarSyncer {
 
   /// Sync all calendar changes from device calendar to DB.
   ///
-  /// This is the most expensive of all sync operations since it needs
-  /// to do a N² operation to compare every calendar event to itself.
-  /// Other operations (such as notifications of single event change)
-  /// should be preferred instead.
-  ///
   /// Returns true if there were any changes or false if here were none
   Future<bool> syncDeviceCalendarsToDb() async {
-    final allCalendars = _calendarList.getAllCalendars();
+    final allCalendars = await _calendarList.getAllCalendars();
 
     final now = _dateTimeProvider();
     final nowPlusSyncLimitDays = now.add(Duration(days: _SYNC_RANGE_DAYS + 1));
