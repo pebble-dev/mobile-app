@@ -1,10 +1,9 @@
 package io.rebble.cobble.bridges.ui
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
 import io.flutter.plugin.common.BinaryMessenger
 import io.rebble.cobble.di.PerActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.job
 import javax.inject.Inject
 
 @PerActivity
@@ -13,7 +12,7 @@ import javax.inject.Inject
  */
 class BridgeLifecycleController @Inject constructor(
         private val binaryMessenger: BinaryMessenger,
-        lifecycle: Lifecycle
+        coroutineScope: CoroutineScope
 ) {
     private val activatedSetupMethods = ArrayList<(BinaryMessenger, Any?) -> Unit>()
 
@@ -28,14 +27,10 @@ class BridgeLifecycleController @Inject constructor(
     }
 
     init {
-        lifecycle.addObserver(object : LifecycleEventObserver {
-            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-                if (event == Lifecycle.Event.ON_DESTROY) {
-                    for (setupMethod in activatedSetupMethods) {
-                        setupMethod.invoke(binaryMessenger, null)
-                    }
-                }
+        coroutineScope.coroutineContext.job.invokeOnCompletion {
+            for (setupMethod in activatedSetupMethods) {
+                setupMethod.invoke(binaryMessenger, null)
             }
-        })
+        }
     }
 }
