@@ -4,7 +4,7 @@ import io.flutter.plugin.common.BasicMessageChannel
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.StandardMessageCodec
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.job
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 fun BasicMessageChannel<Any>.setCoroutineMessageHandler(
@@ -41,7 +41,7 @@ fun BinaryMessenger.registerAsyncPigeonCallback(
         hashMapOf("result" to result)
     }
 
-    coroutineScope.coroutineContext.job.invokeOnCompletion {
+    coroutineScope.coroutineContext[Job]?.invokeOnCompletion {
         channel.setMessageHandler(null)
     }
 }

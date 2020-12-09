@@ -1,16 +1,13 @@
 package io.rebble.cobble.bridges.ui
 
 import io.flutter.plugin.common.BinaryMessenger
-import io.rebble.cobble.di.PerActivity
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.job
-import javax.inject.Inject
+import kotlinx.coroutines.Job
 
-@PerActivity
 /**
  * Helper that automatically closes down all pigeon bridges when activity is destroyed
  */
-class BridgeLifecycleController @Inject constructor(
+class BridgeLifecycleController constructor(
         private val binaryMessenger: BinaryMessenger,
         coroutineScope: CoroutineScope
 ) {
@@ -27,7 +24,7 @@ class BridgeLifecycleController @Inject constructor(
     }
 
     init {
-        coroutineScope.coroutineContext.job.invokeOnCompletion {
+        coroutineScope.coroutineContext[Job]?.invokeOnCompletion {
             for (setupMethod in activatedSetupMethods) {
                 setupMethod.invoke(binaryMessenger, null)
             }

@@ -16,9 +16,7 @@ import io.flutter.plugin.common.StandardMessageCodec;
 @SuppressWarnings("unused")
 public class Pigeons {
 
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
+    /** Generated class from Pigeon that represents data sent in messages. */
     public static class NumberWrapper {
         private Long value;
 
@@ -560,13 +558,13 @@ public class Pigeons {
                         } catch (Exception exception) {
                             wrapped.put("error", wrapError(exception));
                         }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
         }
-      }
-    }
   }
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
@@ -597,87 +595,119 @@ public class Pigeons {
     }
   }
 
-  /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
-  public interface TimelineControl {
-    NumberWrapper addPin(TimelinePinPigeon arg);
-    NumberWrapper removePin(StringWrapper arg);
-    NumberWrapper removeAllPins();
+    /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
+    public interface TimelineControl {
+        NumberWrapper addPin(TimelinePinPigeon arg);
 
-    /** Sets up an instance of `TimelineControl` to handle messages through the `binaryMessenger` */
-    static void setup(BinaryMessenger binaryMessenger, TimelineControl api) {
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.TimelineControl.addPin", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              TimelinePinPigeon input = TimelinePinPigeon.fromMap((HashMap)message);
-              NumberWrapper output = api.addPin(input);
-              wrapped.put("result", output.toMap());
+        NumberWrapper removePin(StringWrapper arg);
+
+        NumberWrapper removeAllPins();
+
+        /** Sets up an instance of `TimelineControl` to handle messages through the `binaryMessenger` */
+        static void setup(BinaryMessenger binaryMessenger, TimelineControl api) {
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.TimelineControl.addPin", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            TimelinePinPigeon input = TimelinePinPigeon.fromMap((HashMap)message);
+                            NumberWrapper output = api.addPin(input);
+                            wrapped.put("result", output.toMap());
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
             }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.TimelineControl.removePin", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            StringWrapper input = StringWrapper.fromMap((HashMap)message);
+                            NumberWrapper output = api.removePin(input);
+                            wrapped.put("result", output.toMap());
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
             }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.TimelineControl.removeAllPins", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            NumberWrapper output = api.removeAllPins();
+                            wrapped.put("result", output.toMap());
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
         }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.TimelineControl.removePin", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              StringWrapper input = StringWrapper.fromMap((HashMap)message);
-              NumberWrapper output = api.removePin(input);
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.TimelineControl.removeAllPins", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              NumberWrapper output = api.removeAllPins();
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
     }
-  }
 
-  /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
-  public interface KeepUnusedHack {
-    void keepPebbleScanDevicePigeon(PebbleScanDevicePigeon arg);
+    /**
+     * Generated interface from Pigeon that represents a handler of messages from Flutter.
+     */
+    public interface BackgroundControl {
+        void notifyFlutterBackgroundStarted();
 
-    /** Sets up an instance of `KeepUnusedHack` to handle messages through the `binaryMessenger` */
-    static void setup(BinaryMessenger binaryMessenger, KeepUnusedHack api) {
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.KeepUnusedHack.keepPebbleScanDevicePigeon", new StandardMessageCodec());
+        /**
+         * Sets up an instance of `BackgroundControl` to handle messages through the `binaryMessenger`
+         */
+        static void setup(BinaryMessenger binaryMessenger, BackgroundControl api) {
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.BackgroundControl.notifyFlutterBackgroundStarted", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            api.notifyFlutterBackgroundStarted();
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+        }
+    }
+
+    /**
+     * Generated interface from Pigeon that represents a handler of messages from Flutter.
+     */
+    public interface KeepUnusedHack {
+        void keepPebbleScanDevicePigeon(PebbleScanDevicePigeon arg);
+
+        /** Sets up an instance of `KeepUnusedHack` to handle messages through the `binaryMessenger` */
+        static void setup(BinaryMessenger binaryMessenger, KeepUnusedHack api) {
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.KeepUnusedHack.keepPebbleScanDevicePigeon", new StandardMessageCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             HashMap<String, HashMap> wrapped = new HashMap<>();
@@ -796,9 +826,8 @@ public class Pigeons {
             try {
               api.cancelObservingConnectionChanges();
               wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
+            } catch (Exception exception) {
+                wrapped.put("error", wrapError(exception));
             }
               reply.reply(wrapped);
           });
@@ -885,11 +914,12 @@ public class Pigeons {
 
         public interface Reply<T> {
             void reply(T reply);
-    }
-    public void onWatchPairComplete(NumberWrapper argInput, Reply<Void> callback) {
-      BasicMessageChannel<Object> channel =
-          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PairCallbacks.onWatchPairComplete", new StandardMessageCodec());
-      HashMap inputMap = argInput.toMap();
+        }
+
+        public void onWatchPairComplete(NumberWrapper argInput, Reply<Void> callback) {
+            BasicMessageChannel<Object> channel =
+                    new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PairCallbacks.onWatchPairComplete", new StandardMessageCodec());
+            HashMap inputMap = argInput.toMap();
       channel.send(inputMap, channelReply -> {
         callback.reply(null);
       });
