@@ -133,8 +133,8 @@ class ConnectionUiFlutterBridge @Inject constructor(
     }
 
     @TargetApi(Build.VERSION_CODES.O)
-    private fun processCompanionDeviceResult(resultCode: Int, data: Intent) {
-        if (resultCode != Activity.RESULT_OK) {
+    private fun processCompanionDeviceResult(resultCode: Int, data: Intent?) {
+        if (resultCode != Activity.RESULT_OK || data == null) {
             return
         }
 

@@ -31,7 +31,7 @@ class MainActivity : FlutterActivity() {
     var isBound = false
     var bootIntentCallback: ((Boolean) -> Unit)? = null
 
-    val activityResultCallbacks = ArrayMap<Int, (resultCode: Int, data: Intent) -> Unit>()
+    val activityResultCallbacks = ArrayMap<Int, (resultCode: Int, data: Intent?) -> Unit>()
 
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
@@ -157,7 +157,7 @@ class MainActivity : FlutterActivity() {
         handleIntent(intent)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         activityResultCallbacks[requestCode]?.invoke(resultCode, data)
