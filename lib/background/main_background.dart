@@ -27,7 +27,15 @@ class BackgroundReceiver implements CalendarCallbacks {
 
     calendarSyncer = container.listen(calendarSyncerProvider).read();
     watchTimelineSyncer = container.listen(watchTimelineSyncerProvider).read();
-    connectionSubscription = container.listen(connectionStateProvider.state);
+
+    connectionSubscription = container.listen(
+      connectionStateProvider.state,
+      mayHaveChanged: (sub) {
+        if (isConnectedToWatch()) {
+          onWatchConnected();
+        }
+      },
+    );
 
     CalendarCallbacks.setup(this);
   }
@@ -35,6 +43,14 @@ class BackgroundReceiver implements CalendarCallbacks {
   @override
   void doFullCalendarSync() async {
     await calendarSyncer.syncDeviceCalendarsToDb();
+    await syncTimelineToWatch();
+  }
+
+  void onWatchConnected() async {
+    await syncTimelineToWatch();
+  }
+
+  Future syncTimelineToWatch() async {
     if (isConnectedToWatch()) {
       final status = await watchTimelineSyncer.syncPinDatabaseWithWatch();
       // TODO properly handle errors
