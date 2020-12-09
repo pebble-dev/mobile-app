@@ -41,7 +41,7 @@ class BackgroundReceiver implements CalendarCallbacks {
   }
 
   @override
-  void doFullCalendarSync() async {
+  Future<void> doFullCalendarSync() async {
     await calendarSyncer.syncDeviceCalendarsToDb();
     await syncTimelineToWatch();
   }

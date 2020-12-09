@@ -460,10 +460,12 @@ packages:
   pigeon:
     dependency: "direct dev"
     description:
-      name: pigeon
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.12"
+      path: "packages/pigeon"
+      ref: "5d51f8add9f2162487465c99a64e5cd6d4b563f6"
+      resolved-ref: "5d51f8add9f2162487465c99a64e5cd6d4b563f6"
+      url: "https://github.com/matejdro/flutter-packages.git"
+    source: git
+    version: "0.1.16"
   platform:
     dependency: transitive
     description:

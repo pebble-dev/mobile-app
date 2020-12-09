@@ -4,6 +4,8 @@ import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.pigeons.Pigeons
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 @Singleton
 class CalendarFlutterBridge @Inject constructor(
@@ -11,9 +13,13 @@ class CalendarFlutterBridge @Inject constructor(
 ) : FlutterBridge {
     private var cachedCalendarCallbacks: Pigeons.CalendarCallbacks? = null
 
-    suspend fun triggerCalendarSync(): Boolean {
+    suspend fun syncCalendar(): Boolean {
         val calendarCallbacks = getCalendarCallbacks() ?: return false
-        calendarCallbacks.doFullCalendarSync {}
+        suspendCoroutine<Unit> { continuation ->
+            calendarCallbacks.doFullCalendarSync {
+                continuation.resume(Unit)
+            }
+        }
 
         return true
     }

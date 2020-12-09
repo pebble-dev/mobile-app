@@ -95,7 +95,8 @@ abstract class PairCallbacks {
 
 @FlutterApi()
 abstract class CalendarCallbacks {
-  void doFullCalendarSync();
+  @async
+  void doFullCalendarSync() async {}
 }
 
 @HostApi()
