@@ -8,6 +8,7 @@ import io.flutter.embedding.engine.plugins.util.GeneratedPluginRegister
 import io.flutter.view.FlutterCallbackInformation
 import io.rebble.cobble.datasources.AndroidPreferences
 import io.rebble.cobble.di.BackgroundFlutterSubcomponent
+import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.registerAsyncPigeonCallback
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
@@ -75,6 +76,11 @@ class FlutterBackgroundController @Inject constructor(
                         // Do not return from notifyFlutterBackgroundStarted() method until
                         // initEngine() has completed
                         androidSideReadyCompletable.join()
+
+                        // Kill this callback to prevent re-call when flutter hot restarts
+                        Pigeons.BackgroundControl.setup(binaryMessenger, null)
+
+                        // Return blank result
                         mapOf("result" to null)
                     }
                 }
