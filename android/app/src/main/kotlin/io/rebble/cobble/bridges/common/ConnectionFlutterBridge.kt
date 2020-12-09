@@ -76,5 +76,3 @@ class ConnectionFlutterBridge @Inject constructor(
         statusObservingJob?.cancel()
     }
 }
-
-private const val REQUEST_CODE_COMPANION_DEVICE_MANAGER = 1557
