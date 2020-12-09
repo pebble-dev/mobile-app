@@ -62,7 +62,7 @@ class ConnectionFlutterBridge @Inject constructor(
                     isConnecting = connectionState is ConnectionState.Connecting
                     val bluetoothDevice = connectionState.watchOrNull
                     currentWatchAddress = bluetoothDevice?.address?.macAddressToLong()
-                    currentConnectedWatch = watchMetadata?.toPigeon(bluetoothDevice, model)
+                    currentConnectedWatch = watchMetadata.toPigeon(bluetoothDevice, model)
                 }
             }.collect {
                 connectionCallbacks.onWatchConnectionStateChanged(
