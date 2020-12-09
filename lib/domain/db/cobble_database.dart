@@ -32,9 +32,8 @@ final databaseProvider = FutureProvider.autoDispose<Database>((key) async {
   final db = await openDatabase(dbPath,
       version: 1, onCreate: (db, name) => createAllCobbleTables(db));
 
-  key.onDispose(() {
-    db.close();
-  });
+  // Note: DB is never closed because closing will cause errors in background
+  // code. See https://github.com/tekartik/sqflite/issues/558.
 
   return db;
 });
