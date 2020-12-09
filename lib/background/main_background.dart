@@ -6,11 +6,8 @@ import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/all.dart';
 
 void main_background() {
-  print('Background hello!');
-
   WidgetsFlutterBinding.ensureInitialized();
 
-  BackgroundControl().notifyFlutterBackgroundStarted();
   BackgroundReceiver();
 }
 
@@ -22,6 +19,12 @@ class BackgroundReceiver implements CalendarCallbacks {
   ProviderSubscription<WatchConnectionState> connectionSubscription;
 
   BackgroundReceiver() {
+    init();
+  }
+
+  void init() async {
+    await BackgroundControl().notifyFlutterBackgroundStarted();
+
     calendarSyncer = container.listen(calendarSyncerProvider).read();
     watchTimelineSyncer = container.listen(watchTimelineSyncerProvider).read();
     connectionSubscription = container.listen(connectionStateProvider.state);

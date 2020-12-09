@@ -4,6 +4,7 @@ import io.flutter.plugin.common.BasicMessageChannel
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.StandardMessageCodec
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -12,7 +13,8 @@ fun BasicMessageChannel<Any>.setCoroutineMessageHandler(
         block: suspend (Any?) -> Any?
 ) {
     setMessageHandler { message, reply ->
-        coroutineScope.launch {
+        // Replies must be sent through UI thread
+        coroutineScope.launch(Dispatchers.Main) {
             reply.reply(block(message))
         }
     }

@@ -8,13 +8,10 @@ import io.flutter.embedding.engine.plugins.util.GeneratedPluginRegister
 import io.flutter.view.FlutterCallbackInformation
 import io.rebble.cobble.datasources.AndroidPreferences
 import io.rebble.cobble.di.BackgroundFlutterSubcomponent
-import io.rebble.cobble.pigeons.Pigeons
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
+import io.rebble.cobble.util.registerAsyncPigeonCallback
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.resume
@@ -65,15 +62,21 @@ class FlutterBackgroundController @Inject constructor(
 
             val dartExecutor = flutterEngine.dartExecutor
             val binaryMessenger = dartExecutor.binaryMessenger
+            val androidSideReadyCompletable = CompletableDeferred<Unit>()
 
             val dartInitWait = launch {
                 suspendCoroutine { continuation ->
-                    val backgroundControlCallback = Pigeons.BackgroundControl {
-                        Pigeons.BackgroundControl.setup(binaryMessenger, null)
+                    binaryMessenger.registerAsyncPigeonCallback(
+                            GlobalScope + Dispatchers.Main,
+                            "dev.flutter.pigeon.BackgroundControl.notifyFlutterBackgroundStarted"
+                    ) {
                         continuation.resume(Unit)
-                    }
 
-                    Pigeons.BackgroundControl.setup(binaryMessenger, backgroundControlCallback)
+                        // Do not return from notifyFlutterBackgroundStarted() method until
+                        // initEngine() has completed
+                        androidSideReadyCompletable.join()
+                        mapOf("result" to null)
+                    }
                 }
             }
 
@@ -84,6 +87,7 @@ class FlutterBackgroundController @Inject constructor(
 
             dartInitWait.join()
             backgroundFlutterSubcomponentFactory.create(flutterEngine).createCommonBridges()
+            androidSideReadyCompletable.complete(Unit)
 
             return@coroutineScope flutterEngine
         }
