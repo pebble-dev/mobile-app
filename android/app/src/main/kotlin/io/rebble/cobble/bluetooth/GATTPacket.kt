@@ -24,24 +24,24 @@ class GATTPacket {
 
     val data: ByteArray
     val type: PacketType
-    val sequence: UShort
+    val sequence: Int
 
     companion object {
-        private val typeMask: Byte = 0b111
-        private val sequenceMask: Byte = 0b11111000.toByte()
+        private const val typeMask: Byte = 0b111
+        private const val sequenceMask: Byte = 0b11111000.toByte()
     }
 
     constructor(data: ByteArray) {
         //Timber.d("${data.toHexString()} -> ${ubyteArrayOf((data[0] and sequenceMask).toUByte()).toHexString()} -> ${ubyteArrayOf((data[0] and sequenceMask).toUByte() shr 3).toHexString()}")
         this.data = data
-        sequence = ((data[0] and sequenceMask).toUByte() shr 3).toUShort()
-        if (sequence < 0U || sequence > 31U) throw IllegalArgumentException("Sequence must be between 0 and 31 inclusive")
+        sequence = ((data[0] and sequenceMask).toUByte() shr 3).toInt()
+        if (sequence < 0 || sequence > 31) throw IllegalArgumentException("Sequence must be between 0 and 31 inclusive")
         type = PacketType.fromHeader(data[0])
     }
 
-    constructor(type: PacketType, sequence: UShort, data: ByteArray? = null) {
+    constructor(type: PacketType, sequence: Int, data: ByteArray? = null) {
         this.sequence = sequence
-        if (sequence < 0U || sequence > 31U) throw IllegalArgumentException("Sequence must be between 0 and 31 inclusive")
+        if (sequence < 0 || sequence > 31) throw IllegalArgumentException("Sequence must be between 0 and 31 inclusive")
         this.type = type
 
         if (data != null) {
@@ -52,7 +52,7 @@ class GATTPacket {
 
         val dataBuf = ByteBuffer.wrap(this.data)
 
-        dataBuf.put((type.value or (((sequence shl 3) and sequenceMask.toUShort()).toByte())))
+        dataBuf.put((type.value or (((sequence shl 3) and sequenceMask.toInt()).toByte())))
         if (data != null) {
             dataBuf.put(data)
         }

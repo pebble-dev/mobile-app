@@ -14,7 +14,7 @@ internal class BlueGATTTest {
         val splitPayload = BlueLEDriver.splitBytesByMTU(payload, mtu)
         val packets = mutableListOf<GATTPacket>()
         splitPayload.forEach {
-            packets.add(GATTPacket(GATTPacket.PacketType.DATA, 10U, it))
+            packets.add(GATTPacket(GATTPacket.PacketType.DATA, 10, it))
         }
 
         var buf = byteArrayOf()

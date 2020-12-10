@@ -2,12 +2,6 @@ package io.rebble.cobble.bluetooth
 
 import android.bluetooth.*
 import android.content.Context
-import com.juul.able.android.connectGatt
-import com.juul.able.device.ConnectGattResult
-import com.juul.able.gatt.Gatt
-import com.juul.able.gatt.GattStatus
-import com.juul.able.gatt.OutOfOrderGattCallbackException
-import com.juul.able.gatt.isSuccess
 import io.rebble.cobble.util.toBytes
 import io.rebble.cobble.util.toHexString
 import io.rebble.libpebblecommon.ProtocolHandler
@@ -53,7 +47,7 @@ class BlueLEDriver(
     }
 
     var connectionState = LEConnectionState.IDLE
-    private var gatt: Gatt? = null
+    private var gatt: BlueGATTConnection? = null
 
     private suspend fun sendPacket(bytes: UByteArray): Boolean {
         val protocolIO = protocolIO ?: return false
@@ -82,11 +76,6 @@ class BlueLEDriver(
     }
 
     suspend fun deviceConnectivity() {
-        val mtu = gatt?.requestMtu(339)
-        if (mtu?.isSuccess == true) {
-            Timber.d("MTU Changed, new mtu $mtu")
-            gattDriver!!.setMTU(mtu.mtu)
-        }
         if (connectivityWatcher!!.subscribe()) {
             var status = connectivityWatcher!!.getStatus()
             if (status.connected) {
@@ -104,7 +93,7 @@ class BlueLEDriver(
                         val pairTrigger = pairService.getCharacteristic(BlueGATTConstants.UUIDs.PAIRING_TRIGGER_CHARACTERISTIC)
                         if (pairTrigger != null) {
                             if (pairTrigger.properties and BluetoothGattCharacteristic.PROPERTY_WRITE > 0) {
-                                GlobalScope.launch(Dispatchers.IO) { gatt!!.writeCharacteristic(pairTrigger, pairTriggerFlagsToBytes(status.supportsPinningWithoutSlaveSecurity, belowLollipop = false, false), BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT) }
+                                GlobalScope.launch(Dispatchers.IO) { gatt!!.writeCharacteristic(pairTrigger, pairTriggerFlagsToBytes(status.supportsPinningWithoutSlaveSecurity, belowLollipop = false, false)) }
                                 if (status.supportsPinningWithoutSlaveSecurity) {
                                     /*if (!targetPebble?.createBond()!!) {
                                         Timber.e("Failed to create bond")
@@ -163,63 +152,44 @@ class BlueLEDriver(
                     Timber.e("initServer failed")
                     return@launch
                 }
-                var result: ConnectGattResult?
-                try {
-                    withTimeout(8000) {
-                        result = targetPebble!!.connectGatt(context)
-                    }
-                } catch (e: CancellationException) {
-                    Timber.w("connectGatt timed out")
-                    delay(1000)
-                    result = targetPebble!!.connectGatt(context)
-                }
-                if (result == null) {
+                gatt = targetPebble!!.connectGatt(context)
+                if (gatt == null) {
                     Timber.e("connectGatt null")
                 }
-                when (result) {
-                    is ConnectGattResult.Success -> {
-                        gatt = (result as ConnectGattResult.Success).gatt
 
-                        Timber.i("Pebble connected (initial)")
+                val mtu = gatt?.requestMtu(339)
+                if (mtu?.isSuccess() == true) {
+                    Timber.d("MTU Changed, new mtu $mtu")
+                    gattDriver!!.setMTU(mtu.mtu)
+                }
 
-                        launch {
-                            while (true) {
-                                gatt!!.onCharacteristicChanged.collect {
-                                    Timber.d("onCharacteristicChanged ${it.characteristic.uuid}")
-                                    connectivityWatcher?.onCharacteristicChanged(it.value, it.characteristic)
-                                }
-                            }
+                Timber.i("Pebble connected (initial)")
+
+                launch {
+                    while (true) {
+                        gatt!!.characteristicChanged.collect {
+                            Timber.d("onCharacteristicChanged ${it.characteristic?.uuid}")
+                            connectivityWatcher?.onCharacteristicChanged(it.characteristic)
                         }
-
-                        connectionParamManager = ConnectionParamManager(gatt!!)
-                        connectivityWatcher = ConnectivityWatcher(gatt!!)
-                        val servicesRes: GattStatus = try {
-                            gatt!!.discoverServices()
-                        } catch (e: OutOfOrderGattCallbackException) {
-                            Timber.e(e)
-                            closePebble()
-                            return@launch
-                        }
-                        if (servicesRes == BluetoothGatt.GATT_SUCCESS) {
-                            if (gatt?.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)?.getCharacteristic(BlueGATTConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC) != null) {
-                                if (connectionParamManager!!.subscribe()) {
-                                    Timber.d("Starting connectivity after connparams")
-                                    deviceConnectivity()
-                                }
-                            } else {
-                                Timber.d("Starting connectivity without connparams")
-                                deviceConnectivity()
-                            }
-                        } else {
-                            Timber.e("Failed to discover services")
-                            closePebble()
-                        }
-
                     }
-                    is ConnectGattResult.Failure -> {
-                        Timber.e("connectGatt failed")
-                        Timber.e((result as ConnectGattResult.Failure).cause)
+                }
+
+                connectionParamManager = ConnectionParamManager(gatt!!)
+                connectivityWatcher = ConnectivityWatcher(gatt!!)
+                val servicesRes = gatt!!.discoverServices()
+                if (servicesRes != null && servicesRes.isSuccess()) {
+                    if (gatt?.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)?.getCharacteristic(BlueGATTConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC) != null) {
+                        if (connectionParamManager!!.subscribe()) {
+                            Timber.d("Starting connectivity after connparams")
+                            deviceConnectivity()
+                        }
+                    } else {
+                        Timber.d("Starting connectivity without connparams")
+                        deviceConnectivity()
                     }
+                } else {
+                    Timber.e("Failed to discover services")
+                    closePebble()
                 }
             }
             if (connectionStatusChannel.receive()) {

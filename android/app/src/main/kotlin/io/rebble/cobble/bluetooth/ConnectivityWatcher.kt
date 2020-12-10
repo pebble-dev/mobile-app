@@ -1,14 +1,12 @@
 package io.rebble.cobble.bluetooth
 
 import android.bluetooth.BluetoothGattCharacteristic
-import com.juul.able.gatt.Gatt
-import com.juul.able.gatt.isSuccess
 import kotlinx.coroutines.CompletableDeferred
 import timber.log.Timber
 import kotlin.experimental.and
 import kotlin.properties.Delegates
 
-class ConnectivityWatcher(val gatt: Gatt) {
+class ConnectivityWatcher(val gatt: BlueGATTConnection) {
     private var isSubscribed = false
 
     @ExperimentalUnsignedTypes
@@ -82,7 +80,7 @@ class ConnectivityWatcher(val gatt: Gatt) {
                     if (!gatt.setCharacteristicNotification(connectivityCharacteristic, true)) {
                         Timber.e("BluetoothGatt refused to subscribe to connectivity characteristic")
                     } else {
-                        if (!gatt.writeDescriptor(configDescriptor, BlueGATTConstants.CHARACTERISTIC_SUBSCRIBE_VALUE).isSuccess) {
+                        if (gatt.writeDescriptor(configDescriptor, BlueGATTConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)?.isSuccess() != true) {
                             Timber.e("Failed to write subscribe value to connectivityCharacteristic's configDescriptor")
                         } else {
                             isSubscribed = true
@@ -96,10 +94,10 @@ class ConnectivityWatcher(val gatt: Gatt) {
         return false
     }
 
-    fun onCharacteristicChanged(value: ByteArray, characteristic: BluetoothGattCharacteristic?) {
+    fun onCharacteristicChanged(characteristic: BluetoothGattCharacteristic?) {
         if (characteristic?.uuid == BlueGATTConstants.UUIDs.CONNECTIVITY_CHARACTERISTIC) {
             if (characteristic != null) {
-                val status = ConnectivityStatus(value)
+                val status = ConnectivityStatus(characteristic.value)
                 //GlobalScope.launch(Dispatchers.IO) { onConnectivityChanged(lastStatus!!) }
                 Timber.d(status.toString())
                 connectivityStatus.complete(status)
