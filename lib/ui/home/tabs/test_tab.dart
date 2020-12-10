@@ -124,19 +124,20 @@ class TestTab extends HookWidget {
                 ),
               ),
               Text("Calendars: "),
-              ...calendars.map((e) {
-                return Row(
-                  children: [
-                    Checkbox(
-                      value: e.enabled,
-                      onChanged: (enabled) {
-                        calendarSelector.setCalendarEnabled(e.id, enabled);
-                      },
-                    ),
-                    Text(e.name),
-                  ],
-                );
-              }).toList(),
+              ...calendars.data?.value?.map((e) {
+                    return Row(
+                      children: [
+                        Checkbox(
+                          value: e.enabled,
+                          onChanged: (enabled) {
+                            calendarSelector.setCalendarEnabled(e.id, enabled);
+                          },
+                        ),
+                        Text(e.name),
+                      ],
+                    );
+                  })?.toList() ??
+                  [],
               if (currentlySyncing.value)
                 CircularProgressIndicator()
               else
