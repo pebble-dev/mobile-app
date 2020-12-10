@@ -37,16 +37,13 @@ class CalendarSyncer {
     final allCalendars = allCalendarsResult.data.value;
 
     final now = _dateTimeProvider();
-    final nowPlusSyncLimitDays = now.add(Duration(days: _SYNC_RANGE_DAYS + 1));
-    final endOfLastDay = nowPlusSyncLimitDays.subtract(Duration(
-        hours: nowPlusSyncLimitDays.hour,
-        minutes: nowPlusSyncLimitDays.minute,
-        seconds: nowPlusSyncLimitDays.second,
-        milliseconds: nowPlusSyncLimitDays.millisecond,
-        microseconds: nowPlusSyncLimitDays.microsecond));
+    // 1 day is added since we need to get the start of the next day
+    // 1 day is added for the 1-day sync buffer
+    final syncEndDate =
+        _getStartOfDay(now.add(Duration(days: _SYNC_RANGE_DAYS + 2)));
 
     final retrieveEventParams =
-        RetrieveEventsParams(startDate: now, endDate: endOfLastDay);
+        RetrieveEventsParams(startDate: now, endDate: syncEndDate);
 
     final List<_EventInCalendar> allCalendarEvents = [];
     for (final calendar in allCalendars) {
@@ -102,7 +99,11 @@ class CalendarSyncer {
     }
 
     for (final pin in existingPins) {
-      if (!newPins.any((newPin) => newPin.backingId == pin.backingId)) {
+      if (pin.timestamp.add(Duration(seconds: pin.duration)).isBefore(now)) {
+        await _timelinePinDao.delete(pin.itemId);
+        anyChanges = true;
+      }
+      else if (!newPins.any((newPin) => newPin.backingId == pin.backingId)) {
         await _timelinePinDao.setSyncAction(pin.itemId, NextSyncAction.Delete);
         anyChanges = true;
       }
@@ -111,12 +112,20 @@ class CalendarSyncer {
     return anyChanges;
   }
 
-  CalendarSyncer(
-    this._calendarList,
-    this._deviceCalendarPlugin,
-    this._dateTimeProvider,
-    this._timelinePinDao,
-  );
+  DateTime _getStartOfDay(DateTime date) {
+    return date.subtract(Duration(
+      hours: date.hour,
+      minutes: date.minute,
+      seconds: date.second,
+      milliseconds: date.millisecond,
+      microseconds: date.microsecond,
+    ));
+  }
+
+  CalendarSyncer(this._calendarList,
+      this._deviceCalendarPlugin,
+      this._dateTimeProvider,
+      this._timelinePinDao,);
 }
 
 class _EventInCalendar {

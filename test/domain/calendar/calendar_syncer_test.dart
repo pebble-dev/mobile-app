@@ -608,18 +608,100 @@ void main() async {
     expect(anyChanges, true);
   });
 
-  test('Full sync: Only add events between now and 3 days in the future',
+  test('Full sync: Delete past events from db without any watch sync',
       () async {
-        final db = await createTestCobbleDatabase();
-        final calendarPlugin = FakeDeviceCalendarPlugin();
+    // Watch seems to delete the events on their own when they go out of the
+    // past timeline. Just delete them from the db and pretend they don't
+    // exist anymore
 
-        final container = ProviderContainer(overrides: [
-          deviceCalendarPluginProvider.overrideWithValue(calendarPlugin),
-          sharedPreferencesProvider
-              .overrideWithValue(Future.value(MemorySharedPreferences())),
-          currentDateTimeProvider.overrideWithValue(nowProvider),
-          databaseProvider.overrideWithValue(AsyncValue.data(db)),
-          currentDateTimeProvider.overrideWithValue(() => now)
+    final db = await createTestCobbleDatabase();
+    final calendarPlugin = FakeDeviceCalendarPlugin();
+
+    final container = ProviderContainer(overrides: [
+      deviceCalendarPluginProvider.overrideWithValue(calendarPlugin),
+      sharedPreferencesProvider
+          .overrideWithValue(Future.value(MemorySharedPreferences())),
+      currentDateTimeProvider.overrideWithValue(nowProvider),
+      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      currentDateTimeProvider.overrideWithValue(() => now)
+    ]);
+
+    final pinDao = container.read(timelinePinDaoProvider);
+
+    calendarPlugin.reportedCalendars = [Calendar(id: "22", name: "Calendar A")];
+
+    calendarPlugin.reportedEvents = [
+      Event(
+        "22",
+        eventId: "1337",
+        start: DateTime.utc(
+          2020, //year
+          11, //month
+          7, //day
+          10, //hour
+          30, //minute
+        ),
+        end: DateTime.utc(
+          2020, //year
+          11, //month
+          7, //day
+          11, //hour
+          30, //minute
+        ),
+      )
+    ];
+
+    await pinDao.insertOrUpdateTimelinePin(
+      TimelinePin(
+        itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
+        parentId: CALENDAR_WATCHAPP_ID,
+        backingId: "1337T1604745000000",
+        timestamp: DateTime.utc(
+          2020, //year
+          11, //month
+          7, //day
+          10, //hour
+          30, //minute
+        ),
+        duration: 60,
+        type: TimelinePinType.PIN,
+        isVisible: true,
+        isFloating: false,
+        isAllDay: false,
+        persistQuickView: false,
+        layout: TimelinePinLayout.CALENDAR_PIN,
+        nextSyncAction: NextSyncAction.Nothing,
+        attributesJson: "",
+      ),
+    );
+
+    final calendarSyncer = container.read(calendarSyncerProvider);
+    final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
+
+    final eventsInDao = await pinDao.getAllPins();
+
+    final List<TimelinePin> expectedEvents = [];
+
+    expectEventsWithoutItemIdAndJsonsIgnoringOrder(eventsInDao, expectedEvents);
+
+    expect(anyChanges, true);
+  });
+
+  test('Full sync: Only add events between now and 4 days in the future',
+      // Pebble only displays 3 days, but we sync 4 days to provide us with
+      // 1 day buffer so we don't need to have exact sync time every day which
+      // saves little bit of phone's battery.
+      () async {
+    final db = await createTestCobbleDatabase();
+    final calendarPlugin = FakeDeviceCalendarPlugin();
+
+    final container = ProviderContainer(overrides: [
+      deviceCalendarPluginProvider.overrideWithValue(calendarPlugin),
+      sharedPreferencesProvider
+          .overrideWithValue(Future.value(MemorySharedPreferences())),
+      currentDateTimeProvider.overrideWithValue(nowProvider),
+      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      currentDateTimeProvider.overrideWithValue(() => now)
         ]);
 
         final pinDao = container.read(timelinePinDaoProvider);
@@ -712,7 +794,7 @@ void main() async {
             ),
           ),
 
-          // Event that starts on day 3 but ends on day 4
+          // Event that starts on day 4 but ends on day 5
           // Should be added
           Event(
             "22",
@@ -720,20 +802,20 @@ void main() async {
             start: DateTime.utc(
               2020, //year
               11, //month
-              13, //day
+              14, //day
               23, //hour
               30, //minute
             ),
             end: DateTime.utc(
               2020, //year
               11, //month
-              14, //day
+              15, //day
               00, //hour
               30, //minute
             ),
           ),
 
-          // Event that starts on day 4
+          // Event that starts on day 5
           // Should not be added
           Event(
             "22",
@@ -741,14 +823,14 @@ void main() async {
             start: DateTime.utc(
               2020, //year
               11, //month
-              14, //day
+              15, //day
               10, //hour
               00, //minute
             ),
             end: DateTime.utc(
               2020, //year
               11, //month
-              14, //day
+              151604705400000, //day
               12, //hour
               00, //minute
             ),
@@ -824,11 +906,11 @@ void main() async {
           TimelinePin(
             itemId: null,
             parentId: CALENDAR_WATCHAPP_ID,
-            backingId: "1341T1605310200000",
+            backingId: "1341T1605396600000",
             timestamp: DateTime.utc(
               2020, //year
               11, //month
-              13, //day
+              14, //day
               23, //hour
               30, //minute
             ),
