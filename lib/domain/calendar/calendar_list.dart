@@ -18,38 +18,43 @@ class CalendarList extends StateNotifier<AsyncValue<List<SelectableCalendar>>> {
   CalendarList(this._deviceCalendarPlugin, this._calendarPermission,
       this._preferencesFuture)
       : super(AsyncValue.loading()) {
-    _load();
+    _refresh();
   }
 
-  Future<void> _load() async {
+  Future<void> _refresh() async {
+    state = await load();
+  }
+
+  /// In-memory state is not transferred between isolates
+  /// To be able to load calendar events in another isolate with
+  /// proper selected calendar, we expose this load method.
+  Future<AsyncValue<List<SelectableCalendar>>> load() async {
     final permissionValue =
         await _calendarPermission.streamWithExistingValue.firstSuccessOrError();
 
     if (permissionValue is AsyncError) {
-      state = AsyncValue.error((permissionValue as AsyncError).error);
-      return;
+      return AsyncValue.error((permissionValue as AsyncError).error);
     }
 
     if (permissionValue.data.value == false) {
-      state = AsyncValue.error([ResultError(0, "No permission")]);
-      return;
+      return AsyncValue.error([ResultError(0, "No permission")]);
     }
 
     final preferences = await _preferencesFuture;
+    await preferences.reload();
     _blacklistedCalendars =
         preferences.getStringList(_PREFERENCES_KEY_BLACKLISTED_CALENDARS) ??
             List.empty();
 
     final calendars = await _deviceCalendarPlugin.retrieveCalendars();
     if (!calendars.isSuccess) {
-      state = AsyncValue.error(calendars.errors);
+      return AsyncValue.error(calendars.errors);
     } else {
-      state = AsyncValue.data(calendars.data
+      return AsyncValue.data(calendars.data
           .map((c) => SelectableCalendar(
               c.name, c.id, !_blacklistedCalendars.contains(c.id)))
           .toList());
     }
-    return;
   }
 
   Future<void> setCalendarEnabled(String id, bool enabled) async {
@@ -66,7 +71,7 @@ class CalendarList extends StateNotifier<AsyncValue<List<SelectableCalendar>>> {
     _blacklistedCalendars = newBlacklist;
     await preferences.setStringList(
         _PREFERENCES_KEY_BLACKLISTED_CALENDARS, newBlacklist);
-    await _load();
+    await _refresh();
   }
 }
 

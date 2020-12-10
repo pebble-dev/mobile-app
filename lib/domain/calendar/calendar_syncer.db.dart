@@ -5,8 +5,6 @@ import 'package:cobble/domain/db/dao/timeline_pin_dao.dart';
 import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/db/models/timeline_pin.dart';
 import 'package:cobble/domain/timeline/attribute_serializer.dart';
-import 'package:cobble/util/state_provider_extension.dart';
-import 'package:cobble/util/stream_extensions.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:uuid_type/uuid_type.dart';
@@ -28,8 +26,7 @@ class CalendarSyncer {
   ///
   /// Returns true if there were any changes or false if here were none
   Future<bool> syncDeviceCalendarsToDb() async {
-    final allCalendarsResult =
-        await _calendarList.streamWithExistingValue.firstSuccessOrError();
+    final allCalendarsResult = await _calendarList.load();
     if (!(allCalendarsResult is AsyncData)) {
       return false;
     }
