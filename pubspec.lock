@@ -193,10 +193,12 @@ packages:
   device_calendar:
     dependency: "direct main"
     description:
-      name: device_calendar
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.1.0"
+      path: "."
+      ref: android_context_fix
+      resolved-ref: e9afbe70895193e5e164ae18e0809d5fd0c798ad
+      url: "https://github.com/matejdro/device_calendar.git"
+    source: git
+    version: "3.2.0"
   fake_async:
     dependency: transitive
     description:
@@ -458,10 +460,12 @@ packages:
   pigeon:
     dependency: "direct dev"
     description:
-      name: pigeon
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.12"
+      path: "packages/pigeon"
+      ref: "5d51f8add9f2162487465c99a64e5cd6d4b563f6"
+      resolved-ref: "5d51f8add9f2162487465c99a64e5cd6d4b563f6"
+      url: "https://github.com/matejdro/flutter-packages.git"
+    source: git
+    version: "0.1.16"
   platform:
     dependency: transitive
     description:
@@ -586,6 +590,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.0-nullsafety.2"
+  sprintf:
+    dependency: transitive
+    description:
+      name: sprintf
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.1.0"
   sqflite:
     dependency: "direct main"
     description:

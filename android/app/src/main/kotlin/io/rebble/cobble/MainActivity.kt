@@ -17,7 +17,6 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugins.GeneratedPluginRegistrant
 import io.rebble.cobble.bridges.FlutterBridge
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.plus
@@ -32,7 +31,7 @@ class MainActivity : FlutterActivity() {
     var isBound = false
     var bootIntentCallback: ((Boolean) -> Unit)? = null
 
-    val activityResultCallbacks = ArrayMap<Int, (resultCode: Int, data: Intent) -> Unit>()
+    val activityResultCallbacks = ArrayMap<Int, (resultCode: Int, data: Intent?) -> Unit>()
 
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
@@ -120,7 +119,8 @@ class MainActivity : FlutterActivity() {
 
         // Bridges need to be created after super.onCreate() to ensure
         // flutter stuff is ready
-        flutterBridges = activityComponent.createFlutterBridges()
+        flutterBridges = activityComponent.createCommonBridges() +
+                activityComponent.createUiBridges()
 
         handleIntent(intent)
 
@@ -157,7 +157,7 @@ class MainActivity : FlutterActivity() {
         handleIntent(intent)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         activityResultCallbacks[requestCode]?.invoke(resultCode, data)

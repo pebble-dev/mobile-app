@@ -1,4 +1,4 @@
-package io.rebble.cobble.bridges
+package io.rebble.cobble.bridges.ui
 
 import android.annotation.TargetApi
 import android.app.Activity
@@ -16,46 +16,32 @@ import android.content.IntentFilter
 import android.content.IntentSender
 import android.os.Build
 import io.rebble.cobble.MainActivity
-import io.rebble.cobble.bluetooth.BlueCommon
 import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.bluetooth.ConnectionState
-import io.rebble.cobble.bluetooth.watchOrNull
-import io.rebble.cobble.data.toPigeon
-import io.rebble.cobble.datasources.WatchMetadataStore
-import io.rebble.cobble.pigeons.BooleanWrapper
+import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.coroutines.asFlow
 import io.rebble.cobble.util.macAddressToLong
 import io.rebble.cobble.util.macAddressToString
-import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
 import timber.log.Timber
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class Connection @Inject constructor(
+class ConnectionUiFlutterBridge @Inject constructor(
         bridgeLifecycleController: BridgeLifecycleController,
         private val connectionLooper: ConnectionLooper,
-        private val blueCommon: BlueCommon,
-        private val coroutineScope: CoroutineScope,
-        private val activity: MainActivity,
-        private val protocolHandler: ProtocolHandler,
-        private val watchMetadataStore: WatchMetadataStore
-) : FlutterBridge, Pigeons.ConnectionControl {
-    private val connectionCallbacks = bridgeLifecycleController
-            .createCallbacks(Pigeons::ConnectionCallbacks)
+        coroutineScope: CoroutineScope,
+        private val activity: MainActivity
+) : FlutterBridge, Pigeons.UiConnectionControl {
     private val pairCallbacks = bridgeLifecycleController
             .createCallbacks(Pigeons::PairCallbacks)
 
     private var lastSelectedDeviceAddress: String? = null
 
-    private var statusObservingJob: Job? = null
-
     init {
-        bridgeLifecycleController.setupControl(Pigeons.ConnectionControl::setup, this)
+        bridgeLifecycleController.setupControl(Pigeons.UiConnectionControl::setup, this)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             activity.activityResultCallbacks[REQUEST_CODE_COMPANION_DEVICE_MANAGER] =
@@ -81,10 +67,6 @@ class Connection @Inject constructor(
         }
     }
 
-    override fun isConnected(): Pigeons.BooleanWrapper {
-        return BooleanWrapper(connectionLooper.connectionState.value is ConnectionState.Connected)
-    }
-
     override fun connectToWatch(arg: Pigeons.NumberWrapper) {
         val address = arg.value.macAddressToString()
         lastSelectedDeviceAddress = address
@@ -102,10 +84,6 @@ class Connection @Inject constructor(
                 openConnectionToWatch(address)
             }
         }
-    }
-
-    override fun disconnect() {
-        connectionLooper.closeConnection()
     }
 
     @TargetApi(Build.VERSION_CODES.O)
@@ -155,8 +133,8 @@ class Connection @Inject constructor(
     }
 
     @TargetApi(Build.VERSION_CODES.O)
-    private fun processCompanionDeviceResult(resultCode: Int, data: Intent) {
-        if (resultCode != Activity.RESULT_OK) {
+    private fun processCompanionDeviceResult(resultCode: Int, data: Intent?) {
+        if (resultCode != Activity.RESULT_OK || data == null) {
             return
         }
 
@@ -185,40 +163,6 @@ class Connection @Inject constructor(
     private fun openConnectionToWatch(macAddress: String) {
         pairCallbacks.onWatchPairComplete(NumberWrapper(macAddress.macAddressToLong())) {}
         connectionLooper.connectToWatch(macAddress)
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    override fun sendRawPacket(arg: Pigeons.ListWrapper) {
-        coroutineScope.launch {
-            val byteArray = (arg.value as List<Number>).map { it.toByte().toUByte() }.toUByteArray()
-            protocolHandler.send(byteArray)
-        }
-    }
-
-    override fun observeConnectionChanges() {
-        statusObservingJob = coroutineScope.launch(Dispatchers.Main) {
-            combine(
-                    connectionLooper.connectionState,
-                    watchMetadataStore.lastConnectedWatchMetadata,
-                    watchMetadataStore.lastConnectedWatchModel
-            ) { connectionState, watchMetadata, model ->
-                Pigeons.WatchConnectionStatePigeon().apply {
-                    isConnected = connectionState is ConnectionState.Connected
-                    isConnecting = connectionState is ConnectionState.Connecting
-                    val bluetoothDevice = connectionState.watchOrNull
-                    currentWatchAddress = bluetoothDevice?.address?.macAddressToLong()
-                    currentConnectedWatch = watchMetadata?.toPigeon(bluetoothDevice, model)
-                }
-            }.collect {
-                connectionCallbacks.onWatchConnectionStateChanged(
-                        it
-                ) {}
-            }
-        }
-    }
-
-    override fun cancelObservingConnectionChanges() {
-        statusObservingJob?.cancel()
     }
 }
 

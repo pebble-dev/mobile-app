@@ -10,7 +10,9 @@ import dagger.Reusable
 import io.rebble.cobble.errors.GlobalExceptionHandler
 import kotlinx.coroutines.CoroutineExceptionHandler
 
-@Module
+@Module(
+        subcomponents = [BackgroundFlutterSubcomponent::class]
+)
 abstract class AppModule {
     @Binds
     abstract fun bindContext(application: Application): Context

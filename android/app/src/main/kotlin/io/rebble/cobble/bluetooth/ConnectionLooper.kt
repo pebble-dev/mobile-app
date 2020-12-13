@@ -38,6 +38,8 @@ class ConnectionLooper @Inject constructor(
                                 retryTime = HALF_OF_INITAL_RETRY_TIME
                             }
                         }
+                    } catch (_: CancellationException) {
+                        // Do nothing. Cancellation is OK
                     } catch (e: Exception) {
                         Timber.e(e, "Watch connection error")
                     }

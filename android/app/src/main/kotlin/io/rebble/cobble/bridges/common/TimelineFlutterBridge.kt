@@ -1,8 +1,9 @@
-package io.rebble.cobble.bridges
+package io.rebble.cobble.bridges.common
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import io.flutter.plugin.common.BinaryMessenger
+import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.data.TimelineAttribute
 import io.rebble.cobble.pigeons.*
 import io.rebble.cobble.util.registerAsyncPigeonCallback
@@ -18,7 +19,7 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.random.Random
 
-class Timeline @Inject constructor(
+class TimelineFlutterBridge @Inject constructor(
         binaryMessenger: BinaryMessenger,
         coroutineScope: CoroutineScope,
         private val moshi: Moshi,

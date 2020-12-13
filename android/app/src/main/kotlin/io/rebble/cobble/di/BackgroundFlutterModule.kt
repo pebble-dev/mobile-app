@@ -1,31 +1,21 @@
 package io.rebble.cobble.di
 
-import androidx.lifecycle.Lifecycle
 import dagger.Module
 import dagger.Provides
+import dagger.Reusable
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.BinaryMessenger
-import io.rebble.cobble.MainActivity
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 
 @Module
-class ActivityModule {
+class BackgroundFlutterModule {
+    /**
+     * Background flutter module is always active. Use GlobalScope.
+     */
     @Provides
-    fun provideLifecycle(mainActivity: MainActivity): Lifecycle {
-        return mainActivity.lifecycle
-    }
-
-    @Provides
-    fun provideCoroutineScope(mainActivity: MainActivity): CoroutineScope {
-        return mainActivity.coroutineScope
-    }
-
-    @Provides
-    fun provideFlutterEngine(mainActivity: MainActivity): FlutterEngine {
-        return mainActivity.flutterEngine
-                ?: error("Flutter engine should be initialized before creating flutter bridges")
-    }
+    fun provideCoroutineScope(): CoroutineScope = GlobalScope
 
     @Provides
     fun provideBinaryMessenger(flutterEngine: FlutterEngine): BinaryMessenger {
@@ -33,7 +23,7 @@ class ActivityModule {
     }
 
     @Provides
-    @PerActivity
+    @Reusable
     fun provideBridgeLifecycleController(
             binaryMessenger: BinaryMessenger,
             coroutineScope: CoroutineScope

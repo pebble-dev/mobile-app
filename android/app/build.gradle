@@ -88,6 +88,7 @@ def daggerVersion = '2.29.1'
 def junitVersion = '4.13'
 def ableVersion = '0.8.0'
 def moshiVersion = '1.11.0'
+def workManagerVersion = '2.4.0'
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -101,6 +102,7 @@ dependencies {
     implementation "com.jakewharton.timber:timber:$timberVersion"
     implementation "com.juul.able:core:$ableVersion"
     implementation "androidx.core:core-ktx:$androidxCoreVersion"
+    implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
 
     implementation "com.squareup.moshi:moshi:$moshiVersion"
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"

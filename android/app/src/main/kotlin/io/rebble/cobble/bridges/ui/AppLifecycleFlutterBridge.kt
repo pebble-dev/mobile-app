@@ -1,7 +1,8 @@
-package io.rebble.cobble.bridges
+package io.rebble.cobble.bridges.ui
 
 import io.flutter.plugin.common.BinaryMessenger
 import io.rebble.cobble.MainActivity
+import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.pigeons.BooleanWrapper
 import io.rebble.cobble.pigeons.toMapExt
 import io.rebble.cobble.util.registerAsyncPigeonCallback
@@ -9,7 +10,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
 
-class AppLifecycle @Inject constructor(
+class AppLifecycleFlutterBridge @Inject constructor(
         binaryMessenger: BinaryMessenger,
         mainActivity: MainActivity,
         coroutineScope: CoroutineScope
