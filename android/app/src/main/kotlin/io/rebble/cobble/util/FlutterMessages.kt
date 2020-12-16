@@ -47,3 +47,5 @@ fun BinaryMessenger.registerAsyncPigeonCallback(
         channel.setMessageHandler(null)
     }
 }
+
+val voidResult: Map<*, *> = mapOf("result" to null)

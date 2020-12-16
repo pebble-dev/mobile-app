@@ -4,10 +4,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoSet
 import io.rebble.cobble.bridges.FlutterBridge
-import io.rebble.cobble.bridges.ui.AppLifecycleFlutterBridge
-import io.rebble.cobble.bridges.ui.BackgroundSetupFlutterBridge
-import io.rebble.cobble.bridges.ui.ConnectionUiFlutterBridge
-import io.rebble.cobble.bridges.ui.DebugFlutterBridge
+import io.rebble.cobble.bridges.ui.*
 import javax.inject.Qualifier
 
 @Module
@@ -36,6 +33,13 @@ abstract class UiBridgesModule {
     @UiBridge
     abstract fun bindBackgroundSetupBridge(
             backgroundSetupFlutterBridge: BackgroundSetupFlutterBridge
+    ): FlutterBridge
+
+    @Binds
+    @IntoSet
+    @UiBridge
+    abstract fun bindPermission(
+            permissionControlFlutterBridge: PermissionControlFlutterBridge
     ): FlutterBridge
 }
 

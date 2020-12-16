@@ -160,6 +160,40 @@ abstract class BackgroundControl {
   void notifyFlutterBackgroundStarted();
 }
 
+@HostApi()
+abstract class PermissionCheck {
+  BooleanWrapper hasLocationPermission();
+
+  BooleanWrapper hasCalendarPermission();
+
+  BooleanWrapper hasNotificationAccess();
+
+  BooleanWrapper hasBatteryExclusionEnabled();
+}
+
+@HostApi()
+abstract class PermissionControl {
+  // All NumberWrapper reqeust* callbacks return:
+  // 0 - permission granted
+  // 1 - permission denied by user
+  // 2 - permission was denied by user and "Don't show again" was selected.
+  //     If we want to request permission again,
+  //     we must direct user to the settings (use openPermissionSettings())
+  //     This might be Android-specific behavior.
+
+  NumberWrapper requestLocationPermission();
+
+  NumberWrapper requestCalendarPermission();
+
+  /// This can only be performed when at least one watch is paired
+  void requestNotificationAccess();
+
+  /// This can only be performed when at least one watch is paired
+  void requestBatteryExclusion();
+
+  void openPermissionSettings();
+}
+
 /// This class will keep all classes that appear in lists from being deleted
 /// by pigeon (they are not kept by default because pigeon does not support
 /// generics in lists).

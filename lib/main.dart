@@ -9,7 +9,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/all.dart';
 
-import 'domain/calendar/calendar_permission.dart';
 import 'infrastructure/pigeons/pigeons.dart';
 
 String getBootUrl = "https://boot.rebble.io/";
@@ -30,14 +29,6 @@ void initBackground() {
 class MyApp extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final CalendarPermission calendarPermission =
-        useProvider(calendarPermissionProvider);
-
-    useEffect(() {
-      calendarPermission.requestPermission();
-      return null;
-    }, ["one-time"]);
-
     return MaterialApp(
       title: 'Cobble',
       theme: RebbleTheme.appTheme,

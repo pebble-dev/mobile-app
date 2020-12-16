@@ -1,9 +1,12 @@
 package io.rebble.cobble.handlers
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.database.ContentObserver
 import android.net.Uri
 import android.provider.CalendarContract
+import androidx.core.content.ContextCompat
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import io.rebble.cobble.background.CalendarSyncWorker
@@ -36,21 +39,26 @@ class CalendarHandler @Inject constructor(
     }
 
     init {
-        coroutineScope.launch {
-            // We were not receiving any calendar changes when service was offline.
-            // Sync calendar at startup
+        if (ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.READ_CALENDAR
+                ) == PackageManager.PERMISSION_GRANTED) {
+            coroutineScope.launch {
+                // We were not receiving any calendar changes when service was offline.
+                // Sync calendar at startup
 
-            Timber.d("Watch service started. Syncing calendar...")
-            calendarFlutterBridge.syncCalendar()
-            Timber.d("Sync complete")
-        }
+                Timber.d("Watch service started. Syncing calendar...")
+                calendarFlutterBridge.syncCalendar()
+                Timber.d("Sync complete")
+            }
 
-        observeCalendarChanges()
-        schedulePeriodicCalendarSync()
+            observeCalendarChanges()
+            schedulePeriodicCalendarSync()
 
-        coroutineScope.coroutineContext.job.invokeOnCompletion {
-            context.contentResolver.unregisterContentObserver(contentObserver)
-            WorkManager.getInstance(context).cancelAllWorkByTag(CALENDAR_WORK_TAG)
+            coroutineScope.coroutineContext.job.invokeOnCompletion {
+                context.contentResolver.unregisterContentObserver(contentObserver)
+                WorkManager.getInstance(context).cancelAllWorkByTag(CALENDAR_WORK_TAG)
+            }
         }
     }
 

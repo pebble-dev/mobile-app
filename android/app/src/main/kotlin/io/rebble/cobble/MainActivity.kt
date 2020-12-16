@@ -1,19 +1,15 @@
 package io.rebble.cobble
 
-import android.Manifest
 import android.app.AlertDialog
 import android.content.ComponentName
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.text.TextUtils
 import android.widget.Toast
 import androidx.collection.ArrayMap
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -21,7 +17,6 @@ import io.rebble.cobble.bridges.FlutterBridge
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.plus
 import java.net.URI
-import kotlin.system.exitProcess
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class MainActivity : FlutterActivity() {
@@ -32,20 +27,15 @@ class MainActivity : FlutterActivity() {
     var bootIntentCallback: ((Boolean) -> Unit)? = null
 
     val activityResultCallbacks = ArrayMap<Int, (resultCode: Int, data: Intent?) -> Unit>()
+    val activityPermissionCallbacks = ArrayMap<
+            Int,
+            (permissions: Array<String>, grantResults: IntArray) -> Unit>()
 
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        when (requestCode) {
-            10 -> {
-
-                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Requires location permission for bluetooth LE", Toast.LENGTH_LONG).show()
-                    exitProcess(1)
-                }
-            }
-        }
+        activityPermissionCallbacks[requestCode]?.invoke(permissions, grantResults)
     }
 
     private fun handleIntent(intent: Intent) {
@@ -123,33 +113,6 @@ class MainActivity : FlutterActivity() {
                 activityComponent.createUiBridges()
 
         handleIntent(intent)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                val builder = AlertDialog.Builder(this)
-                builder.setTitle("This app needs location access")
-                builder.setMessage("Please grant location access in order to scan for Pebbles.")
-                builder.setPositiveButton(android.R.string.ok, null)
-                builder.setOnDismissListener {
-                    ActivityCompat.requestPermissions(
-                            this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                            10
-                    )
-                }
-                builder.show()
-            }
-        }
-
-        if (!isNotificationServiceEnabled()) {
-            //TODO: Save their choice and stop nagging if user doesn't want this
-            val alertDialogBuilder = AlertDialog.Builder(this)
-            alertDialogBuilder.setTitle("Allow notification reading")
-            alertDialogBuilder.setMessage("To see notifications on your watch, you need to give the app access to read incoming notifications on your device")
-
-            alertDialogBuilder.setPositiveButton("Allow") { _, _ -> startActivity(Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")) }
-            alertDialogBuilder.setNegativeButton("Deny") { _, _ -> Toast.makeText(applicationContext, "Running without showing notifications", Toast.LENGTH_LONG).show() }
-            alertDialogBuilder.create().show()
-        }
     }
 
     override fun onNewIntent(intent: Intent) {
