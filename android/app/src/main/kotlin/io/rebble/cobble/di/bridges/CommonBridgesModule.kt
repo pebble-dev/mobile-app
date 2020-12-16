@@ -4,10 +4,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoSet
 import io.rebble.cobble.bridges.FlutterBridge
-import io.rebble.cobble.bridges.common.ConnectionFlutterBridge
-import io.rebble.cobble.bridges.common.NotificationsFlutterBridge
-import io.rebble.cobble.bridges.common.ScanFlutterBridge
-import io.rebble.cobble.bridges.common.TimelineFlutterBridge
+import io.rebble.cobble.bridges.common.*
 import javax.inject.Qualifier
 
 @Module
@@ -35,6 +32,13 @@ abstract class CommonBridgesModule {
     @IntoSet
     @CommonBridge
     abstract fun bindTimelineBridge(timelineFlutterBridge: TimelineFlutterBridge): FlutterBridge
+
+    @Binds
+    @IntoSet
+    @CommonBridge
+    abstract fun bindPermissionBridge(
+            permissionCheckFlutterBridge: PermissionCheckFlutterBridge
+    ): FlutterBridge
 }
 
 @Qualifier

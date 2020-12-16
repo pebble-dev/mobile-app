@@ -10,6 +10,7 @@ import io.rebble.cobble.datasources.AndroidPreferences
 import io.rebble.cobble.di.BackgroundFlutterSubcomponent
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.registerAsyncPigeonCallback
+import io.rebble.cobble.util.voidResult
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -81,7 +82,7 @@ class FlutterBackgroundController @Inject constructor(
                         Pigeons.BackgroundControl.setup(binaryMessenger, null)
 
                         // Return blank result
-                        mapOf("result" to null)
+                        voidResult
                     }
                 }
             }

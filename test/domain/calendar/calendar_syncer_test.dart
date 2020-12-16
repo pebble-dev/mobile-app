@@ -11,6 +11,7 @@ import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/db/models/timeline_pin.dart';
 import 'package:cobble/domain/db/models/timeline_pin_layout.dart';
 import 'package:cobble/domain/db/models/timeline_pin_type.dart';
+import 'package:cobble/domain/permissions.dart';
 import 'package:cobble/domain/preferences.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,6 +20,7 @@ import 'package:uuid_type/uuid_type.dart';
 
 import '../../fakes/fake_database.dart';
 import '../../fakes/fake_device_calendar_plugin.dart';
+import '../../fakes/fake_permissions_check.dart';
 import '../../fakes/memory_shared_preferences.dart';
 
 void main() async {
@@ -43,7 +45,8 @@ void main() async {
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
       databaseProvider.overrideWithValue(AsyncValue.data(db)),
-      currentDateTimeProvider.overrideWithValue(() => now)
+      currentDateTimeProvider.overrideWithValue(() => now),
+      permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
 
     final pinDao = container.read(timelinePinDaoProvider);
@@ -153,7 +156,8 @@ void main() async {
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
       databaseProvider.overrideWithValue(AsyncValue.data(db)),
-      currentDateTimeProvider.overrideWithValue(() => now)
+      currentDateTimeProvider.overrideWithValue(() => now),
+      permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
 
     final pinDao = container.read(timelinePinDaoProvider);
@@ -284,7 +288,8 @@ void main() async {
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
       databaseProvider.overrideWithValue(AsyncValue.data(db)),
-      currentDateTimeProvider.overrideWithValue(() => now)
+      currentDateTimeProvider.overrideWithValue(() => now),
+      permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
 
     final pinDao = container.read(timelinePinDaoProvider);
@@ -352,7 +357,8 @@ void main() async {
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
       databaseProvider.overrideWithValue(AsyncValue.data(db)),
-      currentDateTimeProvider.overrideWithValue(() => now)
+      currentDateTimeProvider.overrideWithValue(() => now),
+      permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
 
     final pinDao = container.read(timelinePinDaoProvider);
@@ -401,7 +407,8 @@ void main() async {
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
       databaseProvider.overrideWithValue(AsyncValue.data(db)),
-      currentDateTimeProvider.overrideWithValue(() => now)
+      currentDateTimeProvider.overrideWithValue(() => now),
+      permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
 
     final pinDao = container.read(timelinePinDaoProvider);
@@ -503,7 +510,8 @@ void main() async {
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
       databaseProvider.overrideWithValue(AsyncValue.data(db)),
-      currentDateTimeProvider.overrideWithValue(() => now)
+      currentDateTimeProvider.overrideWithValue(() => now),
+      permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
 
     final pinDao = container.read(timelinePinDaoProvider);
@@ -623,7 +631,8 @@ void main() async {
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
       databaseProvider.overrideWithValue(AsyncValue.data(db)),
-      currentDateTimeProvider.overrideWithValue(() => now)
+      currentDateTimeProvider.overrideWithValue(() => now),
+      permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
 
     final pinDao = container.read(timelinePinDaoProvider);
@@ -701,8 +710,9 @@ void main() async {
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
       databaseProvider.overrideWithValue(AsyncValue.data(db)),
-      currentDateTimeProvider.overrideWithValue(() => now)
-        ]);
+      currentDateTimeProvider.overrideWithValue(() => now),
+      permissionCheckProvider.overrideWithValue(FakePermissionCheck())
+    ]);
 
         final pinDao = container.read(timelinePinDaoProvider);
 
@@ -941,7 +951,8 @@ void main() async {
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
       databaseProvider.overrideWithValue(AsyncValue.data(db)),
-      currentDateTimeProvider.overrideWithValue(() => now)
+      currentDateTimeProvider.overrideWithValue(() => now),
+      permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
 
     final pinDao = container.read(timelinePinDaoProvider);

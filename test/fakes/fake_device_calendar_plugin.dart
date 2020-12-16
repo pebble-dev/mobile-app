@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:device_calendar/device_calendar.dart';
 
 class FakeDeviceCalendarPlugin implements DeviceCalendarPlugin {
-  bool reportedHasPermissionsValue = true;
   List<Calendar> reportedCalendars = [];
   List<Event> reportedEvents = [];
 
@@ -32,9 +31,7 @@ class FakeDeviceCalendarPlugin implements DeviceCalendarPlugin {
 
   @override
   Future<Result<bool>> hasPermissions() {
-    final result = Result<bool>();
-    result.data = reportedHasPermissionsValue;
-    return Future.value(result);
+    throw UnimplementedError("All classes should use PermissionCheck instead");
   }
 
   @override
