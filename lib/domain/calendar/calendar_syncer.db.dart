@@ -35,9 +35,8 @@ class CalendarSyncer {
 
     final now = _dateTimeProvider();
     // 1 day is added since we need to get the start of the next day
-    // 1 day is added for the 1-day sync buffer
     final syncEndDate =
-        _getStartOfDay(now.add(Duration(days: _syncRangeDays + 2)));
+        _getStartOfDay(now.add(Duration(days: _syncRangeDays + 1)));
 
     final retrieveEventParams =
         RetrieveEventsParams(startDate: now, endDate: syncEndDate);
@@ -142,4 +141,4 @@ final calendarSyncerProvider = Provider.autoDispose<CalendarSyncer>((ref) {
 });
 
 /// Only sync events between now and following days in the future
-const _syncRangeDays = 3;
+const _syncRangeDays = 6;

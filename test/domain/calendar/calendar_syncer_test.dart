@@ -760,10 +760,10 @@ void main() async {
     expect(anyChanges, true);
   });
 
-  test('Full sync: Only add events between now and 4 days in the future',
-      // Pebble only displays 3 days, but we sync 4 days to provide us with
-      // 1 day buffer so we don't need to have exact sync time every day which
-      // saves little bit of phone's battery.
+  test('Full sync: Only add events between now and 6 days in the future',
+      // Pebble only displays 3 days, but we sync 6 days to allow watch to
+      // have a bit of standalone buffer in case it is disconnected from
+      // the phone
       () async {
     final db = await createTestCobbleDatabase();
     final calendarPlugin = FakeDeviceCalendarPlugin();
@@ -868,7 +868,7 @@ void main() async {
             ),
           ),
 
-          // Event that starts on day 4 but ends on day 5
+          // Event that starts on day 6 but ends on day 7
           // Should be added
           Event(
             "22",
@@ -876,20 +876,20 @@ void main() async {
             start: DateTime.utc(
               2020, //year
               11, //month
-              14, //day
+              16, //day
               23, //hour
               30, //minute
             ),
             end: DateTime.utc(
               2020, //year
               11, //month
-              15, //day
+              17, //day
               00, //hour
               30, //minute
             ),
           ),
 
-          // Event that starts on day 5
+          // Event that starts on day 7
           // Should not be added
           Event(
             "22",
@@ -897,14 +897,14 @@ void main() async {
             start: DateTime.utc(
               2020, //year
               11, //month
-              15, //day
+              17, //day
               10, //hour
               00, //minute
             ),
             end: DateTime.utc(
               2020, //year
               11, //month
-              151604705400000, //day
+              17, //day
               12, //hour
               00, //minute
             ),
@@ -980,11 +980,11 @@ void main() async {
           TimelinePin(
             itemId: null,
             parentId: calendarWatchappId,
-            backingId: "1341T1605396600000",
+            backingId: "1341T1605569400000",
             timestamp: DateTime.utc(
               2020, //year
               11, //month
-              14, //day
+              16, //day
               23, //hour
               30, //minute
             ),
