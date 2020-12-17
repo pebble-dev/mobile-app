@@ -157,11 +157,12 @@ void main() {
     final expectedAttributes = [
       TimelineAttribute.title("The Event"),
       TimelineAttribute.tinyIcon(TimelineIcon.TIMELINE_CALENDAR),
-      TimelineAttribute.body("Going out with some friends"),
       TimelineAttribute.headings([
+        "",
         "Calendar",
       ]),
       TimelineAttribute.paragraphs([
+        "Going out with some friends",
         "Test@Calendar",
       ]),
     ].toSet();

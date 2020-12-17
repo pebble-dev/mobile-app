@@ -13,6 +13,11 @@ extension CalendarEventConverter on Event {
     final List<String> headings = [];
     final List<String> paragraphs = [];
 
+    if (description != null) {
+      headings.add("");
+      paragraphs.add(description);
+    }
+
     if (attendees != null && attendees.isNotEmpty) {
       headings.add("Attendees");
       paragraphs.add(attendees
@@ -48,7 +53,6 @@ extension CalendarEventConverter on Event {
     return [
       TimelineAttribute.tinyIcon(TimelineIcon.TIMELINE_CALENDAR),
       TimelineAttribute.title(title),
-      if (description != null) TimelineAttribute.body(description),
       if (location != null) TimelineAttribute.locationName(location),
       if (recurrenceRule != null) TimelineAttribute.displayRecurring(true),
       TimelineAttribute.headings(headings),
