@@ -7,7 +7,7 @@ import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:cobble/infrastructure/pigeons/pigeons.dart';
+import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
@@ -26,6 +26,7 @@ class MyWatchesTab extends HookWidget {
   final Color _connectedBrColor = Color.fromARGB(255, 0, 169, 130);
 
   void getCurrentWatchStatus() {}
+  final UiConnectionControl uiConnectionControl = UiConnectionControl();
   final ConnectionControl connectionControl = ConnectionControl();
 
   @override
@@ -93,7 +94,8 @@ class MyWatchesTab extends HookWidget {
     void _onConnectPressed(PebbleScanDevice device, inSettings) {
       NumberWrapper addressWrapper = NumberWrapper();
       addressWrapper.value = device.address;
-      connectionControl.connectToWatch(addressWrapper);
+
+      uiConnectionControl.connectToWatch(addressWrapper);
       if (inSettings) Navigator.pop(context);
     }
 
