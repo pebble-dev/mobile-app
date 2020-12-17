@@ -279,4 +279,41 @@ void main() {
 
     expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
   });
+
+  test("Remove html tags from calendar description", () {
+    final event = Event(
+      "10",
+      title: "The Event",
+      start: DateTime.utc(
+        2020, // Year
+        11, // Month
+        21, // Day
+        10, //Hour
+        30, // Minute
+      ),
+      end: DateTime.utc(
+        2020, // Year
+        11, // Month
+        21, // Day
+        11, //Hour
+        30, // Minute
+      ),
+      description: "<html><body>A<b> B</b></body></html>",
+    );
+
+    final expectedAttributes = [
+      TimelineAttribute.title("The Event"),
+      TimelineAttribute.tinyIcon(TimelineIcon.TIMELINE_CALENDAR),
+      TimelineAttribute.headings([
+        "",
+        "Calendar",
+      ]),
+      TimelineAttribute.paragraphs([
+        "A B",
+        "Test@Calendar",
+      ]),
+    ].toSet();
+
+    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+  });
 }

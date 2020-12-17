@@ -15,7 +15,7 @@ extension CalendarEventConverter on Event {
 
     if (description != null) {
       headings.add("");
-      paragraphs.add(description);
+      paragraphs.add(_transformDescription(description));
     }
 
     if (attendees != null && attendees.isNotEmpty) {
@@ -87,6 +87,12 @@ extension CalendarEventConverter on Event {
   /// both
   String createCompositeBackingId() {
     return "${eventId}T${start.millisecondsSinceEpoch}";
+  }
+
+  String _transformDescription(String rawDescription) {
+    RegExp htmlTags = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+
+    return rawDescription.replaceAll(htmlTags, "");
   }
 }
 
