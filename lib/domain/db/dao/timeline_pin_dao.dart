@@ -38,13 +38,20 @@ class TimelinePinDao {
         .toList();
   }
 
-  Future<List<TimelinePin>> getAllPinsWithPendingSyncAction() async {
+  Future<List<TimelinePin>> getAllPinsWithPendingUpload() async {
     final db = await _dbFuture;
 
-    return (await db.query(
-      tableTimelinePins,
-      where: "nextSyncAction <> \"Nothing\"",
-      orderBy: "timestamp ASC"))
+    return (await db.query(tableTimelinePins,
+            where: "nextSyncAction = \"Upload\"", orderBy: "timestamp ASC"))
+        .map((e) => TimelinePin.fromMap(e))
+        .toList();
+  }
+
+  Future<List<TimelinePin>> getAllPinsWithPendingDelete() async {
+    final db = await _dbFuture;
+
+    return (await db.query(tableTimelinePins,
+            where: "nextSyncAction = \"Delete\""))
         .map((e) => TimelinePin.fromMap(e))
         .toList();
   }
