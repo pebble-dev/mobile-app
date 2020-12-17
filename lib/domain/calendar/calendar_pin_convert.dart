@@ -5,6 +5,7 @@ import 'package:cobble/domain/db/models/timeline_pin_layout.dart';
 import 'package:cobble/domain/db/models/timeline_pin_type.dart';
 import 'package:cobble/domain/timeline/timeline_attribute.dart';
 import 'package:cobble/domain/timeline/timeline_icon.dart';
+import 'package:cobble/util/string_extensions.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:uuid_type/uuid_type.dart';
 
@@ -92,8 +93,7 @@ extension CalendarEventConverter on Event {
   String _transformDescription(String rawDescription) {
     RegExp htmlTags = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
 
-    return rawDescription.replaceAll(htmlTags, "");
+    return rawDescription.replaceAll(htmlTags, "").trimWithEllipsis(500);
   }
 }
-
 final CALENDAR_WATCHAPP_ID = Uuid("6c6c6fc2-1912-4d25-8396-3547d1dfac5b");
