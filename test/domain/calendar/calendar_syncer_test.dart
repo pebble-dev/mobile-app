@@ -657,6 +657,24 @@ void main() async {
           11, //hour
           30, //minute
         ),
+      ),
+      Event(
+        "22",
+        eventId: "1338",
+        start: DateTime.utc(
+          2020, //year
+          11, //month
+          10, //day
+          11, //hour
+          00, //minute
+        ),
+        end: DateTime.utc(
+          2020, //year
+          11, //month
+          10, //day
+          12, //hour
+          00, //minute
+        ),
       )
     ];
 
@@ -684,12 +702,58 @@ void main() async {
       ),
     );
 
+    await pinDao.insertOrUpdateTimelinePin(
+      TimelinePin(
+        itemId: Uuid("24b88efe-6b43-41cd-a1f6-06b0e5940f94"),
+        parentId: CALENDAR_WATCHAPP_ID,
+        backingId: "1338T1605006000000",
+        timestamp: DateTime.utc(
+          2020, //year
+          11, //month
+          10, //day
+          11, //hour
+          00, //minute
+        ),
+        duration: 60,
+        type: TimelinePinType.PIN,
+        isVisible: true,
+        isFloating: false,
+        isAllDay: false,
+        persistQuickView: false,
+        layout: TimelinePinLayout.CALENDAR_PIN,
+        nextSyncAction: NextSyncAction.Nothing,
+        attributesJson: "",
+      ),
+    );
+
     final calendarSyncer = container.read(calendarSyncerProvider);
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
 
-    final List<TimelinePin> expectedEvents = [];
+    final List<TimelinePin> expectedEvents = [
+      TimelinePin(
+        itemId: Uuid("24b88efe-6b43-41cd-a1f6-06b0e5940f94"),
+        parentId: CALENDAR_WATCHAPP_ID,
+        backingId: "1338T1605006000000",
+        timestamp: DateTime.utc(
+          2020, //year
+          11, //month
+          10, //day
+          11, //hour
+          00, //minute
+        ),
+        duration: 60,
+        type: TimelinePinType.PIN,
+        isVisible: true,
+        isFloating: false,
+        isAllDay: false,
+        persistQuickView: false,
+        layout: TimelinePinLayout.CALENDAR_PIN,
+        nextSyncAction: NextSyncAction.Upload,
+        attributesJson: "",
+      )
+    ];
 
     expectEventsWithoutItemIdAndJsonsIgnoringOrder(eventsInDao, expectedEvents);
 

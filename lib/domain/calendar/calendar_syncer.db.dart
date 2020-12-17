@@ -96,11 +96,10 @@ class CalendarSyncer {
     }
 
     for (final pin in existingPins) {
-      if (pin.timestamp.add(Duration(seconds: pin.duration)).isBefore(now)) {
+      if (pin.timestamp.add(Duration(minutes: pin.duration)).isBefore(now)) {
         await _timelinePinDao.delete(pin.itemId);
         anyChanges = true;
-      }
-      else if (!newPins.any((newPin) => newPin.backingId == pin.backingId)) {
+      } else if (!newPins.any((newPin) => newPin.backingId == pin.backingId)) {
         await _timelinePinDao.setSyncAction(pin.itemId, NextSyncAction.Delete);
         anyChanges = true;
       }
