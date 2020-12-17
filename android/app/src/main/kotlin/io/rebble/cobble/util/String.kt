@@ -10,11 +10,11 @@ fun String.encodeToByteArrayTrimmed(maxBytes: Int): ByteArray {
         return encodedOriginal
     }
 
-    var trimmedString = substring(maxBytes - 1)
+    var trimmedString = take(maxBytes - 1)
     var encoded = "$trimmedString…".encodeToByteArray()
 
     while (encoded.size > maxBytes) {
-        trimmedString = trimmedString.substring(trimmedString.length - 1)
+        trimmedString = trimmedString.take(trimmedString.length - 1)
         encoded = "$trimmedString…".encodeToByteArray()
     }
 
