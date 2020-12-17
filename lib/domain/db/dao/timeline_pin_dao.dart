@@ -44,7 +44,7 @@ class TimelinePinDao {
     return (await db.query(
       tableTimelinePins,
       where: "nextSyncAction <> \"Nothing\"",
-    ))
+      orderBy: "timestamp ASC"))
         .map((e) => TimelinePin.fromMap(e))
         .toList();
   }
