@@ -6,7 +6,7 @@ import 'dao/timeline_pin_dao.dart';
 
 void createAllCobbleTables(Database db) async {
   await db.execute("""
-    CREATE TABLE $TABLE_TIMELINE_PINS(
+    CREATE TABLE $tableTimelinePins(
       itemId TEXT PRIMARY KEY NOT NULL,
       parentId TEXT NOT NULL,
       backingId TEXT,

@@ -36,7 +36,7 @@ void main() {
         ));
 
     final expectedPin = TimelinePin(
-        parentId: CALENDAR_WATCHAPP_ID,
+        parentId: calendarWatchappId,
         backingId: "33T1605954600000",
         timestamp: DateTime.utc(
           2020, // Year
@@ -46,12 +46,12 @@ void main() {
           30, // Minute
         ),
         duration: 60,
-        type: TimelinePinType.PIN,
+        type: TimelinePinType.pin,
         isVisible: true,
         isFloating: false,
         isAllDay: false,
         persistQuickView: false,
-        layout: TimelinePinLayout.CALENDAR_PIN,
+        layout: TimelinePinLayout.calendarPin,
         nextSyncAction: NextSyncAction.Upload);
 
     expect(event.generateBasicEventData(null, null), expectedPin);
@@ -80,7 +80,7 @@ void main() {
     );
 
     final expectedPin = TimelinePin(
-        parentId: CALENDAR_WATCHAPP_ID,
+        parentId: calendarWatchappId,
         backingId: "33T1605954600000",
         timestamp: DateTime.utc(
           2020, // Year
@@ -90,12 +90,12 @@ void main() {
           30, // Minute
         ),
         duration: 60,
-        type: TimelinePinType.PIN,
+        type: TimelinePinType.pin,
         isVisible: true,
         isFloating: false,
         isAllDay: true,
         persistQuickView: false,
-        layout: TimelinePinLayout.CALENDAR_PIN,
+        layout: TimelinePinLayout.calendarPin,
         nextSyncAction: NextSyncAction.Upload);
 
     expect(event.generateBasicEventData(null, null), expectedPin);
@@ -121,7 +121,7 @@ void main() {
 
     final expectedAttributes = [
       TimelineAttribute.title("The Event"),
-      TimelineAttribute.tinyIcon(TimelineIcon.TIMELINE_CALENDAR),
+      TimelineAttribute.tinyIcon(TimelineIcon.timelineCalendar),
       TimelineAttribute.headings([
         "Calendar",
       ]),
@@ -156,7 +156,7 @@ void main() {
 
     final expectedAttributes = [
       TimelineAttribute.title("The Event"),
-      TimelineAttribute.tinyIcon(TimelineIcon.TIMELINE_CALENDAR),
+      TimelineAttribute.tinyIcon(TimelineIcon.timelineCalendar),
       TimelineAttribute.headings([
         "",
         "Calendar",
@@ -192,7 +192,7 @@ void main() {
 
     final expectedAttributes = [
       TimelineAttribute.title("The Event"),
-      TimelineAttribute.tinyIcon(TimelineIcon.TIMELINE_CALENDAR),
+      TimelineAttribute.tinyIcon(TimelineIcon.timelineCalendar),
       TimelineAttribute.locationName("Rebble headquarters"),
       TimelineAttribute.headings([
         "Calendar",
@@ -230,7 +230,7 @@ void main() {
 
     final expectedAttributes = [
       TimelineAttribute.title("The Event"),
-      TimelineAttribute.tinyIcon(TimelineIcon.TIMELINE_CALENDAR),
+      TimelineAttribute.tinyIcon(TimelineIcon.timelineCalendar),
       TimelineAttribute.headings([
         "Attendees",
         "Calendar",
@@ -265,7 +265,7 @@ void main() {
 
     final expectedAttributes = [
       TimelineAttribute.title("The Event"),
-      TimelineAttribute.tinyIcon(TimelineIcon.TIMELINE_CALENDAR),
+      TimelineAttribute.tinyIcon(TimelineIcon.timelineCalendar),
       TimelineAttribute.displayRecurring(true),
       TimelineAttribute.headings([
         "Recurrence",
@@ -303,7 +303,7 @@ void main() {
 
     final expectedAttributes = [
       TimelineAttribute.title("The Event"),
-      TimelineAttribute.tinyIcon(TimelineIcon.TIMELINE_CALENDAR),
+      TimelineAttribute.tinyIcon(TimelineIcon.timelineCalendar),
       TimelineAttribute.headings([
         "",
         "Calendar",
@@ -343,7 +343,7 @@ void main() {
 
     final expectedAttributes = [
       TimelineAttribute.title("The Event"),
-      TimelineAttribute.tinyIcon(TimelineIcon.TIMELINE_CALENDAR),
+      TimelineAttribute.tinyIcon(TimelineIcon.timelineCalendar),
       TimelineAttribute.headings([
         "",
         "Calendar",

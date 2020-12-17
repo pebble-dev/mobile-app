@@ -100,7 +100,7 @@ void main() async {
     final expectedEvents = [
       TimelinePin(
         itemId: null,
-        parentId: CALENDAR_WATCHAPP_ID,
+        parentId: calendarWatchappId,
         backingId: "1337T1605004200000",
         timestamp: DateTime.utc(
           2020, //year
@@ -110,17 +110,17 @@ void main() async {
           30, //minute
         ),
         duration: 60,
-        type: TimelinePinType.PIN,
+        type: TimelinePinType.pin,
         isVisible: true,
         isFloating: false,
         isAllDay: false,
         persistQuickView: false,
-        layout: TimelinePinLayout.CALENDAR_PIN,
+        layout: TimelinePinLayout.calendarPin,
         nextSyncAction: NextSyncAction.Upload,
       ),
       TimelinePin(
         itemId: null,
-        parentId: CALENDAR_WATCHAPP_ID,
+        parentId: calendarWatchappId,
         backingId: "1338T1605094200000",
         timestamp: DateTime.utc(
           2020, //year
@@ -130,12 +130,12 @@ void main() async {
           30, //minute
         ),
         duration: 120,
-        type: TimelinePinType.PIN,
+        type: TimelinePinType.pin,
         isVisible: true,
         isFloating: false,
         isAllDay: false,
         persistQuickView: false,
-        layout: TimelinePinLayout.CALENDAR_PIN,
+        layout: TimelinePinLayout.calendarPin,
         nextSyncAction: NextSyncAction.Upload,
       ),
     ];
@@ -206,7 +206,7 @@ void main() async {
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
           itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
-          parentId: CALENDAR_WATCHAPP_ID,
+          parentId: calendarWatchappId,
           backingId: "1338T1605094200000",
           timestamp: DateTime.utc(
             2020, //year
@@ -216,12 +216,12 @@ void main() async {
             30, //minute
           ),
           duration: 120,
-          type: TimelinePinType.PIN,
+          type: TimelinePinType.pin,
           isVisible: true,
           isFloating: false,
           isAllDay: false,
           persistQuickView: false,
-          layout: TimelinePinLayout.CALENDAR_PIN,
+          layout: TimelinePinLayout.calendarPin,
           nextSyncAction: NextSyncAction.Nothing,
           attributesJson:
               """[{"id":4,"uint32":2147483669},{"id":1,"maxLength":64},{"id":25,"listOfString":["Calendar"],"maxLength":128},{"id":26,"listOfString":["Calendar A"],"maxLength":1024}]"""),
@@ -235,7 +235,7 @@ void main() async {
     final expectedEvents = [
       TimelinePin(
         itemId: null,
-        parentId: CALENDAR_WATCHAPP_ID,
+        parentId: calendarWatchappId,
         backingId: "1338T1605094200000",
         timestamp: DateTime.utc(
           2020, //year
@@ -245,17 +245,17 @@ void main() async {
           30, //minute
         ),
         duration: 120,
-        type: TimelinePinType.PIN,
+        type: TimelinePinType.pin,
         isVisible: true,
         isFloating: false,
         isAllDay: false,
         persistQuickView: false,
-        layout: TimelinePinLayout.CALENDAR_PIN,
+        layout: TimelinePinLayout.calendarPin,
         nextSyncAction: NextSyncAction.Nothing,
       ),
       TimelinePin(
         itemId: null,
-        parentId: CALENDAR_WATCHAPP_ID,
+        parentId: calendarWatchappId,
         backingId: "1337T1605004200000",
         timestamp: DateTime.utc(
           2020, //year
@@ -265,12 +265,12 @@ void main() async {
           30, //minute
         ),
         duration: 60,
-        type: TimelinePinType.PIN,
+        type: TimelinePinType.pin,
         isVisible: true,
         isFloating: false,
         isAllDay: false,
         persistQuickView: false,
-        layout: TimelinePinLayout.CALENDAR_PIN,
+        layout: TimelinePinLayout.calendarPin,
         nextSyncAction: NextSyncAction.Upload,
       ),
     ];
@@ -320,7 +320,7 @@ void main() async {
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
           itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
-          parentId: CALENDAR_WATCHAPP_ID,
+          parentId: calendarWatchappId,
           backingId: "1338T1605094200000",
           timestamp: DateTime.utc(
             2020, //year
@@ -330,12 +330,12 @@ void main() async {
             30, //minute
           ),
           duration: 120,
-          type: TimelinePinType.PIN,
+          type: TimelinePinType.pin,
           isVisible: true,
           isFloating: false,
           isAllDay: false,
           persistQuickView: false,
-          layout: TimelinePinLayout.CALENDAR_PIN,
+          layout: TimelinePinLayout.calendarPin,
           nextSyncAction: NextSyncAction.Nothing,
           attributesJson:
           """[{"id":4,"uint32":2147483669},{"id":1,"maxLength":64},{"id":25,"listOfString":["Calendar"],"maxLength":128},{"id":26,"listOfString":["Calendar A"],"maxLength":1024}]"""),
@@ -441,7 +441,7 @@ void main() async {
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
         itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
-        parentId: CALENDAR_WATCHAPP_ID,
+        parentId: calendarWatchappId,
         backingId: "1338T1605094200000",
         timestamp: DateTime.utc(
           2020, //year
@@ -451,12 +451,12 @@ void main() async {
           30, //minute
         ),
         duration: 60,
-        type: TimelinePinType.PIN,
+        type: TimelinePinType.pin,
         isVisible: true,
         isFloating: false,
         isAllDay: false,
         persistQuickView: false,
-        layout: TimelinePinLayout.CALENDAR_PIN,
+        layout: TimelinePinLayout.calendarPin,
         nextSyncAction: NextSyncAction.Upload,
         attributesJson: "",
       ),
@@ -470,7 +470,7 @@ void main() async {
     final expectedEvents = [
       TimelinePin(
         itemId: null,
-        parentId: CALENDAR_WATCHAPP_ID,
+        parentId: calendarWatchappId,
         backingId: "1338T1605094200000",
         timestamp: DateTime.utc(
           2020, //year
@@ -480,12 +480,12 @@ void main() async {
           30, //minute
         ),
         duration: 120,
-        type: TimelinePinType.PIN,
+        type: TimelinePinType.pin,
         isVisible: true,
         isFloating: false,
         isAllDay: false,
         persistQuickView: false,
-        layout: TimelinePinLayout.CALENDAR_PIN,
+        layout: TimelinePinLayout.calendarPin,
         nextSyncAction: NextSyncAction.Upload,
       ),
     ];
@@ -542,7 +542,7 @@ void main() async {
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
         itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
-        parentId: CALENDAR_WATCHAPP_ID,
+        parentId: calendarWatchappId,
         backingId: "1338T1607599800000",
         timestamp: DateTime.utc(
           2020, //year
@@ -552,12 +552,12 @@ void main() async {
           30, //minute
         ),
         duration: 120,
-        type: TimelinePinType.PIN,
+        type: TimelinePinType.pin,
         isVisible: true,
         isFloating: false,
         isAllDay: false,
         persistQuickView: false,
-        layout: TimelinePinLayout.CALENDAR_PIN,
+        layout: TimelinePinLayout.calendarPin,
         nextSyncAction: NextSyncAction.Nothing,
         attributesJson: "",
       ),
@@ -571,7 +571,7 @@ void main() async {
     final expectedEvents = [
       TimelinePin(
         itemId: null,
-        parentId: CALENDAR_WATCHAPP_ID,
+        parentId: calendarWatchappId,
         backingId: "1338T1607599800000",
         timestamp: DateTime.utc(
           2020, //year
@@ -581,17 +581,17 @@ void main() async {
           30, //minute
         ),
         duration: 120,
-        type: TimelinePinType.PIN,
+        type: TimelinePinType.pin,
         isVisible: true,
         isFloating: false,
         isAllDay: false,
         persistQuickView: false,
-        layout: TimelinePinLayout.CALENDAR_PIN,
+        layout: TimelinePinLayout.calendarPin,
         nextSyncAction: NextSyncAction.Delete,
       ),
       TimelinePin(
         itemId: null,
-        parentId: CALENDAR_WATCHAPP_ID,
+        parentId: calendarWatchappId,
         backingId: "1337T1605004200000",
         timestamp: DateTime.utc(
           2020, //year
@@ -601,12 +601,12 @@ void main() async {
           30, //minute
         ),
         duration: 60,
-        type: TimelinePinType.PIN,
+        type: TimelinePinType.pin,
         isVisible: true,
         isFloating: false,
         isAllDay: false,
         persistQuickView: false,
-        layout: TimelinePinLayout.CALENDAR_PIN,
+        layout: TimelinePinLayout.calendarPin,
         nextSyncAction: NextSyncAction.Upload,
       ),
     ];
@@ -681,7 +681,7 @@ void main() async {
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
         itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
-        parentId: CALENDAR_WATCHAPP_ID,
+        parentId: calendarWatchappId,
         backingId: "1337T1604745000000",
         timestamp: DateTime.utc(
           2020, //year
@@ -691,12 +691,12 @@ void main() async {
           30, //minute
         ),
         duration: 60,
-        type: TimelinePinType.PIN,
+        type: TimelinePinType.pin,
         isVisible: true,
         isFloating: false,
         isAllDay: false,
         persistQuickView: false,
-        layout: TimelinePinLayout.CALENDAR_PIN,
+        layout: TimelinePinLayout.calendarPin,
         nextSyncAction: NextSyncAction.Nothing,
         attributesJson: "",
       ),
@@ -705,7 +705,7 @@ void main() async {
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
         itemId: Uuid("24b88efe-6b43-41cd-a1f6-06b0e5940f94"),
-        parentId: CALENDAR_WATCHAPP_ID,
+        parentId: calendarWatchappId,
         backingId: "1338T1605006000000",
         timestamp: DateTime.utc(
           2020, //year
@@ -715,12 +715,12 @@ void main() async {
           00, //minute
         ),
         duration: 60,
-        type: TimelinePinType.PIN,
+        type: TimelinePinType.pin,
         isVisible: true,
         isFloating: false,
         isAllDay: false,
         persistQuickView: false,
-        layout: TimelinePinLayout.CALENDAR_PIN,
+        layout: TimelinePinLayout.calendarPin,
         nextSyncAction: NextSyncAction.Nothing,
         attributesJson: "",
       ),
@@ -734,7 +734,7 @@ void main() async {
     final List<TimelinePin> expectedEvents = [
       TimelinePin(
         itemId: Uuid("24b88efe-6b43-41cd-a1f6-06b0e5940f94"),
-        parentId: CALENDAR_WATCHAPP_ID,
+        parentId: calendarWatchappId,
         backingId: "1338T1605006000000",
         timestamp: DateTime.utc(
           2020, //year
@@ -744,12 +744,12 @@ void main() async {
           00, //minute
         ),
         duration: 60,
-        type: TimelinePinType.PIN,
+        type: TimelinePinType.pin,
         isVisible: true,
         isFloating: false,
         isAllDay: false,
         persistQuickView: false,
-        layout: TimelinePinLayout.CALENDAR_PIN,
+        layout: TimelinePinLayout.calendarPin,
         nextSyncAction: NextSyncAction.Upload,
         attributesJson: "",
       )
@@ -919,7 +919,7 @@ void main() async {
         final expectedEvents = [
           TimelinePin(
             itemId: null,
-            parentId: CALENDAR_WATCHAPP_ID,
+            parentId: calendarWatchappId,
             backingId: "1338T1605004200000",
             timestamp: DateTime.utc(
               2020, //year
@@ -929,17 +929,17 @@ void main() async {
               30, //minute
             ),
             duration: 60 + 15,
-            type: TimelinePinType.PIN,
+            type: TimelinePinType.pin,
             isVisible: true,
             isFloating: false,
             isAllDay: false,
             persistQuickView: false,
-            layout: TimelinePinLayout.CALENDAR_PIN,
+            layout: TimelinePinLayout.calendarPin,
             nextSyncAction: NextSyncAction.Upload,
           ),
           TimelinePin(
             itemId: null,
-            parentId: CALENDAR_WATCHAPP_ID,
+            parentId: calendarWatchappId,
             backingId: "1339T1605009600000",
             timestamp: DateTime.utc(
               2020, //year
@@ -949,17 +949,17 @@ void main() async {
               00, //minute
             ),
             duration: 60 * 3,
-            type: TimelinePinType.PIN,
+            type: TimelinePinType.pin,
             isVisible: true,
             isFloating: false,
             isAllDay: false,
             persistQuickView: false,
-            layout: TimelinePinLayout.CALENDAR_PIN,
+            layout: TimelinePinLayout.calendarPin,
             nextSyncAction: NextSyncAction.Upload,
           ),
           TimelinePin(
             itemId: null,
-            parentId: CALENDAR_WATCHAPP_ID,
+            parentId: calendarWatchappId,
             backingId: "1340T1605268800000",
             timestamp: DateTime.utc(
               2020, //year
@@ -969,17 +969,17 @@ void main() async {
               00, //minute
             ),
             duration: 60 * 3,
-            type: TimelinePinType.PIN,
+            type: TimelinePinType.pin,
             isVisible: true,
             isFloating: false,
             isAllDay: false,
             persistQuickView: false,
-            layout: TimelinePinLayout.CALENDAR_PIN,
+            layout: TimelinePinLayout.calendarPin,
             nextSyncAction: NextSyncAction.Upload,
           ),
           TimelinePin(
             itemId: null,
-            parentId: CALENDAR_WATCHAPP_ID,
+            parentId: calendarWatchappId,
             backingId: "1341T1605396600000",
             timestamp: DateTime.utc(
               2020, //year
@@ -989,12 +989,12 @@ void main() async {
               30, //minute
             ),
             duration: 60,
-            type: TimelinePinType.PIN,
+            type: TimelinePinType.pin,
             isVisible: true,
             isFloating: false,
             isAllDay: false,
             persistQuickView: false,
-            layout: TimelinePinLayout.CALENDAR_PIN,
+            layout: TimelinePinLayout.calendarPin,
             nextSyncAction: NextSyncAction.Upload,
           ),
         ];
@@ -1076,7 +1076,7 @@ void main() async {
     final expectedEvents = [
       TimelinePin(
         itemId: null,
-        parentId: CALENDAR_WATCHAPP_ID,
+        parentId: calendarWatchappId,
         backingId: "1337T1605004200000",
         timestamp: DateTime.utc(
           2020, //year
@@ -1086,12 +1086,12 @@ void main() async {
           30, //minute
         ),
         duration: 60,
-        type: TimelinePinType.PIN,
+        type: TimelinePinType.pin,
         isVisible: true,
         isFloating: false,
         isAllDay: false,
         persistQuickView: false,
-        layout: TimelinePinLayout.CALENDAR_PIN,
+        layout: TimelinePinLayout.calendarPin,
         nextSyncAction: NextSyncAction.Upload,
       ),
     ];

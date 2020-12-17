@@ -38,7 +38,7 @@ class CalendarList extends StateNotifier<AsyncValue<List<SelectableCalendar>>> {
     final preferences = await _preferencesFuture;
     await preferences.reload();
     _blacklistedCalendars =
-        preferences.getStringList(_PREFERENCES_KEY_BLACKLISTED_CALENDARS) ??
+        preferences.getStringList(_preferencesKeyBlacklistedCalendars) ??
             List.empty();
 
     final calendars = await _deviceCalendarPlugin.retrieveCalendars();
@@ -65,7 +65,7 @@ class CalendarList extends StateNotifier<AsyncValue<List<SelectableCalendar>>> {
 
     _blacklistedCalendars = newBlacklist;
     await preferences.setStringList(
-        _PREFERENCES_KEY_BLACKLISTED_CALENDARS, newBlacklist);
+        _preferencesKeyBlacklistedCalendars, newBlacklist);
     await _refresh();
   }
 }
@@ -75,8 +75,7 @@ final calendarListProvider = StateNotifierProvider<CalendarList>((ref) {
   final permissionCheck = ref.watch(permissionCheckProvider);
   final sharedPreferences = ref.read(sharedPreferencesProvider);
 
-  return CalendarList(
-      deviceCalendarPlugin, permissionCheck, sharedPreferences);
+  return CalendarList(deviceCalendarPlugin, permissionCheck, sharedPreferences);
 });
 
-const _PREFERENCES_KEY_BLACKLISTED_CALENDARS = "blacklisted_calendars";
+const _preferencesKeyBlacklistedCalendars = "blacklisted_calendars";

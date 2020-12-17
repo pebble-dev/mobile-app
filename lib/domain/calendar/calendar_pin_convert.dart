@@ -52,7 +52,7 @@ extension CalendarEventConverter on Event {
     paragraphs.add(calendar.name);
 
     return [
-      TimelineAttribute.tinyIcon(TimelineIcon.TIMELINE_CALENDAR),
+      TimelineAttribute.tinyIcon(TimelineIcon.timelineCalendar),
       TimelineAttribute.title(title),
       if (location != null) TimelineAttribute.locationName(location),
       if (recurrenceRule != null) TimelineAttribute.displayRecurring(true),
@@ -65,16 +65,16 @@ extension CalendarEventConverter on Event {
       String attributesJson, String actionsJson) {
     return TimelinePin(
         itemId: null,
-        parentId: CALENDAR_WATCHAPP_ID,
+        parentId: calendarWatchappId,
         backingId: createCompositeBackingId(),
         timestamp: start,
         duration: end.difference(start).inMinutes,
-        type: TimelinePinType.PIN,
+        type: TimelinePinType.pin,
         isVisible: true,
         isFloating: false,
         isAllDay: allDay,
         persistQuickView: false,
-        layout: TimelinePinLayout.CALENDAR_PIN,
+        layout: TimelinePinLayout.calendarPin,
         attributesJson: attributesJson,
         actionsJson: actionsJson,
         nextSyncAction: NextSyncAction.Upload);
@@ -96,4 +96,5 @@ extension CalendarEventConverter on Event {
     return rawDescription.replaceAll(htmlTags, "").trimWithEllipsis(500);
   }
 }
-final CALENDAR_WATCHAPP_ID = Uuid("6c6c6fc2-1912-4d25-8396-3547d1dfac5b");
+
+final calendarWatchappId = Uuid("6c6c6fc2-1912-4d25-8396-3547d1dfac5b");

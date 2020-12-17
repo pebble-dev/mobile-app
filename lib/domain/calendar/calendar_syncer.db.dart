@@ -37,7 +37,7 @@ class CalendarSyncer {
     // 1 day is added since we need to get the start of the next day
     // 1 day is added for the 1-day sync buffer
     final syncEndDate =
-        _getStartOfDay(now.add(Duration(days: _SYNC_RANGE_DAYS + 2)));
+        _getStartOfDay(now.add(Duration(days: _syncRangeDays + 2)));
 
     final retrieveEventParams =
         RetrieveEventsParams(startDate: now, endDate: syncEndDate);
@@ -69,7 +69,7 @@ class CalendarSyncer {
         ));
 
     final existingPins =
-        (await _timelinePinDao.getPinsFromParent(CALENDAR_WATCHAPP_ID))
+    (await _timelinePinDao.getPinsFromParent(calendarWatchappId))
             .toList();
 
     for (TimelinePin newPin in newPins) {
@@ -142,4 +142,4 @@ final calendarSyncerProvider = Provider.autoDispose<CalendarSyncer>((ref) {
 });
 
 /// Only sync events between now and following days in the future
-const _SYNC_RANGE_DAYS = 3;
+const _syncRangeDays = 3;
