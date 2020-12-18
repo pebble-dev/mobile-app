@@ -65,7 +65,9 @@ class CalendarList extends StateNotifier<AsyncValue<List<SelectableCalendar>>> {
 
     _blacklistedCalendars = newBlacklist;
     await preferences.setStringList(
-        _preferencesKeyBlacklistedCalendars, newBlacklist);
+      _preferencesKeyBlacklistedCalendars,
+      newBlacklist,
+    );
     await _refresh();
   }
 }

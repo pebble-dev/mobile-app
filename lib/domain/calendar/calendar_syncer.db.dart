@@ -35,8 +35,9 @@ class CalendarSyncer {
 
     final now = _dateTimeProvider();
     // 1 day is added since we need to get the start of the next day
-    final syncEndDate =
-        _getStartOfDay(now.add(Duration(days: _syncRangeDays + 1)));
+    final syncEndDate = _getStartOfDay(
+      now.add(Duration(days: _syncRangeDays + 1)),
+    );
 
     final retrieveEventParams =
         RetrieveEventsParams(startDate: now, endDate: syncEndDate);
@@ -62,18 +63,18 @@ class CalendarSyncer {
 
     bool anyChanges = false;
 
-    final newPins = allCalendarEvents.map((e) => e.event.generateBasicEventData(
+    final newPins = allCalendarEvents.map((e) =>
+        e.event.generateBasicEventData(
           serializeAttributesToJson(e.event.getAttributes(e.calendar)),
           null,
         ));
 
     final existingPins =
-    (await _timelinePinDao.getPinsFromParent(calendarWatchappId))
-            .toList();
+    await _timelinePinDao.getPinsFromParent(calendarWatchappId);
 
     for (TimelinePin newPin in newPins) {
       final existingPin = existingPins.firstWhere(
-        (element) => element.backingId == newPin.backingId,
+            (element) => element.backingId == newPin.backingId,
         orElse: () => null,
       );
 

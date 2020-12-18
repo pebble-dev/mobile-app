@@ -38,7 +38,9 @@ class WatchTimelineSyncer {
         }
 
         await timelinePinDao.setSyncAction(
-            pinToSync.itemId, NextSyncAction.Nothing);
+          pinToSync.itemId,
+          NextSyncAction.Nothing,
+        );
       }
     } catch (e) {
       // Log error to native
