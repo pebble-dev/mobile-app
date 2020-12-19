@@ -35,9 +35,9 @@ class CalendarSyncer {
 
     final now = _dateTimeProvider();
     // 1 day is added since we need to get the start of the next day
-    // 1 day is added for the 1-day sync buffer
-    final syncEndDate =
-        _getStartOfDay(now.add(Duration(days: _SYNC_RANGE_DAYS + 2)));
+    final syncEndDate = _getStartOfDay(
+      now.add(Duration(days: _syncRangeDays + 1)),
+    );
 
     final retrieveEventParams =
         RetrieveEventsParams(startDate: now, endDate: syncEndDate);
@@ -63,18 +63,18 @@ class CalendarSyncer {
 
     bool anyChanges = false;
 
-    final newPins = allCalendarEvents.map((e) => e.event.generateBasicEventData(
+    final newPins = allCalendarEvents.map((e) =>
+        e.event.generateBasicEventData(
           serializeAttributesToJson(e.event.getAttributes(e.calendar)),
           null,
         ));
 
     final existingPins =
-        (await _timelinePinDao.getPinsFromParent(CALENDAR_WATCHAPP_ID))
-            .toList();
+    await _timelinePinDao.getPinsFromParent(calendarWatchappId);
 
     for (TimelinePin newPin in newPins) {
       final existingPin = existingPins.firstWhere(
-        (element) => element.backingId == newPin.backingId,
+            (element) => element.backingId == newPin.backingId,
         orElse: () => null,
       );
 
@@ -96,11 +96,10 @@ class CalendarSyncer {
     }
 
     for (final pin in existingPins) {
-      if (pin.timestamp.add(Duration(seconds: pin.duration)).isBefore(now)) {
+      if (pin.timestamp.add(Duration(minutes: pin.duration)).isBefore(now)) {
         await _timelinePinDao.delete(pin.itemId);
         anyChanges = true;
-      }
-      else if (!newPins.any((newPin) => newPin.backingId == pin.backingId)) {
+      } else if (!newPins.any((newPin) => newPin.backingId == pin.backingId)) {
         await _timelinePinDao.setSyncAction(pin.itemId, NextSyncAction.Delete);
         anyChanges = true;
       }
@@ -143,4 +142,4 @@ final calendarSyncerProvider = Provider.autoDispose<CalendarSyncer>((ref) {
 });
 
 /// Only sync events between now and following days in the future
-const _SYNC_RANGE_DAYS = 3;
+const _syncRangeDays = 6;

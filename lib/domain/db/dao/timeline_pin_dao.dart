@@ -14,14 +14,14 @@ class TimelinePinDao {
   Future<void> insertOrUpdateTimelinePin(TimelinePin pin) async {
     final db = await _dbFuture;
 
-    db.insert(TABLE_TIMELINE_PINS, pin.toMap(),
+    db.insert(tableTimelinePins, pin.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<TimelinePin>> getAllPins() async {
     final db = await _dbFuture;
 
-    return (await db.query(TABLE_TIMELINE_PINS))
+    return (await db.query(tableTimelinePins))
         .map((e) => TimelinePin.fromMap(e))
         .toList();
   }
@@ -30,7 +30,7 @@ class TimelinePinDao {
     final db = await _dbFuture;
 
     return (await db.query(
-      TABLE_TIMELINE_PINS,
+      tableTimelinePins,
       where: "parentId = ?",
       whereArgs: [parentId.toString()],
     ))
@@ -38,13 +38,20 @@ class TimelinePinDao {
         .toList();
   }
 
-  Future<List<TimelinePin>> getAllPinsWithPendingSyncAction() async {
+  Future<List<TimelinePin>> getAllPinsWithPendingUpload() async {
     final db = await _dbFuture;
 
-    return (await db.query(
-      TABLE_TIMELINE_PINS,
-      where: "nextSyncAction <> \"Nothing\"",
-    ))
+    return (await db.query(tableTimelinePins,
+            where: "nextSyncAction = \"Upload\"", orderBy: "timestamp ASC"))
+        .map((e) => TimelinePin.fromMap(e))
+        .toList();
+  }
+
+  Future<List<TimelinePin>> getAllPinsWithPendingDelete() async {
+    final db = await _dbFuture;
+
+    return (await db.query(tableTimelinePins,
+            where: "nextSyncAction = \"Delete\""))
         .map((e) => TimelinePin.fromMap(e))
         .toList();
   }
@@ -54,7 +61,7 @@ class TimelinePinDao {
     final db = await _dbFuture;
 
     await db.update(
-        TABLE_TIMELINE_PINS,
+        tableTimelinePins,
         {
           "nextSyncAction":
               TimelinePin.nextSyncActionEnumMap()[newNextSyncAction]
@@ -66,13 +73,13 @@ class TimelinePinDao {
   Future<void> delete(Uuid itemId) async {
     final db = await _dbFuture;
 
-    await db.delete(TABLE_TIMELINE_PINS,
+    await db.delete(tableTimelinePins,
         where: "itemId = ?", whereArgs: [itemId.toString()]);
   }
 
   Future<void> deleteAll() async {
     final db = await _dbFuture;
-    await db.delete(TABLE_TIMELINE_PINS);
+    await db.delete(tableTimelinePins);
   }
 }
 
@@ -81,4 +88,4 @@ final timelinePinDaoProvider = Provider.autoDispose((ref) {
   return TimelinePinDao(dbFuture);
 });
 
-const TABLE_TIMELINE_PINS = "timeline_pin";
+const tableTimelinePins = "timeline_pin";

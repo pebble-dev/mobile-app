@@ -15,29 +15,32 @@ class WatchTimelineSyncer {
 
   Future<int> syncPinDatabaseWithWatch() async {
     try {
-      final pins = await timelinePinDao.getAllPinsWithPendingSyncAction();
-      for (final pinToSync in pins) {
-        if (pinToSync.nextSyncAction == NextSyncAction.Upload) {
-          final res = await timelineControl.addPin(pinToSync.toPigeon());
+      final pinsToDelete = await timelinePinDao.getAllPinsWithPendingDelete();
+      for (final pinToDelete in pinsToDelete) {
+        final StringWrapper idWrapper = StringWrapper();
+        idWrapper.value = pinToDelete.itemId.toString();
 
-          if (res.value != statusSuccess) {
-            return res.value;
-          }
+        final res = await timelineControl.removePin(idWrapper);
 
-          await timelinePinDao.setSyncAction(
-              pinToSync.itemId, NextSyncAction.Nothing);
-        } else if (pinToSync.nextSyncAction == NextSyncAction.Delete) {
-          final StringWrapper idWrapper = StringWrapper();
-          idWrapper.value = pinToSync.itemId.toString();
-
-          final res = await timelineControl.removePin(idWrapper);
-
-          if (res.value != statusSuccess) {
-            return res.value;
-          }
-
-          await timelinePinDao.delete(pinToSync.itemId);
+        if (res.value != statusSuccess) {
+          return res.value;
         }
+
+        await timelinePinDao.delete(pinToDelete.itemId);
+      }
+
+      final pinsToUpload = await timelinePinDao.getAllPinsWithPendingUpload();
+      for (final pinToSync in pinsToUpload) {
+        final res = await timelineControl.addPin(pinToSync.toPigeon());
+
+        if (res.value != statusSuccess) {
+          return res.value;
+        }
+
+        await timelinePinDao.setSyncAction(
+          pinToSync.itemId,
+          NextSyncAction.Nothing,
+        );
       }
     } catch (e) {
       // Log error to native
@@ -60,7 +63,7 @@ class WatchTimelineSyncer {
 }
 
 final watchTimelineSyncerProvider =
-    Provider.autoDispose<WatchTimelineSyncer>((ref) {
+Provider.autoDispose<WatchTimelineSyncer>((ref) {
   final timelinePinDao = ref.watch(timelinePinDaoProvider);
 
   return WatchTimelineSyncer(timelinePinDao);

@@ -5,6 +5,7 @@ import 'package:cobble/domain/db/models/timeline_pin_layout.dart';
 import 'package:cobble/domain/db/models/timeline_pin_type.dart';
 import 'package:cobble/domain/timeline/timeline_attribute.dart';
 import 'package:cobble/domain/timeline/timeline_icon.dart';
+import 'package:cobble/util/string_extensions.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:uuid_type/uuid_type.dart';
 
@@ -12,6 +13,11 @@ extension CalendarEventConverter on Event {
   List<TimelineAttribute> getAttributes(SelectableCalendar calendar) {
     final List<String> headings = [];
     final List<String> paragraphs = [];
+
+    if (description != null) {
+      headings.add("");
+      paragraphs.add(_transformDescription(description));
+    }
 
     if (attendees != null && attendees.isNotEmpty) {
       headings.add("Attendees");
@@ -46,9 +52,8 @@ extension CalendarEventConverter on Event {
     paragraphs.add(calendar.name);
 
     return [
-      TimelineAttribute.tinyIcon(TimelineIcon.TIMELINE_CALENDAR),
+      TimelineAttribute.tinyIcon(TimelineIcon.timelineCalendar),
       TimelineAttribute.title(title),
-      if (description != null) TimelineAttribute.body(description),
       if (location != null) TimelineAttribute.locationName(location),
       if (recurrenceRule != null) TimelineAttribute.displayRecurring(true),
       TimelineAttribute.headings(headings),
@@ -60,16 +65,16 @@ extension CalendarEventConverter on Event {
       String attributesJson, String actionsJson) {
     return TimelinePin(
         itemId: null,
-        parentId: CALENDAR_WATCHAPP_ID,
+        parentId: calendarWatchappId,
         backingId: createCompositeBackingId(),
         timestamp: start,
         duration: end.difference(start).inMinutes,
-        type: TimelinePinType.PIN,
+        type: TimelinePinType.pin,
         isVisible: true,
         isFloating: false,
         isAllDay: allDay,
         persistQuickView: false,
-        layout: TimelinePinLayout.CALENDAR_PIN,
+        layout: TimelinePinLayout.calendarPin,
         attributesJson: attributesJson,
         actionsJson: actionsJson,
         nextSyncAction: NextSyncAction.Upload);
@@ -84,6 +89,12 @@ extension CalendarEventConverter on Event {
   String createCompositeBackingId() {
     return "${eventId}T${start.millisecondsSinceEpoch}";
   }
+
+  String _transformDescription(String rawDescription) {
+    RegExp htmlTags = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+
+    return rawDescription.replaceAll(htmlTags, "").trimWithEllipsis(500);
+  }
 }
 
-final CALENDAR_WATCHAPP_ID = Uuid("6c6c6fc2-1912-4d25-8396-3547d1dfac5b");
+final calendarWatchappId = Uuid("6c6c6fc2-1912-4d25-8396-3547d1dfac5b");
