@@ -12,9 +12,10 @@ import '../logging.dart';
 /// Should only be used from background isolate
 class WatchTimelineSyncer {
   final TimelinePinDao timelinePinDao;
+  final TimelineSyncControl timelineSyncControl;
   final TimelineControl timelineControl = TimelineControl();
 
-  WatchTimelineSyncer(this.timelinePinDao);
+  WatchTimelineSyncer(this.timelinePinDao, this.timelineSyncControl);
 
   Future<bool> syncPinDatabaseWithWatch() async {
     final status = await _performSync();
@@ -43,7 +44,7 @@ class WatchTimelineSyncer {
       default:
         Log.w("Timeline Pin Sync failed ($status). Retrying later...");
         // We have no idea what has gone wrong
-        // TODO retry sync after some time
+        await this.timelineSyncControl.syncTimelineToWatchLater();
         return false;
     }
   }
@@ -100,6 +101,9 @@ class WatchTimelineSyncer {
 final watchTimelineSyncerProvider =
 Provider.autoDispose<WatchTimelineSyncer>((ref) {
   final timelinePinDao = ref.watch(timelinePinDaoProvider);
+  final timelineSyncControl = ref.watch(timelineSyncControlProvider);
 
-  return WatchTimelineSyncer(timelinePinDao);
+  return WatchTimelineSyncer(timelinePinDao, timelineSyncControl);
 });
+
+final timelineSyncControlProvider = Provider((ref) => TimelineSyncControl());

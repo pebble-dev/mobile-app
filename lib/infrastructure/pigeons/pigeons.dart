@@ -9,14 +9,12 @@ import 'package:flutter/services.dart';
 
 class StringWrapper {
   String value;
-
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['value'] = value;
     return pigeonMap;
   }
-
   // ignore: unused_element
   static StringWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final StringWrapper result = StringWrapper();
@@ -27,14 +25,12 @@ class StringWrapper {
 
 class BooleanWrapper {
   bool value;
-
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['value'] = value;
     return pigeonMap;
   }
-
   // ignore: unused_element
   static BooleanWrapper _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final BooleanWrapper result = BooleanWrapper();
@@ -292,7 +288,6 @@ class PigeonLogger {
       // noop
     }
   }
-
   Future<void> d(StringWrapper arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =
@@ -315,7 +310,6 @@ class PigeonLogger {
       // noop
     }
   }
-
   Future<void> i(StringWrapper arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =
@@ -338,7 +332,6 @@ class PigeonLogger {
       // noop
     }
   }
-
   Future<void> w(StringWrapper arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =
@@ -361,7 +354,6 @@ class PigeonLogger {
       // noop
     }
   }
-
   Future<void> e(StringWrapper arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =
@@ -596,7 +588,6 @@ class PermissionControl {
       return NumberWrapper._fromMap(replyMap['result']);
     }
   }
-
   Future<void> requestNotificationAccess() async {
     const BasicMessageChannel<dynamic> channel =
     BasicMessageChannel<dynamic>(
@@ -619,7 +610,6 @@ class PermissionControl {
       // noop
     }
   }
-
   Future<void> requestBatteryExclusion() async {
     const BasicMessageChannel<dynamic> channel =
     BasicMessageChannel<dynamic>(
@@ -882,6 +872,31 @@ abstract class ScanCallbacks {
   }
 }
 
+class TimelineSyncControl {
+  Future<void> syncTimelineToWatchLater() async {
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.TimelineSyncControl.syncTimelineToWatchLater',
+        StandardMessageCodec());
+
+    final Map<dynamic, dynamic> replyMap = await channel.send(null);
+    if (replyMap == null) {
+      throw PlatformException(
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      // noop
+    }
+  }
+}
+
 class KeepUnusedHack {
   Future<void> keepPebbleScanDevicePigeon(PebbleScanDevicePigeon arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
@@ -1040,6 +1055,26 @@ abstract class ConnectionCallbacks {
           final WatchConnectionStatePigeon input = WatchConnectionStatePigeon
               ._fromMap(mapMessage);
           api.onWatchConnectionStateChanged(input);
+        });
+      }
+    }
+  }
+}
+
+abstract class TimelineSyncCallbacks {
+  void syncTimelineToWatch();
+
+  static void setup(TimelineSyncCallbacks api) {
+    {
+      const BasicMessageChannel<dynamic> channel =
+      BasicMessageChannel<dynamic>(
+          'dev.flutter.pigeon.TimelineSyncCallbacks.syncTimelineToWatch',
+          StandardMessageCodec());
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((dynamic message) async {
+          api.syncTimelineToWatch();
         });
       }
     }

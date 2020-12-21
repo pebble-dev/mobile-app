@@ -94,6 +94,7 @@ class FlutterBackgroundController @Inject constructor(
 
             dartInitWait.join()
             backgroundFlutterSubcomponentFactory.create(flutterEngine).createCommonBridges()
+            backgroundFlutterSubcomponentFactory.create(flutterEngine).createBackgroundBridges()
             androidSideReadyCompletable.complete(Unit)
 
             return@coroutineScope flutterEngine

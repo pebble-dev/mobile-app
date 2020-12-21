@@ -44,9 +44,7 @@ public class Pigeons {
         }
     }
 
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
+    /** Generated class from Pigeon that represents data sent in messages. */
     public static class BooleanWrapper {
         private Boolean value;
 
@@ -181,22 +179,46 @@ public class Pigeons {
         }
 
         private Boolean persistQuickView;
-    public Boolean getPersistQuickView() { return persistQuickView; }
-    public void setPersistQuickView(Boolean setterArg) { this.persistQuickView = setterArg; }
 
-    private Long layout;
-    public Long getLayout() { return layout; }
-    public void setLayout(Long setterArg) { this.layout = setterArg; }
+        public Boolean getPersistQuickView() {
+            return persistQuickView;
+        }
 
-    private String attributesJson;
-    public String getAttributesJson() { return attributesJson; }
-    public void setAttributesJson(String setterArg) { this.attributesJson = setterArg; }
+        public void setPersistQuickView(Boolean setterArg) {
+            this.persistQuickView = setterArg;
+        }
 
-    private String actionsJson;
-    public String getActionsJson() { return actionsJson; }
-    public void setActionsJson(String setterArg) { this.actionsJson = setterArg; }
+        private Long layout;
 
-    HashMap toMap() {
+        public Long getLayout() {
+            return layout;
+        }
+
+        public void setLayout(Long setterArg) {
+            this.layout = setterArg;
+        }
+
+        private String attributesJson;
+
+        public String getAttributesJson() {
+            return attributesJson;
+        }
+
+        public void setAttributesJson(String setterArg) {
+            this.attributesJson = setterArg;
+        }
+
+        private String actionsJson;
+
+        public String getActionsJson() {
+            return actionsJson;
+        }
+
+        public void setActionsJson(String setterArg) {
+            this.actionsJson = setterArg;
+        }
+
+        HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("itemId", itemId);
       toMapResult.put("parentId", parentId);
@@ -349,26 +371,27 @@ public class Pigeons {
             toMapResult.put("name", name);
             toMapResult.put("address", address);
             toMapResult.put("version", version);
-      toMapResult.put("serialNumber", serialNumber);
-      toMapResult.put("color", color);
-      toMapResult.put("runningPRF", runningPRF);
-      toMapResult.put("firstUse", firstUse);
-      return toMapResult;
-    }
-    static PebbleScanDevicePigeon fromMap(HashMap map) {
-      PebbleScanDevicePigeon fromMapResult = new PebbleScanDevicePigeon();
-      Object name = map.get("name");
-      fromMapResult.name = (String)name;
-      Object address = map.get("address");
-      fromMapResult.address = (address == null) ? null : ((address instanceof Integer) ? (Integer)address : (Long)address);
-      Object version = map.get("version");
-      fromMapResult.version = (String)version;
-      Object serialNumber = map.get("serialNumber");
-      fromMapResult.serialNumber = (String)serialNumber;
-      Object color = map.get("color");
-      fromMapResult.color = (color == null) ? null : ((color instanceof Integer) ? (Integer)color : (Long)color);
-      Object runningPRF = map.get("runningPRF");
-      fromMapResult.runningPRF = (Boolean)runningPRF;
+            toMapResult.put("serialNumber", serialNumber);
+            toMapResult.put("color", color);
+            toMapResult.put("runningPRF", runningPRF);
+            toMapResult.put("firstUse", firstUse);
+            return toMapResult;
+        }
+
+        static PebbleScanDevicePigeon fromMap(HashMap map) {
+            PebbleScanDevicePigeon fromMapResult = new PebbleScanDevicePigeon();
+            Object name = map.get("name");
+            fromMapResult.name = (String) name;
+            Object address = map.get("address");
+            fromMapResult.address = (address == null) ? null : ((address instanceof Integer) ? (Integer) address : (Long) address);
+            Object version = map.get("version");
+            fromMapResult.version = (String) version;
+            Object serialNumber = map.get("serialNumber");
+            fromMapResult.serialNumber = (String) serialNumber;
+            Object color = map.get("color");
+            fromMapResult.color = (color == null) ? null : ((color instanceof Integer) ? (Integer) color : (Long) color);
+            Object runningPRF = map.get("runningPRF");
+            fromMapResult.runningPRF = (Boolean)runningPRF;
       Object firstUse = map.get("firstUse");
       fromMapResult.firstUse = (Boolean)firstUse;
       return fromMapResult;
@@ -477,23 +500,23 @@ public class Pigeons {
       return toMapResult;
     }
     static PebbleDevicePigeon fromMap(HashMap map) {
-      PebbleDevicePigeon fromMapResult = new PebbleDevicePigeon();
-      Object name = map.get("name");
-      fromMapResult.name = (String)name;
-      Object address = map.get("address");
-      fromMapResult.address = (address == null) ? null : ((address instanceof Integer) ? (Integer)address : (Long)address);
-      Object runningFirmware = map.get("runningFirmware");
-      fromMapResult.runningFirmware = PebbleFirmwarePigeon.fromMap((HashMap)runningFirmware);
-      Object recoveryFirmware = map.get("recoveryFirmware");
-      fromMapResult.recoveryFirmware = PebbleFirmwarePigeon.fromMap((HashMap)recoveryFirmware);
-      Object model = map.get("model");
-      fromMapResult.model = (model == null) ? null : ((model instanceof Integer) ? (Integer)model : (Long)model);
-      Object bootloaderTimestamp = map.get("bootloaderTimestamp");
-      fromMapResult.bootloaderTimestamp = (bootloaderTimestamp == null) ? null : ((bootloaderTimestamp instanceof Integer) ? (Integer)bootloaderTimestamp : (Long)bootloaderTimestamp);
-      Object board = map.get("board");
-      fromMapResult.board = (String)board;
-      Object serial = map.get("serial");
-      fromMapResult.serial = (String) serial;
+        PebbleDevicePigeon fromMapResult = new PebbleDevicePigeon();
+        Object name = map.get("name");
+        fromMapResult.name = (String) name;
+        Object address = map.get("address");
+        fromMapResult.address = (address == null) ? null : ((address instanceof Integer) ? (Integer) address : (Long) address);
+        Object runningFirmware = map.get("runningFirmware");
+        fromMapResult.runningFirmware = PebbleFirmwarePigeon.fromMap((HashMap) runningFirmware);
+        Object recoveryFirmware = map.get("recoveryFirmware");
+        fromMapResult.recoveryFirmware = PebbleFirmwarePigeon.fromMap((HashMap) recoveryFirmware);
+        Object model = map.get("model");
+        fromMapResult.model = (model == null) ? null : ((model instanceof Integer) ? (Integer) model : (Long) model);
+        Object bootloaderTimestamp = map.get("bootloaderTimestamp");
+        fromMapResult.bootloaderTimestamp = (bootloaderTimestamp == null) ? null : ((bootloaderTimestamp instanceof Integer) ? (Integer) bootloaderTimestamp : (Long) bootloaderTimestamp);
+        Object board = map.get("board");
+        fromMapResult.board = (String) board;
+        Object serial = map.get("serial");
+        fromMapResult.serial = (String) serial;
         Object language = map.get("language");
         fromMapResult.language = (String) language;
         Object languageVersion = map.get("languageVersion");
@@ -726,9 +749,7 @@ public class Pigeons {
 
         void startClassicScan();
 
-        /**
-         * Sets up an instance of `ScanControl` to handle messages through the `binaryMessenger`
-         */
+        /** Sets up an instance of `ScanControl` to handle messages through the `binaryMessenger` */
         static void setup(BinaryMessenger binaryMessenger, ScanControl api) {
             {
                 BasicMessageChannel<Object> channel =
@@ -741,26 +762,25 @@ public class Pigeons {
                             wrapped.put("result", null);
                         } catch (Exception exception) {
                             wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
             }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ScanControl.startClassicScan", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              api.startClassicScan();
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ScanControl.startClassicScan", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            api.startClassicScan();
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
             reply.reply(wrapped);
           });
         } else {
@@ -881,13 +901,13 @@ public class Pigeons {
             new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.BackgroundControl.notifyFlutterBackgroundStarted", new StandardMessageCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              api.notifyFlutterBackgroundStarted();
-              wrapped.put("result", null);
-            } catch (Exception exception) {
-                wrapped.put("error", wrapError(exception));
-            }
+              HashMap<String, HashMap> wrapped = new HashMap<>();
+              try {
+                  api.notifyFlutterBackgroundStarted();
+                  wrapped.put("result", null);
+              } catch (Exception exception) {
+                  wrapped.put("error", wrapError(exception));
+              }
               reply.reply(wrapped);
           });
         } else {
@@ -1155,15 +1175,15 @@ public class Pigeons {
             new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.BackgroundSetupControl.setupBackground", new StandardMessageCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              NumberWrapper input = NumberWrapper.fromMap((HashMap)message);
-              api.setupBackground(input);
-              wrapped.put("result", null);
-            } catch (Exception exception) {
-                wrapped.put("error", wrapError(exception));
-            }
+              HashMap<String, HashMap> wrapped = new HashMap<>();
+              try {
+                  @SuppressWarnings("ConstantConditions")
+                  NumberWrapper input = NumberWrapper.fromMap((HashMap) message);
+                  api.setupBackground(input);
+                  wrapped.put("result", null);
+              } catch (Exception exception) {
+                  wrapped.put("error", wrapError(exception));
+              }
               reply.reply(wrapped);
           });
         } else {
@@ -1210,6 +1230,37 @@ public class Pigeons {
             channel.send(null, channelReply -> {
                 callback.reply(null);
             });
+        }
+    }
+
+    /**
+     * Generated interface from Pigeon that represents a handler of messages from Flutter.
+     */
+    public interface TimelineSyncControl {
+        void syncTimelineToWatchLater();
+
+        /**
+         * Sets up an instance of `TimelineSyncControl` to handle messages through the `binaryMessenger`
+         */
+        static void setup(BinaryMessenger binaryMessenger, TimelineSyncControl api) {
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.TimelineSyncControl.syncTimelineToWatchLater", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            api.syncTimelineToWatchLater();
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
         }
     }
 
@@ -1386,6 +1437,29 @@ public class Pigeons {
     }
 
     /**
+     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
+     */
+    public static class TimelineSyncCallbacks {
+        private final BinaryMessenger binaryMessenger;
+
+        public TimelineSyncCallbacks(BinaryMessenger argBinaryMessenger) {
+            this.binaryMessenger = argBinaryMessenger;
+        }
+
+        public interface Reply<T> {
+            void reply(T reply);
+        }
+
+        public void syncTimelineToWatch(Reply<Void> callback) {
+            BasicMessageChannel<Object> channel =
+                    new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.TimelineSyncCallbacks.syncTimelineToWatch", new StandardMessageCodec());
+            channel.send(null, channelReply -> {
+                callback.reply(null);
+            });
+        }
+    }
+
+    /**
      * Generated interface from Pigeon that represents a handler of messages from Flutter.
      */
     public interface DebugControl {
@@ -1407,13 +1481,13 @@ public class Pigeons {
                         } catch (Exception exception) {
                             wrapped.put("error", wrapError(exception));
                         }
-              reply.reply(wrapped);
-          });
-        } else {
-            channel.setMessageHandler(null);
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
         }
-      }
-    }
     }
 
     /**

@@ -36,9 +36,9 @@ class TestTab extends HookWidget {
 
         final pairedDevice = PairedStorage.getDefault();
         if (pairedDevice != null) {
-          if (!(await permissionCheck.hasNotificationAccess()).value) {
-            permissionControl.requestNotificationAccess();
-          }
+          // if (!(await permissionCheck.hasNotificationAccess()).value) {
+          //   permissionControl.requestNotificationAccess();
+          // }
 
           if (!(await permissionCheck.hasBatteryExclusionEnabled()).value) {
             permissionControl.requestBatteryExclusion();
