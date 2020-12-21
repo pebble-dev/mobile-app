@@ -36,12 +36,14 @@ dependencies:
   state_notifier: ^0.6.0
   hooks_riverpod: ^0.12.0
   flutter_hooks: 0.14.1
-  # Fixed build of device_calendar is needed to work in the background.
-  # PR pending: https://github.com/builttoroam/device_calendar/pull/275
+  # We are using custom build of device_calendar with enhancements needed for Cobble app
+  # pending PRs:
+  # - https://github.com/builttoroam/device_calendar/pull/275
+  # - https://github.com/builttoroam/device_calendar/pull/256
   device_calendar:
     git:
       url: https://github.com/matejdro/device_calendar.git
-      ref: android_context_fix
+      ref: 0bf60ce72d20821640ad068e716f4a492db26894
   uuid_type: ^1.0.0
   path: ^1.7.0
   json_annotation: ^3.0.0
