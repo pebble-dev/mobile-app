@@ -57,6 +57,9 @@ class BackgroundReceiver implements CalendarCallbacks {
     if (lastConnectedWatch != watch.address) {
       Log.d("Different watch connected than the last one. Resetting DB...");
       await watchTimelineSyncer.clearAllPinsFromWatchAndResync();
+    } else if (watch.isUnfaithful) {
+      Log.d("Connected watch has beein unfaithful (tsk, tsk tsk). Reset DB...");
+      await watchTimelineSyncer.clearAllPinsFromWatchAndResync();
     } else {
       await syncTimelineToWatch();
     }
