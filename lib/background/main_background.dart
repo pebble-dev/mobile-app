@@ -52,9 +52,7 @@ class BackgroundReceiver implements CalendarCallbacks {
 
   Future syncTimelineToWatch() async {
     if (isConnectedToWatch()) {
-      final status = await watchTimelineSyncer.syncPinDatabaseWithWatch();
-      // TODO properly handle errors
-      print('Sync status $status');
+      await watchTimelineSyncer.syncPinDatabaseWithWatch();
     }
   }
 

@@ -4,6 +4,8 @@ import 'package:cobble/domain/timeline/blob_status.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.dart';
 import 'package:hooks_riverpod/all.dart';
 
+import '../logging.dart';
+
 /// Sync controller that handles synchronization between internal database and
 /// watch
 ///
@@ -14,7 +16,39 @@ class WatchTimelineSyncer {
 
   WatchTimelineSyncer(this.timelinePinDao);
 
-  Future<int> syncPinDatabaseWithWatch() async {
+  Future<bool> syncPinDatabaseWithWatch() async {
+    final status = await _performSync();
+
+    switch (status) {
+      case statusSuccess:
+        Log.d("Timeline Pin Sync OK");
+        return true;
+      case statusInvalidOperation:
+      case statusInvalidDatabaseId:
+      case statusInvalidData:
+      case statusKeyDoesNotExist:
+      case statusDataStale:
+      case statusNotSupported:
+      case statusLocked:
+        Log.e(
+            "Timeline Pin Sync failed due to a bug in the sync engine: $status");
+        return false;
+      case statusDatabaseFull:
+        Log.w("Timeline Pin Sync database is full");
+        // TODO display notification to the user
+        return true;
+      case statusGeneralFailure:
+      case statusTryLater:
+      case statusWatchDisconnected:
+      default:
+        Log.w("Timeline Pin Sync failed ($status). Retrying later...");
+        // We have no idea what has gone wrong
+        // TODO retry sync after some time
+        return false;
+    }
+  }
+
+  Future<int> _performSync() async {
     try {
       final pinsToDelete = await timelinePinDao.getAllPinsWithPendingDelete();
       for (final pinToDelete in pinsToDelete) {
