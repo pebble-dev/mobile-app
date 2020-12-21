@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.rebble.cobble.bridges.FlutterBridge
+import io.rebble.cobble.datasources.PermissionChangeBus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.plus
 import java.net.URI
@@ -36,6 +37,7 @@ class MainActivity : FlutterActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         activityPermissionCallbacks[requestCode]?.invoke(permissions, grantResults)
+        PermissionChangeBus.trigger()
     }
 
     private fun handleIntent(intent: Intent) {

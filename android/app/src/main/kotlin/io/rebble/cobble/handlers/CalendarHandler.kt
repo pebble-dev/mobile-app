@@ -11,8 +11,11 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import io.rebble.cobble.background.CalendarSyncWorker
 import io.rebble.cobble.bridges.background.CalendarFlutterBridge
+import io.rebble.cobble.datasources.PermissionChangeBus
 import io.rebble.cobble.util.Debouncer
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -21,9 +24,12 @@ import javax.inject.Inject
 
 class CalendarHandler @Inject constructor(
         private val context: Context,
-        coroutineScope: CoroutineScope,
+        private val coroutineScope: CoroutineScope,
         private val calendarFlutterBridge: CalendarFlutterBridge
 ) : PebbleMessageHandler {
+    private var initialSyncJob: Job? = null
+    private var calendarHandlerStarted = false
+
     val calendarDebouncer = Debouncer(debouncingTimeMs = 1_000, coroutineScope)
 
     private val contentObserver = object : ContentObserver(null) {
@@ -39,27 +45,52 @@ class CalendarHandler @Inject constructor(
     }
 
     init {
-        if (ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.READ_CALENDAR
-                ) == PackageManager.PERMISSION_GRANTED) {
-            coroutineScope.launch {
-                // We were not receiving any calendar changes when service was offline.
-                // Sync calendar at startup
+        startStopCalendar()
 
-                Timber.d("Watch service started. Syncing calendar...")
-                calendarFlutterBridge.syncCalendar()
-                Timber.d("Sync complete")
-            }
-
-            observeCalendarChanges()
-            schedulePeriodicCalendarSync()
-
-            coroutineScope.coroutineContext.job.invokeOnCompletion {
-                context.contentResolver.unregisterContentObserver(contentObserver)
-                WorkManager.getInstance(context).cancelAllWorkByTag(CALENDAR_WORK_TAG)
+        coroutineScope.launch {
+            PermissionChangeBus.openSubscription().consumeEach {
+                startStopCalendar()
             }
         }
+    }
+
+    private fun startStopCalendar() {
+        val hasPermission = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.READ_CALENDAR
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (hasPermission && !calendarHandlerStarted) {
+            startCalendarHandler()
+        } else if (!hasPermission && calendarHandlerStarted) {
+            stopCalendarHandler()
+        }
+    }
+
+    private fun startCalendarHandler() {
+        observeCalendarChanges()
+        schedulePeriodicCalendarSync()
+
+        initialSyncJob = coroutineScope.launch {
+            // We were not receiving any calendar changes when service was offline or we did not
+            // have permissions.
+            // Sync calendar
+
+            Timber.d("Watch service started or we received permissions. Syncing calendar...")
+            calendarFlutterBridge.syncCalendar()
+            Timber.d("Sync complete")
+        }
+
+        coroutineScope.coroutineContext.job.invokeOnCompletion {
+            stopCalendarHandler()
+        }
+    }
+
+    private fun stopCalendarHandler() {
+        initialSyncJob?.cancel()
+
+        context.contentResolver.unregisterContentObserver(contentObserver)
+        WorkManager.getInstance(context).cancelAllWorkByTag(CALENDAR_WORK_TAG)
     }
 
     private fun schedulePeriodicCalendarSync() {
