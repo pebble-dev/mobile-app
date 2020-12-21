@@ -1,4 +1,5 @@
 import 'package:cobble/domain/calendar/calendar_list.dart';
+import 'package:cobble/domain/calendar/device_calendar_plugin_provider.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/permissions.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
@@ -21,6 +22,7 @@ class TestTab extends HookWidget {
     final connectionState = useProvider(connectionStateProvider.state);
     final calendars = useProvider(calendarListProvider.state);
     final calendarSelector = useProvider(calendarListProvider);
+    final calendarControl = useProvider(calendarControlProvider);
 
     final permissionControl = useProvider(permissionControlProvider);
     final permissionCheck = useProvider(permissionCheckProvider);
@@ -151,6 +153,7 @@ class TestTab extends HookWidget {
                           value: e.enabled,
                           onChanged: (enabled) {
                             calendarSelector.setCalendarEnabled(e.id, enabled);
+                            calendarControl.requestCalendarSync();
                           },
                         ),
                         Text(e.name),

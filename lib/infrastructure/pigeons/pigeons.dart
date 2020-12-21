@@ -946,6 +946,31 @@ abstract class PairCallbacks {
   }
 }
 
+class CalendarControl {
+  Future<void> requestCalendarSync() async {
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.CalendarControl.requestCalendarSync',
+        StandardMessageCodec());
+
+    final Map<dynamic, dynamic> replyMap = await channel.send(null);
+    if (replyMap == null) {
+      throw PlatformException(
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      // noop
+    }
+  }
+}
+
 class PermissionCheck {
   Future<BooleanWrapper> hasLocationPermission() async {
     const BasicMessageChannel<dynamic> channel =
@@ -1063,7 +1088,6 @@ abstract class ConnectionCallbacks {
 
 abstract class TimelineSyncCallbacks {
   void syncTimelineToWatch();
-
   static void setup(TimelineSyncCallbacks api) {
     {
       const BasicMessageChannel<dynamic> channel =

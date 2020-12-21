@@ -200,6 +200,11 @@ abstract class PermissionControl {
 }
 
 @HostApi()
+abstract class CalendarControl {
+  void requestCalendarSync();
+}
+
+@HostApi()
 abstract class PigeonLogger {
   void v(StringWrapper message);
 
