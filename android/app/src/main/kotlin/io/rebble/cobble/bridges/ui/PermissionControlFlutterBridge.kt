@@ -34,8 +34,8 @@ class PermissionControlFlutterBridge @Inject constructor(
                 "dev.flutter.pigeon.PermissionControl.requestLocationPermission"
         ) {
             requestPermission(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    REQUEST_CODE_LOCATION
+                    REQUEST_CODE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
             ).toMapExt()
         }
 
@@ -44,8 +44,9 @@ class PermissionControlFlutterBridge @Inject constructor(
                 "dev.flutter.pigeon.PermissionControl.requestCalendarPermission"
         ) {
             requestPermission(
+                    REQUEST_CODE_CALENDAR,
                     Manifest.permission.READ_CALENDAR,
-                    REQUEST_CODE_CALENDAR
+                    Manifest.permission.WRITE_CALENDAR
             ).toMapExt()
         }
 
@@ -110,8 +111,8 @@ class PermissionControlFlutterBridge @Inject constructor(
     }
 
     private suspend fun requestPermission(
-            permission: String,
-            requestCode: Int
+            requestCode: Int,
+            vararg permissions: String
     ): Pigeons.NumberWrapper {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return NumberWrapper(0)
@@ -125,7 +126,7 @@ class PermissionControlFlutterBridge @Inject constructor(
             completableDeferred.complete(if (granted) {
                 0
             } else {
-                if (activity.shouldShowRequestPermissionRationale(permission)) {
+                if (permissions.any { activity.shouldShowRequestPermissionRationale(it) }) {
                     1
                 } else {
                     2
@@ -133,12 +134,12 @@ class PermissionControlFlutterBridge @Inject constructor(
             })
         }
 
-        activity.requestPermissions(arrayOf(permission), requestCode)
+        activity.requestPermissions(permissions, requestCode)
 
         val result = completableDeferred.await()
         return NumberWrapper(result)
     }
-
-    private val REQUEST_CODE_LOCATION = 123
-    private val REQUEST_CODE_CALENDAR = 124
 }
+
+private const val REQUEST_CODE_LOCATION = 123
+private const val REQUEST_CODE_CALENDAR = 124
