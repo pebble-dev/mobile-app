@@ -6,7 +6,8 @@ import 'package:hooks_riverpod/all.dart';
 
 /// Sync controller that handles synchronization between internal database and
 /// watch
-
+///
+/// Should only be used from background isolate
 class WatchTimelineSyncer {
   final TimelinePinDao timelinePinDao;
   final TimelineControl timelineControl = TimelineControl();
