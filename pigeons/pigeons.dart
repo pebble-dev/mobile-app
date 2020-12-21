@@ -194,6 +194,19 @@ abstract class PermissionControl {
   void openPermissionSettings();
 }
 
+@HostApi()
+abstract class PigeonLogger {
+  void v(StringWrapper message);
+
+  void d(StringWrapper message);
+
+  void i(StringWrapper message);
+
+  void w(StringWrapper message);
+
+  void e(StringWrapper message);
+}
+
 /// This class will keep all classes that appear in lists from being deleted
 /// by pigeon (they are not kept by default because pigeon does not support
 /// generics in lists).

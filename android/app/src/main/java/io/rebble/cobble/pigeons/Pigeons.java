@@ -10,39 +10,69 @@ import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.StandardMessageCodec;
 
-/** Generated class from Pigeon. */
+/**
+ * Generated class from Pigeon.
+ */
 @SuppressWarnings("unused")
 public class Pigeons {
-
-  /** Generated class from Pigeon that represents data sent in messages. */
-  public static class BooleanWrapper {
-      private Boolean value;
-
-      public Boolean getValue() {
-          return value;
-      }
-
-      public void setValue(Boolean setterArg) {
-          this.value = setterArg;
-      }
-
-      HashMap toMap() {
-          HashMap<String, Object> toMapResult = new HashMap<>();
-          toMapResult.put("value", value);
-          return toMapResult;
-      }
-
-      static BooleanWrapper fromMap(HashMap map) {
-          BooleanWrapper fromMapResult = new BooleanWrapper();
-          Object value = map.get("value");
-          fromMapResult.value = (Boolean) value;
-          return fromMapResult;
-      }
-  }
 
     /**
      * Generated class from Pigeon that represents data sent in messages.
      */
+    public static class StringWrapper {
+        private String value;
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String setterArg) {
+            this.value = setterArg;
+        }
+
+        HashMap toMap() {
+            HashMap<String, Object> toMapResult = new HashMap<>();
+            toMapResult.put("value", value);
+            return toMapResult;
+        }
+
+        static StringWrapper fromMap(HashMap map) {
+            StringWrapper fromMapResult = new StringWrapper();
+            Object value = map.get("value");
+            fromMapResult.value = (String) value;
+            return fromMapResult;
+        }
+    }
+
+    /**
+     * Generated class from Pigeon that represents data sent in messages.
+     */
+    public static class BooleanWrapper {
+        private Boolean value;
+
+        public Boolean getValue() {
+            return value;
+        }
+
+        public void setValue(Boolean setterArg) {
+            this.value = setterArg;
+        }
+
+        HashMap toMap() {
+            HashMap<String, Object> toMapResult = new HashMap<>();
+            toMapResult.put("value", value);
+            return toMapResult;
+        }
+
+        static BooleanWrapper fromMap(HashMap map) {
+            BooleanWrapper fromMapResult = new BooleanWrapper();
+            Object value = map.get("value");
+            fromMapResult.value = (Boolean) value;
+            return fromMapResult;
+        }
+    }
+
+    /** Generated class from Pigeon that represents data sent in messages. */
     public static class NumberWrapper {
         private Long value;
 
@@ -68,9 +98,7 @@ public class Pigeons {
         }
     }
 
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
+    /** Generated class from Pigeon that represents data sent in messages. */
     public static class TimelinePinPigeon {
         private String itemId;
 
@@ -113,22 +141,46 @@ public class Pigeons {
         }
 
         private Long duration;
-    public Long getDuration() { return duration; }
-    public void setDuration(Long setterArg) { this.duration = setterArg; }
 
-    private Boolean isVisible;
-    public Boolean getIsVisible() { return isVisible; }
-    public void setIsVisible(Boolean setterArg) { this.isVisible = setterArg; }
+        public Long getDuration() {
+            return duration;
+        }
 
-    private Boolean isFloating;
-    public Boolean getIsFloating() { return isFloating; }
-    public void setIsFloating(Boolean setterArg) { this.isFloating = setterArg; }
+        public void setDuration(Long setterArg) {
+            this.duration = setterArg;
+        }
 
-    private Boolean isAllDay;
-    public Boolean getIsAllDay() { return isAllDay; }
-    public void setIsAllDay(Boolean setterArg) { this.isAllDay = setterArg; }
+        private Boolean isVisible;
 
-    private Boolean persistQuickView;
+        public Boolean getIsVisible() {
+            return isVisible;
+        }
+
+        public void setIsVisible(Boolean setterArg) {
+            this.isVisible = setterArg;
+        }
+
+        private Boolean isFloating;
+
+        public Boolean getIsFloating() {
+            return isFloating;
+        }
+
+        public void setIsFloating(Boolean setterArg) {
+            this.isFloating = setterArg;
+        }
+
+        private Boolean isAllDay;
+
+        public Boolean getIsAllDay() {
+            return isAllDay;
+        }
+
+        public void setIsAllDay(Boolean setterArg) {
+            this.isAllDay = setterArg;
+        }
+
+        private Boolean persistQuickView;
     public Boolean getPersistQuickView() { return persistQuickView; }
     public void setPersistQuickView(Boolean setterArg) { this.persistQuickView = setterArg; }
 
@@ -161,25 +213,25 @@ public class Pigeons {
       return toMapResult;
     }
     static TimelinePinPigeon fromMap(HashMap map) {
-      TimelinePinPigeon fromMapResult = new TimelinePinPigeon();
-      Object itemId = map.get("itemId");
-      fromMapResult.itemId = (String)itemId;
-      Object parentId = map.get("parentId");
-      fromMapResult.parentId = (String)parentId;
-      Object timestamp = map.get("timestamp");
-      fromMapResult.timestamp = (timestamp == null) ? null : ((timestamp instanceof Integer) ? (Integer)timestamp : (Long)timestamp);
-      Object type = map.get("type");
-      fromMapResult.type = (type == null) ? null : ((type instanceof Integer) ? (Integer)type : (Long)type);
-      Object duration = map.get("duration");
-      fromMapResult.duration = (duration == null) ? null : ((duration instanceof Integer) ? (Integer)duration : (Long)duration);
-      Object isVisible = map.get("isVisible");
-      fromMapResult.isVisible = (Boolean)isVisible;
-      Object isFloating = map.get("isFloating");
-      fromMapResult.isFloating = (Boolean)isFloating;
-      Object isAllDay = map.get("isAllDay");
-      fromMapResult.isAllDay = (Boolean)isAllDay;
-      Object persistQuickView = map.get("persistQuickView");
-      fromMapResult.persistQuickView = (Boolean)persistQuickView;
+        TimelinePinPigeon fromMapResult = new TimelinePinPigeon();
+        Object itemId = map.get("itemId");
+        fromMapResult.itemId = (String) itemId;
+        Object parentId = map.get("parentId");
+        fromMapResult.parentId = (String) parentId;
+        Object timestamp = map.get("timestamp");
+        fromMapResult.timestamp = (timestamp == null) ? null : ((timestamp instanceof Integer) ? (Integer) timestamp : (Long) timestamp);
+        Object type = map.get("type");
+        fromMapResult.type = (type == null) ? null : ((type instanceof Integer) ? (Integer) type : (Long) type);
+        Object duration = map.get("duration");
+        fromMapResult.duration = (duration == null) ? null : ((duration instanceof Integer) ? (Integer) duration : (Long) duration);
+        Object isVisible = map.get("isVisible");
+        fromMapResult.isVisible = (Boolean) isVisible;
+        Object isFloating = map.get("isFloating");
+        fromMapResult.isFloating = (Boolean) isFloating;
+        Object isAllDay = map.get("isAllDay");
+        fromMapResult.isAllDay = (Boolean) isAllDay;
+        Object persistQuickView = map.get("persistQuickView");
+        fromMapResult.persistQuickView = (Boolean) persistQuickView;
         Object layout = map.get("layout");
         fromMapResult.layout = (layout == null) ? null : ((layout instanceof Integer) ? (Integer) layout : (Long) layout);
         Object attributesJson = map.get("attributesJson");
@@ -188,34 +240,6 @@ public class Pigeons {
         fromMapResult.actionsJson = (String) actionsJson;
         return fromMapResult;
     }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static class StringWrapper {
-        private String value;
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String setterArg) {
-            this.value = setterArg;
-        }
-
-        HashMap toMap() {
-            HashMap<String, Object> toMapResult = new HashMap<>();
-            toMapResult.put("value", value);
-            return toMapResult;
-        }
-
-        static StringWrapper fromMap(HashMap map) {
-            StringWrapper fromMapResult = new StringWrapper();
-            Object value = map.get("value");
-            fromMapResult.value = (String) value;
-            return fromMapResult;
-        }
     }
 
     /**
@@ -291,22 +315,40 @@ public class Pigeons {
         }
 
         private Long color;
-    public Long getColor() { return color; }
-    public void setColor(Long setterArg) { this.color = setterArg; }
 
-    private Boolean runningPRF;
-    public Boolean getRunningPRF() { return runningPRF; }
-    public void setRunningPRF(Boolean setterArg) { this.runningPRF = setterArg; }
+        public Long getColor() {
+            return color;
+        }
 
-    private Boolean firstUse;
-    public Boolean getFirstUse() { return firstUse; }
-    public void setFirstUse(Boolean setterArg) { this.firstUse = setterArg; }
+        public void setColor(Long setterArg) {
+            this.color = setterArg;
+        }
 
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("name", name);
-      toMapResult.put("address", address);
-      toMapResult.put("version", version);
+        private Boolean runningPRF;
+
+        public Boolean getRunningPRF() {
+            return runningPRF;
+        }
+
+        public void setRunningPRF(Boolean setterArg) {
+            this.runningPRF = setterArg;
+        }
+
+        private Boolean firstUse;
+
+        public Boolean getFirstUse() {
+            return firstUse;
+        }
+
+        public void setFirstUse(Boolean setterArg) {
+            this.firstUse = setterArg;
+        }
+
+        HashMap toMap() {
+            HashMap<String, Object> toMapResult = new HashMap<>();
+            toMapResult.put("name", name);
+            toMapResult.put("address", address);
+            toMapResult.put("version", version);
       toMapResult.put("serialNumber", serialNumber);
       toMapResult.put("color", color);
       toMapResult.put("runningPRF", runningPRF);
@@ -451,90 +493,254 @@ public class Pigeons {
       Object board = map.get("board");
       fromMapResult.board = (String)board;
       Object serial = map.get("serial");
-      fromMapResult.serial = (String)serial;
-      Object language = map.get("language");
-      fromMapResult.language = (String)language;
-      Object languageVersion = map.get("languageVersion");
-      fromMapResult.languageVersion = (languageVersion == null) ? null : ((languageVersion instanceof Integer) ? (Integer)languageVersion : (Long)languageVersion);
-      Object isUnfaithful = map.get("isUnfaithful");
-      fromMapResult.isUnfaithful = (Boolean)isUnfaithful;
-      return fromMapResult;
+      fromMapResult.serial = (String) serial;
+        Object language = map.get("language");
+        fromMapResult.language = (String) language;
+        Object languageVersion = map.get("languageVersion");
+        fromMapResult.languageVersion = (languageVersion == null) ? null : ((languageVersion instanceof Integer) ? (Integer) languageVersion : (Long) languageVersion);
+        Object isUnfaithful = map.get("isUnfaithful");
+        fromMapResult.isUnfaithful = (Boolean) isUnfaithful;
+        return fromMapResult;
     }
   }
 
-  /** Generated class from Pigeon that represents data sent in messages. */
-  public static class PebbleFirmwarePigeon {
-    private Long timestamp;
-    public Long getTimestamp() { return timestamp; }
-    public void setTimestamp(Long setterArg) { this.timestamp = setterArg; }
+    /**
+     * Generated class from Pigeon that represents data sent in messages.
+     */
+    public static class PebbleFirmwarePigeon {
+        private Long timestamp;
 
-    private String version;
-    public String getVersion() { return version; }
-    public void setVersion(String setterArg) { this.version = setterArg; }
+        public Long getTimestamp() {
+            return timestamp;
+        }
 
-    private String gitHash;
-    public String getGitHash() { return gitHash; }
-    public void setGitHash(String setterArg) { this.gitHash = setterArg; }
+        public void setTimestamp(Long setterArg) {
+            this.timestamp = setterArg;
+        }
 
-    private Boolean isRecovery;
-    public Boolean getIsRecovery() { return isRecovery; }
-    public void setIsRecovery(Boolean setterArg) { this.isRecovery = setterArg; }
+        private String version;
 
-    private Long hardwarePlatform;
-    public Long getHardwarePlatform() { return hardwarePlatform; }
-    public void setHardwarePlatform(Long setterArg) { this.hardwarePlatform = setterArg; }
+        public String getVersion() {
+            return version;
+        }
 
-    private Long metadataVersion;
-    public Long getMetadataVersion() { return metadataVersion; }
-    public void setMetadataVersion(Long setterArg) { this.metadataVersion = setterArg; }
+        public void setVersion(String setterArg) {
+            this.version = setterArg;
+        }
 
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("timestamp", timestamp);
-      toMapResult.put("version", version);
-      toMapResult.put("gitHash", gitHash);
-      toMapResult.put("isRecovery", isRecovery);
-      toMapResult.put("hardwarePlatform", hardwarePlatform);
-      toMapResult.put("metadataVersion", metadataVersion);
-      return toMapResult;
+        private String gitHash;
+
+        public String getGitHash() {
+            return gitHash;
+        }
+
+        public void setGitHash(String setterArg) {
+            this.gitHash = setterArg;
+        }
+
+        private Boolean isRecovery;
+
+        public Boolean getIsRecovery() {
+            return isRecovery;
+        }
+
+        public void setIsRecovery(Boolean setterArg) {
+            this.isRecovery = setterArg;
+        }
+
+        private Long hardwarePlatform;
+
+        public Long getHardwarePlatform() {
+            return hardwarePlatform;
+        }
+
+        public void setHardwarePlatform(Long setterArg) {
+            this.hardwarePlatform = setterArg;
+        }
+
+        private Long metadataVersion;
+
+        public Long getMetadataVersion() {
+            return metadataVersion;
+        }
+
+        public void setMetadataVersion(Long setterArg) {
+            this.metadataVersion = setterArg;
+        }
+
+        HashMap toMap() {
+            HashMap<String, Object> toMapResult = new HashMap<>();
+            toMapResult.put("timestamp", timestamp);
+            toMapResult.put("version", version);
+            toMapResult.put("gitHash", gitHash);
+            toMapResult.put("isRecovery", isRecovery);
+            toMapResult.put("hardwarePlatform", hardwarePlatform);
+            toMapResult.put("metadataVersion", metadataVersion);
+            return toMapResult;
+        }
+
+        static PebbleFirmwarePigeon fromMap(HashMap map) {
+            PebbleFirmwarePigeon fromMapResult = new PebbleFirmwarePigeon();
+            Object timestamp = map.get("timestamp");
+            fromMapResult.timestamp = (timestamp == null) ? null : ((timestamp instanceof Integer) ? (Integer) timestamp : (Long) timestamp);
+            Object version = map.get("version");
+            fromMapResult.version = (String) version;
+            Object gitHash = map.get("gitHash");
+            fromMapResult.gitHash = (String) gitHash;
+            Object isRecovery = map.get("isRecovery");
+            fromMapResult.isRecovery = (Boolean) isRecovery;
+            Object hardwarePlatform = map.get("hardwarePlatform");
+            fromMapResult.hardwarePlatform = (hardwarePlatform == null) ? null : ((hardwarePlatform instanceof Integer) ? (Integer) hardwarePlatform : (Long) hardwarePlatform);
+            Object metadataVersion = map.get("metadataVersion");
+            fromMapResult.metadataVersion = (metadataVersion == null) ? null : ((metadataVersion instanceof Integer) ? (Integer) metadataVersion : (Long) metadataVersion);
+            return fromMapResult;
+        }
     }
-    static PebbleFirmwarePigeon fromMap(HashMap map) {
-      PebbleFirmwarePigeon fromMapResult = new PebbleFirmwarePigeon();
-      Object timestamp = map.get("timestamp");
-      fromMapResult.timestamp = (timestamp == null) ? null : ((timestamp instanceof Integer) ? (Integer)timestamp : (Long)timestamp);
-      Object version = map.get("version");
-      fromMapResult.version = (String)version;
-      Object gitHash = map.get("gitHash");
-      fromMapResult.gitHash = (String)gitHash;
-      Object isRecovery = map.get("isRecovery");
-      fromMapResult.isRecovery = (Boolean)isRecovery;
-      Object hardwarePlatform = map.get("hardwarePlatform");
-      fromMapResult.hardwarePlatform = (hardwarePlatform == null) ? null : ((hardwarePlatform instanceof Integer) ? (Integer)hardwarePlatform : (Long)hardwarePlatform);
-      Object metadataVersion = map.get("metadataVersion");
-      fromMapResult.metadataVersion = (metadataVersion == null) ? null : ((metadataVersion instanceof Integer) ? (Integer)metadataVersion : (Long)metadataVersion);
-      return fromMapResult;
-    }
-  }
 
-  /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
-  public interface ScanControl {
-    void startBleScan();
-    void startClassicScan();
+    /**
+     * Generated interface from Pigeon that represents a handler of messages from Flutter.
+     */
+    public interface PigeonLogger {
+        void v(StringWrapper arg);
 
-    /** Sets up an instance of `ScanControl` to handle messages through the `binaryMessenger` */
-    static void setup(BinaryMessenger binaryMessenger, ScanControl api) {
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ScanControl.startBleScan", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              api.startBleScan();
-              wrapped.put("result", null);
+        void d(StringWrapper arg);
+
+        void i(StringWrapper arg);
+
+        void w(StringWrapper arg);
+
+        void e(StringWrapper arg);
+
+        /**
+         * Sets up an instance of `PigeonLogger` to handle messages through the `binaryMessenger`
+         */
+        static void setup(BinaryMessenger binaryMessenger, PigeonLogger api) {
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PigeonLogger.v", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            StringWrapper input = StringWrapper.fromMap((HashMap) message);
+                            api.v(input);
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
             }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PigeonLogger.d", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            StringWrapper input = StringWrapper.fromMap((HashMap) message);
+                            api.d(input);
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PigeonLogger.i", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            StringWrapper input = StringWrapper.fromMap((HashMap) message);
+                            api.i(input);
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PigeonLogger.w", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            StringWrapper input = StringWrapper.fromMap((HashMap) message);
+                            api.w(input);
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PigeonLogger.e", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            StringWrapper input = StringWrapper.fromMap((HashMap) message);
+                            api.e(input);
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+        }
+    }
+
+    /**
+     * Generated interface from Pigeon that represents a handler of messages from Flutter.
+     */
+    public interface ScanControl {
+        void startBleScan();
+
+        void startClassicScan();
+
+        /**
+         * Sets up an instance of `ScanControl` to handle messages through the `binaryMessenger`
+         */
+        static void setup(BinaryMessenger binaryMessenger, ScanControl api) {
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ScanControl.startBleScan", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            api.startBleScan();
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
             }
             reply.reply(wrapped);
           });
@@ -679,9 +885,8 @@ public class Pigeons {
             try {
               api.notifyFlutterBackgroundStarted();
               wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
+            } catch (Exception exception) {
+                wrapped.put("error", wrapError(exception));
             }
               reply.reply(wrapped);
           });
@@ -700,15 +905,13 @@ public class Pigeons {
 
         NumberWrapper requestCalendarPermission();
 
-        BooleanWrapper requestNotificationAccess();
+        void requestNotificationAccess();
 
-        BooleanWrapper requestBatteryExclusion();
+        void requestBatteryExclusion();
 
         void openPermissionSettings();
 
-        /**
-         * Sets up an instance of `PermissionControl` to handle messages through the `binaryMessenger`
-         */
+        /** Sets up an instance of `PermissionControl` to handle messages through the `binaryMessenger` */
         static void setup(BinaryMessenger binaryMessenger, PermissionControl api) {
             {
                 BasicMessageChannel<Object> channel =
@@ -753,8 +956,8 @@ public class Pigeons {
                     channel.setMessageHandler((message, reply) -> {
                         HashMap<String, HashMap> wrapped = new HashMap<>();
                         try {
-                            BooleanWrapper output = api.requestNotificationAccess();
-                            wrapped.put("result", output.toMap());
+                            api.requestNotificationAccess();
+                            wrapped.put("result", null);
                         } catch (Exception exception) {
                             wrapped.put("error", wrapError(exception));
                         }
@@ -771,8 +974,8 @@ public class Pigeons {
                     channel.setMessageHandler((message, reply) -> {
                         HashMap<String, HashMap> wrapped = new HashMap<>();
                         try {
-                            BooleanWrapper output = api.requestBatteryExclusion();
-                            wrapped.put("result", output.toMap());
+                            api.requestBatteryExclusion();
+                            wrapped.put("result", null);
                         } catch (Exception exception) {
                             wrapped.put("error", wrapError(exception));
                         }
@@ -797,8 +1000,8 @@ public class Pigeons {
                         reply.reply(wrapped);
                     });
                 } else {
-                    channel.setMessageHandler(null);
-                }
+          channel.setMessageHandler(null);
+        }
       }
     }
   }
@@ -958,9 +1161,8 @@ public class Pigeons {
               NumberWrapper input = NumberWrapper.fromMap((HashMap)message);
               api.setupBackground(input);
               wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
+            } catch (Exception exception) {
+                wrapped.put("error", wrapError(exception));
             }
               reply.reply(wrapped);
           });
@@ -1179,29 +1381,32 @@ public class Pigeons {
             HashMap inputMap = argInput.toMap();
             channel.send(inputMap, channelReply -> {
                 callback.reply(null);
-      });
+            });
+        }
     }
-  }
 
-  /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
-  public interface DebugControl {
-    void collectLogs();
+    /**
+     * Generated interface from Pigeon that represents a handler of messages from Flutter.
+     */
+    public interface DebugControl {
+        void collectLogs();
 
-    /** Sets up an instance of `DebugControl` to handle messages through the `binaryMessenger` */
-    static void setup(BinaryMessenger binaryMessenger, DebugControl api) {
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.DebugControl.collectLogs", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              api.collectLogs();
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-                wrapped.put("error", wrapError(exception));
-            }
+        /**
+         * Sets up an instance of `DebugControl` to handle messages through the `binaryMessenger`
+         */
+        static void setup(BinaryMessenger binaryMessenger, DebugControl api) {
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.DebugControl.collectLogs", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            api.collectLogs();
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
               reply.reply(wrapped);
           });
         } else {
@@ -1209,7 +1414,7 @@ public class Pigeons {
         }
       }
     }
-  }
+    }
 
     /**
      * Generated class from Pigeon that represents Flutter messages that can be called from Java.
@@ -1271,7 +1476,7 @@ public class Pigeons {
         HashMap<String, Object> errorMap = new HashMap<>();
         errorMap.put("message", exception.toString());
         errorMap.put("code", exception.getClass().getSimpleName());
-        errorMap.put("details", null);
+    errorMap.put("details", null);
     return errorMap;
   }
 }
