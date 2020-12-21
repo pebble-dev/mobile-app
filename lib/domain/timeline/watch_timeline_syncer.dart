@@ -45,7 +45,7 @@ class WatchTimelineSyncer {
         return false;
       case statusDatabaseFull:
         Log.w("Timeline Pin Sync database is full");
-        await _displayWatchFullWarning();
+        _displayWatchFullWarning();
         return true;
       case statusGeneralFailure:
       case statusTryLater:
@@ -107,15 +107,16 @@ class WatchTimelineSyncer {
     return statusSuccess;
   }
 
-  Future<int> removeAllPins() async {
+  Future<bool> clearAllPinsFromWatchAndResync() async {
     final res = await timelineControl.removeAllPins();
 
     if (res.value != statusSuccess) {
-      return res.value;
+      Log.d("Pin clearing failed  ${res.value}");
+      return false;
     }
 
-    await timelinePinDao.deleteAll();
-    return statusSuccess;
+    await timelinePinDao.resetSyncStatus();
+    return syncPinDatabaseWithWatch();
   }
 
   void _displayWatchFullWarning() async {

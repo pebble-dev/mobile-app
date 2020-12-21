@@ -81,6 +81,28 @@ class TimelinePinDao {
     final db = await _dbFuture;
     await db.delete(tableTimelinePins);
   }
+
+  Future<void> resetSyncStatus() async {
+    final db = await _dbFuture;
+
+    // Watch has been reset. We can delete all pins that were pending
+    // deletion
+    await db.delete(tableTimelinePins, where: "nextSyncAction = ?", whereArgs: [
+      TimelinePin.nextSyncActionEnumMap()[NextSyncAction.Delete]
+    ]);
+
+    // Mark all pins to re-upload
+    await db.update(
+        tableTimelinePins,
+        {
+          "nextSyncAction":
+              TimelinePin.nextSyncActionEnumMap()[NextSyncAction.Upload]
+        },
+        where: "nextSyncAction = ?",
+        whereArgs: [
+          TimelinePin.nextSyncActionEnumMap()[NextSyncAction.Nothing]
+        ]);
+  }
 }
 
 final timelinePinDaoProvider = Provider.autoDispose((ref) {
