@@ -5,4 +5,5 @@
 
     <string name="connected">Watch connected</string>
     <string name="connecting">Watch connecting</string>
+    <string name="warnings">Warnings</string>
 </resources>

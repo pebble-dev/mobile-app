@@ -1,7 +1,10 @@
 import 'package:cobble/domain/db/dao/timeline_pin_dao.dart';
 import 'package:cobble/domain/db/models/next_sync_action.dart';
+import 'package:cobble/domain/local_notifications.dart';
 import 'package:cobble/domain/timeline/blob_status.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.dart';
+import 'package:cobble/util/container_extensions.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hooks_riverpod/all.dart';
 
 import '../logging.dart';
@@ -13,9 +16,15 @@ import '../logging.dart';
 class WatchTimelineSyncer {
   final TimelinePinDao timelinePinDao;
   final TimelineSyncControl timelineSyncControl;
+  final Future<AsyncValue<FlutterLocalNotificationsPlugin>>
+      localNotificationsPlugin;
   final TimelineControl timelineControl = TimelineControl();
 
-  WatchTimelineSyncer(this.timelinePinDao, this.timelineSyncControl);
+  WatchTimelineSyncer(
+    this.timelinePinDao,
+    this.timelineSyncControl,
+    this.localNotificationsPlugin,
+  );
 
   Future<bool> syncPinDatabaseWithWatch() async {
     final status = await _performSync();
@@ -36,7 +45,7 @@ class WatchTimelineSyncer {
         return false;
       case statusDatabaseFull:
         Log.w("Timeline Pin Sync database is full");
-        // TODO display notification to the user
+        await _displayWatchFullWarning();
         return true;
       case statusGeneralFailure:
       case statusTryLater:
@@ -69,6 +78,18 @@ class WatchTimelineSyncer {
       for (final pinToSync in pinsToUpload) {
         final res = await timelineControl.addPin(pinToSync.toPigeon());
 
+        if (res.value == statusDatabaseFull) {
+          final dateAfterThreeDays = DateTime.now().add(Duration(days: 3));
+          if (pinToSync.timestamp.isAfter(dateAfterThreeDays)) {
+            // Any pins after 3 day are just buffer to allow for offline
+            // watch operations.
+            // No need to trouble the user if we can't fit that buffer onto
+            // the watch
+            return statusSuccess;
+          } else {
+            return statusDatabaseFull;
+          }
+        }
         if (res.value != statusSuccess) {
           return res.value;
         }
@@ -96,14 +117,46 @@ class WatchTimelineSyncer {
     await timelinePinDao.deleteAll();
     return statusSuccess;
   }
+
+  void _displayWatchFullWarning() async {
+    final pluginValue = await localNotificationsPlugin;
+    if (pluginValue is AsyncError) {
+      Log.e("Notification init failed: ${(pluginValue as AsyncError).error}");
+      return;
+    }
+
+    final plugin = pluginValue.data.value;
+
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails("WARNINGS", "Warnings", "Warnings",
+        importance: Importance.defaultImportance,
+        priority: Priority.defaultPriority,
+        showWhen: false);
+    const NotificationDetails platformChannelSpecifics =
+    NotificationDetails(android: androidPlatformChannelSpecifics);
+    await plugin.show(
+      0,
+      "Your watch is full",
+      "We could not sync all timeline pins to the watch.",
+      platformChannelSpecifics,
+    );
+  }
 }
 
 final watchTimelineSyncerProvider =
 Provider.autoDispose<WatchTimelineSyncer>((ref) {
   final timelinePinDao = ref.watch(timelinePinDaoProvider);
   final timelineSyncControl = ref.watch(timelineSyncControlProvider);
+  final localNotificationsPlugin = ref.readUntilFirstSuccessOrError(
+    localNotificationsPluginProvider,
+  );
 
-  return WatchTimelineSyncer(timelinePinDao, timelineSyncControl);
+
+  return WatchTimelineSyncer(
+    timelinePinDao,
+    timelineSyncControl,
+    localNotificationsPlugin,
+  );
 });
 
 final timelineSyncControlProvider = Provider((ref) => TimelineSyncControl());

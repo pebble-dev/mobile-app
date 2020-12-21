@@ -46,6 +46,7 @@ dependencies:
   path: ^1.7.0
   json_annotation: ^3.0.0
   copy_with_extension: ^1.4.0
+  flutter_local_notifications: ^3.0.2
 
 
   # The following adds the Cupertino Icons font to your application.

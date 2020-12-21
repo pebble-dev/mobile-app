@@ -29,3 +29,10 @@ extension ContainerExtension on ProviderContainer {
     return controller.stream;
   }
 }
+
+extension ProviderReferenceExtension on ProviderReference {
+  Future<AsyncValue<T>> readUntilFirstSuccessOrError<T>(
+      ProviderBase<Object, AsyncValue<T>> provider) {
+    return this.container.listenStream(provider).firstSuccessOrError();
+  }
+}
