@@ -3,6 +3,7 @@ import 'package:cobble/domain/calendar/device_calendar_plugin_provider.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/permissions.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
+import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
@@ -26,6 +27,9 @@ class TestTab extends HookWidget {
 
     final permissionControl = useProvider(permissionControlProvider);
     final permissionCheck = useProvider(permissionCheckProvider);
+
+    final preferences = useProvider(preferencesProvider);
+    final calendarSyncEnabled = useProvider(calendarSyncEnabledProvider);
 
     useEffect(() {
       Future.microtask(() async {
@@ -145,6 +149,16 @@ class TestTab extends HookWidget {
                   ),
                 ),
               ),
+              Row(children: [
+                Switch(
+                  value: calendarSyncEnabled.data?.value ?? false,
+                  onChanged: (value) async {
+                    await preferences.data?.value
+                        ?.setCalendarSyncEnabled(value);
+                  },
+                ),
+                Text("Show calendar on the watch")
+              ]),
               Text("Calendars: "),
               ...calendars.data?.value?.map((e) {
                     return Row(
