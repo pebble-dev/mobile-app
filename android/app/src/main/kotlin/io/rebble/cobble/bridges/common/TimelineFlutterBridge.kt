@@ -4,6 +4,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import io.flutter.plugin.common.BinaryMessenger
 import io.rebble.cobble.bridges.FlutterBridge
+import io.rebble.cobble.data.TimelineAction
 import io.rebble.cobble.data.TimelineAttribute
 import io.rebble.cobble.pigeons.*
 import io.rebble.cobble.util.registerAsyncPigeonCallback
@@ -60,13 +61,17 @@ class TimelineFlutterBridge @Inject constructor(
     @OptIn(ExperimentalStdlibApi::class)
     @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun addTimelinePin(pin: Pigeons.TimelinePinPigeon): BlobResponse.BlobStatus {
-        //TODO parse actions
-
         val parsedAttributes = moshi
                 .adapter<List<TimelineAttribute>>(
                         Types.newParameterizedType(List::class.java, TimelineAttribute::class.java)
                 )
                 .fromJson(pin.attributesJson) ?: emptyList()
+
+        val parsedActions = moshi
+                .adapter<List<TimelineAction>>(
+                        Types.newParameterizedType(List::class.java, TimelineAction::class.java)
+                )
+                .fromJson(pin.actionsJson) ?: emptyList()
 
         val flags = buildList {
             if (pin.isVisible) {
@@ -96,7 +101,7 @@ class TimelineFlutterBridge @Inject constructor(
                 TimelineItem.Flag.makeFlags(flags),
                 pin.layout.toUByte(),
                 parsedAttributes.map { it.toProtocolAttribute() },
-                emptyList()
+                parsedActions.map { it.toProtocolAction() }
         )
         val packet = BlobCommand.InsertCommand(
                 Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),

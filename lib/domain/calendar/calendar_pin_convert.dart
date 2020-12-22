@@ -3,6 +3,7 @@ import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/db/models/timeline_pin.dart';
 import 'package:cobble/domain/db/models/timeline_pin_layout.dart';
 import 'package:cobble/domain/db/models/timeline_pin_type.dart';
+import 'package:cobble/domain/timeline/timeline_action.dart';
 import 'package:cobble/domain/timeline/timeline_attribute.dart';
 import 'package:cobble/domain/timeline/timeline_icon.dart';
 import 'package:cobble/util/string_extensions.dart';
@@ -61,6 +62,15 @@ extension CalendarEventConverter on Event {
     ];
   }
 
+  List<TimelineAction> getActions() {
+    return [
+      TimelineAction(calendarActionRemove, actionTypeDismiss,
+          [TimelineAttribute.title("Remove")]),
+      TimelineAction(calendarActionMuteCalendar, actionTypeDismiss,
+          [TimelineAttribute.title("Mute calendar")])
+    ];
+  }
+
   TimelinePin generateBasicEventData(
       String attributesJson, String actionsJson) {
     return TimelinePin(
@@ -98,3 +108,6 @@ extension CalendarEventConverter on Event {
 }
 
 final calendarWatchappId = Uuid("6c6c6fc2-1912-4d25-8396-3547d1dfac5b");
+
+const calendarActionRemove = 0;
+const calendarActionMuteCalendar = 1;

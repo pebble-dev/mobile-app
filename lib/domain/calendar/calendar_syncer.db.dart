@@ -64,18 +64,17 @@ class CalendarSyncer {
 
     bool anyChanges = false;
 
-    final newPins = allCalendarEvents.map((e) =>
-        e.event.generateBasicEventData(
+    final newPins = allCalendarEvents.map((e) => e.event.generateBasicEventData(
           serializeAttributesToJson(e.event.getAttributes(e.calendar)),
-          null,
+          serializeActionsToJson(e.event.getActions()),
         ));
 
     final existingPins =
-    await _timelinePinDao.getPinsFromParent(calendarWatchappId);
+        await _timelinePinDao.getPinsFromParent(calendarWatchappId);
 
     for (TimelinePin newPin in newPins) {
       final existingPin = existingPins.firstWhere(
-            (element) => element.backingId == newPin.backingId,
+        (element) => element.backingId == newPin.backingId,
         orElse: () => null,
       );
 

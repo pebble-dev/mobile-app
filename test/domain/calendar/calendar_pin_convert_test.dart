@@ -4,6 +4,7 @@ import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/db/models/timeline_pin.dart';
 import 'package:cobble/domain/db/models/timeline_pin_layout.dart';
 import 'package:cobble/domain/db/models/timeline_pin_type.dart';
+import 'package:cobble/domain/timeline/timeline_action.dart';
 import 'package:cobble/domain/timeline/timeline_attribute.dart';
 import 'package:cobble/domain/timeline/timeline_icon.dart';
 import 'package:device_calendar/device_calendar.dart';
@@ -355,5 +356,33 @@ void main() {
     ].toSet();
 
     expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+  });
+
+  test("Generate actions from basic event", () {
+    final event = Event("10",
+        eventId: "33",
+        title: "The Event",
+        start: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          10, //Hour
+          30, // Minute
+        ),
+        end: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          11, //Hour
+          30, // Minute
+        ));
+
+    final expectedActions = [
+      TimelineAction(0, actionTypeDismiss, [TimelineAttribute.title("Remove")]),
+      TimelineAction(
+          1, actionTypeDismiss, [TimelineAttribute.title("Mute calendar")])
+    ];
+
+    expect(event.getActions().toSet(), expectedActions.toSet());
   });
 }
