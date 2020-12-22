@@ -92,7 +92,7 @@ void main() async {
       )
     ];
 
-    final calendarSyncer = container.read(calendarSyncerProvider);
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final insertedEvents = await pinDao.getAllPins();
@@ -101,7 +101,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1337T1605004200000",
+        backingId: "22T1337T1605004200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -121,7 +121,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1338T1605094200000",
+        backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -207,7 +207,7 @@ void main() async {
       TimelinePin(
         itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
-        backingId: "1338T1605094200000",
+        backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -230,7 +230,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.read(calendarSyncerProvider);
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
@@ -239,7 +239,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1338T1605094200000",
+        backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -259,7 +259,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1337T1605004200000",
+        backingId: "22T1337T1605004200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -324,7 +324,7 @@ void main() async {
       TimelinePin(
         itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
-        backingId: "1338T1605094200000",
+        backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -347,7 +347,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.read(calendarSyncerProvider);
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     expect(anyChanges, false);
@@ -394,7 +394,7 @@ void main() async {
       )
     ];
 
-    final calendarSyncer = container.read(calendarSyncerProvider);
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     await calendarSyncer.syncDeviceCalendarsToDb();
 
     final insertedEvents = await pinDao.getAllPins();
@@ -448,7 +448,7 @@ void main() async {
       TimelinePin(
         itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
-        backingId: "1338T1605094200000",
+        backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -468,7 +468,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.read(calendarSyncerProvider);
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
@@ -477,7 +477,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1338T1605094200000",
+        backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -551,7 +551,7 @@ void main() async {
       TimelinePin(
         itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
-        backingId: "1338T1605094200000",
+        backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -571,7 +571,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.read(calendarSyncerProvider);
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
@@ -580,7 +580,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1338T1605094200000",
+        backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -652,7 +652,7 @@ void main() async {
       TimelinePin(
         itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
-        backingId: "1338T1607599800000",
+        backingId: "22T1338T1607599800000",
         timestamp: DateTime.utc(
           2020, //year
           12, //month
@@ -672,7 +672,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.read(calendarSyncerProvider);
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
@@ -681,7 +681,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1338T1607599800000",
+        backingId: "22T1338T1607599800000",
         timestamp: DateTime.utc(
           2020, //year
           12, //month
@@ -701,7 +701,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1337T1605004200000",
+        backingId: "22T1337T1605004200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -791,7 +791,7 @@ void main() async {
       TimelinePin(
         itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
-        backingId: "1337T1604745000000",
+        backingId: "22T1337T1604745000000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -815,7 +815,7 @@ void main() async {
       TimelinePin(
         itemId: Uuid("24b88efe-6b43-41cd-a1f6-06b0e5940f94"),
         parentId: calendarWatchappId,
-        backingId: "1338T1605006000000",
+        backingId: "22T1338T1605006000000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -835,7 +835,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.read(calendarSyncerProvider);
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
@@ -844,7 +844,7 @@ void main() async {
       TimelinePin(
         itemId: Uuid("24b88efe-6b43-41cd-a1f6-06b0e5940f94"),
         parentId: calendarWatchappId,
-        backingId: "1338T1605006000000",
+        backingId: "22T1338T1605006000000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -1019,7 +1019,7 @@ void main() async {
       ),
     ];
 
-    final calendarSyncer = container.read(calendarSyncerProvider);
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final insertedEvents = await pinDao.getAllPins();
@@ -1028,7 +1028,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1338T1605004200000",
+        backingId: "22T1338T1605004200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -1048,7 +1048,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1339T1605009600000",
+        backingId: "22T1339T1605009600000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -1068,7 +1068,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1340T1605268800000",
+        backingId: "22T1340T1605268800000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -1088,7 +1088,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1341T1605569400000",
+        backingId: "22T1341T1605569400000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -1176,7 +1176,7 @@ void main() async {
 
     calendarList.setCalendarEnabled("23", false);
 
-    final calendarSyncer = container.read(calendarSyncerProvider);
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final insertedEvents = await pinDao.getAllPins();
@@ -1185,7 +1185,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1337T1605004200000",
+        backingId: "22T1337T1605004200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month

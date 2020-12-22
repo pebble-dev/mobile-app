@@ -38,7 +38,7 @@ void main() {
 
     final expectedPin = TimelinePin(
         parentId: calendarWatchappId,
-        backingId: "33T1605954600000",
+        backingId: "10T33T1605954600000",
         timestamp: DateTime.utc(
           2020, // Year
           11, // Month
@@ -82,7 +82,7 @@ void main() {
 
     final expectedPin = TimelinePin(
         parentId: calendarWatchappId,
-        backingId: "33T1605954600000",
+        backingId: "10T33T1605954600000",
         timestamp: DateTime.utc(
           2020, // Year
           11, // Month
@@ -391,5 +391,34 @@ void main() {
     ];
 
     expect(event.getActions().toSet(), expectedActions.toSet());
+  });
+
+  test("Get event ID from pin", () {
+    final pin = TimelinePin(
+        parentId: calendarWatchappId,
+        backingId: "10T33T1605954600000",
+        timestamp: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          10, //Hour
+          30, // Minute
+        ),
+        duration: 60,
+        type: TimelinePinType.pin,
+        isVisible: true,
+        isFloating: false,
+        isAllDay: false,
+        persistQuickView: false,
+        layout: TimelinePinLayout.calendarPin,
+        nextSyncAction: NextSyncAction.Upload);
+
+    final expectedId = CalendarEventId(
+      "10",
+      "33",
+      DateTime.fromMillisecondsSinceEpoch(1605954600000, isUtc: true),
+    );
+
+    expect(CalendarEventId.fromTimelinePin(pin), expectedId);
   });
 }

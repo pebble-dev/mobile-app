@@ -87,7 +87,10 @@ void main() {
       Calendar(id: "18", name: "Calendar C")
     ];
 
-    await container.read(calendarListProvider).setCalendarEnabled("22", false);
+    await container
+        .listen(calendarListProvider)
+        .read()
+        .setCalendarEnabled("22", false);
 
     final expectedReceivedCalendars = [
       SelectableCalendar("Calendar A", "22", false),
@@ -96,7 +99,7 @@ void main() {
     ];
 
     final receivedCalendars = (await container
-        .readUntilFirstSuccessOrError(calendarListProvider.state))
+            .readUntilFirstSuccessOrError(calendarListProvider.state))
         .data
         ?.value;
 
@@ -119,8 +122,10 @@ void main() {
       Calendar(id: "18", name: "Calendar C")
     ];
 
-    await container.read(calendarListProvider).setCalendarEnabled("22", false);
-    await container.read(calendarListProvider).setCalendarEnabled("22", true);
+    await container.listen(calendarListProvider).read().setCalendarEnabled(
+        "22", false);
+    await container.listen(calendarListProvider).read().setCalendarEnabled(
+        "22", true);
 
     final expectedReceivedCalendars = [
       SelectableCalendar("Calendar A", "22", true),

@@ -99,13 +99,53 @@ extension CalendarEventConverter on Event {
   /// To ease processing, we insert composite ID into database that contains
   /// both
   String createCompositeBackingId() {
-    return "${eventId}T${start.millisecondsSinceEpoch}";
+    return "${calendarId}T${eventId}T${start.millisecondsSinceEpoch}";
   }
 
   String _transformDescription(String rawDescription) {
     RegExp htmlTags = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
 
     return rawDescription.replaceAll(htmlTags, "").trimWithEllipsis(500);
+  }
+}
+
+class CalendarEventId {
+  final String calendarId;
+  final String eventId;
+  final DateTime startTime;
+
+  CalendarEventId(this.calendarId, this.eventId, this.startTime);
+
+  static CalendarEventId fromTimelinePin(TimelinePin pin) {
+    final backingId = pin.backingId;
+    final split = backingId.split("T");
+    if (split.length != 3) {
+      return null;
+    }
+
+    return CalendarEventId(
+      split[0],
+      split[1],
+      DateTime.fromMillisecondsSinceEpoch(int.parse(split[2]), isUtc: true),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CalendarEventId &&
+          runtimeType == other.runtimeType &&
+          calendarId == other.calendarId &&
+          eventId == other.eventId &&
+          startTime == other.startTime;
+
+  @override
+  int get hashCode =>
+      calendarId.hashCode ^ eventId.hashCode ^ startTime.hashCode;
+
+  @override
+  String toString() {
+    return 'CalendarEventId{calendarId: $calendarId, eventId: $eventId, startTime: $startTime}';
   }
 }
 
