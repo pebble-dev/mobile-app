@@ -103,6 +103,19 @@ class TimelinePinDao {
           TimelinePin.nextSyncActionEnumMap()[NextSyncAction.Nothing]
         ]);
   }
+
+  Future<void> markAllPinsFromAppForDeletion(Uuid appUuid) async {
+    final db = await _dbFuture;
+
+    await db.update(
+        tableTimelinePins,
+        {
+          "nextSyncAction":
+              TimelinePin.nextSyncActionEnumMap()[NextSyncAction.Delete]
+        },
+        where: "parentId = ?",
+        whereArgs: [appUuid.toString()]);
+  }
 }
 
 final timelinePinDaoProvider = Provider.autoDispose((ref) {

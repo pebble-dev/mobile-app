@@ -24,6 +24,17 @@ class CalendarFlutterBridge @Inject constructor(
         return true
     }
 
+    suspend fun deleteCalendarPinsFromWatch(): Boolean {
+        val calendarCallbacks = getCalendarCallbacks() ?: return false
+        suspendCoroutine<Unit> { continuation ->
+            calendarCallbacks.deleteCalendarPinsFromWatch {
+                continuation.resume(Unit)
+            }
+        }
+
+        return true
+    }
+
     private suspend fun getCalendarCallbacks(): Pigeons.CalendarCallbacks? {
         val cachedCalendarCallbacks = cachedCalendarCallbacks
         if (cachedCalendarCallbacks != null) {

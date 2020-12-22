@@ -969,6 +969,29 @@ class CalendarControl {
       // noop
     }
   }
+
+  Future<void> deleteCalendarPinsFromWatch() async {
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.CalendarControl.deleteCalendarPinsFromWatch',
+        StandardMessageCodec());
+
+    final Map<dynamic, dynamic> replyMap = await channel.send(null);
+    if (replyMap == null) {
+      throw PlatformException(
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      // noop
+    }
+  }
 }
 
 class PermissionCheck {
@@ -1131,6 +1154,9 @@ class DebugControl {
 
 abstract class CalendarCallbacks {
   Future<void> doFullCalendarSync();
+
+  Future<void> deleteCalendarPinsFromWatch();
+
   static void setup(CalendarCallbacks api) {
     {
       const BasicMessageChannel<dynamic> channel =
@@ -1142,6 +1168,19 @@ abstract class CalendarCallbacks {
       } else {
         channel.setMessageHandler((dynamic message) async {
           await api.doFullCalendarSync();
+        });
+      }
+    }
+    {
+      const BasicMessageChannel<dynamic> channel =
+      BasicMessageChannel<dynamic>(
+          'dev.flutter.pigeon.CalendarCallbacks.deleteCalendarPinsFromWatch',
+          StandardMessageCodec());
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((dynamic message) async {
+          await api.deleteCalendarPinsFromWatch();
         });
       }
     }

@@ -1,11 +1,14 @@
+import 'package:cobble/domain/calendar/calendar_pin_convert.dart';
 import 'package:cobble/domain/calendar/calendar_syncer.db.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
+import 'package:cobble/domain/db/dao/timeline_pin_dao.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/logging.dart';
 import 'package:cobble/domain/timeline/watch_timeline_syncer.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.dart';
 import 'package:cobble/util/container_extensions.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/all.dart';
 
@@ -20,6 +23,7 @@ class BackgroundReceiver implements CalendarCallbacks {
   CalendarSyncer calendarSyncer;
   WatchTimelineSyncer watchTimelineSyncer;
   Future<Preferences> preferences;
+  TimelinePinDao timelinePinDao;
 
   ProviderSubscription<WatchConnectionState> connectionSubscription;
 
@@ -32,6 +36,7 @@ class BackgroundReceiver implements CalendarCallbacks {
 
     calendarSyncer = container.listen(calendarSyncerProvider).read();
     watchTimelineSyncer = container.listen(watchTimelineSyncerProvider).read();
+    timelinePinDao = container.listen(timelinePinDaoProvider).read();
     preferences = Future.microtask(() async {
       final asyncValue =
           await container.readUntilFirstSuccessOrError(preferencesProvider);
@@ -81,6 +86,14 @@ class BackgroundReceiver implements CalendarCallbacks {
   }
 
   bool isConnectedToWatch() {
-    return connectionSubscription.read().isConnected;
+    return connectionSubscription
+        .read()
+        .isConnected;
+  }
+
+  @override
+  Future<void> deleteCalendarPinsFromWatch() async {
+    await timelinePinDao.markAllPinsFromAppForDeletion(calendarWatchappId);
+    await syncTimelineToWatch();
   }
 }

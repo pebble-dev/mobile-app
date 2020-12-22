@@ -155,6 +155,10 @@ class TestTab extends HookWidget {
                   onChanged: (value) async {
                     await preferences.data?.value
                         ?.setCalendarSyncEnabled(value);
+
+                    if (!value) {
+                      calendarControl.deleteCalendarPinsFromWatch();
+                    }
                   },
                 ),
                 Text("Show calendar on the watch")
