@@ -11,11 +11,15 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import io.rebble.cobble.background.CalendarSyncWorker
 import io.rebble.cobble.bridges.background.CalendarFlutterBridge
+import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.datasources.PermissionChangeBus
 import io.rebble.cobble.util.Debouncer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -25,7 +29,8 @@ import javax.inject.Inject
 class CalendarHandler @Inject constructor(
         private val context: Context,
         private val coroutineScope: CoroutineScope,
-        private val calendarFlutterBridge: CalendarFlutterBridge
+        private val calendarFlutterBridge: CalendarFlutterBridge,
+        private val flutterPreferences: FlutterPreferences
 ) : PebbleMessageHandler {
     private var initialSyncJob: Job? = null
     private var calendarHandlerStarted = false
@@ -45,24 +50,33 @@ class CalendarHandler @Inject constructor(
     }
 
     init {
-        startStopCalendar()
+        val permissionChangeFlow = PermissionChangeBus.openSubscription()
+                .consumeAsFlow()
+                .onStart { emit(Unit) }
+
 
         coroutineScope.launch {
-            PermissionChangeBus.openSubscription().consumeEach {
-                startStopCalendar()
-            }
+            combine(
+                    permissionChangeFlow,
+                    flutterPreferences.calendarSyncEnabled
+            ) { _,
+                calendarSyncEnabled ->
+                startStopCalendar(calendarSyncEnabled)
+            }.collect()
         }
     }
 
-    private fun startStopCalendar() {
+    private fun startStopCalendar(calendarSyncEnabled: Boolean) {
         val hasPermission = ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.READ_CALENDAR
         ) == PackageManager.PERMISSION_GRANTED
 
-        if (hasPermission && !calendarHandlerStarted) {
+        val shouldSyncCalendar = hasPermission && calendarSyncEnabled
+
+        if (shouldSyncCalendar && !calendarHandlerStarted) {
             startCalendarHandler()
-        } else if (!hasPermission && calendarHandlerStarted) {
+        } else if (!shouldSyncCalendar && calendarHandlerStarted) {
             stopCalendarHandler()
         }
     }
