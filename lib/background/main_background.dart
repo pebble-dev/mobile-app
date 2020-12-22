@@ -5,6 +5,7 @@ import 'package:cobble/domain/logging.dart';
 import 'package:cobble/domain/timeline/watch_timeline_syncer.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.dart';
+import 'package:cobble/util/container_extensions.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/all.dart';
 
@@ -18,7 +19,7 @@ class BackgroundReceiver implements CalendarCallbacks {
   final container = ProviderContainer();
   CalendarSyncer calendarSyncer;
   WatchTimelineSyncer watchTimelineSyncer;
-  Preferences preferences;
+  Future<Preferences> preferences;
 
   ProviderSubscription<WatchConnectionState> connectionSubscription;
 
@@ -31,7 +32,12 @@ class BackgroundReceiver implements CalendarCallbacks {
 
     calendarSyncer = container.listen(calendarSyncerProvider).read();
     watchTimelineSyncer = container.listen(watchTimelineSyncerProvider).read();
-    preferences = container.listen(preferencesProvider).read();
+    preferences = Future.microtask(() async {
+      final asyncValue =
+          await container.readUntilFirstSuccessOrError(preferencesProvider);
+
+      return asyncValue.data.value;
+    });
 
     connectionSubscription = container.listen(
       connectionStateProvider.state,
@@ -53,7 +59,8 @@ class BackgroundReceiver implements CalendarCallbacks {
   }
 
   void onWatchConnected(PebbleDevice watch) async {
-    final lastConnectedWatch = await preferences.getLastConnectedWatchAddress();
+    final lastConnectedWatch =
+    (await preferences).getLastConnectedWatchAddress();
     if (lastConnectedWatch != watch.address) {
       Log.d("Different watch connected than the last one. Resetting DB...");
       await watchTimelineSyncer.clearAllPinsFromWatchAndResync();
@@ -64,7 +71,7 @@ class BackgroundReceiver implements CalendarCallbacks {
       await syncTimelineToWatch();
     }
 
-    await preferences.setLastConnectedWatchAddress(watch.address);
+    (await preferences).setLastConnectedWatchAddress(watch.address);
   }
 
   Future syncTimelineToWatch() async {

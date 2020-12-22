@@ -1,27 +1,33 @@
+import 'dart:async';
+
 import 'package:cobble/domain/preferences.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Preferences {
-  final Future<SharedPreferences> _sharedPreferences;
+  final SharedPreferences _sharedPrefs;
 
-  Preferences(this._sharedPreferences);
+  final _preferencesUpdateStream = StreamController<Preferences>.broadcast();
 
-  Future<int> getLastConnectedWatchAddress() async {
-    final sharedPrefs = await _sharedPreferences;
-    await sharedPrefs.reload();
+  Stream<Preferences> preferencesUpdateStream;
 
-    return sharedPrefs.getInt("LAST_CONNECTED_WATCH");
+  Preferences(this._sharedPrefs) {
+    preferencesUpdateStream = _preferencesUpdateStream.stream;
+
+    _preferencesUpdateStream.add(this);
+  }
+
+  int getLastConnectedWatchAddress() {
+    return _sharedPrefs.getInt("LAST_CONNECTED_WATCH");
   }
 
   Future<void> setLastConnectedWatchAddress(int value) async {
-    final sharedPrefs = await _sharedPreferences;
-
-    return sharedPrefs.setInt("LAST_CONNECTED_WATCH", value);
+    await _sharedPrefs.setInt("LAST_CONNECTED_WATCH", value);
+    _preferencesUpdateStream.add(this);
   }
 }
 
-final preferencesProvider = Provider<Preferences>((ref) {
-  final sharedPreferences = ref.watch(sharedPreferencesProvider);
+final preferencesProvider = FutureProvider<Preferences>((ref) async {
+  final sharedPreferences = await ref.watch(sharedPreferencesProvider);
   return Preferences(sharedPreferences);
 });
