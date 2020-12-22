@@ -9,6 +9,7 @@ import 'package:device_calendar/device_calendar.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:uuid_type/uuid_type.dart';
 
+import '../logging.dart';
 import 'calendar_list.dart';
 import 'calendar_pin_convert.dart';
 
@@ -52,7 +53,7 @@ class CalendarSyncer {
           calendar.id, retrieveEventParams);
 
       if (!result.isSuccess) {
-        //TODO log calendar error
+        Log.e("Retrieve calendars: ${result.errors}");
         return false;
       }
 
