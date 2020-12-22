@@ -67,7 +67,8 @@ class TimelinePinDao {
     final db = await _dbFuture;
 
     return (await db.query(tableTimelinePins,
-            where: "nextSyncAction = \"Delete\""))
+            where:
+                "nextSyncAction = \"Delete\" OR nextSyncAction = \"DeleteThenIgnore\""))
         .map((e) => TimelinePin.fromMap(e))
         .toList();
   }

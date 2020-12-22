@@ -226,7 +226,7 @@ void main() async {
         attributesJson:
             """[{"id":4,"uint32":2147483669},{"id":1,"maxLength":64},{"id":25,"listOfString":["Calendar"],"maxLength":128},{"id":26,"listOfString":["Calendar A"],"maxLength":1024}]""",
         actionsJson:
-            """[{"actionId":0,"actionType":4,"attributes":[{"id":1,"string":"Remove","maxLength":64}]},{"actionId":1,"actionType":4,"attributes":[{"id":1,"string":"Mute calendar","maxLength":64}]}]""",
+            """[{"actionId":0,"actionType":2,"attributes":[{"id":1,"string":"Remove","maxLength":64}]},{"actionId":1,"actionType":2,"attributes":[{"id":1,"string":"Mute calendar","maxLength":64}]}]""",
       ),
     );
 
@@ -343,7 +343,7 @@ void main() async {
         attributesJson:
         """[{"id":4,"uint32":2147483669},{"id":1,"maxLength":64},{"id":25,"listOfString":["Calendar"],"maxLength":128},{"id":26,"listOfString":["Calendar A"],"maxLength":1024}]""",
         actionsJson:
-        """[{"actionId":0,"actionType":4,"attributes":[{"id":1,"string":"Remove","maxLength":64}]},{"actionId":1,"actionType":4,"attributes":[{"id":1,"string":"Mute calendar","maxLength":64}]}]""",
+        """[{"actionId":0,"actionType":2,"attributes":[{"id":1,"string":"Remove","maxLength":64}]},{"actionId":1,"actionType":2,"attributes":[{"id":1,"string":"Mute calendar","maxLength":64}]}]""",
       ),
     );
 
@@ -493,6 +493,109 @@ void main() async {
         persistQuickView: false,
         layout: TimelinePinLayout.calendarPin,
         nextSyncAction: NextSyncAction.Upload,
+      ),
+    ];
+
+    expectEventsWithoutItemIdAndJsonsIgnoringOrder(eventsInDao, expectedEvents);
+
+    expect(
+      eventsInDao.first.attributesJson,
+      """[{"id":4,"uint32":2147483669},{"id":1,"string":"Test Event X","maxLength":64},{"id":25,"listOfString":["","Calendar"],"maxLength":128},{"id":26,"listOfString":["Test Description X","Calendar A"],"maxLength":1024}]""",
+    );
+
+    expect(anyChanges, true);
+  });
+
+  test('Full sync: Do not trigger upload on ignored items', () async {
+    final db = await createTestCobbleDatabase();
+    final calendarPlugin = FakeDeviceCalendarPlugin();
+
+    final container = ProviderContainer(overrides: [
+      deviceCalendarPluginProvider.overrideWithValue(calendarPlugin),
+      sharedPreferencesProvider
+          .overrideWithValue(Future.value(MemorySharedPreferences())),
+      currentDateTimeProvider.overrideWithValue(nowProvider),
+      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      currentDateTimeProvider.overrideWithValue(() => now),
+      permissionCheckProvider.overrideWithValue(FakePermissionCheck())
+    ]);
+
+    final pinDao = container.read(timelinePinDaoProvider);
+
+    calendarPlugin.reportedCalendars = [Calendar(id: "22", name: "Calendar A")];
+
+    calendarPlugin.reportedEvents = [
+      Event(
+        "22",
+        eventId: "1338",
+        start: DateTime.utc(
+          2020, //year
+          11, //month
+          11, //day
+          11, //hour
+          30, //minute
+        ),
+        end: DateTime.utc(
+          2020, //year
+          11, //month
+          11, //day
+          13, //hour
+          30, //minute
+        ),
+        title: "Test Event X",
+        description: "Test Description X",
+      )
+    ];
+
+    await pinDao.insertOrUpdateTimelinePin(
+      TimelinePin(
+        itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
+        parentId: calendarWatchappId,
+        backingId: "1338T1605094200000",
+        timestamp: DateTime.utc(
+          2020, //year
+          11, //month
+          11, //day
+          11, //hour
+          30, //minute
+        ),
+        duration: 60,
+        type: TimelinePinType.pin,
+        isVisible: true,
+        isFloating: false,
+        isAllDay: false,
+        persistQuickView: false,
+        layout: TimelinePinLayout.calendarPin,
+        nextSyncAction: NextSyncAction.Ignore,
+        attributesJson: "",
+      ),
+    );
+
+    final calendarSyncer = container.read(calendarSyncerProvider);
+    final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
+
+    final eventsInDao = await pinDao.getAllPins();
+
+    final expectedEvents = [
+      TimelinePin(
+        itemId: null,
+        parentId: calendarWatchappId,
+        backingId: "1338T1605094200000",
+        timestamp: DateTime.utc(
+          2020, //year
+          11, //month
+          11, //day
+          11, //hour
+          30, //minute
+        ),
+        duration: 120,
+        type: TimelinePinType.pin,
+        isVisible: true,
+        isFloating: false,
+        isAllDay: false,
+        persistQuickView: false,
+        layout: TimelinePinLayout.calendarPin,
+        nextSyncAction: NextSyncAction.Ignore,
       ),
     ];
 

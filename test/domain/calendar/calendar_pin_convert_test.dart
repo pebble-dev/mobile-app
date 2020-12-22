@@ -378,9 +378,16 @@ void main() {
         ));
 
     final expectedActions = [
-      TimelineAction(0, actionTypeDismiss, [TimelineAttribute.title("Remove")]),
       TimelineAction(
-          1, actionTypeDismiss, [TimelineAttribute.title("Mute calendar")])
+        0,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Remove")],
+      ),
+      TimelineAction(
+        1,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Mute calendar")],
+      )
     ];
 
     expect(event.getActions().toSet(), expectedActions.toSet());

@@ -1,16 +1,20 @@
+import 'package:cobble/background/actions/calendar_action_handler.dart';
+import 'package:cobble/domain/calendar/calendar_pin_convert.dart';
 import 'package:cobble/domain/db/dao/timeline_pin_dao.dart';
+import 'package:cobble/domain/db/models/timeline_pin.dart';
 import 'package:cobble/domain/timeline/timeline_action_response.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:uuid_type/uuid_type.dart';
 
-class MasterActionHandler implements ActionHandler {
+class MasterActionHandler {
   final TimelinePinDao _dao;
   final Map<Uuid, ActionHandler> handlers = {};
 
-  MasterActionHandler(this._dao);
+  MasterActionHandler(this._dao, CalendarActionHandler calendarActionHandler) {
+    handlers[calendarWatchappId] = calendarActionHandler;
+  }
 
-  @override
   Future<TimelineActionResponse> handleTimelineAction(
     ActionTrigger trigger,
   ) async {
@@ -24,16 +28,16 @@ class MasterActionHandler implements ActionHandler {
       return TimelineActionResponse(false);
     }
 
-    return targetHandler.handleTimelineAction(trigger);
+    return targetHandler.handleTimelineAction(pin, trigger);
   }
 }
 
 abstract class ActionHandler {
-  Future<TimelineActionResponse> handleTimelineAction(ActionTrigger trigger);
+  Future<TimelineActionResponse> handleTimelineAction(TimelinePin pin,
+      ActionTrigger trigger,);
 }
 
 final masterActionHandlerProvider = Provider<MasterActionHandler>((ref) {
-  return MasterActionHandler(
-    ref.read(timelinePinDaoProvider),
-  );
+  return MasterActionHandler(ref.read(timelinePinDaoProvider),
+      ref.read(calendarActionHandlerProvider));
 });

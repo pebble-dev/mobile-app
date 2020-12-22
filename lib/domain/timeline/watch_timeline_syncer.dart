@@ -71,7 +71,14 @@ class WatchTimelineSyncer {
           return res.value;
         }
 
-        await timelinePinDao.delete(pinToDelete.itemId);
+        if (pinToDelete.nextSyncAction == NextSyncAction.DeleteThenIgnore) {
+          await timelinePinDao.setSyncAction(
+            pinToDelete.itemId,
+            NextSyncAction.Ignore,
+          );
+        } else {
+          await timelinePinDao.delete(pinToDelete.itemId);
+        }
       }
 
       final pinsToUpload = await timelinePinDao.getAllPinsWithPendingUpload();
@@ -129,12 +136,12 @@ class WatchTimelineSyncer {
     final plugin = pluginValue.data.value;
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails("WARNINGS", "Warnings", "Warnings",
-        importance: Importance.defaultImportance,
-        priority: Priority.defaultPriority,
-        showWhen: false);
+        AndroidNotificationDetails("WARNINGS", "Warnings", "Warnings",
+            importance: Importance.defaultImportance,
+            priority: Priority.defaultPriority,
+            showWhen: false);
     const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
+        NotificationDetails(android: androidPlatformChannelSpecifics);
     await plugin.show(
       0,
       "Your watch is full",
@@ -151,7 +158,6 @@ Provider.autoDispose<WatchTimelineSyncer>((ref) {
   final localNotificationsPlugin = ref.readUntilFirstSuccessOrError(
     localNotificationsPluginProvider,
   );
-
 
   return WatchTimelineSyncer(
     timelinePinDao,

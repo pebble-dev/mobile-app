@@ -64,10 +64,12 @@ extension CalendarEventConverter on Event {
 
   List<TimelineAction> getActions() {
     return [
-      TimelineAction(calendarActionRemove, actionTypeDismiss,
-          [TimelineAttribute.title("Remove")]),
-      TimelineAction(calendarActionMuteCalendar, actionTypeDismiss,
-          [TimelineAttribute.title("Mute calendar")])
+      TimelineAction(calendarActionRemove, actionTypeGeneric, [
+        TimelineAttribute.title("Remove"),
+      ]),
+      TimelineAction(calendarActionMuteCalendar, actionTypeGeneric, [
+        TimelineAttribute.title("Mute calendar"),
+      ]),
     ];
   }
 

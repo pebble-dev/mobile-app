@@ -175,4 +175,6 @@ const _$NextSyncActionEnumMap = {
   NextSyncAction.Nothing: 'Nothing',
   NextSyncAction.Upload: 'Upload',
   NextSyncAction.Delete: 'Delete',
+  NextSyncAction.Ignore: 'Ignore',
+  NextSyncAction.DeleteThenIgnore: 'DeleteThenIgnore',
 };

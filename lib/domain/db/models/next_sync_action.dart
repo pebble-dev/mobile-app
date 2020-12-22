@@ -1,1 +1,1 @@
-enum NextSyncAction { Nothing, Upload, Delete }
+enum NextSyncAction { Nothing, Upload, Delete, Ignore, DeleteThenIgnore }

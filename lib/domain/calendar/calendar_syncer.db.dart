@@ -91,6 +91,12 @@ class CalendarSyncer {
 
       newPin = newPin.copyWith(itemId: newItemId);
 
+      if (existingPin != null &&
+          (existingPin.nextSyncAction == NextSyncAction.Ignore ||
+              existingPin.nextSyncAction == NextSyncAction.DeleteThenIgnore)) {
+        newPin = newPin.copyWith(nextSyncAction: existingPin.nextSyncAction);
+      }
+
       _timelinePinDao.insertOrUpdateTimelinePin(newPin);
       anyChanges = true;
     }
