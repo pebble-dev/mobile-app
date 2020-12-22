@@ -31,7 +31,7 @@ class TimelineAttribute {
     this.maxLength,
   });
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return _$TimelineAttributeToJson(this);
   }
 

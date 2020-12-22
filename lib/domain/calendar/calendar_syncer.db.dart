@@ -4,7 +4,7 @@ import 'package:cobble/domain/date/date_providers.dart';
 import 'package:cobble/domain/db/dao/timeline_pin_dao.dart';
 import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/db/models/timeline_pin.dart';
-import 'package:cobble/domain/timeline/attribute_serializer.dart';
+import 'package:cobble/domain/timeline/timeline_serializer.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:uuid_type/uuid_type.dart';
