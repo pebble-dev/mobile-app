@@ -616,6 +616,88 @@ public class Pigeons {
     }
 
     /**
+     * Generated class from Pigeon that represents data sent in messages.
+     */
+    public static class ActionResponsePigeon {
+        private Boolean success;
+
+        public Boolean getSuccess() {
+            return success;
+        }
+
+        public void setSuccess(Boolean setterArg) {
+            this.success = setterArg;
+        }
+
+        private String attributesJson;
+
+        public String getAttributesJson() {
+            return attributesJson;
+        }
+
+        public void setAttributesJson(String setterArg) {
+            this.attributesJson = setterArg;
+        }
+
+        HashMap toMap() {
+            HashMap<String, Object> toMapResult = new HashMap<>();
+            toMapResult.put("success", success);
+            toMapResult.put("attributesJson", attributesJson);
+            return toMapResult;
+        }
+
+        static ActionResponsePigeon fromMap(HashMap map) {
+            ActionResponsePigeon fromMapResult = new ActionResponsePigeon();
+            Object success = map.get("success");
+            fromMapResult.success = (Boolean) success;
+            Object attributesJson = map.get("attributesJson");
+            fromMapResult.attributesJson = (String) attributesJson;
+            return fromMapResult;
+        }
+    }
+
+    /**
+     * Generated class from Pigeon that represents data sent in messages.
+     */
+    public static class ActionTrigger {
+        private String itemId;
+
+        public String getItemId() {
+            return itemId;
+        }
+
+        public void setItemId(String setterArg) {
+            this.itemId = setterArg;
+        }
+
+        private Long actionId;
+
+        public Long getActionId() {
+            return actionId;
+        }
+
+        public void setActionId(Long setterArg) {
+            this.actionId = setterArg;
+        }
+
+        HashMap toMap() {
+            HashMap<String, Object> toMapResult = new HashMap<>();
+            toMapResult.put("itemId", itemId);
+            toMapResult.put("actionId", actionId);
+            return toMapResult;
+        }
+
+        static ActionTrigger fromMap(HashMap map) {
+            ActionTrigger fromMapResult = new ActionTrigger();
+            Object itemId = map.get("itemId");
+            fromMapResult.itemId = (String) itemId;
+            Object actionId = map.get("actionId");
+            fromMapResult.actionId = (actionId == null) ? null : ((actionId instanceof Integer) ? (Integer) actionId : (Long) actionId);
+            return fromMapResult;
+        }
+    }
+
+    /**
      * Generated interface from Pigeon that represents a handler of messages from Flutter.
      */
     public interface PigeonLogger {
@@ -1485,10 +1567,10 @@ public class Pigeons {
     /**
      * Generated class from Pigeon that represents Flutter messages that can be called from Java.
      */
-    public static class TimelineSyncCallbacks {
+    public static class TimelineCallbacks {
         private final BinaryMessenger binaryMessenger;
 
-        public TimelineSyncCallbacks(BinaryMessenger argBinaryMessenger) {
+        public TimelineCallbacks(BinaryMessenger argBinaryMessenger) {
             this.binaryMessenger = argBinaryMessenger;
         }
 
@@ -1498,7 +1580,50 @@ public class Pigeons {
 
         public void syncTimelineToWatch(Reply<Void> callback) {
             BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.TimelineSyncCallbacks.syncTimelineToWatch", new StandardMessageCodec());
+                    new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.TimelineCallbacks.syncTimelineToWatch", new StandardMessageCodec());
+            channel.send(null, channelReply -> {
+                callback.reply(null);
+            });
+        }
+
+        public void handleTimelineAction(ActionTrigger argInput, Reply<ActionResponsePigeon> callback) {
+            BasicMessageChannel<Object> channel =
+                    new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.TimelineCallbacks.handleTimelineAction", new StandardMessageCodec());
+            HashMap inputMap = argInput.toMap();
+            channel.send(inputMap, channelReply -> {
+                HashMap outputMap = (HashMap) channelReply;
+                @SuppressWarnings("ConstantConditions")
+                ActionResponsePigeon output = ActionResponsePigeon.fromMap(outputMap);
+                callback.reply(output);
+            });
+        }
+    }
+
+    /**
+     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
+     */
+    public static class CalendarCallbacks {
+        private final BinaryMessenger binaryMessenger;
+
+        public CalendarCallbacks(BinaryMessenger argBinaryMessenger) {
+            this.binaryMessenger = argBinaryMessenger;
+        }
+
+        public interface Reply<T> {
+            void reply(T reply);
+        }
+
+        public void doFullCalendarSync(Reply<Void> callback) {
+            BasicMessageChannel<Object> channel =
+                    new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.CalendarCallbacks.doFullCalendarSync", new StandardMessageCodec());
+            channel.send(null, channelReply -> {
+                callback.reply(null);
+            });
+        }
+
+        public void deleteCalendarPinsFromWatch(Reply<Void> callback) {
+            BasicMessageChannel<Object> channel =
+                    new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.CalendarCallbacks.deleteCalendarPinsFromWatch", new StandardMessageCodec());
             channel.send(null, channelReply -> {
                 callback.reply(null);
             });
@@ -1533,37 +1658,6 @@ public class Pigeons {
                     channel.setMessageHandler(null);
                 }
             }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
-     */
-    public static class CalendarCallbacks {
-        private final BinaryMessenger binaryMessenger;
-
-        public CalendarCallbacks(BinaryMessenger argBinaryMessenger) {
-            this.binaryMessenger = argBinaryMessenger;
-        }
-
-        public interface Reply<T> {
-            void reply(T reply);
-        }
-
-        public void doFullCalendarSync(Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.CalendarCallbacks.doFullCalendarSync", new StandardMessageCodec());
-            channel.send(null, channelReply -> {
-                callback.reply(null);
-            });
-        }
-
-        public void deleteCalendarPinsFromWatch(Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.CalendarCallbacks.deleteCalendarPinsFromWatch", new StandardMessageCodec());
-            channel.send(null, channelReply -> {
-                callback.reply(null);
-            });
         }
     }
 

@@ -6,28 +6,36 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.getSystemService
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.ConnectionState
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.libpebblecommon.packets.blobdb.TimelineAction
+import io.rebble.libpebblecommon.services.blobdb.TimelineService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 @Singleton
-class TimelineSyncFlutterBridge @Inject constructor(
+class BackgroundTimelineFlutterBridge @Inject constructor(
         private val context: Context,
         private val flutterBackgroundController: FlutterBackgroundController,
-        private val connectionLooper: ConnectionLooper
+        private val connectionLooper: ConnectionLooper,
+        private val moshi: Moshi
 ) : FlutterBridge {
     private val alarmManager: AlarmManager = context.getSystemService()!!
-    private var cachedTimelineSyncCallbacks: Pigeons.TimelineSyncCallbacks? = null
+    private var cachedTimelineSyncCallbacks: Pigeons.TimelineCallbacks? = null
 
     @Suppress("ObjectLiteralToLambda")
     private val callbacks = object : Pigeons.TimelineSyncControl {
@@ -71,14 +79,46 @@ class TimelineSyncFlutterBridge @Inject constructor(
         }
     }
 
-    private suspend fun getTimelineSyncCallbacks(): Pigeons.TimelineSyncCallbacks? {
+    suspend fun handleTimelineAction(
+            actionRequest: TimelineAction.InvokeAction
+    ): TimelineService.ActionResponse = withContext(Dispatchers.Main) {
+        val callbacks = getTimelineSyncCallbacks().also { println("Timeline sync callbacks") }
+                ?: return@withContext TimelineService.ActionResponse(false)
+
+        suspendCoroutine { continuation ->
+            val pigeonActionTrigger = Pigeons.ActionTrigger().apply {
+                itemId = actionRequest.itemID.get().toString()
+                actionId = actionRequest.actionID.get().toLong()
+            }
+
+            callbacks.handleTimelineAction(pigeonActionTrigger) { pigeonResponse ->
+                val parsedAttributes = moshi
+                        .adapter<List<io.rebble.cobble.data.TimelineAttribute>>(
+                                Types.newParameterizedType(
+                                        List::class.java,
+                                        io.rebble.cobble.data.TimelineAttribute::class.java
+                                )
+                        )
+                        .fromJson(pigeonResponse.attributesJson) ?: emptyList()
+
+                continuation.resume(
+                        TimelineService.ActionResponse(
+                                pigeonResponse.success,
+                                parsedAttributes.map { it.toProtocolAttribute() }
+                        )
+                )
+            }
+        }
+    }
+
+    private suspend fun getTimelineSyncCallbacks(): Pigeons.TimelineCallbacks? {
         val cachedTimelineSyncCallbacks = cachedTimelineSyncCallbacks
         if (cachedTimelineSyncCallbacks != null) {
             return cachedTimelineSyncCallbacks
         }
 
         val flutterEngine = flutterBackgroundController.getBackgroundFlutterEngine() ?: return null
-        return Pigeons.TimelineSyncCallbacks(flutterEngine.dartExecutor.binaryMessenger)
+        return Pigeons.TimelineCallbacks(flutterEngine.dartExecutor.binaryMessenger)
                 .also { this.cachedTimelineSyncCallbacks = it }
     }
 

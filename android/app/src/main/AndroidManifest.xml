@@ -106,7 +106,7 @@
         </receiver>
 
         <receiver
-            android:name=".bridges.background.TimelineSyncFlutterBridge$Receiver"
+            android:name=".bridges.background.BackgroundTimelineFlutterBridge$Receiver"
             android:exported="false" />
 
         <provider

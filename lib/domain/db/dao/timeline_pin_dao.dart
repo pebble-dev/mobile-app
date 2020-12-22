@@ -18,6 +18,22 @@ class TimelinePinDao {
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
+  Future<TimelinePin> getPinById(Uuid id) async {
+    final db = await _dbFuture;
+
+    final receivedPins = (await db.query(
+      tableTimelinePins,
+      where: "itemId = ?",
+      whereArgs: [id.toString()],
+    ));
+
+    if (receivedPins.isEmpty) {
+      return null;
+    }
+
+    return TimelinePin.fromMap(receivedPins.first);
+  }
+
   Future<List<TimelinePin>> getAllPins() async {
     final db = await _dbFuture;
 

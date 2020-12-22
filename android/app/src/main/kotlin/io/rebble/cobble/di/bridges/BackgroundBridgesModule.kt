@@ -4,7 +4,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoSet
 import io.rebble.cobble.bridges.FlutterBridge
-import io.rebble.cobble.bridges.background.TimelineSyncFlutterBridge
+import io.rebble.cobble.bridges.background.BackgroundTimelineFlutterBridge
 import javax.inject.Qualifier
 
 @Module
@@ -17,7 +17,7 @@ abstract class BackgroundBridgesModule {
     @IntoSet
     @BackgroundBridge
     abstract fun bindTimelineSyncBridge(
-            timelineSyncFlutterBridge: TimelineSyncFlutterBridge
+            backgroundTimelineFlutterBridge: BackgroundTimelineFlutterBridge
     ): FlutterBridge
 }
 

@@ -12,18 +12,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/all.dart';
 
+import 'actions/master_action_handler.dart';
+
 void main_background() {
   WidgetsFlutterBinding.ensureInitialized();
 
   BackgroundReceiver();
 }
 
-class BackgroundReceiver implements CalendarCallbacks {
+class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks {
   final container = ProviderContainer();
   CalendarSyncer calendarSyncer;
   WatchTimelineSyncer watchTimelineSyncer;
   Future<Preferences> preferences;
   TimelinePinDao timelinePinDao;
+  MasterActionHandler masterActionHandler;
 
   ProviderSubscription<WatchConnectionState> connectionSubscription;
 
@@ -43,6 +46,7 @@ class BackgroundReceiver implements CalendarCallbacks {
 
       return asyncValue.data.value;
     });
+    masterActionHandler = container.read(masterActionHandlerProvider);
 
     connectionSubscription = container.listen(
       connectionStateProvider.state,
@@ -55,6 +59,7 @@ class BackgroundReceiver implements CalendarCallbacks {
     );
 
     CalendarCallbacks.setup(this);
+    TimelineCallbacks.setup(this);
   }
 
   @override
@@ -95,5 +100,10 @@ class BackgroundReceiver implements CalendarCallbacks {
   Future<void> deleteCalendarPinsFromWatch() async {
     await timelinePinDao.markAllPinsFromAppForDeletion(calendarWatchappId);
     await syncTimelineToWatch();
+  }
+
+  @override
+  Future<ActionResponsePigeon> handleTimelineAction(ActionTrigger arg) async {
+    return (await masterActionHandler.handleTimelineAction(arg)).toPigeon();
   }
 }

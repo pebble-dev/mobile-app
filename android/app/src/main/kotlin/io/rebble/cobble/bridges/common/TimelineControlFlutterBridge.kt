@@ -20,7 +20,7 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.random.Random
 
-class TimelineFlutterBridge @Inject constructor(
+class TimelineControlFlutterBridge @Inject constructor(
         binaryMessenger: BinaryMessenger,
         coroutineScope: CoroutineScope,
         private val moshi: Moshi,

@@ -265,11 +265,52 @@ class PebbleFirmwarePigeon {
   }
 }
 
+class ActionResponsePigeon {
+  bool success;
+  String attributesJson;
+
+  // ignore: unused_element
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
+    pigeonMap['success'] = success;
+    pigeonMap['attributesJson'] = attributesJson;
+    return pigeonMap;
+  }
+
+  // ignore: unused_element
+  static ActionResponsePigeon _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    final ActionResponsePigeon result = ActionResponsePigeon();
+    result.success = pigeonMap['success'];
+    result.attributesJson = pigeonMap['attributesJson'];
+    return result;
+  }
+}
+
+class ActionTrigger {
+  String itemId;
+  int actionId;
+
+  // ignore: unused_element
+  Map<dynamic, dynamic> _toMap() {
+    final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
+    pigeonMap['itemId'] = itemId;
+    pigeonMap['actionId'] = actionId;
+    return pigeonMap;
+  }
+
+  // ignore: unused_element
+  static ActionTrigger _fromMap(Map<dynamic, dynamic> pigeonMap) {
+    final ActionTrigger result = ActionTrigger();
+    result.itemId = pigeonMap['itemId'];
+    result.actionId = pigeonMap['actionId'];
+    return result;
+  }
+}
+
 class PigeonLogger {
   Future<void> v(StringWrapper arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.PigeonLogger.v', StandardMessageCodec());
 
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
@@ -969,7 +1010,6 @@ class CalendarControl {
       // noop
     }
   }
-
   Future<void> deleteCalendarPinsFromWatch() async {
     const BasicMessageChannel<dynamic> channel =
     BasicMessageChannel<dynamic>(
@@ -1109,13 +1149,16 @@ abstract class ConnectionCallbacks {
   }
 }
 
-abstract class TimelineSyncCallbacks {
+abstract class TimelineCallbacks {
   void syncTimelineToWatch();
-  static void setup(TimelineSyncCallbacks api) {
+
+  Future<ActionResponsePigeon> handleTimelineAction(ActionTrigger arg);
+
+  static void setup(TimelineCallbacks api) {
     {
       const BasicMessageChannel<dynamic> channel =
       BasicMessageChannel<dynamic>(
-          'dev.flutter.pigeon.TimelineSyncCallbacks.syncTimelineToWatch',
+          'dev.flutter.pigeon.TimelineCallbacks.syncTimelineToWatch',
           StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
@@ -1125,38 +1168,31 @@ abstract class TimelineSyncCallbacks {
         });
       }
     }
-  }
-}
-
-class DebugControl {
-  Future<void> collectLogs() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
-        'dev.flutter.pigeon.DebugControl.collectLogs', StandardMessageCodec());
-
-    final Map<dynamic, dynamic> replyMap = await channel.send(null);
-    if (replyMap == null) {
-      throw PlatformException(
-          code: 'channel-error',
-          message: 'Unable to establish connection on channel.',
-          details: null);
-    } else if (replyMap['error'] != null) {
-      final Map<dynamic, dynamic> error = replyMap['error'];
-      throw PlatformException(
-          code: error['code'],
-          message: error['message'],
-          details: error['details']);
-    } else {
-      // noop
+    {
+      const BasicMessageChannel<dynamic> channel =
+      BasicMessageChannel<dynamic>(
+          'dev.flutter.pigeon.TimelineCallbacks.handleTimelineAction',
+          StandardMessageCodec());
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((dynamic message) async {
+          final Map<dynamic, dynamic> mapMessage = message as Map<
+              dynamic,
+              dynamic>;
+          final ActionTrigger input = ActionTrigger._fromMap(mapMessage);
+          final ActionResponsePigeon output = await api.handleTimelineAction(
+              input);
+          return output._toMap();
+        });
+      }
     }
   }
 }
 
 abstract class CalendarCallbacks {
   Future<void> doFullCalendarSync();
-
   Future<void> deleteCalendarPinsFromWatch();
-
   static void setup(CalendarCallbacks api) {
     {
       const BasicMessageChannel<dynamic> channel =
@@ -1183,6 +1219,30 @@ abstract class CalendarCallbacks {
           await api.deleteCalendarPinsFromWatch();
         });
       }
+    }
+  }
+}
+
+class DebugControl {
+  Future<void> collectLogs() async {
+    const BasicMessageChannel<dynamic> channel =
+    BasicMessageChannel<dynamic>(
+        'dev.flutter.pigeon.DebugControl.collectLogs', StandardMessageCodec());
+
+    final Map<dynamic, dynamic> replyMap = await channel.send(null);
+    if (replyMap == null) {
+      throw PlatformException(
+          code: 'channel-error',
+          message: 'Unable to establish connection on channel.',
+          details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      // noop
     }
   }
 }
