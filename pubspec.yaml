@@ -40,10 +40,11 @@ dependencies:
   # pending PRs:
   # - https://github.com/builttoroam/device_calendar/pull/275
   # - https://github.com/builttoroam/device_calendar/pull/256
+  # - https://github.com/builttoroam/device_calendar/pull/276
   device_calendar:
     git:
       url: https://github.com/matejdro/device_calendar.git
-      ref: 0bf60ce72d20821640ad068e716f4a492db26894
+      ref: 8ec96c83d482cada5a910cd6b98505eb35027400
   uuid_type: ^1.0.0
   path: ^1.7.0
   json_annotation: ^3.0.0

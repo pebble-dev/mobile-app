@@ -421,4 +421,397 @@ void main() {
 
     expect(CalendarEventId.fromTimelinePin(pin), expectedId);
   });
+
+  test("Generate event accepted attribute when event is Android accepted", () {
+    final event = Event("10",
+        title: "The Event",
+        start: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          10, //Hour
+          30, // Minute
+        ),
+        end: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          11, //Hour
+          30, // Minute
+        ),
+        attendees: [
+          Attendee(
+            isCurrentUser: true,
+            androidAttendeeDetails: AndroidAttendeeDetails(
+                role: AttendeeRole.None,
+                attendanceStatus: AndroidAttendanceStatus.Accepted),
+          )
+        ]);
+
+    final expectedAttributes = [
+      TimelineAttribute.title("The Event"),
+      TimelineAttribute.tinyIcon(TimelineIcon.timelineCalendar),
+      TimelineAttribute.headings([
+        "Status",
+        "Calendar",
+      ]),
+      TimelineAttribute.paragraphs([
+        "Accepted",
+        "Test@Calendar",
+      ]),
+    ].toSet();
+
+    final expectedActions = [
+      TimelineAction(
+        2,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Maybe")],
+      ),
+      TimelineAction(
+        3,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Decline")],
+      ),
+      TimelineAction(
+        0,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Remove")],
+      ),
+      TimelineAction(
+        1,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Mute calendar")],
+      )
+    ];
+
+    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+    expect(event.getActions().toSet(), expectedActions.toSet());
+  });
+
+  test("Generate event accepted attribute when event is iOS accepted", () {
+    final event = Event("10",
+        title: "The Event",
+        start: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          10, //Hour
+          30, // Minute
+        ),
+        end: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          11, //Hour
+          30, // Minute
+        ),
+        attendees: [
+          Attendee(
+            isCurrentUser: true,
+            iosAttendeeDetails: IosAttendeeDetails(
+                attendanceStatus: IosAttendanceStatus.Accepted),
+          )
+        ]);
+
+    final expectedAttributes = [
+      TimelineAttribute.title("The Event"),
+      TimelineAttribute.tinyIcon(TimelineIcon.timelineCalendar),
+      TimelineAttribute.headings([
+        "Status",
+        "Calendar",
+      ]),
+      TimelineAttribute.paragraphs([
+        "Accepted",
+        "Test@Calendar",
+      ]),
+    ].toSet();
+
+    final expectedActions = [
+      TimelineAction(
+        2,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Maybe")],
+      ),
+      TimelineAction(
+        3,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Decline")],
+      ),
+      TimelineAction(
+        0,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Remove")],
+      ),
+      TimelineAction(
+        1,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Mute calendar")],
+      )
+    ];
+
+    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+    expect(event.getActions().toSet(), expectedActions.toSet());
+  });
+
+  test("Generate event declined attribute when event is Android declined", () {
+    final event = Event("10",
+        title: "The Event",
+        start: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          10, //Hour
+          30, // Minute
+        ),
+        end: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          11, //Hour
+          30, // Minute
+        ),
+        attendees: [
+          Attendee(
+            isCurrentUser: true,
+            androidAttendeeDetails: AndroidAttendeeDetails(
+                role: AttendeeRole.None,
+                attendanceStatus: AndroidAttendanceStatus.Declined),
+          )
+        ]);
+
+    final expectedAttributes = [
+      TimelineAttribute.title("The Event"),
+      TimelineAttribute.tinyIcon(TimelineIcon.timelineCalendar),
+      TimelineAttribute.headings([
+        "Status",
+        "Calendar",
+      ]),
+      TimelineAttribute.paragraphs([
+        "Declined",
+        "Test@Calendar",
+      ]),
+    ].toSet();
+
+    final expectedActions = [
+      TimelineAction(
+        1,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Accept")],
+      ),
+      TimelineAction(
+        2,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Maybe")],
+      ),
+      TimelineAction(
+        0,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Remove")],
+      ),
+      TimelineAction(
+        1,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Mute calendar")],
+      )
+    ];
+
+    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+    expect(event.getActions().toSet(), expectedActions.toSet());
+  });
+
+  test("Generate event declined attribute when event is iOS declined", () {
+    final event = Event("10",
+        title: "The Event",
+        start: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          10, //Hour
+          30, // Minute
+        ),
+        end: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          11, //Hour
+          30, // Minute
+        ),
+        attendees: [
+          Attendee(
+            isCurrentUser: true,
+            iosAttendeeDetails: IosAttendeeDetails(
+                attendanceStatus: IosAttendanceStatus.Declined),
+          )
+        ]);
+
+    final expectedAttributes = [
+      TimelineAttribute.title("The Event"),
+      TimelineAttribute.tinyIcon(TimelineIcon.timelineCalendar),
+      TimelineAttribute.headings([
+        "Status",
+        "Calendar",
+      ]),
+      TimelineAttribute.paragraphs([
+        "Declined",
+        "Test@Calendar",
+      ]),
+    ].toSet();
+
+    final expectedActions = [
+      TimelineAction(
+        1,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Accept")],
+      ),
+      TimelineAction(
+        2,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Maybe")],
+      ),
+      TimelineAction(
+        0,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Remove")],
+      ),
+      TimelineAction(
+        1,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Mute calendar")],
+      )
+    ];
+
+    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+    expect(event.getActions().toSet(), expectedActions.toSet());
+  });
+
+  test("Generate event maybe attribute when event is Android tentative", () {
+    final event = Event("10",
+        title: "The Event",
+        start: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          10, //Hour
+          30, // Minute
+        ),
+        end: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          11, //Hour
+          30, // Minute
+        ),
+        attendees: [
+          Attendee(
+            isCurrentUser: true,
+            androidAttendeeDetails: AndroidAttendeeDetails(
+                role: AttendeeRole.None,
+                attendanceStatus: AndroidAttendanceStatus.Tentative),
+          )
+        ]);
+
+    final expectedAttributes = [
+      TimelineAttribute.title("The Event"),
+      TimelineAttribute.tinyIcon(TimelineIcon.timelineCalendar),
+      TimelineAttribute.headings([
+        "Status",
+        "Calendar",
+      ]),
+      TimelineAttribute.paragraphs([
+        "Maybe",
+        "Test@Calendar",
+      ]),
+    ].toSet();
+
+    final expectedActions = [
+      TimelineAction(
+        1,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Accept")],
+      ),
+      TimelineAction(
+        3,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Decline")],
+      ),
+      TimelineAction(
+        0,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Remove")],
+      ),
+      TimelineAction(
+        1,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Mute calendar")],
+      )
+    ];
+
+    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+    expect(event.getActions().toSet(), expectedActions.toSet());
+  });
+
+  test("Generate event maybe attribute when event is iOS tentative", () {
+    final event = Event("10",
+        title: "The Event",
+        start: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          10, //Hour
+          30, // Minute
+        ),
+        end: DateTime.utc(
+          2020, // Year
+          11, // Month
+          21, // Day
+          11, //Hour
+          30, // Minute
+        ),
+        attendees: [
+          Attendee(
+            isCurrentUser: true,
+            iosAttendeeDetails: IosAttendeeDetails(
+                attendanceStatus: IosAttendanceStatus.Tentative),
+          )
+        ]);
+
+    final expectedAttributes = [
+      TimelineAttribute.title("The Event"),
+      TimelineAttribute.tinyIcon(TimelineIcon.timelineCalendar),
+      TimelineAttribute.headings([
+        "Status",
+        "Calendar",
+      ]),
+      TimelineAttribute.paragraphs([
+        "Maybe",
+        "Test@Calendar",
+      ]),
+    ].toSet();
+
+    final expectedActions = [
+      TimelineAction(
+        1,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Accept")],
+      ),
+      TimelineAction(
+        3,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Decline")],
+      ),
+      TimelineAction(
+        0,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Remove")],
+      ),
+      TimelineAction(
+        1,
+        actionTypeGeneric,
+        [TimelineAttribute.title("Mute calendar")],
+      )
+    ];
+
+    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+    expect(event.getActions().toSet(), expectedActions.toSet());
+  });
 }

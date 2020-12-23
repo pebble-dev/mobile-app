@@ -21,8 +21,7 @@ extension CalendarEventConverter on Event {
     }
 
     if (attendees != null && attendees.isNotEmpty) {
-      headings.add("Attendees");
-      paragraphs.add(attendees
+      final attendeesString = attendees
           .map((e) {
             if (e.name?.trim()?.isNotEmpty == true) {
               return e.name;
@@ -31,7 +30,39 @@ extension CalendarEventConverter on Event {
             }
           })
           .where((label) => label != null && label.trim().isNotEmpty)
-          .join(", "));
+          .join(", ");
+
+      if (attendeesString.isNotEmpty) {
+        headings.add("Attendees");
+        paragraphs.add(attendeesString);
+      }
+
+      final selfAttendee = attendees.firstWhere(
+        (element) => element.isCurrentUser == true,
+        orElse: () => null,
+      );
+
+      if (selfAttendee != null) {
+        if (selfAttendee.androidAttendeeDetails?.attendanceStatus ==
+                AndroidAttendanceStatus.Accepted ||
+            selfAttendee.iosAttendeeDetails?.attendanceStatus ==
+                IosAttendanceStatus.Accepted) {
+          headings.add("Status");
+          paragraphs.add("Accepted");
+        } else if (selfAttendee.androidAttendeeDetails?.attendanceStatus ==
+                AndroidAttendanceStatus.Tentative ||
+            selfAttendee.iosAttendeeDetails?.attendanceStatus ==
+                IosAttendanceStatus.Tentative) {
+          headings.add("Status");
+          paragraphs.add("Maybe");
+        } else if (selfAttendee.androidAttendeeDetails?.attendanceStatus ==
+                AndroidAttendanceStatus.Declined ||
+            selfAttendee.iosAttendeeDetails?.attendanceStatus ==
+                IosAttendanceStatus.Declined) {
+          headings.add("Status");
+          paragraphs.add("Declined");
+        }
+      }
     }
 
     if (recurrenceRule != null) {
@@ -69,14 +100,61 @@ extension CalendarEventConverter on Event {
   }
 
   List<TimelineAction> getActions() {
-    return [
+    final List<TimelineAction> actions = [];
+
+    final selfAtteendee = attendees?.firstWhere(
+          (element) => element.isCurrentUser == true,
+      orElse: () => null,
+    );
+
+    if (selfAtteendee != null) {
+      if (selfAtteendee.androidAttendeeDetails?.attendanceStatus !=
+          AndroidAttendanceStatus.Accepted &&
+          selfAtteendee.iosAttendeeDetails?.attendanceStatus !=
+              IosAttendanceStatus.Accepted) {
+        actions.add(
+          TimelineAction(calendarActionAccept, actionTypeGeneric, [
+            TimelineAttribute.title("Accept"),
+          ]),
+        );
+      }
+
+      if (selfAtteendee.androidAttendeeDetails?.attendanceStatus !=
+          AndroidAttendanceStatus.Tentative &&
+          selfAtteendee.iosAttendeeDetails?.attendanceStatus !=
+              IosAttendanceStatus.Tentative) {
+        actions.add(
+          TimelineAction(calendarActionMaybe, actionTypeGeneric, [
+            TimelineAttribute.title("Maybe"),
+          ]),
+        );
+      }
+
+      if (selfAtteendee.androidAttendeeDetails?.attendanceStatus !=
+          AndroidAttendanceStatus.Declined &&
+          selfAtteendee.iosAttendeeDetails?.attendanceStatus !=
+              IosAttendanceStatus.Declined) {
+        actions.add(
+          TimelineAction(calendarActionDecline, actionTypeGeneric, [
+            TimelineAttribute.title("Decline"),
+          ]),
+        );
+      }
+    }
+
+    actions.add(
       TimelineAction(calendarActionRemove, actionTypeGeneric, [
         TimelineAttribute.title("Remove"),
       ]),
+    );
+
+    actions.add(
       TimelineAction(calendarActionMuteCalendar, actionTypeGeneric, [
         TimelineAttribute.title("Mute calendar"),
       ]),
-    ];
+    );
+
+    return actions;
   }
 
   TimelinePin generateBasicEventData(
@@ -159,3 +237,6 @@ final calendarWatchappId = Uuid("6c6c6fc2-1912-4d25-8396-3547d1dfac5b");
 
 const calendarActionRemove = 0;
 const calendarActionMuteCalendar = 1;
+const calendarActionAccept = 1;
+const calendarActionMaybe = 2;
+const calendarActionDecline = 3;

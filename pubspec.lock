@@ -194,8 +194,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "0bf60ce72d20821640ad068e716f4a492db26894"
-      resolved-ref: "0bf60ce72d20821640ad068e716f4a492db26894"
+      ref: "8ec96c83d482cada5a910cd6b98505eb35027400"
+      resolved-ref: "8ec96c83d482cada5a910cd6b98505eb35027400"
       url: "https://github.com/matejdro/device_calendar.git"
     source: git
     version: "3.2.0"
