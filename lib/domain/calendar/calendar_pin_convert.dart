@@ -23,8 +23,14 @@ extension CalendarEventConverter on Event {
     if (attendees != null && attendees.isNotEmpty) {
       headings.add("Attendees");
       paragraphs.add(attendees
-          .map((e) => e.name)
-          .where((element) => element.trim().isNotEmpty)
+          .map((e) {
+            if (e.name?.trim()?.isNotEmpty == true) {
+              return e.name;
+            } else {
+              return e.emailAddress;
+            }
+          })
+          .where((label) => label != null && label.trim().isNotEmpty)
           .join(", "));
     }
 

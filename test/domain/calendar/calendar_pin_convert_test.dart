@@ -225,7 +225,7 @@ void main() {
         ),
         attendees: [
           Attendee(name: "John"),
-          Attendee(name: "Jane"),
+          Attendee(emailAddress: "Jane@gmail.com"),
           Attendee(name: " "),
         ]);
 
@@ -237,7 +237,7 @@ void main() {
         "Calendar",
       ]),
       TimelineAttribute.paragraphs([
-        "John, Jane",
+        "John, Jane@gmail.com",
         "Test@Calendar",
       ]),
     ].toSet();
