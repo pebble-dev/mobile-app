@@ -3,6 +3,7 @@ import 'package:cobble/domain/calendar/device_calendar_plugin_provider.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/permissions.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
+import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/domain/timeline/blob_status.dart';
 import 'package:cobble/domain/timeline/timeline_sync_controller.dart';
 import 'package:cobble/domain/timeline/watch_timeline_syncer.dart';
@@ -26,6 +27,35 @@ class TestTab extends HookWidget {
     final calendars = useProvider(calendarListProvider.state);
     final calendarSelector = useProvider(calendarListProvider);
     final calendarControl = useProvider(calendarControlProvider);
+
+    final permissionControl = useProvider(permissionControlProvider);
+    final permissionCheck = useProvider(permissionCheckProvider);
+
+    final preferences = useProvider(preferencesProvider);
+    final calendarSyncEnabled = useProvider(calendarSyncEnabledProvider);
+
+    useEffect(() {
+      Future.microtask(() async {
+        if (!(await permissionCheck.hasCalendarPermission()).value) {
+          await permissionControl.requestCalendarPermission();
+        }
+        if (!(await permissionCheck.hasLocationPermission()).value) {
+          await permissionControl.requestLocationPermission();
+        }
+
+        final pairedDevice = PairedStorage.getDefault();
+        if (pairedDevice != null) {
+          if (!(await permissionCheck.hasNotificationAccess()).value) {
+            permissionControl.requestNotificationAccess();
+          }
+
+          if (!(await permissionCheck.hasBatteryExclusionEnabled()).value) {
+            permissionControl.requestBatteryExclusion();
+          }
+        }
+      });
+      return null;
+    }, ["one-time"]);
 
     String statusText;
     if (connectionState.isConnecting == true) {
@@ -122,6 +152,20 @@ class TestTab extends HookWidget {
                   ),
                 ),
               ),
+              Row(children: [
+                Switch(
+                  value: calendarSyncEnabled.data?.value ?? false,
+                  onChanged: (value) async {
+                    await preferences.data?.value
+                        ?.setCalendarSyncEnabled(value);
+
+                    if (!value) {
+                      calendarControl.deleteCalendarPinsFromWatch();
+                    }
+                  },
+                ),
+                Text("Show calendar on the watch")
+              ]),
               Text("Calendars: "),
               ...calendars.data?.value?.map((e) {
                     return Row(

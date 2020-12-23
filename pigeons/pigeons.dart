@@ -73,6 +73,16 @@ class TimelinePinPigeon {
   String actionsJson;
 }
 
+class ActionTrigger {
+  String itemId;
+  int actionId;
+}
+
+class ActionResponsePigeon {
+  bool success;
+  String attributesJson;
+}
+
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
@@ -97,11 +107,17 @@ abstract class PairCallbacks {
 abstract class CalendarCallbacks {
   @async
   void doFullCalendarSync();
+
+  @async
+  void deleteCalendarPinsFromWatch();
 }
 
 @FlutterApi()
-abstract class TimelineSyncCallbacks {
+abstract class TimelineCallbacks {
   void syncTimelineToWatch();
+
+  @async
+  ActionResponsePigeon handleTimelineAction(ActionTrigger actionTrigger);
 }
 
 @HostApi()
@@ -202,6 +218,8 @@ abstract class PermissionControl {
 @HostApi()
 abstract class CalendarControl {
   void requestCalendarSync();
+
+  void deleteCalendarPinsFromWatch();
 }
 
 @HostApi()

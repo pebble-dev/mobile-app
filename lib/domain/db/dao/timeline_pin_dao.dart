@@ -18,6 +18,22 @@ class TimelinePinDao {
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
+  Future<TimelinePin> getPinById(Uuid id) async {
+    final db = await _dbFuture;
+
+    final receivedPins = (await db.query(
+      tableTimelinePins,
+      where: "itemId = ?",
+      whereArgs: [id.toString()],
+    ));
+
+    if (receivedPins.isEmpty) {
+      return null;
+    }
+
+    return TimelinePin.fromMap(receivedPins.first);
+  }
+
   Future<List<TimelinePin>> getAllPins() async {
     final db = await _dbFuture;
 
@@ -51,7 +67,8 @@ class TimelinePinDao {
     final db = await _dbFuture;
 
     return (await db.query(tableTimelinePins,
-            where: "nextSyncAction = \"Delete\""))
+            where:
+                "nextSyncAction = \"Delete\" OR nextSyncAction = \"DeleteThenIgnore\""))
         .map((e) => TimelinePin.fromMap(e))
         .toList();
   }
@@ -102,6 +119,19 @@ class TimelinePinDao {
         whereArgs: [
           TimelinePin.nextSyncActionEnumMap()[NextSyncAction.Nothing]
         ]);
+  }
+
+  Future<void> markAllPinsFromAppForDeletion(Uuid appUuid) async {
+    final db = await _dbFuture;
+
+    await db.update(
+        tableTimelinePins,
+        {
+          "nextSyncAction":
+              TimelinePin.nextSyncActionEnumMap()[NextSyncAction.Delete]
+        },
+        where: "parentId = ?",
+        whereArgs: [appUuid.toString()]);
   }
 }
 

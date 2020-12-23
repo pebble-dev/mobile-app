@@ -31,7 +31,7 @@ abstract class CommonBridgesModule {
     @Binds
     @IntoSet
     @CommonBridge
-    abstract fun bindTimelineBridge(timelineFlutterBridge: TimelineFlutterBridge): FlutterBridge
+    abstract fun bindTimelineBridge(timelineControlFlutterBridge: TimelineControlFlutterBridge): FlutterBridge
 
     @Binds
     @IntoSet

@@ -92,7 +92,7 @@ void main() async {
       )
     ];
 
-    final calendarSyncer = container.read(calendarSyncerProvider);
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final insertedEvents = await pinDao.getAllPins();
@@ -101,7 +101,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1337T1605004200000",
+        backingId: "22T1337T1605004200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -121,7 +121,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1338T1605094200000",
+        backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -205,29 +205,32 @@ void main() async {
 
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
-          itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
-          parentId: calendarWatchappId,
-          backingId: "1338T1605094200000",
-          timestamp: DateTime.utc(
-            2020, //year
-            11, //month
-            11, //day
-            11, //hour
-            30, //minute
-          ),
-          duration: 120,
-          type: TimelinePinType.pin,
-          isVisible: true,
-          isFloating: false,
-          isAllDay: false,
-          persistQuickView: false,
-          layout: TimelinePinLayout.calendarPin,
-          nextSyncAction: NextSyncAction.Nothing,
-          attributesJson:
-              """[{"id":4,"uint32":2147483669},{"id":1,"maxLength":64},{"id":25,"listOfString":["Calendar"],"maxLength":128},{"id":26,"listOfString":["Calendar A"],"maxLength":1024}]"""),
+        itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
+        parentId: calendarWatchappId,
+        backingId: "22T1338T1605094200000",
+        timestamp: DateTime.utc(
+          2020, //year
+          11, //month
+          11, //day
+          11, //hour
+          30, //minute
+        ),
+        duration: 120,
+        type: TimelinePinType.pin,
+        isVisible: true,
+        isFloating: false,
+        isAllDay: false,
+        persistQuickView: false,
+        layout: TimelinePinLayout.calendarPin,
+        nextSyncAction: NextSyncAction.Nothing,
+        attributesJson:
+            """[{"id":4,"uint32":2147483669},{"id":1,"maxLength":64},{"id":25,"listOfString":["Calendar"],"maxLength":128},{"id":26,"listOfString":["Calendar A"],"maxLength":1024}]""",
+        actionsJson:
+            """[{"actionId":0,"actionType":2,"attributes":[{"id":1,"string":"Remove","maxLength":64}]},{"actionId":1,"actionType":2,"attributes":[{"id":1,"string":"Mute calendar","maxLength":64}]}]""",
+      ),
     );
 
-    final calendarSyncer = container.read(calendarSyncerProvider);
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
@@ -236,7 +239,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1338T1605094200000",
+        backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -256,7 +259,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1337T1605004200000",
+        backingId: "22T1337T1605004200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -319,29 +322,32 @@ void main() async {
 
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
-          itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
-          parentId: calendarWatchappId,
-          backingId: "1338T1605094200000",
-          timestamp: DateTime.utc(
-            2020, //year
-            11, //month
-            11, //day
-            11, //hour
-            30, //minute
-          ),
-          duration: 120,
-          type: TimelinePinType.pin,
-          isVisible: true,
-          isFloating: false,
-          isAllDay: false,
-          persistQuickView: false,
-          layout: TimelinePinLayout.calendarPin,
-          nextSyncAction: NextSyncAction.Nothing,
-          attributesJson:
-          """[{"id":4,"uint32":2147483669},{"id":1,"maxLength":64},{"id":25,"listOfString":["Calendar"],"maxLength":128},{"id":26,"listOfString":["Calendar A"],"maxLength":1024}]"""),
+        itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
+        parentId: calendarWatchappId,
+        backingId: "22T1338T1605094200000",
+        timestamp: DateTime.utc(
+          2020, //year
+          11, //month
+          11, //day
+          11, //hour
+          30, //minute
+        ),
+        duration: 120,
+        type: TimelinePinType.pin,
+        isVisible: true,
+        isFloating: false,
+        isAllDay: false,
+        persistQuickView: false,
+        layout: TimelinePinLayout.calendarPin,
+        nextSyncAction: NextSyncAction.Nothing,
+        attributesJson:
+        """[{"id":4,"uint32":2147483669},{"id":1,"maxLength":64},{"id":25,"listOfString":["Calendar"],"maxLength":128},{"id":26,"listOfString":["Calendar A"],"maxLength":1024}]""",
+        actionsJson:
+        """[{"actionId":0,"actionType":2,"attributes":[{"id":1,"string":"Remove","maxLength":64}]},{"actionId":1,"actionType":2,"attributes":[{"id":1,"string":"Mute calendar","maxLength":64}]}]""",
+      ),
     );
 
-    final calendarSyncer = container.read(calendarSyncerProvider);
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     expect(anyChanges, false);
@@ -388,7 +394,7 @@ void main() async {
       )
     ];
 
-    final calendarSyncer = container.read(calendarSyncerProvider);
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     await calendarSyncer.syncDeviceCalendarsToDb();
 
     final insertedEvents = await pinDao.getAllPins();
@@ -442,7 +448,7 @@ void main() async {
       TimelinePin(
         itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
-        backingId: "1338T1605094200000",
+        backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -462,7 +468,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.read(calendarSyncerProvider);
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
@@ -471,7 +477,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1338T1605094200000",
+        backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -487,6 +493,109 @@ void main() async {
         persistQuickView: false,
         layout: TimelinePinLayout.calendarPin,
         nextSyncAction: NextSyncAction.Upload,
+      ),
+    ];
+
+    expectEventsWithoutItemIdAndJsonsIgnoringOrder(eventsInDao, expectedEvents);
+
+    expect(
+      eventsInDao.first.attributesJson,
+      """[{"id":4,"uint32":2147483669},{"id":1,"string":"Test Event X","maxLength":64},{"id":25,"listOfString":["","Calendar"],"maxLength":128},{"id":26,"listOfString":["Test Description X","Calendar A"],"maxLength":1024}]""",
+    );
+
+    expect(anyChanges, true);
+  });
+
+  test('Full sync: Do not trigger upload on ignored items', () async {
+    final db = await createTestCobbleDatabase();
+    final calendarPlugin = FakeDeviceCalendarPlugin();
+
+    final container = ProviderContainer(overrides: [
+      deviceCalendarPluginProvider.overrideWithValue(calendarPlugin),
+      sharedPreferencesProvider
+          .overrideWithValue(Future.value(MemorySharedPreferences())),
+      currentDateTimeProvider.overrideWithValue(nowProvider),
+      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      currentDateTimeProvider.overrideWithValue(() => now),
+      permissionCheckProvider.overrideWithValue(FakePermissionCheck())
+    ]);
+
+    final pinDao = container.read(timelinePinDaoProvider);
+
+    calendarPlugin.reportedCalendars = [Calendar(id: "22", name: "Calendar A")];
+
+    calendarPlugin.reportedEvents = [
+      Event(
+        "22",
+        eventId: "1338",
+        start: DateTime.utc(
+          2020, //year
+          11, //month
+          11, //day
+          11, //hour
+          30, //minute
+        ),
+        end: DateTime.utc(
+          2020, //year
+          11, //month
+          11, //day
+          13, //hour
+          30, //minute
+        ),
+        title: "Test Event X",
+        description: "Test Description X",
+      )
+    ];
+
+    await pinDao.insertOrUpdateTimelinePin(
+      TimelinePin(
+        itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
+        parentId: calendarWatchappId,
+        backingId: "22T1338T1605094200000",
+        timestamp: DateTime.utc(
+          2020, //year
+          11, //month
+          11, //day
+          11, //hour
+          30, //minute
+        ),
+        duration: 60,
+        type: TimelinePinType.pin,
+        isVisible: true,
+        isFloating: false,
+        isAllDay: false,
+        persistQuickView: false,
+        layout: TimelinePinLayout.calendarPin,
+        nextSyncAction: NextSyncAction.Ignore,
+        attributesJson: "",
+      ),
+    );
+
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
+    final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
+
+    final eventsInDao = await pinDao.getAllPins();
+
+    final expectedEvents = [
+      TimelinePin(
+        itemId: null,
+        parentId: calendarWatchappId,
+        backingId: "22T1338T1605094200000",
+        timestamp: DateTime.utc(
+          2020, //year
+          11, //month
+          11, //day
+          11, //hour
+          30, //minute
+        ),
+        duration: 120,
+        type: TimelinePinType.pin,
+        isVisible: true,
+        isFloating: false,
+        isAllDay: false,
+        persistQuickView: false,
+        layout: TimelinePinLayout.calendarPin,
+        nextSyncAction: NextSyncAction.Ignore,
       ),
     ];
 
@@ -543,7 +652,7 @@ void main() async {
       TimelinePin(
         itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
-        backingId: "1338T1607599800000",
+        backingId: "22T1338T1607599800000",
         timestamp: DateTime.utc(
           2020, //year
           12, //month
@@ -563,7 +672,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.read(calendarSyncerProvider);
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
@@ -572,7 +681,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1338T1607599800000",
+        backingId: "22T1338T1607599800000",
         timestamp: DateTime.utc(
           2020, //year
           12, //month
@@ -592,7 +701,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1337T1605004200000",
+        backingId: "22T1337T1605004200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -682,7 +791,7 @@ void main() async {
       TimelinePin(
         itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
-        backingId: "1337T1604745000000",
+        backingId: "22T1337T1604745000000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -706,7 +815,7 @@ void main() async {
       TimelinePin(
         itemId: Uuid("24b88efe-6b43-41cd-a1f6-06b0e5940f94"),
         parentId: calendarWatchappId,
-        backingId: "1338T1605006000000",
+        backingId: "22T1338T1605006000000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -726,7 +835,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.read(calendarSyncerProvider);
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
@@ -735,7 +844,7 @@ void main() async {
       TimelinePin(
         itemId: Uuid("24b88efe-6b43-41cd-a1f6-06b0e5940f94"),
         parentId: calendarWatchappId,
-        backingId: "1338T1605006000000",
+        backingId: "22T1338T1605006000000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month
@@ -778,231 +887,230 @@ void main() async {
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
 
-        final pinDao = container.read(timelinePinDaoProvider);
+    final pinDao = container.read(timelinePinDaoProvider);
 
-        calendarPlugin.reportedCalendars =
-        [Calendar(id: "22", name: "Calendar A")];
+    calendarPlugin.reportedCalendars = [Calendar(id: "22", name: "Calendar A")];
 
-        calendarPlugin.reportedEvents = [
-          // Event that starts and end in the past
-          // Should not be added
-          Event(
-            "22",
-            eventId: "1337",
-            start: DateTime.utc(
-              2020, //year
-              11, //month
-              10, //day
-              10, //hour
-              00, //minute
-            ),
-            end: DateTime.utc(
-              2020, //year
-              11, //month
-              10, //day
-              10, //hour
-              10, //minute
-            ),
-          ),
+    calendarPlugin.reportedEvents = [
+      // Event that starts and end in the past
+      // Should not be added
+      Event(
+        "22",
+        eventId: "1337",
+        start: DateTime.utc(
+          2020, //year
+          11, //month
+          10, //day
+          10, //hour
+          00, //minute
+        ),
+        end: DateTime.utc(
+          2020, //year
+          11, //month
+          10, //day
+          10, //hour
+          10, //minute
+        ),
+      ),
 
-          // Event that starts in the past but ends in the present
-          // Should be added
-          Event(
-            "22",
-            eventId: "1338",
-            start: DateTime.utc(
-              2020, //year
-              11, //month
-              10, //day
-              10, //hour
-              30, //minute
-            ),
-            end: DateTime.utc(
-              2020, //year
-              11, //month
-              10, //day
-              11, //hour
-              45, //minute
-            ),
-          ),
+      // Event that starts in the past but ends in the present
+      // Should be added
+      Event(
+        "22",
+        eventId: "1338",
+        start: DateTime.utc(
+          2020, //year
+          11, //month
+          10, //day
+          10, //hour
+          30, //minute
+        ),
+        end: DateTime.utc(
+          2020, //year
+          11, //month
+          10, //day
+          11, //hour
+          45, //minute
+        ),
+      ),
 
-          // Event that starts and ends today
-          // Should be added
-          Event(
-            "22",
-            eventId: "1339",
-            start: DateTime.utc(
-              2020, //year
-              11, //month
-              10, //day
-              12, //hour
-              00, //minute
-            ),
-            end: DateTime.utc(
-              2020, //year
-              11, //month
-              10, //day
-              15, //hour
-              00, //minute
-            ),
-          ),
+      // Event that starts and ends today
+      // Should be added
+      Event(
+        "22",
+        eventId: "1339",
+        start: DateTime.utc(
+          2020, //year
+          11, //month
+          10, //day
+          12, //hour
+          00, //minute
+        ),
+        end: DateTime.utc(
+          2020, //year
+          11, //month
+          10, //day
+          15, //hour
+          00, //minute
+        ),
+      ),
 
-          // Event that starts and ends in 3 days
-          // Should be added
-          Event(
-            "22",
-            eventId: "1340",
-            start: DateTime.utc(
-              2020, //year
-              11, //month
-              13, //day
-              12, //hour
-              00, //minute
-            ),
-            end: DateTime.utc(
-              2020, //year
-              11, //month
-              13, //day
-              15, //hour
-              00, //minute
-            ),
-          ),
+      // Event that starts and ends in 3 days
+      // Should be added
+      Event(
+        "22",
+        eventId: "1340",
+        start: DateTime.utc(
+          2020, //year
+          11, //month
+          13, //day
+          12, //hour
+          00, //minute
+        ),
+        end: DateTime.utc(
+          2020, //year
+          11, //month
+          13, //day
+          15, //hour
+          00, //minute
+        ),
+      ),
 
-          // Event that starts on day 6 but ends on day 7
-          // Should be added
-          Event(
-            "22",
-            eventId: "1341",
-            start: DateTime.utc(
-              2020, //year
-              11, //month
-              16, //day
-              23, //hour
-              30, //minute
-            ),
-            end: DateTime.utc(
-              2020, //year
-              11, //month
-              17, //day
-              00, //hour
-              30, //minute
-            ),
-          ),
+      // Event that starts on day 6 but ends on day 7
+      // Should be added
+      Event(
+        "22",
+        eventId: "1341",
+        start: DateTime.utc(
+          2020, //year
+          11, //month
+          16, //day
+          23, //hour
+          30, //minute
+        ),
+        end: DateTime.utc(
+          2020, //year
+          11, //month
+          17, //day
+          00, //hour
+          30, //minute
+        ),
+      ),
 
-          // Event that starts on day 7
-          // Should not be added
-          Event(
-            "22",
-            eventId: "1342",
-            start: DateTime.utc(
-              2020, //year
-              11, //month
-              17, //day
-              10, //hour
-              00, //minute
-            ),
-            end: DateTime.utc(
-              2020, //year
-              11, //month
-              17, //day
-              12, //hour
-              00, //minute
-            ),
-          ),
-        ];
+      // Event that starts on day 7
+      // Should not be added
+      Event(
+        "22",
+        eventId: "1342",
+        start: DateTime.utc(
+          2020, //year
+          11, //month
+          17, //day
+          10, //hour
+          00, //minute
+        ),
+        end: DateTime.utc(
+          2020, //year
+          11, //month
+          17, //day
+          12, //hour
+          00, //minute
+        ),
+      ),
+    ];
 
-        final calendarSyncer = container.read(calendarSyncerProvider);
-        final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
+    final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
-        final insertedEvents = await pinDao.getAllPins();
+    final insertedEvents = await pinDao.getAllPins();
 
-        final expectedEvents = [
-          TimelinePin(
-            itemId: null,
-            parentId: calendarWatchappId,
-            backingId: "1338T1605004200000",
-            timestamp: DateTime.utc(
-              2020, //year
-              11, //month
-              10, //day
-              10, //hour
-              30, //minute
-            ),
-            duration: 60 + 15,
-            type: TimelinePinType.pin,
-            isVisible: true,
-            isFloating: false,
-            isAllDay: false,
-            persistQuickView: false,
-            layout: TimelinePinLayout.calendarPin,
-            nextSyncAction: NextSyncAction.Upload,
-          ),
-          TimelinePin(
-            itemId: null,
-            parentId: calendarWatchappId,
-            backingId: "1339T1605009600000",
-            timestamp: DateTime.utc(
-              2020, //year
-              11, //month
-              10, //day
-              12, //hour
-              00, //minute
-            ),
-            duration: 60 * 3,
-            type: TimelinePinType.pin,
-            isVisible: true,
-            isFloating: false,
-            isAllDay: false,
-            persistQuickView: false,
-            layout: TimelinePinLayout.calendarPin,
-            nextSyncAction: NextSyncAction.Upload,
-          ),
-          TimelinePin(
-            itemId: null,
-            parentId: calendarWatchappId,
-            backingId: "1340T1605268800000",
-            timestamp: DateTime.utc(
-              2020, //year
-              11, //month
-              13, //day
-              12, //hour
-              00, //minute
-            ),
-            duration: 60 * 3,
-            type: TimelinePinType.pin,
-            isVisible: true,
-            isFloating: false,
-            isAllDay: false,
-            persistQuickView: false,
-            layout: TimelinePinLayout.calendarPin,
-            nextSyncAction: NextSyncAction.Upload,
-          ),
-          TimelinePin(
-            itemId: null,
-            parentId: calendarWatchappId,
-            backingId: "1341T1605569400000",
-            timestamp: DateTime.utc(
-              2020, //year
-              11, //month
-              16, //day
-              23, //hour
-              30, //minute
-            ),
-            duration: 60,
-            type: TimelinePinType.pin,
-            isVisible: true,
-            isFloating: false,
-            isAllDay: false,
-            persistQuickView: false,
-            layout: TimelinePinLayout.calendarPin,
-            nextSyncAction: NextSyncAction.Upload,
-          ),
-        ];
+    final expectedEvents = [
+      TimelinePin(
+        itemId: null,
+        parentId: calendarWatchappId,
+        backingId: "22T1338T1605004200000",
+        timestamp: DateTime.utc(
+          2020, //year
+          11, //month
+          10, //day
+          10, //hour
+          30, //minute
+        ),
+        duration: 60 + 15,
+        type: TimelinePinType.pin,
+        isVisible: true,
+        isFloating: false,
+        isAllDay: false,
+        persistQuickView: false,
+        layout: TimelinePinLayout.calendarPin,
+        nextSyncAction: NextSyncAction.Upload,
+      ),
+      TimelinePin(
+        itemId: null,
+        parentId: calendarWatchappId,
+        backingId: "22T1339T1605009600000",
+        timestamp: DateTime.utc(
+          2020, //year
+          11, //month
+          10, //day
+          12, //hour
+          00, //minute
+        ),
+        duration: 60 * 3,
+        type: TimelinePinType.pin,
+        isVisible: true,
+        isFloating: false,
+        isAllDay: false,
+        persistQuickView: false,
+        layout: TimelinePinLayout.calendarPin,
+        nextSyncAction: NextSyncAction.Upload,
+      ),
+      TimelinePin(
+        itemId: null,
+        parentId: calendarWatchappId,
+        backingId: "22T1340T1605268800000",
+        timestamp: DateTime.utc(
+          2020, //year
+          11, //month
+          13, //day
+          12, //hour
+          00, //minute
+        ),
+        duration: 60 * 3,
+        type: TimelinePinType.pin,
+        isVisible: true,
+        isFloating: false,
+        isAllDay: false,
+        persistQuickView: false,
+        layout: TimelinePinLayout.calendarPin,
+        nextSyncAction: NextSyncAction.Upload,
+      ),
+      TimelinePin(
+        itemId: null,
+        parentId: calendarWatchappId,
+        backingId: "22T1341T1605569400000",
+        timestamp: DateTime.utc(
+          2020, //year
+          11, //month
+          16, //day
+          23, //hour
+          30, //minute
+        ),
+        duration: 60,
+        type: TimelinePinType.pin,
+        isVisible: true,
+        isFloating: false,
+        isAllDay: false,
+        persistQuickView: false,
+        layout: TimelinePinLayout.calendarPin,
+        nextSyncAction: NextSyncAction.Upload,
+      ),
+    ];
 
-        expectEventsWithoutItemIdAndJsonsIgnoringOrder(
-            insertedEvents, expectedEvents);
+    expectEventsWithoutItemIdAndJsonsIgnoringOrder(
+        insertedEvents, expectedEvents);
 
-        expect(anyChanges, true);
+    expect(anyChanges, true);
   });
 
   test('Full sync: Only add items from selected calendars', () async {
@@ -1068,7 +1176,7 @@ void main() async {
 
     calendarList.setCalendarEnabled("23", false);
 
-    final calendarSyncer = container.read(calendarSyncerProvider);
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final insertedEvents = await pinDao.getAllPins();
@@ -1077,7 +1185,7 @@ void main() async {
       TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
-        backingId: "1337T1605004200000",
+        backingId: "22T1337T1605004200000",
         timestamp: DateTime.utc(
           2020, //year
           11, //month

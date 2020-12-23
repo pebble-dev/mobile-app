@@ -4,11 +4,12 @@ import 'package:cobble/domain/date/date_providers.dart';
 import 'package:cobble/domain/db/dao/timeline_pin_dao.dart';
 import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/db/models/timeline_pin.dart';
-import 'package:cobble/domain/timeline/attribute_serializer.dart';
+import 'package:cobble/domain/timeline/timeline_serializer.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:uuid_type/uuid_type.dart';
 
+import '../logging.dart';
 import 'calendar_list.dart';
 import 'calendar_pin_convert.dart';
 
@@ -52,7 +53,7 @@ class CalendarSyncer {
           calendar.id, retrieveEventParams);
 
       if (!result.isSuccess) {
-        //TODO log calendar error
+        Log.e("Retrieve calendars: ${result.errors}");
         return false;
       }
 
@@ -63,18 +64,17 @@ class CalendarSyncer {
 
     bool anyChanges = false;
 
-    final newPins = allCalendarEvents.map((e) =>
-        e.event.generateBasicEventData(
+    final newPins = allCalendarEvents.map((e) => e.event.generateBasicEventData(
           serializeAttributesToJson(e.event.getAttributes(e.calendar)),
-          null,
+          serializeActionsToJson(e.event.getActions()),
         ));
 
     final existingPins =
-    await _timelinePinDao.getPinsFromParent(calendarWatchappId);
+        await _timelinePinDao.getPinsFromParent(calendarWatchappId);
 
     for (TimelinePin newPin in newPins) {
       final existingPin = existingPins.firstWhere(
-            (element) => element.backingId == newPin.backingId,
+        (element) => element.backingId == newPin.backingId,
         orElse: () => null,
       );
 
@@ -90,6 +90,12 @@ class CalendarSyncer {
           existingPin != null ? existingPin.itemId : _uuidGenerator.generate();
 
       newPin = newPin.copyWith(itemId: newItemId);
+
+      if (existingPin != null &&
+          (existingPin.nextSyncAction == NextSyncAction.Ignore ||
+              existingPin.nextSyncAction == NextSyncAction.DeleteThenIgnore)) {
+        newPin = newPin.copyWith(nextSyncAction: existingPin.nextSyncAction);
+      }
 
       _timelinePinDao.insertOrUpdateTimelinePin(newPin);
       anyChanges = true;

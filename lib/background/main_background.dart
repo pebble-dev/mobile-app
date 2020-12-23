@@ -1,12 +1,18 @@
+import 'package:cobble/domain/calendar/calendar_pin_convert.dart';
 import 'package:cobble/domain/calendar/calendar_syncer.db.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
+import 'package:cobble/domain/db/dao/timeline_pin_dao.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/logging.dart';
 import 'package:cobble/domain/timeline/watch_timeline_syncer.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.dart';
+import 'package:cobble/util/container_extensions.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/all.dart';
+
+import 'actions/master_action_handler.dart';
 
 void main_background() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,11 +20,13 @@ void main_background() {
   BackgroundReceiver();
 }
 
-class BackgroundReceiver implements CalendarCallbacks {
+class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks {
   final container = ProviderContainer();
   CalendarSyncer calendarSyncer;
   WatchTimelineSyncer watchTimelineSyncer;
-  Preferences preferences;
+  Future<Preferences> preferences;
+  TimelinePinDao timelinePinDao;
+  MasterActionHandler masterActionHandler;
 
   ProviderSubscription<WatchConnectionState> connectionSubscription;
 
@@ -31,7 +39,14 @@ class BackgroundReceiver implements CalendarCallbacks {
 
     calendarSyncer = container.listen(calendarSyncerProvider).read();
     watchTimelineSyncer = container.listen(watchTimelineSyncerProvider).read();
-    preferences = container.listen(preferencesProvider).read();
+    timelinePinDao = container.listen(timelinePinDaoProvider).read();
+    preferences = Future.microtask(() async {
+      final asyncValue =
+          await container.readUntilFirstSuccessOrError(preferencesProvider);
+
+      return asyncValue.data.value;
+    });
+    masterActionHandler = container.read(masterActionHandlerProvider);
 
     connectionSubscription = container.listen(
       connectionStateProvider.state,
@@ -44,6 +59,7 @@ class BackgroundReceiver implements CalendarCallbacks {
     );
 
     CalendarCallbacks.setup(this);
+    TimelineCallbacks.setup(this);
   }
 
   @override
@@ -53,7 +69,8 @@ class BackgroundReceiver implements CalendarCallbacks {
   }
 
   void onWatchConnected(PebbleDevice watch) async {
-    final lastConnectedWatch = await preferences.getLastConnectedWatchAddress();
+    final lastConnectedWatch =
+    (await preferences).getLastConnectedWatchAddress();
     if (lastConnectedWatch != watch.address) {
       Log.d("Different watch connected than the last one. Resetting DB...");
       await watchTimelineSyncer.clearAllPinsFromWatchAndResync();
@@ -64,7 +81,7 @@ class BackgroundReceiver implements CalendarCallbacks {
       await syncTimelineToWatch();
     }
 
-    await preferences.setLastConnectedWatchAddress(watch.address);
+    (await preferences).setLastConnectedWatchAddress(watch.address);
   }
 
   Future syncTimelineToWatch() async {
@@ -74,6 +91,19 @@ class BackgroundReceiver implements CalendarCallbacks {
   }
 
   bool isConnectedToWatch() {
-    return connectionSubscription.read().isConnected;
+    return connectionSubscription
+        .read()
+        .isConnected;
+  }
+
+  @override
+  Future<void> deleteCalendarPinsFromWatch() async {
+    await timelinePinDao.markAllPinsFromAppForDeletion(calendarWatchappId);
+    await syncTimelineToWatch();
+  }
+
+  @override
+  Future<ActionResponsePigeon> handleTimelineAction(ActionTrigger arg) async {
+    return (await masterActionHandler.handleTimelineAction(arg)).toPigeon();
   }
 }
