@@ -27,9 +27,18 @@ class NotificationChannelManager @Inject constructor(context: Context) {
                             NotificationManager.IMPORTANCE_LOW
                     )
             )
+
+            notificationManager.createNotificationChannel(
+                    NotificationChannel(
+                            NOTIFICATION_CHANNEL_WARNINGS,
+                            context.getString(R.string.warnings),
+                            NotificationManager.IMPORTANCE_DEFAULT
+                    )
+            )
         }
     }
 }
 
 val NOTIFICATION_CHANNEL_WATCH_CONNECTED = "WATCH_CONNECTED"
 val NOTIFICATION_CHANNEL_WATCH_CONNECTING = "WATCH_CONNECTING"
+val NOTIFICATION_CHANNEL_WARNINGS = "WARNINGS"

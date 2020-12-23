@@ -39,6 +39,13 @@ abstract class CommonBridgesModule {
     abstract fun bindPermissionBridge(
             permissionCheckFlutterBridge: PermissionCheckFlutterBridge
     ): FlutterBridge
+
+    @Binds
+    @IntoSet
+    @CommonBridge
+    abstract fun bindLoggingBridge(
+            loggingFlutterBridge: LoggingFlutterBridge
+    ): FlutterBridge
 }
 
 @Qualifier

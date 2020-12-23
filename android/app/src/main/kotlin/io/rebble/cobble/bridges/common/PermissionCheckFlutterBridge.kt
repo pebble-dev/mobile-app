@@ -27,7 +27,10 @@ class PermissionCheckFlutterBridge @Inject constructor(
     }
 
     override fun hasCalendarPermission(): Pigeons.BooleanWrapper {
-        return checkPermission(Manifest.permission.READ_CALENDAR)
+        return checkPermission(
+                Manifest.permission.READ_CALENDAR,
+                Manifest.permission.WRITE_CALENDAR
+        )
     }
 
     override fun hasNotificationAccess(): Pigeons.BooleanWrapper {
@@ -46,10 +49,12 @@ class PermissionCheckFlutterBridge @Inject constructor(
         return BooleanWrapper(powerManager.isIgnoringBatteryOptimizations(context.packageName))
     }
 
-    private fun checkPermission(permission: String) = BooleanWrapper(
-            ContextCompat.checkSelfPermission(
-                    context,
-                    permission
-            ) == PackageManager.PERMISSION_GRANTED
+    private fun checkPermission(vararg permission: String) = BooleanWrapper(
+            permission.all {
+                ContextCompat.checkSelfPermission(
+                        context,
+                        it
+                ) == PackageManager.PERMISSION_GRANTED
+            }
     )
 }

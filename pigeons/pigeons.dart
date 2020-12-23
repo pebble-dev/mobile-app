@@ -96,7 +96,12 @@ abstract class PairCallbacks {
 @FlutterApi()
 abstract class CalendarCallbacks {
   @async
-  void doFullCalendarSync() async {}
+  void doFullCalendarSync();
+}
+
+@FlutterApi()
+abstract class TimelineSyncCallbacks {
+  void syncTimelineToWatch();
 }
 
 @HostApi()
@@ -192,6 +197,29 @@ abstract class PermissionControl {
   void requestBatteryExclusion();
 
   void openPermissionSettings();
+}
+
+@HostApi()
+abstract class CalendarControl {
+  void requestCalendarSync();
+}
+
+@HostApi()
+abstract class PigeonLogger {
+  void v(StringWrapper message);
+
+  void d(StringWrapper message);
+
+  void i(StringWrapper message);
+
+  void w(StringWrapper message);
+
+  void e(StringWrapper message);
+}
+
+@HostApi()
+abstract class TimelineSyncControl{
+  void syncTimelineToWatchLater();
 }
 
 /// This class will keep all classes that appear in lists from being deleted

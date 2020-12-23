@@ -49,8 +49,17 @@ class FlutterBackgroundController @Inject constructor(
             val backgroundEndpointMethodHandle = androidPreferences.backgroundEndpoint
                     ?: return@coroutineScope null
 
-            val callbackInformation = FlutterCallbackInformation
-                    .lookupCallbackInformation(backgroundEndpointMethodHandle)
+            val callbackInformation: FlutterCallbackInformation = try {
+                FlutterCallbackInformation
+                        .lookupCallbackInformation(backgroundEndpointMethodHandle)
+            } catch (e: NullPointerException) {
+                // Even though this method is marked as @NonNull, it can still return null which
+                // confuses Kotlin runtime and crashes the app.
+
+                // Catch this exception here and treat this error
+                // as if set method handle is invalid.
+                return@coroutineScope null
+            }
 
             val bundlePath = FlutterInjector.instance().flutterLoader().findAppBundlePath()
 
@@ -94,6 +103,7 @@ class FlutterBackgroundController @Inject constructor(
 
             dartInitWait.join()
             backgroundFlutterSubcomponentFactory.create(flutterEngine).createCommonBridges()
+            backgroundFlutterSubcomponentFactory.create(flutterEngine).createBackgroundBridges()
             androidSideReadyCompletable.complete(Unit)
 
             return@coroutineScope flutterEngine

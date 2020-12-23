@@ -41,6 +41,13 @@ abstract class UiBridgesModule {
     abstract fun bindPermission(
             permissionControlFlutterBridge: PermissionControlFlutterBridge
     ): FlutterBridge
+
+    @Binds
+    @IntoSet
+    @UiBridge
+    abstract fun bindCalendarControl(
+            calendarControlFlutterBridge: CalendarControlFlutterBridge
+    ): FlutterBridge
 }
 
 @Qualifier
