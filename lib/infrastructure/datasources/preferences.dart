@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cobble/domain/preferences.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:shared_preferences/shared_preferences.dart';

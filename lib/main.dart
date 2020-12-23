@@ -9,6 +9,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/all.dart';
 
+import 'domain/permissions.dart';
+import 'infrastructure/datasources/paired_storage.dart';
 import 'infrastructure/pigeons/pigeons.dart';
 
 String getBootUrl = "https://boot.rebble.io/";
@@ -29,6 +31,32 @@ void initBackground() {
 class MyApp extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final permissionControl = useProvider(permissionControlProvider);
+    final permissionCheck = useProvider(permissionCheckProvider);
+
+    useEffect(() {
+      Future.microtask(() async {
+        if (!(await permissionCheck.hasCalendarPermission()).value) {
+          await permissionControl.requestCalendarPermission();
+        }
+        if (!(await permissionCheck.hasLocationPermission()).value) {
+          await permissionControl.requestLocationPermission();
+        }
+
+        final pairedDevice = PairedStorage.getDefault();
+        if (pairedDevice != null) {
+          if (!(await permissionCheck.hasNotificationAccess()).value) {
+            permissionControl.requestNotificationAccess();
+          }
+
+          if (!(await permissionCheck.hasBatteryExclusionEnabled()).value) {
+            permissionControl.requestBatteryExclusion();
+          }
+        }
+      });
+      return null;
+    }, ["one-time"]);
+
     return MaterialApp(
       title: 'Cobble',
       theme: RebbleTheme.appTheme,
