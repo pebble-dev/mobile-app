@@ -2,6 +2,7 @@ package io.rebble.cobble.di
 
 import android.app.Application
 import android.content.Context
+import android.content.pm.PackageManager
 import com.squareup.moshi.Moshi
 import dagger.Binds
 import dagger.Module
@@ -28,6 +29,11 @@ abstract class AppModule {
         @Reusable
         fun provideMoshi(): Moshi {
             return Moshi.Builder().build()
+        }
+
+        @Provides
+        fun providePackageManager(context: Context): PackageManager {
+            return context.packageManager
         }
     }
 }

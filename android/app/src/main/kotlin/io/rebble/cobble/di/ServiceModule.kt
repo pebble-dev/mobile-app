@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoSet
 import io.rebble.cobble.handlers.*
+import io.rebble.cobble.handlers.music.MusicHandler
 import io.rebble.cobble.service.WatchService
 import kotlinx.coroutines.CoroutineScope
 
@@ -40,5 +41,11 @@ abstract class ServiceModule {
     @IntoSet
     abstract fun bindTimelineHandlerIntoSet(
             timelineHandler: TimelineHandler
+    ): PebbleMessageHandler
+
+    @Binds
+    @IntoSet
+    abstract fun bindMusicHandlerIntoSet(
+            musicHandler: MusicHandler
     ): PebbleMessageHandler
 }

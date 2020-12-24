@@ -2,11 +2,14 @@ package io.rebble.cobble.notifications
 
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
+import androidx.core.app.NotificationCompat
 import io.rebble.cobble.CobbleApplication
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -29,9 +32,11 @@ class NotificationListener : NotificationListenerService() {
         notificationService = injectionComponent.createNotificationService()
 
         super.onCreate()
+        _isActive.value = true
     }
 
     override fun onDestroy() {
+        _isActive.value = false
         super.onDestroy()
 
         coroutineScope.cancel()
@@ -56,6 +61,11 @@ class NotificationListener : NotificationListenerService() {
             if (sbn == null) return
             if (sbn.packageName == applicationContext.packageName) return // Don't show a notification if it's us
 
+            if (sbn.notification.extras.containsKey(NotificationCompat.EXTRA_MEDIA_SESSION)) {
+                // Do not notify for media notifications
+                return
+            }
+
             val parsedNotification = sbn.parseData(applicationContext)
             val key = NotificationKey(sbn)
 
@@ -76,5 +86,10 @@ class NotificationListener : NotificationListenerService() {
             notifStates.remove(NotificationKey(sbn))
             //TODO: Dismissing on watch
         }
+    }
+
+    companion object {
+        private val _isActive = MutableStateFlow(false)
+        val isActive: StateFlow<Boolean> by ::_isActive
     }
 }
