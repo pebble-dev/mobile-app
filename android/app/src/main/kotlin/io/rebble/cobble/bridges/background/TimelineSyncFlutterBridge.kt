@@ -27,7 +27,7 @@ class TimelineSyncFlutterBridge @Inject constructor(
         private val connectionLooper: ConnectionLooper
 ) : FlutterBridge {
     private val alarmManager: AlarmManager = context.getSystemService()!!
-    private var cachedTimelineSyncCallbacks: Pigeons.TimelineSyncCallbacks? = null
+    private var cachedTimelineSyncCallbacks: Pigeons.TimelineCallbacks? = null
 
     @Suppress("ObjectLiteralToLambda")
     private val callbacks = object : Pigeons.TimelineSyncControl {
@@ -71,14 +71,14 @@ class TimelineSyncFlutterBridge @Inject constructor(
         }
     }
 
-    private suspend fun getTimelineSyncCallbacks(): Pigeons.TimelineSyncCallbacks? {
+    private suspend fun getTimelineSyncCallbacks(): Pigeons.TimelineCallbacks? {
         val cachedTimelineSyncCallbacks = cachedTimelineSyncCallbacks
         if (cachedTimelineSyncCallbacks != null) {
             return cachedTimelineSyncCallbacks
         }
 
         val flutterEngine = flutterBackgroundController.getBackgroundFlutterEngine() ?: return null
-        return Pigeons.TimelineSyncCallbacks(flutterEngine.dartExecutor.binaryMessenger)
+        return Pigeons.TimelineCallbacks(flutterEngine.dartExecutor.binaryMessenger)
                 .also { this.cachedTimelineSyncCallbacks = it }
     }
 
