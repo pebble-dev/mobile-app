@@ -79,7 +79,7 @@ flutter {
     source '../..'
 }
 
-def libpebblecommon_version = '0.0.12'
+def libpebblecommon_version = '0.0.13'
 def coroutinesVersion = "1.4.2"
 def lifecycleVersion = "2.2.0"
 def timberVersion = "4.7.1"
@@ -98,6 +98,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-service:$lifecycleVersion"
     implementation "com.jakewharton.timber:timber:$timberVersion"
     implementation "com.juul.able:core:$ableVersion"

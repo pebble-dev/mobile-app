@@ -6,6 +6,7 @@ import dagger.Provides
 import dagger.multibindings.IntoSet
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.ProtocolHandlerImpl
+import io.rebble.libpebblecommon.services.MusicService
 import io.rebble.libpebblecommon.services.ProtocolService
 import io.rebble.libpebblecommon.services.SystemService
 import io.rebble.libpebblecommon.services.app.AppRunStateService
@@ -58,6 +59,12 @@ abstract class LibPebbleModule {
         fun provideTimelineService(
                 protocolHandler: ProtocolHandler
         ) = TimelineService(protocolHandler)
+
+        @Provides
+        @Singleton
+        fun provideMusicService(
+                protocolHandler: ProtocolHandler
+        ) = MusicService(protocolHandler)
     }
 
     @Binds
@@ -85,4 +92,8 @@ abstract class LibPebbleModule {
     @Binds
     @IntoSet
     abstract fun bindTimelineServiceIntoSet(timelineService: TimelineService): ProtocolService
+
+    @Binds
+    @IntoSet
+    abstract fun bindMusicServiceIntoSet(musicService: MusicService): ProtocolService
 }
