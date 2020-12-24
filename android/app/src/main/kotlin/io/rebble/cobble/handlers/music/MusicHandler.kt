@@ -6,6 +6,7 @@ import android.media.AudioManager
 import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.PlaybackState
+import android.os.SystemClock
 import android.view.KeyEvent
 import androidx.lifecycle.asFlow
 import io.rebble.cobble.handlers.PebbleMessageHandler
@@ -96,7 +97,6 @@ class MusicHandler @Inject constructor(
                     metadata.getString(MediaMetadata.METADATA_KEY_ARTIST),
                     metadata.getString(MediaMetadata.METADATA_KEY_ALBUM),
                     metadata.getString(MediaMetadata.METADATA_KEY_TITLE),
-                    // TODO figure out duration unit
                     metadata.getLong(MediaMetadata.METADATA_KEY_DURATION).toInt(),
                     metadata.getLong(MediaMetadata.METADATA_KEY_NUM_TRACKS).toInt(),
                     metadata.getLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER).toInt()
@@ -135,12 +135,15 @@ class MusicHandler @Inject constructor(
             else -> MusicControl.PlaybackState.Unknown
         }
 
+        val timeSinceLastPositionUpdate = SystemClock.elapsedRealtime() -
+                playbackState.lastPositionUpdateTime
+        val position = playbackState.position + timeSinceLastPositionUpdate
+
         coroutineScope.launch(Dispatchers.Main.immediate) {
             musicService.send(MusicControl.UpdatePlayStateInfo(
                     state,
-                    // TODO what are units of playback position and play rate?
-                    playbackState.position.toUInt(),
-                    100u,
+                    position.toUInt(),
+                    (playbackState.playbackSpeed * 100f).roundToInt().toUInt(),
                     MusicControl.ShuffleState.Unknown,
                     MusicControl.RepeatState.Unknown
             ))
