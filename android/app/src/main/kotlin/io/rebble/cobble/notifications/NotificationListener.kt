@@ -56,6 +56,11 @@ class NotificationListener : NotificationListenerService() {
             if (sbn == null) return
             if (sbn.packageName == applicationContext.packageName) return // Don't show a notification if it's us
 
+            if (sbn.notification.extras.containsKey(NotificationCompat.EXTRA_MEDIA_SESSION)) {
+                // Do not notify for media notifications
+                return
+            }
+
             val parsedNotification = sbn.parseData(applicationContext)
             val key = NotificationKey(sbn)
 
