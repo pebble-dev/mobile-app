@@ -43,3 +43,15 @@ flutter pub run pigeon \
 # Architecture
 
 See [Wiki](https://github.com/pebble-dev/mobile-app/wiki) for more info on app architecture.
+
+## Using Cobble theming
+
+App's components are styled through modified Material theme, in theory you should never specify
+custom styles in your own component. If you have to, try to use colors that are defined in 
+`ThemeData` (accessed by `WithCobbleTheme(context).theme`) or alternatively in 
+`CobbleSchemeData` (`WithCobbleTheme(context).scheme`). Scheme is collection of colors, 
+created by designer while the theme is higher-level grouping of these colours to provide meaningful 
+base styles for components. If you start using Material component which isn't styled properly, 
+take a look at Material theme and see if you can set styles there before setting styles directly on
+component. There is limited set of text types, as defined by designer, if you need different text 
+style, extends these types with `.copyWith` instead of creating your own.
