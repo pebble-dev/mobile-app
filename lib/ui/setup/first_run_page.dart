@@ -1,6 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
+import 'package:cobble/ui/home/home_page.dart';
+import 'package:cobble/ui/router/cobble_navigator.dart';
+import 'package:cobble/ui/router/cobble_scaffold.dart';
+import 'package:cobble/ui/router/cobble_screen.dart';
+import 'package:cobble/ui/setup/pair_page.dart';
+import 'package:flutter/material.dart';
 
 class CircleContainer extends StatelessWidget {
   CircleContainer(
@@ -11,6 +16,7 @@ class CircleContainer extends StatelessWidget {
   final Color color;
   final EdgeInsets margin;
   final EdgeInsets padding;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -28,7 +34,9 @@ class CircleContainer extends StatelessWidget {
 
 class CarouselIcon extends StatelessWidget {
   CarouselIcon({this.icon});
+
   final Widget icon;
+
   @override
   Widget build(BuildContext context) {
     return CircleContainer(
@@ -39,13 +47,12 @@ class CarouselIcon extends StatelessWidget {
   }
 }
 
-class FirstRunPage extends StatefulWidget {
+class FirstRunPage extends StatefulWidget implements CobbleScreen {
   @override
   State<StatefulWidget> createState() => new _FirstRunPageState();
 }
 
 class _FirstRunPageState extends State<FirstRunPage> {
-  static final EdgeInsets _iconMargin = EdgeInsets.all(4);
   static List<Widget> _iconScrollerSet = [
     CarouselIcon(
         icon: PebbleWatchIcon.classic(PebbleWatchColor.Red, size: 96.0)),
@@ -80,8 +87,8 @@ class _FirstRunPageState extends State<FirstRunPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
+    return CobbleScaffold(
+      child: Stack(
         children: <Widget>[
           Positioned(
             top: (MediaQuery.of(context).size.height / 5),
@@ -129,13 +136,13 @@ class _FirstRunPageState extends State<FirstRunPage> {
                 children: <Widget>[
                   FlatButton(
                     child: Text("SKIP"),
-                    onPressed: () => Navigator.pushNamed(context, '/home'),
+                    onPressed: () => context.pushAndRemoveAllBelow(HomePage()),
                   ),
                   FloatingActionButton.extended(
                     icon: Text("LET'S GET STARTED"),
                     label: Icon(RebbleIconsStroke.caret_right),
                     backgroundColor: Theme.of(context).primaryColor,
-                    onPressed: () => Navigator.pushNamed(context, '/pair'),
+                    onPressed: () => context.push(PairPage()),
                   ),
                 ],
               ),

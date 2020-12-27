@@ -3,62 +3,61 @@ import 'package:cobble/ui/home/tabs/settings_tab.dart';
 import 'package:cobble/ui/home/tabs/store_tab.dart';
 import 'package:cobble/ui/home/tabs/test_tab.dart';
 import 'package:cobble/ui/home/tabs/watches_tab.dart';
+import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/test/watch_carousel.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
-import '../theme.dart';
+class _TabConfig {
+  final Widget child;
+  final String label;
+  final IconData icon;
 
-class HomePage extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => new _HomePageState();
+  _TabConfig(this.child, this.label, this.icon);
 }
 
-class _HomePageState extends State<HomePage> {
-  int _currentIndex = 0;
-  List<Widget> _tabs = <Widget>[
-    //TODO: replace this
-    TestTab(),
-    Placeholder(),
-    WatchCarousel(),
-    StoreTab(),
-    MyWatchesTab(), // setup page is not the same as devices tab but it works for now
-    SettingsTab(),
+class HomePage extends HookWidget implements CobbleScreen {
+  final _config = [
+    _TabConfig(TestTab(), "Testing", RebbleIconsStroke.send_to_watch_checked),
+    _TabConfig(Placeholder(), "Health", RebbleIconsStroke.health),
+    _TabConfig(WatchCarousel(), "Locker", RebbleIconsStroke.locker),
+    _TabConfig(StoreTab(), "Store", RebbleIconsStroke.rebble_store),
+    _TabConfig(MyWatchesTab(), "Watches", RebbleIconsStroke.devices),
+    _TabConfig(SettingsTab(), "Settings", RebbleIconsStroke.settings),
   ];
-
-  Map<String, IconData> _tabBarOptions = {
-    "Testing": RebbleIconsStroke.send_to_watch_checked,
-    "Health": RebbleIconsStroke.health,
-    "Locker": RebbleIconsStroke.locker,
-    "Store": RebbleIconsStroke.rebble_store,
-    "Watches": RebbleIconsStroke.devices,
-    "Settings": RebbleIconsStroke.settings,
-  };
-
-  void _onTabTap(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
+    final index = useState(0);
+
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        backgroundColor: RebbleTheme.colorScheme.surface,
-        onTap: _onTabTap,
-        currentIndex: _currentIndex,
-        items: _tabBarOptions.entries
+        onTap: (i) => index.value = i,
+        currentIndex: index.value,
+        items: _config
             .map(
-              (entry) => BottomNavigationBarItem(
-            icon: Icon(entry.value),
-            title: Text(entry.key),
-            backgroundColor: Theme.of(context).colorScheme.surface,
-          ),
-        )
+              (tab) => BottomNavigationBarItem(
+                icon: Icon(tab.icon),
+                label: tab.label,
+                backgroundColor: Theme.of(context).colorScheme.surface,
+              ),
+            )
             .toList(),
       ),
-      body: _tabs[_currentIndex],
+      body: IndexedStack(
+        children: _config
+            .map(
+              (tab) => Navigator(
+                onGenerateInitialRoutes: (navigator, initialRoute) => [
+                  CupertinoPageRoute(builder: (_) => tab.child),
+                ],
+              ),
+            )
+            .toList(),
+        index: index.value,
+      ),
     );
   }
 }

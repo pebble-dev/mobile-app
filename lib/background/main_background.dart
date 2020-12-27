@@ -8,7 +8,6 @@ import 'package:cobble/domain/timeline/watch_timeline_syncer.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/util/container_extensions.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/all.dart';
 
@@ -70,7 +69,7 @@ class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks {
 
   void onWatchConnected(PebbleDevice watch) async {
     final lastConnectedWatch =
-    (await preferences).getLastConnectedWatchAddress();
+        (await preferences).getLastConnectedWatchAddress();
     if (lastConnectedWatch != watch.address) {
       Log.d("Different watch connected than the last one. Resetting DB...");
       await watchTimelineSyncer.clearAllPinsFromWatchAndResync();
@@ -91,9 +90,7 @@ class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks {
   }
 
   bool isConnectedToWatch() {
-    return connectionSubscription
-        .read()
-        .isConnected;
+    return connectionSubscription.read().isConnected;
   }
 
   @override

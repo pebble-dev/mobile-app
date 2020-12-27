@@ -55,3 +55,11 @@ base styles for components. If you start using Material component which isn't st
 take a look at Material theme and see if you can set styles there before setting styles directly on
 component. There is limited set of text types, as defined by designer, if you need different text 
 style, extends these types with `.copyWith` instead of creating your own.
+
+## Using Navigator
+
+We are using iOS-style tabbed navigation, where each tab has its own stack of screens. In practice
+this means there might be multiple stacks (1 main stack and one each for tab) but only 1 stack is
+active. In order to push page on an active stack import `CobbleNavigator` extension and then call
+`context.push(SomeScreen())`. `SomeScreen` widget should also implement interface `CobbleScreen` and
+use `CobbleScaffold`, which takes care of title and back button in navigation bar.

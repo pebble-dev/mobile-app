@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:cobble/infrastructure/datasources/dev_connection.dart';
-import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
+import 'package:cobble/ui/router/cobble_scaffold.dart';
+import 'package:cobble/ui/router/cobble_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class DevOptionsPage extends StatefulWidget {
+class DevOptionsPage extends StatefulWidget implements CobbleScreen {
   @override
   State<StatefulWidget> createState() => new _DevOptionsPageState();
 }
@@ -47,17 +48,9 @@ class _DevOptionsPageState extends State<DevOptionsPage> {
         _devConControl.close();
       }
     }
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Developer Options"),
-        leading: IconButton(
-          icon: Icon(RebbleIconsStroke.caret_left),
-          onPressed: () {
-            Navigator.maybePop(context);
-          },
-        ),
-      ),
-      body: ListView(
+    return CobbleScaffold(
+      title: "Developer Options",
+      child: ListView(
           children: ListTile.divideTiles(
         context: context,
         tiles: <Widget>[
