@@ -1,5 +1,5 @@
 import 'package:cobble/domain/entities/hardware_platform.dart';
-import 'package:cobble/infrastructure/pigeons/pigeons.dart';
+import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 
 class PebbleFirmware {

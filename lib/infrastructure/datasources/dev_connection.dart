@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:cobble/infrastructure/pigeons/pigeons.dart';
+import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 
 final ConnectionControl connectionControl = ConnectionControl();
 

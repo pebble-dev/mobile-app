@@ -11,7 +11,7 @@ import 'package:hooks_riverpod/all.dart';
 
 import 'domain/permissions.dart';
 import 'infrastructure/datasources/paired_storage.dart';
-import 'infrastructure/pigeons/pigeons.dart';
+import 'infrastructure/pigeons/pigeons.g.dart';
 
 String getBootUrl = "https://boot.rebble.io/";
 

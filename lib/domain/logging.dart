@@ -1,4 +1,4 @@
-import 'package:cobble/infrastructure/pigeons/pigeons.dart';
+import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 
 /// Log class that sends all logs back to native which saves the logs to disk,
 /// handles error reporting etc.

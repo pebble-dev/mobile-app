@@ -27,7 +27,7 @@ with the following command:
 ```
 flutter pub run pigeon \
   --input pigeons/pigeons.dart \
-  --dart_out lib/infrastructure/pigeons/pigeons.dart \
+  --dart_out lib/infrastructure/pigeons/pigeons.g.dart \
   --java_out ./android/app/src/main/java/io/rebble/cobble/pigeons/Pigeons.java \
   --java_package "io.rebble.cobble.pigeons"
 ```

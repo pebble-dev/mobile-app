@@ -2,7 +2,7 @@ import 'package:cobble/domain/db/dao/timeline_pin_dao.dart';
 import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/local_notifications.dart';
 import 'package:cobble/domain/timeline/blob_status.dart';
-import 'package:cobble/infrastructure/pigeons/pigeons.dart';
+import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/util/container_extensions.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hooks_riverpod/all.dart';

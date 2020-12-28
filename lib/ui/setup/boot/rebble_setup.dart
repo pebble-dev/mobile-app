@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:cobble/infrastructure/pigeons/pigeons.dart';
+import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
+import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 String _getBootUrl = "https://boot.rebble.io/";
