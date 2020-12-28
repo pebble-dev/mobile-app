@@ -39,6 +39,9 @@ class SystemHandler @Inject constructor(
             connectionLooper.connectionState.collect {
                 if (it is ConnectionState.Connected) {
                     refreshWatchMetadata()
+                } else {
+                    watchMetadataStore.lastConnectedWatchMetadata.value = null
+                    watchMetadataStore.lastConnectedWatchModel.value = null
                 }
             }
         }
