@@ -131,7 +131,8 @@ class MusicHandler @Inject constructor(
                 MusicControl.PlaybackState.Rewinding
             PlaybackState.STATE_FAST_FORWARDING,
             PlaybackState.STATE_SKIPPING_TO_NEXT -> MusicControl.PlaybackState.FastForwarding
-            PlaybackState.STATE_PAUSED -> MusicControl.PlaybackState.Paused
+            PlaybackState.STATE_PAUSED,
+            PlaybackState.STATE_STOPPED -> MusicControl.PlaybackState.Paused
             else -> MusicControl.PlaybackState.Unknown
         }
 
