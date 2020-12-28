@@ -5,10 +5,18 @@ A multi platform watch companion app for Pebble/RebbleOS devices
 # Development
 
 ## Building the app
+1. Checkout this repo
+2. [Generate new Github token with `read:packages` permission](https://github.com/settings/tokens). This is required to fetch libpebblecommons from Github packages repository.
+3. Create `local.properties` file in `android` folder. Write following to the file:
 
-1. [Install flutter on your machine](https://flutter.dev/docs/get-started/install)
-2. [Setup flutter in the IDE of your choice](https://flutter.dev/docs/get-started/editor)
-3. Pull this repo and open it in the IDE set up in step 2
+    ```
+    GITHUB_ACTOR=<YOUR GITHUB USERNAME>
+    GITHUB_TOKEN=<GENERATED TOKEN>
+    ```
+
+4. [Install flutter on your machine](https://flutter.dev/docs/get-started/install)
+5. [Setup flutter in the IDE of your choice](https://flutter.dev/docs/get-started/editor)
+6. Open this repo in the IDE set up in step 5
 
 ## Building mappings
 
