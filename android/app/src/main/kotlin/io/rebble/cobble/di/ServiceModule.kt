@@ -48,4 +48,10 @@ abstract class ServiceModule {
     abstract fun bindMusicHandlerIntoSet(
             musicHandler: MusicHandler
     ): PebbleMessageHandler
+
+    @Binds
+    @IntoSet
+    abstract fun bindFlutterBackgroundStart(
+            flutterStartHandler: FlutterStartHandler
+    ): PebbleMessageHandler
 }
