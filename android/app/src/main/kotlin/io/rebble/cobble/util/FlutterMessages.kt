@@ -14,7 +14,7 @@ fun BasicMessageChannel<Any>.setCoroutineMessageHandler(
 ) {
     setMessageHandler { message, reply ->
         // Replies must be sent through UI thread
-        coroutineScope.launch(Dispatchers.Main) {
+        coroutineScope.launch(Dispatchers.Main.immediate) {
             reply.reply(block(message))
         }
     }
