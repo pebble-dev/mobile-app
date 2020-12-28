@@ -142,7 +142,11 @@ class _FirstRunPageState extends State<FirstRunPage> {
                     icon: Text("LET'S GET STARTED"),
                     label: Icon(RebbleIconsStroke.caret_right),
                     backgroundColor: Theme.of(context).primaryColor,
-                    onPressed: () => context.push(PairPage()),
+                    onPressed: () => context.push(
+                      PairPage(
+                        showSkipButton: true,
+                      ),
+                    ),
                   ),
                 ],
               ),

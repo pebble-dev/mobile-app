@@ -15,6 +15,13 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PairPage extends StatefulWidget implements CobbleScreen {
+  final bool showSkipButton;
+
+  const PairPage({
+    Key key,
+    this.showSkipButton = false,
+  }) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => new _PairPageState();
 }
@@ -205,14 +212,14 @@ class _PairPageState extends State<PairPage>
                         ],
                       ),
                     ),
-                    //TODO: Hide Skip when we're on the home screen and the tabs are visible
-                    FlatButton(
-                      child: Text("SKIP"),
-                      padding: EdgeInsets.symmetric(horizontal: 32.0),
-                      onPressed: () => context.pushAndRemoveAllBelow(
-                        HomePage(),
-                      ),
-                    )
+                    if (widget.showSkipButton)
+                      FlatButton(
+                        child: Text("SKIP"),
+                        padding: EdgeInsets.symmetric(horizontal: 32.0),
+                        onPressed: () => context.pushAndRemoveAllBelow(
+                          HomePage(),
+                        ),
+                      )
                   ]))
         ]));
   }
