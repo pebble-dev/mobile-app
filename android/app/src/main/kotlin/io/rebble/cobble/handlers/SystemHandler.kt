@@ -27,7 +27,7 @@ class SystemHandler @Inject constructor(
         private val systemService: SystemService,
         private val connectionLooper: ConnectionLooper,
         private val watchMetadataStore: WatchMetadataStore
-) : PebbleMessageHandler {
+) : CobbleHandler {
     init {
         listenForTimeChange()
 

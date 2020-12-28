@@ -12,7 +12,7 @@ import javax.inject.Inject
 class FlutterStartHandler @Inject constructor(
         coroutineScope: CoroutineScope,
         backgroundController: FlutterBackgroundController
-) : PebbleMessageHandler {
+) : CobbleHandler {
     init {
         coroutineScope.launch(Dispatchers.Main.immediate) {
             backgroundController.getBackgroundFlutterEngine()

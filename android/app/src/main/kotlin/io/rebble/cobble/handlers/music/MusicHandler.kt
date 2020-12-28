@@ -9,7 +9,7 @@ import android.media.session.PlaybackState
 import android.os.SystemClock
 import android.view.KeyEvent
 import androidx.lifecycle.asFlow
-import io.rebble.cobble.handlers.PebbleMessageHandler
+import io.rebble.cobble.handlers.CobbleHandler
 import io.rebble.cobble.notifications.NotificationListener
 import io.rebble.libpebblecommon.packets.MusicControl
 import io.rebble.libpebblecommon.services.MusicService
@@ -30,7 +30,7 @@ class MusicHandler @Inject constructor(
         private val musicService: MusicService,
         private val activeMediaSessionProvider: ActiveMediaSessionProvider,
         private val packageManager: PackageManager
-) : PebbleMessageHandler {
+) : CobbleHandler {
     private var currentMediaController: MediaController? = null
 
     private fun onMediaPlayerChanged(newPlayer: MediaController?) {

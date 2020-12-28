@@ -11,7 +11,7 @@ class TimelineHandler @Inject constructor(
         private val timelineService: TimelineService,
         coroutineScope: CoroutineScope,
         private val backgroundTimelineFlutterBridge: BackgroundTimelineFlutterBridge
-) : PebbleMessageHandler {
+) : CobbleHandler {
     init {
         timelineService.actionHandler = this::handleAction
 
