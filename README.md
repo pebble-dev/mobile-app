@@ -39,3 +39,7 @@ flutter pub run pigeon \
   --java_out ./android/app/src/main/java/io/rebble/cobble/pigeons/Pigeons.java \
   --java_package "io.rebble.cobble.pigeons"
 ```
+
+# Architecture
+
+See [Wiki](https://github.com/pebble-dev/mobile-app/wiki) for more info on app architecture.
