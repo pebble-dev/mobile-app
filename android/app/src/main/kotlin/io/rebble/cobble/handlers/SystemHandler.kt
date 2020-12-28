@@ -14,6 +14,7 @@ import io.rebble.libpebblecommon.services.SystemService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import java.util.*
@@ -32,6 +33,9 @@ class SystemHandler @Inject constructor(
         listenForTimeChange()
 
         coroutineScope.launch {
+            // Wait until watch is connected before sending time
+            connectionLooper.connectionState.first { it is ConnectionState.Connected }
+
             sendCurrentTime()
         }
 
