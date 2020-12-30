@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.core.content.getSystemService
+import androidx.lifecycle.Lifecycle
 import io.flutter.plugin.common.BinaryMessenger
 import io.rebble.cobble.MainActivity
 import io.rebble.cobble.bridges.FlutterBridge
@@ -17,14 +18,19 @@ import io.rebble.cobble.notifications.NotificationListener
 import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.pigeons.toMapExt
+import io.rebble.cobble.util.asFlow
 import io.rebble.cobble.util.registerAsyncPigeonCallback
 import io.rebble.cobble.util.voidResult
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class PermissionControlFlutterBridge @Inject constructor(
         private val activity: MainActivity,
+        private val activityLifecycle: Lifecycle,
         coroutineScope: CoroutineScope,
         binaryMessenger: BinaryMessenger
 ) : FlutterBridge {
@@ -78,14 +84,38 @@ class PermissionControlFlutterBridge @Inject constructor(
         }
     }
 
-    private fun requestNotificationAccess() {
+    private suspend fun requestNotificationAccess() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val companionDeviceManager: CompanionDeviceManager = activity.getSystemService()!!
-            companionDeviceManager.requestNotificationAccess(ComponentName(activity, NotificationListener::class.java))
+
+            val lifecycleFlow = activityLifecycle.asFlow()
+
+            coroutineScope {
+                val waitUntilPaused = launch {
+                    lifecycleFlow.first { it == Lifecycle.State.STARTED }
+                }
+
+                companionDeviceManager.requestNotificationAccess(ComponentName(activity, NotificationListener::class.java))
+
+                // Wait until dialog appears - activity pauses
+                waitUntilPaused.join()
+                // Wait until user dialog disappears - activity resumes
+                lifecycleFlow.first { it.isAtLeast(Lifecycle.State.RESUMED) }
+            }
         } else {
-            activity.startActivity(
-                    Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+            val resultCompletable = CompletableDeferred<Unit>()
+
+
+            activity.activityResultCallbacks[REQUEST_CODE_NOTIFICATIONS] = { _, _ ->
+                resultCompletable.complete(Unit)
+            }
+
+            activity.startActivityForResult(
+                    Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"),
+                    REQUEST_CODE_NOTIFICATIONS
             )
+
+            resultCompletable.await()
         }
     }
 
@@ -143,3 +173,4 @@ class PermissionControlFlutterBridge @Inject constructor(
 
 private const val REQUEST_CODE_LOCATION = 123
 private const val REQUEST_CODE_CALENDAR = 124
+private const val REQUEST_CODE_NOTIFICATIONS = 125
