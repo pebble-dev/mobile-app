@@ -142,12 +142,22 @@ class PermissionControlFlutterBridge @Inject constructor(
         resultCompletable.await()
     }
 
-    private fun openPermissionSettings() {
-        activity.startActivity(
+    private suspend fun openPermissionSettings() {
+        val resultCompletable = CompletableDeferred<Unit>()
+
+
+        activity.activityResultCallbacks[REQUEST_CODE_SETTINGS] = { _, _ ->
+            resultCompletable.complete(Unit)
+        }
+
+        activity.startActivityForResult(
                 Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                     data = Uri.parse("package:${activity.packageName}")
-                }
+                },
+                REQUEST_CODE_SETTINGS
         )
+
+        resultCompletable.await()
     }
 
     private suspend fun requestPermission(
@@ -185,3 +195,4 @@ private const val REQUEST_CODE_LOCATION = 123
 private const val REQUEST_CODE_CALENDAR = 124
 private const val REQUEST_CODE_NOTIFICATIONS = 125
 private const val REQUEST_CODE_BATTERY = 126
+private const val REQUEST_CODE_SETTINGS = 127
