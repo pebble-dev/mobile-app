@@ -64,6 +64,28 @@ class CobbleTheme {
         height: 1.17,
         fontWeight: FontWeight.w500,
       ),
+      button: TextStyle(
+        color: materialScheme.primary,
+        fontSize: 14,
+        height: 1.17,
+        fontWeight: FontWeight.w500,
+      ),
+    );
+
+    final buttonTheme = ButtonStyle(
+      minimumSize: MaterialStateProperty.all(Size(32, 32)),
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      padding: MaterialStateProperty.all(
+        EdgeInsets.symmetric(
+          vertical: 0,
+          horizontal: 8,
+        ),
+      ),
+      textStyle: MaterialStateProperty.all(textTheme.button),
+      foregroundColor: simpleMaterialStateProperty(
+        materialScheme.primary,
+        materialScheme.onSurface.withOpacity(0.12),
+      ),
     );
 
     return ThemeData(
@@ -83,6 +105,17 @@ class CobbleTheme {
         buttonColor: materialScheme.primary,
         textTheme: ButtonTextTheme.primary,
       ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: buttonTheme.copyWith(
+          side: simpleMaterialStateProperty(
+            BorderSide(color: materialScheme.primary),
+            BorderSide(color: materialScheme.onSurface.withOpacity(0.12)),
+          ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: buttonTheme,
+      ),
       textTheme: textTheme,
       appBarTheme: AppBarTheme(
         color: materialScheme.surface,
@@ -100,7 +133,26 @@ class CobbleTheme {
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: materialScheme.surface,
       ),
-      iconTheme: IconThemeData(color: materialScheme.primary),
+      iconTheme: IconThemeData(
+        color: materialScheme.primary,
+      ),
     );
   }
 }
+
+MaterialStateProperty<T> simpleMaterialStateProperty<T>(
+  T normal, [
+  T disabled,
+  T error,
+]) =>
+    MaterialStateProperty.resolveWith((states) {
+      if (states.contains(MaterialState.disabled)) {
+        assert(disabled != null, 'Provide disabled state!');
+        return disabled;
+      }
+      if (states.contains(MaterialState.error)) {
+        assert(error != null, 'Provide error state!');
+        return error;
+      }
+      return normal;
+    });
