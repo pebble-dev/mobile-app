@@ -1,12 +1,14 @@
 import 'package:cobble/ui/common/components/cobble_card.dart';
 import 'package:cobble/ui/common/components/cobble_tile.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
+import 'package:cobble/ui/home/tabs/widget_library.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/screens/health.dart';
 import 'package:cobble/ui/screens/notifications.dart';
 import 'package:cobble/ui/screens/placeholder_screen.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 
@@ -94,6 +96,12 @@ class Settings extends StatelessWidget implements CobbleScreen {
             title: 'Developer options',
             navigateTo: PlaceholderScreen(),
           ),
+          if (kDebugMode)
+            CobbleTile.navigation(
+              leading: RebbleIcons.developer_connection_console,
+              title: 'Widget Library',
+              navigateTo: WidgetLibrary(),
+            ),
         ],
       ),
     );
