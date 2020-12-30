@@ -3,6 +3,7 @@ import 'package:cobble/ui/home/tabs/settings_tab.dart';
 import 'package:cobble/ui/home/tabs/store_tab.dart';
 import 'package:cobble/ui/home/tabs/test_tab.dart';
 import 'package:cobble/ui/home/tabs/watches_tab.dart';
+import 'package:cobble/ui/home/tabs/widget_library.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/test/watch_carousel.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,7 +21,7 @@ class _TabConfig {
 class HomePage extends HookWidget implements CobbleScreen {
   final _config = [
     _TabConfig(TestTab(), "Testing", RebbleIconsStroke.send_to_watch_checked),
-    _TabConfig(Placeholder(), "Health", RebbleIconsStroke.health),
+    _TabConfig(WidgetLibrary(), "Health", RebbleIconsStroke.health),
     _TabConfig(WatchCarousel(), "Locker", RebbleIconsStroke.locker),
     _TabConfig(StoreTab(), "Store", RebbleIconsStroke.rebble_store),
     _TabConfig(MyWatchesTab(), "Watches", RebbleIconsStroke.devices),

@@ -63,3 +63,10 @@ this means there might be multiple stacks (1 main stack and one each for tab) bu
 active. In order to push page on an active stack import `CobbleNavigator` extension and then call
 `context.push(SomeScreen())`. `SomeScreen` widget should also implement interface `CobbleScreen` and
 use `CobbleScaffold`, which takes care of title and back button in navigation bar.
+
+## Custom Cobble components
+
+A lot of components were refactored in custom Widgets, like CobbleCard, CobbleTile, CobbleButton, etc.
+and these components should serve you as building blocks upon which to build your UI. They are 
+showcased in WidgetLibrary screen and in golden (aka snapshot) tests. All golden images (how widgets 
+should look) are included in /test/components/goldens.
