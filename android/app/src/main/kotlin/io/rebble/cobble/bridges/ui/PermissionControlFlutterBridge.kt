@@ -120,16 +120,26 @@ class PermissionControlFlutterBridge @Inject constructor(
     }
 
     @SuppressLint("BatteryLife")
-    private fun requestBatteryExclusion() {
+    private suspend fun requestBatteryExclusion() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return
         }
 
-        activity.startActivity(
+        val resultCompletable = CompletableDeferred<Unit>()
+
+
+        activity.activityResultCallbacks[REQUEST_CODE_BATTERY] = { _, _ ->
+            resultCompletable.complete(Unit)
+        }
+
+        activity.startActivityForResult(
                 Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
                     data = Uri.parse("package:${activity.packageName}")
-                }
+                },
+                REQUEST_CODE_BATTERY
         )
+
+        resultCompletable.await()
     }
 
     private fun openPermissionSettings() {
@@ -174,3 +184,4 @@ class PermissionControlFlutterBridge @Inject constructor(
 private const val REQUEST_CODE_LOCATION = 123
 private const val REQUEST_CODE_CALENDAR = 124
 private const val REQUEST_CODE_NOTIFICATIONS = 125
+private const val REQUEST_CODE_BATTERY = 126
