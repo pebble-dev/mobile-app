@@ -92,34 +92,40 @@ class MusicHandler @Inject constructor(
     private fun sendCurrentTrackUpdate() {
         Timber.d("Send track %s %s %s", currentMediaController, currentMediaController?.metadata?.keySet()?.toList(), hasPermission)
 
-        if (!hasPermission) {
-            sendNoPermissionTrackUpdate()
-            return
+        val metadata = currentMediaController?.metadata
+
+        val updateTrackObject = when {
+            !hasPermission -> {
+                MusicControl.UpdateCurrentTrack(
+                        "No permission",
+                        "",
+                        "Check Rebble app"
+                )
+            }
+            metadata != null -> {
+                MusicControl.UpdateCurrentTrack(
+                        metadata.getString(MediaMetadata.METADATA_KEY_ARTIST),
+                        metadata.getString(MediaMetadata.METADATA_KEY_ALBUM),
+                        metadata.getString(MediaMetadata.METADATA_KEY_TITLE),
+                        metadata.getLong(MediaMetadata.METADATA_KEY_DURATION).toInt(),
+                        metadata.getLong(MediaMetadata.METADATA_KEY_NUM_TRACKS).toInt(),
+                        metadata.getLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER).toInt()
+                )
+            }
+            else -> {
+                MusicControl.UpdateCurrentTrack(
+                        "",
+                        "",
+                        ""
+                )
+            }
         }
 
-        val metadata = currentMediaController?.metadata ?: return
-
         coroutineScope.launch(Dispatchers.Main.immediate) {
-            musicService.send(MusicControl.UpdateCurrentTrack(
-                    metadata.getString(MediaMetadata.METADATA_KEY_ARTIST),
-                    metadata.getString(MediaMetadata.METADATA_KEY_ALBUM),
-                    metadata.getString(MediaMetadata.METADATA_KEY_TITLE),
-                    metadata.getLong(MediaMetadata.METADATA_KEY_DURATION).toInt(),
-                    metadata.getLong(MediaMetadata.METADATA_KEY_NUM_TRACKS).toInt(),
-                    metadata.getLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER).toInt()
-            ))
+            musicService.send(updateTrackObject)
         }
     }
 
-    private fun sendNoPermissionTrackUpdate() {
-        coroutineScope.launch(Dispatchers.Main.immediate) {
-            musicService.send(MusicControl.UpdateCurrentTrack(
-                    "No permission",
-                    "",
-                    "Check Rebble app"
-            ))
-        }
-    }
 
     private fun sendVolumeUpdate() {
         Timber.d("Send volume %s", currentMediaController)
@@ -175,11 +181,11 @@ class MusicHandler @Inject constructor(
             PermissionChangeBus.notificationPermissionFlow(context)
                     .flatMapLatest { hasNotificationPermission ->
                         this@MusicHandler.hasPermission = hasNotificationPermission
+                        sendCurrentTrackUpdate()
 
                         if (hasNotificationPermission) {
                             activeMediaSessionProvider.asFlow()
                         } else {
-                            sendNoPermissionTrackUpdate()
                             flowOf(null)
                         }
                     }.collect {
