@@ -14,6 +14,7 @@ import androidx.lifecycle.Lifecycle
 import io.flutter.plugin.common.BinaryMessenger
 import io.rebble.cobble.MainActivity
 import io.rebble.cobble.bridges.FlutterBridge
+import io.rebble.cobble.datasources.PermissionChangeBus
 import io.rebble.cobble.notifications.NotificationListener
 import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons
@@ -117,6 +118,8 @@ class PermissionControlFlutterBridge @Inject constructor(
 
             resultCompletable.await()
         }
+
+        PermissionChangeBus.trigger()
     }
 
     @SuppressLint("BatteryLife")

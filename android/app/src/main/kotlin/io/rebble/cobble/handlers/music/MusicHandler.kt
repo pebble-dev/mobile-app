@@ -9,8 +9,9 @@ import android.media.session.PlaybackState
 import android.os.SystemClock
 import android.view.KeyEvent
 import androidx.lifecycle.asFlow
+import io.rebble.cobble.datasources.PermissionChangeBus
+import io.rebble.cobble.datasources.notificationPermissionFlow
 import io.rebble.cobble.handlers.CobbleHandler
-import io.rebble.cobble.notifications.NotificationListener
 import io.rebble.libpebblecommon.packets.MusicControl
 import io.rebble.libpebblecommon.services.MusicService
 import kotlinx.coroutines.CoroutineScope
@@ -32,6 +33,7 @@ class MusicHandler @Inject constructor(
         private val packageManager: PackageManager
 ) : CobbleHandler {
     private var currentMediaController: MediaController? = null
+    private var hasPermission: Boolean = false
 
     private fun onMediaPlayerChanged(newPlayer: MediaController?) {
         Timber.d("New Player %s", newPlayer?.packageName)
@@ -88,7 +90,12 @@ class MusicHandler @Inject constructor(
     }
 
     private fun sendCurrentTrackUpdate() {
-        Timber.d("Send track %s %s", currentMediaController, currentMediaController?.metadata?.keySet()?.toList())
+        Timber.d("Send track %s %s %s", currentMediaController, currentMediaController?.metadata?.keySet()?.toList(), hasPermission)
+
+        if (!hasPermission) {
+            sendNoPermissionTrackUpdate()
+            return
+        }
 
         val metadata = currentMediaController?.metadata ?: return
 
@@ -100,6 +107,16 @@ class MusicHandler @Inject constructor(
                     metadata.getLong(MediaMetadata.METADATA_KEY_DURATION).toInt(),
                     metadata.getLong(MediaMetadata.METADATA_KEY_NUM_TRACKS).toInt(),
                     metadata.getLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER).toInt()
+            ))
+        }
+    }
+
+    private fun sendNoPermissionTrackUpdate() {
+        coroutineScope.launch(Dispatchers.Main.immediate) {
+            musicService.send(MusicControl.UpdateCurrentTrack(
+                    "No permission",
+                    "",
+                    "Check Rebble app"
             ))
         }
     }
@@ -155,15 +172,19 @@ class MusicHandler @Inject constructor(
     private fun listenForPlayerChanges() {
         coroutineScope.launch(Dispatchers.Main.immediate) {
             @Suppress("EXPERIMENTAL_API_USAGE")
-            NotificationListener.isActive.flatMapLatest { notificationServiceActive ->
-                if (notificationServiceActive) {
-                    activeMediaSessionProvider.asFlow()
-                } else {
-                    flowOf(null)
-                }
-            }.collect {
-                onMediaPlayerChanged(it)
-            }
+            PermissionChangeBus.notificationPermissionFlow(context)
+                    .flatMapLatest { hasNotificationPermission ->
+                        this@MusicHandler.hasPermission = hasNotificationPermission
+
+                        if (hasNotificationPermission) {
+                            activeMediaSessionProvider.asFlow()
+                        } else {
+                            sendNoPermissionTrackUpdate()
+                            flowOf(null)
+                        }
+                    }.collect {
+                        onMediaPlayerChanged(it)
+                    }
         }
     }
 
