@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 class CobbleTheme {
   static appTheme(Brightness brightness) {
     final scheme = CobbleSchemeData.fromBrightness(brightness);
-    final textOnDark = CobbleSchemeTextData.fromBrightness(Brightness.dark);
-    final textOnLight = CobbleSchemeTextData.fromBrightness(Brightness.light);
+    final invertedScheme = scheme.invert();
 
     /// Some colors in bright theme are actually dark and vise versa. That's why
     /// I have to manually create both version, I can't simply copy from [scheme].
@@ -20,11 +19,11 @@ class CobbleTheme {
             surface: scheme.surface,
             background: scheme.background,
             error: scheme.danger,
-            onPrimary: textOnLight.text,
-            onSecondary: textOnLight.text,
-            onSurface: scheme.text.text,
-            onBackground: scheme.text.text,
-            onError: textOnDark.text,
+            onPrimary: invertedScheme.text,
+            onSecondary: invertedScheme.text,
+            onSurface: scheme.text,
+            onBackground: scheme.text,
+            onError: scheme.text,
             brightness: brightness,
           )
         : ColorScheme(
@@ -35,11 +34,11 @@ class CobbleTheme {
             surface: scheme.surface,
             background: scheme.background,
             error: scheme.danger,
-            onPrimary: textOnDark.text,
-            onSecondary: textOnDark.text,
-            onSurface: scheme.text.text,
-            onBackground: scheme.text.text,
-            onError: textOnLight.text,
+            onPrimary: invertedScheme.text,
+            onSecondary: invertedScheme.text,
+            onSurface: scheme.text,
+            onBackground: scheme.text,
+            onError: scheme.text,
             brightness: brightness,
           );
 
