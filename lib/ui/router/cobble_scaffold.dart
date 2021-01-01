@@ -74,7 +74,7 @@ class CobbleScaffold extends StatelessWidget {
             subtitle,
             style: context.theme.appBarTheme.textTheme.headline6.copyWith(
               fontSize: 14,
-              color: context.scheme.text.muted,
+              color: context.scheme.muted,
             ),
           )
         ],
