@@ -1,3 +1,5 @@
+import 'package:cobble/ui/theme/cobble_theme.dart';
+import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:flutter/material.dart';
 
 /// Simple Cobble button.
@@ -44,6 +46,31 @@ class CobbleButton extends StatelessWidget {
       onPressed: onPressed,
       focusNode: focusNode,
       child: child,
+    );
+  }
+
+  static Widget withColor({
+    @required Color color,
+    @required Widget child,
+  }) {
+    assert(color != null);
+    assert(child != null);
+    return Builder(
+      builder: (context) => Theme(
+        data: context.theme.copyWith(
+          outlinedButtonTheme: OutlinedButtonThemeData(
+            style: context.theme.outlinedButtonTheme.style.copyWith(
+              side: simpleMaterialStateProperty(
+                BorderSide(color: color),
+              ),
+              foregroundColor: simpleMaterialStateProperty(
+                color,
+              ),
+            ),
+          ),
+        ),
+        child: child,
+      ),
     );
   }
 }
