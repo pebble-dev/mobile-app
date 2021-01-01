@@ -50,6 +50,8 @@ dependencies:
   json_annotation: ^3.0.0
   copy_with_extension: ^1.4.0
   flutter_local_notifications: ^3.0.2
+  flutter_svg: 0.19.1
+  flutter_svg_provider: 0.1.7
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -89,12 +91,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - lang/en.json
-    - lang/es.json
-    - images/rebble.png
-    - images/app_large.png
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+    - lang/
+    - images/
 
   fonts:
       - family:  RebbleIconsStroke
