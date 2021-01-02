@@ -310,6 +310,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
+  golden_toolkit:
+    dependency: "direct main"
+    description:
+      name: golden_toolkit
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.8.0"
   graphs:
     dependency: transitive
     description:
