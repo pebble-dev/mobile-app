@@ -55,7 +55,7 @@ fun collectAndShareLogs(context: Context) = GlobalScope.launch(Dispatchers.IO) {
         }
     }
 
-    withContext(Dispatchers.Main) {
+    withContext(Dispatchers.Main.immediate) {
         val targetUri = FileProvider.getUriForFile(context, "io.rebble.cobble.files", targetFile)
 
         val activityIntent = Intent(Intent.ACTION_SEND)

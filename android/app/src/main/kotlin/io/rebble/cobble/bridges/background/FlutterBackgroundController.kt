@@ -42,7 +42,7 @@ class FlutterBackgroundController @Inject constructor(
         }
     }
 
-    private suspend fun initEngine(): FlutterEngine? = withContext(Dispatchers.Main) {
+    private suspend fun initEngine(): FlutterEngine? = withContext(Dispatchers.Main.immediate) {
         // Flutter must be initialized on the main thread
 
         coroutineScope {
@@ -78,7 +78,7 @@ class FlutterBackgroundController @Inject constructor(
             val dartInitWait = launch {
                 suspendCoroutine { continuation ->
                     binaryMessenger.registerAsyncPigeonCallback(
-                            GlobalScope + Dispatchers.Main,
+                            GlobalScope + Dispatchers.Main.immediate,
                             "dev.flutter.pigeon.BackgroundControl.notifyFlutterBackgroundStarted"
                     ) {
                         continuation.resume(Unit)

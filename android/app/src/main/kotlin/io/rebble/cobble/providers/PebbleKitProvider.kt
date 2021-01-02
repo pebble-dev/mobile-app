@@ -42,7 +42,7 @@ class PebbleKitProvider : ContentProvider() {
 
         connectionLooper = injectionComponent.createConnectionLooper()
 
-        GlobalScope.launch(Dispatchers.Main) {
+        GlobalScope.launch(Dispatchers.Main.immediate) {
             connectionLooper.connectionState.collect {
                 context.contentResolver.notifyChange(Constants.URI_CONTENT_BASALT, null)
             }

@@ -1,9 +1,12 @@
 package io.rebble.cobble.datasources
 
+import android.content.Context
+import io.rebble.cobble.util.hasNotificationAccessPermission
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.flow.*
 
 /**
  * Bus that triggers whenever permissions change
@@ -19,4 +22,10 @@ object PermissionChangeBus {
     fun trigger() {
         permissionChangeChannel.offer(Unit)
     }
+}
+
+fun PermissionChangeBus.notificationPermissionFlow(context: Context): Flow<Boolean> {
+    return (openSubscription().consumeAsFlow().onStart { emit(Unit) })
+            .map { context.hasNotificationAccessPermission() }
+            .distinctUntilChanged()
 }

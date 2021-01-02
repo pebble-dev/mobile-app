@@ -81,7 +81,7 @@ class BackgroundTimelineFlutterBridge @Inject constructor(
 
     suspend fun handleTimelineAction(
             actionRequest: TimelineAction.InvokeAction
-    ): TimelineService.ActionResponse = withContext(Dispatchers.Main) {
+    ): TimelineService.ActionResponse = withContext(Dispatchers.Main.immediate) {
         val callbacks = getTimelineSyncCallbacks().also { println("Timeline sync callbacks") }
                 ?: return@withContext TimelineService.ActionResponse(false)
 

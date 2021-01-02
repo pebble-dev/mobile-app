@@ -23,29 +23,35 @@ abstract class ServiceModule {
     @IntoSet
     abstract fun bindAppMessageHandlerIntoSet(
             appMessageHandler: AppMessageHandler
-    ): PebbleMessageHandler
+    ): CobbleHandler
 
     @Binds
     @IntoSet
     abstract fun bindSystemMessageHandlerIntoSet(
             systemMessageHandler: SystemHandler
-    ): PebbleMessageHandler
+    ): CobbleHandler
 
     @Binds
     @IntoSet
     abstract fun bindCalendarHandlerIntoSet(
             calendarHandler: CalendarHandler
-    ): PebbleMessageHandler
+    ): CobbleHandler
 
     @Binds
     @IntoSet
     abstract fun bindTimelineHandlerIntoSet(
             timelineHandler: TimelineHandler
-    ): PebbleMessageHandler
+    ): CobbleHandler
 
     @Binds
     @IntoSet
     abstract fun bindMusicHandlerIntoSet(
             musicHandler: MusicHandler
-    ): PebbleMessageHandler
+    ): CobbleHandler
+
+    @Binds
+    @IntoSet
+    abstract fun bindFlutterBackgroundStart(
+            flutterStartHandler: FlutterStartHandler
+    ): CobbleHandler
 }

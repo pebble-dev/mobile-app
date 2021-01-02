@@ -3,15 +3,13 @@ package io.rebble.cobble.bridges.common
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Build
-import android.os.PowerManager
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.pigeons.BooleanWrapper
 import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.util.hasBatteryExclusionPermission
+import io.rebble.cobble.util.hasNotificationAccessPermission
 import javax.inject.Inject
 
 class PermissionCheckFlutterBridge @Inject constructor(
@@ -35,18 +33,12 @@ class PermissionCheckFlutterBridge @Inject constructor(
 
     override fun hasNotificationAccess(): Pigeons.BooleanWrapper {
         return BooleanWrapper(
-                NotificationManagerCompat.getEnabledListenerPackages(context)
-                        .contains(context.packageName)
+                context.hasNotificationAccessPermission()
         )
     }
 
     override fun hasBatteryExclusionEnabled(): Pigeons.BooleanWrapper {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return BooleanWrapper(true)
-        }
-
-        val powerManager: PowerManager = context.getSystemService()!!
-        return BooleanWrapper(powerManager.isIgnoringBatteryOptimizations(context.packageName))
+        return BooleanWrapper(context.hasBatteryExclusionPermission())
     }
 
     private fun checkPermission(vararg permission: String) = BooleanWrapper(

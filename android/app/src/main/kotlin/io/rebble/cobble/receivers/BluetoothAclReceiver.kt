@@ -28,7 +28,7 @@ class BluetoothAclReceiver : BroadcastReceiver() {
             // After ACL is established, Pebble still needs some time to initialize
             // Attempt connection after one second
 
-            GlobalScope.launch(Dispatchers.Main) {
+            GlobalScope.launch(Dispatchers.Main.immediate) {
                 delay(1000)
 
                 if (connectionLooper.connectionState.value is ConnectionState.Connecting) {

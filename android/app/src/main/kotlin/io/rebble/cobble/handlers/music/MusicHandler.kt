@@ -9,8 +9,9 @@ import android.media.session.PlaybackState
 import android.os.SystemClock
 import android.view.KeyEvent
 import androidx.lifecycle.asFlow
-import io.rebble.cobble.handlers.PebbleMessageHandler
-import io.rebble.cobble.notifications.NotificationListener
+import io.rebble.cobble.datasources.PermissionChangeBus
+import io.rebble.cobble.datasources.notificationPermissionFlow
+import io.rebble.cobble.handlers.CobbleHandler
 import io.rebble.libpebblecommon.packets.MusicControl
 import io.rebble.libpebblecommon.services.MusicService
 import kotlinx.coroutines.CoroutineScope
@@ -30,8 +31,9 @@ class MusicHandler @Inject constructor(
         private val musicService: MusicService,
         private val activeMediaSessionProvider: ActiveMediaSessionProvider,
         private val packageManager: PackageManager
-) : PebbleMessageHandler {
+) : CobbleHandler {
     private var currentMediaController: MediaController? = null
+    private var hasPermission: Boolean = false
 
     private fun onMediaPlayerChanged(newPlayer: MediaController?) {
         Timber.d("New Player %s", newPlayer?.packageName)
@@ -88,21 +90,42 @@ class MusicHandler @Inject constructor(
     }
 
     private fun sendCurrentTrackUpdate() {
-        Timber.d("Send track %s %s", currentMediaController, currentMediaController?.metadata?.keySet()?.toList())
+        Timber.d("Send track %s %s %s", currentMediaController, currentMediaController?.metadata?.keySet()?.toList(), hasPermission)
 
-        val metadata = currentMediaController?.metadata ?: return
+        val metadata = currentMediaController?.metadata
+
+        val updateTrackObject = when {
+            !hasPermission -> {
+                MusicControl.UpdateCurrentTrack(
+                        "No permission",
+                        "",
+                        "Check Rebble app"
+                )
+            }
+            metadata != null -> {
+                MusicControl.UpdateCurrentTrack(
+                        metadata.getString(MediaMetadata.METADATA_KEY_ARTIST),
+                        metadata.getString(MediaMetadata.METADATA_KEY_ALBUM),
+                        metadata.getString(MediaMetadata.METADATA_KEY_TITLE),
+                        metadata.getLong(MediaMetadata.METADATA_KEY_DURATION).toInt(),
+                        metadata.getLong(MediaMetadata.METADATA_KEY_NUM_TRACKS).toInt(),
+                        metadata.getLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER).toInt()
+                )
+            }
+            else -> {
+                MusicControl.UpdateCurrentTrack(
+                        "",
+                        "",
+                        ""
+                )
+            }
+        }
 
         coroutineScope.launch(Dispatchers.Main.immediate) {
-            musicService.send(MusicControl.UpdateCurrentTrack(
-                    metadata.getString(MediaMetadata.METADATA_KEY_ARTIST),
-                    metadata.getString(MediaMetadata.METADATA_KEY_ALBUM),
-                    metadata.getString(MediaMetadata.METADATA_KEY_TITLE),
-                    metadata.getLong(MediaMetadata.METADATA_KEY_DURATION).toInt(),
-                    metadata.getLong(MediaMetadata.METADATA_KEY_NUM_TRACKS).toInt(),
-                    metadata.getLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER).toInt()
-            ))
+            musicService.send(updateTrackObject)
         }
     }
+
 
     private fun sendVolumeUpdate() {
         Timber.d("Send volume %s", currentMediaController)
@@ -131,7 +154,8 @@ class MusicHandler @Inject constructor(
                 MusicControl.PlaybackState.Rewinding
             PlaybackState.STATE_FAST_FORWARDING,
             PlaybackState.STATE_SKIPPING_TO_NEXT -> MusicControl.PlaybackState.FastForwarding
-            PlaybackState.STATE_PAUSED -> MusicControl.PlaybackState.Paused
+            PlaybackState.STATE_PAUSED,
+            PlaybackState.STATE_STOPPED -> MusicControl.PlaybackState.Paused
             else -> MusicControl.PlaybackState.Unknown
         }
 
@@ -154,15 +178,19 @@ class MusicHandler @Inject constructor(
     private fun listenForPlayerChanges() {
         coroutineScope.launch(Dispatchers.Main.immediate) {
             @Suppress("EXPERIMENTAL_API_USAGE")
-            NotificationListener.isActive.flatMapLatest { notificationServiceActive ->
-                if (notificationServiceActive) {
-                    activeMediaSessionProvider.asFlow()
-                } else {
-                    flowOf(null)
-                }
-            }.collect {
-                onMediaPlayerChanged(it)
-            }
+            PermissionChangeBus.notificationPermissionFlow(context)
+                    .flatMapLatest { hasNotificationPermission ->
+                        this@MusicHandler.hasPermission = hasNotificationPermission
+                        sendCurrentTrackUpdate()
+
+                        if (hasNotificationPermission) {
+                            activeMediaSessionProvider.asFlow()
+                        } else {
+                            flowOf(null)
+                        }
+                    }.collect {
+                        onMediaPlayerChanged(it)
+                    }
         }
     }
 

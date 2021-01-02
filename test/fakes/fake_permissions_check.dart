@@ -1,4 +1,4 @@
-import 'package:cobble/infrastructure/pigeons/pigeons.dart';
+import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 
 class FakePermissionCheck implements PermissionCheck {
   bool reportedBatteryExclusion = true;

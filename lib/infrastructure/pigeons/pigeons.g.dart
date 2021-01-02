@@ -175,9 +175,9 @@ class WatchConnectionStatePigeon {
     result.isConnected = pigeonMap['isConnected'];
     result.isConnecting = pigeonMap['isConnecting'];
     result.currentWatchAddress = pigeonMap['currentWatchAddress'];
-    result.currentConnectedWatch =
-    pigeonMap['currentConnectedWatch'] != null ? PebbleDevicePigeon._fromMap(
-        pigeonMap['currentConnectedWatch']) : null;
+    result.currentConnectedWatch = pigeonMap['currentConnectedWatch'] != null
+        ? PebbleDevicePigeon._fromMap(pigeonMap['currentConnectedWatch'])
+        : null;
     return result;
   }
 }
@@ -200,9 +200,9 @@ class PebbleDevicePigeon {
     pigeonMap['name'] = name;
     pigeonMap['address'] = address;
     pigeonMap['runningFirmware'] =
-    runningFirmware == null ? null : runningFirmware._toMap();
+        runningFirmware == null ? null : runningFirmware._toMap();
     pigeonMap['recoveryFirmware'] =
-    recoveryFirmware == null ? null : recoveryFirmware._toMap();
+        recoveryFirmware == null ? null : recoveryFirmware._toMap();
     pigeonMap['model'] = model;
     pigeonMap['bootloaderTimestamp'] = bootloaderTimestamp;
     pigeonMap['board'] = board;
@@ -217,12 +217,12 @@ class PebbleDevicePigeon {
     final PebbleDevicePigeon result = PebbleDevicePigeon();
     result.name = pigeonMap['name'];
     result.address = pigeonMap['address'];
-    result.runningFirmware =
-    pigeonMap['runningFirmware'] != null ? PebbleFirmwarePigeon._fromMap(
-        pigeonMap['runningFirmware']) : null;
-    result.recoveryFirmware =
-    pigeonMap['recoveryFirmware'] != null ? PebbleFirmwarePigeon._fromMap(
-        pigeonMap['recoveryFirmware']) : null;
+    result.runningFirmware = pigeonMap['runningFirmware'] != null
+        ? PebbleFirmwarePigeon._fromMap(pigeonMap['runningFirmware'])
+        : null;
+    result.recoveryFirmware = pigeonMap['recoveryFirmware'] != null
+        ? PebbleFirmwarePigeon._fromMap(pigeonMap['recoveryFirmware'])
+        : null;
     result.model = pigeonMap['model'];
     result.bootloaderTimestamp = pigeonMap['bootloaderTimestamp'];
     result.board = pigeonMap['board'];
@@ -268,7 +268,6 @@ class PebbleFirmwarePigeon {
 class ActionResponsePigeon {
   bool success;
   String attributesJson;
-
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
@@ -276,7 +275,6 @@ class ActionResponsePigeon {
     pigeonMap['attributesJson'] = attributesJson;
     return pigeonMap;
   }
-
   // ignore: unused_element
   static ActionResponsePigeon _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final ActionResponsePigeon result = ActionResponsePigeon();
@@ -289,7 +287,6 @@ class ActionResponsePigeon {
 class ActionTrigger {
   String itemId;
   int actionId;
-
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
@@ -297,7 +294,6 @@ class ActionTrigger {
     pigeonMap['actionId'] = actionId;
     return pigeonMap;
   }
-
   // ignore: unused_element
   static ActionTrigger _fromMap(Map<dynamic, dynamic> pigeonMap) {
     final ActionTrigger result = ActionTrigger();
@@ -331,8 +327,7 @@ class PigeonLogger {
   }
   Future<void> d(StringWrapper arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.PigeonLogger.d', StandardMessageCodec());
 
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
@@ -353,8 +348,7 @@ class PigeonLogger {
   }
   Future<void> i(StringWrapper arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.PigeonLogger.i', StandardMessageCodec());
 
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
@@ -375,8 +369,7 @@ class PigeonLogger {
   }
   Future<void> w(StringWrapper arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.PigeonLogger.w', StandardMessageCodec());
 
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
@@ -397,8 +390,7 @@ class PigeonLogger {
   }
   Future<void> e(StringWrapper arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.PigeonLogger.e', StandardMessageCodec());
 
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
@@ -421,8 +413,7 @@ class PigeonLogger {
 
 class ScanControl {
   Future<void> startBleScan() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.ScanControl.startBleScan', StandardMessageCodec());
 
     final Map<dynamic, dynamic> replyMap = await channel.send(null);
@@ -442,8 +433,7 @@ class ScanControl {
     }
   }
   Future<void> startClassicScan() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.ScanControl.startClassicScan',
         StandardMessageCodec());
 
@@ -467,8 +457,7 @@ class ScanControl {
 
 class AppLifecycleControl {
   Future<BooleanWrapper> waitForBoot() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.AppLifecycleControl.waitForBoot',
         StandardMessageCodec());
 
@@ -493,8 +482,7 @@ class AppLifecycleControl {
 class TimelineControl {
   Future<NumberWrapper> addPin(TimelinePinPigeon arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.TimelineControl.addPin', StandardMessageCodec());
 
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
@@ -515,8 +503,7 @@ class TimelineControl {
   }
   Future<NumberWrapper> removePin(StringWrapper arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.TimelineControl.removePin', StandardMessageCodec());
 
     final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
@@ -536,8 +523,7 @@ class TimelineControl {
     }
   }
   Future<NumberWrapper> removeAllPins() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.TimelineControl.removeAllPins',
         StandardMessageCodec());
 
@@ -561,8 +547,7 @@ class TimelineControl {
 
 class BackgroundControl {
   Future<void> notifyFlutterBackgroundStarted() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.BackgroundControl.notifyFlutterBackgroundStarted',
         StandardMessageCodec());
 
@@ -586,8 +571,7 @@ class BackgroundControl {
 
 class PermissionControl {
   Future<NumberWrapper> requestLocationPermission() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.PermissionControl.requestLocationPermission',
         StandardMessageCodec());
 
@@ -608,8 +592,7 @@ class PermissionControl {
     }
   }
   Future<NumberWrapper> requestCalendarPermission() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.PermissionControl.requestCalendarPermission',
         StandardMessageCodec());
 
@@ -630,8 +613,7 @@ class PermissionControl {
     }
   }
   Future<void> requestNotificationAccess() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.PermissionControl.requestNotificationAccess',
         StandardMessageCodec());
 
@@ -652,8 +634,7 @@ class PermissionControl {
     }
   }
   Future<void> requestBatteryExclusion() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.PermissionControl.requestBatteryExclusion',
         StandardMessageCodec());
 
@@ -674,8 +655,7 @@ class PermissionControl {
     }
   }
   Future<void> openPermissionSettings() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.PermissionControl.openPermissionSettings',
         StandardMessageCodec());
 
@@ -699,8 +679,7 @@ class PermissionControl {
 
 class ConnectionControl {
   Future<BooleanWrapper> isConnected() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.ConnectionControl.isConnected',
         StandardMessageCodec());
 
@@ -744,8 +723,7 @@ class ConnectionControl {
   }
   Future<void> sendRawPacket(ListWrapper arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.ConnectionControl.sendRawPacket',
         StandardMessageCodec());
 
@@ -766,8 +744,7 @@ class ConnectionControl {
     }
   }
   Future<void> observeConnectionChanges() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.ConnectionControl.observeConnectionChanges',
         StandardMessageCodec());
 
@@ -788,8 +765,7 @@ class ConnectionControl {
     }
   }
   Future<void> cancelObservingConnectionChanges() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.ConnectionControl.cancelObservingConnectionChanges',
         StandardMessageCodec());
 
@@ -813,8 +789,7 @@ class ConnectionControl {
 
 class NotificationsControl {
   Future<void> sendTestNotification() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.NotificationsControl.sendTestNotification',
         StandardMessageCodec());
 
@@ -839,8 +814,7 @@ class NotificationsControl {
 class BackgroundSetupControl {
   Future<void> setupBackground(NumberWrapper arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.BackgroundSetupControl.setupBackground',
         StandardMessageCodec());
 
@@ -868,25 +842,22 @@ abstract class ScanCallbacks {
   void onScanStopped();
   static void setup(ScanCallbacks api) {
     {
-      const BasicMessageChannel<dynamic> channel =
-      BasicMessageChannel<dynamic>(
+      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
           'dev.flutter.pigeon.ScanCallbacks.onScanUpdate',
           StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((dynamic message) async {
-          final Map<dynamic, dynamic> mapMessage = message as Map<
-              dynamic,
-              dynamic>;
+          final Map<dynamic, dynamic> mapMessage =
+              message as Map<dynamic, dynamic>;
           final ListWrapper input = ListWrapper._fromMap(mapMessage);
           api.onScanUpdate(input);
         });
       }
     }
     {
-      const BasicMessageChannel<dynamic> channel =
-      BasicMessageChannel<dynamic>(
+      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
           'dev.flutter.pigeon.ScanCallbacks.onScanStarted',
           StandardMessageCodec());
       if (api == null) {
@@ -898,8 +869,7 @@ abstract class ScanCallbacks {
       }
     }
     {
-      const BasicMessageChannel<dynamic> channel =
-      BasicMessageChannel<dynamic>(
+      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
           'dev.flutter.pigeon.ScanCallbacks.onScanStopped',
           StandardMessageCodec());
       if (api == null) {
@@ -915,8 +885,7 @@ abstract class ScanCallbacks {
 
 class TimelineSyncControl {
   Future<void> syncTimelineToWatchLater() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.TimelineSyncControl.syncTimelineToWatchLater',
         StandardMessageCodec());
 
@@ -941,8 +910,7 @@ class TimelineSyncControl {
 class KeepUnusedHack {
   Future<void> keepPebbleScanDevicePigeon(PebbleScanDevicePigeon arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.KeepUnusedHack.keepPebbleScanDevicePigeon',
         StandardMessageCodec());
 
@@ -968,17 +936,15 @@ abstract class PairCallbacks {
   void onWatchPairComplete(NumberWrapper arg);
   static void setup(PairCallbacks api) {
     {
-      const BasicMessageChannel<dynamic> channel =
-      BasicMessageChannel<dynamic>(
+      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
           'dev.flutter.pigeon.PairCallbacks.onWatchPairComplete',
           StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((dynamic message) async {
-          final Map<dynamic, dynamic> mapMessage = message as Map<
-              dynamic,
-              dynamic>;
+          final Map<dynamic, dynamic> mapMessage =
+              message as Map<dynamic, dynamic>;
           final NumberWrapper input = NumberWrapper._fromMap(mapMessage);
           api.onWatchPairComplete(input);
         });
@@ -989,8 +955,7 @@ abstract class PairCallbacks {
 
 class CalendarControl {
   Future<void> requestCalendarSync() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.CalendarControl.requestCalendarSync',
         StandardMessageCodec());
 
@@ -1011,8 +976,7 @@ class CalendarControl {
     }
   }
   Future<void> deleteCalendarPinsFromWatch() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.CalendarControl.deleteCalendarPinsFromWatch',
         StandardMessageCodec());
 
@@ -1036,8 +1000,7 @@ class CalendarControl {
 
 class PermissionCheck {
   Future<BooleanWrapper> hasLocationPermission() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.PermissionCheck.hasLocationPermission',
         StandardMessageCodec());
 
@@ -1058,8 +1021,7 @@ class PermissionCheck {
     }
   }
   Future<BooleanWrapper> hasCalendarPermission() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.PermissionCheck.hasCalendarPermission',
         StandardMessageCodec());
 
@@ -1080,8 +1042,7 @@ class PermissionCheck {
     }
   }
   Future<BooleanWrapper> hasNotificationAccess() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.PermissionCheck.hasNotificationAccess',
         StandardMessageCodec());
 
@@ -1102,8 +1063,7 @@ class PermissionCheck {
     }
   }
   Future<BooleanWrapper> hasBatteryExclusionEnabled() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.PermissionCheck.hasBatteryExclusionEnabled',
         StandardMessageCodec());
 
@@ -1129,19 +1089,17 @@ abstract class ConnectionCallbacks {
   void onWatchConnectionStateChanged(WatchConnectionStatePigeon arg);
   static void setup(ConnectionCallbacks api) {
     {
-      const BasicMessageChannel<dynamic> channel =
-      BasicMessageChannel<dynamic>(
+      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
           'dev.flutter.pigeon.ConnectionCallbacks.onWatchConnectionStateChanged',
           StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((dynamic message) async {
-          final Map<dynamic, dynamic> mapMessage = message as Map<
-              dynamic,
-              dynamic>;
-          final WatchConnectionStatePigeon input = WatchConnectionStatePigeon
-              ._fromMap(mapMessage);
+          final Map<dynamic, dynamic> mapMessage =
+              message as Map<dynamic, dynamic>;
+          final WatchConnectionStatePigeon input =
+              WatchConnectionStatePigeon._fromMap(mapMessage);
           api.onWatchConnectionStateChanged(input);
         });
       }
@@ -1151,13 +1109,10 @@ abstract class ConnectionCallbacks {
 
 abstract class TimelineCallbacks {
   void syncTimelineToWatch();
-
   Future<ActionResponsePigeon> handleTimelineAction(ActionTrigger arg);
-
   static void setup(TimelineCallbacks api) {
     {
-      const BasicMessageChannel<dynamic> channel =
-      BasicMessageChannel<dynamic>(
+      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
           'dev.flutter.pigeon.TimelineCallbacks.syncTimelineToWatch',
           StandardMessageCodec());
       if (api == null) {
@@ -1169,20 +1124,18 @@ abstract class TimelineCallbacks {
       }
     }
     {
-      const BasicMessageChannel<dynamic> channel =
-      BasicMessageChannel<dynamic>(
+      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
           'dev.flutter.pigeon.TimelineCallbacks.handleTimelineAction',
           StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((dynamic message) async {
-          final Map<dynamic, dynamic> mapMessage = message as Map<
-              dynamic,
-              dynamic>;
+          final Map<dynamic, dynamic> mapMessage =
+              message as Map<dynamic, dynamic>;
           final ActionTrigger input = ActionTrigger._fromMap(mapMessage);
-          final ActionResponsePigeon output = await api.handleTimelineAction(
-              input);
+          final ActionResponsePigeon output =
+              await api.handleTimelineAction(input);
           return output._toMap();
         });
       }
@@ -1195,8 +1148,7 @@ abstract class CalendarCallbacks {
   Future<void> deleteCalendarPinsFromWatch();
   static void setup(CalendarCallbacks api) {
     {
-      const BasicMessageChannel<dynamic> channel =
-      BasicMessageChannel<dynamic>(
+      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
           'dev.flutter.pigeon.CalendarCallbacks.doFullCalendarSync',
           StandardMessageCodec());
       if (api == null) {
@@ -1208,8 +1160,7 @@ abstract class CalendarCallbacks {
       }
     }
     {
-      const BasicMessageChannel<dynamic> channel =
-      BasicMessageChannel<dynamic>(
+      const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
           'dev.flutter.pigeon.CalendarCallbacks.deleteCalendarPinsFromWatch',
           StandardMessageCodec());
       if (api == null) {
@@ -1225,8 +1176,7 @@ abstract class CalendarCallbacks {
 
 class DebugControl {
   Future<void> collectLogs() async {
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.DebugControl.collectLogs', StandardMessageCodec());
 
     final Map<dynamic, dynamic> replyMap = await channel.send(null);
@@ -1250,8 +1200,7 @@ class DebugControl {
 class UiConnectionControl {
   Future<void> connectToWatch(NumberWrapper arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
-    const BasicMessageChannel<dynamic> channel =
-    BasicMessageChannel<dynamic>(
+    const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.UiConnectionControl.connectToWatch',
         StandardMessageCodec());
 

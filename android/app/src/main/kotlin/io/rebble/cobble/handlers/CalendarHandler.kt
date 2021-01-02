@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -32,7 +31,7 @@ class CalendarHandler @Inject constructor(
         private val coroutineScope: CoroutineScope,
         private val calendarFlutterBridge: CalendarFlutterBridge,
         private val flutterPreferences: FlutterPreferences
-) : PebbleMessageHandler {
+) : CobbleHandler {
     private var initialSyncJob: Job? = null
     private var calendarHandlerStarted = false
 
