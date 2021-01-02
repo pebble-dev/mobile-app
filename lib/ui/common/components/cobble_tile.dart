@@ -45,6 +45,8 @@ class CobbleTile extends StatelessWidget {
         ),
         super(key: key);
 
+  /// Simple tile that displays [title] and optional [body], usually used as
+  /// title of ListView
   factory CobbleTile.title({
     Key key,
     @required String title,
@@ -57,6 +59,9 @@ class CobbleTile extends StatelessWidget {
         body: body,
       );
 
+  /// Specialised to provider bigger tap area, that navigates user to another
+  /// screen. It includes [leading] and [trailing] icons and can be colored
+  /// with [intent].
   factory CobbleTile.navigation({
     Key key,
     IconData leading,
@@ -80,6 +85,8 @@ class CobbleTile extends StatelessWidget {
         intent: intent,
       );
 
+  /// Specialised to provider bigger tap area, with [leading] and [trailing]
+  /// icons. Can be colored with [intent].
   factory CobbleTile.action({
     Key key,
     IconData leading,
@@ -105,6 +112,8 @@ class CobbleTile extends StatelessWidget {
         intent: intent,
       );
 
+  /// Specialised to show simple interactive [trailing] widget, usually used to
+  /// toggle some setting
   factory CobbleTile.setting({
     Key key,
     IconData leading,
@@ -123,6 +132,8 @@ class CobbleTile extends StatelessWidget {
         intent: intent,
       );
 
+  /// [CobbleTile.info] doesn't include padding as it's not meant to be used
+  /// in ListView but in [CobbleCard]
   factory CobbleTile.info({
     Key key,
     IconData leading,
