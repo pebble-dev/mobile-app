@@ -1,7 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
+import 'package:cobble/ui/router/cobble_navigator.dart';
+import 'package:cobble/ui/router/cobble_scaffold.dart';
+import 'package:cobble/ui/router/cobble_screen.dart';
+import 'package:cobble/ui/setup/boot/rebble_setup.dart';
+import 'package:flutter/material.dart';
 
-class MoreSetup extends StatefulWidget {
+class MoreSetup extends StatefulWidget implements CobbleScreen {
   @override
   State<StatefulWidget> createState() => _MoreSetupState();
 }
@@ -9,16 +13,10 @@ class MoreSetup extends StatefulWidget {
 class _MoreSetupState extends State<MoreSetup> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("More setup"),
-        leading: IconButton(
-          icon: Icon(RebbleIconsStroke.caret_left),
-          onPressed: () => Navigator.maybePop(context),
-        ),
-      ),
+    return CobbleScaffold(
+      title: "More setup",
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Navigator.pushReplacementNamed(context, '/setup'),
+        onPressed: () => context.pushReplacement(RebbleSetup()),
         label: Row(
           children: <Widget>[
             Text("LET'S GET STARTED"),
@@ -28,7 +26,7 @@ class _MoreSetupState extends State<MoreSetup> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: SingleChildScrollView(
+      child: SingleChildScrollView(
         child: Column(
           children: <Widget>[Text("Setup language / health / privacy")],
         ),

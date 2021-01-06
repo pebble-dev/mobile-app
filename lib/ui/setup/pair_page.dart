@@ -6,10 +6,22 @@ import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
+import 'package:cobble/ui/home/home_page.dart';
+import 'package:cobble/ui/router/cobble_navigator.dart';
+import 'package:cobble/ui/router/cobble_scaffold.dart';
+import 'package:cobble/ui/router/cobble_screen.dart';
+import 'package:cobble/ui/setup/more_setup.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class PairPage extends StatefulWidget {
+class PairPage extends StatefulWidget implements CobbleScreen {
+  final bool showSkipButton;
+
+  const PairPage({
+    Key key,
+    this.showSkipButton = false,
+  }) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => new _PairPageState();
 }
@@ -101,9 +113,9 @@ class _PairPageState extends State<PairPage>
               })); // Register + set as default if no default set
       SharedPreferences.getInstance().then((value) {
         if (!value.containsKey("firstRun")) {
-          Navigator.pushReplacementNamed(context, '/moresetup');
+          context.pushReplacement(MoreSetup());
         } else {
-          Navigator.pushReplacementNamed(context, '/home');
+          context.pushReplacement(HomePage());
         }
       });
     });
@@ -111,12 +123,9 @@ class _PairPageState extends State<PairPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("Pair a watch"),
-          leading: BackButton(),
-        ),
-        body: ListView(children: <Widget>[
+    return CobbleScaffold(
+        title: "Pair a watch",
+        child: ListView(children: <Widget>[
           Column(
               children: _pebbles
                   .map((e) => InkWell(
@@ -191,28 +200,26 @@ class _PairPageState extends State<PairPage>
                           FlatButton(
                             child: Text("SEARCH AGAIN WITH BLE"),
                             padding: EdgeInsets.symmetric(horizontal: 32.0),
-                            textColor: Theme
-                                .of(context)
-                                .accentColor,
+                            textColor: Theme.of(context).accentColor,
                             onPressed: _refreshDevicesBle,
                           ),
                           FlatButton(
                             child: Text("SEARCH AGAIN WITH BT CLASSIC"),
                             padding: EdgeInsets.symmetric(horizontal: 32.0),
-                            textColor: Theme
-                                .of(context)
-                                .accentColor,
+                            textColor: Theme.of(context).accentColor,
                             onPressed: _refreshDevicesClassic,
                           )
                         ],
                       ),
                     ),
-                    //TODO: Hide Skip when we're on the home screen and the tabs are visible
-                    FlatButton(
-                      child: Text("SKIP"),
-                      padding: EdgeInsets.symmetric(horizontal: 32.0),
-                      onPressed: () => Navigator.pushNamed(context, '/home'),
-                    )
+                    if (widget.showSkipButton)
+                      FlatButton(
+                        child: Text("SKIP"),
+                        padding: EdgeInsets.symmetric(horizontal: 32.0),
+                        onPressed: () => context.pushAndRemoveAllBelow(
+                          HomePage(),
+                        ),
+                      )
                   ]))
         ]));
   }

@@ -1,14 +1,16 @@
+import 'package:cobble/ui/home/home_page.dart';
+import 'package:cobble/ui/router/cobble_navigator.dart';
+import 'package:cobble/ui/router/cobble_scaffold.dart';
+import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class RebbleSetupFail extends StatelessWidget {
+class RebbleSetupFail extends StatelessWidget implements CobbleScreen {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Activate Rebble services"),
-      ),
-      body: Column(
+    return CobbleScaffold(
+      title: "Activate Rebble services",
+      child: Column(
         children: <Widget>[
           Text(
             "Oops!",
@@ -26,8 +28,7 @@ class RebbleSetupFail extends StatelessWidget {
                       value.setBool("bootSetup", false)
                     })
                 .then(
-                  (value) => Navigator.pushNamedAndRemoveUntil(
-                      context, '/home', (route) => false),
+                  (value) => context.pushAndRemoveAllBelow(HomePage()),
                 );
           },
           label: Text("OKAY")),
