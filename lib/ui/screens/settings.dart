@@ -3,6 +3,7 @@ import 'package:cobble/ui/common/components/cobble_tile.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
+import 'package:cobble/ui/screens/health.dart';
 import 'package:cobble/ui/screens/placeholder_screen.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +53,7 @@ class Settings extends StatelessWidget implements CobbleScreen {
           CobbleTile.navigation(
             leading: RebbleIcons.health_heart,
             title: 'Health',
-            navigateTo: PlaceholderScreen(),
+            navigateTo: Health(),
           ),
           CobbleTile.withIconColor(
             color: context.scheme.danger,
