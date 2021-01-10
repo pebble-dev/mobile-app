@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:cobble/ui/common/components/cobble_accordion.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
@@ -16,7 +19,7 @@ class CobbleTile extends StatelessWidget {
   final CobbleScreen navigateTo;
   final Color intent;
 
-  /// Prefer using [CobbleTile.navigation] or [CobbleTile.setting] constructors.
+  /// Prefer using named constructors instead of this one.
   @protected
   const CobbleTile._({
     Key key,
@@ -59,7 +62,7 @@ class CobbleTile extends StatelessWidget {
         body: body,
       );
 
-  /// Specialised to provider bigger tap area, that navigates user to another
+  /// Specialised to provide bigger tap area, that navigates user to another
   /// screen. It includes [leading] and [trailing] icons and can be colored
   /// with [intent].
   factory CobbleTile.navigation({
@@ -85,7 +88,7 @@ class CobbleTile extends StatelessWidget {
         intent: intent,
       );
 
-  /// Specialised to provider bigger tap area, with [leading] and [trailing]
+  /// Specialised to provide bigger tap area, with [leading] and [trailing]
   /// icons. Can be colored with [intent].
   factory CobbleTile.action({
     Key key,
@@ -149,6 +152,32 @@ class CobbleTile extends StatelessWidget {
         grayscale: true,
       );
 
+  static CobbleAccordion accordion({
+    Key key,
+    IconData leading,
+    @required String title,
+    @required List<CobbleTile> children,
+  }) =>
+      CobbleAccordion(
+        headerBuilder: (onTap, heightFactor) => CobbleTile._(
+          padding: EdgeInsets.all(16),
+          title: title,
+          onTap: onTap,
+          leading: leading,
+          trailing: Transform.rotate(
+            angle: heightFactor * pi,
+            child: Icon(
+              RebbleIconsStroke.caret_down,
+              size: 25,
+            ),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: children,
+        ),
+      );
+
   @override
   Widget build(BuildContext context) {
     final minHeight = 64.0;
@@ -193,7 +222,7 @@ class CobbleTile extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ]
+                  ],
                 ],
               ),
             ),
