@@ -3,12 +3,18 @@ package io.rebble.cobble.handlers
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.hardware.Sensor
+import android.hardware.SensorManager
+import android.location.LocationManager
+import androidx.core.content.ContextCompat.getSystemService
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.ConnectionState
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.di.PerService
 import io.rebble.cobble.util.coroutines.asFlow
 import io.rebble.libpebblecommon.PacketPriority
+import io.rebble.libpebblecommon.packets.PhoneAppVersion
+import io.rebble.libpebblecommon.packets.ProtocolCapsFlag
 import io.rebble.libpebblecommon.packets.TimeMessage
 import io.rebble.libpebblecommon.services.SystemService
 import kotlinx.coroutines.CoroutineScope
@@ -30,6 +36,7 @@ class SystemHandler @Inject constructor(
         private val watchMetadataStore: WatchMetadataStore
 ) : CobbleHandler {
     init {
+        systemService.appVersionRequestHandler = this::handleAppVersionRequest
         listenForTimeChange()
 
         coroutineScope.launch {
@@ -85,5 +92,37 @@ class SystemHandler @Inject constructor(
         )
 
         systemService.send(updateTimePacket, PacketPriority.LOW)
+    }
+
+    private suspend fun handleAppVersionRequest(): PhoneAppVersion.AppVersionResponse {
+        val sensorManager = getSystemService(context, SensorManager::class.java)
+        val platflormFlags = mutableListOf(PhoneAppVersion.PlatformFlag.BTLE)
+        if (!sensorManager?.getSensorList(Sensor.TYPE_ACCELEROMETER).isNullOrEmpty()) platflormFlags.add(PhoneAppVersion.PlatformFlag.Accelerometer)
+        if (!sensorManager?.getSensorList(Sensor.TYPE_GYROSCOPE).isNullOrEmpty()) platflormFlags.add(PhoneAppVersion.PlatformFlag.Gyroscope)
+        if (!sensorManager?.getSensorList(Sensor.TYPE_MAGNETIC_FIELD).isNullOrEmpty()) platflormFlags.add(PhoneAppVersion.PlatformFlag.Compass)
+
+        val locationManager = getSystemService(context, LocationManager::class.java)
+        if (locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) == true || locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) == true) platflormFlags.add(PhoneAppVersion.PlatformFlag.GPS)
+        //TODO: check phone and sms capabilities
+
+        return PhoneAppVersion.AppVersionResponse(
+                UInt.MAX_VALUE,
+                0u,
+                PhoneAppVersion.PlatformFlag.makeFlags(
+                        PhoneAppVersion.OSType.Android,
+                        platflormFlags
+                ),
+                2u,
+                4u,
+                4u,
+                2u,
+                ProtocolCapsFlag.makeFlags(
+                        listOf(
+                                ProtocolCapsFlag.Supports8kAppMessage,
+                                ProtocolCapsFlag.SupportsExtendedMusicProtocol
+                        )
+                )
+
+        )
     }
 }
