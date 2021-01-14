@@ -1,29 +1,29 @@
 enum TimelinePinLayout {
-  GENERIC_PIN,
-  CALENDAR_PIN,
-  GENERIC_REMINDER,
-  GENERIC_NOTIFICATION,
-  COMM_NOTIFICATION,
-  WEATHER_PIN,
-  SPORTS_PIN
+  genericPin,
+  calendarPin,
+  genericReminder,
+  genericNotification,
+  commNotification,
+  weatherPin,
+  sportsPin
 }
 
 extension ProtocolExtension on TimelinePinLayout {
   int toProtocolNumber() {
     switch (this) {
-      case TimelinePinLayout.GENERIC_PIN:
+      case TimelinePinLayout.genericPin:
         return 1;
-      case TimelinePinLayout.CALENDAR_PIN:
+      case TimelinePinLayout.calendarPin:
         return 2;
-      case TimelinePinLayout.GENERIC_REMINDER:
+      case TimelinePinLayout.genericReminder:
         return 3;
-      case TimelinePinLayout.GENERIC_NOTIFICATION:
+      case TimelinePinLayout.genericNotification:
         return 4;
-      case TimelinePinLayout.COMM_NOTIFICATION:
+      case TimelinePinLayout.commNotification:
         return 5;
-      case TimelinePinLayout.WEATHER_PIN:
+      case TimelinePinLayout.weatherPin:
         return 6;
-      case TimelinePinLayout.SPORTS_PIN:
+      case TimelinePinLayout.sportsPin:
         return 7;
       default:
         throw Exception("Unknown layout $this");

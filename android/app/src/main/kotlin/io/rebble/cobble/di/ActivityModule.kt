@@ -6,6 +6,7 @@ import dagger.Provides
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.BinaryMessenger
 import io.rebble.cobble.MainActivity
+import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import kotlinx.coroutines.CoroutineScope
 
 @Module
@@ -30,4 +31,11 @@ class ActivityModule {
     fun provideBinaryMessenger(flutterEngine: FlutterEngine): BinaryMessenger {
         return flutterEngine.dartExecutor.binaryMessenger
     }
+
+    @Provides
+    @PerActivity
+    fun provideBridgeLifecycleController(
+            binaryMessenger: BinaryMessenger,
+            coroutineScope: CoroutineScope
+    ) = BridgeLifecycleController(binaryMessenger, coroutineScope)
 }

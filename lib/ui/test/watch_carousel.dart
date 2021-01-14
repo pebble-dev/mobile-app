@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/setup/first_run_page.dart';
+import 'package:flutter/material.dart';
 
 class WatchCarousel extends StatelessWidget {
   @override

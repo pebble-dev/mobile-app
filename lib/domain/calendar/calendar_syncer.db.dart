@@ -4,11 +4,12 @@ import 'package:cobble/domain/date/date_providers.dart';
 import 'package:cobble/domain/db/dao/timeline_pin_dao.dart';
 import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/db/models/timeline_pin.dart';
-import 'package:cobble/domain/timeline/attribute_serializer.dart';
+import 'package:cobble/domain/timeline/timeline_serializer.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:uuid_type/uuid_type.dart';
 
+import '../logging.dart';
 import 'calendar_list.dart';
 import 'calendar_pin_convert.dart';
 
@@ -24,26 +25,23 @@ class CalendarSyncer {
 
   /// Sync all calendar changes from device calendar to DB.
   ///
-  /// This is the most expensive of all sync operations since it needs
-  /// to do a N² operation to compare every calendar event to itself.
-  /// Other operations (such as notifications of single event change)
-  /// should be preferred instead.
-  ///
   /// Returns true if there were any changes or false if here were none
   Future<bool> syncDeviceCalendarsToDb() async {
-    final allCalendars = _calendarList.getAllCalendars();
+    final allCalendarsResult = await _calendarList.load();
+    if (!(allCalendarsResult is AsyncData)) {
+      return false;
+    }
+
+    final allCalendars = allCalendarsResult.data.value;
 
     final now = _dateTimeProvider();
-    final nowPlusSyncLimitDays = now.add(Duration(days: _SYNC_RANGE_DAYS + 1));
-    final endOfLastDay = nowPlusSyncLimitDays.subtract(Duration(
-        hours: nowPlusSyncLimitDays.hour,
-        minutes: nowPlusSyncLimitDays.minute,
-        seconds: nowPlusSyncLimitDays.second,
-        milliseconds: nowPlusSyncLimitDays.millisecond,
-        microseconds: nowPlusSyncLimitDays.microsecond));
+    // 1 day is added since we need to get the start of the next day
+    final syncEndDate = _getStartOfDay(
+      now.add(Duration(days: _syncRangeDays + 1)),
+    );
 
     final retrieveEventParams =
-        RetrieveEventsParams(startDate: now, endDate: endOfLastDay);
+        RetrieveEventsParams(startDate: now, endDate: syncEndDate);
 
     final List<_EventInCalendar> allCalendarEvents = [];
     for (final calendar in allCalendars) {
@@ -55,7 +53,7 @@ class CalendarSyncer {
           calendar.id, retrieveEventParams);
 
       if (!result.isSuccess) {
-        //TODO log calendar error
+        Log.e("Retrieve calendars: ${result.errors}");
         return false;
       }
 
@@ -68,12 +66,11 @@ class CalendarSyncer {
 
     final newPins = allCalendarEvents.map((e) => e.event.generateBasicEventData(
           serializeAttributesToJson(e.event.getAttributes(e.calendar)),
-          null,
+          serializeActionsToJson(e.event.getActions()),
         ));
 
     final existingPins =
-        (await _timelinePinDao.getPinsFromParent(CALENDAR_WATCHAPP_ID))
-            .toList();
+        await _timelinePinDao.getPinsFromParent(calendarWatchappId);
 
     for (TimelinePin newPin in newPins) {
       final existingPin = existingPins.firstWhere(
@@ -94,12 +91,21 @@ class CalendarSyncer {
 
       newPin = newPin.copyWith(itemId: newItemId);
 
+      if (existingPin != null &&
+          (existingPin.nextSyncAction == NextSyncAction.Ignore ||
+              existingPin.nextSyncAction == NextSyncAction.DeleteThenIgnore)) {
+        newPin = newPin.copyWith(nextSyncAction: existingPin.nextSyncAction);
+      }
+
       _timelinePinDao.insertOrUpdateTimelinePin(newPin);
       anyChanges = true;
     }
 
     for (final pin in existingPins) {
-      if (!newPins.any((newPin) => newPin.backingId == pin.backingId)) {
+      if (pin.timestamp.add(Duration(minutes: pin.duration)).isBefore(now)) {
+        await _timelinePinDao.delete(pin.itemId);
+        anyChanges = true;
+      } else if (!newPins.any((newPin) => newPin.backingId == pin.backingId)) {
         await _timelinePinDao.setSyncAction(pin.itemId, NextSyncAction.Delete);
         anyChanges = true;
       }
@@ -108,12 +114,20 @@ class CalendarSyncer {
     return anyChanges;
   }
 
-  CalendarSyncer(
-    this._calendarList,
-    this._deviceCalendarPlugin,
-    this._dateTimeProvider,
-    this._timelinePinDao,
-  );
+  DateTime _getStartOfDay(DateTime date) {
+    return date.subtract(Duration(
+      hours: date.hour,
+      minutes: date.minute,
+      seconds: date.second,
+      milliseconds: date.millisecond,
+      microseconds: date.microsecond,
+    ));
+  }
+
+  CalendarSyncer(this._calendarList,
+      this._deviceCalendarPlugin,
+      this._dateTimeProvider,
+      this._timelinePinDao,);
 }
 
 class _EventInCalendar {
@@ -134,4 +148,4 @@ final calendarSyncerProvider = Provider.autoDispose<CalendarSyncer>((ref) {
 });
 
 /// Only sync events between now and following days in the future
-const _SYNC_RANGE_DAYS = 3;
+const _syncRangeDays = 6;

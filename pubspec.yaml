@@ -36,11 +36,20 @@ dependencies:
   state_notifier: ^0.6.0
   hooks_riverpod: ^0.12.0
   flutter_hooks: 0.14.1
-  device_calendar: ^3.1.0
+  # We are using custom build of device_calendar with enhancements needed for Cobble app
+  # pending PRs:
+  # - https://github.com/builttoroam/device_calendar/pull/275
+  # - https://github.com/builttoroam/device_calendar/pull/256
+  # - https://github.com/builttoroam/device_calendar/pull/276
+  device_calendar:
+    git:
+      url: https://github.com/matejdro/device_calendar.git
+      ref: 8ec96c83d482cada5a910cd6b98505eb35027400
   uuid_type: ^1.0.0
   path: ^1.7.0
   json_annotation: ^3.0.0
   copy_with_extension: ^1.4.0
+  flutter_local_notifications: ^3.0.2
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -51,7 +60,13 @@ dev_dependencies:
   flutter_launcher_icons: "^0.7.5"
   flutter_test:
     sdk: flutter
-  pigeon: "0.1.12"
+  # Fixed build of pigeon is needed for async native -> flutter calls.
+  # PR pending: https://github.com/flutter/packages/pull/254
+  pigeon:
+    git:
+      url: https://github.com/matejdro/flutter-packages.git
+      ref: 5d51f8add9f2162487465c99a64e5cd6d4b563f6
+      path: packages/pigeon
   build_runner: ^1.0.0
   json_serializable: ^3.2.0
   copy_with_extension_gen: ^1.4.0

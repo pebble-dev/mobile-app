@@ -1,11 +1,15 @@
 import 'package:cobble/domain/calendar/calendar_list.dart';
+import 'package:cobble/domain/calendar/device_calendar_plugin_provider.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
-import 'package:cobble/domain/timeline/blob_status.dart';
-import 'package:cobble/domain/timeline/timeline_sync_controller.dart';
-import 'package:cobble/domain/timeline/watch_timeline_syncer.dart';
-import 'package:cobble/infrastructure/pigeons/pigeons.dart';
+import 'package:cobble/domain/permissions.dart';
+import 'package:cobble/infrastructure/datasources/paired_storage.dart';
+import 'package:cobble/infrastructure/datasources/preferences.dart';
+import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
+import 'package:cobble/ui/devoptions/dev_options_page.dart';
+import 'package:cobble/ui/router/cobble_navigator.dart';
+import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/all.dart';
@@ -22,11 +26,36 @@ class TestTab extends HookWidget {
     final connectionState = useProvider(connectionStateProvider.state);
     final calendars = useProvider(calendarListProvider.state);
     final calendarSelector = useProvider(calendarListProvider);
-    final syncController = useProvider(timelineSyncControllerProvider);
-    final watchTimelineSyncer = useProvider(watchTimelineSyncerProvider);
+    final calendarControl = useProvider(calendarControlProvider);
 
-    final currentlySyncing = useState(false);
-    final currentlyDeleting = useState(false);
+    final permissionControl = useProvider(permissionControlProvider);
+    final permissionCheck = useProvider(permissionCheckProvider);
+
+    final preferences = useProvider(preferencesProvider);
+    final calendarSyncEnabled = useProvider(calendarSyncEnabledProvider);
+
+    useEffect(() {
+      Future.microtask(() async {
+        if (!(await permissionCheck.hasCalendarPermission()).value) {
+          await permissionControl.requestCalendarPermission();
+        }
+        if (!(await permissionCheck.hasLocationPermission()).value) {
+          await permissionControl.requestLocationPermission();
+        }
+
+        final pairedDevice = PairedStorage.getDefault();
+        if (pairedDevice != null) {
+          if (!(await permissionCheck.hasNotificationAccess()).value) {
+            permissionControl.requestNotificationAccess();
+          }
+
+          if (!(await permissionCheck.hasBatteryExclusionEnabled()).value) {
+            permissionControl.requestBatteryExclusion();
+          }
+        }
+      });
+      return null;
+    }, ["one-time"]);
 
     String statusText;
     if (connectionState.isConnecting == true) {
@@ -47,11 +76,10 @@ class TestTab extends HookWidget {
       statusText = "Disconnected";
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Testing"),
-      ),
-      body: SingleChildScrollView(
+    return CobbleScaffold(
+      title: "Testing",
+      subtitle: 'Testing subtitle',
+      child: SingleChildScrollView(
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
@@ -107,13 +135,13 @@ class TestTab extends HookWidget {
                       ),
                       SizedBox(height: 8.0),
                       FlatButton.icon(
-                          label: Text("Open developer options"),
-                          icon: Icon(
-                              RebbleIconsStroke.developer_connection_console,
-                              size: 25.0),
-                          textColor: Theme.of(context).accentColor,
-                          onPressed: () =>
-                              Navigator.pushNamed(context, '/devoptions')),
+                        label: Text("Open developer options"),
+                        icon: Icon(
+                            RebbleIconsStroke.developer_connection_console,
+                            size: 25.0),
+                        textColor: Theme.of(context).accentColor,
+                        onPressed: () => context.push(DevOptionsPage()),
+                      ),
                       FlatButton.icon(
                           label: Text("Here's another button"),
                           icon: Icon(RebbleIconsStroke.settings, size: 25.0),
@@ -123,50 +151,36 @@ class TestTab extends HookWidget {
                   ),
                 ),
               ),
+              Row(children: [
+                Switch(
+                  value: calendarSyncEnabled.data?.value ?? false,
+                  onChanged: (value) async {
+                    await preferences.data?.value
+                        ?.setCalendarSyncEnabled(value);
+
+                    if (!value) {
+                      calendarControl.deleteCalendarPinsFromWatch();
+                    }
+                  },
+                ),
+                Text("Show calendar on the watch")
+              ]),
               Text("Calendars: "),
-              ...calendars.map((e) {
-                return Row(
-                  children: [
-                    Checkbox(
-                      value: e.enabled,
-                      onChanged: (enabled) {
-                        calendarSelector.setCalendarEnabled(e.id, enabled);
-                      },
-                    ),
-                    Text(e.name),
-                  ],
-                );
-              }).toList(),
-              if (currentlySyncing.value)
-                CircularProgressIndicator()
-              else
-                RaisedButton(
-                  onPressed: () async {
-                    currentlySyncing.value = true;
-                    final errorMsg = await syncController.syncCalendarToWatch();
-                    currentlySyncing.value = false;
-
-                    if (errorMsg != null) {
-                      showSyncError(context, errorMsg);
-                    }
-                  },
-                  child: Text("Sync calendar to watch"),
-                ),
-              if (currentlyDeleting.value)
-                CircularProgressIndicator()
-              else
-                RaisedButton(
-                  onPressed: () async {
-                    currentlyDeleting.value = true;
-                    final status = await watchTimelineSyncer.removeAllPins();
-                    currentlyDeleting.value = false;
-
-                    if (status != statusSuccess) {
-                      showSyncError(context, "Delete error $status");
-                    }
-                  },
-                  child: Text("Delete all pins from watch"),
-                ),
+              ...calendars.data?.value?.map((e) {
+                    return Row(
+                      children: [
+                        Checkbox(
+                          value: e.enabled,
+                          onChanged: (enabled) {
+                            calendarSelector.setCalendarEnabled(e.id, enabled);
+                            calendarControl.requestCalendarSync();
+                          },
+                        ),
+                        Text(e.name),
+                      ],
+                    );
+                  })?.toList() ??
+                  [],
             ],
           ),
         ),

@@ -1,5 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:cobble/main.dart';
+import 'package:cobble/ui/home/home_page.dart';
+import 'package:cobble/ui/router/cobble_navigator.dart';
+import 'package:cobble/ui/router/cobble_scaffold.dart';
+import 'package:cobble/ui/setup/first_run_page.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -10,14 +14,13 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
   void _openHome() {
-    SharedPreferences.getInstance().then((prefs) => {
-          if (!prefs.containsKey("firstRun"))
-            Navigator.pushReplacementNamed(context, '/firstrun')
-          else
-            {
-              Navigator.pushReplacementNamed(context, '/home')
-            }
-        });
+    SharedPreferences.getInstance().then((prefs) {
+      if (!prefs.containsKey("firstRun")) {
+        context.pushReplacement(FirstRunPage());
+      } else {
+        context.pushReplacement(HomePage());
+      }
+    });
   }
 
   void _askToBoot() {
@@ -60,9 +63,9 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        // This page shouldnt be visible for more than a split second, but if
+    return CobbleScaffold(
+      child: Center(
+        // This page shouldn't be visible for more than a split second, but if
         // it ever is, let the user know it's not broken
         child: CircularProgressIndicator(),
       ),

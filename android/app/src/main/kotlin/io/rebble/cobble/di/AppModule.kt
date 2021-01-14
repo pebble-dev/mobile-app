@@ -2,6 +2,7 @@ package io.rebble.cobble.di
 
 import android.app.Application
 import android.content.Context
+import android.content.pm.PackageManager
 import com.squareup.moshi.Moshi
 import dagger.Binds
 import dagger.Module
@@ -10,7 +11,9 @@ import dagger.Reusable
 import io.rebble.cobble.errors.GlobalExceptionHandler
 import kotlinx.coroutines.CoroutineExceptionHandler
 
-@Module
+@Module(
+        subcomponents = [BackgroundFlutterSubcomponent::class]
+)
 abstract class AppModule {
     @Binds
     abstract fun bindContext(application: Application): Context
@@ -26,6 +29,11 @@ abstract class AppModule {
         @Reusable
         fun provideMoshi(): Moshi {
             return Moshi.Builder().build()
+        }
+
+        @Provides
+        fun providePackageManager(context: Context): PackageManager {
+            return context.packageManager
         }
     }
 }

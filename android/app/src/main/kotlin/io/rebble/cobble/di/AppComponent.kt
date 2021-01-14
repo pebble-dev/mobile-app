@@ -6,6 +6,9 @@ import dagger.Component
 import io.rebble.cobble.NotificationChannelManager
 import io.rebble.cobble.bluetooth.BlueCommon
 import io.rebble.cobble.bluetooth.ConnectionLooper
+import io.rebble.cobble.bridges.background.BackgroundTimelineFlutterBridge
+import io.rebble.cobble.bridges.background.CalendarFlutterBridge
+import io.rebble.cobble.bridges.background.TimelineSyncFlutterBridge
 import io.rebble.cobble.datasources.PairedStorage
 import io.rebble.cobble.errors.GlobalExceptionHandler
 import io.rebble.cobble.service.ServiceLifecycleControl
@@ -26,6 +29,8 @@ interface AppComponent {
     fun createExceptionHandler(): GlobalExceptionHandler
     fun createConnectionLooper(): ConnectionLooper
     fun createPairedStorage(): PairedStorage
+    fun createCalendarFlutterBridge(): CalendarFlutterBridge
+    fun createTimelineSyncFlutterBridge(): BackgroundTimelineFlutterBridge
     fun initServiceLifecycleControl(): ServiceLifecycleControl
     fun initNotificationChannels(): NotificationChannelManager
 

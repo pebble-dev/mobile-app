@@ -1,143 +1,143 @@
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 
 enum PebbleHardwarePlatform {
-  UNKNOWN,
-  PEBBLE_ONE_EV1,
-  PEBBLE_ONE_EV2,
-  PEBBLE_ONE_EV2_3,
-  PEBBLE_ONE_EV2_4,
-  PEBBLE_ONE_POINT_FIVE,
-  PEBBLE_TWO_POINT_ZERO,
-  PEBBLE_SNOWY_EVT2,
-  PEBBLE_SNOWY_DVT,
-  PEBBLE_BOBBY_SMILES,
-  PEBBLE_ONE_BIGBOARD_2,
-  PEBBLE_ONE_BIGBOARD,
-  PEBBLE_SNOWY_BIGBOARD,
-  PEBBLE_SNOWY_BIGBOARD_2,
-  PEBBLE_SPALDING_EVT,
-  PEBBLE_SPALDING_PVT,
-  PEBBLE_SPALDING_BIGBOARD,
-  PEBBLE_SILK_EVT,
-  PEBBLE_SILK,
-  PEBBLE_SILK_BIGBOARD,
-  PEBBLE_SILK_BIGBOARD_2_PLUS,
-  PEBBLE_ROBERT_EVT,
-  PEBBLE_ROBERT_BIGBOARD,
-  PEBBLE_ROBERT_BIGBOARD_2
+  unknown,
+  pebbleOneEv1,
+  pebbleOneEv2,
+  pebbleOneEv2_3,
+  pebbleOneEv2_4,
+  pebbleOnePointFive,
+  pebbleOnePointZero,
+  pebbleSnowyEvt2,
+  pebbleSnowyDvt,
+  pebbleBobbySmiles,
+  pebbleOneBigboard2,
+  pebbleOneBigboard,
+  pebbleSnowyBigboard,
+  pebbleSnowyBigboard2,
+  pebbleSpaldingEvt,
+  pebbleSpaldingPvt,
+  pebbleSpaldingBigboard,
+  pebbleSilkEvt,
+  pebbleSilk,
+  pebbleSilkBigboard,
+  pebbleSilkBigboard2Plus,
+  pebbleRobertEvt,
+  pebbleRobertBigboard,
+  pebbleRobertBigboard2
 }
 
 PebbleHardwarePlatform pebbleHardwarePlatformFromNumber(int number) {
   switch (number) {
     case 1:
-      return PebbleHardwarePlatform.PEBBLE_ONE_EV1;
+      return PebbleHardwarePlatform.pebbleOneEv1;
     case 2:
-      return PebbleHardwarePlatform.PEBBLE_ONE_EV2;
+      return PebbleHardwarePlatform.pebbleOneEv2;
     case 3:
-      return PebbleHardwarePlatform.PEBBLE_ONE_EV2_3;
+      return PebbleHardwarePlatform.pebbleOneEv2_3;
     case 4:
-      return PebbleHardwarePlatform.PEBBLE_ONE_EV2_4;
+      return PebbleHardwarePlatform.pebbleOneEv2_4;
     case 5:
-      return PebbleHardwarePlatform.PEBBLE_ONE_POINT_FIVE;
+      return PebbleHardwarePlatform.pebbleOnePointFive;
     case 6:
-      return PebbleHardwarePlatform.PEBBLE_TWO_POINT_ZERO;
+      return PebbleHardwarePlatform.pebbleOnePointZero;
     case 7:
-      return PebbleHardwarePlatform.PEBBLE_SNOWY_EVT2;
+      return PebbleHardwarePlatform.pebbleSnowyEvt2;
     case 8:
-      return PebbleHardwarePlatform.PEBBLE_SNOWY_DVT;
+      return PebbleHardwarePlatform.pebbleSnowyDvt;
     case 10:
-      return PebbleHardwarePlatform.PEBBLE_BOBBY_SMILES;
+      return PebbleHardwarePlatform.pebbleBobbySmiles;
     case 254:
-      return PebbleHardwarePlatform.PEBBLE_ONE_BIGBOARD_2;
+      return PebbleHardwarePlatform.pebbleOneBigboard2;
     case 255:
-      return PebbleHardwarePlatform.PEBBLE_ONE_BIGBOARD;
+      return PebbleHardwarePlatform.pebbleOneBigboard;
     case 253:
-      return PebbleHardwarePlatform.PEBBLE_SNOWY_BIGBOARD;
+      return PebbleHardwarePlatform.pebbleSnowyBigboard;
     case 252:
-      return PebbleHardwarePlatform.PEBBLE_SNOWY_BIGBOARD_2;
+      return PebbleHardwarePlatform.pebbleSnowyBigboard2;
     case 9:
-      return PebbleHardwarePlatform.PEBBLE_SPALDING_EVT;
+      return PebbleHardwarePlatform.pebbleSpaldingEvt;
     case 11:
-      return PebbleHardwarePlatform.PEBBLE_SPALDING_PVT;
+      return PebbleHardwarePlatform.pebbleSpaldingPvt;
     case 251:
-      return PebbleHardwarePlatform.PEBBLE_SPALDING_BIGBOARD;
+      return PebbleHardwarePlatform.pebbleSpaldingBigboard;
     case 12:
-      return PebbleHardwarePlatform.PEBBLE_SILK_EVT;
+      return PebbleHardwarePlatform.pebbleSilkEvt;
     case 14:
-      return PebbleHardwarePlatform.PEBBLE_SILK;
+      return PebbleHardwarePlatform.pebbleSilk;
     case 250:
-      return PebbleHardwarePlatform.PEBBLE_SILK_BIGBOARD;
+      return PebbleHardwarePlatform.pebbleSilkBigboard;
     case 248:
-      return PebbleHardwarePlatform.PEBBLE_SILK_BIGBOARD_2_PLUS;
+      return PebbleHardwarePlatform.pebbleSilkBigboard2Plus;
     case 13:
-      return PebbleHardwarePlatform.PEBBLE_ROBERT_EVT;
+      return PebbleHardwarePlatform.pebbleRobertEvt;
     case 249:
-      return PebbleHardwarePlatform.PEBBLE_ROBERT_BIGBOARD;
+      return PebbleHardwarePlatform.pebbleRobertBigboard;
     case 247:
-      return PebbleHardwarePlatform.PEBBLE_ROBERT_BIGBOARD_2;
+      return PebbleHardwarePlatform.pebbleRobertBigboard2;
     default:
-      return PebbleHardwarePlatform.UNKNOWN;
+      return PebbleHardwarePlatform.unknown;
   }
 }
 
 extension PebbleHardwareData on PebbleHardwarePlatform {
   WatchType getWatchType() {
     switch (this) {
-      case PebbleHardwarePlatform.UNKNOWN:
-        return WatchType.BASALT;
-      case PebbleHardwarePlatform.PEBBLE_ONE_EV1:
-        return WatchType.APLITE;
-      case PebbleHardwarePlatform.PEBBLE_ONE_EV2:
-        return WatchType.APLITE;
-      case PebbleHardwarePlatform.PEBBLE_ONE_EV2_3:
-        return WatchType.APLITE;
-      case PebbleHardwarePlatform.PEBBLE_ONE_EV2_4:
-        return WatchType.APLITE;
-      case PebbleHardwarePlatform.PEBBLE_ONE_POINT_FIVE:
-        return WatchType.APLITE;
-      case PebbleHardwarePlatform.PEBBLE_TWO_POINT_ZERO:
-        return WatchType.APLITE;
-      case PebbleHardwarePlatform.PEBBLE_SNOWY_EVT2:
-        return WatchType.BASALT;
-      case PebbleHardwarePlatform.PEBBLE_SNOWY_DVT:
-        return WatchType.BASALT;
-      case PebbleHardwarePlatform.PEBBLE_BOBBY_SMILES:
-        return WatchType.BASALT;
-      case PebbleHardwarePlatform.PEBBLE_ONE_BIGBOARD_2:
-        return WatchType.APLITE;
-      case PebbleHardwarePlatform.PEBBLE_ONE_BIGBOARD:
-        return WatchType.APLITE;
-      case PebbleHardwarePlatform.PEBBLE_SNOWY_BIGBOARD:
-        return WatchType.BASALT;
-      case PebbleHardwarePlatform.PEBBLE_SNOWY_BIGBOARD_2:
-        return WatchType.BASALT;
-      case PebbleHardwarePlatform.PEBBLE_SPALDING_EVT:
-        return WatchType.CHALK;
-      case PebbleHardwarePlatform.PEBBLE_SPALDING_PVT:
-        return WatchType.CHALK;
-      case PebbleHardwarePlatform.PEBBLE_SPALDING_BIGBOARD:
-        return WatchType.CHALK;
-      case PebbleHardwarePlatform.PEBBLE_SILK_EVT:
-        return WatchType.DIORITE;
-      case PebbleHardwarePlatform.PEBBLE_SILK:
-        return WatchType.DIORITE;
-      case PebbleHardwarePlatform.PEBBLE_SILK_BIGBOARD:
-        return WatchType.DIORITE;
-      case PebbleHardwarePlatform.PEBBLE_SILK_BIGBOARD_2_PLUS:
-        return WatchType.DIORITE;
-      case PebbleHardwarePlatform.PEBBLE_ROBERT_EVT:
-        return WatchType.EMERY;
-      case PebbleHardwarePlatform.PEBBLE_ROBERT_BIGBOARD:
-        return WatchType.EMERY;
-      case PebbleHardwarePlatform.PEBBLE_ROBERT_BIGBOARD_2:
-        return WatchType.EMERY;
+      case PebbleHardwarePlatform.unknown:
+        return WatchType.basalt;
+      case PebbleHardwarePlatform.pebbleOneEv1:
+        return WatchType.aplite;
+      case PebbleHardwarePlatform.pebbleOneEv2:
+        return WatchType.aplite;
+      case PebbleHardwarePlatform.pebbleOneEv2_3:
+        return WatchType.aplite;
+      case PebbleHardwarePlatform.pebbleOneEv2_4:
+        return WatchType.aplite;
+      case PebbleHardwarePlatform.pebbleOnePointFive:
+        return WatchType.aplite;
+      case PebbleHardwarePlatform.pebbleOnePointZero:
+        return WatchType.aplite;
+      case PebbleHardwarePlatform.pebbleSnowyEvt2:
+        return WatchType.basalt;
+      case PebbleHardwarePlatform.pebbleSnowyDvt:
+        return WatchType.basalt;
+      case PebbleHardwarePlatform.pebbleBobbySmiles:
+        return WatchType.basalt;
+      case PebbleHardwarePlatform.pebbleOneBigboard2:
+        return WatchType.aplite;
+      case PebbleHardwarePlatform.pebbleOneBigboard:
+        return WatchType.aplite;
+      case PebbleHardwarePlatform.pebbleSnowyBigboard:
+        return WatchType.basalt;
+      case PebbleHardwarePlatform.pebbleSnowyBigboard2:
+        return WatchType.basalt;
+      case PebbleHardwarePlatform.pebbleSpaldingEvt:
+        return WatchType.chalk;
+      case PebbleHardwarePlatform.pebbleSpaldingPvt:
+        return WatchType.chalk;
+      case PebbleHardwarePlatform.pebbleSpaldingBigboard:
+        return WatchType.chalk;
+      case PebbleHardwarePlatform.pebbleSilkEvt:
+        return WatchType.diorite;
+      case PebbleHardwarePlatform.pebbleSilk:
+        return WatchType.diorite;
+      case PebbleHardwarePlatform.pebbleSilkBigboard:
+        return WatchType.diorite;
+      case PebbleHardwarePlatform.pebbleSilkBigboard2Plus:
+        return WatchType.diorite;
+      case PebbleHardwarePlatform.pebbleRobertEvt:
+        return WatchType.emery;
+      case PebbleHardwarePlatform.pebbleRobertBigboard:
+        return WatchType.emery;
+      case PebbleHardwarePlatform.pebbleRobertBigboard2:
+        return WatchType.emery;
       default:
         throw Exception("Unknown hardware platform $this");
     }
   }
 }
 
-enum WatchType { APLITE, BASALT, CHALK, DIORITE, EMERY }
+enum WatchType { aplite, basalt, chalk, diorite, emery }
 
 PebbleWatchModel watchModelFromNumber(int number) {
   switch (number) {

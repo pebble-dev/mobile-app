@@ -1,314 +1,314 @@
 enum TimelineIcon {
-  NOTIFICATION_REMINDER,
-  HOCKEY_GAME,
-  PAY_BILL,
-  NOTIFICATION_LINKEDIN,
-  NOTIFICATION_GOOGLE_INBOX,
-  GENERIC_QUESTION,
-  NOTIFICATION_FLAG,
-  GENERIC_SMS,
-  WATCH_DISCONNECTED,
-  TV_SHOW,
-  BASKETBALL,
-  GENERIC_WARNING,
-  LIGHT_RAIN,
-  NOTIFICATION_FACEBOOK,
-  INCOMING_PHONE_CALL,
-  NOTIFICATION_GOOGLE_MESSENGER,
-  NOTIFICATION_TELEGRAM,
-  NOTIFICATION_FACETIME,
-  ARROW_DOWN,
-  NOTIFICATION_OUTLOOK,
-  NO_EVENTS,
-  AUDIO_CASSETTE,
-  SUNSET,
-  NOTIFICATION_TWITTER,
-  SUNRISE,
-  HEAVY_RAIN,
-  NOTIFICATION_MAILBOX,
-  AMERICAN_FOOTBALL,
-  CAR_RENTAL,
-  CRICKET_GAME,
-  NOTIFICATION_WECHAT,
-  NOTIFICATION_GENERIC,
-  NOTIFICATION_SKYPE,
-  CLOUDY_DAY,
-  DURING_PHONE_CALL_CENTERED,
-  NOTIFICATION_LINE,
-  HOTEL_RESERVATION,
-  NOTIFICATION_FACEBOOK_MESSENGER,
-  NOTIFICATION_LIGHTHOUSE,
-  TIMELINE_EMPTY_CALENDAR,
-  NOTIFICATION_IOS_PHOTOS,
-  RESULT_DELETED,
-  NOTIFICATION_GMAIL,
-  TIMELINE_MISSED_CALL,
-  SLEEP,
-  RESULT_MUTE,
-  NOTIFICATION_AMAZON,
-  THUMBS_UP,
-  SCHEDULED_FLIGHT,
-  SETTINGS,
-  PARTLY_CLOUDY,
-  STOCKS_EVENT,
-  NOTIFICATION_GOOGLE_MAPS,
-  REWARD_GOOD,
-  NOTIFICATION_YAHOO_MAIL,
-  BIRTHDAY_EVENT,
-  GENERIC_EMAIL,
-  RESULT_DISMISSED,
-  NOTIFICATION_GOOGLE_PHOTOS,
-  TIDE_IS_HIGH,
-  NOTIFICATION_VIBER,
-  LIGHT_SNOW,
-  NEWS_EVENT,
-  GENERIC_CONFIRMATION,
-  TIMELINE_SPORTS,
-  NOTIFICATION_SLACK,
-  CHECK_INTERNET_CONNECTION,
-  ACTIVITY,
-  NOTIFICATION_HIPCHAT,
-  NOTIFICATION_INSTAGRAM,
-  TIMELINE_BASEBALL,
-  REWARD_BAD,
-  REACHED_FITNESS_GOAL,
-  DAY_SEPARATOR,
-  TIMELINE_CALENDAR,
-  RAINING_AND_SNOWING,
-  RADIO_SHOW,
-  DISMISSED_PHONE_CALL,
-  ARROW_UP,
-  REWARD_AVERAGE,
-  MUSIC_EVENT,
-  NOTIFICATION_SNAPCHAT,
-  NOTIFICATION_BLACKBERRY_MESSENGER,
-  NOTIFICATION_WHATSAPP,
-  LOCATION,
-  SOCCER_GAME,
-  RESULT_FAILED,
-  RESULT_UNMUTE,
-  SCHEDULED_EVENT,
-  TIMELINE_WEATHER,
-  TIMELINE_SUN,
-  NOTIFICATION_GOOGLE_HANGOUTS,
-  DURING_PHONE_CALL,
-  NOTIFICATION_KIK,
-  RESULT_UNMUTE_ALT,
-  MOVIE_EVENT,
-  GLUCOSE_MONITOR,
-  RESULT_SENT,
-  ALARM_CLOCK,
-  HEAVY_SNOW,
-  DINNER_RESERVATION,
-  NOTIFICATION_KAKAOTALK,
+  notificationReminder,
+  hockeyGame,
+  payBill,
+  notificationLinkedIn,
+  notificationGoogleInbox,
+  genericQuestion,
+  notificationFlag,
+  genericSms,
+  watchDisconnected,
+  tvShow,
+  basketball,
+  genericWarning,
+  lightRain,
+  notificationFacebook,
+  incomingPhoneCall,
+  notificationGoogleMessenger,
+  notificationTelegram,
+  notificationFacetime,
+  arrowDown,
+  notificationOutlook,
+  noEvents,
+  audioCassette,
+  sunset,
+  notificationTwitter,
+  sunrise,
+  heavyRain,
+  notificationMailbox,
+  americanFootball,
+  carRental,
+  cricketGame,
+  notificationWeChat,
+  notificationGeneric,
+  notificationSkype,
+  cloudyDay,
+  duringPhoneCallCentered,
+  notificationLine,
+  hotelReservation,
+  notificationFacebookMessenger,
+  notificationLighthouse,
+  timelineEmptyCalendar,
+  notificationIosPhotos,
+  resultDeleted,
+  notificationGmail,
+  timelineMissedCall,
+  sleep,
+  resultMute,
+  notificationAmazon,
+  thumbsUp,
+  scheduledFlight,
+  settings,
+  partlyCloudy,
+  stocksEvent,
+  notificationGoogleMaps,
+  rewardGood,
+  notificationYahooMail,
+  birthdayEvent,
+  genericEmail,
+  resultDismissed,
+  notificationGooglePhotos,
+  tideIsHigh,
+  notificationViber,
+  lightSnow,
+  newsEvent,
+  genericConfirmation,
+  timelineSports,
+  notificationSlack,
+  checkInternetConnection,
+  activity,
+  notificationHipChat,
+  notificationInstagram,
+  timelineBaseball,
+  rewardBad,
+  reachedFitnessGoal,
+  daySeparator,
+  timelineCalendar,
+  rainingAndSnowing,
+  radioShow,
+  dismissedPhoneCall,
+  arrowUp,
+  rewardAverage,
+  musicEvent,
+  notificationSnapchat,
+  notificationBlackberryMessenger,
+  notificationWhatsapp,
+  location,
+  soccerGame,
+  resultFailed,
+  resultUnmute,
+  scheduledEvent,
+  timelineWeather,
+  timelineSun,
+  notificationGoogleHangouts,
+  duringPhoneCall,
+  notificationKik,
+  resultUnmuteAlt,
+  movieEvent,
+  glucoseMonitor,
+  resultSent,
+  alarmClock,
+  heavySnow,
+  dinnerReservation,
+  notificationKakaoTalk,
 }
 
 extension ProtocolExtension on TimelineIcon {
   int toProtocolNumber() {
     switch (this) {
-      case TimelineIcon.NOTIFICATION_REMINDER:
+      case TimelineIcon.notificationReminder:
         return 3;
-      case TimelineIcon.HOCKEY_GAME:
+      case TimelineIcon.hockeyGame:
         return 30;
-      case TimelineIcon.PAY_BILL:
+      case TimelineIcon.payBill:
         return 38;
-      case TimelineIcon.NOTIFICATION_LINKEDIN:
+      case TimelineIcon.notificationLinkedIn:
         return 115;
-      case TimelineIcon.NOTIFICATION_GOOGLE_INBOX:
+      case TimelineIcon.notificationGoogleInbox:
         return 61;
-      case TimelineIcon.GENERIC_QUESTION:
+      case TimelineIcon.genericQuestion:
         return 63;
-      case TimelineIcon.NOTIFICATION_FLAG:
+      case TimelineIcon.notificationFlag:
         return 4;
-      case TimelineIcon.GENERIC_SMS:
+      case TimelineIcon.genericSms:
         return 45;
-      case TimelineIcon.WATCH_DISCONNECTED:
+      case TimelineIcon.watchDisconnected:
         return 48;
-      case TimelineIcon.TV_SHOW:
+      case TimelineIcon.tvShow:
         return 73;
-      case TimelineIcon.BASKETBALL:
+      case TimelineIcon.basketball:
         return 74;
-      case TimelineIcon.GENERIC_WARNING:
+      case TimelineIcon.genericWarning:
         return 28;
-      case TimelineIcon.LIGHT_RAIN:
+      case TimelineIcon.lightRain:
         return 32;
-      case TimelineIcon.NOTIFICATION_FACEBOOK:
+      case TimelineIcon.notificationFacebook:
         return 11;
-      case TimelineIcon.INCOMING_PHONE_CALL:
+      case TimelineIcon.incomingPhoneCall:
         return 78;
-      case TimelineIcon.NOTIFICATION_GOOGLE_MESSENGER:
+      case TimelineIcon.notificationGoogleMessenger:
         return 76;
-      case TimelineIcon.NOTIFICATION_TELEGRAM:
+      case TimelineIcon.notificationTelegram:
         return 7;
-      case TimelineIcon.NOTIFICATION_FACETIME:
+      case TimelineIcon.notificationFacetime:
         return 110;
-      case TimelineIcon.ARROW_DOWN:
+      case TimelineIcon.arrowDown:
         return 99;
-      case TimelineIcon.NOTIFICATION_OUTLOOK:
+      case TimelineIcon.notificationOutlook:
         return 64;
-      case TimelineIcon.NO_EVENTS:
+      case TimelineIcon.noEvents:
         return 57;
-      case TimelineIcon.AUDIO_CASSETTE:
+      case TimelineIcon.audioCassette:
         return 12;
-      case TimelineIcon.SUNSET:
+      case TimelineIcon.sunset:
         return 85;
-      case TimelineIcon.NOTIFICATION_TWITTER:
+      case TimelineIcon.notificationTwitter:
         return 6;
-      case TimelineIcon.SUNRISE:
+      case TimelineIcon.sunrise:
         return 84;
-      case TimelineIcon.HEAVY_RAIN:
+      case TimelineIcon.heavyRain:
         return 52;
-      case TimelineIcon.NOTIFICATION_MAILBOX:
+      case TimelineIcon.notificationMailbox:
         return 60;
-      case TimelineIcon.AMERICAN_FOOTBALL:
+      case TimelineIcon.americanFootball:
         return 20;
-      case TimelineIcon.CAR_RENTAL:
+      case TimelineIcon.carRental:
         return 24;
-      case TimelineIcon.CRICKET_GAME:
+      case TimelineIcon.cricketGame:
         return 26;
-      case TimelineIcon.NOTIFICATION_WECHAT:
+      case TimelineIcon.notificationWeChat:
         return 71;
-      case TimelineIcon.NOTIFICATION_GENERIC:
+      case TimelineIcon.notificationGeneric:
         return 1;
-      case TimelineIcon.NOTIFICATION_SKYPE:
+      case TimelineIcon.notificationSkype:
         return 68;
-      case TimelineIcon.CLOUDY_DAY:
+      case TimelineIcon.cloudyDay:
         return 25;
-      case TimelineIcon.DURING_PHONE_CALL_CENTERED:
+      case TimelineIcon.duringPhoneCallCentered:
         return 95;
-      case TimelineIcon.NOTIFICATION_LINE:
+      case TimelineIcon.notificationLine:
         return 67;
-      case TimelineIcon.HOTEL_RESERVATION:
+      case TimelineIcon.hotelReservation:
         return 31;
-      case TimelineIcon.NOTIFICATION_FACEBOOK_MESSENGER:
+      case TimelineIcon.notificationFacebookMessenger:
         return 10;
-      case TimelineIcon.NOTIFICATION_LIGHTHOUSE:
+      case TimelineIcon.notificationLighthouse:
         return 81;
-      case TimelineIcon.TIMELINE_EMPTY_CALENDAR:
+      case TimelineIcon.timelineEmptyCalendar:
         return 96;
-      case TimelineIcon.NOTIFICATION_IOS_PHOTOS:
+      case TimelineIcon.notificationIosPhotos:
         return 114;
-      case TimelineIcon.RESULT_DELETED:
+      case TimelineIcon.resultDeleted:
         return 43;
-      case TimelineIcon.NOTIFICATION_GMAIL:
+      case TimelineIcon.notificationGmail:
         return 9;
-      case TimelineIcon.TIMELINE_MISSED_CALL:
+      case TimelineIcon.timelineMissedCall:
         return 2;
-      case TimelineIcon.SLEEP:
+      case TimelineIcon.sleep:
         return 101;
-      case TimelineIcon.RESULT_MUTE:
+      case TimelineIcon.resultMute:
         return 46;
-      case TimelineIcon.NOTIFICATION_AMAZON:
+      case TimelineIcon.notificationAmazon:
         return 111;
-      case TimelineIcon.THUMBS_UP:
+      case TimelineIcon.thumbsUp:
         return 97;
-      case TimelineIcon.SCHEDULED_FLIGHT:
+      case TimelineIcon.scheduledFlight:
         return 54;
-      case TimelineIcon.SETTINGS:
+      case TimelineIcon.settings:
         return 83;
-      case TimelineIcon.PARTLY_CLOUDY:
+      case TimelineIcon.partlyCloudy:
         return 37;
-      case TimelineIcon.STOCKS_EVENT:
+      case TimelineIcon.stocksEvent:
         return 42;
-      case TimelineIcon.NOTIFICATION_GOOGLE_MAPS:
+      case TimelineIcon.notificationGoogleMaps:
         return 112;
-      case TimelineIcon.REWARD_GOOD:
+      case TimelineIcon.rewardGood:
         return 103;
-      case TimelineIcon.NOTIFICATION_YAHOO_MAIL:
+      case TimelineIcon.notificationYahooMail:
         return 72;
-      case TimelineIcon.BIRTHDAY_EVENT:
+      case TimelineIcon.birthdayEvent:
         return 23;
-      case TimelineIcon.GENERIC_EMAIL:
+      case TimelineIcon.genericEmail:
         return 19;
-      case TimelineIcon.RESULT_DISMISSED:
+      case TimelineIcon.resultDismissed:
         return 51;
-      case TimelineIcon.NOTIFICATION_GOOGLE_PHOTOS:
+      case TimelineIcon.notificationGooglePhotos:
         return 113;
-      case TimelineIcon.TIDE_IS_HIGH:
+      case TimelineIcon.tideIsHigh:
         return 50;
-      case TimelineIcon.NOTIFICATION_VIBER:
+      case TimelineIcon.notificationViber:
         return 70;
-      case TimelineIcon.LIGHT_SNOW:
+      case TimelineIcon.lightSnow:
         return 33;
-      case TimelineIcon.NEWS_EVENT:
+      case TimelineIcon.newsEvent:
         return 36;
-      case TimelineIcon.GENERIC_CONFIRMATION:
+      case TimelineIcon.genericConfirmation:
         return 55;
-      case TimelineIcon.TIMELINE_SPORTS:
+      case TimelineIcon.timelineSports:
         return 17;
-      case TimelineIcon.NOTIFICATION_SLACK:
+      case TimelineIcon.notificationSlack:
         return 116;
-      case TimelineIcon.CHECK_INTERNET_CONNECTION:
+      case TimelineIcon.checkInternetConnection:
         return 44;
-      case TimelineIcon.ACTIVITY:
+      case TimelineIcon.activity:
         return 100;
-      case TimelineIcon.NOTIFICATION_HIPCHAT:
+      case TimelineIcon.notificationHipChat:
         return 77;
-      case TimelineIcon.NOTIFICATION_INSTAGRAM:
+      case TimelineIcon.notificationInstagram:
         return 59;
-      case TimelineIcon.TIMELINE_BASEBALL:
+      case TimelineIcon.timelineBaseball:
         return 22;
-      case TimelineIcon.REWARD_BAD:
+      case TimelineIcon.rewardBad:
         return 102;
-      case TimelineIcon.REACHED_FITNESS_GOAL:
+      case TimelineIcon.reachedFitnessGoal:
         return 66;
-      case TimelineIcon.DAY_SEPARATOR:
+      case TimelineIcon.daySeparator:
         return 56;
-      case TimelineIcon.TIMELINE_CALENDAR:
+      case TimelineIcon.timelineCalendar:
         return 21;
-      case TimelineIcon.RAINING_AND_SNOWING:
+      case TimelineIcon.rainingAndSnowing:
         return 65;
-      case TimelineIcon.RADIO_SHOW:
+      case TimelineIcon.radioShow:
         return 39;
-      case TimelineIcon.DISMISSED_PHONE_CALL:
+      case TimelineIcon.dismissedPhoneCall:
         return 75;
-      case TimelineIcon.ARROW_UP:
+      case TimelineIcon.arrowUp:
         return 98;
-      case TimelineIcon.REWARD_AVERAGE:
+      case TimelineIcon.rewardAverage:
         return 104;
-      case TimelineIcon.MUSIC_EVENT:
+      case TimelineIcon.musicEvent:
         return 35;
-      case TimelineIcon.NOTIFICATION_SNAPCHAT:
+      case TimelineIcon.notificationSnapchat:
         return 69;
-      case TimelineIcon.NOTIFICATION_BLACKBERRY_MESSENGER:
+      case TimelineIcon.notificationBlackberryMessenger:
         return 58;
-      case TimelineIcon.NOTIFICATION_WHATSAPP:
+      case TimelineIcon.notificationWhatsapp:
         return 5;
-      case TimelineIcon.LOCATION:
+      case TimelineIcon.location:
         return 82;
-      case TimelineIcon.SOCCER_GAME:
+      case TimelineIcon.soccerGame:
         return 41;
-      case TimelineIcon.RESULT_FAILED:
+      case TimelineIcon.resultFailed:
         return 62;
-      case TimelineIcon.RESULT_UNMUTE:
+      case TimelineIcon.resultUnmute:
         return 86;
-      case TimelineIcon.SCHEDULED_EVENT:
+      case TimelineIcon.scheduledEvent:
         return 40;
-      case TimelineIcon.TIMELINE_WEATHER:
+      case TimelineIcon.timelineWeather:
         return 14;
-      case TimelineIcon.TIMELINE_SUN:
+      case TimelineIcon.timelineSun:
         return 16;
-      case TimelineIcon.NOTIFICATION_GOOGLE_HANGOUTS:
+      case TimelineIcon.notificationGoogleHangouts:
         return 8;
-      case TimelineIcon.DURING_PHONE_CALL:
+      case TimelineIcon.duringPhoneCall:
         return 49;
-      case TimelineIcon.NOTIFICATION_KIK:
+      case TimelineIcon.notificationKik:
         return 80;
-      case TimelineIcon.RESULT_UNMUTE_ALT:
+      case TimelineIcon.resultUnmuteAlt:
         return 94;
-      case TimelineIcon.MOVIE_EVENT:
+      case TimelineIcon.movieEvent:
         return 34;
-      case TimelineIcon.GLUCOSE_MONITOR:
+      case TimelineIcon.glucoseMonitor:
         return 29;
-      case TimelineIcon.RESULT_SENT:
+      case TimelineIcon.resultSent:
         return 47;
-      case TimelineIcon.ALARM_CLOCK:
+      case TimelineIcon.alarmClock:
         return 13;
-      case TimelineIcon.HEAVY_SNOW:
+      case TimelineIcon.heavySnow:
         return 53;
-      case TimelineIcon.DINNER_RESERVATION:
+      case TimelineIcon.dinnerReservation:
         return 27;
-      case TimelineIcon.NOTIFICATION_KAKAOTALK:
+      case TimelineIcon.notificationKakaoTalk:
         return 79;
       default:
         throw Exception("Unknown icon $this");

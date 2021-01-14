@@ -1,7 +1,7 @@
 import 'package:cobble/domain/db/converters/sql_json_converters.dart';
 import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/db/models/timeline_pin_type.dart';
-import 'package:cobble/infrastructure/pigeons/pigeons.dart';
+import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid_type/uuid_type.dart';
@@ -37,6 +37,8 @@ class TimelinePin {
   final TimelinePinType type;
 
   /// ???
+  /// (Name suggests that setting this to false would hide the pin on the watch
+  /// but it does not seem to do anything)
   final bool isVisible;
 
   /// When set to true, pin is always displayed in UTC timezone
@@ -46,7 +48,8 @@ class TimelinePin {
   /// Whether pin spans throughout the whole day (duration field is ignored)
   final bool isAllDay;
 
-  /// ???
+  /// Whether quick view should be displayed on the watchface when event is
+  /// in progress.
   final bool persistQuickView;
 
   /// UI Layout of the pin

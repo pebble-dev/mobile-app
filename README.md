@@ -5,10 +5,18 @@ A multi platform watch companion app for Pebble/RebbleOS devices
 # Development
 
 ## Building the app
+1. Checkout this repo
+2. [Generate new Github token with `read:packages` permission](https://github.com/settings/tokens). This is required to fetch libpebblecommons from Github packages repository.
+3. Create `local.properties` file in `android` folder. Write following to the file:
 
-1. [Install flutter on your machine](https://flutter.dev/docs/get-started/install)
-2. [Setup flutter in the IDE of your choice](https://flutter.dev/docs/get-started/editor)
-3. Pull this repo and open it in the IDE set up in step 2
+    ```
+    GITHUB_ACTOR=<YOUR GITHUB USERNAME>
+    GITHUB_TOKEN=<GENERATED TOKEN>
+    ```
+
+4. [Install flutter on your machine](https://flutter.dev/docs/get-started/install)
+5. [Setup flutter in the IDE of your choice](https://flutter.dev/docs/get-started/editor)
+6. Open this repo in the IDE set up in step 5
 
 ## Building mappings
 
@@ -27,7 +35,31 @@ with the following command:
 ```
 flutter pub run pigeon \
   --input pigeons/pigeons.dart \
-  --dart_out lib/infrastructure/pigeons/pigeons.dart \
+  --dart_out lib/infrastructure/pigeons/pigeons.g.dart \
   --java_out ./android/app/src/main/java/io/rebble/cobble/pigeons/Pigeons.java \
   --java_package "io.rebble.cobble.pigeons"
 ```
+
+# Architecture
+
+See [Wiki](https://github.com/pebble-dev/mobile-app/wiki) for more info on app architecture.
+
+## Using Cobble theming
+
+App's components are styled through modified Material theme, in theory you should never specify
+custom styles in your own component. If you have to, try to use colors that are defined in 
+`ThemeData` (accessed by `WithCobbleTheme(context).theme`) or alternatively in 
+`CobbleSchemeData` (`WithCobbleTheme(context).scheme`). Scheme is collection of colors, 
+created by designer while the theme is higher-level grouping of these colours to provide meaningful 
+base styles for components. If you start using Material component which isn't styled properly, 
+take a look at Material theme and see if you can set styles there before setting styles directly on
+component. There is limited set of text types, as defined by designer, if you need different text 
+style, extends these types with `.copyWith` instead of creating your own.
+
+## Using Navigator
+
+We are using iOS-style tabbed navigation, where each tab has its own stack of screens. In practice
+this means there might be multiple stacks (1 main stack and one each for tab) but only 1 stack is
+active. In order to push page on an active stack import `CobbleNavigator` extension and then call
+`context.push(SomeScreen())`. `SomeScreen` widget should also implement interface `CobbleScreen` and
+use `CobbleScaffold`, which takes care of title and back button in navigation bar.

@@ -26,7 +26,7 @@ class AppMessageHandler @Inject constructor(
         private val appMessageService: AppMessageService,
         private val appRunStateService: AppRunStateService,
         private val coroutineScope: CoroutineScope
-) : PebbleMessageHandler {
+) : CobbleHandler {
     init {
         listenForIncomingPackets()
 

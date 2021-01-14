@@ -73,6 +73,16 @@ class TimelinePinPigeon {
   String actionsJson;
 }
 
+class ActionTrigger {
+  String itemId;
+  int actionId;
+}
+
+class ActionResponsePigeon {
+  bool success;
+  String attributesJson;
+}
+
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
@@ -93,6 +103,23 @@ abstract class PairCallbacks {
   void onWatchPairComplete(NumberWrapper address);
 }
 
+@FlutterApi()
+abstract class CalendarCallbacks {
+  @async
+  void doFullCalendarSync();
+
+  @async
+  void deleteCalendarPinsFromWatch();
+}
+
+@FlutterApi()
+abstract class TimelineCallbacks {
+  void syncTimelineToWatch();
+
+  @async
+  ActionResponsePigeon handleTimelineAction(ActionTrigger actionTrigger);
+}
+
 @HostApi()
 abstract class ScanControl {
   void startBleScan();
@@ -104,8 +131,6 @@ abstract class ScanControl {
 abstract class ConnectionControl {
   BooleanWrapper isConnected();
 
-  void connectToWatch(NumberWrapper macAddress);
-
   void disconnect();
 
   void sendRawPacket(ListWrapper listOfBytes);
@@ -113,6 +138,13 @@ abstract class ConnectionControl {
   void observeConnectionChanges();
 
   void cancelObservingConnectionChanges();
+}
+
+/// Connection methods that require UI reside in separate pigeon class.
+/// This allows easier separation between background and UI methods.
+@HostApi()
+abstract class UiConnectionControl {
+  void connectToWatch(NumberWrapper macAddress);
 }
 
 @HostApi()
@@ -137,6 +169,75 @@ abstract class TimelineControl {
   NumberWrapper removePin(StringWrapper pinUuid);
 
   NumberWrapper removeAllPins();
+}
+
+@HostApi()
+abstract class BackgroundSetupControl {
+  void setupBackground(NumberWrapper callbackHandle);
+}
+
+@HostApi()
+abstract class BackgroundControl {
+  void notifyFlutterBackgroundStarted();
+}
+
+@HostApi()
+abstract class PermissionCheck {
+  BooleanWrapper hasLocationPermission();
+
+  BooleanWrapper hasCalendarPermission();
+
+  BooleanWrapper hasNotificationAccess();
+
+  BooleanWrapper hasBatteryExclusionEnabled();
+}
+
+@HostApi()
+abstract class PermissionControl {
+  // All NumberWrapper reqeust* callbacks return:
+  // 0 - permission granted
+  // 1 - permission denied by user
+  // 2 - permission was denied by user and "Don't show again" was selected.
+  //     If we want to request permission again,
+  //     we must direct user to the settings (use openPermissionSettings())
+  //     This might be Android-specific behavior.
+
+  NumberWrapper requestLocationPermission();
+
+  NumberWrapper requestCalendarPermission();
+
+  /// This can only be performed when at least one watch is paired
+  void requestNotificationAccess();
+
+  /// This can only be performed when at least one watch is paired
+  void requestBatteryExclusion();
+
+  void openPermissionSettings();
+}
+
+@HostApi()
+abstract class CalendarControl {
+  void requestCalendarSync();
+
+  void deleteCalendarPinsFromWatch();
+}
+
+@HostApi()
+abstract class PigeonLogger {
+  void v(StringWrapper message);
+
+  void d(StringWrapper message);
+
+  void i(StringWrapper message);
+
+  void w(StringWrapper message);
+
+  void e(StringWrapper message);
+}
+
+@HostApi()
+abstract class TimelineSyncControl{
+  void syncTimelineToWatchLater();
 }
 
 /// This class will keep all classes that appear in lists from being deleted

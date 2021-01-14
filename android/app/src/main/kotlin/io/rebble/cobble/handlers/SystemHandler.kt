@@ -14,6 +14,7 @@ import io.rebble.libpebblecommon.services.SystemService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import java.util.*
@@ -27,11 +28,14 @@ class SystemHandler @Inject constructor(
         private val systemService: SystemService,
         private val connectionLooper: ConnectionLooper,
         private val watchMetadataStore: WatchMetadataStore
-) : PebbleMessageHandler {
+) : CobbleHandler {
     init {
         listenForTimeChange()
 
         coroutineScope.launch {
+            // Wait until watch is connected before sending time
+            connectionLooper.connectionState.first { it is ConnectionState.Connected }
+
             sendCurrentTime()
         }
 
@@ -39,6 +43,9 @@ class SystemHandler @Inject constructor(
             connectionLooper.connectionState.collect {
                 if (it is ConnectionState.Connected) {
                     refreshWatchMetadata()
+                } else {
+                    watchMetadataStore.lastConnectedWatchMetadata.value = null
+                    watchMetadataStore.lastConnectedWatchModel.value = null
                 }
             }
         }

@@ -1,21 +1,19 @@
 import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
+import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info/package_info.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutTab extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _AboutTabState();
-
 }
 
 class _AboutTabState extends State<AboutTab> {
-
   static const communityURL = "http://discord.gg/aRUAYFN";
   static const supportURL = "https://rebble.io/faq/";
   String _appVersion = '';
   String _appName = '';
-
 
   @override
   void initState() {
@@ -33,18 +31,14 @@ class _AboutTabState extends State<AboutTab> {
     setState(() {
       _appName = appName;
       _appVersion = appVersion;
-
     });
   }
 
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("About"),
-      ),
-      body: SingleChildScrollView(
+    return CobbleScaffold(
+      title: "About",
+      child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
             Card(
@@ -56,19 +50,20 @@ class _AboutTabState extends State<AboutTab> {
                   children: <Widget>[
                     Row(),
                     Text(
-                      "About " + _appName + " v" +_appVersion,
+                      "About " + _appName + " v" + _appVersion,
                       style: Theme.of(context).textTheme.headline5,
                     ),
                     SizedBox(height: 8.0),
                     FlatButton.icon(
                         label: Text("Community"),
-                        icon: Icon(
-                            RebbleIconsStroke.settings, size: 25.0),
+                        icon: Icon(RebbleIconsStroke.settings, size: 25.0),
                         textColor: Theme.of(context).accentColor,
                         onPressed: () => {launchURL(communityURL)}),
                     FlatButton.icon(
                         label: Text("Support"),
-                        icon: Icon(RebbleIconsStroke.developer_connection_console, size: 25.0),
+                        icon: Icon(
+                            RebbleIconsStroke.developer_connection_console,
+                            size: 25.0),
                         textColor: Theme.of(context).accentColor,
                         onPressed: () => {launchURL(supportURL)}),
                   ],
@@ -88,7 +83,6 @@ class _AboutTabState extends State<AboutTab> {
       throw 'Could not launch $url';
     }
   }
-
 
   @override
   void dispose() {

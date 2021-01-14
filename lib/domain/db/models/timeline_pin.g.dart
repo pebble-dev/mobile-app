@@ -156,23 +156,25 @@ T _$enumDecodeNullable<T>(
 }
 
 const _$TimelinePinTypeEnumMap = {
-  TimelinePinType.NOTIFICATION: 'NOTIFICATION',
-  TimelinePinType.PIN: 'PIN',
-  TimelinePinType.REMINDER: 'REMINDER',
+  TimelinePinType.notification: 'notification',
+  TimelinePinType.pin: 'pin',
+  TimelinePinType.reminder: 'reminder',
 };
 
 const _$TimelinePinLayoutEnumMap = {
-  TimelinePinLayout.GENERIC_PIN: 'GENERIC_PIN',
-  TimelinePinLayout.CALENDAR_PIN: 'CALENDAR_PIN',
-  TimelinePinLayout.GENERIC_REMINDER: 'GENERIC_REMINDER',
-  TimelinePinLayout.GENERIC_NOTIFICATION: 'GENERIC_NOTIFICATION',
-  TimelinePinLayout.COMM_NOTIFICATION: 'COMM_NOTIFICATION',
-  TimelinePinLayout.WEATHER_PIN: 'WEATHER_PIN',
-  TimelinePinLayout.SPORTS_PIN: 'SPORTS_PIN',
+  TimelinePinLayout.genericPin: 'genericPin',
+  TimelinePinLayout.calendarPin: 'calendarPin',
+  TimelinePinLayout.genericReminder: 'genericReminder',
+  TimelinePinLayout.genericNotification: 'genericNotification',
+  TimelinePinLayout.commNotification: 'commNotification',
+  TimelinePinLayout.weatherPin: 'weatherPin',
+  TimelinePinLayout.sportsPin: 'sportsPin',
 };
 
 const _$NextSyncActionEnumMap = {
   NextSyncAction.Nothing: 'Nothing',
   NextSyncAction.Upload: 'Upload',
   NextSyncAction.Delete: 'Delete',
+  NextSyncAction.Ignore: 'Ignore',
+  NextSyncAction.DeleteThenIgnore: 'DeleteThenIgnore',
 };

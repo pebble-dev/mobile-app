@@ -22,18 +22,25 @@
     <!-- Required due to https://github.com/builttoroam/device_calendar/issues/233 -->
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
+    <!-- Required for running in background indefinitely -->
+    <uses-permission android:name="android.permission.REQUEST_COMPANION_RUN_IN_BACKGROUND" />
+    <uses-permission android:name="android.permission.REQUEST_COMPANION_USE_DATA_IN_BACKGROUND" />
+    <uses-permission
+        android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"
+        android:maxSdkVersion="26" />
+
     <uses-feature android:name="android.software.companion_device_setup" />
     <application
         android:name=".CobbleApplication"
-        android:label="Cobble"
         android:icon="@mipmap/ic_launcher"
+        android:label="Cobble"
         android:roundIcon="@mipmap/ic_launcher_round">
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTop"
-            android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
+            android:launchMode="singleTop"
+            android:theme="@style/LaunchTheme"
             android:windowSoftInputMode="adjustResize">
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
@@ -62,8 +69,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="pebble"
-                    android:host="custom-boot-config-url" />
+                    android:host="custom-boot-config-url"
+                    android:scheme="pebble" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
@@ -98,6 +105,10 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".bridges.background.BackgroundTimelineFlutterBridge$Receiver"
+            android:exported="false" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="io.rebble.cobble.files"
@@ -109,9 +120,9 @@
         </provider>
 
         <provider
-            android:authorities="com.getpebble.android.provider.basalt"
             android:name=".providers.PebbleKitProvider"
-            tools:ignore="ExportedContentProvider"
-            android:exported="true" />
+            android:authorities="com.getpebble.android.provider.basalt"
+            android:exported="true"
+            tools:ignore="ExportedContentProvider" />
     </application>
 </manifest>

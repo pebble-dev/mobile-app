@@ -20,7 +20,7 @@ class ServiceLifecycleControl @Inject constructor(
     private val serviceIntent = Intent(context, WatchService::class.java)
 
     init {
-        GlobalScope.launch(Dispatchers.Main) {
+        GlobalScope.launch(Dispatchers.Main.immediate) {
             connectionLooper.connectionState.collect {
                 Timber.d("Watch connection status %s", it)
 

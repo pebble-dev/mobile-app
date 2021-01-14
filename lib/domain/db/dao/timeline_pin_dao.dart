@@ -14,14 +14,30 @@ class TimelinePinDao {
   Future<void> insertOrUpdateTimelinePin(TimelinePin pin) async {
     final db = await _dbFuture;
 
-    db.insert(TABLE_TIMELINE_PINS, pin.toMap(),
+    db.insert(tableTimelinePins, pin.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<TimelinePin> getPinById(Uuid id) async {
+    final db = await _dbFuture;
+
+    final receivedPins = (await db.query(
+      tableTimelinePins,
+      where: "itemId = ?",
+      whereArgs: [id.toString()],
+    ));
+
+    if (receivedPins.isEmpty) {
+      return null;
+    }
+
+    return TimelinePin.fromMap(receivedPins.first);
   }
 
   Future<List<TimelinePin>> getAllPins() async {
     final db = await _dbFuture;
 
-    return (await db.query(TABLE_TIMELINE_PINS))
+    return (await db.query(tableTimelinePins))
         .map((e) => TimelinePin.fromMap(e))
         .toList();
   }
@@ -30,7 +46,7 @@ class TimelinePinDao {
     final db = await _dbFuture;
 
     return (await db.query(
-      TABLE_TIMELINE_PINS,
+      tableTimelinePins,
       where: "parentId = ?",
       whereArgs: [parentId.toString()],
     ))
@@ -38,13 +54,21 @@ class TimelinePinDao {
         .toList();
   }
 
-  Future<List<TimelinePin>> getAllPinsWithPendingSyncAction() async {
+  Future<List<TimelinePin>> getAllPinsWithPendingUpload() async {
     final db = await _dbFuture;
 
-    return (await db.query(
-      TABLE_TIMELINE_PINS,
-      where: "nextSyncAction <> \"Nothing\"",
-    ))
+    return (await db.query(tableTimelinePins,
+            where: "nextSyncAction = \"Upload\"", orderBy: "timestamp ASC"))
+        .map((e) => TimelinePin.fromMap(e))
+        .toList();
+  }
+
+  Future<List<TimelinePin>> getAllPinsWithPendingDelete() async {
+    final db = await _dbFuture;
+
+    return (await db.query(tableTimelinePins,
+            where:
+                "nextSyncAction = \"Delete\" OR nextSyncAction = \"DeleteThenIgnore\""))
         .map((e) => TimelinePin.fromMap(e))
         .toList();
   }
@@ -54,7 +78,7 @@ class TimelinePinDao {
     final db = await _dbFuture;
 
     await db.update(
-        TABLE_TIMELINE_PINS,
+        tableTimelinePins,
         {
           "nextSyncAction":
               TimelinePin.nextSyncActionEnumMap()[newNextSyncAction]
@@ -66,13 +90,48 @@ class TimelinePinDao {
   Future<void> delete(Uuid itemId) async {
     final db = await _dbFuture;
 
-    await db.delete(TABLE_TIMELINE_PINS,
+    await db.delete(tableTimelinePins,
         where: "itemId = ?", whereArgs: [itemId.toString()]);
   }
 
   Future<void> deleteAll() async {
     final db = await _dbFuture;
-    await db.delete(TABLE_TIMELINE_PINS);
+    await db.delete(tableTimelinePins);
+  }
+
+  Future<void> resetSyncStatus() async {
+    final db = await _dbFuture;
+
+    // Watch has been reset. We can delete all pins that were pending
+    // deletion
+    await db.delete(tableTimelinePins, where: "nextSyncAction = ?", whereArgs: [
+      TimelinePin.nextSyncActionEnumMap()[NextSyncAction.Delete]
+    ]);
+
+    // Mark all pins to re-upload
+    await db.update(
+        tableTimelinePins,
+        {
+          "nextSyncAction":
+              TimelinePin.nextSyncActionEnumMap()[NextSyncAction.Upload]
+        },
+        where: "nextSyncAction = ?",
+        whereArgs: [
+          TimelinePin.nextSyncActionEnumMap()[NextSyncAction.Nothing]
+        ]);
+  }
+
+  Future<void> markAllPinsFromAppForDeletion(Uuid appUuid) async {
+    final db = await _dbFuture;
+
+    await db.update(
+        tableTimelinePins,
+        {
+          "nextSyncAction":
+              TimelinePin.nextSyncActionEnumMap()[NextSyncAction.Delete]
+        },
+        where: "parentId = ?",
+        whereArgs: [appUuid.toString()]);
   }
 }
 
@@ -81,4 +140,4 @@ final timelinePinDaoProvider = Provider.autoDispose((ref) {
   return TimelinePinDao(dbFuture);
 });
 
-const TABLE_TIMELINE_PINS = "timeline_pin";
+const tableTimelinePins = "timeline_pin";
