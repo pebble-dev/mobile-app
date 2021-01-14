@@ -8,6 +8,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import io.rebble.libpebblecommon.ProtocolHandlerImpl
 import io.rebble.libpebblecommon.packets.PhoneAppVersion
 import io.rebble.libpebblecommon.packets.PingPong
+import io.rebble.libpebblecommon.packets.ProtocolCapsFlag
 import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
@@ -37,7 +38,7 @@ class BlueGATTServerTest {
                     PhoneAppVersion.PlatformFlag.makeFlags(PhoneAppVersion.OSType.Android, listOf(PhoneAppVersion.PlatformFlag.BTLE)),
                     2U,
                     2U, 3U, 0U,
-                    PhoneAppVersion.ProtocolCapsFlag.makeFlags(listOf())
+                    ProtocolCapsFlag.makeFlags(listOf())
             ))
         }
 
