@@ -93,7 +93,7 @@ class BlueLEDriver(
                         val pairTrigger = pairService.getCharacteristic(BlueGATTConstants.UUIDs.PAIRING_TRIGGER_CHARACTERISTIC)
                         if (pairTrigger != null) {
                             if (pairTrigger.properties and BluetoothGattCharacteristic.PROPERTY_WRITE > 0) {
-                                GlobalScope.launch(Dispatchers.IO) { gatt!!.writeCharacteristic(pairTrigger, pairTriggerFlagsToBytes(status.supportsPinningWithoutSlaveSecurity, belowLollipop = false, false)) }
+                                GlobalScope.launch(Dispatchers.IO) { gatt!!.writeCharacteristic(pairTrigger, pairTriggerFlagsToBytes(status.supportsPinningWithoutSlaveSecurity, belowLollipop = false, clientMode = false)) }
                                 if (status.supportsPinningWithoutSlaveSecurity) {
                                     /*if (!targetPebble?.createBond()!!) {
                                         Timber.e("Failed to create bond")
@@ -122,8 +122,9 @@ class BlueLEDriver(
                 closePebble()
                 throw Exception() //TODO
             }
+        }else {
+            closePebble()
         }
-        closePebble()
     }
 
     @FlowPreview
@@ -150,11 +151,14 @@ class BlueLEDriver(
             launch(Dispatchers.IO) {
                 if (!server.initServer()) {
                     Timber.e("initServer failed")
+                    connectionStatusChannel.offer(false)
                     return@launch
                 }
                 gatt = targetPebble!!.connectGatt(context)
                 if (gatt == null) {
                     Timber.e("connectGatt null")
+                    connectionStatusChannel.offer(false)
+                    return@launch
                 }
 
                 val mtu = gatt?.requestMtu(339)

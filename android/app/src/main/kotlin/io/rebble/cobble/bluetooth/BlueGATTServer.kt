@@ -21,7 +21,6 @@ import kotlin.experimental.and
 
 class BlueGATTServer(private val targetDevice: BluetoothDevice, private val context: Context) : BluetoothGattServerCallback() {
     private val serverReady = CompletableDeferred<Boolean>()
-    private val beginWriter = Channel<Boolean>(0)
     private val connectionStatusChannel = Channel<Boolean>(0)
 
     private val ackPending: MutableMap<Int, CompletableDeferred<GATTPacket>> = mutableMapOf()
@@ -113,7 +112,6 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         if (targetDevice.address == device!!.address) {
             if (characteristic?.uuid == BlueGATTConstants.UUIDs.META_CHARACTERISTIC_SERVER) {
                 Timber.d("Meta queried")
-                connectionStatusChannel.offer(true)
                 if (!bluetoothGattServer.sendResponse(device, requestId, 0, offset, BlueGATTConstants.SERVER_META_RESPONSE)) {
                     Timber.e("Error sending meta response to device")
                     closePebble()
@@ -129,17 +127,11 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
             if (descriptor?.characteristic?.uuid == BlueGATTConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER) {
                 if (value != null) {
                     GlobalScope.launch(Dispatchers.IO) {
-                        if ((value[0] and 1) > 0) { // if notifications enabled
-                            if (!writerRunning.get()) {
-                                writerRunning.set(true)
-                                Timber.d("Notifications enabled, starting packet writer")
-                                beginWriter.offer(true)
-                            }
-                            if (!bluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, value)) {
-                                Timber.e("Failed to send confirm for descriptor write")
-                                closePebble()
-                            }
-                        } else {
+                        if (!bluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, value)) {
+                            Timber.e("Failed to send confirm for descriptor write")
+                            closePebble()
+                        }
+                        if ((value[0] and 1) == 0.toByte()) { // if notifications disabled
                             Timber.d("Device requested disable notifications")
                             closePebble()
                         }
@@ -244,19 +236,17 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         }
     }
 
-    private suspend fun packetWriter() = coroutineScope {
+    private suspend fun packetWriter() {
         Timber.d("packetWriter launched")
-        launch(Dispatchers.IO) {
-            while (true) {
-                if (packetWriteInputStream.available() > 0) {
-                    val count = packetWriteInputStream.available().coerceAtMost(mtu-2)
-                    val buf = ByteBuffer.allocate(count)
-                    packetWriteInputStream.readFully(buf, 0, count)
-                    attemptWrite(GATTPacket(GATTPacket.PacketType.DATA, getSeq(), buf.array()))
-                    Timber.d("Wrote $count bytes")
-                }else {
-                    delay(10)
-                }
+        while (true) {
+            if (packetWriteInputStream.available() > 0) {
+                val count = packetWriteInputStream.available().coerceAtMost(mtu-2)
+                val buf = ByteBuffer.allocate(count)
+                packetWriteInputStream.readFully(buf, 0, count)
+                attemptWrite(GATTPacket(GATTPacket.PacketType.DATA, getSeq(), buf.array()))
+                Timber.d("Wrote $count bytes")
+            }else {
+                delay(10)
             }
         }
     }
@@ -274,7 +264,8 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         }
     }
 
-    private fun reset() {
+    private suspend fun reset() {
+        Timber.d("Resetting LE")
         writerCoroutine?.cancel()
         packetWriteInputStream.skip(packetWriteInputStream.available().toLong())
         ackPending.forEach{
@@ -283,7 +274,15 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         }
         remoteSeq = 0
         seq = 0
-        if (writerCoroutine != null) writerCoroutine = GlobalScope.launch(Dispatchers.IO) { packetWriter() }
+
+        val alreadyRunning = writerCoroutine?.isActive == true
+        if (alreadyRunning) {
+            writerCoroutine?.cancelAndJoin()
+        }
+        writerCoroutine = GlobalScope.launch(Dispatchers.IO) { packetWriter() }
+        if(!alreadyRunning) {
+            connectionStatusChannel.offer(true)
+        }
     }
 
     private suspend fun sendAck(sequence: Int, reset: Boolean = false) {
@@ -297,7 +296,6 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
     }
 
     suspend fun connectPebble(): Boolean {
-        if (beginWriter.receive()) writerCoroutine = GlobalScope.launch(Dispatchers.IO) { packetWriter() } else return false
         return connectionStatusChannel.receive()
     }
 
