@@ -129,82 +129,88 @@ class BlueLEDriver(
 
     @FlowPreview
     override fun startSingleWatchConnection(device: BluetoothDevice): Flow<SingleConnectionStatus> = flow {
-        coroutineScope {
-            if (device.type == BluetoothDevice.DEVICE_TYPE_CLASSIC || device.type == BluetoothDevice.DEVICE_TYPE_UNKNOWN) {
-                throw IllegalArgumentException("Non-LE device should not use LE driver")
-            }
-
-            if (targetPebble != null && connectionState == LEConnectionState.CONNECTED && device.address == this@BlueLEDriver.targetPebble!!.address) {
-                emit(SingleConnectionStatus.Connected(device))
-                return@coroutineScope
-            } else if (connectionState != LEConnectionState.IDLE) {
-                return@coroutineScope
-            }
-            emit(SingleConnectionStatus.Connecting(device))
-
-            this@BlueLEDriver.targetPebble = device
-
-            val server = BlueGATTServer(device, context)
-            gattDriver = server
-
-            connectionState = LEConnectionState.CONNECTING
-            launch(Dispatchers.IO) {
-                if (!server.initServer()) {
-                    Timber.e("initServer failed")
-                    connectionStatusChannel.offer(false)
-                    return@launch
-                }
-                gatt = targetPebble!!.connectGatt(context)
-                if (gatt == null) {
-                    Timber.e("connectGatt null")
-                    connectionStatusChannel.offer(false)
-                    return@launch
+        var connectJob: Job? = null
+        try {
+            coroutineScope {
+                if (device.type == BluetoothDevice.DEVICE_TYPE_CLASSIC || device.type == BluetoothDevice.DEVICE_TYPE_UNKNOWN) {
+                    throw IllegalArgumentException("Non-LE device should not use LE driver")
                 }
 
-                val mtu = gatt?.requestMtu(339)
-                if (mtu?.isSuccess() == true) {
-                    Timber.d("MTU Changed, new mtu $mtu")
-                    gattDriver!!.setMTU(mtu.mtu)
+                if (targetPebble != null && connectionState == LEConnectionState.CONNECTED && device.address == this@BlueLEDriver.targetPebble!!.address) {
+                    emit(SingleConnectionStatus.Connected(device))
+                    return@coroutineScope
+                } else if (connectionState != LEConnectionState.IDLE) {
+                    return@coroutineScope
                 }
+                emit(SingleConnectionStatus.Connecting(device))
 
-                Timber.i("Pebble connected (initial)")
+                this@BlueLEDriver.targetPebble = device
 
-                launch {
-                    while (true) {
-                        gatt!!.characteristicChanged.collect {
-                            Timber.d("onCharacteristicChanged ${it.characteristic?.uuid}")
-                            connectivityWatcher?.onCharacteristicChanged(it.characteristic)
+                val server = BlueGATTServer(device, context)
+                gattDriver = server
+
+                connectionState = LEConnectionState.CONNECTING
+                connectJob = launch(Dispatchers.IO) {
+                    if (!server.initServer()) {
+                        Timber.e("initServer failed")
+                        connectionStatusChannel.offer(false)
+                        return@launch
+                    }
+                    gatt = targetPebble!!.connectGatt(context)
+                    if (gatt == null) {
+                        Timber.e("connectGatt null")
+                        connectionStatusChannel.offer(false)
+                        return@launch
+                    }
+
+                    val mtu = gatt?.requestMtu(339)
+                    if (mtu?.isSuccess() == true) {
+                        Timber.d("MTU Changed, new mtu $mtu")
+                        gattDriver!!.setMTU(mtu.mtu)
+                    }
+
+                    Timber.i("Pebble connected (initial)")
+
+                    launch {
+                        while (true) {
+                            gatt!!.characteristicChanged.collect {
+                                Timber.d("onCharacteristicChanged ${it.characteristic?.uuid}")
+                                connectivityWatcher?.onCharacteristicChanged(it.characteristic)
+                            }
                         }
                     }
-                }
 
-                connectionParamManager = ConnectionParamManager(gatt!!)
-                connectivityWatcher = ConnectivityWatcher(gatt!!)
-                val servicesRes = gatt!!.discoverServices()
-                if (servicesRes != null && servicesRes.isSuccess()) {
-                    if (gatt?.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)?.getCharacteristic(BlueGATTConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC) != null) {
-                        if (connectionParamManager!!.subscribe()) {
-                            Timber.d("Starting connectivity after connparams")
+                    connectionParamManager = ConnectionParamManager(gatt!!)
+                    connectivityWatcher = ConnectivityWatcher(gatt!!)
+                    val servicesRes = gatt!!.discoverServices()
+                    if (servicesRes != null && servicesRes.isSuccess()) {
+                        if (gatt?.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)?.getCharacteristic(BlueGATTConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC) != null) {
+                            if (connectionParamManager!!.subscribe()) {
+                                Timber.d("Starting connectivity after connparams")
+                                deviceConnectivity()
+                            }
+                        } else {
+                            Timber.d("Starting connectivity without connparams")
                             deviceConnectivity()
                         }
                     } else {
-                        Timber.d("Starting connectivity without connparams")
-                        deviceConnectivity()
+                        Timber.e("Failed to discover services")
+                        closePebble()
                     }
-                } else {
-                    Timber.e("Failed to discover services")
-                    closePebble()
+                }
+                if (connectionStatusChannel.receive()) {
+                    val sendLoop = launch { protocolHandler.startPacketSendingLoop(::sendPacket) }
+                    emit(SingleConnectionStatus.Connected(device))
+                    protocolIO = ProtocolIO(gattDriver!!.inputStream, gattDriver!!.outputStream, protocolHandler)
+                    protocolIO!!.readLoop()
+                    gattDriver!!.closePebble()
+                    sendLoop.cancel()
                 }
             }
-            if (connectionStatusChannel.receive()) {
-                val sendLoop = launch { protocolHandler.startPacketSendingLoop(::sendPacket) }
-                emit(SingleConnectionStatus.Connected(device))
-                protocolIO = ProtocolIO(gattDriver!!.inputStream, gattDriver!!.outputStream, protocolHandler)
-                protocolIO!!.readLoop()
-                gattDriver!!.closePebble()
-                closePebble()
-                sendLoop.cancel()
-            }
+        } finally {
+            connectJob?.cancelAndJoin()
+            gattDriver?.closePebble()
+            closePebble()
         }
     }
 
