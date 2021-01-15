@@ -182,7 +182,7 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
         var result: DescriptorResult? = null
         try {
             withTimeout(cbTimeout) {
-                result = descriptorWritten.first{ a-> a.descriptor?.uuid == descriptor.uuid}
+                result = descriptorWritten.first{ a-> a.descriptor?.uuid == descriptor.uuid && a.descriptor?.characteristic?.uuid == descriptor.characteristic.uuid}
             }
         } catch (e: TimeoutCancellationException) {
             Timber.e("writeDescriptor timed out")
