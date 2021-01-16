@@ -286,7 +286,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         }
         writerCoroutine = GlobalScope.launch(Dispatchers.IO) { packetWriter() }
         if(!alreadyRunning) {
-            connectionStatusChannel.offer(true)
+            connectionStatusChannel.send(true)
         }
     }
 
