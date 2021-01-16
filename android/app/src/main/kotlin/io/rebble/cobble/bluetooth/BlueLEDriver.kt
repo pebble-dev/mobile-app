@@ -186,7 +186,7 @@ class BlueLEDriver(
                     if (servicesRes != null && servicesRes.isSuccess()) {
                         if (gatt?.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)?.getCharacteristic(BlueGATTConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC) != null) {
                             Timber.d("Subscribing to connparams")
-                            if (connectionParamManager!!.subscribe()) {
+                            if (connectionParamManager!!.subscribe() || gattDriver?.connected == true) {
                                 Timber.d("Starting connectivity after connparams")
                                 deviceConnectivity()
                             }

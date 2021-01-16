@@ -43,6 +43,8 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
     private val packetWriteInputStream = PipedInputStream()
     val outputStream = PipedOutputStream(packetWriteInputStream)
 
+    var connected = false
+
     override fun onServiceAdded(status: Int, service: BluetoothGattService?) {
         val gattStatus = GattStatus(status)
         when (service?.uuid) {
@@ -114,6 +116,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         if (targetDevice.address == device!!.address) {
             if (characteristic?.uuid == BlueGATTConstants.UUIDs.META_CHARACTERISTIC_SERVER) {
                 Timber.d("Meta queried")
+                connected = true
                 if (!bluetoothGattServer.sendResponse(device, requestId, 0, offset, BlueGATTConstants.SERVER_META_RESPONSE)) {
                     Timber.e("Error sending meta response to device")
                     closePebble()
