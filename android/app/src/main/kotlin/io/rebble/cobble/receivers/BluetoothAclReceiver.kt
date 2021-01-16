@@ -13,7 +13,7 @@ class BluetoothAclReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != BluetoothDevice.ACTION_ACL_CONNECTED) {
             return
-        }/*
+        }
 
         val device: BluetoothDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                 ?: return
@@ -35,6 +35,6 @@ class BluetoothAclReceiver : BroadcastReceiver() {
                     connectionLooper.connectToWatch(device.address)
                 }
             }
-        }*/
+        }
     }
 }
