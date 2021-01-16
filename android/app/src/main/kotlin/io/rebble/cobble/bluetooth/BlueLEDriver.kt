@@ -185,6 +185,7 @@ class BlueLEDriver(
                     val servicesRes = gatt!!.discoverServices()
                     if (servicesRes != null && servicesRes.isSuccess()) {
                         if (gatt?.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)?.getCharacteristic(BlueGATTConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC) != null) {
+                            Timber.d("Subscribing to connparams")
                             if (connectionParamManager!!.subscribe()) {
                                 Timber.d("Starting connectivity after connparams")
                                 deviceConnectivity()

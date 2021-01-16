@@ -19,23 +19,27 @@ class ConnectionParamManager(val gatt: BlueGATTConnection) {
                     Timber.e("Conn params characteristic null")
                 } else {
                     val configDescriptor = characteristic.getDescriptor(BlueGATTConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR)
-                    if (gatt.writeDescriptor(configDescriptor, BlueGATTConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)?.isSuccess() == true) {
-                        if (gatt.setCharacteristicNotification(characteristic, true)) {
-                            val mgmtData = ByteBuffer.allocate(2)
-                            mgmtData.put(0)
-                            mgmtData.put(1) // disablePebbleParamManagement
-                            if (gatt.writeCharacteristic(characteristic, mgmtData.array())?.isSuccess() == true) {
-                                Timber.d("Configured successfully")
+                    if (gatt.readDescriptor(configDescriptor)?.descriptor?.value.contentEquals(BlueGATTConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)) {
+                        Timber.w("Already subscribed to conn params")
+                    }else {
+                        if (gatt.writeDescriptor(configDescriptor, BlueGATTConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)?.isSuccess() == true) {
+                            if (gatt.setCharacteristicNotification(characteristic, true)) {
+                                val mgmtData = ByteBuffer.allocate(2)
+                                mgmtData.put(0)
+                                mgmtData.put(1) // disablePebbleParamManagement
+                                if (gatt.writeCharacteristic(characteristic, mgmtData.array())?.isSuccess() == true) {
+                                    Timber.d("Configured successfully")
+                                    return true
+                                } else {
+                                    Timber.e("Couldn't write conn param config")
+                                }
                                 return true
                             } else {
-                                Timber.e("Couldn't write conn param config")
+                                Timber.e("BluetoothGatt refused to subscribe")
                             }
-                            return true
                         } else {
-                            Timber.e("BluetoothGatt refused to subscribe")
+                            Timber.e("Failed to write subscribe value")
                         }
-                    } else {
-                        Timber.e("Failed to write subscribe value")
                     }
                 }
             }
