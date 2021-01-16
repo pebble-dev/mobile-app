@@ -24,14 +24,14 @@ class BluetoothAclReceiver : BroadcastReceiver() {
         val connectionLooper = component.createConnectionLooper()
 
         if (pairedStorage.getMacAddressOfDefaultPebble() == device.address &&
-                connectionLooper.connectionState.value is ConnectionState.Connecting) {
+                connectionLooper.connectionState.value is ConnectionState.WaitingForReconnect) {
             // After ACL is established, Pebble still needs some time to initialize
             // Attempt connection after one second
 
             GlobalScope.launch(Dispatchers.Main) {
                 delay(1000)
 
-                if (connectionLooper.connectionState.value is ConnectionState.Connecting) {
+                if (connectionLooper.connectionState.value is ConnectionState.WaitingForReconnect) {
                     connectionLooper.connectToWatch(device.address)
                 }
             }
