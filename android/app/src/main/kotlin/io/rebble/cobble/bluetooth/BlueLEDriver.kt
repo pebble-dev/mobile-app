@@ -57,6 +57,7 @@ class BlueLEDriver(
     }
 
     suspend fun closePebble() {
+        gattDriver?.closePebble()
         gatt?.disconnect()
         gatt = null
         connectionState = LEConnectionState.CLOSED
@@ -103,7 +104,7 @@ class BlueLEDriver(
                                     targetPebble?.createBond()
                                 }
                                 status = connectivityWatcher!!.getStatus()
-                                if (status.paired && targetPebble?.bondState == BluetoothDevice.BOND_BONDED) {
+                                if (status.paired && targetPebble?.bondState != BluetoothDevice.BOND_NONE) {
                                     Timber.d("Paired successfully, connecting gattDriver")
                                     connect()
                                     return
