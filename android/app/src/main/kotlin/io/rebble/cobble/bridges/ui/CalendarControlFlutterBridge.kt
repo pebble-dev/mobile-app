@@ -8,6 +8,7 @@ import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.Debouncer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 class CalendarControlFlutterBridge @Inject constructor(
@@ -23,6 +24,7 @@ class CalendarControlFlutterBridge @Inject constructor(
     }
 
     override fun requestCalendarSync() {
+        Timber.d("Request calendar sync %s", connectionLooper.connectionState.value)
         if (connectionLooper.connectionState.value is ConnectionState.Disconnected) {
             // No need to do anything. Calendar will be re-synced automatically when service
             // is restarted
@@ -32,6 +34,7 @@ class CalendarControlFlutterBridge @Inject constructor(
         // Use debouncer to ensure user quickly selecting his/hers calendars will not trigger too
         // many sync requests
         debouncer.executeDebouncing {
+            Timber.d("Sync calendar on request after debounce")
             calendarFlutterBridge.syncCalendar()
         }
     }

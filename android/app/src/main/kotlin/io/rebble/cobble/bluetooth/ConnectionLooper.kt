@@ -46,7 +46,6 @@ class ConnectionLooper @Inject constructor(
 
 
                     val lastWatch = connectionState.value.watchOrNull
-                    _connectionState.value = ConnectionState.Connecting(lastWatch)
 
                     retryTime *= 2
                     if (retryTime > MAX_RETRY_TIME) {
@@ -55,6 +54,7 @@ class ConnectionLooper @Inject constructor(
                         break
                     }
                     Timber.d("Watch connection failed, waiting and reconnecting after $retryTime ms")
+                    _connectionState.value = ConnectionState.WaitingForReconnect(lastWatch)
                     delay(retryTime)
                 }
             } finally {

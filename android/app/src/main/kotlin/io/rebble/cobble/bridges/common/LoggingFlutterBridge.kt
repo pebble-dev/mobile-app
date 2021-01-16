@@ -14,22 +14,22 @@ class LoggingFlutterBridge @Inject constructor(
     }
 
     override fun v(arg: Pigeons.StringWrapper) {
-        Timber.v(arg.value)
+        Timber.v("%s", arg.value)
     }
 
     override fun d(arg: Pigeons.StringWrapper) {
-        Timber.d(arg.value)
+        Timber.d("%s", arg.value)
     }
 
     override fun i(arg: Pigeons.StringWrapper) {
-        Timber.i(arg.value)
+        Timber.i("%s", arg.value)
     }
 
     override fun w(arg: Pigeons.StringWrapper) {
-        Timber.w(arg.value)
+        Timber.w("%s", arg.value)
     }
 
     override fun e(arg: Pigeons.StringWrapper) {
-        Timber.e(arg.value)
+        Timber.e("%s", arg.value)
     }
 }
