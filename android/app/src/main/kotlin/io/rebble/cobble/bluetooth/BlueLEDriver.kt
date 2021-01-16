@@ -124,6 +124,7 @@ class BlueLEDriver(
             }
         }else if (gattDriver?.connected == true){
             Timber.d("Connectivity: device already connected")
+            connect()
         }else {
             closePebble()
         }
