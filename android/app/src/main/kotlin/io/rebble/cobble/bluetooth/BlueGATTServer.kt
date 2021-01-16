@@ -86,6 +86,8 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                                         sendAck(packet.sequence)
                                     } catch (e: IOException) {
                                         Timber.e(e, "Error writing to packetOutputStream")
+                                        closePebble()
+                                        return@launch
                                     }
                                 }else {
                                     Timber.w("Unexpected sequence ${packet.sequence}")
