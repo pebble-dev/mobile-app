@@ -103,13 +103,15 @@ class BlueLEDriver(
                                     targetPebble?.createBond()
                                 }
                                 status = connectivityWatcher!!.getStatus()
-                                if (status.paired) {
+                                if (status.paired && targetPebble?.bondState == BluetoothDevice.BOND_BONDED) {
                                     Timber.d("Paired successfully, connecting gattDriver")
                                     connect()
                                     return
                                 } else {
                                     Timber.e("Failed to pair")
                                 }
+                            } else {
+                                Timber.e("Pair trigger cannot be written to")
                             }
                         } else {
                             Timber.e("pairTrigger is null")
@@ -118,10 +120,9 @@ class BlueLEDriver(
                         Timber.e("pairService is null")
                     }
                 }
-            } else {
-                closePebble()
-                throw Exception() //TODO
             }
+        }else if (gattDriver?.connected == true){
+            Timber.d("Connectivity: device already connected")
         }else {
             closePebble()
         }
@@ -206,6 +207,8 @@ class BlueLEDriver(
                     protocolIO!!.readLoop()
                     gattDriver!!.closePebble()
                     sendLoop.cancel()
+                }else {
+                    Timber.e("connectionStatus was false")
                 }
             }
         } finally {

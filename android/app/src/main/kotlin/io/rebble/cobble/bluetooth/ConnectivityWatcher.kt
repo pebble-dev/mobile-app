@@ -84,6 +84,7 @@ class ConnectivityWatcher(val gatt: BlueGATTConnection) {
                             Timber.e("Failed to write subscribe value to connectivityCharacteristic's configDescriptor")
                         } else {
                             isSubscribed = true
+                            Timber.d("Subscribed successfully")
                             return true
                         }
                     }
