@@ -14,6 +14,9 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.coroutines.coroutineContext
 
+/**
+ * Common I/O for sending packets over LE or classic bluetooth
+ */
 @Suppress("BlockingMethodInNonBlockingContext")
 class ProtocolIO(private val inputStream: InputStream, private val outputStream: OutputStream, private val protocolHandler: ProtocolHandler) {
     suspend fun readLoop() {

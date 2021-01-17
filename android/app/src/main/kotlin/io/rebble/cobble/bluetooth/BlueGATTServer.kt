@@ -184,6 +184,9 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         }
     }
 
+    /**
+     * Create the server and add its characteristics for the watch to use
+     */
     suspend fun initServer(): Boolean {
         val bluetoothManager = context.applicationContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothGattServer = bluetoothManager.openGattServer(context, this)!!
@@ -206,20 +209,32 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         return true
     }
 
+    /**
+     * Returns the next sequence to use and increments it
+     */
     private fun getSeq(): Int {
         if (seq == 32) seq = 0
         return seq++
     }
 
+    /**
+     * Returns the expected sequence the current watch packet should have and increments it for the next one
+     */
     private fun getExpectedRemoteSeq(): Int {
         if (remoteSeq == 32) remoteSeq = 0
         return remoteSeq++
     }
 
+    /**
+     * Update the MTU for the server to check packet sizes against
+     */
     fun setMTU(newMTU: Int) {
         this.mtu = newMTU
     }
 
+    /**
+     * attempt to write to data characteristic, error conditions being no ACK received or failing to get the write lock
+     */
     private suspend fun attemptWrite(packet: GATTPacket) {
         if (packet.type == GATTPacket.PacketType.DATA || packet.type == GATTPacket.PacketType.RESET) ackPending[packet.sequence] = CompletableDeferred(packet)
         var success = false
@@ -248,6 +263,9 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         }
     }
 
+    /**
+     * Loop intended to be in its own 'thread' that reads the packet write stream and sends it to the watch in discrete packets of size MTU (-2 to account for GATT packet frame)
+     */
     private suspend fun packetWriter() {
         Timber.d("packetWriter launched")
         while (true) {
@@ -263,12 +281,18 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         }
     }
 
+    /**
+     * Send reset packet to watch (usually should never need to happen) that resets sequence and pending pebble packet buffer
+     */
     private suspend fun requestReset() {
         Timber.w("Requesting reset")
         attemptWrite(GATTPacket(GATTPacket.PacketType.RESET, getSeq()))
         reset()
     }
 
+    /**
+     * Writes to data characteristic and notify watch that new data is available, within a lock
+     */
     private suspend fun requestWritePacket(data: ByteArray): Boolean {
         try {
             return withTimeout(5000) {
@@ -282,6 +306,9 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         }
     }
 
+    /**
+     * Phone side reset, clears buffers, pending packets and resets sequence back to 0
+     */
     private suspend fun reset() {
         Timber.d("Resetting LE")
         writerCoroutine?.cancel()
@@ -304,6 +331,10 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         }
     }
 
+    /**
+     * Send an ACK for a packet
+     * @param reset used to ACK a reset instead of data
+     */
     private suspend fun sendAck(sequence: Int, reset: Boolean = false) {
         Timber.d("Sending ACK for $sequence")
         val ack = GATTPacket(if (reset) GATTPacket.PacketType.RESET_ACK else GATTPacket.PacketType.ACK, sequence)
@@ -311,6 +342,9 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         lastAck = ack
     }
 
+    /**
+     * Simply suspends the caller until a connection succeeded or failed, AKA its connected or not
+     */
     suspend fun connectPebble(): Boolean {
         return connectionStatusChannel.receive()
     }

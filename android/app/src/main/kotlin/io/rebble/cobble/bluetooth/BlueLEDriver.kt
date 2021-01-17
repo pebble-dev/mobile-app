@@ -83,6 +83,9 @@ class BlueLEDriver(
         return byteArr
     }
 
+    /**
+     * Subscribes to connectivity and ensures watch is paired before initiating the connection
+     */
     suspend fun deviceConnectivity() {
         if (connectivityWatcher!!.subscribe()) {
             var status = connectivityWatcher!!.getStatus()
@@ -150,7 +153,7 @@ class BlueLEDriver(
 
             if (targetPebble != null && connectionState == LEConnectionState.CONNECTED && device.address == this@BlueLEDriver.targetPebble!!.address) {
                 emit(SingleConnectionStatus.Connected(device))
-            } else if (connectionState != LEConnectionState.IDLE) {
+            } else if (connectionState != LEConnectionState.IDLE) { // If not in idle state this is a stale instance
                 return@flow
             } else {
                 emit(SingleConnectionStatus.Connecting(device))

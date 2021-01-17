@@ -3,6 +3,9 @@ package io.rebble.cobble.bluetooth
 import timber.log.Timber
 import java.nio.ByteBuffer
 
+/**
+ * Handles negotiating and reading changes to connection parameters, currently this feature is unused by us so it just tells the pebble to disable it
+ */
 class ConnectionParamManager(val gatt: BlueGATTConnection) {
     private var subscribed = false
 

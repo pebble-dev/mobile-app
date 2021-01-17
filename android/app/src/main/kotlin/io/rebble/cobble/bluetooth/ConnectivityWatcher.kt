@@ -6,6 +6,9 @@ import timber.log.Timber
 import kotlin.experimental.and
 import kotlin.properties.Delegates
 
+/**
+ * Talks to watch connectivity characteristic describing pair status, connection, and other parameters
+ */
 class ConnectivityWatcher(val gatt: BlueGATTConnection) {
     private var isSubscribed = false
 
