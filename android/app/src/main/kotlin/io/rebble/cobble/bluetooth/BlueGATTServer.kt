@@ -94,10 +94,12 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                                     }
                                 }else {
                                     Timber.w("Unexpected sequence ${packet.sequence}")
-                                    if (lastAck != null) {
+                                    if (lastAck != null && lastAck!!.type != GATTPacket.PacketType.RESET_ACK) {
                                         Timber.d("Re-sending previous ACK")
                                         remoteSeq = lastAck!!.sequence + 1
                                         sendAck(lastAck!!.sequence)
+                                    }else {
+                                        requestReset()
                                     }
                                 }
                             }
@@ -261,6 +263,12 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         }
     }
 
+    private suspend fun requestReset() {
+        Timber.w("Requesting reset")
+        attemptWrite(GATTPacket(GATTPacket.PacketType.RESET, getSeq()))
+        reset()
+    }
+
     private suspend fun requestWritePacket(data: ByteArray): Boolean {
         try {
             return withTimeout(5000) {
@@ -284,6 +292,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         ackPending.clear()
         remoteSeq = 0
         seq = 0
+        lastAck = null
 
         val alreadyRunning = writerCoroutine?.isActive == true
         if (alreadyRunning) {
