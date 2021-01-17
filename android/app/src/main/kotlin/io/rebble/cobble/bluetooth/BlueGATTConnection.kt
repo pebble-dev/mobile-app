@@ -111,13 +111,25 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
                     }
                 }
                 withTimeout(cbTimeout) {
-                    res = connectionStateChanged.first { a -> a.newState == BluetoothGatt.STATE_CONNECTED }
+                    res = connectionStateChanged.first()
                 }
             }
         } catch (e: TimeoutCancellationException) {
             Timber.e("connectGatt timed out")
         }
-        return if (res?.isSuccess() == true) this else null
+        if (res?.status != BluetoothGatt.GATT_SUCCESS) {
+            Timber.e("connectGatt status ${res?.status}")
+        }
+        return if (res?.isSuccess() == true && res?.newState == BluetoothGatt.STATE_CONNECTED) {
+            this
+        }else {
+            close()
+            null
+        }
+    }
+
+    fun close() {
+        gatt?.close()
     }
 
     suspend fun requestMtu(mtu: Int): MTUResult? {
