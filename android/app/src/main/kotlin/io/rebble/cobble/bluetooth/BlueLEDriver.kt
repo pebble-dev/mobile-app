@@ -8,6 +8,7 @@ import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import okio.Timeout
 import timber.log.Timber
 import java.io.*
 
@@ -105,6 +106,13 @@ class BlueLEDriver(
                                     targetPebble?.createBond()
                                 }
                                 status = connectivityWatcher!!.getStatus()
+                                if (!status.paired && status.encrypted) {
+                                    try {
+                                        withTimeout(10000) {
+                                            status = connectivityWatcher!!.getStatus()
+                                        }
+                                    }catch (e: TimeoutCancellationException) {}
+                                }
                                 if (status.paired && targetPebble?.bondState != BluetoothDevice.BOND_NONE) {
                                     Timber.d("Paired successfully, connecting gattDriver")
                                     connect()
