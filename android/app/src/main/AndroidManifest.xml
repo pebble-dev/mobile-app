@@ -29,6 +29,10 @@
         android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"
         android:maxSdkVersion="26" />
 
+    <!-- Required to get app name for notifications in Android 11 -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+
     <uses-feature android:name="android.software.companion_device_setup" />
     <application
         android:name=".CobbleApplication"
