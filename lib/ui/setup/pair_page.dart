@@ -38,7 +38,6 @@ class _PairPageState extends State<PairPage>
 
   List<PebbleScanDevice> _pebbles = [];
   bool _scanning = false;
-  bool _firstRun = false;
 
   @override
   void initState() {
@@ -46,7 +45,6 @@ class _PairPageState extends State<PairPage>
     ScanCallbacks.setup(this);
     PairCallbacks.setup(this);
     log("Prestart");
-    _isFirstRun();
     scanControl.startBleScan();
   }
 
@@ -75,16 +73,6 @@ class _PairPageState extends State<PairPage>
         scanControl.startClassicScan();
       });
     }
-  }
-
-  void _isFirstRun() {
-    SharedPreferences.getInstance().then((value) {
-      if (!value.containsKey("firstRun")) {
-        _firstRun = true;
-      } else {
-        _firstRun = false;
-      }
-    });
   }
 
   void _targetPebble(PebbleScanDevice dev) {
@@ -130,13 +118,6 @@ class _PairPageState extends State<PairPage>
     setState(() {
       pairedStorage.register(dev);
 
-    setState(() {
-      PairedStorage.register(dev)
-          .then((_) => PairedStorage.getDefault().then((def) {
-                if (def == null) {
-                  PairedStorage.setDefault(dev.address);
-                }
-              })); // Register + set as default if no default set
       SharedPreferences.getInstance().then((value) {
         if (!value.containsKey("firstRun")) {
           context.pushReplacement(MoreSetup());
