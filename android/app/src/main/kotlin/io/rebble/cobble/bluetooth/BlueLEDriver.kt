@@ -61,6 +61,7 @@ class BlueLEDriver(
     }
 
     suspend fun closePebble() {
+        Timber.d("Driver shutting down")
         gattDriver?.closePebble()
         gatt?.disconnect()
         gatt?.close()
@@ -101,14 +102,7 @@ class BlueLEDriver(
                             val bondReceiver = BluetoothBondReceiver.registerBondReceiver(context, targetPebble!!.address)
                             if (pairTrigger.properties and BluetoothGattCharacteristic.PROPERTY_WRITE > 0) {
                                 GlobalScope.launch(Dispatchers.IO) { gatt!!.writeCharacteristic(pairTrigger, pairTriggerFlagsToBytes(status.supportsPinningWithoutSlaveSecurity, belowLollipop = false, clientMode = false)) }
-                                if (status.supportsPinningWithoutSlaveSecurity) {
-                                    /*if (!targetPebble?.createBond()!!) {
-                                        Timber.e("Failed to create bond")
-                                        closePebble()
-                                        return
-                                    }*/
-                                    targetPebble?.createBond()
-                                }
+                                targetPebble?.createBond()
                                 var bondResult = BluetoothDevice.BOND_NONE
                                 try {
                                     withTimeout(30000) {
@@ -174,7 +168,7 @@ class BlueLEDriver(
                         connectionStatusChannel.offer(false)
                         return@launch
                     }
-                    gatt = targetPebble!!.connectGatt(context)
+                    gatt = targetPebble!!.connectGatt(context, 15000)
                     if (gatt == null) {
                         Timber.e("connectGatt null")
                         connectionStatusChannel.offer(false)
