@@ -275,8 +275,8 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         packetWriteInputStream.skip(packetWriteInputStream.available().toLong())
         ackPending.forEach{
             it.value.cancel()
-            ackPending.remove(it.key)
         }
+        ackPending.clear()
         remoteSeq = 0
         seq = 0
 
