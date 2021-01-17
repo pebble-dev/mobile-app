@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import timber.log.Timber
+import java.lang.Exception
 
 
 class BlueLEDriver(
@@ -101,7 +102,7 @@ class BlueLEDriver(
                         if (pairTrigger != null) {
                             val bondReceiver = BluetoothBondReceiver.registerBondReceiver(context, targetPebble!!.address)
                             if (pairTrigger.properties and BluetoothGattCharacteristic.PROPERTY_WRITE > 0) {
-                                GlobalScope.launch(Dispatchers.IO) { gatt!!.writeCharacteristic(pairTrigger, pairTriggerFlagsToBytes(status.supportsPinningWithoutSlaveSecurity, belowLollipop = false, clientMode = false)) }
+                                GlobalScope.launch(Dispatchers.Main.immediate) { gatt!!.writeCharacteristic(pairTrigger, pairTriggerFlagsToBytes(status.supportsPinningWithoutSlaveSecurity, belowLollipop = false, clientMode = false)) }
                                 targetPebble?.createBond()
                                 var bondResult = BluetoothDevice.BOND_NONE
                                 try {
@@ -143,17 +144,15 @@ class BlueLEDriver(
     override fun startSingleWatchConnection(device: BluetoothDevice): Flow<SingleConnectionStatus> = flow {
         var connectJob: Job? = null
         try {
-            coroutineScope {
-                if (device.type == BluetoothDevice.DEVICE_TYPE_CLASSIC || device.type == BluetoothDevice.DEVICE_TYPE_UNKNOWN) {
-                    throw IllegalArgumentException("Non-LE device should not use LE driver")
-                }
+            if (device.type == BluetoothDevice.DEVICE_TYPE_CLASSIC || device.type == BluetoothDevice.DEVICE_TYPE_UNKNOWN) {
+                throw IllegalArgumentException("Non-LE device should not use LE driver")
+            }
 
-                if (targetPebble != null && connectionState == LEConnectionState.CONNECTED && device.address == this@BlueLEDriver.targetPebble!!.address) {
-                    emit(SingleConnectionStatus.Connected(device))
-                    return@coroutineScope
-                } else if (connectionState != LEConnectionState.IDLE) {
-                    return@coroutineScope
-                }
+            if (targetPebble != null && connectionState == LEConnectionState.CONNECTED && device.address == this@BlueLEDriver.targetPebble!!.address) {
+                emit(SingleConnectionStatus.Connected(device))
+            } else if (connectionState != LEConnectionState.IDLE) {
+                return@flow
+            } else {
                 emit(SingleConnectionStatus.Connecting(device))
 
                 this@BlueLEDriver.targetPebble = device
@@ -162,13 +161,13 @@ class BlueLEDriver(
                 gattDriver = server
 
                 connectionState = LEConnectionState.CONNECTING
-                connectJob = launch(Dispatchers.IO) {
+                connectJob = GlobalScope.launch(Dispatchers.IO) {
                     if (!server.initServer()) {
                         Timber.e("initServer failed")
                         connectionStatusChannel.offer(false)
                         return@launch
                     }
-                    gatt = targetPebble!!.connectGatt(context, 15000)
+                    gatt = targetPebble!!.connectGatt(context)
                     if (gatt == null) {
                         Timber.e("connectGatt null")
                         connectionStatusChannel.offer(false)
@@ -211,21 +210,21 @@ class BlueLEDriver(
                         closePebble()
                     }
                 }
-                if (connectionStatusChannel.receive()) {
-                    val sendLoop = launch { protocolHandler.startPacketSendingLoop(::sendPacket) }
-                    emit(SingleConnectionStatus.Connected(device))
-                    protocolIO = ProtocolIO(gattDriver!!.inputStream, gattDriver!!.outputStream, protocolHandler)
-                    protocolIO!!.readLoop()
-                    gattDriver!!.closePebble()
-                    sendLoop.cancel()
-                }else {
-                    Timber.e("connectionStatus was false")
-                }
+            }
+
+            if (connectionStatusChannel.receive()) {
+                val sendLoop = GlobalScope.launch { protocolHandler.startPacketSendingLoop(::sendPacket) }
+                emit(SingleConnectionStatus.Connected(device))
+                protocolIO = ProtocolIO(gattDriver!!.inputStream, gattDriver!!.outputStream, protocolHandler)
+                protocolIO!!.readLoop()
+                sendLoop.cancel()
+                Timber.d("readLoop returned")
+            }else {
+                Timber.e("connectionStatus was false")
             }
         } finally {
-            connectJob?.cancelAndJoin()
-            gattDriver?.closePebble()
             closePebble()
+            connectJob?.cancelAndJoin()
         }
     }
 
