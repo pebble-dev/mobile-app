@@ -33,6 +33,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
     private var mtu = BlueGATTConstants.DEFAULT_MTU
     private var seq: Int = 0
     private var remoteSeq: Int = 0
+    private var lastAck: GATTPacket? = null
 
     private lateinit var bluetoothGattServer: BluetoothGattServer
     private lateinit var dataCharacteristic: BluetoothGattCharacteristic
@@ -93,7 +94,11 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                                     }
                                 }else {
                                     Timber.w("Unexpected sequence ${packet.sequence}")
-                                    //TODO: resend last ack if any
+                                    if (lastAck != null) {
+                                        Timber.d("Re-sending previous ACK")
+                                        remoteSeq = lastAck!!.sequence + 1
+                                        sendAck(lastAck!!.sequence)
+                                    }
                                 }
                             }
                         }
@@ -292,12 +297,9 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
 
     private suspend fun sendAck(sequence: Int, reset: Boolean = false) {
         Timber.d("Sending ACK for $sequence")
-        attemptWrite(GATTPacket(if (reset) GATTPacket.PacketType.RESET_ACK else GATTPacket.PacketType.ACK, sequence))
-    }
-
-    suspend fun requestReset() {
-        val thisSeq = getSeq()
-        attemptWrite(GATTPacket(GATTPacket.PacketType.RESET, thisSeq))
+        val ack = GATTPacket(if (reset) GATTPacket.PacketType.RESET_ACK else GATTPacket.PacketType.ACK, sequence)
+        attemptWrite(ack)
+        lastAck = ack
     }
 
     suspend fun connectPebble(): Boolean {
