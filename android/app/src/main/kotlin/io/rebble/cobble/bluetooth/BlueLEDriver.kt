@@ -1,16 +1,19 @@
 package io.rebble.cobble.bluetooth
 
-import android.bluetooth.*
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothGattCharacteristic
 import android.content.Context
+import android.content.IntentFilter
+import io.rebble.cobble.receivers.BluetoothBondReceiver
 import io.rebble.cobble.util.toBytes
 import io.rebble.cobble.util.toHexString
 import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
-import okio.Timeout
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import timber.log.Timber
-import java.io.*
 
 
 class BlueLEDriver(
@@ -95,6 +98,7 @@ class BlueLEDriver(
                     if (pairService != null) {
                         val pairTrigger = pairService.getCharacteristic(BlueGATTConstants.UUIDs.PAIRING_TRIGGER_CHARACTERISTIC)
                         if (pairTrigger != null) {
+                            val bondReceiver = BluetoothBondReceiver.registerBondReceiver(context, targetPebble!!.address)
                             if (pairTrigger.properties and BluetoothGattCharacteristic.PROPERTY_WRITE > 0) {
                                 GlobalScope.launch(Dispatchers.IO) { gatt!!.writeCharacteristic(pairTrigger, pairTriggerFlagsToBytes(status.supportsPinningWithoutSlaveSecurity, belowLollipop = false, clientMode = false)) }
                                 if (status.supportsPinningWithoutSlaveSecurity) {
@@ -105,15 +109,17 @@ class BlueLEDriver(
                                     }*/
                                     targetPebble?.createBond()
                                 }
-                                status = connectivityWatcher!!.getStatus()
-                                if (!status.paired && status.encrypted) {
-                                    try {
-                                        withTimeout(10000) {
-                                            status = connectivityWatcher!!.getStatus()
-                                        }
-                                    }catch (e: TimeoutCancellationException) {}
+                                var bondResult = BluetoothDevice.BOND_NONE
+                                try {
+                                    withTimeout(30000) {
+                                        bondResult = bondReceiver.awaitBondResult()
+                                    }
+                                } catch (e: TimeoutCancellationException) {
+                                    Timber.w("Timed out waiting for bond result")
+                                } finally {
+                                    bondReceiver.unregister()
                                 }
-                                if (status.paired && targetPebble?.bondState != BluetoothDevice.BOND_NONE) {
+                                if (bondResult == BluetoothDevice.BOND_BONDED) {
                                     Timber.d("Paired successfully, connecting gattDriver")
                                     connect()
                                     return
