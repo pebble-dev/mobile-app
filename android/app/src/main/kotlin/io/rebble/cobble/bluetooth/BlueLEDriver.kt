@@ -59,6 +59,7 @@ class BlueLEDriver(
     suspend fun closePebble() {
         gattDriver?.closePebble()
         gatt?.disconnect()
+        gatt?.close()
         gatt = null
         connectionState = LEConnectionState.CLOSED
         connectionStatusChannel.offer(false)
