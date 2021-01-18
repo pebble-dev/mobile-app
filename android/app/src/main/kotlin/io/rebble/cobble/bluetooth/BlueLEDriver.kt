@@ -177,9 +177,9 @@ class BlueLEDriver(
                         return@launch
                     }
 
-                    val mtu = gatt?.requestMtu(339)
+                    val mtu = gatt?.requestMtu(506)
                     if (mtu?.isSuccess() == true) {
-                        Timber.d("MTU Changed, new mtu $mtu")
+                        Timber.d("MTU Changed, new mtu ${mtu.mtu}")
                         gattDriver!!.setMTU(mtu.mtu)
                     }
 
