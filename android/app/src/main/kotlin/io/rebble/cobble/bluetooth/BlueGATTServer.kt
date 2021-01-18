@@ -34,6 +34,11 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
     private var lastAck: GATTPacket? = null
     private var pendingSendAck: GATTPacket? = null
     private var packetsInFlight = 0
+    private var gattConnectionVersion = GATTPacket.PPoGConnectionVersion.ZERO
+    private var maxRxWindow: Byte = 4
+    private var currentRxPend = 0
+    private var maxTxWindow: Byte = 4
+    private var delayedAckJob: Job? = null
 
     private lateinit var bluetoothGattServer: BluetoothGattServer
     private lateinit var dataCharacteristic: BluetoothGattCharacteristic
@@ -75,6 +80,14 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                     val packet = GATTPacket(value)
                     when (packet.type) {
                         GATTPacket.PacketType.RESET_ACK, GATTPacket.PacketType.ACK -> {
+                            if (packet.type == GATTPacket.PacketType.RESET_ACK) {
+                                sendResetAck(packet.sequence, BlueGATTConstants.MAX_RX_WINDOW, BlueGATTConstants.MAX_TX_WINDOW)
+                                if (gattConnectionVersion.supportsWindowNegotiation) {
+                                    maxRxWindow = packet.getMaxRXWindow().coerceAtMost(BlueGATTConstants.MAX_RX_WINDOW)
+                                    maxTxWindow = packet.getMaxTXWindow().coerceAtMost(BlueGATTConstants.MAX_TX_WINDOW)
+                                    Timber.d("Windows negotiated: maxRxWindow = $maxRxWindow, maxTxWindow = $maxTxWindow")
+                                }
+                            }
                             for (i in 0..packet.sequence) {
                                 ackPending.remove(i)?.complete(packet)
                                 packetsInFlight = (packetsInFlight-1).coerceAtLeast(0)
@@ -83,10 +96,10 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                         }
                         GATTPacket.PacketType.DATA -> {
                             readMutex.withLock {
-                                val expected = getExpectedRemoteSeq()
-                                Timber.d("Packet ${packet.sequence}, Expected $expected")
-                                if (packet.sequence == expected) {
+                                Timber.d("Packet ${packet.sequence}, Expected $remoteSeq")
+                                if (packet.sequence == remoteSeq) {
                                     try {
+                                        remoteSeq = getNextSeq(remoteSeq)
                                         packetOutputStream.write(packet.data.copyOfRange(1, packet.data.size))
                                         packetOutputStream.flush()
                                         sendAck(packet.sequence)
@@ -109,8 +122,10 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                         }
                         GATTPacket.PacketType.RESET -> {
                             if (seq != 0) Timber.w("Got reset on non zero sequence")
+                            gattConnectionVersion = packet.getPPoGConnectionVersion()
+                            Timber.d("gattConnectionVersion updated: $gattConnectionVersion")
                             reset()
-                            sendAck(packet.sequence, true)
+                            sendResetAck(packet.sequence, BlueGATTConstants.MAX_RX_WINDOW, BlueGATTConstants.MAX_TX_WINDOW)
                         }
                     }
                 }
@@ -213,19 +228,10 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
     }
 
     /**
-     * Returns the next sequence to use and increments it
+     * Returns the next sequence that will be used
      */
-    private fun getSeq(): Int {
-        if (seq == 32) seq = 0
-        return seq++
-    }
-
-    /**
-     * Returns the expected sequence the current watch packet should have and increments it for the next one
-     */
-    private fun getExpectedRemoteSeq(): Int {
-        if (remoteSeq == 32) remoteSeq = 0
-        return remoteSeq++
+    private fun getNextSeq(current: Int): Int {
+        return (current + 1) % 32
     }
 
     /**
@@ -239,7 +245,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
      * attempt to write to data characteristic, error conditions being no ACK received or failing to get the write lock
      */
     private suspend fun attemptWrite(packet: GATTPacket) {
-        Timber.d("Sending ${packet.sequence}")
+        Timber.d("Sending ${packet.type}: ${packet.sequence}")
         if (packet.type == GATTPacket.PacketType.DATA || packet.type == GATTPacket.PacketType.RESET) ackPending[packet.sequence] = CompletableDeferred(packet)
         var success = false
         var attempt = 0
@@ -276,7 +282,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
             val count = packetWriteInputStream.available().coerceAtMost(mtu-2)
             val buf = ByteBuffer.allocate(count)
             packetWriteInputStream.readFully(buf, 0, count)
-            emit(GATTPacket(GATTPacket.PacketType.DATA, getSeq(), buf.array()))
+            emit(GATTPacket(GATTPacket.PacketType.DATA, seq, buf.array()))
         }
     }
 
@@ -285,7 +291,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
      */
     private suspend fun requestReset() {
         Timber.w("Requesting reset")
-        attemptWrite(GATTPacket(GATTPacket.PacketType.RESET, getSeq()))
+        attemptWrite(GATTPacket(GATTPacket.PacketType.RESET, 0, byteArrayOf(gattConnectionVersion.value)))
         reset()
     }
 
@@ -353,12 +359,41 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
 
     /**
      * Send an ACK for a packet
-     * @param reset used to ACK a reset instead of data
      */
-    private suspend fun sendAck(sequence: Int, reset: Boolean = false) {
+    private suspend fun sendAck(sequence: Int) {
         Timber.d("Sending ACK for $sequence")
-        val ack = GATTPacket(if (reset) GATTPacket.PacketType.RESET_ACK else GATTPacket.PacketType.ACK, sequence)
+
+        val ack = GATTPacket(GATTPacket.PacketType.ACK, sequence)
+        if (!gattConnectionVersion.supportsCoalescedAcking) {
+            currentRxPend = 0
+            pendingSendAck = ack
+            return
+        }
+
+        currentRxPend++
+        delayedAckJob?.cancel()
+        if (currentRxPend >= maxRxWindow / 2) {
+            currentRxPend = 0
+            pendingSendAck = ack
+        }else {
+            delayedAckJob = GlobalScope.launch(Dispatchers.IO) {
+                delay(200)
+                currentRxPend = 0
+                pendingSendAck = ack
+            }
+        }
+    }
+
+    /**
+     * Send a reset ACK
+     * @param maxRxWindow the max RX window the watch should use (packets before phone ack)
+     * @param maxTxWindow the max TX window the watch should use (packets before watch ack)
+     */
+    private fun sendResetAck(sequence: Int, maxRxWindow: Byte, maxTxWindow: Byte) {
+        Timber.d("Sending reset ACK for $sequence")
+        val ack = GATTPacket(GATTPacket.PacketType.RESET_ACK, sequence, if (gattConnectionVersion.supportsWindowNegotiation) byteArrayOf(maxRxWindow, maxTxWindow) else null)
         pendingSendAck = ack
+        GlobalScope.launch(Dispatchers.IO) { sendNextPacket() }
     }
 
     /**
