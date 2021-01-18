@@ -25,6 +25,21 @@ class GATTPacket {
         }
     }
 
+    enum class PPoGConnectionVersion(val value: Byte, val supportsWindowNegotiation: Boolean, val supportsCoalescedAcking: Boolean) {
+        ZERO(0, false, false),
+        ONE(1, true, true);
+
+        companion object {
+            fun fromByte(value: Byte): PPoGConnectionVersion {
+                return PPoGConnectionVersion.values().first { it.value == value }
+            }
+        }
+
+        override fun toString(): String {
+            return "< value = $value, supportsWindowNegotiation = $supportsWindowNegotiation, supportsCoalescedAcking = $supportsCoalescedAcking >"
+        }
+    }
+
     val data: ByteArray
     val type: PacketType
     val sequence: Int
@@ -63,5 +78,20 @@ class GATTPacket {
 
     fun toByteArray(): ByteArray {
         return data
+    }
+
+    fun getPPoGConnectionVersion(): PPoGConnectionVersion {
+        if (type != PacketType.RESET) throw IllegalStateException("Function does not apply to packet type")
+        return PPoGConnectionVersion.fromByte(data[1])
+    }
+
+    fun getMaxTXWindow(): Byte {
+        if (type != PacketType.RESET_ACK) throw IllegalStateException("Function does not apply to packet type")
+        return data[2]
+    }
+
+    fun getMaxRXWindow(): Byte {
+        if (type != PacketType.RESET_ACK) throw IllegalStateException("Function does not apply to packet type")
+        return data[1]
     }
 }
