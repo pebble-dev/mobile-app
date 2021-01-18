@@ -24,7 +24,7 @@ class BlueGATTServerTest {
 
     @Before
     fun setUp() {
-        blueLEDriver = BlueLEDriver(InstrumentationRegistry.getInstrumentation().context, protocolHandler)
+        blueLEDriver = BlueLEDriver(InstrumentationRegistry.getInstrumentation().targetContext, protocolHandler)
         remoteDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice("48:91:52:CC:D1:D5")
         if (remoteDevice.bondState != BluetoothDevice.BOND_NONE) remoteDevice::class.java.getMethod("removeBond").invoke(remoteDevice)
     }
