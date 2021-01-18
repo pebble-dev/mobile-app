@@ -27,21 +27,6 @@ class BlueLEDriver(
     private var targetPebble: BluetoothDevice? = null
     private var protocolIO: ProtocolIO? = null
 
-    companion object {
-        fun splitBytesByMTU(bytes: ByteArray, mtu: Int): List<ByteArray> {
-            val stream = bytes.inputStream()
-            val splitList = mutableListOf<ByteArray>()
-
-            var payload = ByteArray(mtu - 1)
-            var count = stream.read(payload)
-            while (count > -1) {
-                splitList.add(payload.copyOfRange(0, count))
-                count = stream.read(payload)
-            }
-            return splitList
-        }
-    }
-
     val connectionStatusChannel = Channel<Boolean>(0)
 
     enum class LEConnectionState {
