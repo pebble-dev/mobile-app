@@ -18,6 +18,7 @@ import kotlin.coroutines.coroutineContext
 import kotlin.experimental.and
 
 class BlueGATTServer(private val targetDevice: BluetoothDevice, private val context: Context) : BluetoothGattServerCallback() {
+    private val serverScope = CoroutineScope(Dispatchers.IO)
     private val serverReady = CompletableDeferred<Boolean>()
     private val connectionStatusChannel = Channel<Boolean>(0)
 
@@ -76,7 +77,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
     override fun onCharacteristicWriteRequest(device: BluetoothDevice?, requestId: Int, characteristic: BluetoothGattCharacteristic?, preparedWrite: Boolean, responseNeeded: Boolean, offset: Int, value: ByteArray?) {
         if (targetDevice.address == device!!.address) {
             if (value != null) {
-                GlobalScope.launch(Dispatchers.IO) {
+                serverScope.launch {
                     val packet = GATTPacket(value)
                     when (packet.type) {
                         GATTPacket.PacketType.RESET_ACK, GATTPacket.PacketType.ACK -> {
@@ -155,7 +156,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         if (targetDevice.address == device!!.address) {
             if (descriptor?.characteristic?.uuid == BlueGATTConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER) {
                 if (value != null) {
-                    GlobalScope.launch(Dispatchers.IO) {
+                    serverScope.launch {
                         if (!bluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, value)) {
                             Timber.e("Failed to send confirm for descriptor write")
                             closePebble()
@@ -325,6 +326,8 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                         attemptWrite(it)
                         seq = getNextSeq(seq)
                     }
+                }else {
+                    delay(5)
                 }
             }
         }
@@ -352,7 +355,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
 
 
         writerFlow = packetFlow()
-        packetFlowHandlerJob = GlobalScope.launch(Dispatchers.IO) { packetFlowHandler() }
+        packetFlowHandlerJob = serverScope.launch { packetFlowHandler() }
         if(!alreadyRunning) {
             connectionStatusChannel.send(true)
         }
@@ -377,7 +380,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
             currentRxPend = 0
             pendingSendAck = ack
         }else {
-            delayedAckJob = GlobalScope.launch(Dispatchers.IO) {
+            delayedAckJob = serverScope.launch {
                 delay(200)
                 currentRxPend = 0
                 pendingSendAck = ack

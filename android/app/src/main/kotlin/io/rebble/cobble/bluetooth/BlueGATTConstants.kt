@@ -26,6 +26,7 @@ object BlueGATTConstants {
 
     val CHARACTERISTIC_SUBSCRIBE_VALUE = byteArrayOf(1, 0)
     val DEFAULT_MTU = 23
+    val TARGET_MTU = 339
     val MAX_RX_WINDOW: Byte = 25
     val MAX_TX_WINDOW: Byte = 25
 
