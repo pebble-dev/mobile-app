@@ -393,7 +393,6 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         Timber.d("Sending reset ACK for $sequence")
         val ack = GATTPacket(GATTPacket.PacketType.RESET_ACK, sequence, if (gattConnectionVersion.supportsWindowNegotiation) byteArrayOf(maxRxWindow, maxTxWindow) else null)
         pendingSendAck = ack
-        GlobalScope.launch(Dispatchers.IO) { sendNextPacket() }
     }
 
     /**
