@@ -3,7 +3,6 @@ package io.rebble.cobble.bluetooth
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGattCharacteristic
 import android.content.Context
-import android.content.IntentFilter
 import io.rebble.cobble.receivers.BluetoothBondReceiver
 import io.rebble.cobble.util.toBytes
 import io.rebble.cobble.util.toHexString
@@ -14,7 +13,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import timber.log.Timber
-import java.lang.Exception
 
 
 class BlueLEDriver(
@@ -27,7 +25,7 @@ class BlueLEDriver(
     private var targetPebble: BluetoothDevice? = null
     private var protocolIO: ProtocolIO? = null
 
-    val connectionStatusChannel = Channel<Boolean>(0)
+    private val connectionStatusChannel = Channel<Boolean>(0)
 
     enum class LEConnectionState {
         IDLE,
@@ -46,7 +44,7 @@ class BlueLEDriver(
         return true
     }
 
-    suspend fun closePebble() {
+    private suspend fun closePebble() {
         Timber.d("Driver shutting down")
         gattDriver?.closePebble()
         gatt?.disconnect()
@@ -61,6 +59,7 @@ class BlueLEDriver(
      * @param belowLollipop Used by official app to indicate a device below lollipop?
      * @param clientMode Forces phone-as-client mode
      */
+    @Suppress("SameParameterValue")
     private fun pairTriggerFlagsToBytes(supportsPinningWithoutSlaveSecurity: Boolean, belowLollipop: Boolean, clientMode: Boolean): ByteArray {
         val boolArr = booleanArrayOf(true, supportsPinningWithoutSlaveSecurity, false, belowLollipop, clientMode, false)
         val byteArr = boolArr.toBytes()
@@ -71,9 +70,9 @@ class BlueLEDriver(
     /**
      * Subscribes to connectivity and ensures watch is paired before initiating the connection
      */
-    suspend fun deviceConnectivity() {
+    private suspend fun deviceConnectivity() {
         if (connectivityWatcher!!.subscribe()) {
-            var status = connectivityWatcher!!.getStatus()
+            val status = connectivityWatcher!!.getStatus()
             if (status.connected) {
                 if (status.paired && targetPebble!!.bondState == BluetoothDevice.BOND_BONDED) {
                     Timber.d("Paired, connecting gattDriver")

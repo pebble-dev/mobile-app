@@ -20,7 +20,7 @@ class ConnectivityWatcher(val gatt: BlueGATTConnection) {
         var hasBondedGateway by Delegates.notNull<Boolean>()
         var supportsPinningWithoutSlaveSecurity by Delegates.notNull<Boolean>()
         var hasRemoteAttemptedToUseStalePairing by Delegates.notNull<Boolean>()
-        lateinit var pairingErrorCode: PairingErrorCode
+        var pairingErrorCode: PairingErrorCode
 
         init {
             val flags = characteristicValue[0]
@@ -57,7 +57,7 @@ class ConnectivityWatcher(val gatt: BlueGATTConnection) {
         companion object {
             fun getByValue(value: Byte): PairingErrorCode {
                 val v = values().firstOrNull { it.value == value }
-                return if (v == null) UNKNOWN_ERROR else v
+                return v ?: UNKNOWN_ERROR
             }
         }
     }
@@ -111,8 +111,7 @@ class ConnectivityWatcher(val gatt: BlueGATTConnection) {
 
     suspend fun getStatus(): ConnectivityStatus {
         try {
-            val status = connectivityStatus.await()
-            return status
+            return connectivityStatus.await()
         } finally {
             connectivityStatus = CompletableDeferred()
         }
