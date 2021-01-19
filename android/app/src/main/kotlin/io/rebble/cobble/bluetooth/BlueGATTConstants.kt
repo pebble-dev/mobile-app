@@ -1,5 +1,6 @@
 package io.rebble.cobble.bluetooth
 
+import android.os.Build
 import java.util.*
 
 object BlueGATTConstants {
@@ -25,6 +26,8 @@ object BlueGATTConstants {
 
     val CHARACTERISTIC_SUBSCRIBE_VALUE = byteArrayOf(1, 0)
     val DEFAULT_MTU = 23
+    val MAX_RX_WINDOW: Byte = 25
+    val MAX_TX_WINDOW: Byte = 25
 
     // PPoGConnectionVersion.minSupportedVersion(), PPoGConnectionVersion.maxSupportedVersion(), ??? (magic numbers in stock app too)
     val SERVER_META_RESPONSE = byteArrayOf(0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)
