@@ -193,8 +193,14 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
 
                     BluetoothGatt.STATE_DISCONNECTED -> {
                         if (targetDevice.address == device.address && writerFlow != null) {
-                            Timber.d("Device disconnected, closing")
-                            closePebble()
+                            connected = false
+                            serverScope.launch(Dispatchers.Default) {
+                                delay(1000)
+                                if (!connected) {
+                                    Timber.d("Device disconnected, closing")
+                                    closePebble()
+                                }
+                            }
                         }
                     }
                 }
