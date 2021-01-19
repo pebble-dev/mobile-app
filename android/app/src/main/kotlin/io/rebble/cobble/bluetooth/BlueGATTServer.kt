@@ -112,7 +112,6 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                                     Timber.w("Unexpected sequence ${packet.sequence}")
                                     if (lastAck != null && lastAck!!.type != GATTPacket.PacketType.RESET_ACK) {
                                         Timber.d("Re-sending previous ACK")
-                                        remoteSeq = lastAck!!.sequence + 1
                                         sendAck(lastAck!!.sequence)
                                     }else {
                                         requestReset()
@@ -321,9 +320,10 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                 lastAck = pendingSendAck
                 pendingSendAck = null
             }else {
-                if (packetsInFlight < 4) { // Max packets in flight is 4
+                if (packetsInFlight < maxTxWindow) {
                     writerFlow?.collect {
                         attemptWrite(it)
+                        seq = getNextSeq(seq)
                     }
                 }
             }
@@ -348,6 +348,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         remoteSeq = 0
         seq = 0
         lastAck = null
+        packetsInFlight = 0
 
 
         writerFlow = packetFlow()
@@ -391,7 +392,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
      */
     private fun sendResetAck(sequence: Int, maxRxWindow: Byte, maxTxWindow: Byte) {
         Timber.d("Sending reset ACK for $sequence")
-        val ack = GATTPacket(GATTPacket.PacketType.RESET_ACK, sequence, if (gattConnectionVersion.supportsWindowNegotiation) byteArrayOf(maxRxWindow, maxTxWindow) else null)
+        val ack = GATTPacket(GATTPacket.PacketType.RESET_ACK, 0, if (gattConnectionVersion.supportsWindowNegotiation) byteArrayOf(maxRxWindow, maxTxWindow) else null)
         pendingSendAck = ack
     }
 
