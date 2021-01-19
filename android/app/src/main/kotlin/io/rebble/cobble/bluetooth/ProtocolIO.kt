@@ -46,6 +46,7 @@ class ProtocolIO(private val inputStream: InputStream, private val outputStream:
                 protocolHandler.receivePacket(packet.toUByteArray())
             }
         } finally {
+            Timber.e("Read loop returning")
             try {
                 inputStream.close()
                 outputStream.close()
@@ -53,7 +54,6 @@ class ProtocolIO(private val inputStream: InputStream, private val outputStream:
                 e.printStackTrace()
             }
         }
-        Timber.e("Read loop returning")
     }
 
     suspend fun write(bytes: ByteArray) = withContext(Dispatchers.IO) {

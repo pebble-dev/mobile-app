@@ -202,12 +202,18 @@ class BlueLEDriver(
                 }
 
                 if (connectionStatusChannel.receive()) {
-                    val sendLoop = launch { protocolHandler.startPacketSendingLoop(::sendPacket) }
-                    emit(SingleConnectionStatus.Connected(device))
                     protocolIO = ProtocolIO(gattDriver!!.inputStream, gattDriver!!.outputStream, protocolHandler)
+                    val sendLoop = launch {
+                        try {
+                            protocolHandler.startPacketSendingLoop(::sendPacket)
+                        } finally {
+                            Timber.d("Packet sending loop exited")
+                        }
+                    }
+                    emit(SingleConnectionStatus.Connected(device))
+
                     protocolIO!!.readLoop()
                     sendLoop.cancel()
-                    Timber.d("readLoop returned")
                 }else {
                     Timber.e("connectionStatus was false")
                 }

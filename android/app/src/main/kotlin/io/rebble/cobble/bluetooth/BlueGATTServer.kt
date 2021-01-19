@@ -277,6 +277,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
     /**
      * Flow that reads the packet write stream and sends it to the watch in discrete packets of size MTU (-2 to account for GATT packet frame)
      */
+    @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun packetFlow(): Flow<GATTPacket> = flow {
         if (packetWriteInputStream.available() > 0) {
             val count = packetWriteInputStream.available().coerceAtMost(mtu-2)
