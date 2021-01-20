@@ -90,26 +90,26 @@ class BlueLEDriver(
                             val bondReceiver = BluetoothBondReceiver.registerBondReceiver(context, targetPebble!!.address)
                             if (pairTrigger.properties and BluetoothGattCharacteristic.PROPERTY_WRITE > 0) {
                                 GlobalScope.launch(Dispatchers.Main.immediate) { gatt!!.writeCharacteristic(pairTrigger, pairTriggerFlagsToBytes(status.supportsPinningWithoutSlaveSecurity, belowLollipop = false, clientMode = false)) }
-                                targetPebble?.createBond()
-                                var bondResult = BluetoothDevice.BOND_NONE
-                                try {
-                                    withTimeout(30000) {
-                                        bondResult = bondReceiver.awaitBondResult()
-                                    }
-                                } catch (e: TimeoutCancellationException) {
-                                    Timber.w("Timed out waiting for bond result")
-                                } finally {
-                                    bondReceiver.unregister()
+                            }else {
+                                Timber.d("Pair characteristic can't be written, won't use")
+                            }
+                            targetPebble?.createBond()
+                            var bondResult = BluetoothDevice.BOND_NONE
+                            try {
+                                withTimeout(30000) {
+                                    bondResult = bondReceiver.awaitBondResult()
                                 }
-                                if (bondResult == BluetoothDevice.BOND_BONDED) {
-                                    Timber.d("Paired successfully, connecting gattDriver")
-                                    connect()
-                                    return
-                                } else {
-                                    Timber.e("Failed to pair")
-                                }
+                            } catch (e: TimeoutCancellationException) {
+                                Timber.w("Timed out waiting for bond result")
+                            } finally {
+                                bondReceiver.unregister()
+                            }
+                            if (bondResult == BluetoothDevice.BOND_BONDED) {
+                                Timber.d("Paired successfully, connecting gattDriver")
+                                connect()
+                                return
                             } else {
-                                Timber.e("Pair trigger cannot be written to")
+                                Timber.e("Failed to pair")
                             }
                         } else {
                             Timber.e("pairTrigger is null")
@@ -136,8 +136,10 @@ class BlueLEDriver(
             }
 
             if (targetPebble != null && connectionState == LEConnectionState.CONNECTED && device.address == this@BlueLEDriver.targetPebble!!.address) {
+                Timber.w("startSingleWatchConnection called on already connected driver")
                 emit(SingleConnectionStatus.Connected(device))
             } else if (connectionState != LEConnectionState.IDLE) { // If not in idle state this is a stale instance
+                Timber.e("Stale instance used for new connection")
                 return@coroutineScope
             } else {
                 emit(SingleConnectionStatus.Connecting(device))
@@ -210,10 +212,15 @@ class BlueLEDriver(
                         connectJob?.cancelAndJoin()
                     }
                 }
-                emit(SingleConnectionStatus.Connected(device))
 
-                protocolIO!!.readLoop()
-                sendLoop.cancel()
+                try {
+                    connectionState = LEConnectionState.CONNECTED
+                    emit(SingleConnectionStatus.Connected(device))
+
+                    protocolIO!!.readLoop()
+                }finally {
+                    sendLoop.cancel()
+                }
             } else {
                 Timber.e("connectionStatus was false")
             }

@@ -259,6 +259,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         while (!success && attempt < 3) {
             if (!requestWritePacket(packet.data)) {
                 Timber.w("requestWritePacket failed")
+                attempt++
                 continue
             }
             if (packet.type == GATTPacket.PacketType.DATA || packet.type == GATTPacket.PacketType.RESET) {
@@ -359,6 +360,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         seq = 0
         lastAck = null
         packetsInFlight = 0
+        if (sendMutex.isLocked) sendMutex.unlock()
 
 
         writerFlow = packetFlow()
@@ -418,6 +420,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         connectionStatusChannel.offer(false)
         packetOutputStream.close()
         inputStream.close()
+        bluetoothGattServer.clearServices()
         bluetoothGattServer.close()
     }
 
