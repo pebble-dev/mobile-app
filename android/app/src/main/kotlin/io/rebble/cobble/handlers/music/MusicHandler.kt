@@ -244,6 +244,11 @@ class MusicHandler @Inject constructor(
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             sendCurrentTrackUpdate(metadata)
         }
+
+        override fun onSessionDestroyed() {
+            Timber.d("Session destroyed")
+            disposeCurrentMediaController()
+        }
     }
 
     init {
