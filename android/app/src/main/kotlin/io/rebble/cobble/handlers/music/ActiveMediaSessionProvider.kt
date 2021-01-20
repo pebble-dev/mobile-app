@@ -126,7 +126,9 @@ class ActiveMediaSessionProvider @Inject constructor(context: Context) :
     }
 
     private fun setReportedController(mediaController: MediaController?) {
-        value = mediaController
+        if (mediaController !== value) {
+            value = mediaController
+        }
     }
 
     init {
