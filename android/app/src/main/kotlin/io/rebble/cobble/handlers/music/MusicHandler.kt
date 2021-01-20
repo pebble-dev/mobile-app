@@ -125,6 +125,7 @@ class MusicHandler @Inject constructor(
 
 
     private fun sendVolumeUpdate(playbackInfo: MediaController.PlaybackInfo) {
+        Timber.d("Send volume update %s", playbackInfo)
         coroutineScope.launch(Dispatchers.Main.immediate) {
             musicService.send(MusicControl.UpdateVolumeInfo(
                     (100f * playbackInfo.currentVolume / playbackInfo.maxVolume)
