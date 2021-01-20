@@ -139,7 +139,8 @@ class MusicHandler @Inject constructor(
         Timber.d("Send play state %s", playbackState)
 
         val state = when (playbackState?.state) {
-            PlaybackState.STATE_PLAYING ->
+            PlaybackState.STATE_PLAYING,
+            PlaybackState.STATE_BUFFERING ->
                 MusicControl.PlaybackState.Playing
             PlaybackState.STATE_REWINDING,
             PlaybackState.STATE_SKIPPING_TO_PREVIOUS ->
