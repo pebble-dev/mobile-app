@@ -83,6 +83,10 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                         GATTPacket.PacketType.RESET_ACK, GATTPacket.PacketType.ACK -> {
                             if (packet.type == GATTPacket.PacketType.RESET_ACK) {
                                 sendResetAck(packet.sequence, BlueGATTConstants.MAX_RX_WINDOW, BlueGATTConstants.MAX_TX_WINDOW)
+                                if (gattConnectionVersion.supportsWindowNegotiation && !packet.hasWindowSizes()) {
+                                    Timber.d("FW does not support window sizes in reset complete, reverting to gattConnectionVersion 0")
+                                    gattConnectionVersion = GATTPacket.PPoGConnectionVersion.ZERO
+                                }
                                 if (gattConnectionVersion.supportsWindowNegotiation) {
                                     maxRxWindow = packet.getMaxRXWindow().coerceAtMost(BlueGATTConstants.MAX_RX_WINDOW)
                                     maxTxWindow = packet.getMaxTXWindow().coerceAtMost(BlueGATTConstants.MAX_TX_WINDOW)
@@ -420,6 +424,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         connectionStatusChannel.offer(false)
         packetOutputStream.close()
         inputStream.close()
+        bluetoothGattServer.cancelConnection(targetDevice)
         bluetoothGattServer.clearServices()
         bluetoothGattServer.close()
     }

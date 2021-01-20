@@ -85,6 +85,11 @@ class GATTPacket {
         return PPoGConnectionVersion.fromByte(data[1])
     }
 
+    fun hasWindowSizes(): Boolean {
+        if (type != PacketType.RESET_ACK) throw IllegalStateException("Function does not apply to packet type")
+        return data.size >= 3
+    }
+
     fun getMaxTXWindow(): Byte {
         if (type != PacketType.RESET_ACK) throw IllegalStateException("Function does not apply to packet type")
         return data[2]
