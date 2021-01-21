@@ -17,8 +17,7 @@ import java.nio.ByteBuffer
 import kotlin.coroutines.coroutineContext
 import kotlin.experimental.and
 
-class BlueGATTServer(private val targetDevice: BluetoothDevice, private val context: Context) : BluetoothGattServerCallback() {
-    private val serverScope = CoroutineScope(Dispatchers.IO)
+class BlueGATTServer(private val targetDevice: BluetoothDevice, private val context: Context, private val serverScope: CoroutineScope) : BluetoothGattServerCallback() {
     private val serverReady = CompletableDeferred<Boolean>()
     private val connectionStatusChannel = Channel<Boolean>(0)
 
@@ -77,7 +76,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
     override fun onCharacteristicWriteRequest(device: BluetoothDevice?, requestId: Int, characteristic: BluetoothGattCharacteristic?, preparedWrite: Boolean, responseNeeded: Boolean, offset: Int, value: ByteArray?) {
         if (targetDevice.address == device!!.address) {
             if (value != null) {
-                serverScope.launch {
+                serverScope.launch(Dispatchers.IO) {
                     val packet = GATTPacket(value)
                     when (packet.type) {
                         GATTPacket.PacketType.RESET_ACK, GATTPacket.PacketType.ACK -> {
@@ -160,7 +159,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         if (targetDevice.address == device!!.address) {
             if (descriptor?.characteristic?.uuid == BlueGATTConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER) {
                 if (value != null) {
-                    serverScope.launch {
+                    serverScope.launch(Dispatchers.IO) {
                         if (!bluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, value)) {
                             Timber.e("Failed to send confirm for descriptor write")
                             closePebble()
@@ -198,7 +197,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                     BluetoothGatt.STATE_DISCONNECTED -> {
                         if (targetDevice.address == device.address && writerFlow != null) {
                             connected = false
-                            serverScope.launch(Dispatchers.Default) {
+                            serverScope.launch {
                                 delay(1000)
                                 if (!connected) {
                                     Timber.d("Device disconnected, closing")
@@ -368,7 +367,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
 
 
         writerFlow = packetFlow()
-        packetFlowHandlerJob = serverScope.launch { packetFlowHandler() }
+        packetFlowHandlerJob = serverScope.launch(Dispatchers.IO) { packetFlowHandler() }
         if(!alreadyRunning) {
             connectionStatusChannel.send(true)
         }
@@ -393,7 +392,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
             currentRxPend = 0
             pendingSendAck = ack
         }else {
-            delayedAckJob = serverScope.launch {
+            delayedAckJob = serverScope.launch(Dispatchers.IO) {
                 delay(200)
                 currentRxPend = 0
                 pendingSendAck = ack

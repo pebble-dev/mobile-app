@@ -146,7 +146,7 @@ class BlueLEDriver(
 
                 this@BlueLEDriver.targetPebble = device
 
-                val server = BlueGATTServer(device, context)
+                val server = BlueGATTServer(device, context, this)
                 gattDriver = server
 
                 connectionState = LEConnectionState.CONNECTING
