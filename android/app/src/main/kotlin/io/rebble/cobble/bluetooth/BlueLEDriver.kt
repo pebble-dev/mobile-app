@@ -22,7 +22,7 @@ class BlueLEDriver(
     private var connectivityWatcher: ConnectivityWatcher? = null
     private var connectionParamManager: ConnectionParamManager? = null
     private var gattDriver: BlueGATTServer? = null
-    private var targetPebble: BluetoothDevice? = null
+    lateinit var targetPebble: BluetoothDevice
     private var protocolIO: ProtocolIO? = null
 
     private val connectionStatusChannel = Channel<Boolean>(0)
@@ -74,26 +74,26 @@ class BlueLEDriver(
         if (connectivityWatcher!!.subscribe()) {
             val status = connectivityWatcher!!.getStatus()
             if (status.connected) {
-                if (status.paired && targetPebble!!.bondState == BluetoothDevice.BOND_BONDED) {
+                if (status.paired && targetPebble.bondState == BluetoothDevice.BOND_BONDED) {
                     Timber.d("Paired, connecting gattDriver")
                     connect()
                 } else {
                     Timber.d("Not yet paired, pairing...")
-                    if (targetPebble!!.bondState == BluetoothDevice.BOND_BONDED) {
+                    if (targetPebble.bondState == BluetoothDevice.BOND_BONDED) {
                         Timber.d("Phone already paired but watch not paired, removing bond and re-pairing")
-                        targetPebble!!::class.java.getMethod("removeBond").invoke(targetPebble)
+                        targetPebble::class.java.getMethod("removeBond").invoke(targetPebble)
                     }
                     val pairService = gatt!!.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)
                     if (pairService != null) {
                         val pairTrigger = pairService.getCharacteristic(BlueGATTConstants.UUIDs.PAIRING_TRIGGER_CHARACTERISTIC)
                         if (pairTrigger != null) {
-                            val bondReceiver = BluetoothBondReceiver.registerBondReceiver(context, targetPebble!!.address)
+                            val bondReceiver = BluetoothBondReceiver.registerBondReceiver(context, targetPebble.address)
                             if (pairTrigger.properties and BluetoothGattCharacteristic.PROPERTY_WRITE > 0) {
                                 GlobalScope.launch(Dispatchers.Main.immediate) { gatt!!.writeCharacteristic(pairTrigger, pairTriggerFlagsToBytes(status.supportsPinningWithoutSlaveSecurity, belowLollipop = false, clientMode = false)) }
                             }else {
                                 Timber.d("Pair characteristic can't be written, won't use")
                             }
-                            targetPebble?.createBond()
+                            targetPebble.createBond()
                             var bondResult = BluetoothDevice.BOND_NONE
                             try {
                                 withTimeout(30000) {
@@ -135,7 +135,7 @@ class BlueLEDriver(
                 throw IllegalArgumentException("Non-LE device should not use LE driver")
             }
 
-            if (targetPebble != null && connectionState == LEConnectionState.CONNECTED && device.address == this@BlueLEDriver.targetPebble!!.address) {
+            if (connectionState == LEConnectionState.CONNECTED && device.address == this@BlueLEDriver.targetPebble.address) {
                 Timber.w("startSingleWatchConnection called on already connected driver")
                 emit(SingleConnectionStatus.Connected(device))
             } else if (connectionState != LEConnectionState.IDLE) { // If not in idle state this is a stale instance
@@ -156,7 +156,7 @@ class BlueLEDriver(
                         connectionStatusChannel.offer(false)
                         return@launch
                     }
-                    gatt = targetPebble!!.connectGatt(context)
+                    gatt = targetPebble.connectGatt(context)
                     if (gatt == null) {
                         Timber.e("connectGatt null")
                         connectionStatusChannel.offer(false)

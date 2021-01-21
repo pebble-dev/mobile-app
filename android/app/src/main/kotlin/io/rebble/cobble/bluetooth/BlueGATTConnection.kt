@@ -14,7 +14,7 @@ import java.util.*
  * @param context application context
  * @param cbTimeout the timeout for all callbacks behind the scenes before the suspend function returns null
  */
-suspend fun BluetoothDevice.connectGatt(context: Context, cbTimeout: Long = 8000): BlueGATTConnection? = BlueGATTConnection(this, cbTimeout).connectGatt(context)
+suspend fun BluetoothDevice.connectGatt(context: Context, auto: Boolean = false, cbTimeout: Long = 8000): BlueGATTConnection? = BlueGATTConnection(this, cbTimeout).connectGatt(context, auto)
 
 class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Long): BluetoothGattCallback() {
     var gatt: BluetoothGatt? = null
@@ -95,19 +95,19 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
     }
 
     @FlowPreview
-    suspend fun connectGatt(context: Context): BlueGATTConnection? {
+    suspend fun connectGatt(context: Context, auto: Boolean): BlueGATTConnection? {
         var res: ConnectionStateResult? = null
         try {
             coroutineScope {
                 launch(Dispatchers.IO) {
                     gatt = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                            device.connectGatt(context, false, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_LE, BluetoothDevice.PHY_LE_1M)
+                            device.connectGatt(context, auto, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_LE, BluetoothDevice.PHY_LE_1M)
                         }else {
-                            device.connectGatt(context, false, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_LE)
+                            device.connectGatt(context, auto, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_LE)
                         }
                     }else {
-                        device.connectGatt(context, false, this@BlueGATTConnection)
+                        device.connectGatt(context, auto, this@BlueGATTConnection)
                     }
                 }
                 withTimeout(cbTimeout) {
@@ -117,7 +117,7 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
         } catch (e: TimeoutCancellationException) {
             Timber.e("connectGatt timed out")
         }
-        if (res?.status != BluetoothGatt.GATT_SUCCESS) {
+        if (res?.status != null && res!!.status != BluetoothGatt.GATT_SUCCESS) {
             Timber.e("connectGatt status ${res?.status}")
         }
         return if (res?.isSuccess() == true && res?.newState == BluetoothGatt.STATE_CONNECTED) {
