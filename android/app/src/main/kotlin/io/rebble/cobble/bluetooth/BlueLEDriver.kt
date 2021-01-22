@@ -150,7 +150,7 @@ class BlueLEDriver(
                 gattDriver = server
 
                 connectionState = LEConnectionState.CONNECTING
-                connectJob = launch(Dispatchers.IO) {
+                connectJob = launch {
                     if (!server.initServer()) {
                         Timber.e("initServer failed")
                         connectionStatusChannel.offer(false)
