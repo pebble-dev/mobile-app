@@ -20,6 +20,7 @@ import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import io.rebble.libpebblecommon.structmapper.SUUID
 import io.rebble.libpebblecommon.structmapper.StructMapper
 import kotlinx.coroutines.*
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 import kotlin.random.Random
@@ -68,7 +69,7 @@ class NotificationsFlutterBridge @Inject constructor(
         override fun getMailPackages(): Pigeons.ListWrapper = ListWrapper(getAppsWithCategory(Intent.CATEGORY_APP_EMAIL))
     }
 
-    private lateinit var notifListening: Pigeons.NotificationListening
+    private var notifListening: Pigeons.NotificationListening? = null
     init {
         GlobalScope.launch {
             val flutterEngine = flutterBackgroundController.getBackgroundFlutterEngine()
@@ -82,7 +83,7 @@ class NotificationsFlutterBridge @Inject constructor(
         }
     }
 
-    @ExperimentalStdlibApi
+    @OptIn(ExperimentalStdlibApi::class)
     suspend fun handleNotification(packageId: String,
                                    notifId: Long, tagId: String?, tagName: String?, title: String,
                                    text: String, messages: List<NotificationMessage>,
@@ -104,7 +105,10 @@ class NotificationsFlutterBridge @Inject constructor(
                 ).toJson(messages)
 
         val result = CompletableDeferred<Pair<TimelineItem, BlobResponse.BlobStatus>>()
-        notifListening.handleNotification(notif) { notifToSend ->
+        if (notifListening == null) {
+            Timber.w("Notification listening pigeon null")
+        }
+        notifListening?.handleNotification(notif) { notifToSend ->
             val parsedAttributes = moshi
                     .adapter<List<TimelineAttribute>>(
                             Types.newParameterizedType(List::class.java, TimelineAttribute::class.java)
@@ -145,6 +149,6 @@ class NotificationsFlutterBridge @Inject constructor(
     fun dismiss(uuid: UUID) {
         val id = Pigeons.StringWrapper()
         id.value = uuid.toString()
-        notifListening.dismissNotification(id) {}
+        notifListening?.dismissNotification(id) {}
     }
 }

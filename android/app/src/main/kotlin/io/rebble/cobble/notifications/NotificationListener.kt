@@ -70,7 +70,7 @@ class NotificationListener : NotificationListenerService() {
         isListening = false
     }
 
-    @ExperimentalStdlibApi
+    @OptIn(ExperimentalStdlibApi::class)
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         if (isListening) {
             if (sbn == null) return
@@ -81,7 +81,7 @@ class NotificationListener : NotificationListenerService() {
             }
             if (NotificationCompat.getLocalOnly(sbn.notification)) return // ignore local notifications TODO: respect user preference
             if (sbn.notification.flags and Notification.FLAG_ONGOING_EVENT != 0) return // ignore ongoing notifications
-            if (sbn.notification.group != null && !NotificationCompat.isGroupSummary(sbn.notification)) return
+            //if (sbn.notification.group != null && !NotificationCompat.isGroupSummary(sbn.notification)) return
 
             var tagId: String? = null
             var tagName: String? = null
@@ -98,14 +98,17 @@ class NotificationListener : NotificationListenerService() {
             val text = sbn.notification.extras[Notification.EXTRA_TEXT] as? String
                     ?: sbn.notification.extras[Notification.EXTRA_BIG_TEXT] as? String ?: ""
 
-            val actions = sbn.notification.actions.map {
-                NotificationAction(it.title as String, !it.remoteInputs.isNullOrEmpty())
-            }
+            val actions = sbn.notification.actions?.map {
+                NotificationAction(it.title.toString(), !it.remoteInputs.isNullOrEmpty())
+            } ?: listOf()
 
             var messages: List<NotificationMessage>? = null
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                messages = sbn.notification.extras.getParcelableArray(Notification.EXTRA_MESSAGES)?.map {
-                    NotificationMessage(((it as Bundle)["sender"] as String), it["text"] as String, it["time"] as Long)
+                val messagesArr = sbn.notification.extras.getParcelableArray(Notification.EXTRA_MESSAGES)
+                if (messagesArr != null) {
+                    messages = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(sbn.notification)?.messages?.map {
+                        NotificationMessage(it.person?.name.toString()?:"?", it.text.toString(), it.timestamp)
+                    }
                 }
             }
             coroutineScope.launch(Dispatchers.Main.immediate) {
