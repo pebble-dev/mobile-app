@@ -1,20 +1,25 @@
 package io.rebble.cobble.notifications
 
+import android.annotation.TargetApi
+import android.content.ComponentName
+import android.content.Context
+import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 import io.rebble.cobble.CobbleApplication
+import io.rebble.cobble.bluetooth.ConnectionLooper
+import io.rebble.cobble.bluetooth.ConnectionState
 import io.rebble.libpebblecommon.services.notification.NotificationService
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
 import timber.log.Timber
 
 class NotificationListener : NotificationListenerService() {
     private lateinit var coroutineScope: CoroutineScope
+    private lateinit var connectionLooper: ConnectionLooper
 
     private var isListening = false
 
@@ -28,6 +33,8 @@ class NotificationListener : NotificationListenerService() {
         coroutineScope = CoroutineScope(
                 SupervisorJob() + injectionComponent.createExceptionHandler()
         )
+
+        connectionLooper = injectionComponent.createConnectionLooper()
 
         notificationService = injectionComponent.createNotificationService()
 
@@ -44,6 +51,10 @@ class NotificationListener : NotificationListenerService() {
 
     override fun onListenerConnected() {
         isListening = true
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            unbindOnWatchDisconnect()
+        }
     }
 
     override fun onListenerDisconnected() {
@@ -88,8 +99,29 @@ class NotificationListener : NotificationListenerService() {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.N)
+    private fun unbindOnWatchDisconnect() {
+        // It is a waste of resources to keep running notification listener in the background when
+        // watch disconnects.
+
+        // When watch disconnects, we call requestUnbind() to kill ourselves it and wait for
+        // ServiceLifecycleControl to starts up back up when watch reconnects.
+
+        coroutineScope.launch(Dispatchers.Main.immediate) {
+            connectionLooper.connectionState.collect {
+                if (it is ConnectionState.Disconnected) {
+                    requestUnbind()
+                }
+            }
+        }
+    }
+
     companion object {
         private val _isActive = MutableStateFlow(false)
         val isActive: StateFlow<Boolean> by ::_isActive
+
+        fun getComponentName(context: Context): ComponentName {
+            return ComponentName(context, NotificationListener::class.java)
+        }
     }
 }
