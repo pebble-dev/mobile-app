@@ -83,6 +83,17 @@ class ActionResponsePigeon {
   String attributesJson;
 }
 
+class NotificationPigeon {
+  String packageId;
+  int notifId;
+  String tagId;
+  String tagName;
+  String title;
+  String text;
+  String messagesJson;
+  String actionsJson;
+}
+
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
@@ -118,6 +129,21 @@ abstract class TimelineCallbacks {
 
   @async
   ActionResponsePigeon handleTimelineAction(ActionTrigger actionTrigger);
+}
+
+@FlutterApi()
+abstract class NotificationListening {
+  @async
+  TimelinePinPigeon handleNotification(NotificationPigeon notification);
+  void dismissNotification(StringWrapper itemId);
+}
+
+@HostApi()
+abstract class NotificationUtils {
+  ListWrapper getMailPackages();
+  ListWrapper getSMSPackages();
+  @async
+  BooleanWrapper dismissNotification(StringWrapper itemId);
 }
 
 @HostApi()

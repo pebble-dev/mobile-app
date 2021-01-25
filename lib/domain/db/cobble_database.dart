@@ -1,3 +1,4 @@
+import 'package:cobble/domain/db/dao/active_notification_dao.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -21,6 +22,14 @@ void createAllCobbleTables(Database db) async {
       attributesJson TEXT NOT NULL,
       actionsJson TEXT,
       nextSyncAction TEXT NOT NULL
+    )
+  """);
+  await db.execute("""
+    CREATE TABLE $tableActiveNotifications(
+      pinId TEXT PRIMARY KEY NOT NULL,
+      notifId INT NOT NULL,
+      packageId TEXT NOT NULL,
+      tagId TEXT NOT NULL
     )
   """);
 }

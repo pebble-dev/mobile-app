@@ -1,7 +1,9 @@
+import 'package:cobble/background/notification/notification_manager.dart';
 import 'package:cobble/domain/calendar/calendar_pin_convert.dart';
 import 'package:cobble/domain/calendar/calendar_syncer.db.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/db/dao/timeline_pin_dao.dart';
+import 'package:cobble/domain/db/models/timeline_pin.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/logging.dart';
 import 'package:cobble/domain/timeline/watch_timeline_syncer.dart';
@@ -10,6 +12,7 @@ import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/util/container_extensions.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/all.dart';
+import 'package:uuid_type/uuid_type.dart';
 
 import 'actions/master_action_handler.dart';
 
@@ -19,13 +22,14 @@ void main_background() {
   BackgroundReceiver();
 }
 
-class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks {
+class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, NotificationListening {
   final container = ProviderContainer();
   CalendarSyncer calendarSyncer;
   WatchTimelineSyncer watchTimelineSyncer;
   Future<Preferences> preferences;
   TimelinePinDao timelinePinDao;
   MasterActionHandler masterActionHandler;
+  NotificationManager notificationManager;
 
   ProviderSubscription<WatchConnectionState> connectionSubscription;
 
@@ -37,6 +41,7 @@ class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks {
     await BackgroundControl().notifyFlutterBackgroundStarted();
 
     calendarSyncer = container.listen(calendarSyncerProvider).read();
+    notificationManager = container.listen(notificationManagerProvider).read();
     watchTimelineSyncer = container.listen(watchTimelineSyncerProvider).read();
     timelinePinDao = container.listen(timelinePinDaoProvider).read();
     preferences = Future.microtask(() async {
@@ -102,5 +107,15 @@ class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks {
   @override
   Future<ActionResponsePigeon> handleTimelineAction(ActionTrigger arg) async {
     return (await masterActionHandler.handleTimelineAction(arg)).toPigeon();
+  }
+
+  @override
+  Future<TimelinePinPigeon> handleNotification(NotificationPigeon arg) async {
+    return (await notificationManager.handleNotification(arg)).toPigeon();
+  }
+
+  @override
+  void dismissNotification(StringWrapper arg) {
+    notificationManager.dismissNotification(Uuid(arg.value));
   }
 }

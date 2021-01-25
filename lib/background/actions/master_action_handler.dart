@@ -1,4 +1,5 @@
 import 'package:cobble/background/actions/calendar_action_handler.dart';
+import 'package:cobble/background/notification/notification_manager.dart';
 import 'package:cobble/domain/calendar/calendar_pin_convert.dart';
 import 'package:cobble/domain/db/dao/timeline_pin_dao.dart';
 import 'package:cobble/domain/db/models/timeline_pin.dart';
@@ -11,8 +12,9 @@ class MasterActionHandler {
   final TimelinePinDao _dao;
   final Map<Uuid, ActionHandler> handlers = {};
 
-  MasterActionHandler(this._dao, CalendarActionHandler calendarActionHandler) {
+  MasterActionHandler(this._dao, CalendarActionHandler calendarActionHandler, NotificationManager notificationActionHandler) {
     handlers[calendarWatchappId] = calendarActionHandler;
+    handlers[notificationsWatchappId] = notificationActionHandler;
   }
 
   Future<TimelineActionResponse> handleTimelineAction(
@@ -39,5 +41,5 @@ abstract class ActionHandler {
 
 final masterActionHandlerProvider = Provider<MasterActionHandler>((ref) {
   return MasterActionHandler(ref.read(timelinePinDaoProvider),
-      ref.read(calendarActionHandlerProvider));
+      ref.read(calendarActionHandlerProvider), ref.read(notificationManagerProvider));
 });
