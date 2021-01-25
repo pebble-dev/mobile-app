@@ -93,7 +93,7 @@ class NotificationListener : NotificationListenerService() {
                 if (tagName == null) tagName = tagId
             }
             val title = sbn.notification.extras[Notification.EXTRA_TITLE] as? String
-                    ?: applicationContext.packageManager.getApplicationLabel(applicationContext.packageManager.getApplicationInfo(packageName, 0)) as String
+                    ?: sbn.notification.extras[Notification.EXTRA_CONVERSATION_TITLE] as? String ?: ""
 
             val text = sbn.notification.extras[Notification.EXTRA_TEXT] as? String
                     ?: sbn.notification.extras[Notification.EXTRA_BIG_TEXT] as? String ?: ""
@@ -107,7 +107,7 @@ class NotificationListener : NotificationListenerService() {
                 val messagesArr = sbn.notification.extras.getParcelableArray(Notification.EXTRA_MESSAGES)
                 if (messagesArr != null) {
                     messages = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(sbn.notification)?.messages?.map {
-                        NotificationMessage(it.person?.name.toString()?:"?", it.text.toString(), it.timestamp)
+                        NotificationMessage(it.person?.name.toString(), it.text.toString(), it.timestamp)
                     }
                 }
             }
@@ -117,6 +117,7 @@ class NotificationListener : NotificationListenerService() {
                     delay(1000)
                     result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, tagName, title, text, messages?: listOf(), actions)
                 }
+                Timber.d(result.second.toString())
                 notificationBridge.activeNotifs[result.first.itemId.get()] = sbn
             }
         }

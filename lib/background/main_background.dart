@@ -64,6 +64,7 @@ class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, Notifi
 
     CalendarCallbacks.setup(this);
     TimelineCallbacks.setup(this);
+    NotificationListening.setup(this);
   }
 
   @override

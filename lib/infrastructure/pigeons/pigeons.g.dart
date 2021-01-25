@@ -122,6 +122,7 @@ class ListWrapper {
 class NotificationPigeon {
   String packageId;
   int notifId;
+  String appName;
   String tagId;
   String tagName;
   String title;
@@ -133,6 +134,7 @@ class NotificationPigeon {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
     pigeonMap['packageId'] = packageId;
     pigeonMap['notifId'] = notifId;
+    pigeonMap['appName'] = appName;
     pigeonMap['tagId'] = tagId;
     pigeonMap['tagName'] = tagName;
     pigeonMap['title'] = title;
@@ -146,6 +148,7 @@ class NotificationPigeon {
     final NotificationPigeon result = NotificationPigeon();
     result.packageId = pigeonMap['packageId'];
     result.notifId = pigeonMap['notifId'];
+    result.appName = pigeonMap['appName'];
     result.tagId = pigeonMap['tagId'];
     result.tagName = pigeonMap['tagName'];
     result.title = pigeonMap['title'];
@@ -1038,6 +1041,28 @@ class NotificationUtils {
           details: error['details']);
     } else {
       return BooleanWrapper._fromMap(replyMap['result']);
+    }
+    
+  }
+  Future<void> dismissNotificationWatch(StringWrapper arg) async {
+    final Map<dynamic, dynamic> requestMap = arg._toMap();
+    const BasicMessageChannel<dynamic> channel =
+        BasicMessageChannel<dynamic>('dev.flutter.pigeon.NotificationUtils.dismissNotificationWatch', StandardMessageCodec());
+    
+    final Map<dynamic, dynamic> replyMap = await channel.send(requestMap);
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null);
+    } else if (replyMap['error'] != null) {
+      final Map<dynamic, dynamic> error = replyMap['error'];
+      throw PlatformException(
+          code: error['code'],
+          message: error['message'],
+          details: error['details']);
+    } else {
+      // noop
     }
     
   }

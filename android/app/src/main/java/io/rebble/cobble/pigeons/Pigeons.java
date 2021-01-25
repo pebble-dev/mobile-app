@@ -195,6 +195,10 @@ public class Pigeons {
     public Long getNotifId() { return notifId; }
     public void setNotifId(Long setterArg) { this.notifId = setterArg; }
 
+    private String appName;
+    public String getAppName() { return appName; }
+    public void setAppName(String setterArg) { this.appName = setterArg; }
+
     private String tagId;
     public String getTagId() { return tagId; }
     public void setTagId(String setterArg) { this.tagId = setterArg; }
@@ -223,6 +227,7 @@ public class Pigeons {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("packageId", packageId);
       toMapResult.put("notifId", notifId);
+      toMapResult.put("appName", appName);
       toMapResult.put("tagId", tagId);
       toMapResult.put("tagName", tagName);
       toMapResult.put("title", title);
@@ -237,6 +242,8 @@ public class Pigeons {
       fromMapResult.packageId = (String)packageId;
       Object notifId = map.get("notifId");
       fromMapResult.notifId = (notifId == null) ? null : ((notifId instanceof Integer) ? (Integer)notifId : (Long)notifId);
+      Object appName = map.get("appName");
+      fromMapResult.appName = (String)appName;
       Object tagId = map.get("tagId");
       fromMapResult.tagId = (String)tagId;
       Object tagName = map.get("tagName");
@@ -1219,6 +1226,7 @@ public class Pigeons {
     ListWrapper getMailPackages();
     ListWrapper getSMSPackages();
     void dismissNotification(StringWrapper arg, Result<BooleanWrapper> result);
+    void dismissNotificationWatch(StringWrapper arg);
 
     /** Sets up an instance of `NotificationUtils` to handle messages through the `binaryMessenger` */
     static void setup(BinaryMessenger binaryMessenger, NotificationUtils api) {
@@ -1275,6 +1283,27 @@ public class Pigeons {
               wrapped.put("error", wrapError(exception));
               reply.reply(wrapped);
             }
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.NotificationUtils.dismissNotificationWatch", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              StringWrapper input = StringWrapper.fromMap((HashMap)message);
+              api.dismissNotificationWatch(input);
+              wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
           });
         } else {
           channel.setMessageHandler(null);

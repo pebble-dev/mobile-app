@@ -48,6 +48,19 @@ class NotificationsFlutterBridge @Inject constructor(
         return lastPackages[category] ?: listOf()
     }
     private val notifUtils = object : Pigeons.NotificationUtils {
+        override fun dismissNotificationWatch(arg: Pigeons.StringWrapper?) {
+            val id = UUID.fromString(arg?.value)
+            val command = BlobCommand.DeleteCommand(Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(), BlobCommand.BlobDatabase.Notification, SUUID(StructMapper(), id).toBytes())
+            GlobalScope.launch {
+                var blobResult = blobDBService.send(command)
+                while (blobResult.responseValue == BlobResponse.BlobStatus.TryLater) {
+                    delay(1000)
+                    command.token.set(Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort())
+                    blobResult = blobDBService.send(command)
+                }
+            }
+        }
+
         override fun getSMSPackages(): Pigeons.ListWrapper = ListWrapper(getAppsWithCategory(Intent.CATEGORY_APP_MESSAGING))
         override fun dismissNotification(arg: Pigeons.StringWrapper?, result: Pigeons.Result<Pigeons.BooleanWrapper>?) {
             if (arg != null) {
@@ -61,7 +74,9 @@ class NotificationsFlutterBridge @Inject constructor(
                         command.token.set(Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort())
                         blobResult = blobDBService.send(command)
                     }
-                    result?.success(BooleanWrapper(blobResult.responseValue == BlobResponse.BlobStatus.Success))
+                    withContext(Dispatchers.Main.immediate) {
+                        result?.success(BooleanWrapper(blobResult.responseValue == BlobResponse.BlobStatus.Success))
+                    }
                 }
             }
         }
@@ -70,8 +85,13 @@ class NotificationsFlutterBridge @Inject constructor(
     }
 
     private var notifListening: Pigeons.NotificationListening? = null
-    init {
-        GlobalScope.launch {
+
+    @OptIn(ExperimentalStdlibApi::class)
+    suspend fun handleNotification(packageId: String,
+                                   notifId: Long, tagId: String?, tagName: String?, title: String,
+                                   text: String, messages: List<NotificationMessage>,
+                                   actions: List<NotificationAction>): Pair<TimelineItem, BlobResponse.BlobStatus> {
+        if (notifListening == null) {
             val flutterEngine = flutterBackgroundController.getBackgroundFlutterEngine()
             if (flutterEngine != null) {
                 Pigeons.NotificationUtils.setup(
@@ -81,15 +101,10 @@ class NotificationsFlutterBridge @Inject constructor(
                 notifListening = Pigeons.NotificationListening(flutterEngine.dartExecutor.binaryMessenger)
             }
         }
-    }
 
-    @OptIn(ExperimentalStdlibApi::class)
-    suspend fun handleNotification(packageId: String,
-                                   notifId: Long, tagId: String?, tagName: String?, title: String,
-                                   text: String, messages: List<NotificationMessage>,
-                                   actions: List<NotificationAction>): Pair<TimelineItem, BlobResponse.BlobStatus> {
         val notif = Pigeons.NotificationPigeon()
         notif.packageId = packageId
+        notif.appName = context.packageManager.getApplicationLabel(context.packageManager.getApplicationInfo(packageId, 0)) as String
         notif.notifId = notifId
         notif.tagId = tagId
         notif.tagName = tagName
@@ -135,7 +150,7 @@ class NotificationsFlutterBridge @Inject constructor(
             )
             val packet = BlobCommand.InsertCommand(
                     Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
-                    BlobCommand.BlobDatabase.Pin,
+                    BlobCommand.BlobDatabase.Notification,
                     SUUID(StructMapper(), itemId).toBytes(),
                     timelineItem.toBytes(),
             )

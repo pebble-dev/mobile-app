@@ -86,6 +86,7 @@ class ActionResponsePigeon {
 class NotificationPigeon {
   String packageId;
   int notifId;
+  String appName;
   String tagId;
   String tagName;
   String title;
@@ -144,6 +145,7 @@ abstract class NotificationUtils {
   ListWrapper getSMSPackages();
   @async
   BooleanWrapper dismissNotification(StringWrapper itemId);
+  void dismissNotificationWatch(StringWrapper itemId);
 }
 
 @HostApi()
