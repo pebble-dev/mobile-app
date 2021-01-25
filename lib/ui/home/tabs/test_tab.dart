@@ -5,7 +5,6 @@ import 'package:cobble/domain/permissions.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
-import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/devoptions/dev_options_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
@@ -14,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import '../../common/icons/fonts/rebble_icons.dart';
 
 class TestTab extends HookWidget {
   final NotificationsControl notifications = NotificationsControl();
@@ -136,15 +137,14 @@ class TestTab extends HookWidget {
                       SizedBox(height: 8.0),
                       FlatButton.icon(
                         label: Text("Open developer options"),
-                        icon: Icon(
-                            RebbleIconsStroke.developer_connection_console,
+                        icon: Icon(RebbleIcons.developer_connection_console,
                             size: 25.0),
                         textColor: Theme.of(context).accentColor,
                         onPressed: () => context.push(DevOptionsPage()),
                       ),
                       FlatButton.icon(
                           label: Text("Here's another button"),
-                          icon: Icon(RebbleIconsStroke.settings, size: 25.0),
+                          icon: Icon(RebbleIcons.settings, size: 25.0),
                           textColor: Theme.of(context).accentColor,
                           onPressed: () => {}),
                     ],

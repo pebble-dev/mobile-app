@@ -1,8 +1,9 @@
-import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../common/icons/fonts/rebble_icons.dart';
 
 class SettingsTab extends StatefulWidget {
   @override
@@ -56,13 +57,13 @@ class _SettingsTabState extends State<SettingsTab> {
                     SizedBox(height: 8.0),
                     FlatButton.icon(
                         label: Text("Community"),
-                        icon: Icon(RebbleIconsStroke.settings, size: 25.0),
+                        icon: Icon(RebbleIcons.settings, size: 25.0),
                         textColor: Theme.of(context).accentColor,
                         onPressed: () => {launchURL(communityURL)}),
                     FlatButton.icon(
                         label: Text("Support"),
                         icon: Icon(
-                          RebbleIconsStroke.developer_connection_console,
+                          RebbleIcons.developer_connection_console,
                           size: 25.0,
                         ),
                         textColor: Theme.of(context).accentColor,

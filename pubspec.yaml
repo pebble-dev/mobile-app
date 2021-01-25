@@ -97,12 +97,9 @@ flutter:
   #   - images/a_dot_ham.jpeg
 
   fonts:
-      - family:  RebbleIconsStroke
+      - family:  RebbleIcons
         fonts:
-          - asset: fonts/RebbleIconsStroke.ttf
-      - family:  RebbleIconsFill
-        fonts:
-          - asset: fonts/RebbleIconsFill.ttf
+          - asset: fonts/RebbleIcons.ttf
       - family:  PebbleWatchIcons
         fonts:
           - asset: fonts/PebbleWatchIcons.ttf

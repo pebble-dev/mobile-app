@@ -1,6 +1,7 @@
-import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:flutter/material.dart';
+
+import '../common/icons/fonts/rebble_icons.dart';
 
 class CobbleScaffold extends StatelessWidget {
   final Widget child;
@@ -39,12 +40,12 @@ class CobbleScaffold extends StatelessWidget {
     if (canPop)
       leading = useCloseButton
           ? IconButton(
-              icon: Icon(RebbleIconsStroke.x_close),
+              icon: Icon(RebbleIcons.x_close),
               onPressed: () => Navigator.maybePop(context),
               tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
             )
           : IconButton(
-              icon: Icon(RebbleIconsStroke.caret_left),
+              icon: Icon(RebbleIcons.caret_left),
               onPressed: () => Navigator.maybePop(context),
               tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             );

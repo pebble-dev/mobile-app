@@ -1,9 +1,10 @@
-import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/setup/boot/rebble_setup.dart';
 import 'package:flutter/material.dart';
+
+import '../common/icons/fonts/rebble_icons.dart';
 
 class MoreSetup extends StatefulWidget implements CobbleScreen {
   @override
@@ -20,7 +21,7 @@ class _MoreSetupState extends State<MoreSetup> {
         label: Row(
           children: <Widget>[
             Text("LET'S GET STARTED"),
-            Icon(RebbleIconsStroke.caret_right)
+            Icon(RebbleIcons.caret_right)
           ],
           mainAxisAlignment: MainAxisAlignment.center,
         ),

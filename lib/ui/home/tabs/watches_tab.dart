@@ -1,12 +1,13 @@
 import 'dart:ui';
 
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
-import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/setup/pair_page.dart';
 import 'package:flutter/material.dart';
+
+import '../../common/icons/fonts/rebble_icons.dart';
 
 class MyWatchesTab extends StatefulWidget {
   @override
@@ -59,7 +60,7 @@ class _MyWatchesTabState extends State<MyWatchesTab> {
                               ),
                               Expanded(
                                   child: Container(width: 0.0, height: 0.0)),
-                              Icon(RebbleIconsStroke.caret_right,
+                              Icon(RebbleIcons.caret_right,
                                   color:
                                       Theme.of(context).colorScheme.secondary),
                             ]),

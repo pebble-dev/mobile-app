@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
-import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/home/home_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
@@ -13,6 +12,8 @@ import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/setup/more_setup.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../common/icons/fonts/rebble_icons.dart';
 
 class PairPage extends StatefulWidget implements CobbleScreen {
   final bool showSkipButton;
@@ -172,7 +173,7 @@ class _PairPageState extends State<PairPage>
                               ),
                               Expanded(
                                   child: Container(width: 0.0, height: 0.0)),
-                              Icon(RebbleIconsStroke.caret_right,
+                              Icon(RebbleIcons.caret_right,
                                   color:
                                       Theme.of(context).colorScheme.secondary),
                             ]),
