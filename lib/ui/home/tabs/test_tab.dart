@@ -33,6 +33,9 @@ class TestTab extends HookWidget {
 
     final preferences = useProvider(preferencesProvider);
     final calendarSyncEnabled = useProvider(calendarSyncEnabledProvider);
+    final phoneNotificationsMuteEnabled =
+        useProvider(phoneNotificationsMuteProvider);
+    final phoneCallsMuteEnabled = useProvider(phoneCallsMuteProvider);
 
     useEffect(() {
       Future.microtask(() async {
@@ -151,6 +154,28 @@ class TestTab extends HookWidget {
                   ),
                 ),
               ),
+              // TODO Separate call and notification mute is only possible on
+              //  Android 7 (SDK 24) and newer. On older releases,
+              //  we should only display one switch that controls both.
+              Row(children: [
+                Switch(
+                  value: phoneNotificationsMuteEnabled.data?.value ?? false,
+                  onChanged: (value) async {
+                    await preferences.data?.value
+                        ?.setPhoneNotificationMute(value);
+                  },
+                ),
+                Text("Mute phone notification sounds when watch connected")
+              ]),
+              Row(children: [
+                Switch(
+                  value: phoneCallsMuteEnabled.data?.value ?? false,
+                  onChanged: (value) async {
+                    await preferences.data?.value?.setPhoneCallsMute(value);
+                  },
+                ),
+                Text("Mute phone call ringing when watch connected")
+              ]),
               Row(children: [
                 Switch(
                   value: calendarSyncEnabled.data?.value ?? false,

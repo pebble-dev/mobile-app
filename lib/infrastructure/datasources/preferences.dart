@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:cobble/domain/preferences.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -31,6 +32,24 @@ class Preferences {
 
   Future<void> setCalendarSyncEnabled(bool value) async {
     await _sharedPrefs.setBool("ENABLE_CALENDAR_SYNC", value);
+    _preferencesUpdateStream.add(this);
+  }
+
+  bool isPhoneNotificationMuteEnabled() {
+    return _sharedPrefs.getBool("MUTE_PHONE_NOTIFICATIONS");
+  }
+
+  Future<void> setPhoneNotificationMute(bool value) async {
+    await _sharedPrefs.setBool("MUTE_PHONE_NOTIFICATIONS", value);
+    _preferencesUpdateStream.add(this);
+  }
+
+  bool isPhoneCallMuteEnabled() {
+    return _sharedPrefs.getBool("MUTE_PHONE_CALLS");
+  }
+
+  Future<void> setPhoneCallsMute(bool value) async {
+    await _sharedPrefs.setBool("MUTE_PHONE_CALLS", value);
     _preferencesUpdateStream.add(this);
   }
 }
