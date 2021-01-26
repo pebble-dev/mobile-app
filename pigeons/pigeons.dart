@@ -76,11 +76,18 @@ class TimelinePinPigeon {
 class ActionTrigger {
   String itemId;
   int actionId;
+  String attributesJson;
 }
 
 class ActionResponsePigeon {
   bool success;
   String attributesJson;
+}
+
+class NotifActionExecuteReq {
+  String itemId;
+  int actionId;
+  String responseText;
 }
 
 class NotificationPigeon {
@@ -146,6 +153,8 @@ abstract class NotificationUtils {
   @async
   BooleanWrapper dismissNotification(StringWrapper itemId);
   void dismissNotificationWatch(StringWrapper itemId);
+  void openNotification(StringWrapper itemId);
+  void executeAction(NotifActionExecuteReq action);
 }
 
 @HostApi()

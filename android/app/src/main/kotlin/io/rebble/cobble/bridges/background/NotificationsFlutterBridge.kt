@@ -3,7 +3,10 @@ package io.rebble.cobble.bridges.background
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ResolveInfo
+import android.os.Bundle
 import android.service.notification.StatusBarNotification
+import androidx.core.app.NotificationCompat
+import androidx.core.app.RemoteInput
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import io.rebble.cobble.bridges.FlutterBridge
@@ -48,6 +51,31 @@ class NotificationsFlutterBridge @Inject constructor(
         return lastPackages[category] ?: listOf()
     }
     private val notifUtils = object : Pigeons.NotificationUtils {
+        override fun openNotification(arg: Pigeons.StringWrapper?) {
+            val id = UUID.fromString(arg?.value)
+            activeNotifs[id]?.notification?.contentIntent?.send()
+        }
+
+        override fun executeAction(arg: Pigeons.NotifActionExecuteReq?) {
+            if (arg != null) {
+                val id = UUID.fromString(arg.itemId)
+                val action = NotificationCompat.getAction(activeNotifs[id]?.notification, arg.actionId.toInt())
+                if (arg.responseText?.isEmpty() == false) {
+                    val key = action?.remoteInputs?.first()?.resultKey
+                    if (key != null) {
+                        val intent = Intent()
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        val bundle = Bundle()
+                        bundle.putString(key, arg.responseText)
+                        RemoteInput.addResultsToIntent(action.remoteInputs, intent, bundle)
+                        action.actionIntent.send(context, 0, intent)
+                        return
+                    }
+                }
+                action.actionIntent.send()
+            }
+        }
+
         override fun dismissNotificationWatch(arg: Pigeons.StringWrapper?) {
             val id = UUID.fromString(arg?.value)
             val command = BlobCommand.DeleteCommand(Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(), BlobCommand.BlobDatabase.Notification, SUUID(StructMapper(), id).toBytes())

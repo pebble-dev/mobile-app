@@ -26,7 +26,7 @@ import 'package:uuid_type/uuid_type.dart';
 
 final Uuid notificationsWatchappId = Uuid("B2CAE818-10F8-46DF-AD2B-98AD2254A3C1");
 
-class NotificationManager implements ActionHandler{
+class NotificationManager {
   final NotificationUtils _notificationUtils = NotificationUtils();
   final ActiveNotificationDao _activeNotificationDao;
   final Future<SharedPreferences> _preferencesFuture;
@@ -115,7 +115,7 @@ class NotificationManager implements ActionHandler{
       if (notifActions != null) {
         for (int i=0; i<notifActions.length; i++) {
           NotificationAction action = NotificationAction.fromJson(notifActions[i]);
-          actions.add(TimelineAction((MetaAction.values.length-1)+i, actionTypeGeneric, [
+          actions.add(TimelineAction((MetaAction.values.length)+i, action.isResponse ? actionTypeResponse : actionTypeGeneric, [
             TimelineAttribute.title(action.title)
           ]));
         }
@@ -130,7 +130,7 @@ class NotificationManager implements ActionHandler{
     ]));
     if (notif.tagId != null) {
       actions.add(TimelineAction(MetaAction.MUTE_TAG.index, actionTypeGeneric, [
-        TimelineAttribute.title("Mute tag '${notif.tagName}'")
+        TimelineAttribute.title("Mute tag\n'${notif.tagName}'")
       ]));
     }
 
@@ -153,27 +153,55 @@ class NotificationManager implements ActionHandler{
     );
   }
 
-  @override
-  Future<TimelineActionResponse> handleTimelineAction(TimelinePin pin, ActionTrigger trigger) async {
+  Future<TimelineActionResponse> handleNotifAction(ActionTrigger trigger) async {
+    TimelineActionResponse ret;
     switch (trigger.actionId) {
       case 0: // DISMISS
-        BooleanWrapper res = await _notificationUtils.dismissNotification(StringWrapper()..value=pin.itemId.toString());
+        BooleanWrapper res = await _notificationUtils.dismissNotification(StringWrapper()..value=trigger.itemId.toString());
         if (res.value) {
-          return TimelineActionResponse(true, attributes: [
+          ret = TimelineActionResponse(true, attributes: [
             TimelineAttribute.subtitle("Dismissed"),
             TimelineAttribute.largeIcon(TimelineIcon.resultDismissed)
           ]);
         }
         break;
       case 1: // OPEN
+        _notificationUtils.openNotification(StringWrapper()..value=trigger.itemId.toString());
+        ret = TimelineActionResponse(true, attributes: [
+          TimelineAttribute.subtitle("Opened on phone"),
+          TimelineAttribute.largeIcon(TimelineIcon.genericConfirmation)
+        ]);
         break;
       case 2: // MUTE_PKG
+        //TODO
         break;
       case 3: // MUTE_TAG
+        //TODO
         break;
       default: // Custom
+        List<TimelineAttribute> attrs = List<TimelineAttribute>();
+        if (trigger.attributesJson != null && trigger.attributesJson.isNotEmpty) {
+          List<Map<String, dynamic>> attrsJson = new List<Map<String, dynamic>>.from(jsonDecode(trigger.attributesJson));
+          attrsJson.forEach((el) {
+            attrs.add(TimelineAttribute.fromJson(el));
+          });
+        }
+        attrs.forEach((element) {Log.d(element.id.toString());});
+        String responseText = attrs.firstWhere((el) => el.id == 3, orElse: ()=>TimelineAttribute(string: "")).string;
+        _notificationUtils.executeAction(
+            NotifActionExecuteReq()
+          ..itemId=trigger.itemId.toString()
+          ..actionId=trigger.actionId-MetaAction.values.length
+          ..responseText=responseText
+        );
+
+        ret = TimelineActionResponse(true, attributes: [
+          TimelineAttribute.subtitle("Done"),
+          TimelineAttribute.largeIcon(TimelineIcon.genericConfirmation)
+        ]);
         break;
     }
+    return ret;
   }
 
   void dismissNotification(Uuid itemId) {

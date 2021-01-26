@@ -6,6 +6,7 @@ import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
 import io.rebble.libpebblecommon.structmapper.SInt
 import io.rebble.libpebblecommon.structmapper.SUInt
 import io.rebble.libpebblecommon.structmapper.StructMapper
+import java.nio.ByteBuffer
 
 @JsonClass(generateAdapter = true)
 data class TimelineAttribute(
@@ -39,5 +40,23 @@ data class TimelineAttribute(
                 id.toUByte(),
                 content
         )
+    }
+
+    companion object {
+        fun fromProtocolAttribute(attr: TimelineItem.Attribute): TimelineAttribute {
+            return when (val id = attr.attributeId.get().toInt()) {
+                in 1..3, 9, 11, 12, in 15..22, 24 -> {
+                    TimelineAttribute(id, string = String(attr.content.get().toByteArray()))
+                }
+
+                in 4..7, 13, 14 -> {
+                    TimelineAttribute(id, uint32 = ByteBuffer.wrap(attr.content.get().toByteArray()).getLong(0))
+                }
+
+                else -> {
+                    throw NotImplementedError("Attr ID $id does not have an implemented type.")
+                }
+            }
+        }
     }
 }
