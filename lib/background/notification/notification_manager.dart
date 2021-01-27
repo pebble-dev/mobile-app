@@ -89,9 +89,9 @@ class NotificationManager {
     }
     Uuid itemId = RandomBasedUuidGenerator().generate();
     TimelineAttribute icon = TimelineAttribute.tinyIcon(await _determineIcon(notif.packageId));
-    TimelineAttribute title = TimelineAttribute.title(notif.appName);
-    TimelineAttribute subject = TimelineAttribute.subtitle(notif.title);
-    TimelineAttribute content = TimelineAttribute.body(notif.text);
+    TimelineAttribute title = TimelineAttribute.title(notif.appName.trim());
+    TimelineAttribute subject = TimelineAttribute.subtitle(notif.title.trim());
+    TimelineAttribute content = TimelineAttribute.body(notif.text.trim());
     if (notif.messagesJson.isEmpty) {
       content = TimelineAttribute.body("");
     }else {
@@ -99,8 +99,8 @@ class NotificationManager {
       String contentText = "";
       messages.forEach((el) {
         NotificationMessage message = NotificationMessage.fromJson(el);
-        contentText += message.sender + ": ";
-        contentText += message.text + "\n";
+        contentText += message.sender.trim() + ": ";
+        contentText += message.text.trim() + "\n";
       });
       content = TimelineAttribute.body(contentText);
     }
