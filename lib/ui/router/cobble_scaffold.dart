@@ -7,6 +7,7 @@ class CobbleScaffold extends StatelessWidget {
   final Widget child;
   final String title;
   final String subtitle;
+  final List<Widget> actions;
   final FloatingActionButton floatingActionButton;
   final FloatingActionButtonLocation floatingActionButtonLocation;
 
@@ -17,10 +18,12 @@ class CobbleScaffold extends StatelessWidget {
     this.subtitle,
     this.floatingActionButton,
     this.floatingActionButtonLocation,
+    this.actions = const [],
   })  : assert(child != null),
         assert(title == null || title.length > 0),
         assert(subtitle == null ||
             (subtitle.length > 0 && title != null && title.length > 0)),
+        assert(actions != null),
         super(key: key);
 
   @override
@@ -33,10 +36,9 @@ class CobbleScaffold extends StatelessWidget {
     }
 
     Widget leading;
-    final parentRoute = ModalRoute.of(context);
-    final bool canPop = parentRoute?.canPop ?? false;
-    final bool useCloseButton =
-        parentRoute is PageRoute && parentRoute.fullscreenDialog;
+    final route = ModalRoute.of(context);
+    final bool canPop = route?.canPop ?? false;
+    final bool useCloseButton = route is PageRoute && route.fullscreenDialog;
     if (canPop)
       leading = useCloseButton
           ? IconButton(
@@ -50,14 +52,17 @@ class CobbleScaffold extends StatelessWidget {
               tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             );
 
+    final height = 25.0 + 16 * 2;
+
     return Scaffold(
       appBar: navBarTitle == null
           ? null
           : PreferredSize(
-              preferredSize: Size.fromHeight(56),
+              preferredSize: Size.fromHeight(height),
               child: AppBar(
                 leading: leading,
                 title: navBarTitle,
+                actions: actions,
               ),
             ),
       floatingActionButton: floatingActionButton,
