@@ -138,6 +138,13 @@ class CobbleTheme {
         color: materialScheme.primary,
         size: 25,
       ),
+      inputDecorationTheme: InputDecorationTheme(
+        border: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: scheme.divider,
+          ),
+        ),
+      ),
     );
   }
 }
