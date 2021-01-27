@@ -43,7 +43,7 @@ class NotificationsFlutterBridge @Inject constructor(
     private fun getAppsWithCategory(category: String): List<String> {
         if (lastPackages[category] == null || System.currentTimeMillis() - (lastRefresh[category] ?: 0) > cacheLifetime) {
             lastRefresh[category] = System.currentTimeMillis()
-            val intent = Intent()
+            val intent = Intent(Intent.ACTION_MAIN)
             intent.addCategory(category)
             val resolveInfos: List<ResolveInfo> = context.packageManager.queryIntentActivities(intent, 0)
             lastPackages[category] = resolveInfos.map { it.resolvePackageName }
