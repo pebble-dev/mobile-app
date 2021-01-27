@@ -127,6 +127,7 @@ class CobbleTheme {
         ),
         iconTheme: IconThemeData(
           color: materialScheme.onSurface,
+          size: 25,
         ),
       ),
       toggleableActiveColor: materialScheme.primary,
@@ -135,6 +136,7 @@ class CobbleTheme {
       ),
       iconTheme: IconThemeData(
         color: materialScheme.primary,
+        size: 25,
       ),
     );
   }

@@ -110,7 +110,6 @@ class CobbleCard extends StatelessWidget {
                           ),
                           child: Icon(
                             leading,
-                            size: 25,
                             color: scheme.invert().text,
                           ),
                         )

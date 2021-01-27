@@ -80,7 +80,6 @@ class CobbleTile extends StatelessWidget {
         leading: leading,
         trailing: Icon(
           trailing,
-          size: 25,
         ),
         title: title,
         subtitle: subtitle,
@@ -106,7 +105,6 @@ class CobbleTile extends StatelessWidget {
         trailing: trailing != null
             ? Icon(
                 trailing,
-                size: 25,
               )
             : null,
         title: title,
@@ -166,10 +164,7 @@ class CobbleTile extends StatelessWidget {
           leading: leading,
           trailing: Transform.rotate(
             angle: heightFactor * pi,
-            child: Icon(
-              RebbleIconsStroke.caret_down,
-              size: 25,
-            ),
+            child: Icon(RebbleIconsStroke.caret_down),
           ),
         ),
         child: Column(
@@ -191,10 +186,7 @@ class CobbleTile extends StatelessWidget {
         child: Row(
           children: [
             if (leading != null) ...[
-              Icon(
-                leading,
-                size: 25,
-              ),
+              Icon(leading),
               SizedBox(width: 16),
             ],
             Expanded(
