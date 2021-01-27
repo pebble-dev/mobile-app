@@ -44,7 +44,7 @@ class NotificationsFlutterBridge @Inject constructor(
         if (lastPackages[category] == null || System.currentTimeMillis() - (lastRefresh[category] ?: 0) > cacheLifetime) {
             lastRefresh[category] = System.currentTimeMillis()
             val intent = Intent()
-            intent.addCategory(Intent.CATEGORY_APP_EMAIL)
+            intent.addCategory(category)
             val resolveInfos: List<ResolveInfo> = context.packageManager.queryIntentActivities(intent, 0)
             lastPackages[category] = resolveInfos.map { it.resolvePackageName }
         }
