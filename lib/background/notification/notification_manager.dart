@@ -186,8 +186,7 @@ class NotificationManager {
             attrs.add(TimelineAttribute.fromJson(el));
           });
         }
-        attrs.forEach((element) {Log.d(element.id.toString());});
-        String responseText = attrs.firstWhere((el) => el.id == 3, orElse: ()=>TimelineAttribute(string: "")).string;
+        String responseText = attrs.firstWhere((el) => el.id == 1, orElse: ()=>TimelineAttribute(string: "")).string;
         _notificationUtils.executeAction(
             NotifActionExecuteReq()
           ..itemId=trigger.itemId.toString()
