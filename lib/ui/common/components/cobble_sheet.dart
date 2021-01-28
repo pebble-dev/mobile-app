@@ -37,38 +37,47 @@ Future<void> showCobbleSheet({
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: 8),
-              child: Row(
-                children: [
-                  Flexible(
-                    flex: 132,
-                    child: Container(),
-                  ),
-                  Flexible(
-                    flex: 96,
-                    child: Container(
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: context.scheme.divider,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(2),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height / 3,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    Flexible(
+                      flex: 132,
+                      child: Container(),
+                    ),
+                    Flexible(
+                      flex: 96,
+                      child: Container(
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: context.scheme.divider,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(2),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Flexible(
-                    flex: 132,
-                    child: Container(),
-                  ),
-                ],
+                    Flexible(
+                      flex: 132,
+                      child: Container(),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            builder(context, close),
-          ],
+              Flexible(
+                child: SingleChildScrollView(
+                  child: builder(context, close),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     },
