@@ -126,7 +126,7 @@ class CobbleTheme {
           ),
         ),
         iconTheme: IconThemeData(
-          color: materialScheme.onSurface,
+          color: materialScheme.primary,
           size: 25,
         ),
       ),
