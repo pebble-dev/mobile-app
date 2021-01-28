@@ -5,6 +5,7 @@ import 'package:cobble/domain/connection/scan_provider.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
+import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/home/home_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
@@ -148,7 +149,7 @@ class PairPage extends HookWidget implements CobbleScreen {
                         Expanded(
                           child: Container(width: 0.0, height: 0.0),
                         ),
-                        Icon(RebbleIconsStroke.caret_right,
+                        Icon(RebbleIcons.caret_right,
                             color: Theme.of(context).colorScheme.secondary),
                       ],
                     ),

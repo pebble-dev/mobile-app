@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
-import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
+
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -14,7 +14,6 @@ import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/setup/pair_page.dart';
 
-import '../../common/icons/fonts/rebble_icons_stroke.dart';
 import '../../common/icons/fonts/rebble_icons.dart';
 
 class MyWatchesTab extends HookWidget {
@@ -158,7 +157,7 @@ class MyWatchesTab extends HookWidget {
                   Offstage(
                     offstage: isConnected,
                     child: ListTile(
-                      leading: Icon(RebbleIconsStroke.devices),
+                      leading: Icon(RebbleIcons.devices),
                       title: Text('Connect to watch'),
                       onTap: () => _onConnectPressed(device, true),
                     ),
@@ -166,13 +165,13 @@ class MyWatchesTab extends HookWidget {
                   Offstage(
                     offstage: !isConnected,
                     child: ListTile(
-                      leading: Icon(RebbleIconsStroke.devices),
+                      leading: Icon(RebbleIcons.devices),
                       title: Text('Disconnect from watch'),
                       onTap: () => _onDisconnectPressed(true),
                     ),
                   ),
                   ListTile(
-                    leading: Icon(RebbleIconsStroke.search),
+                    leading: Icon(RebbleIcons.search),
                     title: Text('Check for updates'),
                     onTap: () => _onUpdatePressed(device),
                   ),
@@ -184,7 +183,7 @@ class MyWatchesTab extends HookWidget {
                     endIndent: 15,
                   ),
                   ListTile(
-                    leading: Icon(RebbleIconsStroke.x_close, color: Colors.red),
+                    leading: Icon(RebbleIcons.x_close, color: Colors.red),
                     title: Text('Forget watch',
                         style: TextStyle(color: Colors.red)),
                     onTap: () => _onForgetPressed(device),
@@ -262,7 +261,7 @@ class MyWatchesTab extends HookWidget {
                               Padding(
                                 padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
                                 child: IconButton(
-                                  icon: Icon(RebbleIconsStroke.devices,
+                                  icon: Icon(RebbleIcons.devices,
                                       color: Theme.of(context)
                                           .colorScheme
                                           .secondary),
@@ -270,7 +269,7 @@ class MyWatchesTab extends HookWidget {
                                 ),
                               ),
                               IconButton(
-                                  icon: Icon(RebbleIconsStroke.menu_vertical,
+                                  icon: Icon(RebbleIcons.menu_vertical,
                                       color: Theme.of(context)
                                           .colorScheme
                                           .secondary),
@@ -323,14 +322,14 @@ class MyWatchesTab extends HookWidget {
                           Padding(
                             padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
                             child: IconButton(
-                              icon: Icon(RebbleIconsStroke.devices,
+                              icon: Icon(RebbleIcons.devices,
                                   color:
                                       Theme.of(context).colorScheme.secondary),
                               onPressed: () => _onConnectPressed(e, false),
                             ),
                           ),
                           IconButton(
-                              icon: Icon(RebbleIconsStroke.menu_vertical,
+                              icon: Icon(RebbleIcons.menu_vertical,
                                   color:
                                       Theme.of(context).colorScheme.secondary),
                               onPressed: () => _onSettingsPressed(e, false)),
