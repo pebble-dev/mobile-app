@@ -99,8 +99,8 @@ class CobbleSchemeData {
     primary: Color(0xFFCD3100),
     danger: Color(0xFFEA7272),
     destructive: Color(0xFFBB2323),
-    background: Color(0xFFF2F2F2),
-    surface: Color(0xFFFCFCFC),
+    background: Color(0xFFF0F0F0),
+    surface: Color(0xFFFAFAFA),
     elevated: Color(0xFFFFFFFF),
     text: CobbleSchemeTextData.fromBrightness(Brightness.light),
   );
