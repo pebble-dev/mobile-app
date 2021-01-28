@@ -127,20 +127,16 @@ class PairPage extends HookWidget implements CobbleScreen {
                             Wrap(
                               spacing: 4,
                               children: [
-                                Offstage(
-                                  offstage: !e.runningPRF || e.firstUse,
-                                  child: Chip(
+                                if (e.runningPRF && !e.firstUse)
+                                  Chip(
                                     backgroundColor: Colors.deepOrange,
                                     label: Text("Recovery"),
                                   ),
-                                ),
-                                Offstage(
-                                  offstage: !e.firstUse,
-                                  child: Chip(
+                                if (e.firstUse)
+                                  Chip(
                                     backgroundColor: Color(0xffd4af37),
                                     label: Text("New!"),
                                   ),
-                                ),
                               ],
                             ),
                           ],
