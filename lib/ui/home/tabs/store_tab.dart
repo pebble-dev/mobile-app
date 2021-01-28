@@ -9,9 +9,10 @@ class StoreTab extends StatefulWidget {
 class _StoreTabState extends State<StoreTab> {
   @override
   Widget build(BuildContext context) {
-    return WebView(
+    return SafeArea(
+        child: WebView(
       initialUrl: "https://store-beta.rebble.io/?native=true&platform=android",
       javascriptMode: JavascriptMode.unrestricted,
-    );
+    ));
   }
 }
