@@ -2,6 +2,7 @@ package io.rebble.cobble.bridges.background
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.os.Bundle
 import android.service.notification.StatusBarNotification
@@ -35,21 +36,8 @@ class NotificationsFlutterBridge @Inject constructor(
         private val moshi: Moshi,
         private val blobDBService: BlobDBService,
 ) : FlutterBridge {
-    private val cacheLifetime = 1000*60*10
-    private var lastPackages: MutableMap<String, List<String>> = mutableMapOf()
-    private var lastRefresh: MutableMap<String, Long> = mutableMapOf()
     val activeNotifs: MutableMap<UUID, StatusBarNotification> = mutableMapOf()
 
-    private fun getAppsWithCategory(category: String): List<String> {
-        if (lastPackages[category] == null || System.currentTimeMillis() - (lastRefresh[category] ?: 0) > cacheLifetime) {
-            lastRefresh[category] = System.currentTimeMillis()
-            val intent = Intent(Intent.ACTION_MAIN)
-            intent.addCategory(category)
-            val resolveInfos: List<ResolveInfo> = context.packageManager.queryIntentActivities(intent, 0)
-            lastPackages[category] = resolveInfos.map { it.resolvePackageName }
-        }
-        return lastPackages[category] ?: listOf()
-    }
     private val notifUtils = object : Pigeons.NotificationUtils {
         override fun openNotification(arg: Pigeons.StringWrapper?) {
             val id = UUID.fromString(arg?.value)
@@ -89,7 +77,6 @@ class NotificationsFlutterBridge @Inject constructor(
             }
         }
 
-        override fun getSMSPackages(): Pigeons.ListWrapper = ListWrapper(getAppsWithCategory(Intent.CATEGORY_APP_MESSAGING))
         override fun dismissNotification(arg: Pigeons.StringWrapper?, result: Pigeons.Result<Pigeons.BooleanWrapper>?) {
             if (arg != null) {
                 val id = UUID.fromString(arg.value)
@@ -109,7 +96,6 @@ class NotificationsFlutterBridge @Inject constructor(
             }
         }
 
-        override fun getMailPackages(): Pigeons.ListWrapper = ListWrapper(getAppsWithCategory(Intent.CATEGORY_APP_EMAIL))
     }
 
     private var notifListening: Pigeons.NotificationListening? = null
@@ -117,7 +103,7 @@ class NotificationsFlutterBridge @Inject constructor(
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun handleNotification(packageId: String,
                                    notifId: Long, tagId: String?, tagName: String?, title: String,
-                                   text: String, messages: List<NotificationMessage>,
+                                   text: String, category: String, messages: List<NotificationMessage>,
                                    actions: List<NotificationAction>): Pair<TimelineItem, BlobResponse.BlobStatus> {
         if (notifListening == null) {
             val flutterEngine = flutterBackgroundController.getBackgroundFlutterEngine()
@@ -138,6 +124,7 @@ class NotificationsFlutterBridge @Inject constructor(
         notif.tagName = tagName
         notif.title = title
         notif.text = text
+        notif.category = category
         notif.actionsJson = moshi
                 .adapter<List<NotificationAction>>(
                         Types.newParameterizedType(List::class.java, NotificationAction::class.java)

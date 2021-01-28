@@ -33,16 +33,44 @@ class NotificationManager {
 
   NotificationManager(this._activeNotificationDao, this._preferencesFuture);
 
-  Future<TimelineIcon> _determineIcon(String packageId) async {
+  Future<TimelineIcon> _determineIcon(String packageId, String category) async {
     TimelineIcon icon = TimelineIcon.notificationGeneric;
-    List<String> mailPackages = new List<String>.from((await _notificationUtils.getMailPackages()).value);
-    List<String> smsPackages = new List<String>.from((await _notificationUtils.getSMSPackages()).value);
-    if (mailPackages.contains(packageId)) {
-      icon = TimelineIcon.genericEmail;
-    }else if (smsPackages.contains(packageId)) {
-      icon = TimelineIcon.genericSms;
-    }
     if (Platform.isAndroid) {
+      switch (category) {
+        case "email":
+          icon = TimelineIcon.genericEmail;
+          break;
+        case "msg":
+          icon = TimelineIcon.genericSms;
+          break;
+        case "event":
+          icon = TimelineIcon.timelineCalendar;
+          break;
+        case "promo":
+          icon = TimelineIcon.payBill;
+          break;
+        case "navigation":
+          icon = TimelineIcon.location;
+          break;
+        case "alarm":
+          icon = TimelineIcon.alarmClock;
+          break;
+        case "social":
+          icon = TimelineIcon.newsEvent;
+          break;
+        case "err":
+          icon = TimelineIcon.genericWarning;
+          break;
+        case "transport":
+          icon = TimelineIcon.audioCassette;
+          break;
+        case "sys":
+          icon = TimelineIcon.settings;
+          break;
+        case "reminder":
+          icon = TimelineIcon.notificationReminder;
+          break;
+      }
       switch (packageId) {
         case "com.google.android.gm.lite":
         case "com.google.android.gm":
@@ -88,7 +116,7 @@ class NotificationManager {
       _notificationUtils.dismissNotificationWatch(id);
     }
     Uuid itemId = RandomBasedUuidGenerator().generate();
-    TimelineAttribute icon = TimelineAttribute.tinyIcon(await _determineIcon(notif.packageId));
+    TimelineAttribute icon = TimelineAttribute.tinyIcon(await _determineIcon(notif.packageId, notif.category));
     TimelineAttribute title = TimelineAttribute.title(notif.appName.trim());
     TimelineAttribute subject = TimelineAttribute.subtitle(notif.title.trim());
     TimelineAttribute content = TimelineAttribute.body(notif.text.trim());

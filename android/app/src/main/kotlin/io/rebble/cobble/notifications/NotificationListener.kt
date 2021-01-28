@@ -112,10 +112,10 @@ class NotificationListener : NotificationListenerService() {
                 }
             }
             coroutineScope.launch(Dispatchers.Main.immediate) {
-                var result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, tagName, title, text, messages?: listOf(), actions)
+                var result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, tagName, title, text, sbn.notification.category?:"", messages?: listOf(), actions)
                 while (result.second == BlobResponse.BlobStatus.TryLater) {
                     delay(1000)
-                    result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, tagName, title, text, messages?: listOf(), actions)
+                    result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, tagName, title, text, sbn.notification.category?:"", messages?: listOf(), actions)
                 }
                 Timber.d(result.second.toString())
                 notificationBridge.activeNotifs[result.first.itemId.get()] = sbn

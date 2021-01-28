@@ -98,6 +98,7 @@ class NotificationPigeon {
   String tagName;
   String title;
   String text;
+  String category;
   String messagesJson;
   String actionsJson;
 }
@@ -148,8 +149,6 @@ abstract class NotificationListening {
 
 @HostApi()
 abstract class NotificationUtils {
-  ListWrapper getMailPackages();
-  ListWrapper getSMSPackages();
   @async
   BooleanWrapper dismissNotification(StringWrapper itemId);
   void dismissNotificationWatch(StringWrapper itemId);

@@ -127,6 +127,7 @@ class NotificationPigeon {
   String tagName;
   String title;
   String text;
+  String category;
   String messagesJson;
   String actionsJson;
   // ignore: unused_element
@@ -139,6 +140,7 @@ class NotificationPigeon {
     pigeonMap['tagName'] = tagName;
     pigeonMap['title'] = title;
     pigeonMap['text'] = text;
+    pigeonMap['category'] = category;
     pigeonMap['messagesJson'] = messagesJson;
     pigeonMap['actionsJson'] = actionsJson;
     return pigeonMap;
@@ -153,6 +155,7 @@ class NotificationPigeon {
     result.tagName = pigeonMap['tagName'];
     result.title = pigeonMap['title'];
     result.text = pigeonMap['text'];
+    result.category = pigeonMap['category'];
     result.messagesJson = pigeonMap['messagesJson'];
     result.actionsJson = pigeonMap['actionsJson'];
     return result;
@@ -1005,48 +1008,6 @@ abstract class NotificationListening {
 }
 
 class NotificationUtils {
-  Future<ListWrapper> getMailPackages() async {
-    const BasicMessageChannel<dynamic> channel =
-        BasicMessageChannel<dynamic>('dev.flutter.pigeon.NotificationUtils.getMailPackages', StandardMessageCodec());
-    
-    final Map<dynamic, dynamic> replyMap = await channel.send(null);
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null);
-    } else if (replyMap['error'] != null) {
-      final Map<dynamic, dynamic> error = replyMap['error'];
-      throw PlatformException(
-          code: error['code'],
-          message: error['message'],
-          details: error['details']);
-    } else {
-      return ListWrapper._fromMap(replyMap['result']);
-    }
-    
-  }
-  Future<ListWrapper> getSMSPackages() async {
-    const BasicMessageChannel<dynamic> channel =
-        BasicMessageChannel<dynamic>('dev.flutter.pigeon.NotificationUtils.getSMSPackages', StandardMessageCodec());
-    
-    final Map<dynamic, dynamic> replyMap = await channel.send(null);
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null);
-    } else if (replyMap['error'] != null) {
-      final Map<dynamic, dynamic> error = replyMap['error'];
-      throw PlatformException(
-          code: error['code'],
-          message: error['message'],
-          details: error['details']);
-    } else {
-      return ListWrapper._fromMap(replyMap['result']);
-    }
-    
-  }
   Future<BooleanWrapper> dismissNotification(StringWrapper arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
     const BasicMessageChannel<dynamic> channel =

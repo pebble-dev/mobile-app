@@ -215,6 +215,10 @@ public class Pigeons {
     public String getText() { return text; }
     public void setText(String setterArg) { this.text = setterArg; }
 
+    private String category;
+    public String getCategory() { return category; }
+    public void setCategory(String setterArg) { this.category = setterArg; }
+
     private String messagesJson;
     public String getMessagesJson() { return messagesJson; }
     public void setMessagesJson(String setterArg) { this.messagesJson = setterArg; }
@@ -232,6 +236,7 @@ public class Pigeons {
       toMapResult.put("tagName", tagName);
       toMapResult.put("title", title);
       toMapResult.put("text", text);
+      toMapResult.put("category", category);
       toMapResult.put("messagesJson", messagesJson);
       toMapResult.put("actionsJson", actionsJson);
       return toMapResult;
@@ -252,6 +257,8 @@ public class Pigeons {
       fromMapResult.title = (String)title;
       Object text = map.get("text");
       fromMapResult.text = (String)text;
+      Object category = map.get("category");
+      fromMapResult.category = (String)category;
       Object messagesJson = map.get("messagesJson");
       fromMapResult.messagesJson = (String)messagesJson;
       Object actionsJson = map.get("actionsJson");
@@ -1263,8 +1270,6 @@ public class Pigeons {
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface NotificationUtils {
-    ListWrapper getMailPackages();
-    ListWrapper getSMSPackages();
     void dismissNotification(StringWrapper arg, Result<BooleanWrapper> result);
     void dismissNotificationWatch(StringWrapper arg);
     void openNotification(StringWrapper arg);
@@ -1272,44 +1277,6 @@ public class Pigeons {
 
     /** Sets up an instance of `NotificationUtils` to handle messages through the `binaryMessenger` */
     static void setup(BinaryMessenger binaryMessenger, NotificationUtils api) {
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.NotificationUtils.getMailPackages", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              ListWrapper output = api.getMailPackages();
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.NotificationUtils.getSMSPackages", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              ListWrapper output = api.getSMSPackages();
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
       {
         BasicMessageChannel<Object> channel =
             new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.NotificationUtils.dismissNotification", new StandardMessageCodec());
