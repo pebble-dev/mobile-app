@@ -145,7 +145,7 @@ class _FirstRunPageState extends State<FirstRunPage> {
                     backgroundColor: Theme.of(context).primaryColor,
                     onPressed: () => context.push(
                       PairPage(
-                        showSkipButton: true,
+                        fromLanding: true,
                       ),
                     ),
                   ),
