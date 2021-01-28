@@ -111,11 +111,12 @@ class NotificationListener : NotificationListenerService() {
                     }
                 }
             }
+            Timber.d("Colour ${sbn.notification.color}")
             coroutineScope.launch(Dispatchers.Main.immediate) {
-                var result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, tagName, title, text, sbn.notification.category?:"", messages?: listOf(), actions)
+                var result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, tagName, title, text, sbn.notification.category?:"", sbn.notification.color, messages?: listOf(), actions)
                 while (result.second == BlobResponse.BlobStatus.TryLater) {
                     delay(1000)
-                    result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, tagName, title, text, sbn.notification.category?:"", messages?: listOf(), actions)
+                    result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, tagName, title, text, sbn.notification.category?:"", sbn.notification.color, messages?: listOf(), actions)
                 }
                 Timber.d(result.second.toString())
                 notificationBridge.activeNotifs[result.first.itemId.get()] = sbn

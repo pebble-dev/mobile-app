@@ -219,6 +219,10 @@ public class Pigeons {
     public String getCategory() { return category; }
     public void setCategory(String setterArg) { this.category = setterArg; }
 
+    private Long color;
+    public Long getColor() { return color; }
+    public void setColor(Long setterArg) { this.color = setterArg; }
+
     private String messagesJson;
     public String getMessagesJson() { return messagesJson; }
     public void setMessagesJson(String setterArg) { this.messagesJson = setterArg; }
@@ -237,6 +241,7 @@ public class Pigeons {
       toMapResult.put("title", title);
       toMapResult.put("text", text);
       toMapResult.put("category", category);
+      toMapResult.put("color", color);
       toMapResult.put("messagesJson", messagesJson);
       toMapResult.put("actionsJson", actionsJson);
       return toMapResult;
@@ -259,6 +264,8 @@ public class Pigeons {
       fromMapResult.text = (String)text;
       Object category = map.get("category");
       fromMapResult.category = (String)category;
+      Object color = map.get("color");
+      fromMapResult.color = (color == null) ? null : ((color instanceof Integer) ? (Integer)color : (Long)color);
       Object messagesJson = map.get("messagesJson");
       fromMapResult.messagesJson = (String)messagesJson;
       Object actionsJson = map.get("actionsJson");

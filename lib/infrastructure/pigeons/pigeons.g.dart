@@ -128,6 +128,7 @@ class NotificationPigeon {
   String title;
   String text;
   String category;
+  int color;
   String messagesJson;
   String actionsJson;
   // ignore: unused_element
@@ -141,6 +142,7 @@ class NotificationPigeon {
     pigeonMap['title'] = title;
     pigeonMap['text'] = text;
     pigeonMap['category'] = category;
+    pigeonMap['color'] = color;
     pigeonMap['messagesJson'] = messagesJson;
     pigeonMap['actionsJson'] = actionsJson;
     return pigeonMap;
@@ -156,6 +158,7 @@ class NotificationPigeon {
     result.title = pigeonMap['title'];
     result.text = pigeonMap['text'];
     result.category = pigeonMap['category'];
+    result.color = pigeonMap['color'];
     result.messagesJson = pigeonMap['messagesJson'];
     result.actionsJson = pigeonMap['actionsJson'];
     return result;

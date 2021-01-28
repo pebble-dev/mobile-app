@@ -99,6 +99,7 @@ class NotificationPigeon {
   String title;
   String text;
   String category;
+  int color;
   String messagesJson;
   String actionsJson;
 }

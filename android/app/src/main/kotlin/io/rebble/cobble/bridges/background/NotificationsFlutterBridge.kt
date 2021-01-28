@@ -4,10 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import android.graphics.Color
+import android.graphics.ColorSpace
 import android.os.Bundle
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
+import androidx.core.graphics.convertTo
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import io.rebble.cobble.bridges.FlutterBridge
@@ -103,7 +106,7 @@ class NotificationsFlutterBridge @Inject constructor(
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun handleNotification(packageId: String,
                                    notifId: Long, tagId: String?, tagName: String?, title: String,
-                                   text: String, category: String, messages: List<NotificationMessage>,
+                                   text: String, category: String, color: Int, messages: List<NotificationMessage>,
                                    actions: List<NotificationAction>): Pair<TimelineItem, BlobResponse.BlobStatus> {
         if (notifListening == null) {
             val flutterEngine = flutterBackgroundController.getBackgroundFlutterEngine()
@@ -125,6 +128,7 @@ class NotificationsFlutterBridge @Inject constructor(
         notif.title = title
         notif.text = text
         notif.category = category
+        notif.color = color.toLong()
         notif.actionsJson = moshi
                 .adapter<List<NotificationAction>>(
                         Types.newParameterizedType(List::class.java, NotificationAction::class.java)

@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cobble/background/actions/master_action_handler.dart';
 import 'package:cobble/domain/db/dao/active_notification_dao.dart';
@@ -11,6 +12,7 @@ import 'package:cobble/domain/db/models/timeline_pin_layout.dart';
 import 'package:cobble/domain/db/models/timeline_pin_type.dart';
 import 'package:cobble/domain/logging.dart';
 import 'package:cobble/domain/notification/notification_action.dart';
+import 'package:cobble/domain/notification/notification_category_android.dart';
 import 'package:cobble/domain/notification/notification_message.dart';
 import 'package:cobble/domain/preferences.dart';
 import 'package:cobble/domain/timeline/timeline_action.dart';
@@ -20,6 +22,7 @@ import 'package:cobble/domain/timeline/timeline_icon.dart';
 import 'package:cobble/domain/timeline/timeline_serializer.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid_type/uuid_type.dart';
@@ -33,44 +36,11 @@ class NotificationManager {
 
   NotificationManager(this._activeNotificationDao, this._preferencesFuture);
 
-  Future<TimelineIcon> _determineIcon(String packageId, String category) async {
+  Future<TimelineIcon> _determineIcon(String packageId, CategoryAndroid category) async {
     TimelineIcon icon = TimelineIcon.notificationGeneric;
     if (Platform.isAndroid) {
-      switch (category) {
-        case "email":
-          icon = TimelineIcon.genericEmail;
-          break;
-        case "msg":
-          icon = TimelineIcon.genericSms;
-          break;
-        case "event":
-          icon = TimelineIcon.timelineCalendar;
-          break;
-        case "promo":
-          icon = TimelineIcon.payBill;
-          break;
-        case "navigation":
-          icon = TimelineIcon.location;
-          break;
-        case "alarm":
-          icon = TimelineIcon.alarmClock;
-          break;
-        case "social":
-          icon = TimelineIcon.newsEvent;
-          break;
-        case "err":
-          icon = TimelineIcon.genericWarning;
-          break;
-        case "transport":
-          icon = TimelineIcon.audioCassette;
-          break;
-        case "sys":
-          icon = TimelineIcon.settings;
-          break;
-        case "reminder":
-          icon = TimelineIcon.notificationReminder;
-          break;
-      }
+      if (category != null) icon = category.icon;
+
       switch (packageId) {
         case "com.google.android.gm.lite":
         case "com.google.android.gm":
@@ -116,9 +86,11 @@ class NotificationManager {
       _notificationUtils.dismissNotificationWatch(id);
     }
     Uuid itemId = RandomBasedUuidGenerator().generate();
-    TimelineAttribute icon = TimelineAttribute.tinyIcon(await _determineIcon(notif.packageId, notif.category));
-    TimelineAttribute title = TimelineAttribute.title(notif.appName.trim());
-    TimelineAttribute subject = TimelineAttribute.subtitle(notif.title.trim());
+    List<TimelineAttribute> attributes = [
+      TimelineAttribute.tinyIcon(await _determineIcon(notif.packageId, CategoryAndroid.fromId(notif.category))),
+      TimelineAttribute.title(notif.appName.trim()),
+      TimelineAttribute.subtitle(notif.title.trim()),
+    ];
     TimelineAttribute content = TimelineAttribute.body(notif.text.trim());
     if (notif.messagesJson.isEmpty) {
       content = TimelineAttribute.body("");
@@ -149,6 +121,11 @@ class NotificationManager {
         }
       }
     }
+    attributes.add(content);
+
+    if (Platform.isAndroid && notif.color != 0 && notif.color != 1) {
+      attributes.add(TimelineAttribute.primaryColor(Color(notif.color)));
+    }
 
     actions.add(TimelineAction(MetaAction.OPEN.index, actionTypeGeneric, [
       TimelineAttribute.title("Open on phone")
@@ -171,7 +148,7 @@ class NotificationManager {
       duration: 0,
       type: TimelinePinType.notification,
       layout: TimelinePinLayout.genericNotification,
-      attributesJson: serializeAttributesToJson([icon, title, subject, content]),
+      attributesJson: serializeAttributesToJson(attributes),
       actionsJson: serializeActionsToJson(actions),
 
       isAllDay: false,
