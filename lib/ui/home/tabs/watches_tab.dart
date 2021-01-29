@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:cobble/domain/connection/connection_state_provider.dart';
+import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 
 import 'package:cobble/ui/common/icons/watch_icon.dart';
@@ -34,20 +35,21 @@ class MyWatchesTab extends HookWidget {
 
     List<PebbleScanDevice> allWatchesList =
         allWatches.map((e) => e.device).toList();
+    List<PebbleScanDevice> allDisconnectedWatches = allWatchesList.toList();
     if (defaultWatch != null && connectionState.isConnected == true) {
       //TODO: Save the data from the connected watch after first connection(i.e, not here)
       defaultWatch.color = connectionState.currentConnectedWatch.model.index;
       defaultWatch.version =
           connectionState.currentConnectedWatch.runningFirmware.version;
       //Hide the default watch if we're connected to it. We don't need to see it twice!
-      allWatchesList.remove(defaultWatch);
+      allDisconnectedWatches.remove(defaultWatch);
     }
 
-    List<PebbleScanDevice> defaultWatchList;
-    if (defaultWatch != null) {
-      defaultWatchList = [defaultWatch];
+    List<PebbleDevice> connectedWatchList;
+    if (connectionState.currentConnectedWatch != null) {
+      connectedWatchList = [connectionState.currentConnectedWatch];
     } else {
-      defaultWatchList = [];
+      connectedWatchList = [];
     }
 
     String statusText;
@@ -105,7 +107,13 @@ class MyWatchesTab extends HookWidget {
       //TODO
     }
 
-    void _onSettingsPressed(PebbleScanDevice device, bool isConnected) {
+    void _onSettingsPressed(bool isConnected,
+        [PebbleDevice dev, PebbleScanDevice scanDev]) {
+      PebbleScanDevice device;
+      if (scanDev == null)
+        device = allWatchesList.firstWhere((e) => e.address == dev.address);
+      else
+        device = scanDev;
       showModalBottomSheet(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
@@ -229,7 +237,7 @@ class MyWatchesTab extends HookWidget {
         Offstage(
           offstage: !isConnected,
           child: Column(
-              children: defaultWatchList
+              children: connectedWatchList
                   .map((e) => InkWell(
                         child: Container(
                             child: Row(children: <Widget>[
@@ -272,7 +280,7 @@ class MyWatchesTab extends HookWidget {
                                       color: Theme.of(context)
                                           .colorScheme
                                           .secondary),
-                                  onPressed: () => _onSettingsPressed(e, true)),
+                                  onPressed: () => _onSettingsPressed(true, e)),
                             ]),
                             margin: EdgeInsets.all(16)),
                         onTap: () {},
@@ -290,7 +298,7 @@ class MyWatchesTab extends HookWidget {
           endIndent: 15,
         ),
         Column(
-            children: allWatchesList
+            children: allDisconnectedWatches
                 .map((e) => InkWell(
                       child: Container(
                         child: Row(children: <Widget>[
@@ -331,7 +339,8 @@ class MyWatchesTab extends HookWidget {
                               icon: Icon(RebbleIcons.menu_vertical,
                                   color:
                                       Theme.of(context).colorScheme.secondary),
-                              onPressed: () => _onSettingsPressed(e, false)),
+                              onPressed: () =>
+                                  _onSettingsPressed(false, null, e)),
                         ]),
                         margin: EdgeInsets.fromLTRB(16, 10, 16, 16),
                       ),
