@@ -1,5 +1,6 @@
 package io.rebble.cobble.bluetooth
 
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import io.rebble.cobble.bluetooth.classic.BlueSerialDriver
@@ -18,8 +19,8 @@ class BlueCommon @Inject constructor(
         private val classicScanner: ClassicScanner,
         private val protocolHandler: ProtocolHandler
 ) {
-    val bluetoothAdapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter()
-    var driver: BlueIO? = null
+    private val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+    private var driver: BlueIO? = null
 
     private var externalIncomingPacketHandler: (suspend (ByteArray) -> Unit)? = null
 

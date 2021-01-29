@@ -95,15 +95,15 @@ class TestTab extends HookWidget {
                 onPressed: () {
                   ListWrapper l = ListWrapper();
                   l.value = [
-                    0x07,
                     0x00,
+                    0x05,
+                    0x07,
                     0xD1,
-                    0x07,
                     0x00,
-                    0xCA,
-                    0xFE,
                     0x00,
-                    0x00
+                    0x00,
+                    0x05,
+                    0x39
                   ];
                   connectionControl.sendRawPacket(l);
                 },

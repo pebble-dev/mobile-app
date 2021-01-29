@@ -52,7 +52,7 @@ class BleScanner @Inject constructor() {
                                     val bluePebbleDevice = BluePebbleDevice(result)
                                     foundDevices = foundDevices + bluePebbleDevice
                                     emit(foundDevices)
-                                } else if (foundDevices[i].leMeta?.color != null) {
+                                } else if (foundDevices[i].leMeta?.color == null) {
                                     val fd = foundDevices as MutableList
                                     fd[i] = BluePebbleDevice(result)
                                     foundDevices = fd

@@ -5,7 +5,9 @@ import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.MediaMetadata
 import android.media.session.MediaController
+import android.media.session.MediaSession
 import android.media.session.PlaybackState
+import android.os.Bundle
 import android.os.SystemClock
 import android.view.KeyEvent
 import androidx.lifecycle.asFlow
@@ -14,13 +16,10 @@ import io.rebble.cobble.datasources.notificationPermissionFlow
 import io.rebble.cobble.handlers.CobbleHandler
 import io.rebble.libpebblecommon.packets.MusicControl
 import io.rebble.libpebblecommon.services.MusicService
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.job
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -36,7 +35,7 @@ class MusicHandler @Inject constructor(
     private var hasPermission: Boolean = false
 
     private fun onMediaPlayerChanged(newPlayer: MediaController?) {
-        Timber.d("New Player %s", newPlayer?.packageName)
+        Timber.d("New Player %s %s", newPlayer?.packageName, newPlayer.hashCode())
 
         disposeCurrentMediaController()
         this.currentMediaController = newPlayer
@@ -59,14 +58,14 @@ class MusicHandler @Inject constructor(
                     name
             ))
 
-            sendCurrentTrackUpdate()
-            sendPlayStateUpdate()
-            sendVolumeUpdate()
+            sendCurrentTrackUpdate(newPlayer.metadata)
+            sendPlayStateUpdate(newPlayer.playbackState)
+            newPlayer.playbackInfo?.let { sendVolumeUpdate(it) }
         }
     }
 
     private fun disposeCurrentMediaController() {
-        Timber.d("Dispose %s", currentMediaController?.packageName)
+        Timber.d("Dispose %s %s", currentMediaController?.packageName, currentMediaController?.hashCode())
         currentMediaController?.unregisterCallback(callback)
         currentMediaController = null
     }
@@ -89,10 +88,8 @@ class MusicHandler @Inject constructor(
         }
     }
 
-    private fun sendCurrentTrackUpdate() {
-        Timber.d("Send track %s %s %s", currentMediaController, currentMediaController?.metadata?.keySet()?.toList(), hasPermission)
-
-        val metadata = currentMediaController?.metadata
+    private fun sendCurrentTrackUpdate(metadata: MediaMetadata?) {
+        Timber.d("Send track %s", metadata?.keySet()?.toList())
 
         val updateTrackObject = when {
             !hasPermission -> {
@@ -104,9 +101,9 @@ class MusicHandler @Inject constructor(
             }
             metadata != null -> {
                 MusicControl.UpdateCurrentTrack(
-                        metadata.getString(MediaMetadata.METADATA_KEY_ARTIST),
-                        metadata.getString(MediaMetadata.METADATA_KEY_ALBUM),
-                        metadata.getString(MediaMetadata.METADATA_KEY_TITLE),
+                        metadata.getString(MediaMetadata.METADATA_KEY_ARTIST) ?: "",
+                        metadata.getString(MediaMetadata.METADATA_KEY_ALBUM) ?: "",
+                        metadata.getString(MediaMetadata.METADATA_KEY_TITLE) ?: "",
                         metadata.getLong(MediaMetadata.METADATA_KEY_DURATION).toInt(),
                         metadata.getLong(MediaMetadata.METADATA_KEY_NUM_TRACKS).toInt(),
                         metadata.getLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER).toInt()
@@ -127,11 +124,8 @@ class MusicHandler @Inject constructor(
     }
 
 
-    private fun sendVolumeUpdate() {
-        Timber.d("Send volume %s", currentMediaController)
-
-        val playbackInfo = currentMediaController?.playbackInfo ?: return
-
+    private fun sendVolumeUpdate(playbackInfo: MediaController.PlaybackInfo) {
+        Timber.d("Send volume update %s", playbackInfo)
         coroutineScope.launch(Dispatchers.Main.immediate) {
             musicService.send(MusicControl.UpdateVolumeInfo(
                     (100f * playbackInfo.currentVolume / playbackInfo.maxVolume)
@@ -142,12 +136,12 @@ class MusicHandler @Inject constructor(
 
     }
 
-    private fun sendPlayStateUpdate() {
-        Timber.d("Send play state %s %s", currentMediaController, currentMediaController?.playbackState)
-        val playbackState = currentMediaController?.playbackState ?: return
+    private fun sendPlayStateUpdate(playbackState: PlaybackState?) {
+        Timber.d("Send play state %s", playbackState)
 
-        val state = when (playbackState.state) {
-            PlaybackState.STATE_PLAYING ->
+        val state = when (playbackState?.state) {
+            PlaybackState.STATE_PLAYING,
+            PlaybackState.STATE_BUFFERING ->
                 MusicControl.PlaybackState.Playing
             PlaybackState.STATE_REWINDING,
             PlaybackState.STATE_SKIPPING_TO_PREVIOUS ->
@@ -160,14 +154,15 @@ class MusicHandler @Inject constructor(
         }
 
         val timeSinceLastPositionUpdate = SystemClock.elapsedRealtime() -
-                playbackState.lastPositionUpdateTime
-        val position = playbackState.position + timeSinceLastPositionUpdate
+                (playbackState?.lastPositionUpdateTime ?: SystemClock.elapsedRealtime())
+        val position = (playbackState?.position ?: 0) + timeSinceLastPositionUpdate
 
+        val playbackSpeed = playbackState?.playbackSpeed ?: 1f
         coroutineScope.launch(Dispatchers.Main.immediate) {
             musicService.send(MusicControl.UpdatePlayStateInfo(
                     state,
                     position.toUInt(),
-                    (playbackState.playbackSpeed * 100f).roundToInt().toUInt(),
+                    (playbackSpeed * 100f).roundToInt().toUInt(),
                     MusicControl.ShuffleState.Unknown,
                     MusicControl.RepeatState.Unknown
             ))
@@ -181,11 +176,11 @@ class MusicHandler @Inject constructor(
             PermissionChangeBus.notificationPermissionFlow(context)
                     .flatMapLatest { hasNotificationPermission ->
                         this@MusicHandler.hasPermission = hasNotificationPermission
-                        sendCurrentTrackUpdate()
 
                         if (hasNotificationPermission) {
                             activeMediaSessionProvider.asFlow()
                         } else {
+                            sendCurrentTrackUpdate(null)
                             flowOf(null)
                         }
                     }.collect {
@@ -220,13 +215,15 @@ class MusicHandler @Inject constructor(
                     }
                     MusicControl.Message.VolumeUp -> {
                         currentMediaController?.adjustVolume(AudioManager.ADJUST_RAISE, 0)
-                        sendVolumeUpdate()
+                        currentMediaController?.playbackInfo?.let { sendVolumeUpdate(it) }
                     }
                     MusicControl.Message.VolumeDown -> {
                         currentMediaController?.adjustVolume(AudioManager.ADJUST_LOWER, 0)
-                        sendVolumeUpdate()
+                        currentMediaController?.playbackInfo?.let { sendVolumeUpdate(it) }
                     }
-                    MusicControl.Message.GetCurrentTrack -> sendCurrentTrackUpdate()
+                    MusicControl.Message.GetCurrentTrack -> {
+                        sendCurrentTrackUpdate(currentMediaController?.metadata)
+                    }
                     MusicControl.Message.UpdateCurrentTrack,
                     MusicControl.Message.UpdatePlayStateInfo,
                     MusicControl.Message.UpdateVolumeInfo,
@@ -239,15 +236,20 @@ class MusicHandler @Inject constructor(
 
     private val callback = object : MediaController.Callback() {
         override fun onAudioInfoChanged(info: MediaController.PlaybackInfo) {
-            sendVolumeUpdate()
+            sendVolumeUpdate(info)
         }
 
         override fun onPlaybackStateChanged(state: PlaybackState?) {
-            sendPlayStateUpdate()
+            sendPlayStateUpdate(state)
         }
 
         override fun onMetadataChanged(metadata: MediaMetadata?) {
-            sendCurrentTrackUpdate()
+            sendCurrentTrackUpdate(metadata)
+        }
+
+        override fun onSessionDestroyed() {
+            Timber.d("Session destroyed")
+            disposeCurrentMediaController()
         }
     }
 

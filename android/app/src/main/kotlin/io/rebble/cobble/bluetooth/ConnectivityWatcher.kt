@@ -1,14 +1,15 @@
 package io.rebble.cobble.bluetooth
 
 import android.bluetooth.BluetoothGattCharacteristic
-import com.juul.able.gatt.Gatt
-import com.juul.able.gatt.isSuccess
 import kotlinx.coroutines.CompletableDeferred
 import timber.log.Timber
 import kotlin.experimental.and
 import kotlin.properties.Delegates
 
-class ConnectivityWatcher(val gatt: Gatt) {
+/**
+ * Talks to watch connectivity characteristic describing pair status, connection, and other parameters
+ */
+class ConnectivityWatcher(val gatt: BlueGATTConnection) {
     private var isSubscribed = false
 
     @ExperimentalUnsignedTypes
@@ -19,7 +20,7 @@ class ConnectivityWatcher(val gatt: Gatt) {
         var hasBondedGateway by Delegates.notNull<Boolean>()
         var supportsPinningWithoutSlaveSecurity by Delegates.notNull<Boolean>()
         var hasRemoteAttemptedToUseStalePairing by Delegates.notNull<Boolean>()
-        lateinit var pairingErrorCode: PairingErrorCode
+        var pairingErrorCode: PairingErrorCode
 
         init {
             val flags = characteristicValue[0]
@@ -56,7 +57,7 @@ class ConnectivityWatcher(val gatt: Gatt) {
         companion object {
             fun getByValue(value: Byte): PairingErrorCode {
                 val v = values().firstOrNull { it.value == value }
-                return if (v == null) UNKNOWN_ERROR else v
+                return v ?: UNKNOWN_ERROR
             }
         }
     }
@@ -82,10 +83,11 @@ class ConnectivityWatcher(val gatt: Gatt) {
                     if (!gatt.setCharacteristicNotification(connectivityCharacteristic, true)) {
                         Timber.e("BluetoothGatt refused to subscribe to connectivity characteristic")
                     } else {
-                        if (!gatt.writeDescriptor(configDescriptor, BlueGATTConstants.CHARACTERISTIC_SUBSCRIBE_VALUE).isSuccess) {
+                        if (gatt.writeDescriptor(configDescriptor, BlueGATTConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)?.isSuccess() != true) {
                             Timber.e("Failed to write subscribe value to connectivityCharacteristic's configDescriptor")
                         } else {
                             isSubscribed = true
+                            Timber.d("Subscribed successfully")
                             return true
                         }
                     }
@@ -96,10 +98,10 @@ class ConnectivityWatcher(val gatt: Gatt) {
         return false
     }
 
-    fun onCharacteristicChanged(value: ByteArray, characteristic: BluetoothGattCharacteristic?) {
+    fun onCharacteristicChanged(characteristic: BluetoothGattCharacteristic?) {
         if (characteristic?.uuid == BlueGATTConstants.UUIDs.CONNECTIVITY_CHARACTERISTIC) {
             if (characteristic != null) {
-                val status = ConnectivityStatus(value)
+                val status = ConnectivityStatus(characteristic.value)
                 //GlobalScope.launch(Dispatchers.IO) { onConnectivityChanged(lastStatus!!) }
                 Timber.d(status.toString())
                 connectivityStatus.complete(status)
@@ -109,8 +111,7 @@ class ConnectivityWatcher(val gatt: Gatt) {
 
     suspend fun getStatus(): ConnectivityStatus {
         try {
-            val status = connectivityStatus.await()
-            return status
+            return connectivityStatus.await()
         } finally {
             connectivityStatus = CompletableDeferred()
         }

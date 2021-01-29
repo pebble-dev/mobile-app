@@ -85,7 +85,8 @@ class WatchService : LifecycleService() {
                         // service will be stopped
                         return@collect
                     }
-                    is ConnectionState.Connecting -> {
+                    is ConnectionState.Connecting,
+                    is ConnectionState.WaitingForReconnect -> {
                         icon = R.drawable.ic_notification_disconnected
                         titleText = "Connecting"
                         deviceName = null

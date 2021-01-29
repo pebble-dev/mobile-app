@@ -6,6 +6,9 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.experimental.and
 
+/**
+ * Describes the BLE GAP extra data sent by discoverable LE pebbles
+ */
 @ExperimentalUnsignedTypes
 data class LEMeta(private val scanRecord: ByteArray) {
     val vendor: Short
