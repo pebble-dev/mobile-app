@@ -1,7 +1,9 @@
 import 'dart:async';
+
 import 'package:cobble/domain/preferences.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stream_transform/stream_transform.dart';
 
 class Preferences {
   final SharedPreferences _sharedPrefs;
@@ -10,10 +12,7 @@ class Preferences {
   Stream<Preferences> preferencesUpdateStream;
 
   Preferences(this._sharedPrefs) {
-    _preferencesUpdateStream =
-        StreamController<Preferences>.broadcast(onListen: () {
-      _preferencesUpdateStream.add(this);
-    });
+    _preferencesUpdateStream = StreamController<Preferences>.broadcast();
 
     preferencesUpdateStream = _preferencesUpdateStream.stream;
   }
@@ -35,6 +34,24 @@ class Preferences {
     await _sharedPrefs.setBool("ENABLE_CALENDAR_SYNC", value);
     _preferencesUpdateStream.add(this);
   }
+
+  bool isPhoneNotificationMuteEnabled() {
+    return _sharedPrefs.getBool("MUTE_PHONE_NOTIFICATIONS");
+  }
+
+  Future<void> setPhoneNotificationMute(bool value) async {
+    await _sharedPrefs.setBool("MUTE_PHONE_NOTIFICATIONS", value);
+    _preferencesUpdateStream.add(this);
+  }
+
+  bool isPhoneCallMuteEnabled() {
+    return _sharedPrefs.getBool("MUTE_PHONE_CALLS");
+  }
+
+  Future<void> setPhoneCallsMute(bool value) async {
+    await _sharedPrefs.setBool("MUTE_PHONE_CALLS", value);
+    _preferencesUpdateStream.add(this);
+  }
 }
 
 final preferencesProvider = FutureProvider<Preferences>((ref) async {
@@ -46,6 +63,14 @@ final calendarSyncEnabledProvider = _createPreferenceProvider(
   (preferences) => preferences.isCalendarSyncEnabled(),
 );
 
+final phoneNotificationsMuteProvider = _createPreferenceProvider(
+  (preferences) => preferences.isPhoneNotificationMuteEnabled(),
+);
+
+final phoneCallsMuteProvider = _createPreferenceProvider(
+  (preferences) => preferences.isPhoneCallMuteEnabled(),
+);
+
 StreamProvider<T> _createPreferenceProvider<T>(
   T Function(Preferences preferences) mapper,
 ) {
@@ -53,8 +78,10 @@ StreamProvider<T> _createPreferenceProvider<T>(
     final preferences = ref.watch(preferencesProvider);
 
     return preferences.map(
-        data: (preferences) =>
-            preferences.value.preferencesUpdateStream.map(mapper).distinct(),
+        data: (preferences) => preferences.value.preferencesUpdateStream
+            .startWith(preferences.value)
+            .map(mapper)
+            .distinct(),
         loading: (loading) => Stream.empty(),
         error: (error) => Stream.empty());
   });

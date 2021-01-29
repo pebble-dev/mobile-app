@@ -50,6 +50,7 @@ dependencies:
   json_annotation: ^3.0.0
   copy_with_extension: ^1.4.0
   flutter_local_notifications: ^3.0.2
+  stream_transform: ^1.2.0
 
 
   # The following adds the Cupertino Icons font to your application.
