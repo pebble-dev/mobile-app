@@ -10,7 +10,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
-import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/setup/pair_page.dart';
@@ -52,22 +51,25 @@ class MyWatchesTab extends HookWidget {
       connectedWatchList = [];
     }
 
-    String statusText;
     bool isConnected;
-    PebbleWatchModel model = PebbleWatchModel.rebble_logo;
-    String fwVersion = "unknown";
 
     if (connectionState.isConnecting == true) {
-      statusText = "Connecting...";
       isConnected = false;
     } else if (connectionState.isConnected == true) {
-      statusText = "Connected!";
-      model = connectionState.currentConnectedWatch.model;
-      fwVersion = connectionState.currentConnectedWatch.runningFirmware.version;
       isConnected = true;
     } else {
-      statusText = "Disconnected";
       isConnected = false;
+    }
+
+    String _getStatusText(int address) {
+      if (connectionState.isConnected &&
+          connectionState.currentWatchAddress == address)
+        return "Connected";
+      else if (connectionState.isConnecting &&
+          connectionState.currentWatchAddress == address)
+        return "Connecting...";
+      else
+        return "Disconnected";
     }
 
     Color _getBrStatusColor(PebbleScanDevice device) {
@@ -107,13 +109,10 @@ class MyWatchesTab extends HookWidget {
       //TODO
     }
 
-    void _onSettingsPressed(bool isConnected,
-        [PebbleDevice dev, PebbleScanDevice scanDev]) {
-      PebbleScanDevice device;
-      if (scanDev == null)
-        device = allWatchesList.firstWhere((e) => e.address == dev.address);
-      else
-        device = scanDev;
+    void _onSettingsPressed(bool isConnected, int address) {
+      PebbleScanDevice device =
+          allWatchesList.firstWhere((e) => e.address == address);
+
       showModalBottomSheet(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
@@ -122,6 +121,8 @@ class MyWatchesTab extends HookWidget {
           isScrollControlled: true,
           builder: (context) {
             return Container(
+              //Todo:use theme
+              color: Color.fromARGB(1, 65, 65, 65),
               child: Wrap(
                 children: <Widget>[
                   Container(
@@ -141,7 +142,10 @@ class MyWatchesTab extends HookWidget {
                         children: <Widget>[
                           Text(device.name, style: TextStyle(fontSize: 16)),
                           SizedBox(height: 4),
-                          Text(device.version.toString() + " - " + statusText,
+                          Text(
+                              device.version.toString() +
+                                  " - " +
+                                  _getStatusText(device.address),
                               style: TextStyle(color: _getStatusColor(device))),
                           Wrap(
                             spacing: 4,
@@ -164,7 +168,7 @@ class MyWatchesTab extends HookWidget {
                   Offstage(
                     offstage: isConnected,
                     child: ListTile(
-                      leading: Icon(RebbleIcons.devices),
+                      leading: Icon(RebbleIcons.connect_to_watch),
                       title: Text('Connect to watch'),
                       onTap: () => _onConnectPressed(device, true),
                     ),
@@ -172,13 +176,13 @@ class MyWatchesTab extends HookWidget {
                   Offstage(
                     offstage: !isConnected,
                     child: ListTile(
-                      leading: Icon(RebbleIcons.devices),
+                      leading: Icon(RebbleIcons.disconnect_from_watch),
                       title: Text('Disconnect from watch'),
                       onTap: () => _onDisconnectPressed(true),
                     ),
                   ),
                   ListTile(
-                    leading: Icon(RebbleIcons.search),
+                    leading: Icon(RebbleIcons.check_for_updates),
                     title: Text('Check for updates'),
                     onTap: () => _onUpdatePressed(device),
                   ),
@@ -210,7 +214,9 @@ class MyWatchesTab extends HookWidget {
               Container(
                   child: Row(children: <Widget>[
                     Container(
-                      child: Center(child: Icon(Icons.autorenew)),
+                      child: Center(
+                          child: Icon(RebbleIcons.disconnect_from_watch,
+                              color: Colors.black)),
                       width: 56,
                       height: 56,
                       decoration: BoxDecoration(
@@ -242,7 +248,7 @@ class MyWatchesTab extends HookWidget {
                         child: Container(
                             child: Row(children: <Widget>[
                               Container(
-                                child: Center(child: PebbleWatchIcon(model)),
+                                child: Center(child: PebbleWatchIcon(e.model)),
                                 width: 56,
                                 height: 56,
                                 decoration: BoxDecoration(
@@ -254,7 +260,7 @@ class MyWatchesTab extends HookWidget {
                                 children: <Widget>[
                                   Text(e.name, style: TextStyle(fontSize: 16)),
                                   SizedBox(height: 4),
-                                  Text(statusText,
+                                  Text(_getStatusText(e.address),
                                       style: TextStyle(color: _connectedColor)),
                                   Wrap(
                                     spacing: 4,
@@ -268,7 +274,7 @@ class MyWatchesTab extends HookWidget {
                               Padding(
                                 padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
                                 child: IconButton(
-                                  icon: Icon(RebbleIcons.devices,
+                                  icon: Icon(RebbleIcons.disconnect_from_watch,
                                       color: Theme.of(context)
                                           .colorScheme
                                           .secondary),
@@ -280,7 +286,8 @@ class MyWatchesTab extends HookWidget {
                                       color: Theme.of(context)
                                           .colorScheme
                                           .secondary),
-                                  onPressed: () => _onSettingsPressed(true, e)),
+                                  onPressed: () =>
+                                      _onSettingsPressed(true, e.address)),
                             ]),
                             margin: EdgeInsets.all(16)),
                         onTap: () {},
@@ -317,7 +324,7 @@ class MyWatchesTab extends HookWidget {
                             children: <Widget>[
                               Text(e.name, style: TextStyle(fontSize: 16)),
                               SizedBox(height: 4),
-                              Text(statusText),
+                              Text(_getStatusText(e.address)),
                               Wrap(
                                 spacing: 4,
                                 children: [],
@@ -329,7 +336,7 @@ class MyWatchesTab extends HookWidget {
                           Padding(
                             padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
                             child: IconButton(
-                              icon: Icon(RebbleIcons.devices,
+                              icon: Icon(RebbleIcons.connect_to_watch,
                                   color:
                                       Theme.of(context).colorScheme.secondary),
                               onPressed: () => _onConnectPressed(e, false),
@@ -340,7 +347,7 @@ class MyWatchesTab extends HookWidget {
                                   color:
                                       Theme.of(context).colorScheme.secondary),
                               onPressed: () =>
-                                  _onSettingsPressed(false, null, e)),
+                                  _onSettingsPressed(false, e.address)),
                         ]),
                         margin: EdgeInsets.fromLTRB(16, 10, 16, 16),
                       ),
