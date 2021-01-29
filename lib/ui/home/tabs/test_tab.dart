@@ -1,7 +1,6 @@
 import 'package:cobble/domain/calendar/calendar_list.dart';
 import 'package:cobble/domain/calendar/device_calendar_plugin_provider.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
-import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/domain/permissions.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
@@ -10,6 +9,7 @@ import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/devoptions/dev_options_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
+import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/all.dart';
@@ -17,7 +17,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../common/icons/fonts/rebble_icons.dart';
 
-class TestTab extends HookWidget {
+class TestTab extends HookWidget implements CobbleScreen {
   final NotificationsControl notifications = NotificationsControl();
 
   final ConnectionControl connectionControl = ConnectionControl();
