@@ -482,8 +482,8 @@ packages:
     dependency: "direct dev"
     description:
       path: "packages/pigeon"
-      ref: "5d51f8add9f2162487465c99a64e5cd6d4b563f6"
-      resolved-ref: "5d51f8add9f2162487465c99a64e5cd6d4b563f6"
+      ref: "c2495f1a6245f3f772b2b38363e0a880776b380d"
+      resolved-ref: "c2495f1a6245f3f772b2b38363e0a880776b380d"
       url: "https://github.com/matejdro/flutter-packages.git"
     source: git
     version: "0.1.16"

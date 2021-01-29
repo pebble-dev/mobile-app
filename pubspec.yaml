@@ -65,7 +65,7 @@ dev_dependencies:
   pigeon:
     git:
       url: https://github.com/matejdro/flutter-packages.git
-      ref: 5d51f8add9f2162487465c99a64e5cd6d4b563f6
+      ref: c2495f1a6245f3f772b2b38363e0a880776b380d
       path: packages/pigeon
   build_runner: ^1.0.0
   json_serializable: ^3.2.0
