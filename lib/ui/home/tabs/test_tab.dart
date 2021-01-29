@@ -1,6 +1,7 @@
 import 'package:cobble/domain/calendar/calendar_list.dart';
 import 'package:cobble/domain/calendar/device_calendar_plugin_provider.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
+import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/domain/permissions.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
@@ -25,6 +26,7 @@ class TestTab extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final connectionState = useProvider(connectionStateProvider.state);
+    final defaultWatch = useProvider(defaultWatchProvider);
     final calendars = useProvider(calendarListProvider.state);
     final calendarSelector = useProvider(calendarListProvider);
     final calendarControl = useProvider(calendarControlProvider);
@@ -44,8 +46,7 @@ class TestTab extends HookWidget {
           await permissionControl.requestLocationPermission();
         }
 
-        final pairedDevice = PairedStorage.getDefault();
-        if (pairedDevice != null) {
+        if (defaultWatch != null) {
           if (!(await permissionCheck.hasNotificationAccess()).value) {
             permissionControl.requestNotificationAccess();
           }
