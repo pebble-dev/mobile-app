@@ -107,15 +107,14 @@ class MyWatchesTab extends HookWidget {
 
     void _onSettingsPressed(PebbleScanDevice device, bool isConnected) {
       showModalBottomSheet(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
+          ),
           context: context,
           isScrollControlled: true,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
           builder: (context) {
-            return FractionallySizedBox(
-              heightFactor: 0.4,
-              child: Column(
+            return Container(
+              child: Wrap(
                 children: <Widget>[
                   Container(
                     child: Row(children: <Widget>[
