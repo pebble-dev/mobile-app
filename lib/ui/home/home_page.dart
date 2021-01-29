@@ -33,6 +33,8 @@ class HomePage extends HookWidget implements CobbleScreen {
   Widget build(BuildContext context) {
     final index = useState(0);
 
+    /// Never change that to CobbleScaffold, see [EnsureCobbleScaffold] for
+    /// reasons.
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,

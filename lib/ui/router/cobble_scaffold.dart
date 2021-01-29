@@ -1,3 +1,4 @@
+import 'package:cobble/ui/common/components/cobble_sheet.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -54,20 +55,22 @@ class CobbleScaffold extends StatelessWidget {
 
     final height = 25.0 + 16 * 2;
 
-    return Scaffold(
-      appBar: navBarTitle == null
-          ? null
-          : PreferredSize(
-              preferredSize: Size.fromHeight(height),
-              child: AppBar(
-                leading: leading,
-                title: navBarTitle,
-                actions: actions,
+    return EnsureCobbleScaffold(
+      child: Scaffold(
+        appBar: navBarTitle == null
+            ? null
+            : PreferredSize(
+                preferredSize: Size.fromHeight(height),
+                child: AppBar(
+                  leading: leading,
+                  title: navBarTitle,
+                  actions: actions,
+                ),
               ),
-            ),
-      floatingActionButton: floatingActionButton,
-      floatingActionButtonLocation: floatingActionButtonLocation,
-      body: child,
+        floatingActionButton: floatingActionButton,
+        floatingActionButtonLocation: floatingActionButtonLocation,
+        body: child,
+      ),
     );
   }
 
