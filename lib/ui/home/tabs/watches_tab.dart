@@ -158,8 +158,8 @@ class MyWatchesTab extends HookWidget {
                     color: Colors.white24,
                     height: 20,
                     thickness: 2,
-                    indent: 15,
-                    endIndent: 15,
+                    indent: 0,
+                    endIndent: 0,
                   ),
                   Offstage(
                     offstage: isConnected,
@@ -186,8 +186,8 @@ class MyWatchesTab extends HookWidget {
                     color: Colors.white24,
                     height: 20,
                     thickness: 2,
-                    indent: 15,
-                    endIndent: 15,
+                    indent: 0,
+                    endIndent: 0,
                   ),
                   ListTile(
                     leading: Icon(RebbleIcons.x_close, color: Colors.red),
