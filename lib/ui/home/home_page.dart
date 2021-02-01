@@ -1,10 +1,9 @@
-import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
-import 'package:cobble/ui/home/tabs/settings_tab.dart';
 import 'package:cobble/ui/home/tabs/store_tab.dart';
 import 'package:cobble/ui/home/tabs/test_tab.dart';
 import 'package:cobble/ui/home/tabs/watches_tab.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/screens/placeholder_screen.dart';
+import 'package:cobble/ui/screens/settings.dart';
 import 'package:cobble/ui/test/watch_carousel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +26,7 @@ class HomePage extends HookWidget implements CobbleScreen {
     _TabConfig(WatchCarousel(), "Locker", RebbleIcons.locker),
     _TabConfig(StoreTab(), "Store", RebbleIcons.rebble_store),
     _TabConfig(MyWatchesTab(), "Watches", RebbleIcons.devices),
-    _TabConfig(SettingsTab(), "Settings", RebbleIcons.settings),
+    _TabConfig(Settings(), "Settings", RebbleIcons.settings),
   ];
 
   @override
