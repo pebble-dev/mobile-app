@@ -46,7 +46,7 @@ class CobbleSchemeTextData {
 
   static final _textOnDark = CobbleSchemeTextData(
     text: Color(0xFFFFFFFF),
-    muted: Color(0xFFFFFFFF).withOpacity(0.5),
+    muted: Color(0xFFFFFFFF).withOpacity(0.6),
     divider: Color(0xFFFFFFFF).withOpacity(0.35),
   );
 
