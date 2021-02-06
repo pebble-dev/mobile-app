@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 class Health extends StatelessWidget implements CobbleScreen {
   @override
   Widget build(BuildContext context) {
-    return CobbleScaffold(
+    return CobbleScaffold.tab(
       title: 'Health',
       child: ListView(
         children: [

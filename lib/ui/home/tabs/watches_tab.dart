@@ -205,7 +205,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
           });
     }
 
-    return CobbleScaffold(
+    return CobbleScaffold.tab(
       title: "My Watches",
       child: ListView(children: <Widget>[
         Offstage(

@@ -34,7 +34,7 @@ class AlertingApps extends HookWidget implements CobbleScreen {
 
     final sheet = CobbleSheet.useInline();
 
-    return CobbleScaffold(
+    return CobbleScaffold.tab(
       title: 'Choose which apps can alert',
       subtitle: '8 alerted, 5 muted today',
       actions: [

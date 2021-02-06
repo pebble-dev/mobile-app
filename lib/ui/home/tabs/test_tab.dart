@@ -81,7 +81,7 @@ class TestTab extends HookWidget implements CobbleScreen {
       statusText = "Disconnected";
     }
 
-    return CobbleScaffold(
+    return CobbleScaffold.tab(
       title: "Testing",
       subtitle: 'Testing subtitle',
       child: SingleChildScrollView(

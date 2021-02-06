@@ -1,6 +1,7 @@
 import 'package:cobble/ui/home/tabs/store_tab.dart';
 import 'package:cobble/ui/home/tabs/test_tab.dart';
 import 'package:cobble/ui/home/tabs/watches_tab.dart';
+import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/screens/placeholder_screen.dart';
 import 'package:cobble/ui/screens/settings.dart';
@@ -33,9 +34,7 @@ class HomePage extends HookWidget implements CobbleScreen {
   Widget build(BuildContext context) {
     final index = useState(0);
 
-    /// Never change that to CobbleScaffold, see [EnsureCobbleScaffold] for
-    /// reasons.
-    return Scaffold(
+    return CobbleScaffold.page(
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         onTap: (i) => index.value = i,
@@ -50,7 +49,7 @@ class HomePage extends HookWidget implements CobbleScreen {
             )
             .toList(),
       ),
-      body: IndexedStack(
+      child: IndexedStack(
         children: _config
             .map(
               (tab) => Navigator(

@@ -156,7 +156,7 @@ class InlineCobbleSheet {
   /// Bottom sheet will be closed automatically if user clicks on back button
   /// in app bar.
   ///
-  /// NOTE: Make sure [context] you've provided is inside [CobbleScaffold],
+  /// NOTE: Make sure [context] you've provided is inside [CobbleScaffold.tab],
   /// otherwise inline bottom sheet will escape current tab and be displayed
   /// above all tabs. This is probably not what you want.
   ///
@@ -165,7 +165,7 @@ class InlineCobbleSheet {
   /// @override
   /// Widget build(BuildContext context) {
   ///   final sheet = CobbleSheet.useInline();
-  ///   return CobbleScaffold(
+  ///   return CobbleScaffold.tab(
   ///     actions: [
   ///       Button(
   ///         onPressed: () {
@@ -183,10 +183,10 @@ class InlineCobbleSheet {
   /// @override
   /// Widget build(BuildContext context1) {
   ///   final sheet = CobbleSheet.useInline();
-  ///   return CobbleScaffold(
+  ///   return CobbleScaffold.tab(
   ///     actions: [
   ///       Builder(
-  ///         // Builder will provide new context that is inside CobbleScaffold
+  ///         // Builder will provide new context that is inside tabbed CobbleScaffold
   ///         builder: (context2) => Button(
   ///           onPressed: () {
   ///             sheet.show(
@@ -206,9 +206,8 @@ class InlineCobbleSheet {
     if (shown) return;
 
     assert(
-      context.dependOnInheritedWidgetOfExactType<EnsureCobbleScaffold>() !=
-          null,
-      "BuildContext you've provided doesn't include CobbleScaffold. "
+      context.dependOnInheritedWidgetOfExactType<EnsureTabScaffold>() != null,
+      "BuildContext you've provided doesn't include CobbleScaffold.tab. "
       "See InlineCobbleSheet.show for more info",
     );
 
@@ -248,17 +247,4 @@ class InlineCobbleSheet {
     if (!shown) return;
     _controller.value.close();
   }
-}
-
-/// Ensures widget is inside CobbleScaffold, used primarily by
-/// [InlineCobbleSheet.show] to scope bottom sheet inside tab
-class EnsureCobbleScaffold extends InheritedWidget {
-  const EnsureCobbleScaffold({
-    Key key,
-    @required Widget child,
-  })  : assert(child != null),
-        super(key: key, child: child);
-
-  @override
-  bool updateShouldNotify(covariant InheritedWidget oldWidget) => false;
 }

@@ -88,7 +88,7 @@ class _FirstRunPageState extends State<FirstRunPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CobbleScaffold(
+    return CobbleScaffold.page(
       child: Stack(
         children: <Widget>[
           Positioned(

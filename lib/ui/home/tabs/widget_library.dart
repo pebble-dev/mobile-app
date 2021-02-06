@@ -18,7 +18,7 @@ class WidgetLibrary extends HookWidget implements CobbleScreen {
   @override
   Widget build(BuildContext context) {
     final inlineSheet = CobbleSheet.useInline();
-    return CobbleScaffold(
+    return CobbleScaffold.tab(
       title: 'Widget library',
       child: SingleChildScrollView(
         child: Padding(

@@ -15,7 +15,7 @@ import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 class Settings extends StatelessWidget implements CobbleScreen {
   @override
   Widget build(BuildContext context) {
-    return CobbleScaffold(
+    return CobbleScaffold.tab(
       title: 'Settings',
       child: ListView(
         children: [

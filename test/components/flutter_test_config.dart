@@ -20,7 +20,7 @@ Widget wrapper({Widget child, Brightness brightness}) {
     child: MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: theme,
-      home: CobbleScaffold(
+      home: CobbleScaffold.tab(
         child: child,
       ),
     ),

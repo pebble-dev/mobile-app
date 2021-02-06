@@ -11,7 +11,7 @@ class StoreTab extends StatefulWidget implements CobbleScreen {
 class _StoreTabState extends State<StoreTab> {
   @override
   Widget build(BuildContext context) {
-    return CobbleScaffold(
+    return CobbleScaffold.tab(
       child: WebView(
         initialUrl:
             "https://store-beta.rebble.io/?native=true&platform=android",

@@ -37,7 +37,7 @@ class _AboutTabState extends State<AboutTab> {
 
   @override
   Widget build(BuildContext context) {
-    return CobbleScaffold(
+    return CobbleScaffold.tab(
       title: "About",
       child: SingleChildScrollView(
         child: Column(

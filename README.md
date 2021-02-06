@@ -62,7 +62,8 @@ We are using iOS-style tabbed navigation, where each tab has its own stack of sc
 this means there might be multiple stacks (1 main stack and one each for tab) but only 1 stack is
 active. In order to push page on an active stack import `CobbleNavigator` extension and then call
 `context.push(SomeScreen())`. `SomeScreen` widget should also implement interface `CobbleScreen` and
-use `CobbleScaffold`, which takes care of title and back button in navigation bar.
+use `CobbleScaffold.page` or `CobbleScaffold.tab`, which takes care of title and back button in 
+navigation bar.
 
 ## Custom Cobble components
 

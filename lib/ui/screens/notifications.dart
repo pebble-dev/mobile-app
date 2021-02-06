@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 class Notifications extends StatelessWidget implements CobbleScreen {
   @override
   Widget build(BuildContext context) {
-    return CobbleScaffold(
+    return CobbleScaffold.tab(
       title: 'Notifications and muting',
       child: ListView(
         children: [

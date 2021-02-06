@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class PlaceholderScreen extends StatelessWidget implements CobbleScreen {
   @override
   Widget build(BuildContext context) {
-    return CobbleScaffold(
+    return CobbleScaffold.tab(
       title: 'Placeholder screen',
       child: Placeholder(),
     );
