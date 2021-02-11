@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class RebbleSetupFail extends StatelessWidget implements CobbleScreen {
   @override
   Widget build(BuildContext context) {
-    return CobbleScaffold(
+    return CobbleScaffold.page(
       title: "Activate Rebble services",
       child: Column(
         children: <Widget>[

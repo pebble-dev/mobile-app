@@ -2,21 +2,21 @@ import 'dart:ui';
 
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
+import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
-
+import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
+import 'package:cobble/ui/router/cobble_navigator.dart';
+import 'package:cobble/ui/router/cobble_scaffold.dart';
+import 'package:cobble/ui/router/cobble_screen.dart';
+import 'package:cobble/ui/setup/pair_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
-import 'package:cobble/domain/entities/pebble_scan_device.dart';
-import 'package:cobble/ui/router/cobble_navigator.dart';
-import 'package:cobble/ui/router/cobble_scaffold.dart';
-import 'package:cobble/ui/setup/pair_page.dart';
 
 import '../../common/icons/fonts/rebble_icons.dart';
 
-class MyWatchesTab extends HookWidget {
+class MyWatchesTab extends HookWidget implements CobbleScreen {
   final Color _disconnectedColor = Color.fromRGBO(255, 255, 255, 0.5);
   final Color _connectedColor = Color.fromARGB(255, 0, 255, 170);
   final Color _connectedBrColor = Color.fromARGB(255, 0, 169, 130);
@@ -205,7 +205,7 @@ class MyWatchesTab extends HookWidget {
           });
     }
 
-    return CobbleScaffold(
+    return CobbleScaffold.tab(
       title: "My Watches",
       child: ListView(children: <Widget>[
         Offstage(

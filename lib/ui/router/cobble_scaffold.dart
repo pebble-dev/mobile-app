@@ -1,3 +1,4 @@
+import 'package:cobble/ui/common/components/cobble_sheet.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -7,20 +8,25 @@ class CobbleScaffold extends StatelessWidget {
   final Widget child;
   final String title;
   final String subtitle;
+  final List<Widget> actions;
   final FloatingActionButton floatingActionButton;
   final FloatingActionButtonLocation floatingActionButtonLocation;
+  final Widget bottomNavigationBar;
 
-  const CobbleScaffold({
+  const CobbleScaffold._({
     Key key,
     @required this.child,
     this.title,
     this.subtitle,
+    this.actions = const [],
     this.floatingActionButton,
     this.floatingActionButtonLocation,
+    this.bottomNavigationBar,
   })  : assert(child != null),
         assert(title == null || title.length > 0),
         assert(subtitle == null ||
             (subtitle.length > 0 && title != null && title.length > 0)),
+        assert(actions != null),
         super(key: key);
 
   @override
@@ -33,10 +39,9 @@ class CobbleScaffold extends StatelessWidget {
     }
 
     Widget leading;
-    final parentRoute = ModalRoute.of(context);
-    final bool canPop = parentRoute?.canPop ?? false;
-    final bool useCloseButton =
-        parentRoute is PageRoute && parentRoute.fullscreenDialog;
+    final route = ModalRoute.of(context);
+    final bool canPop = route?.canPop ?? false;
+    final bool useCloseButton = route is PageRoute && route.fullscreenDialog;
     if (canPop)
       leading = useCloseButton
           ? IconButton(
@@ -50,19 +55,25 @@ class CobbleScaffold extends StatelessWidget {
               tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             );
 
+    final height = 25.0 + 16 * 2;
+
     return Scaffold(
       appBar: navBarTitle == null
           ? null
           : PreferredSize(
-              preferredSize: Size.fromHeight(56),
+              preferredSize: Size.fromHeight(height),
               child: AppBar(
                 leading: leading,
                 title: navBarTitle,
+                actions: actions,
               ),
             ),
       floatingActionButton: floatingActionButton,
       floatingActionButtonLocation: floatingActionButtonLocation,
-      body: child,
+      bottomNavigationBar: bottomNavigationBar,
+      body: SafeArea(
+        child: child,
+      ),
     );
   }
 
@@ -75,7 +86,7 @@ class CobbleScaffold extends StatelessWidget {
             subtitle,
             style: context.theme.appBarTheme.textTheme.headline6.copyWith(
               fontSize: 14,
-              color: context.scheme.text.muted,
+              color: context.scheme.muted,
             ),
           )
         ],
@@ -84,4 +95,79 @@ class CobbleScaffold extends StatelessWidget {
   Text _titleOnly(BuildContext context) => Text(
         title,
       );
+
+  /// Implements the basic material design visual layout structure.
+  ///
+  /// You should use [CobbleScaffold.page] when screen is displayed outside of
+  /// tab view.
+  ///
+  /// See also:
+  ///
+  ///  * [CobbleScaffold.tab], which should be used when screen is displayed inside of
+  ///  tab view.
+  ///  * [CobbleSheet], API to display modal or inline bottom sheet
+  static Widget page({
+    Key key,
+    @required Widget child,
+    String title,
+    String subtitle,
+    List<Widget> actions = const [],
+    FloatingActionButton floatingActionButton,
+    FloatingActionButtonLocation floatingActionButtonLocation,
+    Widget bottomNavigationBar,
+  }) =>
+      CobbleScaffold._(
+        key: key,
+        child: child,
+        title: title,
+        subtitle: subtitle,
+        floatingActionButton: floatingActionButton,
+        floatingActionButtonLocation: floatingActionButtonLocation,
+        actions: actions,
+        bottomNavigationBar: bottomNavigationBar,
+      );
+
+  /// Implements the basic material design visual layout structure.
+  ///
+  /// You should use [CobbleScaffold.tab] when screen is displayed inside of
+  /// tab view.
+  ///
+  /// See also:
+  ///
+  ///  * [CobbleScaffold.page], which should be used when screen is displayed outside of
+  ///  tab view.
+  ///  * [CobbleSheet], API to display modal or inline bottom sheet
+  static Widget tab({
+    Key key,
+    @required Widget child,
+    String title,
+    String subtitle,
+    List<Widget> actions = const [],
+    FloatingActionButton floatingActionButton,
+    FloatingActionButtonLocation floatingActionButtonLocation,
+  }) =>
+      EnsureTabScaffold(
+        child: CobbleScaffold._(
+          key: key,
+          child: child,
+          title: title,
+          subtitle: subtitle,
+          floatingActionButton: floatingActionButton,
+          floatingActionButtonLocation: floatingActionButtonLocation,
+          actions: actions,
+        ),
+      );
+}
+
+/// Ensures widget is inside CobbleScaffold.tab, used primarily by
+/// [InlineCobbleSheet.show] to scope bottom sheet inside tab
+class EnsureTabScaffold extends InheritedWidget {
+  const EnsureTabScaffold({
+    Key key,
+    @required Widget child,
+  })  : assert(child != null),
+        super(key: key, child: child);
+
+  @override
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) => false;
 }

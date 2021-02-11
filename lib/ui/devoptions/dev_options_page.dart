@@ -48,7 +48,7 @@ class _DevOptionsPageState extends State<DevOptionsPage> {
         _devConControl.close();
       }
     }
-    return CobbleScaffold(
+    return CobbleScaffold.tab(
       title: "Developer Options",
       child: ListView(
           children: ListTile.divideTiles(
