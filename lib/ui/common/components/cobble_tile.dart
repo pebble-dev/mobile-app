@@ -309,7 +309,7 @@ class CobbleTile extends StatelessWidget {
 
   /// Can be passed as [leading] argument instead of actual IconData to
   /// visually align titles of tiles without using icons.
-  static final reservedIconSpace = IconData(-1);
+  static const reservedIconSpace = Icons.bathtub;
 
   /// Wrap [CobbleTile] with this wrapper to provide color to icon.
   static Widget withIconColor({
