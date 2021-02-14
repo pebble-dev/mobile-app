@@ -16,7 +16,7 @@ import android.content.IntentFilter
 import android.content.IntentSender
 import android.os.Build
 import io.rebble.cobble.MainActivity
-import io.rebble.cobble.bluetooth.ConnectionLooper
+import io.rebble.cobble.transport.bluetooth.ConnectionLooper
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons

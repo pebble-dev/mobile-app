@@ -7,8 +7,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.content.getSystemService
 import io.rebble.cobble.CobbleApplication
-import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.bluetooth.ConnectionState
+import io.rebble.cobble.transport.bluetooth.ConnectionLooper
+import io.rebble.cobble.transport.bluetooth.ConnectionState
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.pigeons.Pigeons
 import kotlinx.coroutines.Dispatchers

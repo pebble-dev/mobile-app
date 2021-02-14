@@ -8,8 +8,8 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 import io.rebble.cobble.CobbleApplication
-import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.bluetooth.ConnectionState
+import io.rebble.cobble.transport.bluetooth.ConnectionLooper
+import io.rebble.cobble.transport.bluetooth.ConnectionState
 import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.*

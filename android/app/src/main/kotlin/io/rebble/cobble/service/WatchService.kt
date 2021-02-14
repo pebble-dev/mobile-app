@@ -11,8 +11,8 @@ import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.NOTIFICATION_CHANNEL_WATCH_CONNECTED
 import io.rebble.cobble.NOTIFICATION_CHANNEL_WATCH_CONNECTING
 import io.rebble.cobble.R
-import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.bluetooth.ConnectionState
+import io.rebble.cobble.transport.bluetooth.ConnectionLooper
+import io.rebble.cobble.transport.bluetooth.ConnectionState
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.CoroutineScope

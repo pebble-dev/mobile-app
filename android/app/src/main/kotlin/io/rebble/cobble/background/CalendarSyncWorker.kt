@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import io.rebble.cobble.CobbleApplication
-import io.rebble.cobble.bluetooth.ConnectionState
+import io.rebble.cobble.transport.bluetooth.ConnectionState
 import timber.log.Timber
 
 class CalendarSyncWorker(appContext: Context, params: WorkerParameters) : CoroutineWorker(appContext, params) {

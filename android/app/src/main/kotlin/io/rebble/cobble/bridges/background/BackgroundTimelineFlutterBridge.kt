@@ -9,8 +9,8 @@ import androidx.core.content.getSystemService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import io.rebble.cobble.CobbleApplication
-import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.bluetooth.ConnectionState
+import io.rebble.cobble.transport.bluetooth.ConnectionLooper
+import io.rebble.cobble.transport.bluetooth.ConnectionState
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.libpebblecommon.packets.blobdb.TimelineAction

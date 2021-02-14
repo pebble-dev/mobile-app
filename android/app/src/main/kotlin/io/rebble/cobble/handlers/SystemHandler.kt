@@ -7,8 +7,8 @@ import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.location.LocationManager
 import androidx.core.content.ContextCompat.getSystemService
-import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.bluetooth.ConnectionState
+import io.rebble.cobble.transport.bluetooth.ConnectionLooper
+import io.rebble.cobble.transport.bluetooth.ConnectionState
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.di.PerService
 import io.rebble.cobble.util.coroutines.asFlow

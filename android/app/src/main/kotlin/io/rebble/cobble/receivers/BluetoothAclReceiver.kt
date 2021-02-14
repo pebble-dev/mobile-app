@@ -5,7 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import io.rebble.cobble.CobbleApplication
-import io.rebble.cobble.bluetooth.ConnectionState
+import io.rebble.cobble.transport.bluetooth.ConnectionState
 import kotlinx.coroutines.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
