@@ -29,6 +29,7 @@
 .pub-cache/
 .pub/
 /build/
+android/key.properties
 
 # Web related
 lib/generated_plugin_registrant.dart
@@ -43,3 +44,4 @@ app.*.map.json
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
 test/**/failures/
+
