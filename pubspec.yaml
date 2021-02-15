@@ -25,9 +25,9 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  webview_flutter: ^0.3.21
-  shared_preferences: ^0.5.7+2
-  url_launcher: ^5.4.7
+  webview_flutter: ^1.0.7
+  shared_preferences: ^0.5.12+4
+  url_launcher: ^5.7.10
   intl: ^0.16.1
   states_rebuilder: ^2.2.0
   path_provider: ^1.6.11
