@@ -14,7 +14,7 @@ class MoreSetup extends StatefulWidget implements CobbleScreen {
 class _MoreSetupState extends State<MoreSetup> {
   @override
   Widget build(BuildContext context) {
-    return CobbleScaffold(
+    return CobbleScaffold.page(
       title: "More setup",
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.pushReplacement(RebbleSetup()),

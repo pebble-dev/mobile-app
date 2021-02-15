@@ -272,6 +272,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.1"
+  flutter_svg:
+    dependency: "direct main"
+    description:
+      name: flutter_svg
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.19.1"
+  flutter_svg_provider:
+    dependency: "direct main"
+    description:
+      name: flutter_svg_provider
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.7"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -296,6 +310,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
+  golden_toolkit:
+    dependency: "direct main"
+    description:
+      name: golden_toolkit
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.8.0"
   graphs:
     dependency: transitive
     description:
@@ -330,7 +351,7 @@ packages:
       name: image
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.12"
+    version: "2.1.19"
   intl:
     dependency: "direct main"
     description:
@@ -436,6 +457,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.0-nullsafety.1"
+  path_drawing:
+    dependency: transitive
+    description:
+      name: path_drawing
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.1+1"
+  path_parsing:
+    dependency: transitive
+    description:
+      name: path_parsing
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.4"
   path_provider:
     dependency: "direct main"
     description:
@@ -477,16 +512,16 @@ packages:
       name: petitparser
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.4.0"
+    version: "3.1.0"
   pigeon:
     dependency: "direct dev"
     description:
       path: "packages/pigeon"
-      ref: "c2495f1a6245f3f772b2b38363e0a880776b380d"
-      resolved-ref: "c2495f1a6245f3f772b2b38363e0a880776b380d"
+      ref: c2495f1a6245f3f772b2b38363e0a880776b380d
+      resolved-ref: c2495f1a6245f3f772b2b38363e0a880776b380d
       url: "https://github.com/matejdro/flutter-packages.git"
     source: git
-    version: "0.1.16"
+    version: "0.1.9"
   platform:
     dependency: transitive
     description:
@@ -806,7 +841,7 @@ packages:
       name: xml
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.6.1"
+    version: "4.5.1"
   yaml:
     dependency: transitive
     description:
