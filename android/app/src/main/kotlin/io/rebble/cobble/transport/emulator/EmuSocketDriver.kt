@@ -8,7 +8,7 @@ import io.rebble.cobble.transport.bluetooth.readFully
 import io.rebble.cobble.util.toHexString
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.packets.HEADER_SIGNATURE
-import io.rebble.libpebblecommon.packets.QemuInboundPacket
+import io.rebble.libpebblecommon.packets.QemuPacket
 import io.rebble.libpebblecommon.protocolhelpers.PebblePacket
 import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import kotlinx.coroutines.*
@@ -49,8 +49,8 @@ class EmuSocketDriver @Inject constructor(private val protocolHandler: ProtocolH
                 inputStream.readFully(buf, 6, emuLen.toInt())
                 val packet = ByteArray(emuLen.toInt() + 4 * (Short.SIZE_BYTES))
                 buf.get(packet,0,packet.size)
-                val qemuPacket = QemuInboundPacket.deserialize(packet.toUByteArray())
-                if (qemuPacket !is QemuInboundPacket.QemuSPP) {
+                val qemuPacket = QemuPacket.deserialize(packet.toUByteArray())
+                if (qemuPacket !is QemuPacket.QemuSPP) {
                     Timber.d("QEMU packet with protocol ${qemuPacket.protocol.get()} ignored")
                     continue
                 }
@@ -70,7 +70,7 @@ class EmuSocketDriver @Inject constructor(private val protocolHandler: ProtocolH
     private suspend fun write(outputStream: OutputStream, bytes: ByteArray) = withContext(Dispatchers.IO) {
         //TODO: remove msg
         Timber.d("Sending packet of EP ${PebblePacket(bytes.toUByteArray()).endpoint}")
-        outputStream.write(bytes)
+        outputStream.write(QemuPacket.QemuSPP(bytes.toUByteArray()).serialize().toByteArray())
     }
 
 
