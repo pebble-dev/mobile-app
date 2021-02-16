@@ -30,7 +30,7 @@ class ConnectionLooperTest {
         runBlocking {
             val looper = component.createConnectionLooper()
             val protocolHandler = component.createProtocolHandler()
-            looper.connectToEmulator("10.0.2.2", 8070)
+            looper.connectToEmulator("10.0.2.2", 8080)
             protocolHandler.registerReceiveCallback(PingPong.endpoint) { packet ->
                 if (packet is PingPong.Pong) {
                     success = packet.cookie.get() == 0x1337u
