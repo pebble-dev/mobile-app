@@ -2,7 +2,7 @@
 
 if [[ "$PEBBLE_SDK" == "" ]]; then
   if [[ "$OSTYPE" == "darwin"* ]]; then
-    PEBBLE_SDK="$HOME/Library/Application Support/Pebble SDK"
+    PEBBLE_SDK=${HOME}/Library/Application Support/Pebble\ SDK
   else
     PEBBLE_SDK="$HOME/.pebble-sdk"
   fi
