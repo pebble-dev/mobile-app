@@ -25,11 +25,14 @@ class ConnectionLooper @Inject constructor(
 
     private var currentConnection: Job? = null
 
+    var isEmulator = false
+
     fun connectToWatch(macAddress: String) {
         coroutineScope.launch {
             try {
                 currentConnection?.cancelAndJoin()
                 currentConnection = coroutineContext[Job]
+                isEmulator = false
 
                 var retryTime = HALF_OF_INITAL_RETRY_TIME
                 while (isActive) {
@@ -70,6 +73,7 @@ class ConnectionLooper @Inject constructor(
             try {
                 currentConnection?.cancelAndJoin()
                 currentConnection = coroutineContext[Job]
+                isEmulator = true
                 var retries = 0
                 while (isActive) {
                     try {

@@ -95,7 +95,7 @@ class WatchService : LifecycleService() {
                     is ConnectionState.Connected -> {
                         icon = R.drawable.ic_notification_connected
                         titleText = "Connected to device"
-                        deviceName = it.watch.name
+                        deviceName = if (it.watch.name.isNullOrEmpty() && connectionLooper.isEmulator) "Emulator" else it.watch.name
                         channel = NOTIFICATION_CHANNEL_WATCH_CONNECTED
                     }
                 }

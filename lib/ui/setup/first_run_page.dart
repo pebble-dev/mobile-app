@@ -1,3 +1,4 @@
+import 'package:cobble/ui/common/components/circle_container.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/home/home_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
@@ -7,31 +8,6 @@ import 'package:cobble/ui/setup/pair_page.dart';
 import 'package:flutter/material.dart';
 
 import '../common/icons/fonts/rebble_icons.dart';
-
-class CircleContainer extends StatelessWidget {
-  CircleContainer(
-      {this.child, this.diameter, this.color, this.margin, this.padding});
-
-  final Widget child;
-  final double diameter;
-  final Color color;
-  final EdgeInsets margin;
-  final EdgeInsets padding;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          color: color == null ? Theme.of(context).dividerColor : color,
-          shape: BoxShape.circle),
-      child: child,
-      width: diameter,
-      height: diameter,
-      margin: margin == null ? EdgeInsets.zero : margin,
-      padding: padding == null ? EdgeInsets.zero : padding,
-    );
-  }
-}
 
 class CarouselIcon extends StatelessWidget {
   CarouselIcon({this.icon});

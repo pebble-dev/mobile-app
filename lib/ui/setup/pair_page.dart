@@ -5,11 +5,13 @@ import 'package:cobble/domain/connection/scan_provider.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
+import 'package:cobble/ui/common/components/cobble_tile.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/home/home_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
+import 'package:cobble/ui/screens/emulator_connection.dart';
 import 'package:cobble/ui/setup/more_setup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -82,6 +84,19 @@ class PairPage extends HookWidget implements CobbleScreen {
       appBar: AppBar(
         title: Text("Pair a watch"),
         leading: BackButton(),
+        actions: [
+          PopupMenuButton(itemBuilder: (BuildContext context) {
+            return [
+              PopupMenuItem(
+                child: CobbleTile.navigation(
+                title: "Connect to an emulator",
+                leading: RebbleIcons.developer_connection_console,
+                trailing: null,
+                navigateTo: EmulatorConnection(fromSetup: fromLanding),
+              ))
+            ];
+          })
+        ],
       ),
       body: ListView(
         children: [

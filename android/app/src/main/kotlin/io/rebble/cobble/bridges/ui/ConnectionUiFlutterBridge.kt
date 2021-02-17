@@ -86,6 +86,12 @@ class ConnectionUiFlutterBridge @Inject constructor(
         }
     }
 
+    override fun connectToEmulator(arg: Pigeons.EmulatorConnectionPigeon) {
+        val host = arg.host
+        val port = arg.port
+        connectionLooper.connectToEmulator(host, port.toInt())
+    }
+
     @TargetApi(Build.VERSION_CODES.O)
     private fun associateWithCompanionDeviceManager(macAddress: String) {
         val companionDeviceManager =

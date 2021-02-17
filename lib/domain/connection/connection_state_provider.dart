@@ -5,10 +5,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class WatchConnectionState {
   final bool isConnected;
   final bool isConnecting;
+  final bool isEmulator;
   final int currentWatchAddress;
   final PebbleDevice currentConnectedWatch;
 
-  WatchConnectionState(this.isConnected, this.isConnecting,
+  WatchConnectionState(this.isConnected, this.isConnecting, this.isEmulator,
       this.currentWatchAddress, this.currentConnectedWatch);
 }
 
@@ -17,7 +18,7 @@ class ConnectionCallbacksStateNotifier
   final _connectionControl = ConnectionControl();
 
   ConnectionCallbacksStateNotifier()
-      : super(WatchConnectionState(false, false, null, null)) {
+      : super(WatchConnectionState(false, false, false, null, null)) {
     ConnectionCallbacks.setup(this);
     _connectionControl.observeConnectionChanges();
   }
@@ -27,6 +28,7 @@ class ConnectionCallbacksStateNotifier
     state = WatchConnectionState(
         pigeon.isConnected,
         pigeon.isConnecting,
+        pigeon.isEmulator,
         pigeon.currentWatchAddress,
         PebbleDevice.fromPigeon(pigeon.currentConnectedWatch));
   }

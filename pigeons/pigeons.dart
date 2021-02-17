@@ -54,6 +54,7 @@ class PebbleScanDevicePigeon {
 class WatchConnectionStatePigeon {
   bool isConnected;
   bool isConnecting;
+  bool isEmulator;
   int currentWatchAddress;
   PebbleDevicePigeon currentConnectedWatch;
 }
@@ -81,6 +82,11 @@ class ActionTrigger {
 class ActionResponsePigeon {
   bool success;
   String attributesJson;
+}
+
+class EmulatorConnectionPigeon {
+  String host;
+  int port;
 }
 
 @FlutterApi()
@@ -145,6 +151,7 @@ abstract class ConnectionControl {
 @HostApi()
 abstract class UiConnectionControl {
   void connectToWatch(NumberWrapper macAddress);
+  void connectToEmulator(EmulatorConnectionPigeon connection);
 }
 
 @HostApi()
