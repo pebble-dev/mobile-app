@@ -20,7 +20,12 @@ fi
 
 platform_micro="${PEBBLE_SDK}/SDKs/current/sdk-core/pebble/$1/qemu/qemu_micro_flash.bin"
 platform_spi="${PEBBLE_SDK}/SDKs/current/sdk-core/pebble/$1/qemu/qemu_spi_flash.bin"
-declare -A platform_machine=( [aplite]=pebble-bb2 [basalt]=pebble-snowy-bb [chalk]=pebble-s4-bb [diorite]=pebble-silk-bb [emery]=pebble-robert-bb )
+platform_machine__aplite=pebble-bb2
+platform_machine__basalt=pebble-snowy-bb
+platform_machine__chalk=pebble-s4-bb
+platform_machine__diorite=pebble-silk-bb
+platform_machine__emery=pebble-robert-bb
+platform_machine=platform_machine__$1
 qemu_port=8080
 
 if [[ ! -f "$platform_spi" ]]; then
@@ -31,7 +36,7 @@ if [[ ! -f "$platform_spi" ]]; then
   fi
 fi
 platform_args=(-pflash "$platform_micro")
-platform_args+=(-machine "${platform_machine[$1]}")
+platform_args+=(-machine ${!platform_machine})
 if [[ "$1" == "aplite" ]]; then
   platform_args+=(-cpu cortex-m3)
   platform_args+=(-mtdblock "$platform_spi")
