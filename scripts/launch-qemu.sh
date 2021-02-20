@@ -2,7 +2,7 @@
 
 if [[ "$PEBBLE_SDK" == "" ]]; then
   if [[ "$OSTYPE" == "darwin"* ]]; then
-    PEBBLE_SDK=${HOME}/Library/Application Support/Pebble\ SDK
+    PEBBLE_SDK="${HOME}/Library/Application Support/Pebble SDK"
   else
     PEBBLE_SDK="$HOME/.pebble-sdk"
   fi
@@ -30,12 +30,15 @@ if [[ ! -f "$platform_spi" ]]; then
     exit 2
   fi
 fi
-platform_args="-pflash ${platform_micro} -machine ${platform_machine[$1]}"
+platform_args=(-pflash "$platform_micro")
+platform_args+=(-machine "${platform_machine[$1]}")
 if [[ "$1" == "aplite" ]]; then
-  platform_args="${platform_args} -cpu cortex-m3 -mtdblock ${platform_spi}"
+  platform_args+=(-cpu cortex-m3)
+  platform_args+=(-mtdblock "$platform_spi")
 else
-  platform_args="${platform_args} -cpu cortex-m4 -pflash ${platform_spi}"
+  platform_args+=(-cpu cortex-m4)
+  platform_args+=(-pflash "$platform_spi")
 fi
 
 # shellcheck disable=SC2086
-qemu-pebble -rtc base=localtime -serial null -serial tcp::${qemu_port},server,nowait -serial null $platform_args
+qemu-pebble -rtc base=localtime -serial null -serial tcp::${qemu_port},server,nowait -serial null "${platform_args[@]}"
