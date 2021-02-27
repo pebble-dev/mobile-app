@@ -21,7 +21,7 @@ abstract class UiBridgesModule {
     @Binds
     @IntoSet
     @UiBridge
-    abstract fun bindAppLifecycleBridge(appLifecycleFlutterBridge: AppLifecycleFlutterBridge): FlutterBridge
+    abstract fun bindIntentsBridge(intentsFlutterBridge: IntentsFlutterBridge): FlutterBridge
 
     @Binds
     @IntoSet

@@ -39,22 +39,6 @@ class ListWrapper {
   }
 }
 
-class BooleanWrapper {
-  bool value;
-
-  Object encode() {
-    final Map<Object, Object> pigeonMap = <Object, Object>{};
-    pigeonMap['value'] = value;
-    return pigeonMap;
-  }
-
-  static BooleanWrapper decode(Object message) {
-    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
-    return BooleanWrapper()
-      ..value = pigeonMap['value'] as bool;
-  }
-}
-
 class NumberWrapper {
   int value;
 
@@ -117,6 +101,22 @@ class TimelinePinPigeon {
       ..layout = pigeonMap['layout'] as int
       ..attributesJson = pigeonMap['attributesJson'] as String
       ..actionsJson = pigeonMap['actionsJson'] as String;
+  }
+}
+
+class BooleanWrapper {
+  bool value;
+
+  Object encode() {
+    final Map<Object, Object> pigeonMap = <Object, Object>{};
+    pigeonMap['value'] = value;
+    return pigeonMap;
+  }
+
+  static BooleanWrapper decode(Object message) {
+    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
+    return BooleanWrapper()
+      ..value = pigeonMap['value'] as bool;
   }
 }
 
@@ -571,26 +571,22 @@ class ScanControl {
   }
 }
 
-class AppLifecycleControl {
-  Future<BooleanWrapper> waitForBoot() async {
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.AppLifecycleControl.waitForBoot', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
-      throw PlatformException(
-        code: error['code'] as String,
-        message: error['message'] as String,
-        details: error['details'],
-      );
-    } else {
-      return BooleanWrapper.decode(replyMap['result']);
+abstract class IntentCallbacks {
+  void openUri(StringWrapper arg);
+  static void setup(IntentCallbacks api) {
+    {
+      const BasicMessageChannel<Object> channel =
+          BasicMessageChannel<Object>('dev.flutter.pigeon.IntentCallbacks.openUri', StandardMessageCodec());
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object message) async {
+          assert(message != null, 'Argument for dev.flutter.pigeon.IntentCallbacks.openUri was null. Expected StringWrapper.');
+          final StringWrapper input = StringWrapper.decode(message);
+          api.openUri(input);
+          return;
+        });
+      }
     }
   }
 }
@@ -1031,6 +1027,52 @@ class PackageDetails {
       );
     } else {
       return AppEntriesPigeon.decode(replyMap['result']);
+    }
+  }
+}
+
+class IntentControl {
+  Future<void> notifyFlutterReadyForIntents() async {
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.IntentControl.notifyFlutterReadyForIntents', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      // noop
+    }
+  }
+
+  Future<BooleanWrapper> waitForBoot() async {
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.IntentControl.waitForBoot', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return BooleanWrapper.decode(replyMap['result']);
     }
   }
 }

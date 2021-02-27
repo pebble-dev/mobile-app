@@ -38,6 +38,7 @@ fun BinaryMessenger.registerAsyncPigeonCallback(
             StandardMessageCodec()
     )
     channel.setCoroutineMessageHandler(coroutineScope) { rawMessage ->
+        @Suppress("UNCHECKED_CAST")
         val result = callback(rawMessage as HashMap<*, *>?)
 
         hashMapOf("result" to result)

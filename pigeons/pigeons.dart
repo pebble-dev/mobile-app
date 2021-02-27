@@ -147,6 +147,11 @@ abstract class TimelineCallbacks {
 }
 
 @FlutterApi()
+abstract class IntentCallbacks {
+  void openUri(StringWrapper uri);
+}
+
+@FlutterApi()
 abstract class NotificationListening {
   @async
   TimelinePinPigeon handleNotification(NotificationPigeon notification);
@@ -195,7 +200,8 @@ abstract class NotificationsControl {
 }
 
 @HostApi()
-abstract class AppLifecycleControl {
+abstract class IntentControl {
+  void notifyFlutterReadyForIntents();
   BooleanWrapper waitForBoot();
 }
 
