@@ -25,6 +25,7 @@ class NotificationListener : NotificationListenerService() {
     private lateinit var flutterPreferences: FlutterPreferences
 
     private var isListening = false
+    private var areNotificationsEnabled = true
 
     private var notifStates: MutableMap<NotificationKey, ParsedNotification> = mutableMapOf()
 
@@ -60,6 +61,7 @@ class NotificationListener : NotificationListenerService() {
         }
 
         controlListenerHints()
+        observeNotificationToggle()
     }
 
     override fun onListenerDisconnected() {
@@ -73,7 +75,7 @@ class NotificationListener : NotificationListenerService() {
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
-        if (isListening) {
+        if (isListening && areNotificationsEnabled) {
             if (sbn == null) return
             if (sbn.packageName == applicationContext.packageName) return // Don't show a notification if it's us
 
@@ -152,7 +154,14 @@ class NotificationListener : NotificationListenerService() {
                 requestListenerHints(listenerHints)
             }.collect()
         }
+    }
 
+    private fun observeNotificationToggle() {
+        coroutineScope.launch(Dispatchers.Main.immediate) {
+            flutterPreferences.masterNotificationsToggle.collect {
+                areNotificationsEnabled = it
+            }
+        }
     }
 
     companion object {
