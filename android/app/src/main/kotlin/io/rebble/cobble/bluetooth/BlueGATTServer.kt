@@ -290,7 +290,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
     @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun packetFlow(): Flow<GATTPacket> = flow {
         if (packetWriteInputStream.available() > 0) {
-            val count = packetWriteInputStream.available().coerceAtMost(mtu-2)
+            val count = packetWriteInputStream.available().coerceAtMost(mtu-4)
             val buf = ByteBuffer.allocate(count)
             packetWriteInputStream.readFully(buf, 0, count)
             emit(GATTPacket(GATTPacket.PacketType.DATA, seq, buf.array()))
