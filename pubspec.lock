@@ -583,6 +583,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.1"
+  rxdart:
+    dependency: "direct main"
+    description:
+      name: rxdart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.25.0"
   shared_preferences:
     dependency: "direct main"
     description:

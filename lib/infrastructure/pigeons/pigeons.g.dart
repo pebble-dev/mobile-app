@@ -18,7 +18,24 @@ class StringWrapper {
 
   static StringWrapper decode(Object message) {
     final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
-    return StringWrapper()..value = pigeonMap['value'] as String;
+    return StringWrapper()
+      ..value = pigeonMap['value'] as String;
+  }
+}
+
+class ListWrapper {
+  List<Object> value;
+
+  Object encode() {
+    final Map<Object, Object> pigeonMap = <Object, Object>{};
+    pigeonMap['value'] = value;
+    return pigeonMap;
+  }
+
+  static ListWrapper decode(Object message) {
+    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
+    return ListWrapper()
+      ..value = pigeonMap['value'] as List<Object>;
   }
 }
 
@@ -33,7 +50,8 @@ class BooleanWrapper {
 
   static BooleanWrapper decode(Object message) {
     final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
-    return BooleanWrapper()..value = pigeonMap['value'] as bool;
+    return BooleanWrapper()
+      ..value = pigeonMap['value'] as bool;
   }
 }
 
@@ -48,7 +66,8 @@ class NumberWrapper {
 
   static NumberWrapper decode(Object message) {
     final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
-    return NumberWrapper()..value = pigeonMap['value'] as int;
+    return NumberWrapper()
+      ..value = pigeonMap['value'] as int;
   }
 }
 
@@ -101,21 +120,6 @@ class TimelinePinPigeon {
   }
 }
 
-class ListWrapper {
-  List<Object> value;
-
-  Object encode() {
-    final Map<Object, Object> pigeonMap = <Object, Object>{};
-    pigeonMap['value'] = value;
-    return pigeonMap;
-  }
-
-  static ListWrapper decode(Object message) {
-    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
-    return ListWrapper()..value = pigeonMap['value'] as List<Object>;
-  }
-}
-
 class PebbleScanDevicePigeon {
   String name;
   int address;
@@ -161,8 +165,7 @@ class WatchConnectionStatePigeon {
     pigeonMap['isConnected'] = isConnected;
     pigeonMap['isConnecting'] = isConnecting;
     pigeonMap['currentWatchAddress'] = currentWatchAddress;
-    pigeonMap['currentConnectedWatch'] =
-        currentConnectedWatch == null ? null : currentConnectedWatch.encode();
+    pigeonMap['currentConnectedWatch'] = currentConnectedWatch == null ? null : currentConnectedWatch.encode();
     return pigeonMap;
   }
 
@@ -172,9 +175,7 @@ class WatchConnectionStatePigeon {
       ..isConnected = pigeonMap['isConnected'] as bool
       ..isConnecting = pigeonMap['isConnecting'] as bool
       ..currentWatchAddress = pigeonMap['currentWatchAddress'] as int
-      ..currentConnectedWatch = pigeonMap['currentConnectedWatch'] != null
-          ? PebbleDevicePigeon.decode(pigeonMap['currentConnectedWatch'])
-          : null;
+      ..currentConnectedWatch = pigeonMap['currentConnectedWatch'] != null ? PebbleDevicePigeon.decode(pigeonMap['currentConnectedWatch']) : null;
   }
 }
 
@@ -195,10 +196,8 @@ class PebbleDevicePigeon {
     final Map<Object, Object> pigeonMap = <Object, Object>{};
     pigeonMap['name'] = name;
     pigeonMap['address'] = address;
-    pigeonMap['runningFirmware'] =
-        runningFirmware == null ? null : runningFirmware.encode();
-    pigeonMap['recoveryFirmware'] =
-        recoveryFirmware == null ? null : recoveryFirmware.encode();
+    pigeonMap['runningFirmware'] = runningFirmware == null ? null : runningFirmware.encode();
+    pigeonMap['recoveryFirmware'] = recoveryFirmware == null ? null : recoveryFirmware.encode();
     pigeonMap['model'] = model;
     pigeonMap['bootloaderTimestamp'] = bootloaderTimestamp;
     pigeonMap['board'] = board;
@@ -214,12 +213,8 @@ class PebbleDevicePigeon {
     return PebbleDevicePigeon()
       ..name = pigeonMap['name'] as String
       ..address = pigeonMap['address'] as int
-      ..runningFirmware = pigeonMap['runningFirmware'] != null
-          ? PebbleFirmwarePigeon.decode(pigeonMap['runningFirmware'])
-          : null
-      ..recoveryFirmware = pigeonMap['recoveryFirmware'] != null
-          ? PebbleFirmwarePigeon.decode(pigeonMap['recoveryFirmware'])
-          : null
+      ..runningFirmware = pigeonMap['runningFirmware'] != null ? PebbleFirmwarePigeon.decode(pigeonMap['runningFirmware']) : null
+      ..recoveryFirmware = pigeonMap['recoveryFirmware'] != null ? PebbleFirmwarePigeon.decode(pigeonMap['recoveryFirmware']) : null
       ..model = pigeonMap['model'] as int
       ..bootloaderTimestamp = pigeonMap['bootloaderTimestamp'] as int
       ..board = pigeonMap['board'] as String
@@ -302,10 +297,9 @@ class ActionTrigger {
 class PigeonLogger {
   Future<void> v(StringWrapper arg) async {
     final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.PigeonLogger.v', StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(encoded) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.PigeonLogger.v', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -313,8 +307,7 @@ class PigeonLogger {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -327,10 +320,9 @@ class PigeonLogger {
 
   Future<void> d(StringWrapper arg) async {
     final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.PigeonLogger.d', StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(encoded) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.PigeonLogger.d', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -338,8 +330,7 @@ class PigeonLogger {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -352,10 +343,9 @@ class PigeonLogger {
 
   Future<void> i(StringWrapper arg) async {
     final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.PigeonLogger.i', StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(encoded) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.PigeonLogger.i', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -363,8 +353,7 @@ class PigeonLogger {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -377,10 +366,9 @@ class PigeonLogger {
 
   Future<void> w(StringWrapper arg) async {
     final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.PigeonLogger.w', StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(encoded) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.PigeonLogger.w', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -388,8 +376,7 @@ class PigeonLogger {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -402,10 +389,9 @@ class PigeonLogger {
 
   Future<void> e(StringWrapper arg) async {
     final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.PigeonLogger.e', StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(encoded) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.PigeonLogger.e', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -413,8 +399,7 @@ class PigeonLogger {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -426,12 +411,11 @@ class PigeonLogger {
   }
 }
 
-class ScanControl {
-  Future<void> startBleScan() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.ScanControl.startBleScan', StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+class WorkaroundsControl {
+  Future<ListWrapper> getNeededWorkarounds() async {
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.WorkaroundsControl.getNeededWorkarounds', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -439,8 +423,31 @@ class ScanControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return ListWrapper.decode(replyMap['result']);
+    }
+  }
+}
+
+class ScanControl {
+  Future<void> startBleScan() async {
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.ScanControl.startBleScan', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -452,11 +459,9 @@ class ScanControl {
   }
 
   Future<void> startClassicScan() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.ScanControl.startClassicScan',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.ScanControl.startClassicScan', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -464,8 +469,7 @@ class ScanControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -479,11 +483,9 @@ class ScanControl {
 
 class AppLifecycleControl {
   Future<BooleanWrapper> waitForBoot() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.AppLifecycleControl.waitForBoot',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AppLifecycleControl.waitForBoot', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -491,8 +493,7 @@ class AppLifecycleControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -507,10 +508,9 @@ class AppLifecycleControl {
 class TimelineControl {
   Future<NumberWrapper> addPin(TimelinePinPigeon arg) async {
     final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.TimelineControl.addPin', StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(encoded) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.TimelineControl.addPin', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -518,8 +518,7 @@ class TimelineControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -532,10 +531,9 @@ class TimelineControl {
 
   Future<NumberWrapper> removePin(StringWrapper arg) async {
     final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.TimelineControl.removePin', StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(encoded) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.TimelineControl.removePin', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -543,8 +541,7 @@ class TimelineControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -556,11 +553,9 @@ class TimelineControl {
   }
 
   Future<NumberWrapper> removeAllPins() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.TimelineControl.removeAllPins',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.TimelineControl.removeAllPins', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -568,8 +563,7 @@ class TimelineControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -583,11 +577,9 @@ class TimelineControl {
 
 class BackgroundControl {
   Future<void> notifyFlutterBackgroundStarted() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.BackgroundControl.notifyFlutterBackgroundStarted',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.BackgroundControl.notifyFlutterBackgroundStarted', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -595,8 +587,7 @@ class BackgroundControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -610,11 +601,9 @@ class BackgroundControl {
 
 class PermissionControl {
   Future<NumberWrapper> requestLocationPermission() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.PermissionControl.requestLocationPermission',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.PermissionControl.requestLocationPermission', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -622,8 +611,7 @@ class PermissionControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -635,11 +623,9 @@ class PermissionControl {
   }
 
   Future<NumberWrapper> requestCalendarPermission() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.PermissionControl.requestCalendarPermission',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.PermissionControl.requestCalendarPermission', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -647,8 +633,7 @@ class PermissionControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -660,11 +645,9 @@ class PermissionControl {
   }
 
   Future<void> requestNotificationAccess() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.PermissionControl.requestNotificationAccess',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.PermissionControl.requestNotificationAccess', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -672,8 +655,7 @@ class PermissionControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -685,11 +667,9 @@ class PermissionControl {
   }
 
   Future<void> requestBatteryExclusion() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.PermissionControl.requestBatteryExclusion',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.PermissionControl.requestBatteryExclusion', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -697,8 +677,7 @@ class PermissionControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -710,11 +689,9 @@ class PermissionControl {
   }
 
   Future<void> openPermissionSettings() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.PermissionControl.openPermissionSettings',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.PermissionControl.openPermissionSettings', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -722,8 +699,7 @@ class PermissionControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -737,11 +713,9 @@ class PermissionControl {
 
 class ConnectionControl {
   Future<BooleanWrapper> isConnected() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.ConnectionControl.isConnected',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.ConnectionControl.isConnected', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -749,8 +723,7 @@ class ConnectionControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -762,11 +735,9 @@ class ConnectionControl {
   }
 
   Future<void> disconnect() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.ConnectionControl.disconnect',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.ConnectionControl.disconnect', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -774,8 +745,7 @@ class ConnectionControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -788,11 +758,9 @@ class ConnectionControl {
 
   Future<void> sendRawPacket(ListWrapper arg) async {
     final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.ConnectionControl.sendRawPacket',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(encoded) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.ConnectionControl.sendRawPacket', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -800,8 +768,7 @@ class ConnectionControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -813,11 +780,9 @@ class ConnectionControl {
   }
 
   Future<void> observeConnectionChanges() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.ConnectionControl.observeConnectionChanges',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.ConnectionControl.observeConnectionChanges', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -825,8 +790,7 @@ class ConnectionControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -838,11 +802,9 @@ class ConnectionControl {
   }
 
   Future<void> cancelObservingConnectionChanges() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.ConnectionControl.cancelObservingConnectionChanges',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.ConnectionControl.cancelObservingConnectionChanges', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -850,8 +812,7 @@ class ConnectionControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -865,11 +826,9 @@ class ConnectionControl {
 
 class NotificationsControl {
   Future<void> sendTestNotification() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.NotificationsControl.sendTestNotification',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.NotificationsControl.sendTestNotification', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -877,8 +836,7 @@ class NotificationsControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -893,11 +851,9 @@ class NotificationsControl {
 class BackgroundSetupControl {
   Future<void> setupBackground(NumberWrapper arg) async {
     final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.BackgroundSetupControl.setupBackground',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(encoded) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.BackgroundSetupControl.setupBackground', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -905,8 +861,7 @@ class BackgroundSetupControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -924,15 +879,13 @@ abstract class ScanCallbacks {
   void onScanStopped();
   static void setup(ScanCallbacks api) {
     {
-      const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-          'dev.flutter.pigeon.ScanCallbacks.onScanUpdate',
-          StandardMessageCodec());
+      const BasicMessageChannel<Object> channel =
+          BasicMessageChannel<Object>('dev.flutter.pigeon.ScanCallbacks.onScanUpdate', StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.ScanCallbacks.onScanUpdate was null. Expected ListWrapper.');
+          assert(message != null, 'Argument for dev.flutter.pigeon.ScanCallbacks.onScanUpdate was null. Expected ListWrapper.');
           final ListWrapper input = ListWrapper.decode(message);
           api.onScanUpdate(input);
           return;
@@ -940,9 +893,8 @@ abstract class ScanCallbacks {
       }
     }
     {
-      const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-          'dev.flutter.pigeon.ScanCallbacks.onScanStarted',
-          StandardMessageCodec());
+      const BasicMessageChannel<Object> channel =
+          BasicMessageChannel<Object>('dev.flutter.pigeon.ScanCallbacks.onScanStarted', StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
@@ -954,9 +906,8 @@ abstract class ScanCallbacks {
       }
     }
     {
-      const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-          'dev.flutter.pigeon.ScanCallbacks.onScanStopped',
-          StandardMessageCodec());
+      const BasicMessageChannel<Object> channel =
+          BasicMessageChannel<Object>('dev.flutter.pigeon.ScanCallbacks.onScanStopped', StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
@@ -972,11 +923,9 @@ abstract class ScanCallbacks {
 
 class TimelineSyncControl {
   Future<void> syncTimelineToWatchLater() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.TimelineSyncControl.syncTimelineToWatchLater',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.TimelineSyncControl.syncTimelineToWatchLater', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -984,8 +933,7 @@ class TimelineSyncControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -1000,11 +948,9 @@ class TimelineSyncControl {
 class KeepUnusedHack {
   Future<void> keepPebbleScanDevicePigeon(PebbleScanDevicePigeon arg) async {
     final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.KeepUnusedHack.keepPebbleScanDevicePigeon',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(encoded) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.KeepUnusedHack.keepPebbleScanDevicePigeon', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1012,8 +958,7 @@ class KeepUnusedHack {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -1029,15 +974,13 @@ abstract class PairCallbacks {
   void onWatchPairComplete(NumberWrapper arg);
   static void setup(PairCallbacks api) {
     {
-      const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-          'dev.flutter.pigeon.PairCallbacks.onWatchPairComplete',
-          StandardMessageCodec());
+      const BasicMessageChannel<Object> channel =
+          BasicMessageChannel<Object>('dev.flutter.pigeon.PairCallbacks.onWatchPairComplete', StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.PairCallbacks.onWatchPairComplete was null. Expected NumberWrapper.');
+          assert(message != null, 'Argument for dev.flutter.pigeon.PairCallbacks.onWatchPairComplete was null. Expected NumberWrapper.');
           final NumberWrapper input = NumberWrapper.decode(message);
           api.onWatchPairComplete(input);
           return;
@@ -1049,11 +992,9 @@ abstract class PairCallbacks {
 
 class CalendarControl {
   Future<void> requestCalendarSync() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.CalendarControl.requestCalendarSync',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.CalendarControl.requestCalendarSync', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1061,8 +1002,7 @@ class CalendarControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -1074,11 +1014,9 @@ class CalendarControl {
   }
 
   Future<void> deleteCalendarPinsFromWatch() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.CalendarControl.deleteCalendarPinsFromWatch',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.CalendarControl.deleteCalendarPinsFromWatch', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1086,8 +1024,7 @@ class CalendarControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -1101,11 +1038,9 @@ class CalendarControl {
 
 class PermissionCheck {
   Future<BooleanWrapper> hasLocationPermission() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.PermissionCheck.hasLocationPermission',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.PermissionCheck.hasLocationPermission', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1113,8 +1048,7 @@ class PermissionCheck {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -1126,11 +1060,9 @@ class PermissionCheck {
   }
 
   Future<BooleanWrapper> hasCalendarPermission() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.PermissionCheck.hasCalendarPermission',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.PermissionCheck.hasCalendarPermission', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1138,8 +1070,7 @@ class PermissionCheck {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -1151,11 +1082,9 @@ class PermissionCheck {
   }
 
   Future<BooleanWrapper> hasNotificationAccess() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.PermissionCheck.hasNotificationAccess',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.PermissionCheck.hasNotificationAccess', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1163,8 +1092,7 @@ class PermissionCheck {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -1176,11 +1104,9 @@ class PermissionCheck {
   }
 
   Future<BooleanWrapper> hasBatteryExclusionEnabled() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.PermissionCheck.hasBatteryExclusionEnabled',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.PermissionCheck.hasBatteryExclusionEnabled', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1188,8 +1114,7 @@ class PermissionCheck {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -1205,17 +1130,14 @@ abstract class ConnectionCallbacks {
   void onWatchConnectionStateChanged(WatchConnectionStatePigeon arg);
   static void setup(ConnectionCallbacks api) {
     {
-      const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-          'dev.flutter.pigeon.ConnectionCallbacks.onWatchConnectionStateChanged',
-          StandardMessageCodec());
+      const BasicMessageChannel<Object> channel =
+          BasicMessageChannel<Object>('dev.flutter.pigeon.ConnectionCallbacks.onWatchConnectionStateChanged', StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.ConnectionCallbacks.onWatchConnectionStateChanged was null. Expected WatchConnectionStatePigeon.');
-          final WatchConnectionStatePigeon input =
-              WatchConnectionStatePigeon.decode(message);
+          assert(message != null, 'Argument for dev.flutter.pigeon.ConnectionCallbacks.onWatchConnectionStateChanged was null. Expected WatchConnectionStatePigeon.');
+          final WatchConnectionStatePigeon input = WatchConnectionStatePigeon.decode(message);
           api.onWatchConnectionStateChanged(input);
           return;
         });
@@ -1229,9 +1151,8 @@ abstract class TimelineCallbacks {
   Future<ActionResponsePigeon> handleTimelineAction(ActionTrigger arg);
   static void setup(TimelineCallbacks api) {
     {
-      const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-          'dev.flutter.pigeon.TimelineCallbacks.syncTimelineToWatch',
-          StandardMessageCodec());
+      const BasicMessageChannel<Object> channel =
+          BasicMessageChannel<Object>('dev.flutter.pigeon.TimelineCallbacks.syncTimelineToWatch', StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
@@ -1243,18 +1164,15 @@ abstract class TimelineCallbacks {
       }
     }
     {
-      const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-          'dev.flutter.pigeon.TimelineCallbacks.handleTimelineAction',
-          StandardMessageCodec());
+      const BasicMessageChannel<Object> channel =
+          BasicMessageChannel<Object>('dev.flutter.pigeon.TimelineCallbacks.handleTimelineAction', StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.TimelineCallbacks.handleTimelineAction was null. Expected ActionTrigger.');
+          assert(message != null, 'Argument for dev.flutter.pigeon.TimelineCallbacks.handleTimelineAction was null. Expected ActionTrigger.');
           final ActionTrigger input = ActionTrigger.decode(message);
-          final ActionResponsePigeon output =
-              await api.handleTimelineAction(input);
+          final ActionResponsePigeon output = await api.handleTimelineAction(input);
           return output.encode();
         });
       }
@@ -1267,9 +1185,8 @@ abstract class CalendarCallbacks {
   Future<void> deleteCalendarPinsFromWatch();
   static void setup(CalendarCallbacks api) {
     {
-      const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-          'dev.flutter.pigeon.CalendarCallbacks.doFullCalendarSync',
-          StandardMessageCodec());
+      const BasicMessageChannel<Object> channel =
+          BasicMessageChannel<Object>('dev.flutter.pigeon.CalendarCallbacks.doFullCalendarSync', StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
@@ -1281,9 +1198,8 @@ abstract class CalendarCallbacks {
       }
     }
     {
-      const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-          'dev.flutter.pigeon.CalendarCallbacks.deleteCalendarPinsFromWatch',
-          StandardMessageCodec());
+      const BasicMessageChannel<Object> channel =
+          BasicMessageChannel<Object>('dev.flutter.pigeon.CalendarCallbacks.deleteCalendarPinsFromWatch', StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
@@ -1299,10 +1215,9 @@ abstract class CalendarCallbacks {
 
 class DebugControl {
   Future<void> collectLogs() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.DebugControl.collectLogs', StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.DebugControl.collectLogs', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1310,8 +1225,7 @@ class DebugControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -1326,11 +1240,9 @@ class DebugControl {
 class UiConnectionControl {
   Future<void> connectToWatch(NumberWrapper arg) async {
     final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.UiConnectionControl.connectToWatch',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(encoded) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.UiConnectionControl.connectToWatch', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1338,8 +1250,7 @@ class UiConnectionControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,

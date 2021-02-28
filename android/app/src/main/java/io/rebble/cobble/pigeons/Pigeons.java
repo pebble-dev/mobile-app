@@ -3,11 +3,12 @@
 
 package io.rebble.cobble.pigeons;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.StandardMessageCodec;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /** Generated class from Pigeon. */
 @SuppressWarnings("unused")
@@ -21,26 +22,63 @@ public class Pigeons {
 
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("value", value);
-      return toMapResult;
+        toMapResult.put("value", value);
+        return toMapResult;
     }
-    static StringWrapper fromMap(HashMap map) {
-      StringWrapper fromMapResult = new StringWrapper();
-      Object value = map.get("value");
-      fromMapResult.value = (String)value;
-      return fromMapResult;
-    }
+
+      static StringWrapper fromMap(HashMap map) {
+          StringWrapper fromMapResult = new StringWrapper();
+          Object value = map.get("value");
+          fromMapResult.value = (String) value;
+          return fromMapResult;
+      }
   }
 
-  /** Generated class from Pigeon that represents data sent in messages. */
-  public static class BooleanWrapper {
-    private Boolean value;
-    public Boolean getValue() { return value; }
-    public void setValue(Boolean setterArg) { this.value = setterArg; }
+    /**
+     * Generated class from Pigeon that represents data sent in messages.
+     */
+    public static class ListWrapper {
+        private ArrayList value;
 
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("value", value);
+        public ArrayList getValue() {
+            return value;
+        }
+
+        public void setValue(ArrayList setterArg) {
+            this.value = setterArg;
+        }
+
+        HashMap toMap() {
+            HashMap<String, Object> toMapResult = new HashMap<>();
+            toMapResult.put("value", value);
+            return toMapResult;
+        }
+
+        static ListWrapper fromMap(HashMap map) {
+            ListWrapper fromMapResult = new ListWrapper();
+            Object value = map.get("value");
+            fromMapResult.value = (ArrayList) value;
+            return fromMapResult;
+        }
+    }
+
+    /**
+     * Generated class from Pigeon that represents data sent in messages.
+     */
+    public static class BooleanWrapper {
+        private Boolean value;
+
+        public Boolean getValue() {
+            return value;
+        }
+
+        public void setValue(Boolean setterArg) {
+            this.value = setterArg;
+        }
+
+        HashMap toMap() {
+            HashMap<String, Object> toMapResult = new HashMap<>();
+            toMapResult.put("value", value);
       return toMapResult;
     }
     static BooleanWrapper fromMap(HashMap map) {
@@ -162,25 +200,6 @@ public class Pigeons {
       fromMapResult.attributesJson = (String)attributesJson;
       Object actionsJson = map.get("actionsJson");
       fromMapResult.actionsJson = (String)actionsJson;
-      return fromMapResult;
-    }
-  }
-
-  /** Generated class from Pigeon that represents data sent in messages. */
-  public static class ListWrapper {
-    private ArrayList value;
-    public ArrayList getValue() { return value; }
-    public void setValue(ArrayList setterArg) { this.value = setterArg; }
-
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("value", value);
-      return toMapResult;
-    }
-    static ListWrapper fromMap(HashMap map) {
-      ListWrapper fromMapResult = new ListWrapper();
-      Object value = map.get("value");
-      fromMapResult.value = (ArrayList)value;
       return fromMapResult;
     }
   }
@@ -481,126 +500,158 @@ public class Pigeons {
     }
   }
 
-  /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
-  public interface PigeonLogger {
-    void v(StringWrapper arg);
-    void d(StringWrapper arg);
-    void i(StringWrapper arg);
-    void w(StringWrapper arg);
-    void e(StringWrapper arg);
+    /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
+    public interface PigeonLogger {
+        void v(StringWrapper arg);
 
-    /** Sets up an instance of `PigeonLogger` to handle messages through the `binaryMessenger` */
-    static void setup(BinaryMessenger binaryMessenger, PigeonLogger api) {
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PigeonLogger.v", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              StringWrapper input = StringWrapper.fromMap((HashMap)message);
-              api.v(input);
-              wrapped.put("result", null);
+        void d(StringWrapper arg);
+
+        void i(StringWrapper arg);
+
+        void w(StringWrapper arg);
+
+        void e(StringWrapper arg);
+
+        /** Sets up an instance of `PigeonLogger` to handle messages through the `binaryMessenger` */
+        static void setup(BinaryMessenger binaryMessenger, PigeonLogger api) {
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PigeonLogger.v", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            StringWrapper input = StringWrapper.fromMap((HashMap)message);
+                            api.v(input);
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
             }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PigeonLogger.d", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            StringWrapper input = StringWrapper.fromMap((HashMap)message);
+                            api.d(input);
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
             }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PigeonLogger.i", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            StringWrapper input = StringWrapper.fromMap((HashMap)message);
+                            api.i(input);
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PigeonLogger.w", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            StringWrapper input = StringWrapper.fromMap((HashMap)message);
+                            api.w(input);
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PigeonLogger.e", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            StringWrapper input = StringWrapper.fromMap((HashMap) message);
+                            api.e(input);
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
         }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PigeonLogger.d", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              StringWrapper input = StringWrapper.fromMap((HashMap)message);
-              api.d(input);
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PigeonLogger.i", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              StringWrapper input = StringWrapper.fromMap((HashMap)message);
-              api.i(input);
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PigeonLogger.w", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              StringWrapper input = StringWrapper.fromMap((HashMap)message);
-              api.w(input);
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PigeonLogger.e", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              StringWrapper input = StringWrapper.fromMap((HashMap)message);
-              api.e(input);
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
     }
-  }
 
-  /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
-  public interface ScanControl {
+    /**
+     * Generated interface from Pigeon that represents a handler of messages from Flutter.
+     */
+    public interface WorkaroundsControl {
+        ListWrapper getNeededWorkarounds();
+
+        /**
+         * Sets up an instance of `WorkaroundsControl` to handle messages through the `binaryMessenger`
+         */
+        static void setup(BinaryMessenger binaryMessenger, WorkaroundsControl api) {
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WorkaroundsControl.getNeededWorkarounds", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            ListWrapper output = api.getNeededWorkarounds();
+                            wrapped.put("result", output.toMap());
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+        }
+    }
+
+    /**
+     * Generated interface from Pigeon that represents a handler of messages from Flutter.
+     */
+    public interface ScanControl {
     void startBleScan();
     void startClassicScan();
 

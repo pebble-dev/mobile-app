@@ -3,6 +3,7 @@ package io.rebble.cobble.datasources
 import android.content.Context
 import android.content.SharedPreferences
 import dagger.Reusable
+import io.rebble.cobble.bluetooth.workarounds.WorkaroundDescriptor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
@@ -12,7 +13,7 @@ import javax.inject.Inject
  * Read only provider for all shared preferences from flutter
  */
 @Reusable
-class FlutterPreferences @Inject constructor(context: Context) {
+class FlutterPreferences @Inject constructor(private val context: Context) {
     private val preferences = context.getSharedPreferences(
             "FlutterSharedPreferences",
             Context.MODE_PRIVATE
@@ -35,6 +36,14 @@ class FlutterPreferences @Inject constructor(context: Context) {
     ) { prefs: SharedPreferences,
         key: String ->
         prefs.getBoolean(key, false)
+    }
+
+    fun shouldActivateWorkaround(workaround: WorkaroundDescriptor): Boolean {
+        if (!workaround.isNeeded(context)) {
+            return false
+        }
+
+        return !preferences.getBoolean(KEY_PREFIX_DISABLE_WORKAROUND + workaround.name, false)
     }
 }
 
@@ -66,3 +75,4 @@ private inline fun <T> SharedPreferences.flow(
 private const val KEY_CALENDAR_SYNC_ENABLED = "flutter.ENABLE_CALENDAR_SYNC"
 private const val KEY_MUTE_PHONE_NOTIFICATION_SOUNDS = "flutter.MUTE_PHONE_NOTIFICATIONS"
 private const val KEY_MUTE_PHONE_CALL_SOUNDS = "flutter.MUTE_PHONE_CALLS"
+private const val KEY_PREFIX_DISABLE_WORKAROUND = "flutter.DISABLE_WORKAROUND_MUTE_PHONE_CALLS"

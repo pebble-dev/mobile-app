@@ -48,6 +48,13 @@ abstract class UiBridgesModule {
     abstract fun bindCalendarControl(
             calendarControlFlutterBridge: CalendarControlFlutterBridge
     ): FlutterBridge
+
+    @Binds
+    @IntoSet
+    @UiBridge
+    abstract fun bindWorkaroundsControl(
+            bridge: WorkaroundsFlutterBridge
+    ): FlutterBridge
 }
 
 @Qualifier

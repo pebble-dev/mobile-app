@@ -240,6 +240,13 @@ abstract class TimelineSyncControl{
   void syncTimelineToWatchLater();
 }
 
+@HostApi()
+abstract class WorkaroundsControl {
+  // List of workaround ID strings that apply to this device
+  ListWrapper getNeededWorkarounds();
+}
+
+
 /// This class will keep all classes that appear in lists from being deleted
 /// by pigeon (they are not kept by default because pigeon does not support
 /// generics in lists).
