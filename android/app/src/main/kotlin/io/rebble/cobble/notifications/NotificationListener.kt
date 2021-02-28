@@ -82,6 +82,10 @@ class NotificationListener : NotificationListenerService() {
                 return
             }
 
+            if (!sbn.isClearable) {
+                return
+            }
+
             val parsedNotification = sbn.parseData(applicationContext)
             val key = NotificationKey(sbn)
 
