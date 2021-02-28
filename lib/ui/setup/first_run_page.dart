@@ -144,9 +144,7 @@ class _FirstRunPageState extends State<FirstRunPage> {
                     label: Icon(RebbleIcons.caret_right),
                     backgroundColor: Theme.of(context).primaryColor,
                     onPressed: () => context.push(
-                      PairPage(
-                        fromLanding: true,
-                      ),
+                      PairPage.fromLanding(),
                     ),
                   ),
                 ],

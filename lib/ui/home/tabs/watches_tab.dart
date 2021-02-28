@@ -356,7 +356,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                 .toList()),
       ]),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(PairPage()),
+        onPressed: () => context.push(PairPage.fromTab()),
         label: Text('PAIR A WATCH'),
         icon: Icon(Icons.add),
       ),
