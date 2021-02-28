@@ -4,6 +4,7 @@ import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/permissions.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
+import 'package:cobble/infrastructure/datasources/workarounds.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/devoptions/dev_options_page.dart';
@@ -36,6 +37,11 @@ class TestTab extends HookWidget implements CobbleScreen {
 
     final preferences = useProvider(preferencesProvider);
     final calendarSyncEnabled = useProvider(calendarSyncEnabledProvider);
+    final neededWorkarounds = useProvider(neededWorkaroundsProvider).when(
+      data: (data) => data,
+      loading: () => List<Workaround>.empty(),
+      error: (e, s) => List<Workaround>.empty(),
+    );
 
     useEffect(() {
       Future.microtask(() async {
@@ -182,6 +188,19 @@ class TestTab extends HookWidget implements CobbleScreen {
                     );
                   })?.toList() ??
                   [],
+              Text("Disable BLE Workarounds: "),
+              ...neededWorkarounds.map(
+                (workaround) => Row(children: [
+                  Switch(
+                    value: workaround.disabled ?? false,
+                    onChanged: (value) async {
+                      await preferences.data?.value
+                          ?.setWorkaroundDisabled(workaround.name, value);
+                    },
+                  ),
+                  Text(workaround.name)
+                ]),
+              )
             ],
           ),
         ),

@@ -33,6 +33,25 @@ public class Pigeons {
   }
 
   /** Generated class from Pigeon that represents data sent in messages. */
+  public static class ListWrapper {
+    private ArrayList value;
+    public ArrayList getValue() { return value; }
+    public void setValue(ArrayList setterArg) { this.value = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("value", value);
+      return toMapResult;
+    }
+    static ListWrapper fromMap(HashMap map) {
+      ListWrapper fromMapResult = new ListWrapper();
+      Object value = map.get("value");
+      fromMapResult.value = (ArrayList)value;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
   public static class BooleanWrapper {
     private Boolean value;
     public Boolean getValue() { return value; }
@@ -162,25 +181,6 @@ public class Pigeons {
       fromMapResult.attributesJson = (String)attributesJson;
       Object actionsJson = map.get("actionsJson");
       fromMapResult.actionsJson = (String)actionsJson;
-      return fromMapResult;
-    }
-  }
-
-  /** Generated class from Pigeon that represents data sent in messages. */
-  public static class ListWrapper {
-    private ArrayList value;
-    public ArrayList getValue() { return value; }
-    public void setValue(ArrayList setterArg) { this.value = setterArg; }
-
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("value", value);
-      return toMapResult;
-    }
-    static ListWrapper fromMap(HashMap map) {
-      ListWrapper fromMapResult = new ListWrapper();
-      Object value = map.get("value");
-      fromMapResult.value = (ArrayList)value;
       return fromMapResult;
     }
   }
@@ -741,6 +741,34 @@ public class Pigeons {
               StringWrapper input = StringWrapper.fromMap((HashMap)message);
               api.e(input);
               wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
+  public interface WorkaroundsControl {
+    ListWrapper getNeededWorkarounds();
+
+    /** Sets up an instance of `WorkaroundsControl` to handle messages through the `binaryMessenger` */
+    static void setup(BinaryMessenger binaryMessenger, WorkaroundsControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WorkaroundsControl.getNeededWorkarounds", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              ListWrapper output = api.getNeededWorkarounds();
+              wrapped.put("result", output.toMap());
             }
             catch (Exception exception) {
               wrapped.put("error", wrapError(exception));

@@ -283,6 +283,13 @@ abstract class TimelineSyncControl{
 }
 
 @HostApi()
+abstract class WorkaroundsControl {
+  // List of workaround ID strings that apply to this device
+  ListWrapper getNeededWorkarounds();
+}
+
+
+@HostApi()
 abstract class PackageDetails {
   AppEntriesPigeon getPackageList();
 }

@@ -39,6 +39,10 @@ class Preferences {
     return _sharedPrefs.getBool("MUTE_PHONE_NOTIFICATIONS");
   }
 
+  bool isWorkaroundDisabled(String workaround) {
+    return _sharedPrefs.getBool("DISABLE_WORKAROUND_" + workaround) ?? false;
+  }
+
   Future<void> setPhoneNotificationMute(bool value) async {
     await _sharedPrefs.setBool("MUTE_PHONE_NOTIFICATIONS", value);
     _preferencesUpdateStream.add(this);
@@ -50,6 +54,11 @@ class Preferences {
 
   Future<void> setPhoneCallsMute(bool value) async {
     await _sharedPrefs.setBool("MUTE_PHONE_CALLS", value);
+    _preferencesUpdateStream.add(this);
+  }
+
+  Future<void> setWorkaroundDisabled(String workaround, bool disabled) async {
+    await _sharedPrefs.setBool("DISABLE_WORKAROUND_" + workaround, disabled);
     _preferencesUpdateStream.add(this);
   }
 
@@ -89,6 +98,13 @@ final phoneCallsMuteProvider = _createPreferenceProvider(
   (preferences) => preferences.isPhoneCallMuteEnabled(),
 );
 
+final isWorkaroundDisabledProvider = StreamProvider.family((ref, workaround) {
+  return _createPreferenceStream(
+    ref,
+    (preferences) => preferences.isWorkaroundDisabled(workaround as String),
+  );
+});
+
 final notificationToggleProvider = _createPreferenceProvider(
   (preferences) => preferences.areNotificationsEnabled(),
 );
@@ -101,14 +117,19 @@ StreamProvider<T> _createPreferenceProvider<T>(
   T Function(Preferences preferences) mapper,
 ) {
   return StreamProvider<T>((ref) {
-    final preferences = ref.watch(preferencesProvider);
-
-    return preferences.map(
-        data: (preferences) => preferences.value.preferencesUpdateStream
-            .startWith(preferences.value)
-            .map(mapper)
-            .distinct(),
-        loading: (loading) => Stream.empty(),
-        error: (error) => Stream.empty());
+    return _createPreferenceStream(ref, mapper);
   });
+}
+
+Stream<T> _createPreferenceStream<T>(
+    ProviderReference ref, T mapper(Preferences preferences)) {
+  final preferences = ref.watch(preferencesProvider);
+
+  return preferences.map(
+      data: (preferences) => preferences.value.preferencesUpdateStream
+          .startWith(preferences.value)
+          .map(mapper)
+          .distinct(),
+      loading: (loading) => Stream.empty(),
+      error: (error) => Stream.empty());
 }
