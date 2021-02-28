@@ -75,4 +75,4 @@ private inline fun <T> SharedPreferences.flow(
 private const val KEY_CALENDAR_SYNC_ENABLED = "flutter.ENABLE_CALENDAR_SYNC"
 private const val KEY_MUTE_PHONE_NOTIFICATION_SOUNDS = "flutter.MUTE_PHONE_NOTIFICATIONS"
 private const val KEY_MUTE_PHONE_CALL_SOUNDS = "flutter.MUTE_PHONE_CALLS"
-private const val KEY_PREFIX_DISABLE_WORKAROUND = "flutter.DISABLE_WORKAROUND_MUTE_PHONE_CALLS"
+private const val KEY_PREFIX_DISABLE_WORKAROUND = "flutter.DISABLE_WORKAROUND_"
