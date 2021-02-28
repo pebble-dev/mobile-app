@@ -148,6 +148,14 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                 if (!bluetoothGattServer.sendResponse(device, requestId, 0, offset, BlueGATTConstants.SERVER_META_RESPONSE)) {
                     Timber.e("Error sending meta response to device")
                     closePebble()
+                }else {
+                    serverScope.launch {
+                        delay(5000)
+                        if (packetFlowHandlerJob?.isActive != true) {
+                            Timber.w("No initial reset from watch after 5s, requesting reset")
+                            requestReset()
+                        }
+                    }
                 }
             }
         } else {
