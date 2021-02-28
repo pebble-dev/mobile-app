@@ -62,9 +62,7 @@ Widget wrapper(
       ],
       child: MaterialApp(
         navigatorObservers: [if (navigatorObserver != null) navigatorObserver],
-        home: PairPage(
-          fromLanding: true,
-        ),
+        home: PairPage.fromLanding(),
         routes: {
           '/moresetup': (_) => Container(),
         },
