@@ -12,7 +12,7 @@ on:
       - 'test/**'
 jobs:
   build:
-    if: github.repository == ‘pebble-dev/mobile-app’
+    if: github.repository == 'pebble-dev/mobile-app'
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v1
