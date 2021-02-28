@@ -8,6 +8,8 @@ interface WorkaroundDescriptor {
     fun isNeeded(context: Context): Boolean
 
     companion object {
-        val allWorkarounds = emptyList<WorkaroundDescriptor>()
+        val allWorkarounds = listOf<WorkaroundDescriptor>(
+                UnboundWatchBeforeConnecting
+        )
     }
 }
