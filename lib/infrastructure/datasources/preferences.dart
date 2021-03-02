@@ -98,13 +98,6 @@ final phoneCallsMuteProvider = _createPreferenceProvider(
   (preferences) => preferences.isPhoneCallMuteEnabled(),
 );
 
-final isWorkaroundDisabledProvider = StreamProvider.family((ref, workaround) {
-  return _createPreferenceStream(
-    ref,
-    (preferences) => preferences.isWorkaroundDisabled(workaround as String),
-  );
-});
-
 final notificationToggleProvider = _createPreferenceProvider(
   (preferences) => preferences.areNotificationsEnabled(),
 );
@@ -117,19 +110,14 @@ StreamProvider<T> _createPreferenceProvider<T>(
   T Function(Preferences preferences) mapper,
 ) {
   return StreamProvider<T>((ref) {
-    return _createPreferenceStream(ref, mapper);
+    final preferences = ref.watch(preferencesProvider);
+
+    return preferences.map(
+        data: (preferences) => preferences.value.preferencesUpdateStream
+            .startWith(preferences.value)
+            .map(mapper)
+            .distinct(),
+        loading: (loading) => Stream.empty(),
+        error: (error) => Stream.empty());
   });
-}
-
-Stream<T> _createPreferenceStream<T>(
-    ProviderReference ref, T mapper(Preferences preferences)) {
-  final preferences = ref.watch(preferencesProvider);
-
-  return preferences.map(
-      data: (preferences) => preferences.value.preferencesUpdateStream
-          .startWith(preferences.value)
-          .map(mapper)
-          .distinct(),
-      loading: (loading) => Stream.empty(),
-      error: (error) => Stream.empty());
 }
