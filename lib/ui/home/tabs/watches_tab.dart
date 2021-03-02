@@ -35,12 +35,13 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
     List<PebbleScanDevice> allWatchesList =
         allWatches.map((e) => e.device).toList();
     List<PebbleScanDevice> allDisconnectedWatches = allWatchesList.toList();
-    if (defaultWatch != null && connectionState.isConnected == true) {
+    if (defaultWatch != null &&
+        (connectionState.isConnected == true || connectionState.isConnecting)) {
       //TODO: Save the data from the connected watch after first connection(i.e, not here)
       defaultWatch.color = connectionState.currentConnectedWatch.model.index;
       defaultWatch.version =
           connectionState.currentConnectedWatch.runningFirmware.version;
-      //Hide the default watch if we're connected to it. We don't need to see it twice!
+      //Hide the default watch if we're connected or connecting to it. We don't need to see it twice!
       allDisconnectedWatches.remove(defaultWatch);
     }
 
@@ -52,12 +53,16 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
     }
 
     bool isConnected;
+    bool isConnecting;
 
     if (connectionState.isConnecting == true) {
+      isConnecting = true;
       isConnected = false;
     } else if (connectionState.isConnected == true) {
+      isConnecting = false;
       isConnected = true;
     } else {
+      isConnecting = false;
       isConnected = false;
     }
 
@@ -208,41 +213,39 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
     return CobbleScaffold.tab(
       title: "My Watches",
       child: ListView(children: <Widget>[
-        Offstage(
-            offstage: isConnected,
-            child: Column(children: <Widget>[
-              Container(
-                  child: Row(children: <Widget>[
-                    Container(
-                      child: Center(
-                          child: Icon(RebbleIcons.disconnect_from_watch,
-                              color: Colors.black)),
-                      width: 56,
-                      height: 56,
-                      decoration: BoxDecoration(
-                          color: _disconnectedColor, shape: BoxShape.circle),
-                    ),
-                    SizedBox(width: 16),
-                    Column(
-                      children: <Widget>[
-                        Text("Nothing connected",
-                            style: TextStyle(fontSize: 16)),
-                        SizedBox(height: 4),
-                        Text("Background service stopped"),
-                        Wrap(
-                          spacing: 4,
-                          children: [],
-                        ),
-                      ],
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                    ),
-                    Expanded(child: Container(width: 0.0, height: 0.0)),
-                  ]),
-                  margin: EdgeInsets.all(16)),
-            ])),
-        Offstage(
-          offstage: !isConnected,
-          child: Column(
+        if (!isConnecting && !isConnected) ...[
+          Column(children: <Widget>[
+            Container(
+                child: Row(children: <Widget>[
+                  Container(
+                    child: Center(
+                        child: Icon(RebbleIcons.disconnect_from_watch,
+                            color: Colors.black)),
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                        color: _disconnectedColor, shape: BoxShape.circle),
+                  ),
+                  SizedBox(width: 16),
+                  Column(
+                    children: <Widget>[
+                      Text("Nothing connected", style: TextStyle(fontSize: 16)),
+                      SizedBox(height: 4),
+                      Text("Background service stopped"),
+                      Wrap(
+                        spacing: 4,
+                        children: [],
+                      ),
+                    ],
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                  Expanded(child: Container(width: 0.0, height: 0.0)),
+                ]),
+                margin: EdgeInsets.all(16)),
+          ])
+        ],
+        if (isConnecting || isConnected) ...[
+          Column(
               children: connectedWatchList
                   .map((e) => InkWell(
                         child: Container(
@@ -293,7 +296,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                         onTap: () {},
                       ))
                   .toList()),
-        ),
+        ],
         Padding(
             padding: EdgeInsets.fromLTRB(15, 25, 15, 5),
             child: Text('All watches', style: TextStyle(fontSize: 18))),
