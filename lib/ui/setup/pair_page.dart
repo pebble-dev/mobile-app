@@ -170,18 +170,20 @@ class PairPage extends HookWidget implements CobbleScreen {
               ),
             )
             .toList(),
-        FlatButton(
-          child: Text("SEARCH AGAIN WITH BLE"),
-          padding: EdgeInsets.symmetric(horizontal: 32.0),
-          textColor: Theme.of(context).accentColor,
-          onPressed: _refreshDevicesBle,
-        ),
-        FlatButton(
-          child: Text("SEARCH AGAIN WITH BT CLASSIC"),
-          padding: EdgeInsets.symmetric(horizontal: 32.0),
-          textColor: Theme.of(context).accentColor,
-          onPressed: _refreshDevicesClassic,
-        ),
+        if (!scan.scanning) ...[
+          FlatButton(
+            child: Text("SEARCH AGAIN WITH BLE"),
+            padding: EdgeInsets.symmetric(horizontal: 32.0),
+            textColor: Theme.of(context).accentColor,
+            onPressed: _refreshDevicesBle,
+          ),
+          FlatButton(
+            child: Text("SEARCH AGAIN WITH BT CLASSIC"),
+            padding: EdgeInsets.symmetric(horizontal: 32.0),
+            textColor: Theme.of(context).accentColor,
+            onPressed: _refreshDevicesClassic,
+          ),
+        ],
         if (fromLanding)
           FlatButton(
             child: Text("SKIP"),
