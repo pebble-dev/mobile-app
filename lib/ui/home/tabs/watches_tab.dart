@@ -274,26 +274,16 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                               ),
                               Expanded(
                                   child: Container(width: 0.0, height: 0.0)),
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                child: IconButton(
-                                  icon: Icon(RebbleIcons.disconnect_from_watch,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary),
-                                  onPressed: () => _onDisconnectPressed(false),
-                                ),
-                              ),
                               IconButton(
-                                  icon: Icon(RebbleIcons.menu_vertical,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary),
-                                  onPressed: () =>
-                                      _onSettingsPressed(true, e.address)),
+                                icon: Icon(RebbleIcons.disconnect_from_watch,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary),
+                                onPressed: () => _onDisconnectPressed(false),
+                              ),
                             ]),
                             margin: EdgeInsets.all(16)),
-                        onTap: () {},
+                        onTap: () => _onSettingsPressed(true, e.address),
                       ))
                   .toList()),
         ],
@@ -336,25 +326,15 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                             crossAxisAlignment: CrossAxisAlignment.start,
                           ),
                           Expanded(child: Container(width: 0.0, height: 0.0)),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
-                            child: IconButton(
-                              icon: Icon(RebbleIcons.connect_to_watch,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary),
-                              onPressed: () => _onConnectPressed(e, false),
-                            ),
-                          ),
                           IconButton(
-                              icon: Icon(RebbleIcons.menu_vertical,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary),
-                              onPressed: () =>
-                                  _onSettingsPressed(false, e.address)),
+                            icon: Icon(RebbleIcons.connect_to_watch,
+                                color: Theme.of(context).colorScheme.secondary),
+                            onPressed: () => _onConnectPressed(e, false),
+                          ),
                         ]),
                         margin: EdgeInsets.fromLTRB(16, 10, 16, 16),
                       ),
-                      onTap: () {},
+                      onTap: () => _onSettingsPressed(false, e.address),
                     ))
                 .toList()),
       ]),
