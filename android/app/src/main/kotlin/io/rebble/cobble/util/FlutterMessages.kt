@@ -3,10 +3,13 @@ package io.rebble.cobble.util
 import io.flutter.plugin.common.BasicMessageChannel
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.StandardMessageCodec
+import io.rebble.cobble.pigeons.Pigeons
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 fun BasicMessageChannel<Any>.setCoroutineMessageHandler(
         coroutineScope: CoroutineScope,
@@ -27,6 +30,7 @@ fun BasicMessageChannel<Any>.setCoroutineMessageHandler(
  *
  * @param callName Name of the pigeon call. Copy from *Pigeons.java*.
  */
+@Deprecated("Use native pigeon's support for @async and wrap it with launchPigeonResult")
 fun BinaryMessenger.registerAsyncPigeonCallback(
         coroutineScope: CoroutineScope,
         callName: String,
@@ -50,3 +54,11 @@ fun BinaryMessenger.registerAsyncPigeonCallback(
 }
 
 val voidResult: Map<*, *> = mapOf("result" to null)
+
+fun <T> CoroutineScope.launchPigeonResult(result: Pigeons.Result<T>,
+                                          coroutineContext: CoroutineContext = EmptyCoroutineContext,
+                                          callback: suspend () -> T) {
+    launch(coroutineContext) {
+        result.success(callback())
+    }
+}

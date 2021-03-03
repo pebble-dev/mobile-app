@@ -109,6 +109,35 @@ class AppEntriesPigeon {
   List<String>? packageId;
 }
 
+class PbwAppInfo {
+  bool? isValid;
+  String? uuid;
+  String? shortName;
+  String? longName;
+  String? companyName;
+  int? versionCode;
+  String? versionLabel;
+  Map<String, int>? appKeys;
+  List<String>? capabilities;
+  List<WatchResource>? resources;
+  String? sdkVersion;
+  List<String>? targetPlatforms;
+  WatchappInfo? watchapp;
+}
+
+class WatchappInfo {
+  bool? watchface;
+  bool? hiddenApp;
+  bool? onlyShownOnCommunication;
+}
+
+class WatchResource {
+  String? file;
+  bool? menuIcon;
+  String? name;
+  String? type;
+}
+
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
@@ -284,7 +313,7 @@ abstract class PigeonLogger {
 }
 
 @HostApi()
-abstract class TimelineSyncControl{
+abstract class TimelineSyncControl {
   void syncTimelineToWatchLater();
 }
 
@@ -294,6 +323,11 @@ abstract class WorkaroundsControl {
   ListWrapper getNeededWorkarounds();
 }
 
+@HostApi()
+abstract class AppInstallControl {
+  @async
+  PbwAppInfo getAppInfo(StringWrapper localUri);
+}
 
 @HostApi()
 abstract class PackageDetails {
@@ -306,4 +340,6 @@ abstract class PackageDetails {
 @HostApi()
 abstract class KeepUnusedHack {
   void keepPebbleScanDevicePigeon(PebbleScanDevicePigeon cls);
+
+  void keepWatchResource(WatchResource cls);
 }

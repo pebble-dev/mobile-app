@@ -3,15 +3,10 @@ package io.rebble.cobble.bridges.background
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
-import android.graphics.Color
-import android.graphics.ColorSpace
 import android.os.Bundle
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
-import androidx.core.graphics.convertTo
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import io.rebble.cobble.bridges.FlutterBridge
@@ -19,7 +14,6 @@ import io.rebble.cobble.data.NotificationAction
 import io.rebble.cobble.data.NotificationMessage
 import io.rebble.cobble.data.TimelineAttribute
 import io.rebble.cobble.pigeons.BooleanWrapper
-import io.rebble.cobble.pigeons.ListWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse

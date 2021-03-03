@@ -186,6 +186,142 @@ public class Pigeons {
   }
 
   /** Generated class from Pigeon that represents data sent in messages. */
+  public static class PbwAppInfo {
+    private Boolean isValid;
+    public Boolean getIsValid() { return isValid; }
+    public void setIsValid(Boolean setterArg) { this.isValid = setterArg; }
+
+    private String uuid;
+    public String getUuid() { return uuid; }
+    public void setUuid(String setterArg) { this.uuid = setterArg; }
+
+    private String shortName;
+    public String getShortName() { return shortName; }
+    public void setShortName(String setterArg) { this.shortName = setterArg; }
+
+    private String longName;
+    public String getLongName() { return longName; }
+    public void setLongName(String setterArg) { this.longName = setterArg; }
+
+    private String companyName;
+    public String getCompanyName() { return companyName; }
+    public void setCompanyName(String setterArg) { this.companyName = setterArg; }
+
+    private Long versionCode;
+    public Long getVersionCode() { return versionCode; }
+    public void setVersionCode(Long setterArg) { this.versionCode = setterArg; }
+
+    private String versionLabel;
+    public String getVersionLabel() { return versionLabel; }
+    public void setVersionLabel(String setterArg) { this.versionLabel = setterArg; }
+
+    private HashMap appKeys;
+    public HashMap getAppKeys() { return appKeys; }
+    public void setAppKeys(HashMap setterArg) { this.appKeys = setterArg; }
+
+    private ArrayList capabilities;
+    public ArrayList getCapabilities() { return capabilities; }
+    public void setCapabilities(ArrayList setterArg) { this.capabilities = setterArg; }
+
+    private ArrayList resources;
+    public ArrayList getResources() { return resources; }
+    public void setResources(ArrayList setterArg) { this.resources = setterArg; }
+
+    private String sdkVersion;
+    public String getSdkVersion() { return sdkVersion; }
+    public void setSdkVersion(String setterArg) { this.sdkVersion = setterArg; }
+
+    private ArrayList targetPlatforms;
+    public ArrayList getTargetPlatforms() { return targetPlatforms; }
+    public void setTargetPlatforms(ArrayList setterArg) { this.targetPlatforms = setterArg; }
+
+    private WatchappInfo watchapp;
+    public WatchappInfo getWatchapp() { return watchapp; }
+    public void setWatchapp(WatchappInfo setterArg) { this.watchapp = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("isValid", isValid);
+      toMapResult.put("uuid", uuid);
+      toMapResult.put("shortName", shortName);
+      toMapResult.put("longName", longName);
+      toMapResult.put("companyName", companyName);
+      toMapResult.put("versionCode", versionCode);
+      toMapResult.put("versionLabel", versionLabel);
+      toMapResult.put("appKeys", appKeys);
+      toMapResult.put("capabilities", capabilities);
+      toMapResult.put("resources", resources);
+      toMapResult.put("sdkVersion", sdkVersion);
+      toMapResult.put("targetPlatforms", targetPlatforms);
+      toMapResult.put("watchapp", watchapp.toMap());
+      return toMapResult;
+    }
+    static PbwAppInfo fromMap(HashMap map) {
+      PbwAppInfo fromMapResult = new PbwAppInfo();
+      Object isValid = map.get("isValid");
+      fromMapResult.isValid = (Boolean)isValid;
+      Object uuid = map.get("uuid");
+      fromMapResult.uuid = (String)uuid;
+      Object shortName = map.get("shortName");
+      fromMapResult.shortName = (String)shortName;
+      Object longName = map.get("longName");
+      fromMapResult.longName = (String)longName;
+      Object companyName = map.get("companyName");
+      fromMapResult.companyName = (String)companyName;
+      Object versionCode = map.get("versionCode");
+      fromMapResult.versionCode = (versionCode == null) ? null : ((versionCode instanceof Integer) ? (Integer)versionCode : (Long)versionCode);
+      Object versionLabel = map.get("versionLabel");
+      fromMapResult.versionLabel = (String)versionLabel;
+      Object appKeys = map.get("appKeys");
+      fromMapResult.appKeys = (HashMap)appKeys;
+      Object capabilities = map.get("capabilities");
+      fromMapResult.capabilities = (ArrayList)capabilities;
+      Object resources = map.get("resources");
+      fromMapResult.resources = (ArrayList)resources;
+      Object sdkVersion = map.get("sdkVersion");
+      fromMapResult.sdkVersion = (String)sdkVersion;
+      Object targetPlatforms = map.get("targetPlatforms");
+      fromMapResult.targetPlatforms = (ArrayList)targetPlatforms;
+      Object watchapp = map.get("watchapp");
+      fromMapResult.watchapp = WatchappInfo.fromMap((HashMap)watchapp);
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class WatchappInfo {
+    private Boolean watchface;
+    public Boolean getWatchface() { return watchface; }
+    public void setWatchface(Boolean setterArg) { this.watchface = setterArg; }
+
+    private Boolean hiddenApp;
+    public Boolean getHiddenApp() { return hiddenApp; }
+    public void setHiddenApp(Boolean setterArg) { this.hiddenApp = setterArg; }
+
+    private Boolean onlyShownOnCommunication;
+    public Boolean getOnlyShownOnCommunication() { return onlyShownOnCommunication; }
+    public void setOnlyShownOnCommunication(Boolean setterArg) { this.onlyShownOnCommunication = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("watchface", watchface);
+      toMapResult.put("hiddenApp", hiddenApp);
+      toMapResult.put("onlyShownOnCommunication", onlyShownOnCommunication);
+      return toMapResult;
+    }
+    static WatchappInfo fromMap(HashMap map) {
+      WatchappInfo fromMapResult = new WatchappInfo();
+      Object watchface = map.get("watchface");
+      fromMapResult.watchface = (Boolean)watchface;
+      Object hiddenApp = map.get("hiddenApp");
+      fromMapResult.hiddenApp = (Boolean)hiddenApp;
+      Object onlyShownOnCommunication = map.get("onlyShownOnCommunication");
+      fromMapResult.onlyShownOnCommunication = (Boolean)onlyShownOnCommunication;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
   public static class AppEntriesPigeon {
     private ArrayList appName;
     public ArrayList getAppName() { return appName; }
@@ -390,6 +526,46 @@ public class Pigeons {
       fromMapResult.runningPRF = (Boolean)runningPRF;
       Object firstUse = map.get("firstUse");
       fromMapResult.firstUse = (Boolean)firstUse;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class WatchResource {
+    private String file;
+    public String getFile() { return file; }
+    public void setFile(String setterArg) { this.file = setterArg; }
+
+    private Boolean menuIcon;
+    public Boolean getMenuIcon() { return menuIcon; }
+    public void setMenuIcon(Boolean setterArg) { this.menuIcon = setterArg; }
+
+    private String name;
+    public String getName() { return name; }
+    public void setName(String setterArg) { this.name = setterArg; }
+
+    private String type;
+    public String getType() { return type; }
+    public void setType(String setterArg) { this.type = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("file", file);
+      toMapResult.put("menuIcon", menuIcon);
+      toMapResult.put("name", name);
+      toMapResult.put("type", type);
+      return toMapResult;
+    }
+    static WatchResource fromMap(HashMap map) {
+      WatchResource fromMapResult = new WatchResource();
+      Object file = map.get("file");
+      fromMapResult.file = (String)file;
+      Object menuIcon = map.get("menuIcon");
+      fromMapResult.menuIcon = (Boolean)menuIcon;
+      Object name = map.get("name");
+      fromMapResult.name = (String)name;
+      Object type = map.get("type");
+      fromMapResult.type = (String)type;
       return fromMapResult;
     }
   }
@@ -1258,6 +1434,39 @@ public class Pigeons {
     }
   }
 
+  public interface Result<T> {
+    void success(T result);
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
+  public interface AppInstallControl {
+    void getAppInfo(StringWrapper arg, Result<PbwAppInfo> result);
+
+    /** Sets up an instance of `AppInstallControl` to handle messages through the `binaryMessenger` */
+    static void setup(BinaryMessenger binaryMessenger, AppInstallControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AppInstallControl.getAppInfo", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              StringWrapper input = StringWrapper.fromMap((HashMap)message);
+              api.getAppInfo(input, result -> { wrapped.put("result", result.toMap()); reply.reply(wrapped); });
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+              reply.reply(wrapped);
+            }
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface PackageDetails {
     AppEntriesPigeon getPackageList();
@@ -1392,10 +1601,6 @@ public class Pigeons {
     }
   }
 
-  public interface Result<T> {
-    void success(T result);
-  }
-
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface NotificationUtils {
     void dismissNotification(StringWrapper arg, Result<BooleanWrapper> result);
@@ -1494,6 +1699,7 @@ public class Pigeons {
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface KeepUnusedHack {
     void keepPebbleScanDevicePigeon(PebbleScanDevicePigeon arg);
+    void keepWatchResource(WatchResource arg);
 
     /** Sets up an instance of `KeepUnusedHack` to handle messages through the `binaryMessenger` */
     static void setup(BinaryMessenger binaryMessenger, KeepUnusedHack api) {
@@ -1507,6 +1713,27 @@ public class Pigeons {
               @SuppressWarnings("ConstantConditions")
               PebbleScanDevicePigeon input = PebbleScanDevicePigeon.fromMap((HashMap)message);
               api.keepPebbleScanDevicePigeon(input);
+              wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.KeepUnusedHack.keepWatchResource", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              @SuppressWarnings("ConstantConditions")
+              WatchResource input = WatchResource.fromMap((HashMap)message);
+              api.keepWatchResource(input);
               wrapped.put("result", null);
             }
             catch (Exception exception) {

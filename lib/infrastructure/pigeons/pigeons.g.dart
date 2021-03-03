@@ -120,6 +120,80 @@ class BooleanWrapper {
   }
 }
 
+class PbwAppInfo {
+  bool isValid;
+  String uuid;
+  String shortName;
+  String longName;
+  String companyName;
+  int versionCode;
+  String versionLabel;
+  Map<Object, Object> appKeys;
+  List<Object> capabilities;
+  List<Object> resources;
+  String sdkVersion;
+  List<Object> targetPlatforms;
+  WatchappInfo watchapp;
+
+  Object encode() {
+    final Map<Object, Object> pigeonMap = <Object, Object>{};
+    pigeonMap['isValid'] = isValid;
+    pigeonMap['uuid'] = uuid;
+    pigeonMap['shortName'] = shortName;
+    pigeonMap['longName'] = longName;
+    pigeonMap['companyName'] = companyName;
+    pigeonMap['versionCode'] = versionCode;
+    pigeonMap['versionLabel'] = versionLabel;
+    pigeonMap['appKeys'] = appKeys;
+    pigeonMap['capabilities'] = capabilities;
+    pigeonMap['resources'] = resources;
+    pigeonMap['sdkVersion'] = sdkVersion;
+    pigeonMap['targetPlatforms'] = targetPlatforms;
+    pigeonMap['watchapp'] = watchapp == null ? null : watchapp.encode();
+    return pigeonMap;
+  }
+
+  static PbwAppInfo decode(Object message) {
+    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
+    return PbwAppInfo()
+      ..isValid = pigeonMap['isValid'] as bool
+      ..uuid = pigeonMap['uuid'] as String
+      ..shortName = pigeonMap['shortName'] as String
+      ..longName = pigeonMap['longName'] as String
+      ..companyName = pigeonMap['companyName'] as String
+      ..versionCode = pigeonMap['versionCode'] as int
+      ..versionLabel = pigeonMap['versionLabel'] as String
+      ..appKeys = pigeonMap['appKeys'] as Map<Object, Object>
+      ..capabilities = pigeonMap['capabilities'] as List<Object>
+      ..resources = pigeonMap['resources'] as List<Object>
+      ..sdkVersion = pigeonMap['sdkVersion'] as String
+      ..targetPlatforms = pigeonMap['targetPlatforms'] as List<Object>
+      ..watchapp = pigeonMap['watchapp'] != null ? WatchappInfo.decode(pigeonMap['watchapp']) : null;
+  }
+}
+
+class WatchappInfo {
+  bool watchface;
+  bool hiddenApp;
+  bool onlyShownOnCommunication;
+
+  Object encode() {
+    final Map<Object, Object> pigeonMap = <Object, Object>{};
+    pigeonMap['watchface'] = watchface;
+    pigeonMap['hiddenApp'] = hiddenApp;
+    pigeonMap['onlyShownOnCommunication'] = onlyShownOnCommunication;
+    return pigeonMap;
+  }
+
+  static WatchappInfo decode(Object message) {
+    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
+    return WatchappInfo()
+      ..watchface = pigeonMap['watchface'] as bool
+      ..hiddenApp = pigeonMap['hiddenApp'] as bool
+      ..onlyShownOnCommunication = pigeonMap['onlyShownOnCommunication'] as bool;
+  }
+}
+
 class AppEntriesPigeon {
   List<Object> appName;
   List<Object> packageId;
@@ -238,6 +312,31 @@ class PebbleScanDevicePigeon {
       ..color = pigeonMap['color'] as int
       ..runningPRF = pigeonMap['runningPRF'] as bool
       ..firstUse = pigeonMap['firstUse'] as bool;
+  }
+}
+
+class WatchResource {
+  String file;
+  bool menuIcon;
+  String name;
+  String type;
+
+  Object encode() {
+    final Map<Object, Object> pigeonMap = <Object, Object>{};
+    pigeonMap['file'] = file;
+    pigeonMap['menuIcon'] = menuIcon;
+    pigeonMap['name'] = name;
+    pigeonMap['type'] = type;
+    return pigeonMap;
+  }
+
+  static WatchResource decode(Object message) {
+    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
+    return WatchResource()
+      ..file = pigeonMap['file'] as String
+      ..menuIcon = pigeonMap['menuIcon'] as bool
+      ..name = pigeonMap['name'] as String
+      ..type = pigeonMap['type'] as String;
   }
 }
 
@@ -1007,6 +1106,31 @@ abstract class ScanCallbacks {
   }
 }
 
+class AppInstallControl {
+  Future<PbwAppInfo> getAppInfo(StringWrapper arg) async {
+    final Object encoded = arg.encode();
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AppInstallControl.getAppInfo', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return PbwAppInfo.decode(replyMap['result']);
+    }
+  }
+}
+
 class PackageDetails {
   Future<AppEntriesPigeon> getPackageList() async {
     const BasicMessageChannel<Object> channel =
@@ -1235,6 +1359,29 @@ class KeepUnusedHack {
     final Object encoded = arg.encode();
     const BasicMessageChannel<Object> channel =
         BasicMessageChannel<Object>('dev.flutter.pigeon.KeepUnusedHack.keepPebbleScanDevicePigeon', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      // noop
+    }
+  }
+
+  Future<void> keepWatchResource(WatchResource arg) async {
+    final Object encoded = arg.encode();
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.KeepUnusedHack.keepWatchResource', StandardMessageCodec());
     final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
