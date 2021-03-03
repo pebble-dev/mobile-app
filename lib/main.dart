@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:cobble/background/main_background.dart';
-import 'package:cobble/ui/localize.dart';
+import 'package:cobble/localization/localization_delegate.dart';
 import 'package:cobble/ui/splash/splash_page.dart';
 import 'package:cobble/ui/theme/cobble_scheme.dart';
 import 'package:cobble/ui/theme/cobble_theme.dart';
@@ -61,6 +61,11 @@ class MyApp extends HookWidget {
 
     final brightness = usePlatformBrightness();
 
+    final supportedLocales = [
+      Locale('en'),
+      Locale('es'),
+    ];
+
     return CobbleScheme(
       schemeData: CobbleSchemeData.fromBrightness(brightness),
       child: MaterialApp(
@@ -68,31 +73,16 @@ class MyApp extends HookWidget {
         theme: CobbleTheme.appTheme(brightness),
         home: SplashPage(),
         // List all of the app's supported locales here
-        supportedLocales: [
-          Locale('en'),
-          Locale('es'),
-        ],
+        supportedLocales: supportedLocales,
         // These delegates make sure that the localization data for the proper language is loaded
         localizationsDelegates: [
           // A class which loads the translations from JSON files
-          Localize.delegate,
+          CobbleLocalizationDelegate(supportedLocales),
           // Built-in localization of basic text for Material widgets
           GlobalMaterialLocalizations.delegate,
           // Built-in localization for text direction LTR/RTL
           GlobalWidgetsLocalizations.delegate,
         ],
-        // Returns a locale which will be used by the app
-        localeResolutionCallback: (locale, supportedLocales) {
-          var retLocale = supportedLocales.first;
-          // Check if the current device locale is supported
-          if (locale != null)
-            for (var supportedLocale in supportedLocales)
-              if (supportedLocale.languageCode == locale.languageCode) {
-                retLocale = supportedLocale;
-                if (supportedLocale.countryCode == locale.countryCode) break;
-              }
-          return retLocale;
-        },
       ),
     );
   }
