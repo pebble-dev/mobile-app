@@ -1,5 +1,6 @@
 package io.rebble.cobble.bridges.background
 
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -83,7 +84,11 @@ class NotificationsFlutterBridge @Inject constructor(
         override fun dismissNotification(arg: Pigeons.StringWrapper?, result: Pigeons.Result<Pigeons.BooleanWrapper>?) {
             if (arg != null) {
                 val id = UUID.fromString(arg.value)
-                activeNotifs.remove(id)?.notification?.deleteIntent?.send()
+                try {
+                    activeNotifs.remove(id)?.notification?.deleteIntent?.send() ?: Timber.w("Dismiss on untracked notif")
+                } catch (e: PendingIntent.CanceledException) {}
+                result?.success(BooleanWrapper(true))
+
                 val command = BlobCommand.DeleteCommand(Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(), BlobCommand.BlobDatabase.Notification, SUUID(StructMapper(), id).toBytes())
                 GlobalScope.launch {
                     var blobResult = blobDBService.send(command)
@@ -91,9 +96,6 @@ class NotificationsFlutterBridge @Inject constructor(
                         delay(1000)
                         command.token.set(Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort())
                         blobResult = blobDBService.send(command)
-                    }
-                    withContext(Dispatchers.Main.immediate) {
-                        result?.success(BooleanWrapper(blobResult.responseValue == BlobResponse.BlobStatus.Success))
                     }
                 }
             }

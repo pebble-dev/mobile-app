@@ -105,7 +105,7 @@ class NotificationManager {
       content = TimelineAttribute.body(contentText);
     }
     List<TimelineAction> actions = new List<TimelineAction>();
-    actions.add(TimelineAction(MetaAction.DISMISS.index, actionTypeDismiss, [
+    actions.add(TimelineAction(MetaAction.DISMISS.index, actionTypeGeneric, [
       TimelineAttribute.title("Dismiss")
     ]));
 

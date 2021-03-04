@@ -36,10 +36,6 @@ class TestTab extends HookWidget implements CobbleScreen {
 
     final preferences = useProvider(preferencesProvider);
     final calendarSyncEnabled = useProvider(calendarSyncEnabledProvider);
-    final phoneNotificationsMuteEnabled =
-        useProvider(phoneNotificationsMuteProvider);
-    final phoneCallsMuteEnabled = useProvider(phoneCallsMuteProvider);
-    final notifcationsEnabled = useProvider(notificationToggleProvider);
 
     useEffect(() {
       Future.microtask(() async {
@@ -156,37 +152,6 @@ class TestTab extends HookWidget implements CobbleScreen {
                   ),
                 ),
               ),
-              // TODO Separate call and notification mute is only possible on
-              //  Android 7 (SDK 24) and newer. On older releases,
-              //  we should only display one switch that controls both.
-              Row(children: [
-                Switch(
-                  value: phoneNotificationsMuteEnabled.data?.value ?? false,
-                  onChanged: (value) async {
-                    await preferences.data?.value
-                        ?.setPhoneNotificationMute(value);
-                  },
-                ),
-                Text("Mute phone notification sounds when watch connected")
-              ]),
-              Row(children: [
-                Switch(
-                  value: phoneCallsMuteEnabled.data?.value ?? false,
-                  onChanged: (value) async {
-                    await preferences.data?.value?.setPhoneCallsMute(value);
-                  },
-                ),
-                Text("Mute phone call ringing when watch connected")
-              ]),
-              Row(children: [
-                Switch(
-                  value: notifcationsEnabled.data?.value ?? true,
-                  onChanged: (value) async {
-                    await preferences.data?.value?.setNotificationsEnabled(value);
-                  },
-                ),
-                Text("Send notifications to the watch")
-              ]),
               Row(children: [
                 Switch(
                   value: calendarSyncEnabled.data?.value ?? false,
