@@ -62,12 +62,15 @@ class ClassicScanner @Inject constructor(private val context: Context) {
                         }
                         scanningFinishChannel.onReceive {
                             keepScanning = false
+                            emit(deviceList)
                         }
                         stopTrigger.onAwait {
                             keepScanning = false
+                            emit(deviceList)
                         }
                         onTimeout(scanEndTime - System.currentTimeMillis()) {
                             keepScanning = false
+                            emit(deviceList)
                         }
                     }
                 }
