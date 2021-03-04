@@ -289,7 +289,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
         ],
         Padding(
             padding: EdgeInsets.fromLTRB(15, 25, 15, 5),
-            child: Text('All watches', style: TextStyle(fontSize: 18))),
+            child: Text('My Other Watches', style: TextStyle(fontSize: 18))),
         const Divider(
           color: Colors.white24,
           height: 20,
