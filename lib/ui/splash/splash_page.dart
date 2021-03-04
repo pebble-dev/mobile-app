@@ -25,7 +25,7 @@ class _SplashPageState extends State<SplashPage> {
 
     // Init of this has to be done after first page is being pushed since
     // UriNavigator can push subsequent pages
-    UriNavigator(context.findAncestorStateOfType()!).init();
+    UriNavigator(Navigator.of(context)).init();
   }
 
   void _askToBoot() {
