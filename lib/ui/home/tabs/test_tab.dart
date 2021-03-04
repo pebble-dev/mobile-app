@@ -39,6 +39,7 @@ class TestTab extends HookWidget implements CobbleScreen {
     final phoneNotificationsMuteEnabled =
         useProvider(phoneNotificationsMuteProvider);
     final phoneCallsMuteEnabled = useProvider(phoneCallsMuteProvider);
+    final notifcationsEnabled = useProvider(notificationToggleProvider);
 
     useEffect(() {
       Future.microtask(() async {
@@ -176,6 +177,15 @@ class TestTab extends HookWidget implements CobbleScreen {
                   },
                 ),
                 Text("Mute phone call ringing when watch connected")
+              ]),
+              Row(children: [
+                Switch(
+                  value: notifcationsEnabled.data?.value ?? true,
+                  onChanged: (value) async {
+                    await preferences.data?.value?.setNotificationsEnabled(value);
+                  },
+                ),
+                Text("Send notifications to the watch")
               ]),
               Row(children: [
                 Switch(

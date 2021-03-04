@@ -52,6 +52,15 @@ class Preferences {
     await _sharedPrefs.setBool("MUTE_PHONE_CALLS", value);
     _preferencesUpdateStream.add(this);
   }
+
+  bool areNotificationsEnabled() {
+    return _sharedPrefs.getBool("MASTER_NOTIFICATION_TOGGLE");
+  }
+
+  Future<void> setNotificationsEnabled(bool value) async {
+    await _sharedPrefs.setBool("MASTER_NOTIFICATION_TOGGLE", value);
+    _preferencesUpdateStream.add(this);
+  }
 }
 
 final preferencesProvider = FutureProvider<Preferences>((ref) async {
@@ -69,6 +78,10 @@ final phoneNotificationsMuteProvider = _createPreferenceProvider(
 
 final phoneCallsMuteProvider = _createPreferenceProvider(
   (preferences) => preferences.isPhoneCallMuteEnabled(),
+);
+
+final notificationToggleProvider = _createPreferenceProvider(
+  (preferences) => preferences.areNotificationsEnabled(),
 );
 
 StreamProvider<T> _createPreferenceProvider<T>(
