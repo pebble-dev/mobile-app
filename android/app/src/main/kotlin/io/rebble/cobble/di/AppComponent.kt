@@ -10,6 +10,7 @@ import io.rebble.cobble.bridges.background.BackgroundTimelineFlutterBridge
 import io.rebble.cobble.bridges.background.CalendarFlutterBridge
 import io.rebble.cobble.bridges.background.NotificationsFlutterBridge
 import io.rebble.cobble.bridges.background.TimelineSyncFlutterBridge
+import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.datasources.PairedStorage
 import io.rebble.cobble.errors.GlobalExceptionHandler
 import io.rebble.cobble.service.ServiceLifecycleControl
@@ -33,6 +34,7 @@ interface AppComponent {
     fun createCalendarFlutterBridge(): CalendarFlutterBridge
     fun createTimelineSyncFlutterBridge(): BackgroundTimelineFlutterBridge
     fun createNotificationsFlutterBridge(): NotificationsFlutterBridge
+    fun createFlutterPreferences(): FlutterPreferences
     fun initServiceLifecycleControl(): ServiceLifecycleControl
     fun initNotificationChannels(): NotificationChannelManager
 

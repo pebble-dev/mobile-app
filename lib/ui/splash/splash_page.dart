@@ -63,7 +63,7 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CobbleScaffold(
+    return CobbleScaffold.page(
       child: Center(
         // This page shouldn't be visible for more than a split second, but if
         // it ever is, let the user know it's not broken

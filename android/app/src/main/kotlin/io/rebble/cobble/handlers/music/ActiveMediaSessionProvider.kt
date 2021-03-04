@@ -1,6 +1,5 @@
 package io.rebble.cobble.handlers.music
 
-import android.content.ComponentName
 import android.content.Context
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
@@ -9,12 +8,9 @@ import io.rebble.cobble.notifications.NotificationListener
 import timber.log.Timber
 import javax.inject.Inject
 
-class ActiveMediaSessionProvider @Inject constructor(context: Context) :
+class ActiveMediaSessionProvider @Inject constructor(private val context: Context) :
         androidx.lifecycle.LiveData<MediaController>(),
         MediaSessionManager.OnActiveSessionsChangedListener {
-
-    private val notificationListenerComponent: ComponentName =
-            ComponentName(context, NotificationListener::class.java)
 
     private val mediaSessionManager: MediaSessionManager = context.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
     var currentController: MediaController? = null
@@ -52,7 +48,9 @@ class ActiveMediaSessionProvider @Inject constructor(context: Context) :
 
     private fun getActiveSessions(): List<MediaController> {
         try {
-            return mediaSessionManager.getActiveSessions(notificationListenerComponent)
+            return mediaSessionManager.getActiveSessions(
+                    NotificationListener.getComponentName(context)
+            )
         } catch (e: SecurityException) {
             return emptyList()
         }
@@ -60,7 +58,10 @@ class ActiveMediaSessionProvider @Inject constructor(context: Context) :
 
     private fun activate() {
         try {
-            mediaSessionManager.addOnActiveSessionsChangedListener(this, notificationListenerComponent)
+            mediaSessionManager.addOnActiveSessionsChangedListener(
+                    this,
+                    NotificationListener.getComponentName(context)
+            )
         } catch (e: SecurityException) {
             // No notification access. Just ignore, MusicHandler should stop and restart us when
             // needed

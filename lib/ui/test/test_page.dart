@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class TestPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return CobbleScaffold(
+    return CobbleScaffold.page(
       title: "Cobble",
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

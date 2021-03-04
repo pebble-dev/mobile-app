@@ -35,6 +35,7 @@ class MyApp extends HookWidget {
   Widget build(BuildContext context) {
     final permissionControl = useProvider(permissionControlProvider);
     final permissionCheck = useProvider(permissionCheckProvider);
+    final defaultWatch = useProvider(defaultWatchProvider);
 
     useEffect(() {
       Future.microtask(() async {
@@ -45,8 +46,7 @@ class MyApp extends HookWidget {
           await permissionControl.requestLocationPermission();
         }
 
-        final pairedDevice = PairedStorage.getDefault();
-        if (pairedDevice != null) {
+        if (defaultWatch != null) {
           if (!(await permissionCheck.hasNotificationAccess()).value) {
             permissionControl.requestNotificationAccess();
           }

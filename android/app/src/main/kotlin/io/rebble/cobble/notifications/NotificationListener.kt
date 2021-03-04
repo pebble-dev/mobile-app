@@ -1,40 +1,34 @@
 package io.rebble.cobble.notifications
 
+import android.annotation.TargetApi
 import android.app.Notification
 import android.app.NotificationManager
-import android.app.RemoteInput
+import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.os.Build
-import android.os.Bundle
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
-import com.dexterous.flutterlocalnotifications.models.Time
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
 import io.rebble.cobble.CobbleApplication
+import io.rebble.cobble.bluetooth.ConnectionLooper
+import io.rebble.cobble.bluetooth.ConnectionState
+import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.bridges.background.NotificationsFlutterBridge
 import io.rebble.cobble.data.NotificationAction
 import io.rebble.cobble.data.NotificationMessage
-import io.rebble.cobble.data.TimelineAttribute
-import io.rebble.cobble.pigeons.Pigeons
-import io.rebble.libpebblecommon.PacketPriority
 import io.rebble.libpebblecommon.packets.blobdb.*
 import io.rebble.libpebblecommon.services.notification.NotificationService
-import io.rebble.libpebblecommon.structmapper.SUUID
-import io.rebble.libpebblecommon.structmapper.StructMapper
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import org.json.JSONArray
-import org.json.JSONObject
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import timber.log.Timber
-import java.util.*
-import kotlin.random.Random
 
 class NotificationListener : NotificationListenerService() {
     private lateinit var coroutineScope: CoroutineScope
+    private lateinit var connectionLooper: ConnectionLooper
+    private lateinit var flutterPreferences: FlutterPreferences
 
     private var isListening = false
 
@@ -48,8 +42,10 @@ class NotificationListener : NotificationListenerService() {
                 SupervisorJob() + injectionComponent.createExceptionHandler()
         )
 
+        connectionLooper = injectionComponent.createConnectionLooper()
         notificationService = injectionComponent.createNotificationService()
         notificationBridge = injectionComponent.createNotificationsFlutterBridge()
+        flutterPreferences = injectionComponent.createFlutterPreferences()
 
         super.onCreate()
         _isActive.value = true
@@ -64,6 +60,12 @@ class NotificationListener : NotificationListenerService() {
 
     override fun onListenerConnected() {
         isListening = true
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            unbindOnWatchDisconnect()
+        }
+
+        controlListenerHints()
     }
 
     override fun onListenerDisconnected() {
@@ -135,8 +137,63 @@ class NotificationListener : NotificationListenerService() {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.N)
+    private fun unbindOnWatchDisconnect() {
+        // It is a waste of resources to keep running notification listener in the background when
+        // watch disconnects.
+
+        // When watch disconnects, we call requestUnbind() to kill ourselves it and wait for
+        // ServiceLifecycleControl to starts up back up when watch reconnects.
+
+        coroutineScope.launch(Dispatchers.Main.immediate) {
+            connectionLooper.connectionState.collect {
+                if (it is ConnectionState.Disconnected) {
+                    requestUnbind()
+                }
+            }
+        }
+    }
+
+    private fun controlListenerHints() {
+        coroutineScope.launch(Dispatchers.Main.immediate) {
+            combine(
+                    flutterPreferences.mutePhoneNotificationSounds,
+                    flutterPreferences.mutePhoneCallSounds
+            ) {
+                mutePhoneNotificationSounds, mutePhoneCallSounds ->
+
+                val listenerHints = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    var hints = 0
+
+                    if (mutePhoneNotificationSounds) {
+                        hints = hints or HINT_HOST_DISABLE_NOTIFICATION_EFFECTS
+                    }
+
+                    if (mutePhoneCallSounds) {
+                        hints = hints or HINT_HOST_DISABLE_CALL_EFFECTS
+                    }
+
+                    hints
+                } else {
+                    if (mutePhoneCallSounds || mutePhoneNotificationSounds) {
+                        HINT_HOST_DISABLE_EFFECTS
+                    } else {
+                        0
+                    }
+                }
+
+                requestListenerHints(listenerHints)
+            }.collect()
+        }
+
+    }
+
     companion object {
         private val _isActive = MutableStateFlow(false)
         val isActive: StateFlow<Boolean> by ::_isActive
+
+        fun getComponentName(context: Context): ComponentName {
+            return ComponentName(context, NotificationListener::class.java)
+        }
     }
 }

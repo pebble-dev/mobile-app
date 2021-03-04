@@ -5,17 +5,19 @@ import 'package:cobble/domain/permissions.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
-import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/devoptions/dev_options_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
+import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class TestTab extends HookWidget {
+import '../../common/icons/fonts/rebble_icons.dart';
+
+class TestTab extends HookWidget implements CobbleScreen {
   final NotificationsControl notifications = NotificationsControl();
 
   final ConnectionControl connectionControl = ConnectionControl();
@@ -24,6 +26,7 @@ class TestTab extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final connectionState = useProvider(connectionStateProvider.state);
+    final defaultWatch = useProvider(defaultWatchProvider);
     final calendars = useProvider(calendarListProvider.state);
     final calendarSelector = useProvider(calendarListProvider);
     final calendarControl = useProvider(calendarControlProvider);
@@ -33,6 +36,9 @@ class TestTab extends HookWidget {
 
     final preferences = useProvider(preferencesProvider);
     final calendarSyncEnabled = useProvider(calendarSyncEnabledProvider);
+    final phoneNotificationsMuteEnabled =
+        useProvider(phoneNotificationsMuteProvider);
+    final phoneCallsMuteEnabled = useProvider(phoneCallsMuteProvider);
 
     useEffect(() {
       Future.microtask(() async {
@@ -43,8 +49,7 @@ class TestTab extends HookWidget {
           await permissionControl.requestLocationPermission();
         }
 
-        final pairedDevice = PairedStorage.getDefault();
-        if (pairedDevice != null) {
+        if (defaultWatch != null) {
           if (!(await permissionCheck.hasNotificationAccess()).value) {
             permissionControl.requestNotificationAccess();
           }
@@ -76,7 +81,7 @@ class TestTab extends HookWidget {
       statusText = "Disconnected";
     }
 
-    return CobbleScaffold(
+    return CobbleScaffold.tab(
       title: "Testing",
       subtitle: 'Testing subtitle',
       child: SingleChildScrollView(
@@ -136,21 +141,42 @@ class TestTab extends HookWidget {
                       SizedBox(height: 8.0),
                       FlatButton.icon(
                         label: Text("Open developer options"),
-                        icon: Icon(
-                            RebbleIconsStroke.developer_connection_console,
+                        icon: Icon(RebbleIcons.developer_connection_console,
                             size: 25.0),
                         textColor: Theme.of(context).accentColor,
                         onPressed: () => context.push(DevOptionsPage()),
                       ),
                       FlatButton.icon(
                           label: Text("Here's another button"),
-                          icon: Icon(RebbleIconsStroke.settings, size: 25.0),
+                          icon: Icon(RebbleIcons.settings, size: 25.0),
                           textColor: Theme.of(context).accentColor,
                           onPressed: () => {}),
                     ],
                   ),
                 ),
               ),
+              // TODO Separate call and notification mute is only possible on
+              //  Android 7 (SDK 24) and newer. On older releases,
+              //  we should only display one switch that controls both.
+              Row(children: [
+                Switch(
+                  value: phoneNotificationsMuteEnabled.data?.value ?? false,
+                  onChanged: (value) async {
+                    await preferences.data?.value
+                        ?.setPhoneNotificationMute(value);
+                  },
+                ),
+                Text("Mute phone notification sounds when watch connected")
+              ]),
+              Row(children: [
+                Switch(
+                  value: phoneCallsMuteEnabled.data?.value ?? false,
+                  onChanged: (value) async {
+                    await preferences.data?.value?.setPhoneCallsMute(value);
+                  },
+                ),
+                Text("Mute phone call ringing when watch connected")
+              ]),
               Row(children: [
                 Switch(
                   value: calendarSyncEnabled.data?.value ?? false,

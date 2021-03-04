@@ -1,4 +1,3 @@
-import 'package:cobble/ui/common/icons/fonts/rebble_icons_stroke.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/home/home_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
@@ -6,6 +5,8 @@ import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/setup/pair_page.dart';
 import 'package:flutter/material.dart';
+
+import '../common/icons/fonts/rebble_icons.dart';
 
 class CircleContainer extends StatelessWidget {
   CircleContainer(
@@ -87,7 +88,7 @@ class _FirstRunPageState extends State<FirstRunPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CobbleScaffold(
+    return CobbleScaffold.page(
       child: Stack(
         children: <Widget>[
           Positioned(
@@ -140,11 +141,11 @@ class _FirstRunPageState extends State<FirstRunPage> {
                   ),
                   FloatingActionButton.extended(
                     icon: Text("LET'S GET STARTED"),
-                    label: Icon(RebbleIconsStroke.caret_right),
+                    label: Icon(RebbleIcons.caret_right),
                     backgroundColor: Theme.of(context).primaryColor,
                     onPressed: () => context.push(
                       PairPage(
-                        showSkipButton: true,
+                        fromLanding: true,
                       ),
                     ),
                   ),

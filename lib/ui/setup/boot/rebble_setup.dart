@@ -14,7 +14,7 @@ class RebbleSetup extends StatelessWidget implements CobbleScreen {
 
   @override
   Widget build(BuildContext context) {
-    return CobbleScaffold(
+    return CobbleScaffold.page(
       title: "Activate Rebble services",
       child: Column(
         children: <Widget>[

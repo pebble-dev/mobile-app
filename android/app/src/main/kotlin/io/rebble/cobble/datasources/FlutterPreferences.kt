@@ -22,6 +22,20 @@ class FlutterPreferences @Inject constructor(context: Context) {
                                                                             key: String ->
         prefs.getBoolean(key, false)
     }
+
+    val mutePhoneNotificationSounds = preferences.flow(
+            KEY_MUTE_PHONE_NOTIFICATION_SOUNDS
+    ) { prefs: SharedPreferences,
+        key: String ->
+        prefs.getBoolean(key, false)
+    }
+
+    val mutePhoneCallSounds = preferences.flow(
+            KEY_MUTE_PHONE_CALL_SOUNDS
+    ) { prefs: SharedPreferences,
+        key: String ->
+        prefs.getBoolean(key, false)
+    }
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -50,3 +64,5 @@ private inline fun <T> SharedPreferences.flow(
 }
 
 private const val KEY_CALENDAR_SYNC_ENABLED = "flutter.ENABLE_CALENDAR_SYNC"
+private const val KEY_MUTE_PHONE_NOTIFICATION_SOUNDS = "flutter.MUTE_PHONE_NOTIFICATIONS"
+private const val KEY_MUTE_PHONE_CALL_SOUNDS = "flutter.MUTE_PHONE_CALLS"
