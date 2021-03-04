@@ -1,12 +1,12 @@
-import 'package:cobble/domain/entities/pbw_app_info_parsed.dart';
+import 'package:cobble/ui/screens/install_prompt.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../infrastructure/pigeons/pigeons.g.dart';
 
 class UriNavigator implements IntentCallbacks {
-  BuildContext _buildContext;
+  NavigatorState _navigatorState;
 
-  UriNavigator(this._buildContext);
+  UriNavigator(this._navigatorState);
 
   void init() {
     IntentCallbacks.setup(this);
@@ -22,13 +22,8 @@ class UriNavigator implements IntentCallbacks {
     final uriWrapper = StringWrapper();
     uriWrapper.value = uri;
 
-    final out = await control.getAppInfo(uriWrapper);
-    if (!out.isValid) {
-      print('Not valid :(');
-    } else {
-      final appInfo = PbwAppInfoParsed(out);
-
-      print('Got $appInfo');
-    }
+    final pbwResult = await control.getAppInfo(uriWrapper);
+    _navigatorState
+        .push(CupertinoPageRoute(builder: (_) => InstallPrompt(pbwResult)));
   }
 }

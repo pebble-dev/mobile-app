@@ -23,7 +23,9 @@ class _SplashPageState extends State<SplashPage> {
       }
     });
 
-    UriNavigator(context).init();
+    // Init of this has to be done after first page is being pushed since
+    // UriNavigator can push subsequent pages
+    UriNavigator(context.findAncestorStateOfType()!).init();
   }
 
   void _askToBoot() {
