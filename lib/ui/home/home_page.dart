@@ -16,8 +16,10 @@ class _TabConfig {
   final CobbleScreen child;
   final String label;
   final IconData icon;
+  final GlobalKey<NavigatorState> key;
 
-  _TabConfig(this.child, this.label, this.icon);
+  _TabConfig(this.child, this.label, this.icon)
+      : key = GlobalKey<NavigatorState>();
 }
 
 class HomePage extends HookWidget implements CobbleScreen {
@@ -34,32 +36,42 @@ class HomePage extends HookWidget implements CobbleScreen {
   Widget build(BuildContext context) {
     final index = useState(0);
 
-    return CobbleScaffold.page(
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        onTap: (i) => index.value = i,
-        currentIndex: index.value,
-        items: _config
-            .map(
-              (tab) => BottomNavigationBarItem(
-                icon: Icon(tab.icon),
-                label: tab.label,
-                backgroundColor: Theme.of(context).colorScheme.surface,
-              ),
-            )
-            .toList(),
-      ),
-      child: IndexedStack(
-        children: _config
-            .map(
-              (tab) => Navigator(
-                onGenerateInitialRoutes: (navigator, initialRoute) => [
-                  CupertinoPageRoute(builder: (_) => tab.child),
-                ],
-              ),
-            )
-            .toList(),
-        index: index.value,
+    return WillPopScope(
+      onWillPop: () async {
+        /// Ask currently active child Navigator to pop. If child Navigator has
+        /// nothing to pop it will return `false`, allowing root navigator to
+        /// pop itself, closing the app.
+        final popped = await _config[index.value].key.currentState?.maybePop();
+        return popped == false;
+      },
+      child: CobbleScaffold.page(
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          onTap: (i) => index.value = i,
+          currentIndex: index.value,
+          items: _config
+              .map(
+                (tab) => BottomNavigationBarItem(
+                  icon: Icon(tab.icon),
+                  label: tab.label,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                ),
+              )
+              .toList(),
+        ),
+        child: IndexedStack(
+          children: _config
+              .map(
+                (tab) => Navigator(
+                  key: tab.key,
+                  onGenerateInitialRoutes: (navigator, initialRoute) => [
+                    CupertinoPageRoute(builder: (_) => tab.child),
+                  ],
+                ),
+              )
+              .toList(),
+          index: index.value,
+        ),
       ),
     );
   }

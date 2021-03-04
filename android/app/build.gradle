@@ -27,7 +27,9 @@ apply plugin: 'kotlin-kapt'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    ndkPath "$System.env.ANDROID_NDK_HOME"
+    if (System.getenv("ANDROID_NDK_HOME") != null) {
+        ndkPath "$System.env.ANDROID_NDK_HOME"
+    }
     compileSdkVersion 30
 
     sourceSets {

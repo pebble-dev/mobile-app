@@ -31,6 +31,7 @@ class NotificationListener : NotificationListenerService() {
     private lateinit var flutterPreferences: FlutterPreferences
 
     private var isListening = false
+    private var areNotificationsEnabled = true
 
     private lateinit var notificationService: NotificationService
     private lateinit var notificationBridge: NotificationsFlutterBridge
@@ -66,6 +67,7 @@ class NotificationListener : NotificationListenerService() {
         }
 
         controlListenerHints()
+        observeNotificationToggle()
     }
 
     override fun onListenerDisconnected() {
@@ -74,7 +76,7 @@ class NotificationListener : NotificationListenerService() {
 
     @OptIn(ExperimentalStdlibApi::class)
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
-        if (isListening) {
+        if (isListening && areNotificationsEnabled) {
             if (sbn == null) return
             if (sbn.packageName == applicationContext.packageName) return // Don't show a notification if it's us
             if (sbn.notification.extras.containsKey(NotificationCompat.EXTRA_MEDIA_SESSION)) {
@@ -185,7 +187,14 @@ class NotificationListener : NotificationListenerService() {
                 requestListenerHints(listenerHints)
             }.collect()
         }
+    }
 
+    private fun observeNotificationToggle() {
+        coroutineScope.launch(Dispatchers.Main.immediate) {
+            flutterPreferences.masterNotificationsToggle.collect {
+                areNotificationsEnabled = it
+            }
+        }
     }
 
     companion object {

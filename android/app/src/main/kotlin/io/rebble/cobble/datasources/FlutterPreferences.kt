@@ -36,6 +36,13 @@ class FlutterPreferences @Inject constructor(context: Context) {
         key: String ->
         prefs.getBoolean(key, false)
     }
+
+    val masterNotificationsToggle = preferences.flow(
+            KEY_MASTER_NOTIFICATION_TOGGLE
+    ) { prefs: SharedPreferences,
+        key: String ->
+        prefs.getBoolean(key, true)
+    }
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -66,3 +73,4 @@ private inline fun <T> SharedPreferences.flow(
 private const val KEY_CALENDAR_SYNC_ENABLED = "flutter.ENABLE_CALENDAR_SYNC"
 private const val KEY_MUTE_PHONE_NOTIFICATION_SOUNDS = "flutter.MUTE_PHONE_NOTIFICATIONS"
 private const val KEY_MUTE_PHONE_CALL_SOUNDS = "flutter.MUTE_PHONE_CALLS"
+private const val KEY_MASTER_NOTIFICATION_TOGGLE = "flutter.MASTER_NOTIFICATION_TOGGLE"
