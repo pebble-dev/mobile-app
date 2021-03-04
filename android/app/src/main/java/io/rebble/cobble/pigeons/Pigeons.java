@@ -1498,6 +1498,7 @@ public class Pigeons {
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface IntentControl {
     void notifyFlutterReadyForIntents();
+    void notifyFlutterNotReadyForIntents();
     BooleanWrapper waitForBoot();
 
     /** Sets up an instance of `IntentControl` to handle messages through the `binaryMessenger` */
@@ -1510,6 +1511,25 @@ public class Pigeons {
             HashMap<String, HashMap> wrapped = new HashMap<>();
             try {
               api.notifyFlutterReadyForIntents();
+              wrapped.put("result", null);
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.IntentControl.notifyFlutterNotReadyForIntents", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              api.notifyFlutterNotReadyForIntents();
               wrapped.put("result", null);
             }
             catch (Exception exception) {

@@ -2,7 +2,6 @@ import 'package:cobble/main.dart';
 import 'package:cobble/ui/home/home_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
-import 'package:cobble/ui/router/uri_navigator.dart';
 import 'package:cobble/ui/setup/first_run_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,10 +21,6 @@ class _SplashPageState extends State<SplashPage> {
         context.pushReplacement(HomePage());
       }
     });
-
-    // Init of this has to be done after first page is being pushed since
-    // UriNavigator can push subsequent pages
-    UriNavigator(Navigator.of(context)).init();
   }
 
   void _askToBoot() {

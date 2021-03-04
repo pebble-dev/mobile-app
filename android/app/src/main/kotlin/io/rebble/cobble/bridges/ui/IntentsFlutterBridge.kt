@@ -22,7 +22,7 @@ class IntentsFlutterBridge @Inject constructor(
     private val bootTrigger = CompletableDeferred<Boolean>()
     private val intentCallbacks: Pigeons.IntentCallbacks
 
-    private var flutterInitialized = false
+    private var flutterReadyToReceiveIntents = false
     private var waitingIntent: Intent? = null
 
     init {
@@ -45,7 +45,7 @@ class IntentsFlutterBridge @Inject constructor(
     }
 
     private fun forwardIntentToFlutter(intent: Intent) {
-        if (!flutterInitialized) {
+        if (!flutterReadyToReceiveIntents) {
             waitingIntent = intent
             return
         }
@@ -55,8 +55,12 @@ class IntentsFlutterBridge @Inject constructor(
     }
 
     override fun notifyFlutterReadyForIntents() {
-        flutterInitialized = true
+        flutterReadyToReceiveIntents = true
         waitingIntent?.let { forwardIntentToFlutter(it) }
+    }
+
+    override fun notifyFlutterNotReadyForIntents() {
+        flutterReadyToReceiveIntents = false
     }
 
     override fun waitForBoot(): Pigeons.BooleanWrapper {

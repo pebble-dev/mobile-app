@@ -1,16 +1,21 @@
+import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/screens/install_prompt.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../infrastructure/pigeons/pigeons.g.dart';
 
 class UriNavigator implements IntentCallbacks {
-  NavigatorState _navigatorState;
+  BuildContext _context;
 
-  UriNavigator(this._navigatorState);
+  final _intentControl = IntentControl();
 
-  void init() {
+  UriNavigator(this._context) {
     IntentCallbacks.setup(this);
-    IntentControl().notifyFlutterReadyForIntents();
+    _intentControl.notifyFlutterReadyForIntents();
+  }
+
+  void cancel() {
+    _intentControl.notifyFlutterNotReadyForIntents();
   }
 
   @override
@@ -23,7 +28,6 @@ class UriNavigator implements IntentCallbacks {
     uriWrapper.value = uri;
 
     final pbwResult = await control.getAppInfo(uriWrapper);
-    _navigatorState
-        .push(CupertinoPageRoute(builder: (_) => InstallPrompt(pbwResult)));
+    _context.push(InstallPrompt(pbwResult));
   }
 }

@@ -231,6 +231,9 @@ abstract class NotificationsControl {
 @HostApi()
 abstract class IntentControl {
   void notifyFlutterReadyForIntents();
+
+  void notifyFlutterNotReadyForIntents();
+
   BooleanWrapper waitForBoot();
 }
 
