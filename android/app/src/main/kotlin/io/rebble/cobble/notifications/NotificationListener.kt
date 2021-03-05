@@ -32,6 +32,7 @@ class NotificationListener : NotificationListenerService() {
 
     private var isListening = false
     private var areNotificationsEnabled = true
+    private var mutedPackages = listOf<String>()
 
     private lateinit var notificationService: NotificationService
     private lateinit var notificationBridge: NotificationsFlutterBridge
@@ -68,6 +69,7 @@ class NotificationListener : NotificationListenerService() {
 
         controlListenerHints()
         observeNotificationToggle()
+        observeMutedPackages()
     }
 
     override fun onListenerDisconnected() {
@@ -86,6 +88,7 @@ class NotificationListener : NotificationListenerService() {
             if (NotificationCompat.getLocalOnly(sbn.notification)) return // ignore local notifications TODO: respect user preference
             if (sbn.notification.flags and Notification.FLAG_ONGOING_EVENT != 0) return // ignore ongoing notifications
             //if (sbn.notification.group != null && !NotificationCompat.isGroupSummary(sbn.notification)) return
+            if (mutedPackages.contains(sbn.packageName)) return // ignore muted packages
 
             var tagId: String? = null
             var tagName: String? = null
@@ -115,8 +118,8 @@ class NotificationListener : NotificationListenerService() {
                     }
                 }
             }
-            Timber.d("Colour ${sbn.notification.color}")
-            coroutineScope.launch(Dispatchers.Main.immediate) {
+
+            GlobalScope.launch(Dispatchers.Main.immediate) {
                 var result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, tagName, title, text, sbn.notification.category?:"", sbn.notification.color, messages?: listOf(), actions)
                 while (result.second == BlobResponse.BlobStatus.TryLater) {
                     delay(1000)
@@ -193,6 +196,15 @@ class NotificationListener : NotificationListenerService() {
         coroutineScope.launch(Dispatchers.Main.immediate) {
             flutterPreferences.masterNotificationsToggle.collect {
                 areNotificationsEnabled = it
+            }
+        }
+    }
+
+    private fun observeMutedPackages() {
+        coroutineScope.launch(Dispatchers.Main.immediate) {
+            flutterPreferences.mutedNotifPackages.collect {
+                Timber.d("${it}")
+                mutedPackages = it ?: listOf()
             }
         }
     }

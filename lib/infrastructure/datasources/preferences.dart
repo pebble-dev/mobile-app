@@ -61,6 +61,15 @@ class Preferences {
     await _sharedPrefs.setBool("MASTER_NOTIFICATION_TOGGLE", value);
     _preferencesUpdateStream.add(this);
   }
+
+  List<String> getNotificationsMutedPackages() {
+    return _sharedPrefs.getStringList("MUTED_NOTIF_PACKAGES");
+  }
+
+  Future<void> setNotificationsMutedPackages(List<String> packages) async {
+    await _sharedPrefs.setStringList("MUTED_NOTIF_PACKAGES", packages);
+    _preferencesUpdateStream.add(this);
+  }
 }
 
 final preferencesProvider = FutureProvider<Preferences>((ref) async {
@@ -82,6 +91,10 @@ final phoneCallsMuteProvider = _createPreferenceProvider(
 
 final notificationToggleProvider = _createPreferenceProvider(
   (preferences) => preferences.areNotificationsEnabled(),
+);
+
+final notificationsMutedPackagesProvider = _createPreferenceProvider(
+  (preferences) => preferences.getNotificationsMutedPackages(),
 );
 
 StreamProvider<T> _createPreferenceProvider<T>(

@@ -104,6 +104,11 @@ class NotificationPigeon {
   String actionsJson;
 }
 
+class AppEntriesPigeon {
+  List<String> appName;
+  List<String> packageId;
+}
+
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
@@ -275,6 +280,11 @@ abstract class PigeonLogger {
 @HostApi()
 abstract class TimelineSyncControl{
   void syncTimelineToWatchLater();
+}
+
+@HostApi()
+abstract class PackageDetails {
+  AppEntriesPigeon getPackageList();
 }
 
 /// This class will keep all classes that appear in lists from being deleted

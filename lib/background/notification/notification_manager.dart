@@ -20,6 +20,7 @@ import 'package:cobble/domain/timeline/timeline_action_response.dart';
 import 'package:cobble/domain/timeline/timeline_attribute.dart';
 import 'package:cobble/domain/timeline/timeline_icon.dart';
 import 'package:cobble/domain/timeline/timeline_serializer.dart';
+import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -109,6 +110,7 @@ class NotificationManager {
       TimelineAttribute.title("Dismiss")
     ]));
 
+    //TODO: change to use preferences datasource
     List<String> disabledActionPkgs = (await _preferencesFuture).getStringList(disabledActionPackagesKey);
     if (disabledActionPkgs == null || !disabledActionPkgs.contains(notif.packageId)) {
       List<Map<String, dynamic>> notifActions = new List<Map<String, dynamic>>.from(jsonDecode(notif.actionsJson));
@@ -159,6 +161,8 @@ class NotificationManager {
   }
 
   Future<TimelineActionResponse> handleNotifAction(ActionTrigger trigger) async {
+    Preferences prefs = Preferences(await _preferencesFuture);
+    
     TimelineActionResponse ret;
     switch (trigger.actionId) {
       case 0: // DISMISS
@@ -178,10 +182,19 @@ class NotificationManager {
         ]);
         break;
       case 2: // MUTE_PKG
-        //TODO
+        List<String> muted = prefs.getNotificationsMutedPackages();
+        prefs.setNotificationsMutedPackages(muted + [(await _activeNotificationDao.getActiveNotifByPinId(Uuid.parse(trigger.itemId))).packageId]);
+        ret = TimelineActionResponse(true, attributes: [
+          TimelineAttribute.subtitle("Muted app"),
+          TimelineAttribute.largeIcon(TimelineIcon.resultMute)
+        ]);
         break;
       case 3: // MUTE_TAG
         //TODO
+        ret = TimelineActionResponse(true, attributes: [
+          TimelineAttribute.subtitle("TODO"),
+          TimelineAttribute.largeIcon(TimelineIcon.resultFailed)
+        ]);
         break;
       default: // Custom
         List<TimelineAttribute> attrs = List<TimelineAttribute>();

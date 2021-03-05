@@ -27,7 +27,7 @@ class Notifications extends HookWidget implements CobbleScreen {
             leading: RebbleIcons.notification,
             title: 'Send notifications to my watch',
             child: Switch(
-              value: notifcationsEnabled.data.value ?? true,
+              value: notifcationsEnabled.data?.value ?? true,
               onChanged: (bool value) async {
                 await preferences.data?.value?.setNotificationsEnabled(value);
               },
@@ -56,7 +56,7 @@ class Notifications extends HookWidget implements CobbleScreen {
             leading: CobbleTile.reservedIconSpace,
             title: 'Silence notifications',
             child: Switch(
-              value: phoneNotificationsMuteEnabled.data.value ?? false,
+              value: phoneNotificationsMuteEnabled.data?.value ?? false,
               onChanged: (bool value) async {
                 await preferences.data?.value?.setPhoneNotificationMute(value);
               },
@@ -66,7 +66,7 @@ class Notifications extends HookWidget implements CobbleScreen {
             leading: CobbleTile.reservedIconSpace,
             title: 'Silence incoming calls',
             child: Switch(
-              value: phoneCallsMuteEnabled.data.value ?? false,
+              value: phoneCallsMuteEnabled.data?.value ?? false,
               onChanged: (bool value) async {
                 await preferences.data?.value?.setPhoneCallsMute(value);
               },
