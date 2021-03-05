@@ -25,17 +25,17 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  webview_flutter: ^1.0.7
-  shared_preferences: ^0.5.12+4
-  url_launcher: ^5.7.10
-  intl: ^0.16.1
-  states_rebuilder: ^2.2.0
-  path_provider: ^1.6.11
-  sqflite: ^1.3.1
-  package_info: ^0.4.3+2
-  state_notifier: ^0.6.0
-  hooks_riverpod: ^0.12.0
-  flutter_hooks: 0.14.1
+  webview_flutter: ^2.0.1
+  shared_preferences: ^2.0.3
+  url_launcher: ^6.0.2
+  intl: ^0.17.0
+  states_rebuilder: ^3.2.0
+  path_provider: ^2.0.1
+  sqflite: ^2.0.0+2
+  package_info: ^2.0.0
+  state_notifier: ^0.7.0
+  hooks_riverpod: ^0.13.0
+  flutter_hooks: ^0.16.0
   # We are using custom build of device_calendar with enhancements needed for Cobble app
   # pending PRs:
   # - https://github.com/builttoroam/device_calendar/pull/275
@@ -45,22 +45,22 @@ dependencies:
     git:
       url: https://github.com/matejdro/device_calendar.git
       ref: 8ec96c83d482cada5a910cd6b98505eb35027400
-  uuid_type: ^1.0.0
+  uuid_type: ^1.1.1
   path: ^1.7.0
-  json_annotation: ^3.0.0
+  json_annotation: ^4.0.0
   copy_with_extension: ^1.4.0
-  flutter_local_notifications: ^3.0.2
-  stream_transform: ^1.2.0
-  flutter_svg: 0.19.1
-  flutter_svg_provider: 0.1.7
-  golden_toolkit: 0.8.0
+  flutter_local_notifications: ^5.0.0-nullsafety.0
+  stream_transform: ^2.0.0
+  flutter_svg: 0.19.3
+  flutter_svg_provider: ^0.1.8
+  golden_toolkit: ^0.9.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.3
+  cupertino_icons: ^1.0.2
 
 dev_dependencies:
-  flutter_launcher_icons: "^0.7.5"
+  flutter_launcher_icons: ^0.8.1
   flutter_test:
     sdk: flutter
   # Fixed build of pigeon is needed for async native -> flutter calls.
@@ -71,10 +71,10 @@ dev_dependencies:
       ref: c2495f1a6245f3f772b2b38363e0a880776b380d
       path: packages/pigeon
   build_runner: ^1.0.0
-  json_serializable: ^3.2.0
+  json_serializable: ^4.0.2
   copy_with_extension_gen: ^1.4.0
-  sqflite_common_ffi: ^1.1.1
-  mockito: 4.1.3
+  sqflite_common_ffi: ^2.0.0
+  mockito: ^4.1.4
 
 flutter_icons:
   ios: true
