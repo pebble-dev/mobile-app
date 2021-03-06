@@ -79,14 +79,14 @@ class PairPage extends HookWidget implements CobbleScreen {
 
     final _refreshDevicesBle = () {
       if (!scan.scanning) {
-        scan.devices.clear();
+        context.refresh(scanProvider).onScanStarted();
         scanControl.startBleScan();
       }
     };
 
     final _refreshDevicesClassic = () {
       if (!scan.scanning) {
-        scan.devices.clear();
+        context.refresh(scanProvider).onScanStarted();
         scanControl.startClassicScan();
       }
     };
