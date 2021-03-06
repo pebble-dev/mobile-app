@@ -63,13 +63,7 @@ dev_dependencies:
   flutter_launcher_icons: ^0.8.1
   flutter_test:
     sdk: flutter
-  # Fixed build of pigeon is needed for async native -> flutter calls.
-  # PR pending: https://github.com/flutter/packages/pull/254
-  pigeon:
-    git:
-      url: https://github.com/matejdro/flutter-packages.git
-      ref: c2495f1a6245f3f772b2b38363e0a880776b380d
-      path: packages/pigeon
+  pigeon: 0.1.21
   build_runner: ^1.0.0
   json_serializable: ^4.0.2
   copy_with_extension_gen: ^1.4.0
