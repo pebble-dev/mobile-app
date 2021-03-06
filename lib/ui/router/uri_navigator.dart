@@ -1,9 +1,12 @@
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/screens/install_prompt.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../infrastructure/pigeons/pigeons.g.dart';
 
+/// If user opens any URI with Cobble,
+/// this navigator will receive notification and handle that URI.
 class UriNavigator implements IntentCallbacks {
   BuildContext _context;
 
@@ -30,4 +33,11 @@ class UriNavigator implements IntentCallbacks {
     final pbwResult = await control.getAppInfo(uriWrapper);
     _context.push(InstallPrompt(uri, pbwResult));
   }
+}
+
+void useUriNavigator(BuildContext context) {
+  useEffect(() {
+    final navigator = UriNavigator(context);
+    return navigator.cancel;
+  }, []);
 }
