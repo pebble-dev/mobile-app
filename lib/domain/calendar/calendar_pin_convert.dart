@@ -7,6 +7,7 @@ import 'package:cobble/domain/timeline/timeline_action.dart';
 import 'package:cobble/domain/timeline/timeline_attribute.dart';
 import 'package:cobble/domain/timeline/timeline_icon.dart';
 import 'package:cobble/util/string_extensions.dart';
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:device_calendar/device_calendar.dart';
 import 'package:uuid_type/uuid_type.dart';
 
@@ -37,9 +38,8 @@ extension CalendarEventConverter on Event {
         paragraphs.add(attendeesString);
       }
 
-      final selfAttendee = attendees.firstWhere(
+      final selfAttendee = attendees.firstWhereOrNull(
         (element) => element.isCurrentUser == true,
-        orElse: () => null,
       );
 
       if (selfAttendee != null) {
@@ -102,9 +102,8 @@ extension CalendarEventConverter on Event {
   List<TimelineAction> getActions() {
     final List<TimelineAction> actions = [];
 
-    final selfAtteendee = attendees?.firstWhere(
+    final selfAtteendee = attendees?.firstWhereOrNull(
           (element) => element.isCurrentUser == true,
-      orElse: () => null,
     );
 
     if (selfAtteendee != null) {
@@ -158,7 +157,7 @@ extension CalendarEventConverter on Event {
   }
 
   TimelinePin generateBasicEventData(
-      String attributesJson, String actionsJson) {
+      String? attributesJson, String? actionsJson) {
     return TimelinePin(
         itemId: null,
         parentId: calendarWatchappId,
@@ -200,8 +199,8 @@ class CalendarEventId {
 
   CalendarEventId(this.calendarId, this.eventId, this.startTime);
 
-  static CalendarEventId fromTimelinePin(TimelinePin pin) {
-    final backingId = pin.backingId;
+  static CalendarEventId? fromTimelinePin(TimelinePin pin) {
+    final backingId = pin.backingId!;
     final split = backingId.split("T");
     if (split.length != 3) {
       return null;

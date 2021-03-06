@@ -7,12 +7,12 @@ import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 
 class CobbleCardAction {
   final VoidCallback onPressed;
-  final String label;
-  final IconData icon;
+  final String? label;
+  final IconData? icon;
 
   const CobbleCardAction({
-    Key key,
-    @required this.onPressed,
+    Key? key,
+    required this.onPressed,
     this.label,
     this.icon,
   }) : assert(
@@ -33,16 +33,16 @@ class CobbleCardAction {
 class CobbleCard extends StatelessWidget {
   final Object leading;
   final String title;
-  final String subtitle;
-  final Widget child;
+  final String? subtitle;
+  final Widget? child;
   final List<CobbleCardAction> actions;
-  final Color intent;
+  final Color? intent;
   final EdgeInsets padding;
 
   const CobbleCard({
-    Key key,
-    @required this.leading,
-    @required this.title,
+    Key? key,
+    required this.leading,
+    required this.title,
     this.subtitle,
     this.child,
     this.actions = const [],
@@ -59,12 +59,12 @@ class CobbleCard extends StatelessWidget {
         super(key: key);
 
   factory CobbleCard.inList({
-    @required Object leading,
-    @required String title,
-    String subtitle,
-    Widget child,
+    required Object leading,
+    required String title,
+    String? subtitle,
+    Widget? child,
     List<CobbleCardAction> actions = const [],
-    Color intent,
+    Color? intent,
   }) =>
       CobbleCard(
         leading: leading,
@@ -80,8 +80,8 @@ class CobbleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isColored = intent != null;
     final brightness = isColored
-        ? ThemeData.estimateBrightnessForColor(intent)
-        : context.scheme.brightness;
+        ? ThemeData.estimateBrightnessForColor(intent!)
+        : context.scheme!.brightness;
     final scheme = CobbleSchemeData.fromBrightness(brightness);
 
     Widget card = Card(
@@ -109,11 +109,11 @@ class CobbleCard extends StatelessWidget {
                             color: scheme.invert().surface,
                           ),
                           child: Icon(
-                            leading,
+                            leading as IconData?,
                             color: scheme.invert().text,
                           ),
                         )
-                      : Image(image: leading),
+                      : Image(image: leading as ImageProvider<Object>),
                 ),
                 SizedBox(width: 16),
                 Column(
@@ -121,15 +121,15 @@ class CobbleCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: context.textTheme.headline6.copyWith(
+                      style: context.textTheme.headline6!.copyWith(
                         color: scheme.text,
                       ),
                     ),
                     if (subtitle != null) ...[
                       SizedBox(height: 4),
                       Text(
-                        subtitle,
-                        style: context.textTheme.bodyText2.copyWith(
+                        subtitle!,
+                        style: context.textTheme.bodyText2!.copyWith(
                           color: scheme.text,
                         ),
                       ),

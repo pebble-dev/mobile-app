@@ -1,4 +1,5 @@
 import 'package:cobble/domain/timeline/timeline_icon.dart';
+import 'package:collection/collection.dart' show IterableExtension;
 
 class CategoryAndroid {
   final String id;
@@ -19,7 +20,6 @@ class CategoryAndroid {
     CategoryAndroid('reminder', TimelineIcon.notificationReminder)
   ];
 
-  static CategoryAndroid fromId(String id) => categories.firstWhere(
-          (element) => element.id == id,
-      orElse: () => null);
+  static CategoryAndroid? fromId(String? id) => categories.firstWhereOrNull(
+          (element) => element.id == id);
 }

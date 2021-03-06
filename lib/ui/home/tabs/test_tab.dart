@@ -25,10 +25,10 @@ class TestTab extends HookWidget implements CobbleScreen {
 
   @override
   Widget build(BuildContext context) {
-    final connectionState = useProvider(connectionStateProvider.state);
+    final connectionState = useProvider(connectionStateProvider!.state);
     final defaultWatch = useProvider(defaultWatchProvider);
-    final calendars = useProvider(calendarListProvider.state);
-    final calendarSelector = useProvider(calendarListProvider);
+    final calendars = useProvider(calendarListProvider!.state);
+    final calendarSelector = useProvider(calendarListProvider!);
     final calendarControl = useProvider(calendarControlProvider);
 
     final permissionControl = useProvider(permissionControlProvider);
@@ -39,19 +39,19 @@ class TestTab extends HookWidget implements CobbleScreen {
 
     useEffect(() {
       Future.microtask(() async {
-        if (!(await permissionCheck.hasCalendarPermission()).value) {
+        if (!(await permissionCheck.hasCalendarPermission()).value!) {
           await permissionControl.requestCalendarPermission();
         }
-        if (!(await permissionCheck.hasLocationPermission()).value) {
+        if (!(await permissionCheck.hasLocationPermission()).value!) {
           await permissionControl.requestLocationPermission();
         }
 
         if (defaultWatch != null) {
-          if (!(await permissionCheck.hasNotificationAccess()).value) {
+          if (!(await permissionCheck.hasNotificationAccess()).value!) {
             permissionControl.requestNotificationAccess();
           }
 
-          if (!(await permissionCheck.hasBatteryExclusionEnabled()).value) {
+          if (!(await permissionCheck.hasBatteryExclusionEnabled()).value!) {
             permissionControl.requestBatteryExclusion();
           }
         }
@@ -64,12 +64,12 @@ class TestTab extends HookWidget implements CobbleScreen {
       statusText = "Connecting to ${connectionState.currentWatchAddress}";
     } else if (connectionState.isConnected == true) {
       PebbleWatchModel model = PebbleWatchModel.rebble_logo;
-      String fwVersion = "unknown";
+      String? fwVersion = "unknown";
 
       if (connectionState.currentConnectedWatch != null) {
-        model = connectionState.currentConnectedWatch.model;
+        model = connectionState.currentConnectedWatch!.model;
         fwVersion =
-            connectionState.currentConnectedWatch.runningFirmware.version;
+            connectionState.currentConnectedWatch!.runningFirmware.version;
       }
 
       statusText = "Connected to ${connectionState.currentWatchAddress}" +
@@ -173,7 +173,7 @@ class TestTab extends HookWidget implements CobbleScreen {
                         Checkbox(
                           value: e.enabled,
                           onChanged: (enabled) {
-                            calendarSelector.setCalendarEnabled(e.id, enabled);
+                            calendarSelector.setCalendarEnabled(e.id, enabled!);
                             calendarControl.requestCalendarSync();
                           },
                         ),

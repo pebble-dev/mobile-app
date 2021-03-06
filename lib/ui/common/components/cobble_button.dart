@@ -7,15 +7,15 @@ import 'package:flutter/material.dart';
 /// [onPressed] parameter is required but can be null. At least one of [label]
 /// and [icon] need be defined.
 class CobbleButton extends StatelessWidget {
-  final VoidCallback onPressed;
-  final FocusNode focusNode;
-  final String label;
-  final IconData icon;
+  final VoidCallback? onPressed;
+  final FocusNode? focusNode;
+  final String? label;
+  final IconData? icon;
   final bool outlined;
 
   const CobbleButton({
-    Key key,
-    @required this.onPressed,
+    Key? key,
+    required this.onPressed,
     this.label,
     this.icon,
     this.outlined = true,
@@ -33,7 +33,7 @@ class CobbleButton extends StatelessWidget {
       children: [
         if (icon is IconData) Icon(icon, size: 21),
         if (icon is IconData && label is String) SizedBox(width: 8),
-        if (label is String) Text(label.toUpperCase()),
+        if (label is String) Text(label!.toUpperCase()),
       ],
     );
     if (outlined)
@@ -50,8 +50,8 @@ class CobbleButton extends StatelessWidget {
   }
 
   static Widget withColor({
-    @required Color color,
-    @required Widget child,
+    required Color color,
+    required Widget child,
   }) {
     assert(color != null);
     assert(child != null);
@@ -59,7 +59,7 @@ class CobbleButton extends StatelessWidget {
       builder: (context) => Theme(
         data: context.theme.copyWith(
           outlinedButtonTheme: OutlinedButtonThemeData(
-            style: context.theme.outlinedButtonTheme.style.copyWith(
+            style: context.theme.outlinedButtonTheme.style!.copyWith(
               side: simpleMaterialStateProperty(
                 BorderSide(color: color),
               ),

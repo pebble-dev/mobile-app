@@ -37,7 +37,7 @@ class NotificationManager {
 
   NotificationManager(this._activeNotificationDao, this._preferencesFuture);
 
-  Future<TimelineIcon> _determineIcon(String packageId, CategoryAndroid category) async {
+  Future<TimelineIcon> _determineIcon(String? packageId, CategoryAndroid? category) async {
     TimelineIcon icon = TimelineIcon.notificationGeneric;
     if (Platform.isAndroid) {
       if (category != null) icon = category.icon;
@@ -80,7 +80,7 @@ class NotificationManager {
   }
 
   Future<TimelinePin> handleNotification(NotificationPigeon notif) async {
-    ActiveNotification old = await _activeNotificationDao.getActiveNotifByNotifMeta(notif.notifId, notif.packageId, notif.tagId);
+    ActiveNotification? old = await _activeNotificationDao.getActiveNotifByNotifMeta(notif.notifId, notif.packageId, notif.tagId);
     if (old != null && old.pinId != null) {
       StringWrapper id = StringWrapper();
       id.value = old.pinId.toString();
@@ -89,35 +89,35 @@ class NotificationManager {
     Uuid itemId = RandomBasedUuidGenerator().generate();
     List<TimelineAttribute> attributes = [
       TimelineAttribute.tinyIcon(await _determineIcon(notif.packageId, CategoryAndroid.fromId(notif.category))),
-      TimelineAttribute.title(notif.appName.trim()),
-      TimelineAttribute.subtitle(notif.title.trim()),
+      TimelineAttribute.title(notif.appName!.trim()),
+      TimelineAttribute.subtitle(notif.title!.trim()),
     ];
-    TimelineAttribute content = TimelineAttribute.body(notif.text.trim());
-    if (notif.messagesJson.isEmpty) {
+    TimelineAttribute content = TimelineAttribute.body(notif.text!.trim());
+    if (notif.messagesJson!.isEmpty) {
       content = TimelineAttribute.body("");
     }else {
-      List<Map<String, dynamic>> messages = new List<Map<String, dynamic>>.from(jsonDecode(notif.messagesJson));
+      List<Map<String, dynamic>> messages = new List<Map<String, dynamic>>.from(jsonDecode(notif.messagesJson!));
       String contentText = "";
       messages.forEach((el) {
         NotificationMessage message = NotificationMessage.fromJson(el);
-        contentText += message.sender.trim() + ": ";
-        contentText += message.text.trim() + "\n";
+        contentText += message.sender!.trim() + ": ";
+        contentText += message.text!.trim() + "\n";
       });
       content = TimelineAttribute.body(contentText);
     }
-    List<TimelineAction> actions = new List<TimelineAction>();
+    List<TimelineAction> actions = [];
     actions.add(TimelineAction(MetaAction.DISMISS.index, actionTypeGeneric, [
       TimelineAttribute.title("Dismiss")
     ]));
 
     //TODO: change to use preferences datasource
-    List<String> disabledActionPkgs = (await _preferencesFuture).getStringList(disabledActionPackagesKey);
+    List<String>? disabledActionPkgs = (await _preferencesFuture).getStringList(disabledActionPackagesKey);
     if (disabledActionPkgs == null || !disabledActionPkgs.contains(notif.packageId)) {
-      List<Map<String, dynamic>> notifActions = new List<Map<String, dynamic>>.from(jsonDecode(notif.actionsJson));
+      List<Map<String, dynamic>> notifActions = new List<Map<String, dynamic>>.from(jsonDecode(notif.actionsJson!));
       if (notifActions != null) {
         for (int i=0; i<notifActions.length; i++) {
           NotificationAction action = NotificationAction.fromJson(notifActions[i]);
-          actions.add(TimelineAction((MetaAction.values.length)+i, action.isResponse ? actionTypeResponse : actionTypeGeneric, [
+          actions.add(TimelineAction((MetaAction.values.length)+i, action.isResponse! ? actionTypeResponse : actionTypeGeneric, [
             TimelineAttribute.title(action.title)
           ]));
         }
@@ -126,7 +126,7 @@ class NotificationManager {
     attributes.add(content);
 
     if (Platform.isAndroid && notif.color != 0 && notif.color != 1) {
-      attributes.add(TimelineAttribute.primaryColor(Color(notif.color)));
+      attributes.add(TimelineAttribute.primaryColor(Color(notif.color!)));
     }
 
     actions.add(TimelineAction(MetaAction.OPEN.index, actionTypeGeneric, [
@@ -160,14 +160,14 @@ class NotificationManager {
     );
   }
 
-  Future<TimelineActionResponse> handleNotifAction(ActionTrigger trigger) async {
+  Future<TimelineActionResponse?> handleNotifAction(ActionTrigger trigger) async {
     Preferences prefs = Preferences(await _preferencesFuture);
     
-    TimelineActionResponse ret;
+    TimelineActionResponse? ret;
     switch (trigger.actionId) {
       case 0: // DISMISS
         BooleanWrapper res = await _notificationUtils.dismissNotification(StringWrapper()..value=trigger.itemId.toString());
-        if (res.value) {
+        if (res.value!) {
           ret = TimelineActionResponse(true, attributes: [
             TimelineAttribute.subtitle("Dismissed"),
             TimelineAttribute.largeIcon(TimelineIcon.resultDismissed)
@@ -182,8 +182,8 @@ class NotificationManager {
         ]);
         break;
       case 2: // MUTE_PKG
-        List<String> muted = prefs.getNotificationsMutedPackages();
-        prefs.setNotificationsMutedPackages(muted + [(await _activeNotificationDao.getActiveNotifByPinId(Uuid.parse(trigger.itemId))).packageId]);
+        List<String?> muted = prefs.getNotificationsMutedPackages()!;
+        prefs.setNotificationsMutedPackages(muted + [(await _activeNotificationDao.getActiveNotifByPinId(Uuid.parse(trigger.itemId!)))!.packageId]);
         ret = TimelineActionResponse(true, attributes: [
           TimelineAttribute.subtitle("Muted app"),
           TimelineAttribute.largeIcon(TimelineIcon.resultMute)
@@ -197,18 +197,18 @@ class NotificationManager {
         ]);
         break;
       default: // Custom
-        List<TimelineAttribute> attrs = List<TimelineAttribute>();
-        if (trigger.attributesJson != null && trigger.attributesJson.isNotEmpty) {
-          List<Map<String, dynamic>> attrsJson = new List<Map<String, dynamic>>.from(jsonDecode(trigger.attributesJson));
+        List<TimelineAttribute> attrs = [];
+        if (trigger.attributesJson != null && trigger.attributesJson!.isNotEmpty) {
+          List<Map<String, dynamic>> attrsJson = new List<Map<String, dynamic>>.from(jsonDecode(trigger.attributesJson!));
           attrsJson.forEach((el) {
             attrs.add(TimelineAttribute.fromJson(el));
           });
         }
-        String responseText = attrs.firstWhere((el) => el.id == 1, orElse: ()=>TimelineAttribute(string: "")).string;
+        String? responseText = attrs.firstWhere((el) => el.id == 1, orElse: ()=>TimelineAttribute(string: "")).string;
         _notificationUtils.executeAction(
             NotifActionExecuteReq()
           ..itemId=trigger.itemId.toString()
-          ..actionId=trigger.actionId-MetaAction.values.length
+          ..actionId=trigger.actionId!-MetaAction.values.length
           ..responseText=responseText
         );
 
@@ -227,7 +227,7 @@ class NotificationManager {
   }
 }
 
-final notificationManagerProvider = Provider((ref) => NotificationManager(ref.read(activeNotifDaoProvider), ref.read(sharedPreferencesProvider)));
+final notificationManagerProvider = Provider((ref) => NotificationManager(ref.read(activeNotifDaoProvider!), ref.read(sharedPreferencesProvider)));
 
 final disabledActionPackagesKey = "disabledActionPackages";
 

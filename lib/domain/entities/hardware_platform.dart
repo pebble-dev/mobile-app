@@ -27,7 +27,7 @@ enum PebbleHardwarePlatform {
   pebbleRobertBigboard2
 }
 
-PebbleHardwarePlatform pebbleHardwarePlatformFromNumber(int number) {
+PebbleHardwarePlatform pebbleHardwarePlatformFromNumber(int? number) {
   switch (number) {
     case 1:
       return PebbleHardwarePlatform.pebbleOneEv1;
@@ -139,7 +139,7 @@ extension PebbleHardwareData on PebbleHardwarePlatform {
 
 enum WatchType { aplite, basalt, chalk, diorite, emery }
 
-PebbleWatchModel watchModelFromNumber(int number) {
+PebbleWatchModel watchModelFromNumber(int? number) {
   switch (number) {
     case 1:
       return PebbleWatchModel.classic_black;

@@ -14,8 +14,8 @@ class CompositeFilter {
   String attributeName;
   List<String> attributes;
   CompositeFilter({
-    @required this.attributeName,
-    @required this.attributes,
+    required this.attributeName,
+    required this.attributes,
   });
   String toString() {
     return '''CompositeFilter{
@@ -42,9 +42,9 @@ class RelationalFilter {
   String value;
   RelationalOperator attributeOperator;
   RelationalFilter({
-    @required this.attributeName,
-    @required this.value,
-    @required this.attributeOperator,
+    required this.attributeName,
+    required this.value,
+    required this.attributeOperator,
   });
 }
 

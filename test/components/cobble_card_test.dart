@@ -49,7 +49,7 @@ Widget cards() => Column(
           builder: (context) => CobbleCard(
             title: 'Untrusted boot URL',
             leading: RebbleIcons.notification,
-            intent: context.scheme.danger,
+            intent: context.scheme!.danger,
             actions: [
               CobbleCardAction(
                 onPressed: () {},

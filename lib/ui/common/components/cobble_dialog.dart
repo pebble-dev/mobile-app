@@ -14,13 +14,13 @@ import 'package:flutter/material.dart';
 /// Returns a [Future] that resolves to true/false, depending on action user
 /// has tapped on.
 Future<bool> showCobbleDialog({
-  @required BuildContext context,
-  String title,
-  String content,
-  String negative,
-  String positive,
+  required BuildContext context,
+  String? title,
+  String? content,
+  String? negative,
+  String? positive,
   bool dismissible = true,
-  Color intent,
+  Color? intent,
 }) async {
   assert(context is BuildContext);
   assert(
@@ -45,14 +45,14 @@ Future<bool> showCobbleDialog({
 }
 
 class CobbleDialog extends StatelessWidget {
-  final String title;
-  final String content;
-  final String negative;
-  final String positive;
-  final Color intent;
+  final String? title;
+  final String? content;
+  final String? negative;
+  final String? positive;
+  final Color? intent;
 
   const CobbleDialog({
-    Key key,
+    Key? key,
     this.title,
     this.content,
     this.negative,
@@ -68,8 +68,8 @@ class CobbleDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final isColored = intent != null;
     final brightness = isColored
-        ? ThemeData.estimateBrightnessForColor(intent)
-        : context.scheme.brightness;
+        ? ThemeData.estimateBrightnessForColor(intent!)
+        : context.scheme!.brightness;
     final scheme = CobbleSchemeData.fromBrightness(brightness);
 
     Widget dialog = Dialog(
@@ -82,16 +82,16 @@ class CobbleDialog extends StatelessWidget {
           children: [
             if (title is String)
               Text(
-                title,
-                style: context.textTheme.headline6.copyWith(
+                title!,
+                style: context.textTheme.headline6!.copyWith(
                   color: scheme.text,
                 ),
               ),
             if (title is String && content is String) SizedBox(height: 4),
             if (content is String)
               Text(
-                content,
-                style: context.textTheme.bodyText2.copyWith(
+                content!,
+                style: context.textTheme.bodyText2!.copyWith(
                   color: scheme.text,
                 ),
               ),

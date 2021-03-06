@@ -12,11 +12,11 @@ class CircleContainer extends StatelessWidget {
   CircleContainer(
       {this.child, this.diameter, this.color, this.margin, this.padding});
 
-  final Widget child;
-  final double diameter;
-  final Color color;
-  final EdgeInsets margin;
-  final EdgeInsets padding;
+  final Widget? child;
+  final double? diameter;
+  final Color? color;
+  final EdgeInsets? margin;
+  final EdgeInsets? padding;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class CircleContainer extends StatelessWidget {
 class CarouselIcon extends StatelessWidget {
   CarouselIcon({this.icon});
 
-  final Widget icon;
+  final Widget? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +75,7 @@ class _FirstRunPageState extends State<FirstRunPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       if (!_doneScrollChange) {
         _doneScrollChange = true;
         _scrollController.animateTo(

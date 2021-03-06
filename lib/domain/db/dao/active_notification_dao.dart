@@ -19,7 +19,7 @@ class ActiveNotificationDao {
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<ActiveNotification> getActiveNotifByPinId(Uuid id) async {
+  Future<ActiveNotification?> getActiveNotifByPinId(Uuid id) async {
     final db = await _dbFuture;
 
     final receivedActiveNotifs = (await db.query(
@@ -35,7 +35,7 @@ class ActiveNotificationDao {
     return ActiveNotification.fromMap(receivedActiveNotifs.first);
   }
 
-  Future<ActiveNotification> getActiveNotifByNotifMeta(int notifId, String packageId, String tagId) async {
+  Future<ActiveNotification?> getActiveNotifByNotifMeta(int? notifId, String? packageId, String? tagId) async {
     final db = await _dbFuture;
 
     final receivedActiveNotifs = (await db.query(
@@ -67,7 +67,7 @@ class ActiveNotificationDao {
   }
 }
 
-final activeNotifDaoProvider = Provider.autoDispose((ref) {
-  final dbFuture = ref.watch(databaseProvider.future);
+final AutoDisposeProvider<ActiveNotificationDao>? activeNotifDaoProvider = Provider.autoDispose((ref) {
+  final dbFuture = ref.watch(databaseProvider!.future);
   return ActiveNotificationDao(dbFuture);
 });

@@ -5,16 +5,16 @@ import 'package:flutter/material.dart';
 class CobbleFab extends StatelessWidget {
   final VoidCallback onPressed;
   final String label;
-  final IconData icon;
+  final IconData? icon;
 
   /// You will probably never need to use this, use only if you wish to
   /// display multiple FABs on same page. Can be anything, also simple string.
-  final Object heroTag;
+  final Object? heroTag;
 
   const CobbleFab({
-    Key key,
-    @required this.onPressed,
-    @required this.label,
+    Key? key,
+    required this.onPressed,
+    required this.label,
     this.icon,
     this.heroTag,
   })  : assert(
@@ -28,7 +28,7 @@ class CobbleFab extends StatelessWidget {
     return FloatingActionButton.extended(
       onPressed: null,
       icon: icon is IconData ? Icon(icon, size: 21) : null,
-      label: label is String ? Text(label.toUpperCase()) : null,
+      label: Text(label.toUpperCase()),
       heroTag: heroTag,
     );
   }

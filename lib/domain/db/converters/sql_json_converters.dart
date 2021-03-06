@@ -19,11 +19,11 @@ class NumberDateTimeConverter implements JsonConverter<DateTime, int> {
   }
 }
 
-class UuidConverter implements JsonConverter<Uuid, String> {
+class UuidConverter implements JsonConverter<Uuid?, String?> {
   const UuidConverter();
 
   @override
-  Uuid fromJson(String json) {
+  Uuid? fromJson(String? json) {
     if (json == null) {
       return null;
     }
@@ -31,7 +31,7 @@ class UuidConverter implements JsonConverter<Uuid, String> {
   }
 
   @override
-  String toJson(Uuid object) {
+  String? toJson(Uuid? object) {
     if (object == null) {
       return null;
     }
@@ -43,7 +43,7 @@ class BooleanNumberConverter implements JsonConverter<bool, int> {
   const BooleanNumberConverter();
 
   @override
-  bool fromJson(int json) {
+  bool fromJson(int? json) {
     return json == 1;
   }
 

@@ -38,7 +38,7 @@ void main() {
     ];
 
     final receivedCalendars = (await container
-            .readUntilFirstSuccessOrError(calendarListProvider.state))
+            .readUntilFirstSuccessOrError(calendarListProvider!.state))
         .data
         ?.value;
 
@@ -66,7 +66,7 @@ void main() {
     permissionCheck.reportedCalendarPermission = false;
 
     final receivedCalendars = await container
-        .readUntilFirstSuccessOrError(calendarListProvider.state);
+        .readUntilFirstSuccessOrError(calendarListProvider!.state);
 
     expect(receivedCalendars, isA<AsyncError>());
   });
@@ -88,7 +88,7 @@ void main() {
     ];
 
     await container
-        .listen(calendarListProvider)
+        .listen(calendarListProvider!)
         .read()
         .setCalendarEnabled("22", false);
 
@@ -99,7 +99,7 @@ void main() {
     ];
 
     final receivedCalendars = (await container
-            .readUntilFirstSuccessOrError(calendarListProvider.state))
+            .readUntilFirstSuccessOrError(calendarListProvider!.state))
         .data
         ?.value;
 
@@ -122,9 +122,9 @@ void main() {
       Calendar(id: "18", name: "Calendar C")
     ];
 
-    await container.listen(calendarListProvider).read().setCalendarEnabled(
+    await container.listen(calendarListProvider!).read().setCalendarEnabled(
         "22", false);
-    await container.listen(calendarListProvider).read().setCalendarEnabled(
+    await container.listen(calendarListProvider!).read().setCalendarEnabled(
         "22", true);
 
     final expectedReceivedCalendars = [
@@ -134,7 +134,7 @@ void main() {
     ];
 
     final receivedCalendars = (await container
-        .readUntilFirstSuccessOrError(calendarListProvider.state))
+        .readUntilFirstSuccessOrError(calendarListProvider!.state))
         .data
         ?.value;
 

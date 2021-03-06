@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cobble/domain/entities/base_obj.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/datasources/sqlite/data_transfer_objects/baseobj_dto.dart';
@@ -8,8 +10,8 @@ import 'package:path/path.dart' as pathlib;
 import 'package:sqflite/sqflite.dart';
 
 class SQLiteDataSource {
-  static SQLiteDataSource _databaseHelper; // Singleton DatabaseHelper
-  static Database _database; // Singleton Database
+  static SQLiteDataSource? _databaseHelper; // Singleton DatabaseHelper
+  static Database? _database; // Singleton Database
 
   SQLiteDataSource._createInstance(); // Named constructor to create instance to DatabaseHelper
 
@@ -17,12 +19,12 @@ class SQLiteDataSource {
     if (_databaseHelper == null) {
       _databaseHelper = SQLiteDataSource._createInstance();
     }
-    return _databaseHelper;
+    return _databaseHelper!;
   }
 
   Future<Database> initializeDatabase() async {
     // Get the directory path for both Android and iOS to store database.
-    var databasesPath = await getDatabasesPath();
+    var databasesPath = await (getDatabasesPath() as FutureOr<String>);
     String path = pathlib.join(databasesPath, 'demo.db');
 
     // Open/close the database at a given path
@@ -30,7 +32,7 @@ class SQLiteDataSource {
     return db;
   }
 
-  Future<Database> get database async {
+  Future<Database?> get database async {
     if (_database == null) {
       _database = await initializeDatabase();
     }
@@ -48,21 +50,21 @@ class SQLiteDataSource {
   }
 
   Future delete({
-    @required Type objType,
-    List<CompositeFilter> compositeFilters,
-    List<RelationalFilter> relationalFilters,
+    required Type objType,
+    List<CompositeFilter>? compositeFilters,
+    List<RelationalFilter>? relationalFilters,
   }) async {
-    return await (await this.database).delete(
-      typeToTable[objType],
+    return await (await this.database)!.delete(
+      typeToTable[objType]!,
       where: _filterToSql(compositeFilters, relationalFilters),
     );
   }
 
   Future<List> read({
-    @required Type objType,
-    List<CompositeFilter> compositeFilters,
-    List<RelationalFilter> relationalFilters,
-    List<CompositeFilter> recurCompFilters,
+    required Type objType,
+    List<CompositeFilter>? compositeFilters,
+    List<RelationalFilter>? relationalFilters,
+    List<CompositeFilter>? recurCompFilters,
   }) async {
     switch (objType) {
       case PebbleScanDevice:
@@ -79,13 +81,13 @@ class SQLiteDataSource {
   //////////////////////////////////
 
   Future<List> _hierarchicalSelect({
-    String recursiveTable,
-    String selectTable,
+    String? recursiveTable,
+    String? selectTable,
     String selectColumn = "id",
-    Map<String, Map<String, dynamic>> leftJoins,
-    String orderBy,
-    String recursiveWhere,
-    String where,
+    Map<String, Map<String, dynamic>>? leftJoins,
+    String? orderBy,
+    String? recursiveWhere,
+    String? where,
     bool groupBy = false,
   }) async {
     var leftJoinsSql =
@@ -114,17 +116,17 @@ class SQLiteDataSource {
       $groupBySql
       $orderBySql''';
 
-    var result = await (await this.database).rawQuery(qry);
+    var result = await (await this.database)!.rawQuery(qry);
     return result;
   }
 
   Future<List> _select(
     String tableName, {
     String where = "",
-    List<String> whereArgs,
-    Map<String, Map<String, dynamic>> leftJoins,
-    String orderByColumn,
-    String groupByColumn,
+    List<String>? whereArgs,
+    Map<String, Map<String, dynamic>>? leftJoins,
+    String? orderByColumn,
+    String? groupByColumn,
   }) async {
     String selectSql = _prepareSelect(tableName, leftJoins);
     String joinSql = _prepareJoins(leftJoins, tableName);
@@ -142,19 +144,19 @@ class SQLiteDataSource {
       $groupBySql
       $orderBySql''';
     List<Map<String, dynamic>> result =
-        await (await this.database).rawQuery(query);
+        await (await this.database)!.rawQuery(query);
     return result;
   }
 
-  String _prepareSelect(String tableName, Map leftJoins) {
+  String _prepareSelect(String tableName, Map? leftJoins) {
     String selQry = "$tableName.id AS '$tableName.id'";
     if (leftJoins == null || leftJoins.length == 0) return selQry;
-    for (String joinTable in leftJoins.keys)
+    for (String joinTable in leftJoins.keys as Iterable<String>)
       selQry += ", $joinTable.id AS '$joinTable.id'";
     return selQry;
   }
 
-  String _prepareWhere(String where, List<String> whereArgs) {
+  String _prepareWhere(String where, List<String>? whereArgs) {
     if (whereArgs != null && whereArgs.length != 0) {
       for (String arg in whereArgs)
         where = where.replaceFirst(RegExp(r'[?]'), arg);
@@ -163,13 +165,13 @@ class SQLiteDataSource {
   }
 
   String _prepareJoins(
-      Map<String, Map<String, dynamic>> leftJoins, String tableName) {
+      Map<String, Map<String, dynamic>>? leftJoins, String? tableName) {
     if (leftJoins == null || leftJoins.length == 0) return "";
     List<String> leftJoinsSql = [];
     for (var joinTable in leftJoins.keys) {
-      String fromTable = leftJoins[joinTable]["from"]["table"];
-      var fromColumn = leftJoins[joinTable]["from"]["colName"];
-      String toColumn = leftJoins[joinTable]["to"];
+      String? fromTable = leftJoins[joinTable]!["from"]["table"];
+      var fromColumn = leftJoins[joinTable]!["from"]["colName"];
+      String? toColumn = leftJoins[joinTable]!["to"];
       String join = "";
 
       if (fromColumn is List<String>) {
@@ -200,15 +202,15 @@ class SQLiteDataSource {
   };
 
   String _filterToSql(
-    List<CompositeFilter> comFilters,
-    List<RelationalFilter> relFilters,
+    List<CompositeFilter>? comFilters,
+    List<RelationalFilter>? relFilters,
   ) {
     String sql = _parseComFilters("", comFilters);
     sql = _parseRelFilters(sql, relFilters);
     return sql;
   }
 
-  String _parseComFilters(String sql, List<CompositeFilter> comFilters) {
+  String _parseComFilters(String sql, List<CompositeFilter>? comFilters) {
     if (comFilters == null) return "";
     for (CompositeFilter filter in comFilters) {
       if (sql.length > 0) sql += ", ";
@@ -220,7 +222,7 @@ class SQLiteDataSource {
     return (sql.length > 1) ? sql.substring(0, sql.length - 2) : sql;
   }
 
-  String _parseRelFilters(String sql, List<RelationalFilter> relFilters) {
+  String _parseRelFilters(String sql, List<RelationalFilter>? relFilters) {
     if (relFilters == null) return sql;
     for (RelationalFilter filter in relFilters) {
       if (filter.value != null &&
@@ -284,12 +286,12 @@ class SQLiteDataSource {
 
   Future _singleInsert(String tableName, Map<String, dynamic> map) async {
     if (map == null || map.length < 1) return false;
-    return await (await this.database).insert(tableName, map);
+    return await (await this.database)!.insert(tableName, map);
   }
 
   Future<int> _singleUpdate(String tableName, Map map) async {
     if (map == null || map.length < 1 || map["id"] == null) return -1;
-    return await (await this.database)
-        .update(tableName, map, where: "id = ?", whereArgs: [map["id"]]);
+    return await (await this.database)!
+        .update(tableName, map as Map<String, Object?>, where: "id = ?", whereArgs: [map["id"]]);
   }
 }

@@ -8,9 +8,9 @@ part of 'notification_message.dart';
 
 NotificationMessage _$NotificationMessageFromJson(Map<String, dynamic> json) {
   return NotificationMessage()
-    ..sender = json['sender'] as String
-    ..text = json['text'] as String
-    ..timestamp = json['timestamp'] as int;
+    ..sender = json['sender'] as String?
+    ..text = json['text'] as String?
+    ..timestamp = json['timestamp'] as int?;
 }
 
 Map<String, dynamic> _$NotificationMessageToJson(NotificationMessage instance) {

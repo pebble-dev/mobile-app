@@ -6,16 +6,16 @@ import '../common/icons/fonts/rebble_icons.dart';
 
 class CobbleScaffold extends StatelessWidget {
   final Widget child;
-  final String title;
-  final String subtitle;
+  final String? title;
+  final String? subtitle;
   final List<Widget> actions;
-  final FloatingActionButton floatingActionButton;
-  final FloatingActionButtonLocation floatingActionButtonLocation;
-  final Widget bottomNavigationBar;
+  final FloatingActionButton? floatingActionButton;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
+  final Widget? bottomNavigationBar;
 
   const CobbleScaffold._({
-    Key key,
-    @required this.child,
+    Key? key,
+    required this.child,
     this.title,
     this.subtitle,
     this.actions = const [],
@@ -31,17 +31,17 @@ class CobbleScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget navBarTitle;
+    Widget? navBarTitle;
     if (subtitle != null) {
       navBarTitle = _withSubtitle(context);
     } else if (title != null) {
       navBarTitle = _titleOnly(context);
     }
 
-    Widget leading;
+    Widget? leading;
     final route = ModalRoute.of(context);
     final bool canPop = route?.canPop ?? false;
-    final bool useCloseButton = route is PageRoute && route.fullscreenDialog;
+    final bool useCloseButton = route is PageRoute && route!.fullscreenDialog;
     if (canPop)
       leading = useCloseButton
           ? IconButton(
@@ -83,17 +83,17 @@ class CobbleScaffold extends StatelessWidget {
           _titleOnly(context),
           SizedBox(height: 4),
           Text(
-            subtitle,
-            style: context.theme.appBarTheme.textTheme.headline6.copyWith(
+            subtitle!,
+            style: context.theme.appBarTheme.textTheme!.headline6!.copyWith(
               fontSize: 14,
-              color: context.scheme.muted,
+              color: context.scheme!.muted,
             ),
           )
         ],
       );
 
   Text _titleOnly(BuildContext context) => Text(
-        title,
+        title!,
       );
 
   /// Implements the basic material design visual layout structure.
@@ -107,14 +107,14 @@ class CobbleScaffold extends StatelessWidget {
   ///  tab view.
   ///  * [CobbleSheet], API to display modal or inline bottom sheet
   static Widget page({
-    Key key,
-    @required Widget child,
-    String title,
-    String subtitle,
+    Key? key,
+    required Widget child,
+    String? title,
+    String? subtitle,
     List<Widget> actions = const [],
-    FloatingActionButton floatingActionButton,
-    FloatingActionButtonLocation floatingActionButtonLocation,
-    Widget bottomNavigationBar,
+    FloatingActionButton? floatingActionButton,
+    FloatingActionButtonLocation? floatingActionButtonLocation,
+    Widget? bottomNavigationBar,
   }) =>
       CobbleScaffold._(
         key: key,
@@ -138,13 +138,13 @@ class CobbleScaffold extends StatelessWidget {
   ///  tab view.
   ///  * [CobbleSheet], API to display modal or inline bottom sheet
   static Widget tab({
-    Key key,
-    @required Widget child,
-    String title,
-    String subtitle,
+    Key? key,
+    required Widget child,
+    String? title,
+    String? subtitle,
     List<Widget> actions = const [],
-    FloatingActionButton floatingActionButton,
-    FloatingActionButtonLocation floatingActionButtonLocation,
+    FloatingActionButton? floatingActionButton,
+    FloatingActionButtonLocation? floatingActionButtonLocation,
   }) =>
       EnsureTabScaffold(
         child: CobbleScaffold._(
@@ -163,8 +163,8 @@ class CobbleScaffold extends StatelessWidget {
 /// [InlineCobbleSheet.show] to scope bottom sheet inside tab
 class EnsureTabScaffold extends InheritedWidget {
   const EnsureTabScaffold({
-    Key key,
-    @required Widget child,
+    Key? key,
+    required Widget child,
   })  : assert(child != null),
         super(key: key, child: child);
 

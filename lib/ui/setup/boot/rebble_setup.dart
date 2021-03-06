@@ -26,7 +26,7 @@ class RebbleSetup extends StatelessWidget implements CobbleScreen {
               if (value) {
                 launch(_getBootUrl);
                 lifecycleControl.waitForBoot().then((value) {
-                  if (value.value)
+                  if (value.value!)
                     context.pushReplacement(RebbleSetupSuccess());
                   else
                     context.pushReplacement(RebbleSetupFail());

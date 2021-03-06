@@ -12,7 +12,7 @@ Future<void> main(FutureOr<void> testMain()) async {
   return testMain();
 }
 
-Widget wrapper({Widget child, Brightness brightness}) {
+Widget wrapper({required Widget child, Brightness? brightness}) {
   final theme = CobbleTheme.appTheme(brightness);
   final scheme = CobbleSchemeData.fromBrightness(brightness);
   return CobbleScheme(
@@ -47,13 +47,13 @@ extension DeviceBuilderX on DeviceBuilder {
   }
 }
 
-void testUi(String name, Widget child, [List<Device> devices]) {
+void testUi(String name, Widget child, [List<Device>? devices]) {
   devices ??= [
     Device.phone,
   ];
   testGoldens(name, (WidgetTester tester) async {
     final devicesBuilder = DeviceBuilder()
-      ..overrideDevicesForAllScenarios(devices: devices)
+      ..overrideDevicesForAllScenarios(devices: devices!)
       ..addBothScenarios(
         child,
       );

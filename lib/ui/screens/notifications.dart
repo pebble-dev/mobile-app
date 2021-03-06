@@ -40,7 +40,7 @@ class Notifications extends HookWidget implements CobbleScreen {
           ),
           CobbleDivider(),
           CobbleTile.withIconColor(
-            color: context.scheme.muted,
+            color: context.scheme!.muted,
             child: CobbleTile.sectionTitle(
               leading: RebbleIcons.settings,
               title: 'Silence notifications',

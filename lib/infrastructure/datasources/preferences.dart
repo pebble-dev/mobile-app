@@ -8,8 +8,8 @@ import 'package:stream_transform/stream_transform.dart';
 class Preferences {
   final SharedPreferences _sharedPrefs;
 
-  StreamController<Preferences> _preferencesUpdateStream;
-  Stream<Preferences> preferencesUpdateStream;
+  late StreamController<Preferences> _preferencesUpdateStream;
+  late Stream<Preferences> preferencesUpdateStream;
 
   Preferences(this._sharedPrefs) {
     _preferencesUpdateStream = StreamController<Preferences>.broadcast();
@@ -17,7 +17,7 @@ class Preferences {
     preferencesUpdateStream = _preferencesUpdateStream.stream;
   }
 
-  int getLastConnectedWatchAddress() {
+  int? getLastConnectedWatchAddress() {
     return _sharedPrefs.getInt("LAST_CONNECTED_WATCH");
   }
 
@@ -26,7 +26,7 @@ class Preferences {
     _preferencesUpdateStream.add(this);
   }
 
-  bool isCalendarSyncEnabled() {
+  bool? isCalendarSyncEnabled() {
     return _sharedPrefs.getBool("ENABLE_CALENDAR_SYNC");
   }
 
@@ -35,7 +35,7 @@ class Preferences {
     _preferencesUpdateStream.add(this);
   }
 
-  bool isPhoneNotificationMuteEnabled() {
+  bool? isPhoneNotificationMuteEnabled() {
     return _sharedPrefs.getBool("MUTE_PHONE_NOTIFICATIONS");
   }
 
@@ -44,7 +44,7 @@ class Preferences {
     _preferencesUpdateStream.add(this);
   }
 
-  bool isPhoneCallMuteEnabled() {
+  bool? isPhoneCallMuteEnabled() {
     return _sharedPrefs.getBool("MUTE_PHONE_CALLS");
   }
 
@@ -53,7 +53,7 @@ class Preferences {
     _preferencesUpdateStream.add(this);
   }
 
-  bool areNotificationsEnabled() {
+  bool? areNotificationsEnabled() {
     return _sharedPrefs.getBool("MASTER_NOTIFICATION_TOGGLE");
   }
 
@@ -62,12 +62,12 @@ class Preferences {
     _preferencesUpdateStream.add(this);
   }
 
-  List<String> getNotificationsMutedPackages() {
+  List<String?>? getNotificationsMutedPackages() {
     return _sharedPrefs.getStringList("MUTED_NOTIF_PACKAGES");
   }
 
-  Future<void> setNotificationsMutedPackages(List<String> packages) async {
-    await _sharedPrefs.setStringList("MUTED_NOTIF_PACKAGES", packages);
+  Future<void> setNotificationsMutedPackages(List<String?> packages) async {
+    await _sharedPrefs.setStringList("MUTED_NOTIF_PACKAGES", packages as List<String>);
     _preferencesUpdateStream.add(this);
   }
 }

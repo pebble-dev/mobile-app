@@ -2,7 +2,7 @@ import 'package:cobble/ui/theme/cobble_scheme.dart';
 import 'package:flutter/material.dart';
 
 class CobbleTheme {
-  static appTheme(Brightness brightness) {
+  static appTheme(Brightness? brightness) {
     final scheme = CobbleSchemeData.fromBrightness(brightness);
     final invertedScheme = scheme.invert();
 
@@ -24,7 +24,7 @@ class CobbleTheme {
             onSurface: scheme.text,
             onBackground: scheme.text,
             onError: scheme.text,
-            brightness: brightness,
+            brightness: brightness!,
           )
         : ColorScheme(
             primary: scheme.primary,
@@ -39,7 +39,7 @@ class CobbleTheme {
             onSurface: scheme.text,
             onBackground: scheme.text,
             onError: scheme.text,
-            brightness: brightness,
+            brightness: brightness!,
           );
 
     /// This is entire typography of app, as determined by designer. You should
@@ -121,7 +121,7 @@ class CobbleTheme {
         color: materialScheme.surface,
         centerTitle: true,
         textTheme: TextTheme(
-          headline6: textTheme.headline6.copyWith(
+          headline6: textTheme.headline6!.copyWith(
             fontSize: 16,
           ),
         ),
@@ -149,10 +149,10 @@ class CobbleTheme {
   }
 }
 
-MaterialStateProperty<T> simpleMaterialStateProperty<T>(
+MaterialStateProperty<T?> simpleMaterialStateProperty<T>(
   T normal, [
-  T disabled,
-  T error,
+  T? disabled,
+  T? error,
 ]) =>
     MaterialStateProperty.resolveWith((states) {
       if (states.contains(MaterialState.disabled)) {

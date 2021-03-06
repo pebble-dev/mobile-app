@@ -8,10 +8,10 @@ part of 'active_notification.dart';
 
 ActiveNotification _$ActiveNotificationFromJson(Map<String, dynamic> json) {
   return ActiveNotification(
-    pinId: const UuidConverter().fromJson(json['pinId'] as String),
-    notifId: json['notifId'] as int,
-    packageId: json['packageId'] as String,
-    tagId: json['tagId'] as String,
+    pinId: const UuidConverter().fromJson(json['pinId'] as String?),
+    notifId: json['notifId'] as int?,
+    packageId: json['packageId'] as String?,
+    tagId: json['tagId'] as String?,
   );
 }
 

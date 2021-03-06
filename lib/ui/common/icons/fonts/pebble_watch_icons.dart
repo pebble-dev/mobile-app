@@ -19,7 +19,7 @@ class PebbleWatchIcons {
   PebbleWatchIcons._();
 
   static const _kFontFam = 'PebbleWatchIcons';
-  static const _kFontPkg = null;
+  static const dynamic _kFontPkg = null;
 
   static const IconData classic_body_stroke = IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData classic_body_fill = IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);

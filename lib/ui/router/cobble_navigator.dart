@@ -2,13 +2,13 @@ import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:flutter/cupertino.dart';
 
 extension CobbleNavigator on BuildContext {
-  Future<T> push<T extends Object>(CobbleScreen page) {
-    return Navigator.of(this).push(CupertinoPageRoute<T>(builder: (_) => page));
+  Future<T?> push<T extends Object>(CobbleScreen? page) {
+    return Navigator.of(this).push(CupertinoPageRoute<T>(builder: (_) => page!));
   }
 
-  Future<T> pushReplacement<T extends Object, TO extends Object>(
+  Future<T?> pushReplacement<T extends Object, TO extends Object>(
     CobbleScreen page, {
-    TO result,
+    TO? result,
   }) {
     return Navigator.of(this).pushReplacement(
       CupertinoPageRoute<T>(builder: (_) => page),
@@ -16,7 +16,7 @@ extension CobbleNavigator on BuildContext {
     );
   }
 
-  Future<T> pushAndRemoveAllBelow<T extends Object>(CobbleScreen page) {
+  Future<T?> pushAndRemoveAllBelow<T extends Object>(CobbleScreen page) {
     return Navigator.of(this).pushAndRemoveUntil(
       CupertinoPageRoute<T>(builder: (_) => page),
       (_) => false,

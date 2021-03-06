@@ -12,7 +12,7 @@ class CalendarList extends StateNotifier<AsyncValue<List<SelectableCalendar>>> {
   final DeviceCalendarPlugin _deviceCalendarPlugin;
   final PermissionCheck _permissionCheck;
   final Future<SharedPreferences> _preferencesFuture;
-  List<String> _blacklistedCalendars = List.empty();
+  List<String>? _blacklistedCalendars = List.empty();
 
   CalendarList(this._deviceCalendarPlugin, this._permissionCheck,
       this._preferencesFuture)
@@ -47,18 +47,18 @@ class CalendarList extends StateNotifier<AsyncValue<List<SelectableCalendar>>> {
     } else {
       return AsyncValue.data(calendars.data
           .map((c) => SelectableCalendar(
-              c.name, c.id, !_blacklistedCalendars.contains(c.id)))
+              c.name, c.id, !_blacklistedCalendars!.contains(c.id)))
           .toList());
     }
   }
 
   Future<void> setCalendarEnabled(String id, bool enabled) async {
-    List<String> newBlacklist;
-    if (enabled && _blacklistedCalendars.contains(id)) {
+    List<String>? newBlacklist;
+    if (enabled && _blacklistedCalendars!.contains(id)) {
       newBlacklist =
-          _blacklistedCalendars.where((element) => element != id).toList();
-    } else if (!enabled && !_blacklistedCalendars.contains(id)) {
-      newBlacklist = [..._blacklistedCalendars, id];
+          _blacklistedCalendars!.where((element) => element != id).toList();
+    } else if (!enabled && !_blacklistedCalendars!.contains(id)) {
+      newBlacklist = [..._blacklistedCalendars!, id];
     }
 
     final preferences = await _preferencesFuture;
@@ -66,13 +66,13 @@ class CalendarList extends StateNotifier<AsyncValue<List<SelectableCalendar>>> {
     _blacklistedCalendars = newBlacklist;
     await preferences.setStringList(
       _preferencesKeyBlacklistedCalendars,
-      newBlacklist,
+      newBlacklist!,
     );
     await _refresh();
   }
 }
 
-final calendarListProvider =
+final AutoDisposeStateNotifierProvider<CalendarList>? calendarListProvider =
     StateNotifierProvider.autoDispose<CalendarList>((ref) {
   // Use auto-dispose to ensure calendar list is reloaded every time user
   // re-opens the screen since we cannot propagate change notifications

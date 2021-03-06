@@ -27,7 +27,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
 
   @override
   Widget build(BuildContext context) {
-    final connectionState = useProvider(connectionStateProvider.state);
+    final connectionState = useProvider(connectionStateProvider!.state);
     final defaultWatch = useProvider(defaultWatchProvider);
     final pairedStorage = useProvider(pairedStorageProvider);
     final allWatches = useProvider(pairedStorageProvider.state);
@@ -36,16 +36,16 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
         allWatches.map((e) => e.device).toList();
     List<PebbleScanDevice> allDisconnectedWatches = allWatchesList.toList();
     if (defaultWatch != null &&
-        (connectionState.isConnected == true || connectionState.isConnecting)) {
+        (connectionState.isConnected == true || connectionState.isConnecting!)) {
       //TODO: Save the data from the connected watch after first connection(i.e, not here)
-      defaultWatch.color = connectionState.currentConnectedWatch.model.index;
+      defaultWatch.color = connectionState.currentConnectedWatch!.model.index;
       defaultWatch.version =
-          connectionState.currentConnectedWatch.runningFirmware.version;
+          connectionState.currentConnectedWatch!.runningFirmware.version;
       //Hide the default watch if we're connected or connecting to it. We don't need to see it twice!
       allDisconnectedWatches.remove(defaultWatch);
     }
 
-    List<PebbleDevice> connectedWatchList;
+    List<PebbleDevice?> connectedWatchList;
     if (connectionState.currentConnectedWatch != null) {
       connectedWatchList = [connectionState.currentConnectedWatch];
     } else {
@@ -66,11 +66,11 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
       isConnected = false;
     }
 
-    String _getStatusText(int address) {
-      if (connectionState.isConnected &&
+    String _getStatusText(int? address) {
+      if (connectionState.isConnected! &&
           connectionState.currentWatchAddress == address)
         return "Connected";
-      else if (connectionState.isConnecting &&
+      else if (connectionState.isConnecting! &&
           connectionState.currentWatchAddress == address)
         return "Connecting...";
       else
@@ -114,7 +114,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
       //TODO
     }
 
-    void _onSettingsPressed(bool isConnected, int address) {
+    void _onSettingsPressed(bool isConnected, int? address) {
       PebbleScanDevice device =
           allWatchesList.firstWhere((e) => e.address == address);
 
@@ -135,7 +135,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                       Container(
                         child: Center(
                             child: PebbleWatchIcon(
-                                PebbleWatchModel.values[device.color])),
+                                PebbleWatchModel.values[device.color!])),
                         width: 56,
                         height: 56,
                         decoration: BoxDecoration(
@@ -145,7 +145,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                       SizedBox(width: 16),
                       Column(
                         children: <Widget>[
-                          Text(device.name, style: TextStyle(fontSize: 16)),
+                          Text(device.name!, style: TextStyle(fontSize: 16)),
                           SizedBox(height: 4),
                           Text(
                               device.version.toString() +
@@ -251,7 +251,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                         child: Container(
                             child: Row(children: <Widget>[
                               Container(
-                                child: Center(child: PebbleWatchIcon(e.model)),
+                                child: Center(child: PebbleWatchIcon(e!.model)),
                                 width: 56,
                                 height: 56,
                                 decoration: BoxDecoration(
@@ -261,7 +261,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                               SizedBox(width: 16),
                               Column(
                                 children: <Widget>[
-                                  Text(e.name, style: TextStyle(fontSize: 16)),
+                                  Text(e.name!, style: TextStyle(fontSize: 16)),
                                   SizedBox(height: 4),
                                   Text(_getStatusText(e.address),
                                       style: TextStyle(color: _connectedColor)),
@@ -305,7 +305,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                           Container(
                             child: Center(
                                 child: PebbleWatchIcon(
-                                    PebbleWatchModel.values[e.color])),
+                                    PebbleWatchModel.values[e.color!])),
                             width: 56,
                             height: 56,
                             decoration: BoxDecoration(
@@ -315,7 +315,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                           SizedBox(width: 16),
                           Column(
                             children: <Widget>[
-                              Text(e.name, style: TextStyle(fontSize: 16)),
+                              Text(e.name!, style: TextStyle(fontSize: 16)),
                               SizedBox(height: 4),
                               Text(_getStatusText(e.address)),
                               Wrap(

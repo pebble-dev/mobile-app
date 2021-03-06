@@ -8,20 +8,20 @@ part of 'timeline_pin.dart';
 
 extension TimelinePinCopyWith on TimelinePin {
   TimelinePin copyWith({
-    String actionsJson,
-    String attributesJson,
-    String backingId,
-    int duration,
-    bool isAllDay,
-    bool isFloating,
-    bool isVisible,
-    Uuid itemId,
-    TimelinePinLayout layout,
-    NextSyncAction nextSyncAction,
-    Uuid parentId,
-    bool persistQuickView,
-    DateTime timestamp,
-    TimelinePinType type,
+    String? actionsJson,
+    String? attributesJson,
+    String? backingId,
+    int? duration,
+    bool? isAllDay,
+    bool? isFloating,
+    bool? isVisible,
+    Uuid? itemId,
+    TimelinePinLayout? layout,
+    NextSyncAction? nextSyncAction,
+    Uuid? parentId,
+    bool? persistQuickView,
+    DateTime? timestamp,
+    TimelinePinType? type,
   }) {
     return TimelinePin(
       actionsJson: actionsJson ?? this.actionsJson,
@@ -82,12 +82,12 @@ extension TimelinePinCopyWith on TimelinePin {
 
 TimelinePin _$TimelinePinFromJson(Map<String, dynamic> json) {
   return TimelinePin(
-    itemId: const UuidConverter().fromJson(json['itemId'] as String),
-    parentId: const UuidConverter().fromJson(json['parentId'] as String),
-    backingId: json['backingId'] as String,
+    itemId: const UuidConverter().fromJson(json['itemId'] as String?),
+    parentId: const UuidConverter().fromJson(json['parentId'] as String?),
+    backingId: json['backingId'] as String?,
     timestamp:
         const NumberDateTimeConverter().fromJson(json['timestamp'] as int),
-    duration: json['duration'] as int,
+    duration: json['duration'] as int?,
     type: _$enumDecodeNullable(_$TimelinePinTypeEnumMap, json['type']),
     isVisible:
         const BooleanNumberConverter().fromJson(json['isVisible'] as int),
@@ -97,8 +97,8 @@ TimelinePin _$TimelinePinFromJson(Map<String, dynamic> json) {
     persistQuickView: const BooleanNumberConverter()
         .fromJson(json['persistQuickView'] as int),
     layout: _$enumDecodeNullable(_$TimelinePinLayoutEnumMap, json['layout']),
-    attributesJson: json['attributesJson'] as String,
-    actionsJson: json['actionsJson'] as String,
+    attributesJson: json['attributesJson'] as String?,
+    actionsJson: json['actionsJson'] as String?,
     nextSyncAction:
         _$enumDecodeNullable(_$NextSyncActionEnumMap, json['nextSyncAction']),
   );
@@ -109,50 +109,55 @@ Map<String, dynamic> _$TimelinePinToJson(TimelinePin instance) =>
       'itemId': const UuidConverter().toJson(instance.itemId),
       'parentId': const UuidConverter().toJson(instance.parentId),
       'backingId': instance.backingId,
-      'timestamp': const NumberDateTimeConverter().toJson(instance.timestamp),
+      'timestamp': instance.timestamp != null ? const NumberDateTimeConverter().toJson(instance.timestamp!) : null,
       'duration': instance.duration,
       'type': _$TimelinePinTypeEnumMap[instance.type],
-      'isVisible': const BooleanNumberConverter().toJson(instance.isVisible),
-      'isFloating': const BooleanNumberConverter().toJson(instance.isFloating),
-      'isAllDay': const BooleanNumberConverter().toJson(instance.isAllDay),
+      'isVisible': instance.isVisible != null ? const BooleanNumberConverter().toJson(instance.isVisible!) : null,
+      'isFloating': instance.isFloating != null ? const BooleanNumberConverter().toJson(instance.isFloating!) : null,
+      'isAllDay': instance.isAllDay != null ? const BooleanNumberConverter().toJson(instance.isAllDay!) : null,
       'persistQuickView':
-          const BooleanNumberConverter().toJson(instance.persistQuickView),
+        instance.persistQuickView != null ? const BooleanNumberConverter().toJson(instance.persistQuickView!) : null,
       'layout': _$TimelinePinLayoutEnumMap[instance.layout],
       'attributesJson': instance.attributesJson,
       'actionsJson': instance.actionsJson,
       'nextSyncAction': _$NextSyncActionEnumMap[instance.nextSyncAction],
     };
 
-T _$enumDecode<T>(
-  Map<T, dynamic> enumValues,
-  dynamic source, {
-  T unknownValue,
+K _$enumDecode<K, V>(
+  Map<K, V> enumValues,
+  Object? source, {
+  K? unknownValue,
 }) {
   if (source == null) {
-    throw ArgumentError('A value must be provided. Supported values: '
-        '${enumValues.values.join(', ')}');
+    throw ArgumentError(
+      'A value must be provided. Supported values: '
+      '${enumValues.values.join(', ')}',
+    );
   }
 
-  final value = enumValues.entries
-      .singleWhere((e) => e.value == source, orElse: () => null)
-      ?.key;
-
-  if (value == null && unknownValue == null) {
-    throw ArgumentError('`$source` is not one of the supported values: '
-        '${enumValues.values.join(', ')}');
-  }
-  return value ?? unknownValue;
+  return enumValues.entries.singleWhere(
+    (e) => e.value == source,
+    orElse: () {
+      if (unknownValue == null) {
+        throw ArgumentError(
+          '`$source` is not one of the supported values: '
+          '${enumValues.values.join(', ')}',
+        );
+      }
+      return MapEntry(unknownValue, enumValues.values.first);
+    },
+  ).key;
 }
 
-T _$enumDecodeNullable<T>(
-  Map<T, dynamic> enumValues,
+K? _$enumDecodeNullable<K, V>(
+  Map<K, V> enumValues,
   dynamic source, {
-  T unknownValue,
+  K? unknownValue,
 }) {
   if (source == null) {
     return null;
   }
-  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
+  return _$enumDecode<K, V>(enumValues, source, unknownValue: unknownValue);
 }
 
 const _$TimelinePinTypeEnumMap = {

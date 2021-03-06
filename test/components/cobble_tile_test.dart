@@ -52,7 +52,7 @@ Widget tiles() => Column(
           builder: (context) => CobbleTile.action(
             leading: RebbleIcons.menu_vertical,
             title: 'Delete all health data',
-            intent: context.scheme.destructive,
+            intent: context.scheme!.destructive,
             onTap: () async {},
           ),
         ),

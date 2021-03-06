@@ -9,7 +9,7 @@ class FakeDeviceCalendarPlugin implements DeviceCalendarPlugin {
 
   @override
   Future<Result<String>> createCalendar(String calendarName,
-      {Color calendarColor, String localAccountName}) {
+      {Color? calendarColor, String? localAccountName}) {
     throw UnimplementedError("Not supported for tests yet");
   }
 

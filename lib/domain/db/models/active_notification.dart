@@ -7,10 +7,10 @@ part 'active_notification.g.dart';
 @JsonSerializable()
 @UuidConverter()
 class ActiveNotification {
-  final Uuid pinId;
-  final int notifId;
-  final String packageId;
-  final String tagId;
+  final Uuid? pinId;
+  final int? notifId;
+  final String? packageId;
+  final String? tagId;
 
   ActiveNotification({
     this.pinId,

@@ -19,19 +19,19 @@ class MasterActionHandler {
     handlers[calendarWatchappId] = calendarActionHandler;
   }
 
-  Future<TimelineActionResponse> handleTimelineAction(
+  Future<TimelineActionResponse?> handleTimelineAction(
     ActionTrigger trigger,
   ) async {
-    final pin = await _dao.getPinById(Uuid(trigger.itemId));
+    final pin = await _dao.getPinById(Uuid(trigger.itemId!));
     if (pin == null) {
-      final notif = _notifDao.getActiveNotifByPinId(Uuid(trigger.itemId));
+      final notif = _notifDao.getActiveNotifByPinId(Uuid(trigger.itemId!));
       if (notif != null) {
         return notificationManager.handleNotifAction(trigger);
       }
       return TimelineActionResponse(false);
     }
 
-    final targetHandler = handlers[pin.parentId];
+    final targetHandler = handlers[pin.parentId!];
     if (targetHandler == null) {
       return TimelineActionResponse(false);
     }
@@ -46,6 +46,6 @@ abstract class ActionHandler {
 }
 
 final masterActionHandlerProvider = Provider<MasterActionHandler>((ref) {
-  return MasterActionHandler(ref.read(timelinePinDaoProvider), ref.read(activeNotifDaoProvider),
+  return MasterActionHandler(ref.read(timelinePinDaoProvider!), ref.read(activeNotifDaoProvider!),
       ref.read(calendarActionHandlerProvider), ref.read(notificationManagerProvider));
 });

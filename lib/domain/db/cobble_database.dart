@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cobble/domain/db/dao/active_notification_dao.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:path/path.dart';
@@ -43,8 +45,8 @@ void _upgradeDb(Database db, int oldVersion, int newVersion) async {
   }
 }
 
-final databaseProvider = FutureProvider.autoDispose<Database>((key) async {
-  final dbFolder = await getDatabasesPath();
+final AutoDisposeFutureProvider<Database>? databaseProvider = FutureProvider.autoDispose<Database>((key) async {
+  final dbFolder = await (getDatabasesPath() as FutureOr<String>);
   final dbPath = join(dbFolder, "cobble.db");
 
   final db = await openDatabase(dbPath,

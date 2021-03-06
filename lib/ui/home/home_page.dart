@@ -41,7 +41,7 @@ class HomePage extends HookWidget implements CobbleScreen {
         /// Ask currently active child Navigator to pop. If child Navigator has
         /// nothing to pop it will return `false`, allowing root navigator to
         /// pop itself, closing the app.
-        final popped = await _config[index.value].key.currentState?.maybePop();
+        final popped = (await _config[index.value].key.currentState?.maybePop())!;
         return popped == false;
       },
       child: CobbleScaffold.page(

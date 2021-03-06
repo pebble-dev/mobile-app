@@ -58,7 +58,7 @@ class WatchTimelineSyncer {
     }
   }
 
-  Future<int> _performSync() async {
+  Future<int?> _performSync() async {
     try {
       final pinsToDelete = await timelinePinDao.getAllPinsWithPendingDelete();
       for (final pinToDelete in pinsToDelete) {
@@ -87,7 +87,7 @@ class WatchTimelineSyncer {
 
         if (res.value == statusDatabaseFull) {
           final dateAfterThreeDays = DateTime.now().add(Duration(days: 3));
-          if (pinToSync.timestamp.isAfter(dateAfterThreeDays)) {
+          if (pinToSync.timestamp!.isAfter(dateAfterThreeDays)) {
             // Any pins after 3 day are just buffer to allow for offline
             // watch operations.
             // No need to trouble the user if we can't fit that buffer onto
@@ -133,7 +133,7 @@ class WatchTimelineSyncer {
       return;
     }
 
-    final plugin = pluginValue.data.value;
+    final plugin = pluginValue.data!.value;
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails("WARNINGS", "Warnings", "Warnings",
@@ -151,9 +151,9 @@ class WatchTimelineSyncer {
   }
 }
 
-final watchTimelineSyncerProvider =
+final AutoDisposeProvider<WatchTimelineSyncer>? watchTimelineSyncerProvider =
 Provider.autoDispose<WatchTimelineSyncer>((ref) {
-  final timelinePinDao = ref.watch(timelinePinDaoProvider);
+  final timelinePinDao = ref.watch(timelinePinDaoProvider!);
   final timelineSyncControl = ref.watch(timelineSyncControlProvider);
   final localNotificationsPlugin = ref.readUntilFirstSuccessOrError(
     localNotificationsPluginProvider,

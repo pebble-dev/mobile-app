@@ -8,8 +8,8 @@ part of 'notification_action.dart';
 
 NotificationAction _$NotificationActionFromJson(Map<String, dynamic> json) {
   return NotificationAction()
-    ..title = json['title'] as String
-    ..isResponse = json['isResponse'] as bool;
+    ..title = json['title'] as String?
+    ..isResponse = json['isResponse'] as bool?;
 }
 
 Map<String, dynamic> _$NotificationActionToJson(NotificationAction instance) {

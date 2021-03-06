@@ -73,13 +73,13 @@ class AlertingApps extends HookWidget implements CobbleScreen {
                 AsyncSnapshot<AppEntriesPigeon> snapshot) {
               if (snapshot.hasData) {
                 List<_App> apps = [];
-                for (int i = 0; i < snapshot.data.packageId.length; i++) {
+                for (int i = 0; i < snapshot.data!.packageId!.length; i++) {
                   final enabled = (mutedPackages.data?.value ?? []).firstWhere(
-                          (element) => element == snapshot.data.packageId[i],
+                          (element) => element == snapshot.data!.packageId![i],
                           orElse: () => null) ==
                       null;
-                  apps.add(_App(snapshot.data.appName[i], enabled,
-                      snapshot.data.packageId[i]));
+                  apps.add(_App(snapshot.data!.appName![i] as String, enabled,
+                      snapshot.data!.packageId![i] as String));
                 }
 
                 return ListView(

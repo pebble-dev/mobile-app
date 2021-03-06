@@ -7,9 +7,9 @@ import 'package:intl/intl.dart';
 
 class Localize {
   static final Localize _instance = Localize._internal();
-  Locale locale;
+  late Locale locale;
 
-  factory Localize([Locale locale]) {
+  factory Localize([Locale? locale]) {
     print("Localize constructor called!! <<<<<<<");
     if (locale != null) _instance.locale = locale;
     return _instance;
@@ -18,11 +18,11 @@ class Localize {
   Localize._internal();
 
   // Helper method to keep the code in the widgets concise
-  static String it(String key) => _instance.translate(key);
+  static String? it(String key) => _instance.translate(key);
 
   static String get langCode => _instance.locale.languageCode;
 
-  Map<String, String> _localizedStrings;
+  late Map<String, String> _localizedStrings;
 
   static List<String> _getWeekDays(String localeName) {
     DateFormat formatter = DateFormat("E", localeName);
@@ -54,7 +54,7 @@ class Localize {
   }
 
   // This method will be called from every widget which needs a localized text
-  String translate(String key) {
+  String? translate(String key) {
     if (_localizedStrings[key] == null) return key;
     return _localizedStrings[key];
   }

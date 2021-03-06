@@ -4,8 +4,8 @@ part 'notification_action.g.dart';
 
 @JsonSerializable(includeIfNull: false)
 class NotificationAction {
-  String title;
-  bool isResponse;
+  String? title;
+  bool? isResponse;
 
   Map<String, dynamic> toJson() {
     return _$NotificationActionToJson(this);

@@ -24,14 +24,14 @@ void main_background() {
 
 class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, NotificationListening {
   final container = ProviderContainer();
-  CalendarSyncer calendarSyncer;
-  WatchTimelineSyncer watchTimelineSyncer;
-  Future<Preferences> preferences;
-  TimelinePinDao timelinePinDao;
-  MasterActionHandler masterActionHandler;
-  NotificationManager notificationManager;
+  late CalendarSyncer calendarSyncer;
+  late WatchTimelineSyncer watchTimelineSyncer;
+  Future<Preferences>? preferences;
+  late TimelinePinDao timelinePinDao;
+  late MasterActionHandler masterActionHandler;
+  late NotificationManager notificationManager;
 
-  ProviderSubscription<WatchConnectionState> connectionSubscription;
+  late ProviderSubscription<WatchConnectionState> connectionSubscription;
 
   BackgroundReceiver() {
     init();
@@ -40,23 +40,23 @@ class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, Notifi
   void init() async {
     await BackgroundControl().notifyFlutterBackgroundStarted();
 
-    calendarSyncer = container.listen(calendarSyncerProvider).read();
+    calendarSyncer = container.listen(calendarSyncerProvider!).read();
     notificationManager = container.listen(notificationManagerProvider).read();
-    watchTimelineSyncer = container.listen(watchTimelineSyncerProvider).read();
-    timelinePinDao = container.listen(timelinePinDaoProvider).read();
+    watchTimelineSyncer = container.listen(watchTimelineSyncerProvider!).read();
+    timelinePinDao = container.listen(timelinePinDaoProvider!).read();
     preferences = Future.microtask(() async {
       final asyncValue =
           await container.readUntilFirstSuccessOrError(preferencesProvider);
 
-      return asyncValue.data.value;
+      return asyncValue.data!.value;
     });
     masterActionHandler = container.read(masterActionHandlerProvider);
 
     connectionSubscription = container.listen(
-      connectionStateProvider.state,
+      connectionStateProvider!.state,
       mayHaveChanged: (sub) {
         final currentConnectedWatch = sub.read().currentConnectedWatch;
-        if (isConnectedToWatch() && currentConnectedWatch.name.isNotEmpty) {
+        if (isConnectedToWatch()! && currentConnectedWatch!.name!.isNotEmpty) {
           onWatchConnected(currentConnectedWatch);
         }
       },
@@ -75,27 +75,27 @@ class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, Notifi
 
   void onWatchConnected(PebbleDevice watch) async {
     final lastConnectedWatch =
-        (await preferences).getLastConnectedWatchAddress();
+        (await preferences)!.getLastConnectedWatchAddress();
     if (lastConnectedWatch != watch.address) {
       Log.d("Different watch connected than the last one. Resetting DB...");
       await watchTimelineSyncer.clearAllPinsFromWatchAndResync();
-    } else if (watch.isUnfaithful) {
+    } else if (watch.isUnfaithful!) {
       Log.d("Connected watch has beein unfaithful (tsk, tsk tsk). Reset DB...");
       await watchTimelineSyncer.clearAllPinsFromWatchAndResync();
     } else {
       await syncTimelineToWatch();
     }
 
-    (await preferences).setLastConnectedWatchAddress(watch.address);
+    (await preferences)!.setLastConnectedWatchAddress(watch.address!);
   }
 
   Future syncTimelineToWatch() async {
-    if (isConnectedToWatch()) {
+    if (isConnectedToWatch()!) {
       await watchTimelineSyncer.syncPinDatabaseWithWatch();
     }
   }
 
-  bool isConnectedToWatch() {
+  bool? isConnectedToWatch() {
     return connectionSubscription.read().isConnected;
   }
 
@@ -107,7 +107,7 @@ class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, Notifi
 
   @override
   Future<ActionResponsePigeon> handleTimelineAction(ActionTrigger arg) async {
-    return (await masterActionHandler.handleTimelineAction(arg)).toPigeon();
+    return (await masterActionHandler.handleTimelineAction(arg))!.toPigeon();
   }
 
   @override
@@ -117,6 +117,6 @@ class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, Notifi
 
   @override
   void dismissNotification(StringWrapper arg) {
-    notificationManager.dismissNotification(Uuid(arg.value));
+    notificationManager.dismissNotification(Uuid(arg.value!));
   }
 }

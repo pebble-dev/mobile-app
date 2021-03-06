@@ -3,10 +3,10 @@ import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class WatchConnectionState {
-  final bool isConnected;
-  final bool isConnecting;
-  final int currentWatchAddress;
-  final PebbleDevice currentConnectedWatch;
+  final bool? isConnected;
+  final bool? isConnecting;
+  final int? currentWatchAddress;
+  final PebbleDevice? currentConnectedWatch;
 
   WatchConnectionState(this.isConnected, this.isConnecting,
       this.currentWatchAddress, this.currentConnectedWatch);
@@ -37,7 +37,7 @@ class ConnectionCallbacksStateNotifier
   }
 }
 
-final connectionStateProvider =
+final AutoDisposeStateNotifierProvider<ConnectionCallbacksStateNotifier>? connectionStateProvider =
 StateNotifierProvider.autoDispose<ConnectionCallbacksStateNotifier>((ref) {
   final notifier = ConnectionCallbacksStateNotifier();
   ref.onDispose(notifier.dispose);

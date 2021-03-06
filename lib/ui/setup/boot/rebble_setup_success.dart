@@ -27,7 +27,7 @@ class _RebbleSetupSuccessState extends State<RebbleSetupSuccess> {
             builder:
                 (BuildContext context, AsyncSnapshot<WSAuthUser> snapshot) {
               if (snapshot.hasData) {
-                return Text("Welcome back, ${snapshot.data.name}!");
+                return Text("Welcome back, ${snapshot.data!.name}!");
               } else {
                 return Text(" ");
               }
