@@ -186,6 +186,32 @@ public class Pigeons {
   }
 
   /** Generated class from Pigeon that represents data sent in messages. */
+  public static class InstallData {
+    private String uri;
+    public String getUri() { return uri; }
+    public void setUri(String setterArg) { this.uri = setterArg; }
+
+    private PbwAppInfo appInfo;
+    public PbwAppInfo getAppInfo() { return appInfo; }
+    public void setAppInfo(PbwAppInfo setterArg) { this.appInfo = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("uri", uri);
+      toMapResult.put("appInfo", appInfo.toMap());
+      return toMapResult;
+    }
+    static InstallData fromMap(HashMap map) {
+      InstallData fromMapResult = new InstallData();
+      Object uri = map.get("uri");
+      fromMapResult.uri = (String)uri;
+      Object appInfo = map.get("appInfo");
+      fromMapResult.appInfo = PbwAppInfo.fromMap((HashMap)appInfo);
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
   public static class PbwAppInfo {
     private Boolean isValid;
     public Boolean getIsValid() { return isValid; }
@@ -322,32 +348,6 @@ public class Pigeons {
   }
 
   /** Generated class from Pigeon that represents data sent in messages. */
-  public static class AppEntriesPigeon {
-    private ArrayList appName;
-    public ArrayList getAppName() { return appName; }
-    public void setAppName(ArrayList setterArg) { this.appName = setterArg; }
-
-    private ArrayList packageId;
-    public ArrayList getPackageId() { return packageId; }
-    public void setPackageId(ArrayList setterArg) { this.packageId = setterArg; }
-
-    HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("appName", appName);
-      toMapResult.put("packageId", packageId);
-      return toMapResult;
-    }
-    static AppEntriesPigeon fromMap(HashMap map) {
-      AppEntriesPigeon fromMapResult = new AppEntriesPigeon();
-      Object appName = map.get("appName");
-      fromMapResult.appName = (ArrayList)appName;
-      Object packageId = map.get("packageId");
-      fromMapResult.packageId = (ArrayList)packageId;
-      return fromMapResult;
-    }
-  }
-
-  /** Generated class from Pigeon that represents data sent in messages. */
   public static class NotificationPigeon {
     private String packageId;
     public String getPackageId() { return packageId; }
@@ -432,6 +432,32 @@ public class Pigeons {
       fromMapResult.messagesJson = (String)messagesJson;
       Object actionsJson = map.get("actionsJson");
       fromMapResult.actionsJson = (String)actionsJson;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class AppEntriesPigeon {
+    private ArrayList appName;
+    public ArrayList getAppName() { return appName; }
+    public void setAppName(ArrayList setterArg) { this.appName = setterArg; }
+
+    private ArrayList packageId;
+    public ArrayList getPackageId() { return packageId; }
+    public void setPackageId(ArrayList setterArg) { this.packageId = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("appName", appName);
+      toMapResult.put("packageId", packageId);
+      return toMapResult;
+    }
+    static AppEntriesPigeon fromMap(HashMap map) {
+      AppEntriesPigeon fromMapResult = new AppEntriesPigeon();
+      Object appName = map.get("appName");
+      fromMapResult.appName = (ArrayList)appName;
+      Object packageId = map.get("packageId");
+      fromMapResult.packageId = (ArrayList)packageId;
       return fromMapResult;
     }
   }
@@ -1371,6 +1397,25 @@ public class Pigeons {
     }
   }
 
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java.*/
+  public static class BackgroundAppInstallCallbacks {
+    private final BinaryMessenger binaryMessenger;
+    public BackgroundAppInstallCallbacks(BinaryMessenger argBinaryMessenger){
+      this.binaryMessenger = argBinaryMessenger;
+    }
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+    public void beginAppInstall(InstallData argInput, Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall", new StandardMessageCodec());
+      HashMap inputMap = argInput.toMap();
+      channel.send(inputMap, channelReply -> {
+        callback.reply(null);
+      });
+    }
+  }
+
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface BackgroundSetupControl {
     void setupBackground(NumberWrapper arg);
@@ -1441,6 +1486,7 @@ public class Pigeons {
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface AppInstallControl {
     void getAppInfo(StringWrapper arg, Result<PbwAppInfo> result);
+    void beginAppInstall(InstallData arg);
 
     /** Sets up an instance of `AppInstallControl` to handle messages through the `binaryMessenger` */
     static void setup(BinaryMessenger binaryMessenger, AppInstallControl api) {
@@ -1464,24 +1510,17 @@ public class Pigeons {
           channel.setMessageHandler(null);
         }
       }
-    }
-  }
-
-  /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
-  public interface PackageDetails {
-    AppEntriesPigeon getPackageList();
-
-    /** Sets up an instance of `PackageDetails` to handle messages through the `binaryMessenger` */
-    static void setup(BinaryMessenger binaryMessenger, PackageDetails api) {
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PackageDetails.getPackageList", new StandardMessageCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AppInstallControl.beginAppInstall", new StandardMessageCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             HashMap<String, HashMap> wrapped = new HashMap<>();
             try {
-              AppEntriesPigeon output = api.getPackageList();
-              wrapped.put("result", output.toMap());
+              @SuppressWarnings("ConstantConditions")
+              InstallData input = InstallData.fromMap((HashMap)message);
+              api.beginAppInstall(input);
+              wrapped.put("result", null);
             }
             catch (Exception exception) {
               wrapped.put("error", wrapError(exception));
@@ -1621,6 +1660,34 @@ public class Pigeons {
     }
   }
 
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
+  public interface PackageDetails {
+    AppEntriesPigeon getPackageList();
+
+    /** Sets up an instance of `PackageDetails` to handle messages through the `binaryMessenger` */
+    static void setup(BinaryMessenger binaryMessenger, PackageDetails api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PackageDetails.getPackageList", new StandardMessageCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            HashMap<String, HashMap> wrapped = new HashMap<>();
+            try {
+              AppEntriesPigeon output = api.getPackageList();
+              wrapped.put("result", output.toMap());
+            }
+            catch (Exception exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+  
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface NotificationUtils {
     void dismissNotification(StringWrapper arg, Result<BooleanWrapper> result);

@@ -3,6 +3,7 @@ import 'package:cobble/domain/calendar/calendar_pin_convert.dart';
 import 'package:cobble/domain/calendar/calendar_syncer.db.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/db/dao/timeline_pin_dao.dart';
+import 'package:cobble/domain/entities/pbw_app_info_extension.dart';
 import 'package:cobble/domain/db/models/timeline_pin.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/logging.dart';
@@ -10,8 +11,10 @@ import 'package:cobble/domain/timeline/watch_timeline_syncer.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/util/container_extensions.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/all.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:uuid_type/uuid_type.dart';
 
 import 'actions/master_action_handler.dart';
@@ -22,7 +25,7 @@ void main_background() {
   BackgroundReceiver();
 }
 
-class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, NotificationListening {
+class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, NotificationListening, BackgroundAppInstallCallbacks {
   final container = ProviderContainer();
   late CalendarSyncer calendarSyncer;
   late WatchTimelineSyncer watchTimelineSyncer;
@@ -65,6 +68,7 @@ class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, Notifi
     CalendarCallbacks.setup(this);
     TimelineCallbacks.setup(this);
     NotificationListening.setup(this);
+    BackgroundAppInstallCallbacks.setup(this);
   }
 
   @override
@@ -119,4 +123,11 @@ class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, Notifi
   void dismissNotification(StringWrapper arg) {
     notificationManager.dismissNotification(Uuid(arg.value!));
   }
+
+  @override
+  void beginAppInstall(InstallData installData) async {
+    print('TODO begin installing app $installData');
+  }
+
+
 }

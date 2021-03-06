@@ -120,6 +120,25 @@ class BooleanWrapper {
   }
 }
 
+class InstallData {
+  String uri;
+  PbwAppInfo appInfo;
+
+  Object encode() {
+    final Map<Object, Object> pigeonMap = <Object, Object>{};
+    pigeonMap['uri'] = uri;
+    pigeonMap['appInfo'] = appInfo == null ? null : appInfo.encode();
+    return pigeonMap;
+  }
+
+  static InstallData decode(Object message) {
+    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
+    return InstallData()
+      ..uri = pigeonMap['uri'] as String
+      ..appInfo = pigeonMap['appInfo'] != null ? PbwAppInfo.decode(pigeonMap['appInfo']) : null;
+  }
+}
+
 class PbwAppInfo {
   bool isValid;
   String uuid;
@@ -194,25 +213,6 @@ class WatchappInfo {
   }
 }
 
-class AppEntriesPigeon {
-  List<Object> appName;
-  List<Object> packageId;
-
-  Object encode() {
-    final Map<Object, Object> pigeonMap = <Object, Object>{};
-    pigeonMap['appName'] = appName;
-    pigeonMap['packageId'] = packageId;
-    return pigeonMap;
-  }
-
-  static AppEntriesPigeon decode(Object message) {
-    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
-    return AppEntriesPigeon()
-      ..appName = pigeonMap['appName'] as List<Object>
-      ..packageId = pigeonMap['packageId'] as List<Object>;
-  }
-}
-
 class NotificationPigeon {
   String packageId;
   int notifId;
@@ -256,6 +256,25 @@ class NotificationPigeon {
       ..color = pigeonMap['color'] as int
       ..messagesJson = pigeonMap['messagesJson'] as String
       ..actionsJson = pigeonMap['actionsJson'] as String;
+  }
+}
+
+class AppEntriesPigeon {
+  List<Object> appName;
+  List<Object> packageId;
+
+  Object encode() {
+    final Map<Object, Object> pigeonMap = <Object, Object>{};
+    pigeonMap['appName'] = appName;
+    pigeonMap['packageId'] = packageId;
+    return pigeonMap;
+  }
+
+  static AppEntriesPigeon decode(Object message) {
+    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
+    return AppEntriesPigeon()
+      ..appName = pigeonMap['appName'] as List<Object>
+      ..packageId = pigeonMap['packageId'] as List<Object>;
   }
 }
 
@@ -1033,6 +1052,26 @@ class NotificationsControl {
   }
 }
 
+abstract class BackgroundAppInstallCallbacks {
+  void beginAppInstall(InstallData arg);
+  static void setup(BackgroundAppInstallCallbacks api) {
+    {
+      const BasicMessageChannel<Object> channel =
+          BasicMessageChannel<Object>('dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall', StandardMessageCodec());
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object message) async {
+          assert(message != null, 'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall was null. Expected InstallData.');
+          final InstallData input = InstallData.decode(message);
+          api.beginAppInstall(input);
+          return;
+        });
+      }
+    }
+  }
+}
+
 class BackgroundSetupControl {
   Future<void> setupBackground(NumberWrapper arg) async {
     final Object encoded = arg.encode();
@@ -1129,13 +1168,12 @@ class AppInstallControl {
       return PbwAppInfo.decode(replyMap['result']);
     }
   }
-}
 
-class PackageDetails {
-  Future<AppEntriesPigeon> getPackageList() async {
+  Future<void> beginAppInstall(InstallData arg) async {
+    final Object encoded = arg.encode();
     const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.PackageDetails.getPackageList', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AppInstallControl.beginAppInstall', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1150,7 +1188,7 @@ class PackageDetails {
         details: error['details'],
       );
     } else {
-      return AppEntriesPigeon.decode(replyMap['result']);
+      // noop
     }
   }
 }
@@ -1179,11 +1217,9 @@ class IntentControl {
   }
 
   Future<void> notifyFlutterNotReadyForIntents() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.IntentControl.notifyFlutterNotReadyForIntents',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.IntentControl.notifyFlutterNotReadyForIntents', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1191,8 +1227,7 @@ class IntentControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -1281,6 +1316,30 @@ abstract class NotificationListening {
           return;
         });
       }
+    }
+  }
+}
+
+class PackageDetails {
+  Future<AppEntriesPigeon> getPackageList() async {
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.PackageDetails.getPackageList', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return AppEntriesPigeon.decode(replyMap['result']);
     }
   }
 }

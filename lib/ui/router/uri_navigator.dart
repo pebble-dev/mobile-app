@@ -28,6 +28,6 @@ class UriNavigator implements IntentCallbacks {
     uriWrapper.value = uri;
 
     final pbwResult = await control.getAppInfo(uriWrapper);
-    _context.push(InstallPrompt(pbwResult));
+    _context.push(InstallPrompt(uri, pbwResult));
   }
 }

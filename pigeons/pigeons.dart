@@ -138,6 +138,13 @@ class WatchResource {
   String? type;
 }
 
+class InstallData {
+  String uri;
+  PbwAppInfo appInfo;
+
+  InstallData(this.uri, this.appInfo);
+}
+
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
@@ -178,6 +185,11 @@ abstract class TimelineCallbacks {
 @FlutterApi()
 abstract class IntentCallbacks {
   void openUri(StringWrapper uri);
+}
+
+@FlutterApi()
+abstract class BackgroundAppInstallCallbacks {
+  void beginAppInstall(InstallData installData);
 }
 
 @FlutterApi()
@@ -329,7 +341,10 @@ abstract class WorkaroundsControl {
 @HostApi()
 abstract class AppInstallControl {
   @async
-  PbwAppInfo getAppInfo(StringWrapper localUri);
+  PbwAppInfo getAppInfo(StringWrapper localPbwUri);
+
+  // Just relay method that triggers beginAppInstall on background flutter side
+  void beginAppInstall(InstallData installData);
 }
 
 @HostApi()
