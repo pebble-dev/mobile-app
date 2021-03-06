@@ -87,6 +87,6 @@ class HomePage extends HookWidget implements CobbleScreen {
     useEffect(() {
       final navigator = UriNavigator(context);
       return navigator.cancel;
-    }, ["uri-navigator"]);
+    }, []);
   }
 }
