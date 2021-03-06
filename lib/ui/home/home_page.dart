@@ -35,7 +35,7 @@ class HomePage extends HookWidget implements CobbleScreen {
 
   @override
   Widget build(BuildContext context) {
-    _initEffects(context);
+    useUriNavigator(context);
 
     final index = useState(0);
 
@@ -79,7 +79,7 @@ class HomePage extends HookWidget implements CobbleScreen {
     );
   }
 
-  void _initEffects(BuildContext context) {
+  void useUriNavigator(BuildContext context) {
     // Install URI navgiator as effect of this page.
     // If user opens any URI with Cobble,
     // this navigator will receive notification and handle that URI.
