@@ -113,7 +113,8 @@ class NotificationListener : NotificationListenerService() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 val messagesArr = sbn.notification.extras.getParcelableArray(Notification.EXTRA_MESSAGES)
                 if (messagesArr != null) {
-                    messages = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(sbn.notification)?.messages?.map {
+                    val msgstyle = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(sbn.notification)
+                    messages = msgstyle?.messages?.map {
                         NotificationMessage(it.person?.name.toString(), it.text.toString(), it.timestamp)
                     }
                 }

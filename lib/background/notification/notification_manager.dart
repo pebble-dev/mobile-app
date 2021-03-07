@@ -89,7 +89,7 @@ class NotificationManager {
     }
 
     ActiveNotification? old = await _activeNotificationDao.getActiveNotifByNotifMeta(notif.notifId, notif.packageId, notif.tagId);
-    if (old != null && old.pinId != null) {
+    if (old != null && old.pinId != null && notif.messagesJson.isEmpty) {
       StringWrapper id = StringWrapper();
       id.value = old.pinId.toString();
       _notificationUtils.dismissNotificationWatch(id);
@@ -98,23 +98,17 @@ class NotificationManager {
     List<TimelineAttribute> attributes = [
       TimelineAttribute.tinyIcon(await _determineIcon(notif.packageId, CategoryAndroid.fromId(notif.category))),
       TimelineAttribute.title(notif.appName!.trim()),
-      TimelineAttribute.subtitle(notif.title!.trim()),
     ];
+    TimelineAttribute subtitle = TimelineAttribute.subtitle(notif.title!.trim());
     TimelineAttribute content = TimelineAttribute.body(notif.text!.trim());
-    if (notif.messagesJson!.isEmpty) {
-      content = TimelineAttribute.body("");
-    }else {
+
+    if (notif.messagesJson?.isNotEmpty ?? false) {
       List<Map<String, dynamic>> messages = new List<Map<String, dynamic>>.from(jsonDecode(notif.messagesJson!));
-      String contentText = "";
-      messages.forEach((el) {
-        NotificationMessage message = NotificationMessage.fromJson(el);
-        contentText += message.sender!.trim() + ": ";
-        contentText += message.text!.trim() + "\n";
-      });
-      content = TimelineAttribute.body(contentText);
+      content = TimelineAttribute.body(NotificationMessage.fromJson(messages.last).text!.trim());
     }
+
     List<TimelineAction> actions = [];
-    actions.add(TimelineAction(MetaAction.DISMISS.index, actionTypeGeneric, [
+    actions.add(TimelineAction(META_ACTION_DISMISS, actionTypeGeneric, [
       TimelineAttribute.title("Dismiss")
     ]));
 
@@ -125,26 +119,27 @@ class NotificationManager {
       if (notifActions != null) {
         for (int i=0; i<notifActions.length; i++) {
           NotificationAction action = NotificationAction.fromJson(notifActions[i]);
-          actions.add(TimelineAction((MetaAction.values.length)+i, action.isResponse! ? actionTypeResponse : actionTypeGeneric, [
+          actions.add(TimelineAction((META_ACTION_LENGTH)+i, action.isResponse! ? actionTypeResponse : actionTypeGeneric, [
             TimelineAttribute.title(action.title)
           ]));
         }
       }
     }
+    attributes.add(subtitle);
     attributes.add(content);
 
     if (Platform.isAndroid && notif.color != 0 && notif.color != 1) {
       attributes.add(TimelineAttribute.primaryColor(Color(notif.color!)));
     }
 
-    actions.add(TimelineAction(MetaAction.OPEN.index, actionTypeGeneric, [
+    actions.add(TimelineAction(META_ACTION_OPEN, actionTypeGeneric, [
       TimelineAttribute.title("Open on phone")
     ]));
-    actions.add(TimelineAction(MetaAction.MUTE_PKG.index, actionTypeGeneric, [
+    actions.add(TimelineAction(META_ACTION_MUTE_PKG, actionTypeGeneric, [
       TimelineAttribute.title("Mute app")
     ]));
     if (notif.tagId != null) {
-      actions.add(TimelineAction(MetaAction.MUTE_TAG.index, actionTypeGeneric, [
+      actions.add(TimelineAction(META_ACTION_MUTE_TAG, actionTypeGeneric, [
         TimelineAttribute.title("Mute tag\n'${notif.tagName}'")
       ]));
     }
@@ -173,7 +168,7 @@ class NotificationManager {
     
     TimelineActionResponse? ret;
     switch (trigger.actionId) {
-      case 0: // DISMISS
+      case META_ACTION_DISMISS:
         BooleanWrapper res = await _notificationUtils.dismissNotification(StringWrapper()..value=trigger.itemId.toString());
         if (res.value!) {
           ret = TimelineActionResponse(true, attributes: [
@@ -182,14 +177,14 @@ class NotificationManager {
           ]);
         }
         break;
-      case 1: // OPEN
+      case META_ACTION_OPEN:
         await _notificationUtils.openNotification(StringWrapper()..value=trigger.itemId.toString());
         ret = TimelineActionResponse(true, attributes: [
           TimelineAttribute.subtitle("Opened on phone"),
           TimelineAttribute.largeIcon(TimelineIcon.genericConfirmation)
         ]);
         break;
-      case 2: // MUTE_PKG
+      case META_ACTION_MUTE_PKG:
         List<String?> muted = prefs.getNotificationsMutedPackages()!;
         ActiveNotification? notif = await _activeNotificationDao.getActiveNotifByPinId(Uuid.parse(trigger.itemId!));
         if (notif != null) {
@@ -200,7 +195,7 @@ class NotificationManager {
           ]);
         }
         break;
-      case 3: // MUTE_TAG
+      case META_ACTION_MUTE_TAG:
         ActiveNotification? notif = await _activeNotificationDao.getActiveNotifByPinId(Uuid.parse(trigger.itemId!));
         if (notif != null) {
           await _notificationChannelDao.insertOrUpdateNotificationChannel(NotificationChannel(notif.packageId!, notif.tagId!, false));
@@ -222,13 +217,13 @@ class NotificationManager {
         await _notificationUtils.executeAction(
             NotifActionExecuteReq()
           ..itemId=trigger.itemId.toString()
-          ..actionId=trigger.actionId!-MetaAction.values.length
+          ..actionId=trigger.actionId!-META_ACTION_LENGTH
           ..responseText=responseText
         );
 
         ret = TimelineActionResponse(true, attributes: [
           TimelineAttribute.subtitle("Done"),
-          TimelineAttribute.largeIcon(TimelineIcon.genericConfirmation)
+          TimelineAttribute.largeIcon((responseText?.isEmpty ?? true) ? TimelineIcon.genericConfirmation : TimelineIcon.resultSent)
         ]);
         break;
     }
@@ -245,9 +240,8 @@ final notificationManagerProvider = Provider((ref) => NotificationManager(ref.re
 
 final disabledActionPackagesKey = "disabledActionPackages";
 
-enum MetaAction {
-  DISMISS,
-  OPEN,
-  MUTE_PKG,
-  MUTE_TAG
-}
+const int META_ACTION_DISMISS = 0;
+const int META_ACTION_OPEN = 1;
+const int META_ACTION_MUTE_PKG = 2;
+const int META_ACTION_MUTE_TAG = 3;
+const int META_ACTION_LENGTH = 4;
