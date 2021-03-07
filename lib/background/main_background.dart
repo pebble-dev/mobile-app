@@ -2,7 +2,9 @@ import 'package:cobble/background/notification/notification_manager.dart';
 import 'package:cobble/domain/calendar/calendar_pin_convert.dart';
 import 'package:cobble/domain/calendar/calendar_syncer.db.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
+import 'package:cobble/domain/db/dao/notification_channel_dao.dart';
 import 'package:cobble/domain/db/dao/timeline_pin_dao.dart';
+import 'package:cobble/domain/db/models/notification_channel.dart';
 import 'package:cobble/domain/db/models/timeline_pin.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/logging.dart';
@@ -30,6 +32,7 @@ class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, Notifi
   late TimelinePinDao timelinePinDao;
   late MasterActionHandler masterActionHandler;
   late NotificationManager notificationManager;
+  late NotificationChannelDao _notificationChannelDao;
 
   late ProviderSubscription<WatchConnectionState> connectionSubscription;
 
@@ -51,6 +54,7 @@ class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, Notifi
       return asyncValue.data!.value;
     });
     masterActionHandler = container.read(masterActionHandlerProvider);
+    _notificationChannelDao = container.listen(notifChannelDaoProvider).read();
 
     connectionSubscription = container.listen(
       connectionStateProvider!.state,
@@ -111,12 +115,20 @@ class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, Notifi
   }
 
   @override
-  Future<TimelinePinPigeon> handleNotification(NotificationPigeon arg) async {
-    return (await notificationManager.handleNotification(arg)).toPigeon();
+  Future<TimelinePinPigeon?> handleNotification(NotificationPigeon arg) async {
+    TimelinePin? notif = await notificationManager.handleNotification(arg);
+
+    return notif != null ? notif.toPigeon() : null;
   }
 
   @override
   void dismissNotification(StringWrapper arg) {
     notificationManager.dismissNotification(Uuid(arg.value!));
+  }
+
+  @override
+  Future<BooleanWrapper> shouldNotify(NotifChannelPigeon arg) async {
+    NotificationChannel? channel = await _notificationChannelDao.getNotifChannelByIds(arg.channelId, arg.packageId);
+    return BooleanWrapper()..value=channel?.shouldNotify ?? true;
   }
 }

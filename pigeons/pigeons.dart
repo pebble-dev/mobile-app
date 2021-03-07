@@ -109,6 +109,11 @@ class AppEntriesPigeon {
   List<String>? packageId;
 }
 
+class NotifChannelPigeon {
+  String? packageId;
+  String? channelId;
+}
+
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
@@ -151,6 +156,8 @@ abstract class NotificationListening {
   @async
   TimelinePinPigeon handleNotification(NotificationPigeon notification);
   void dismissNotification(StringWrapper itemId);
+  @async
+  BooleanWrapper shouldNotify(NotifChannelPigeon channel);
 }
 
 @HostApi()

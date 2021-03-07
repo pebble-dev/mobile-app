@@ -185,6 +185,25 @@ class NotificationPigeon {
   }
 }
 
+class NotifChannelPigeon {
+  String packageId;
+  String channelId;
+
+  Object encode() {
+    final Map<Object, Object> pigeonMap = <Object, Object>{};
+    pigeonMap['packageId'] = packageId;
+    pigeonMap['channelId'] = channelId;
+    return pigeonMap;
+  }
+
+  static NotifChannelPigeon decode(Object message) {
+    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
+    return NotifChannelPigeon()
+      ..packageId = pigeonMap['packageId'] as String
+      ..channelId = pigeonMap['channelId'] as String;
+  }
+}
+
 class NotifActionExecuteReq {
   String itemId;
   int actionId;
@@ -1038,6 +1057,7 @@ class TimelineSyncControl {
 abstract class NotificationListening {
   Future<TimelinePinPigeon> handleNotification(NotificationPigeon arg);
   void dismissNotification(StringWrapper arg);
+  Future<BooleanWrapper> shouldNotify(NotifChannelPigeon arg);
   static void setup(NotificationListening api) {
     {
       const BasicMessageChannel<Object> channel =
@@ -1064,6 +1084,20 @@ abstract class NotificationListening {
           final StringWrapper input = StringWrapper.decode(message);
           api.dismissNotification(input);
           return;
+        });
+      }
+    }
+    {
+      const BasicMessageChannel<Object> channel =
+          BasicMessageChannel<Object>('dev.flutter.pigeon.NotificationListening.shouldNotify', StandardMessageCodec());
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object message) async {
+          assert(message != null, 'Argument for dev.flutter.pigeon.NotificationListening.shouldNotify was null. Expected NotifChannelPigeon.');
+          final NotifChannelPigeon input = NotifChannelPigeon.decode(message);
+          final BooleanWrapper output = await api.shouldNotify(input);
+          return output.encode();
         });
       }
     }

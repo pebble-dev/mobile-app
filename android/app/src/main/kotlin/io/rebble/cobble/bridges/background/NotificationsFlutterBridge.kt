@@ -109,7 +109,7 @@ class NotificationsFlutterBridge @Inject constructor(
     suspend fun handleNotification(packageId: String,
                                    notifId: Long, tagId: String?, tagName: String?, title: String,
                                    text: String, category: String, color: Int, messages: List<NotificationMessage>,
-                                   actions: List<NotificationAction>): Pair<TimelineItem, BlobResponse.BlobStatus> {
+                                   actions: List<NotificationAction>): Pair<TimelineItem, BlobResponse.BlobStatus>? {
         if (notifListening == null) {
             val flutterEngine = flutterBackgroundController.getBackgroundFlutterEngine()
             if (flutterEngine != null) {
@@ -121,62 +121,73 @@ class NotificationsFlutterBridge @Inject constructor(
             }
         }
 
-        val notif = Pigeons.NotificationPigeon()
-        notif.packageId = packageId
-        notif.appName = context.packageManager.getApplicationLabel(context.packageManager.getApplicationInfo(packageId, 0)) as String
-        notif.notifId = notifId
-        notif.tagId = tagId
-        notif.tagName = tagName
-        notif.title = title
-        notif.text = text
-        notif.category = category
-        notif.color = color.toLong()
-        notif.actionsJson = moshi
-                .adapter<List<NotificationAction>>(
-                        Types.newParameterizedType(List::class.java, NotificationAction::class.java)
-                ).toJson(actions)
-        notif.messagesJson = moshi
-                .adapter<List<NotificationMessage>>(
-                        Types.newParameterizedType(List::class.java, NotificationMessage::class.java)
-                ).toJson(messages)
+        val channel = Pigeons.NotifChannelPigeon()
+        channel.packageId = packageId
+        channel.channelId = tagId
+        val result = CompletableDeferred<Pair<TimelineItem, BlobResponse.BlobStatus>?>()
 
-        val result = CompletableDeferred<Pair<TimelineItem, BlobResponse.BlobStatus>>()
-        if (notifListening == null) {
-            Timber.w("Notification listening pigeon null")
-        }
-        notifListening?.handleNotification(notif) { notifToSend ->
-            val parsedAttributes = moshi
-                    .adapter<List<TimelineAttribute>>(
-                            Types.newParameterizedType(List::class.java, TimelineAttribute::class.java)
-                    )
-                    .fromJson(notifToSend.attributesJson) ?: emptyList()
+        notifListening!!.shouldNotify(channel) { shouldNotify ->
+            if (!shouldNotify.value) {
+                result.complete(null)
+                return@shouldNotify
+            }
+            
+            val notif = Pigeons.NotificationPigeon()
+            notif.packageId = packageId
+            notif.appName = context.packageManager.getApplicationLabel(context.packageManager.getApplicationInfo(packageId, 0)) as String
+            notif.notifId = notifId
+            notif.tagId = tagId
+            notif.tagName = tagName
+            notif.title = title
+            notif.text = text
+            notif.category = category
+            notif.color = color.toLong()
+            notif.actionsJson = moshi
+                    .adapter<List<NotificationAction>>(
+                            Types.newParameterizedType(List::class.java, NotificationAction::class.java)
+                    ).toJson(actions)
+            notif.messagesJson = moshi
+                    .adapter<List<NotificationMessage>>(
+                            Types.newParameterizedType(List::class.java, NotificationMessage::class.java)
+                    ).toJson(messages)
 
-            val parsedActions = moshi
-                    .adapter<List<io.rebble.cobble.data.TimelineAction>>(
-                            Types.newParameterizedType(List::class.java, io.rebble.cobble.data.TimelineAction::class.java)
-                    )
-                    .fromJson(notifToSend.actionsJson) ?: emptyList()
+            if (notifListening == null) {
+                Timber.w("Notification listening pigeon null")
+            }
+            notifListening?.handleNotification(notif) { notifToSend ->
+                val parsedAttributes = moshi
+                        .adapter<List<TimelineAttribute>>(
+                                Types.newParameterizedType(List::class.java, TimelineAttribute::class.java)
+                        )
+                        .fromJson(notifToSend.attributesJson) ?: emptyList()
 
-            val itemId = UUID.fromString(notifToSend.itemId)
-            val timelineItem = TimelineItem(
-                    itemId,
-                    UUID.fromString(notifToSend.parentId),
-                    notifToSend.timestamp.toUInt(),
-                    notifToSend.duration.toUShort(),
-                    TimelineItem.Type.Notification,
-                    TimelineItem.Flag.makeFlags(listOf()),
-                    notifToSend.layout.toUByte(),
-                    parsedAttributes.map { it.toProtocolAttribute() },
-                    parsedActions.map { it.toProtocolAction() }
-            )
-            val packet = BlobCommand.InsertCommand(
-                    Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
-                    BlobCommand.BlobDatabase.Notification,
-                    SUUID(StructMapper(), itemId).toBytes(),
-                    timelineItem.toBytes(),
-            )
-            GlobalScope.launch {
-                result.complete(Pair(timelineItem, blobDBService.send(packet).responseValue))
+                val parsedActions = moshi
+                        .adapter<List<io.rebble.cobble.data.TimelineAction>>(
+                                Types.newParameterizedType(List::class.java, io.rebble.cobble.data.TimelineAction::class.java)
+                        )
+                        .fromJson(notifToSend.actionsJson) ?: emptyList()
+
+                val itemId = UUID.fromString(notifToSend.itemId)
+                val timelineItem = TimelineItem(
+                        itemId,
+                        UUID.fromString(notifToSend.parentId),
+                        notifToSend.timestamp.toUInt(),
+                        notifToSend.duration.toUShort(),
+                        TimelineItem.Type.Notification,
+                        TimelineItem.Flag.makeFlags(listOf()),
+                        notifToSend.layout.toUByte(),
+                        parsedAttributes.map { it.toProtocolAttribute() },
+                        parsedActions.map { it.toProtocolAction() }
+                )
+                val packet = BlobCommand.InsertCommand(
+                        Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
+                        BlobCommand.BlobDatabase.Notification,
+                        SUUID(StructMapper(), itemId).toBytes(),
+                        timelineItem.toBytes(),
+                )
+                GlobalScope.launch {
+                    result.complete(Pair(timelineItem, blobDBService.send(packet).responseValue))
+                }
             }
         }
         return result.await()

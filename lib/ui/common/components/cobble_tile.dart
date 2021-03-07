@@ -192,7 +192,7 @@ class CobbleTile extends StatelessWidget {
         ),
       );
 
-  factory CobbleTile.app({
+  factory CobbleTile.appSetting({
     Key? key,
     ImageProvider? leading,
     required String title,
@@ -206,6 +206,23 @@ class CobbleTile extends StatelessWidget {
         title: title,
         subtitle: subtitle,
         trailing: child,
+      );
+
+  factory CobbleTile.appNavigation({
+    Key? key,
+    ImageProvider? leading,
+    required String title,
+    String? subtitle,
+    required CobbleScreen navigateTo
+  }) =>
+      CobbleTile._(
+        key: key,
+        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        leading: _leadingToWidget(leading, size: 48),
+        trailing: Icon(RebbleIcons.caret_right),
+        title: title,
+        subtitle: subtitle,
+        navigateTo: navigateTo,
       );
 
   @override

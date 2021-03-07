@@ -301,6 +301,32 @@ public class Pigeons {
   }
 
   /** Generated class from Pigeon that represents data sent in messages. */
+  public static class NotifChannelPigeon {
+    private String packageId;
+    public String getPackageId() { return packageId; }
+    public void setPackageId(String setterArg) { this.packageId = setterArg; }
+
+    private String channelId;
+    public String getChannelId() { return channelId; }
+    public void setChannelId(String setterArg) { this.channelId = setterArg; }
+
+    HashMap toMap() {
+      HashMap<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("packageId", packageId);
+      toMapResult.put("channelId", channelId);
+      return toMapResult;
+    }
+    static NotifChannelPigeon fromMap(HashMap map) {
+      NotifChannelPigeon fromMapResult = new NotifChannelPigeon();
+      Object packageId = map.get("packageId");
+      fromMapResult.packageId = (String)packageId;
+      Object channelId = map.get("channelId");
+      fromMapResult.channelId = (String)channelId;
+      return fromMapResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
   public static class NotifActionExecuteReq {
     private String itemId;
     public String getItemId() { return itemId; }
@@ -1321,6 +1347,17 @@ public class Pigeons {
       HashMap inputMap = argInput.toMap();
       channel.send(inputMap, channelReply -> {
         callback.reply(null);
+      });
+    }
+    public void shouldNotify(NotifChannelPigeon argInput, Reply<BooleanWrapper> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.NotificationListening.shouldNotify", new StandardMessageCodec());
+      HashMap inputMap = argInput.toMap();
+      channel.send(inputMap, channelReply -> {
+        HashMap outputMap = (HashMap)channelReply;
+        @SuppressWarnings("ConstantConditions")
+        BooleanWrapper output = BooleanWrapper.fromMap(outputMap);
+        callback.reply(output);
       });
     }
   }

@@ -6,7 +6,9 @@ import 'dart:typed_data';
 
 import 'package:cobble/background/actions/master_action_handler.dart';
 import 'package:cobble/domain/db/dao/active_notification_dao.dart';
+import 'package:cobble/domain/db/dao/notification_channel_dao.dart';
 import 'package:cobble/domain/db/models/active_notification.dart';
+import 'package:cobble/domain/db/models/notification_channel.dart';
 import 'package:cobble/domain/db/models/timeline_pin.dart';
 import 'package:cobble/domain/db/models/timeline_pin_layout.dart';
 import 'package:cobble/domain/db/models/timeline_pin_type.dart';
@@ -33,9 +35,10 @@ final Uuid notificationsWatchappId = Uuid("B2CAE818-10F8-46DF-AD2B-98AD2254A3C1"
 class NotificationManager {
   final NotificationUtils _notificationUtils = NotificationUtils();
   final ActiveNotificationDao _activeNotificationDao;
+  final NotificationChannelDao _notificationChannelDao;
   final Future<SharedPreferences> _preferencesFuture;
 
-  NotificationManager(this._activeNotificationDao, this._preferencesFuture);
+  NotificationManager(this._activeNotificationDao, this._notificationChannelDao, this._preferencesFuture);
 
   Future<TimelineIcon> _determineIcon(String? packageId, CategoryAndroid? category) async {
     TimelineIcon icon = TimelineIcon.notificationGeneric;
@@ -80,6 +83,11 @@ class NotificationManager {
   }
 
   Future<TimelinePin> handleNotification(NotificationPigeon notif) async {
+    NotificationChannel? channel = await _notificationChannelDao.getNotifChannelByIds(notif.tagId, notif.packageId);
+    if (channel == null) {
+      _notificationChannelDao.insertOrUpdateNotificationChannel(NotificationChannel(notif.packageId, notif.tagId, true));
+    }
+
     ActiveNotification? old = await _activeNotificationDao.getActiveNotifByNotifMeta(notif.notifId, notif.packageId, notif.tagId);
     if (old != null && old.pinId != null) {
       StringWrapper id = StringWrapper();
@@ -175,7 +183,7 @@ class NotificationManager {
         }
         break;
       case 1: // OPEN
-        _notificationUtils.openNotification(StringWrapper()..value=trigger.itemId.toString());
+        await _notificationUtils.openNotification(StringWrapper()..value=trigger.itemId.toString());
         ret = TimelineActionResponse(true, attributes: [
           TimelineAttribute.subtitle("Opened on phone"),
           TimelineAttribute.largeIcon(TimelineIcon.genericConfirmation)
@@ -183,18 +191,24 @@ class NotificationManager {
         break;
       case 2: // MUTE_PKG
         List<String?> muted = prefs.getNotificationsMutedPackages()!;
-        prefs.setNotificationsMutedPackages(muted + [(await _activeNotificationDao.getActiveNotifByPinId(Uuid.parse(trigger.itemId!)))!.packageId]);
-        ret = TimelineActionResponse(true, attributes: [
-          TimelineAttribute.subtitle("Muted app"),
-          TimelineAttribute.largeIcon(TimelineIcon.resultMute)
-        ]);
+        ActiveNotification? notif = await _activeNotificationDao.getActiveNotifByPinId(Uuid.parse(trigger.itemId!));
+        if (notif != null) {
+          await prefs.setNotificationsMutedPackages(muted + [notif.packageId]);
+          ret = TimelineActionResponse(true, attributes: [
+            TimelineAttribute.subtitle("Muted app"),
+            TimelineAttribute.largeIcon(TimelineIcon.resultMute)
+          ]);
+        }
         break;
       case 3: // MUTE_TAG
-        //TODO
-        ret = TimelineActionResponse(true, attributes: [
-          TimelineAttribute.subtitle("TODO"),
-          TimelineAttribute.largeIcon(TimelineIcon.resultFailed)
-        ]);
+        ActiveNotification? notif = await _activeNotificationDao.getActiveNotifByPinId(Uuid.parse(trigger.itemId!));
+        if (notif != null) {
+          await _notificationChannelDao.insertOrUpdateNotificationChannel(NotificationChannel(notif.packageId!, notif.tagId!, false));
+          ret = TimelineActionResponse(true, attributes: [
+            TimelineAttribute.subtitle("Muted channel"),
+            TimelineAttribute.largeIcon(TimelineIcon.resultMute)
+          ]);
+        }
         break;
       default: // Custom
         List<TimelineAttribute> attrs = [];
@@ -205,7 +219,7 @@ class NotificationManager {
           });
         }
         String? responseText = attrs.firstWhere((el) => el.id == 1, orElse: ()=>TimelineAttribute(string: "")).string;
-        _notificationUtils.executeAction(
+        await _notificationUtils.executeAction(
             NotifActionExecuteReq()
           ..itemId=trigger.itemId.toString()
           ..actionId=trigger.actionId!-MetaAction.values.length
@@ -227,7 +241,7 @@ class NotificationManager {
   }
 }
 
-final notificationManagerProvider = Provider((ref) => NotificationManager(ref.read(activeNotifDaoProvider!), ref.read(sharedPreferencesProvider)));
+final notificationManagerProvider = Provider((ref) => NotificationManager(ref.read(activeNotifDaoProvider), ref.read(notifChannelDaoProvider), ref.read(sharedPreferencesProvider)));
 
 final disabledActionPackagesKey = "disabledActionPackages";
 
