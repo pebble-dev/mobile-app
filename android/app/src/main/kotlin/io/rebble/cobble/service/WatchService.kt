@@ -73,7 +73,10 @@ class WatchService : LifecycleService() {
 
     private fun startNotificationLoop() {
         coroutineScope.launch {
+            Timber.d("Notification Loop start")
             connectionLooper.connectionState.collect {
+                Timber.d("Update notification state %s", it)
+
                 @DrawableRes val icon: Int
                 val titleText: String?
                 val deviceName: String?
@@ -99,6 +102,8 @@ class WatchService : LifecycleService() {
                         channel = NOTIFICATION_CHANNEL_WATCH_CONNECTED
                     }
                 }
+
+                Timber.d("Notification Title Text %s", titleText)
 
                 mainNotifBuilder = NotificationCompat
                         .Builder(this@WatchService, channel)
