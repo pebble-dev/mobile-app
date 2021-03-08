@@ -136,7 +136,7 @@ class TimelinePinDao {
 }
 
 final AutoDisposeProvider<TimelinePinDao>? timelinePinDaoProvider = Provider.autoDispose((ref) {
-  final dbFuture = ref.watch(databaseProvider!.future);
+  final dbFuture = ref.watch(databaseProvider.future);
   return TimelinePinDao(dbFuture);
 });
 

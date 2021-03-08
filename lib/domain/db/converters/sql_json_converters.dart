@@ -46,6 +46,20 @@ class UuidConverter implements JsonConverter<Uuid?, String?> {
   }
 }
 
+class NonNullUuidConverter implements JsonConverter<Uuid, String> {
+  const NonNullUuidConverter();
+
+  @override
+  Uuid fromJson(String json) {
+    return Uuid(json);
+  }
+
+  @override
+  String toJson(Uuid object) {
+    return object.toString();
+  }
+}
+
 class BooleanNumberConverter implements JsonConverter<bool, int> {
   const BooleanNumberConverter();
 
@@ -57,5 +71,20 @@ class BooleanNumberConverter implements JsonConverter<bool, int> {
   @override
   int toJson(bool object) {
     return object ? 1 : 0;
+  }
+}
+
+class CommaSeparatedListConverter
+    implements JsonConverter<List<String>, String> {
+  const CommaSeparatedListConverter();
+
+  @override
+  List<String> fromJson(String json) {
+    return json.split(",");
+  }
+
+  @override
+  String toJson(List<String> object) {
+    return object.join(",");
   }
 }
