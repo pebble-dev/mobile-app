@@ -16,7 +16,7 @@ packages:
     source: hosted
     version: "0.41.2"
   archive:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: archive
       url: "https://pub.dartlang.org"
@@ -161,14 +161,14 @@ packages:
       name: copy_with_extension
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.4.0"
+    version: "2.0.0-nullsafety.1"
   copy_with_extension_gen:
     dependency: "direct dev"
     description:
       name: copy_with_extension_gen
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.4.0"
+    version: "2.0.0-nullsafety.1"
   crypto:
     dependency: transitive
     description:

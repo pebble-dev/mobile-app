@@ -48,7 +48,7 @@ dependencies:
   uuid_type: ^1.1.1
   path: ^1.7.0
   json_annotation: ^4.0.0
-  copy_with_extension: ^1.4.0
+  copy_with_extension: ^2.0.0-nullsafety.1
   flutter_local_notifications: ^5.0.0-nullsafety.0
   stream_transform: ^2.0.0
   flutter_svg: 0.19.3
@@ -66,9 +66,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   pigeon: 0.1.21
-  build_runner: ^1.0.0
+  build_runner: ^1.11.5
   json_serializable: ^4.0.2
-  copy_with_extension_gen: ^1.4.0
+  copy_with_extension_gen: ^2.0.0-nullsafety.1
   sqflite_common_ffi: ^2.0.0
   mockito: ^4.1.4
 
