@@ -1,9 +1,12 @@
 import 'package:cobble/domain/calendar/calendar_list.dart';
 import 'package:cobble/domain/calendar/device_calendar_plugin_provider.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
+import 'package:cobble/domain/db/dao/app_dao.dart';
+import 'package:cobble/domain/db/models/app.dart';
 import 'package:cobble/domain/permissions.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
+import 'package:cobble/infrastructure/datasources/workarounds.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/devoptions/dev_options_page.dart';
@@ -36,6 +39,17 @@ class TestTab extends HookWidget implements CobbleScreen {
 
     final preferences = useProvider(preferencesProvider);
     final calendarSyncEnabled = useProvider(calendarSyncEnabledProvider);
+    final neededWorkarounds = useProvider(neededWorkaroundsProvider).when(
+      data: (data) => data,
+      loading: () => List<Workaround>.empty(),
+      error: (e, s) => List<Workaround>.empty(),
+    );
+
+    final allApps = useProvider(_appListProvider).when(
+      data: (data) => data,
+      loading: () => List<App>.empty(),
+      error: (e, s) => List<App>.empty(),
+    );
 
     useEffect(() {
       Future.microtask(() async {
@@ -180,8 +194,26 @@ class TestTab extends HookWidget implements CobbleScreen {
                         Text(e.name),
                       ],
                     );
-                  })?.toList() ??
+                  }).toList() ??
                   [],
+              Text("Disable BLE Workarounds: "),
+              ...neededWorkarounds.map(
+                (workaround) => Row(children: [
+                  Switch(
+                    value: workaround.disabled ?? false,
+                    onChanged: (value) async {
+                      await preferences.data?.value
+                          .setWorkaroundDisabled(workaround.name, value);
+                    },
+                  ),
+                  Text(workaround.name)
+                ]),
+              ),
+              Text("Installed apps: "),
+              ...allApps.map(
+                (app) =>
+                    Row(children: [Text("${app.longName} by ${app.company}")]),
+              )
             ],
           ),
         ),
@@ -206,3 +238,10 @@ class TestTab extends HookWidget implements CobbleScreen {
             ));
   }
 }
+
+/// Temporary provider to display debug app list. Will be moved elsewhere
+final FutureProvider<List<App>> _appListProvider = FutureProvider((ref) async {
+  final appDao = await ref.read(appDaoProvider);
+
+  return appDao.getAllInstalledApps();
+});

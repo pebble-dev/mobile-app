@@ -2,10 +2,11 @@ package io.rebble.cobble.bluetooth
 
 import android.bluetooth.*
 import android.content.Context
+import io.rebble.cobble.bluetooth.workarounds.UnboundWatchBeforeConnecting
+import io.rebble.cobble.datasources.FlutterPreferences
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
-import java.io.IOException
 import java.util.*
 
 @FlowPreview
@@ -14,9 +15,18 @@ import java.util.*
  * @param context application context
  * @param cbTimeout the timeout for all callbacks behind the scenes before the suspend function returns null
  */
-suspend fun BluetoothDevice.connectGatt(context: Context, auto: Boolean = false, cbTimeout: Long = 8000): BlueGATTConnection? = BlueGATTConnection(this, cbTimeout).connectGatt(context, auto)
+suspend fun BluetoothDevice.connectGatt(
+        context: Context,
+        flutterPreferences: FlutterPreferences,
+        auto: Boolean = false,
+        cbTimeout: Long = 8000
+): BlueGATTConnection? {
+    val unbindOnTimeout = flutterPreferences.shouldActivateWorkaround(UnboundWatchBeforeConnecting)
 
-class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Long): BluetoothGattCallback() {
+    return BlueGATTConnection(this, cbTimeout).connectGatt(context, auto, unbindOnTimeout)
+}
+
+class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Long) : BluetoothGattCallback() {
     var gatt: BluetoothGatt? = null
 
     private val _connectionStateChanged = MutableStateFlow<ConnectionStateResult?>(null)
@@ -45,14 +55,14 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
 
     open class BlueGATTResult(val gatt: BluetoothGatt?)
 
-    open class StatusResult(gatt: BluetoothGatt?, val status: Int): BlueGATTResult(gatt) {
+    open class StatusResult(gatt: BluetoothGatt?, val status: Int) : BlueGATTResult(gatt) {
         fun isSuccess() = status == BluetoothGatt.GATT_SUCCESS
     }
 
-    class ConnectionStateResult(gatt: BluetoothGatt?, status: Int, val newState: Int): StatusResult(gatt, status)
-    class CharacteristicResult(gatt: BluetoothGatt?, val characteristic: BluetoothGattCharacteristic?, status: Int = BluetoothGatt.GATT_SUCCESS): StatusResult(gatt, status)
-    class DescriptorResult(gatt: BluetoothGatt?, val descriptor: BluetoothGattDescriptor?, status: Int = BluetoothGatt.GATT_SUCCESS): StatusResult(gatt, status)
-    class MTUResult(gatt: BluetoothGatt?, val mtu: Int, status: Int): StatusResult(gatt, status)
+    class ConnectionStateResult(gatt: BluetoothGatt?, status: Int, val newState: Int) : StatusResult(gatt, status)
+    class CharacteristicResult(gatt: BluetoothGatt?, val characteristic: BluetoothGattCharacteristic?, status: Int = BluetoothGatt.GATT_SUCCESS) : StatusResult(gatt, status)
+    class DescriptorResult(gatt: BluetoothGatt?, val descriptor: BluetoothGattDescriptor?, status: Int = BluetoothGatt.GATT_SUCCESS) : StatusResult(gatt, status)
+    class MTUResult(gatt: BluetoothGatt?, val mtu: Int, status: Int) : StatusResult(gatt, status)
 
     override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
         if (this.gatt?.device?.address == null || gatt?.device?.address != this.gatt!!.device.address) return
@@ -95,7 +105,7 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
     }
 
     @FlowPreview
-    suspend fun connectGatt(context: Context, auto: Boolean): BlueGATTConnection? {
+    suspend fun connectGatt(context: Context, auto: Boolean, unbondOnTimeout: Boolean = true): BlueGATTConnection? {
         var res: ConnectionStateResult? = null
         try {
             coroutineScope {
@@ -103,10 +113,10 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
                     gatt = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                             device.connectGatt(context, auto, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_LE, BluetoothDevice.PHY_LE_1M)
-                        }else {
+                        } else {
                             device.connectGatt(context, auto, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_LE)
                         }
-                    }else {
+                    } else {
                         device.connectGatt(context, auto, this@BlueGATTConnection)
                     }
                 }
@@ -115,6 +125,17 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
                 }
             }
         } catch (e: TimeoutCancellationException) {
+            if (unbondOnTimeout) {
+                Timber.w("Gatt timed out. Removing bond and retrying.")
+
+                if (device.bondState == BluetoothDevice.BOND_BONDED) {
+                    device::class.java.getMethod("removeBond").invoke(device)
+                }
+
+                return connectGatt(context, auto, unbondOnTimeout = false)
+            }
+
+
             Timber.e("connectGatt timed out")
         }
         if (res?.status != null && res!!.status != BluetoothGatt.GATT_SUCCESS) {
@@ -122,7 +143,7 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
         }
         return if (res?.isSuccess() == true && res?.newState == BluetoothGatt.STATE_CONNECTED) {
             this
-        }else {
+        } else {
             close()
             null
         }
@@ -194,7 +215,7 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
         var result: DescriptorResult? = null
         try {
             withTimeout(cbTimeout) {
-                result = descriptorWritten.first{ a-> a.descriptor?.uuid == descriptor.uuid && a.descriptor?.characteristic?.uuid == descriptor.characteristic.uuid}
+                result = descriptorWritten.first { a -> a.descriptor?.uuid == descriptor.uuid && a.descriptor?.characteristic?.uuid == descriptor.characteristic.uuid }
             }
         } catch (e: TimeoutCancellationException) {
             Timber.e("writeDescriptor timed out")

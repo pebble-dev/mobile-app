@@ -8,6 +8,7 @@ Future<Database> createTestCobbleDatabase() async {
   await databaseFactoryFfi.deleteDatabase(inMemoryDatabasePath);
 
   final db = await databaseFactoryFfi.openDatabase(inMemoryDatabasePath);
-  createAllCobbleTables(db);
+  createTimelinePinsTable(db);
+  createAppsTable(db);
   return db;
 }

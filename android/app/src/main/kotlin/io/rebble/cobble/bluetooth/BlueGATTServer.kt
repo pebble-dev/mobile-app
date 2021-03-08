@@ -337,9 +337,9 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                         attemptWrite(it)
                         seq = getNextSeq(seq)
                     }
-                }else {
-                    delay(5)
                 }
+
+                delay(5)
             }
         }
     }

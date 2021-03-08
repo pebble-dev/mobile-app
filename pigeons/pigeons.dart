@@ -109,6 +109,42 @@ class AppEntriesPigeon {
   List<String>? packageId;
 }
 
+class PbwAppInfo {
+  bool? isValid;
+  String? uuid;
+  String? shortName;
+  String? longName;
+  String? companyName;
+  int? versionCode;
+  String? versionLabel;
+  Map<String, int>? appKeys;
+  List<String>? capabilities;
+  List<WatchResource>? resources;
+  String? sdkVersion;
+  List<String>? targetPlatforms;
+  WatchappInfo? watchapp;
+}
+
+class WatchappInfo {
+  bool? watchface;
+  bool? hiddenApp;
+  bool? onlyShownOnCommunication;
+}
+
+class WatchResource {
+  String? file;
+  bool? menuIcon;
+  String? name;
+  String? type;
+}
+
+class InstallData {
+  String uri;
+  PbwAppInfo appInfo;
+
+  InstallData(this.uri, this.appInfo);
+}
+
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
@@ -144,6 +180,16 @@ abstract class TimelineCallbacks {
 
   @async
   ActionResponsePigeon handleTimelineAction(ActionTrigger actionTrigger);
+}
+
+@FlutterApi()
+abstract class IntentCallbacks {
+  void openUri(StringWrapper uri);
+}
+
+@FlutterApi()
+abstract class BackgroundAppInstallCallbacks {
+  void beginAppInstall(InstallData installData);
 }
 
 @FlutterApi()
@@ -195,7 +241,11 @@ abstract class NotificationsControl {
 }
 
 @HostApi()
-abstract class AppLifecycleControl {
+abstract class IntentControl {
+  void notifyFlutterReadyForIntents();
+
+  void notifyFlutterNotReadyForIntents();
+
   BooleanWrapper waitForBoot();
 }
 
@@ -278,8 +328,23 @@ abstract class PigeonLogger {
 }
 
 @HostApi()
-abstract class TimelineSyncControl{
+abstract class TimelineSyncControl {
   void syncTimelineToWatchLater();
+}
+
+@HostApi()
+abstract class WorkaroundsControl {
+  // List of workaround ID strings that apply to this device
+  ListWrapper getNeededWorkarounds();
+}
+
+@HostApi()
+abstract class AppInstallControl {
+  @async
+  PbwAppInfo getAppInfo(StringWrapper localPbwUri);
+
+  // Just relay method that triggers beginAppInstall on background flutter side
+  void beginAppInstall(InstallData installData);
 }
 
 @HostApi()
@@ -293,4 +358,6 @@ abstract class PackageDetails {
 @HostApi()
 abstract class KeepUnusedHack {
   void keepPebbleScanDevicePigeon(PebbleScanDevicePigeon cls);
+
+  void keepWatchResource(WatchResource cls);
 }

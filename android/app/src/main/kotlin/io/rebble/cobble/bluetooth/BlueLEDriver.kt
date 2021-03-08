@@ -3,6 +3,7 @@ package io.rebble.cobble.bluetooth
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGattCharacteristic
 import android.content.Context
+import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.receivers.BluetoothBondReceiver
 import io.rebble.cobble.util.toBytes
 import io.rebble.cobble.util.toHexString
@@ -17,7 +18,8 @@ import timber.log.Timber
 
 class BlueLEDriver(
         private val context: Context,
-        private val protocolHandler: ProtocolHandler
+        private val protocolHandler: ProtocolHandler,
+        private val flutterPreferences: FlutterPreferences
 ) : BlueIO {
     private var connectivityWatcher: ConnectivityWatcher? = null
     private var connectionParamManager: ConnectionParamManager? = null
@@ -157,7 +159,7 @@ class BlueLEDriver(
                             connectionStatusChannel.offer(false)
                             return@launch
                         }
-                        gatt = targetPebble.connectGatt(context)
+                        gatt = targetPebble.connectGatt(context, flutterPreferences)
                         if (gatt == null) {
                             Timber.e("connectGatt null")
                             connectionStatusChannel.offer(false)
