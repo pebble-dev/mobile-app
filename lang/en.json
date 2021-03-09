@@ -1,6 +1,9 @@
 {
-    "Email": "Email",
-    "Password": "Password",
-    "Sign in": "Sign in",
-    "hello_world": "Hello world!"
+  "common": {
+    "skip": "skip"
+  },
+  "first_run": {
+    "title": "Welcome to Rebble!",
+    "fab": "LET'S GET STARTED"
+  }
 }

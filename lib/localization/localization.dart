@@ -1,80 +1,93 @@
 import 'dart:convert';
 
+import 'package:cobble/localization/model/model_generator.model.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-
-import 'translations.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 class Localization {
-  final Translations _translations;
+  final Language _language;
+  final StateError _error;
 
-  final RegExp _replaceArgRegex = RegExp(r'{}');
-
-  Localization(this._translations);
+  Localization({
+    Language language,
+    StateError error,
+  })  : _language = language,
+        _error = error;
 
   static Localization _instance;
 
-  static Localization get instance =>
-      _instance ??
-      StateError(
+  static Localization get instance {
+    if (_instance == null) {
+      throw StateError(
         'Localization.instance is null, call Localization.load first. '
         'CobbleLocalizationDelegate should call it automatically, '
         'did you configure it correctly?',
       );
+    }
+    return _instance;
+  }
 
   static Future<Localization> load(Locale locale) async {
     String jsonString = await rootBundle.loadString(
       'lang/${locale.languageCode}.json',
     );
-    Map<String, dynamic> jsonMap = json.decode(jsonString);
+    Localization instance;
+    try {
+      final language = Language.fromJson(json.decode(jsonString));
+      instance = Localization(language: language);
+    } on BadKeyException catch (e) {
+      instance = Localization(error: StateError(e.message));
+    }
 
-    _instance = Localization(Translations(jsonMap));
+    assert(instance != null);
+    _instance = instance;
     return _instance;
   }
+}
 
-  String tr(
-    String key, {
-    List<String> args,
-    Map<String, String> namedArgs,
+extension Tr on String {
+  String args({
+    List<String> positional,
+    Map<String, String> named,
   }) {
-    String res = _resolve(key);
-    res = _replaceNamedArgs(res, namedArgs);
-    return _replaceArgs(res, args);
+    String value = this;
+    value = _replaceNamedArgs(value, named);
+    value = _replaceArgs(value, positional);
+    return value;
   }
 
   String _replaceArgs(String res, List<String> args) {
     if (args == null || args.isEmpty) return res;
-    args.forEach((String str) => res = res.replaceFirst(_replaceArgRegex, str));
+    args.forEach((str) => res = res.replaceFirst(RegExp(r'{}'), str));
     return res;
   }
 
   String _replaceNamedArgs(String res, Map<String, String> args) {
     if (args == null || args.isEmpty) return res;
-    args.forEach((String key, String value) =>
-        res = res.replaceAll(RegExp('{$key}'), value));
+    args.forEach(
+      (key, value) => res = res.replaceAll(RegExp('{$key}'), value),
+    );
     return res;
-  }
-
-  String _resolve(String key, {bool logging = true}) {
-    var resource = _translations?.get(key);
-    if (resource == null) {
-      if (logging) {
-        print('Localization key [$key] not found');
-      }
-      return key;
-    }
-    return resource;
   }
 }
 
-extension Tr on String {
-  String tr({
-    List<String> args,
-    Map<String, String> namedArgs,
-  }) =>
-      Localization.instance.tr(
-        this,
-        args: args,
-        namedArgs: namedArgs,
-      );
+/// Singleton with parsed locale file.
+///
+/// Example usage:
+/// ```dart
+/// Text(
+///   tr.splash_page.title.args(
+///     positional: ['first', 'second'],
+///     named: {
+///       'param': 'value',
+///     },
+///   ),
+/// )
+/// ```
+Language get tr {
+  if (Localization.instance._error != null) {
+    throw Localization.instance._error;
+  }
+  return Localization.instance._language;
 }
