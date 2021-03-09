@@ -116,9 +116,9 @@ class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, Notifi
 
   @override
   Future<TimelinePinPigeon?> handleNotification(NotificationPigeon arg) async {
-    TimelinePin? notif = await notificationManager.handleNotification(arg);
+    TimelinePin notif = await notificationManager.handleNotification(arg);
 
-    return notif != null ? notif.toPigeon() : null;
+    return notif.toPigeon();
   }
 
   @override
@@ -130,5 +130,18 @@ class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, Notifi
   Future<BooleanWrapper> shouldNotify(NotifChannelPigeon arg) async {
     NotificationChannel? channel = await _notificationChannelDao.getNotifChannelByIds(arg.channelId, arg.packageId);
     return BooleanWrapper()..value=channel?.shouldNotify ?? true;
+  }
+
+  @override
+  void updateChannel(NotifChannelPigeon arg) {
+    if (arg.delete) {
+      _notificationChannelDao.deleteNotifChannelByIds(arg.channelId, arg.packageId);
+    }else {
+      _notificationChannelDao.getNotifChannelByIds(arg.channelId, arg.packageId).then((existing) {
+        final shouldNotify = existing?.shouldNotify ?? true;
+        final channel = NotificationChannel(arg.packageId, arg.channelId, shouldNotify, name: arg.channelName, description: arg.channelDesc);
+        _notificationChannelDao.insertOrUpdateNotificationChannel(channel);
+      });
+    }
   }
 }

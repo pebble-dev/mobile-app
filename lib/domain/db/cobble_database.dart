@@ -39,6 +39,8 @@ void createAllCobbleTables(Database db) async {
     CREATE TABLE $tableChannels(
       channelId TEXT NOT NULL,
       packageId TEXT NOT NULL,
+      name TEXT,
+      description TEXT,
       shouldNotify INTEGER NOT NULL,
       UNIQUE(channelId, packageId)
     )

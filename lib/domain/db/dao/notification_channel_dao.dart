@@ -49,6 +49,16 @@ class NotificationChannelDao {
 
     return receivedChannels.map((e) => NotificationChannel.fromMap(e)).toList();
   }
+
+  Future<int> deleteNotifChannelByIds(String channelId, String packageId) async {
+    final db = await _dbFuture;
+
+    return db.delete(
+      tableChannels,
+      where: "channelId = ? AND packageId = ?",
+      whereArgs: [channelId, packageId]
+    );
+  }
 }
 
 final AutoDisposeProvider<NotificationChannelDao> notifChannelDaoProvider = Provider.autoDispose((ref) {

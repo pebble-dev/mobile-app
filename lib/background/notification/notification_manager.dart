@@ -139,8 +139,9 @@ class NotificationManager {
       TimelineAttribute.title("Mute app")
     ]));
     if (notif.tagId != null) {
+      final channel = await _notificationChannelDao.getNotifChannelByIds(notif.tagId, notif.packageId);
       actions.add(TimelineAction(META_ACTION_MUTE_TAG, actionTypeGeneric, [
-        TimelineAttribute.title("Mute tag\n'${notif.tagName}'")
+        TimelineAttribute.title("Mute tag\n'${channel?.name ?? notif.tagId}'")
       ]));
     }
 

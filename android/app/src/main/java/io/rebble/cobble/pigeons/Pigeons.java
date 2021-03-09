@@ -229,10 +229,6 @@ public class Pigeons {
     public String getTagId() { return tagId; }
     public void setTagId(String setterArg) { this.tagId = setterArg; }
 
-    private String tagName;
-    public String getTagName() { return tagName; }
-    public void setTagName(String setterArg) { this.tagName = setterArg; }
-
     private String title;
     public String getTitle() { return title; }
     public void setTitle(String setterArg) { this.title = setterArg; }
@@ -263,7 +259,6 @@ public class Pigeons {
       toMapResult.put("notifId", notifId);
       toMapResult.put("appName", appName);
       toMapResult.put("tagId", tagId);
-      toMapResult.put("tagName", tagName);
       toMapResult.put("title", title);
       toMapResult.put("text", text);
       toMapResult.put("category", category);
@@ -282,8 +277,6 @@ public class Pigeons {
       fromMapResult.appName = (String)appName;
       Object tagId = map.get("tagId");
       fromMapResult.tagId = (String)tagId;
-      Object tagName = map.get("tagName");
-      fromMapResult.tagName = (String)tagName;
       Object title = map.get("title");
       fromMapResult.title = (String)title;
       Object text = map.get("text");
@@ -310,10 +303,25 @@ public class Pigeons {
     public String getChannelId() { return channelId; }
     public void setChannelId(String setterArg) { this.channelId = setterArg; }
 
+    private String channelName;
+    public String getChannelName() { return channelName; }
+    public void setChannelName(String setterArg) { this.channelName = setterArg; }
+
+    private String channelDesc;
+    public String getChannelDesc() { return channelDesc; }
+    public void setChannelDesc(String setterArg) { this.channelDesc = setterArg; }
+
+    private Boolean delete;
+    public Boolean getDelete() { return delete; }
+    public void setDelete(Boolean setterArg) { this.delete = setterArg; }
+
     HashMap toMap() {
       HashMap<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("packageId", packageId);
       toMapResult.put("channelId", channelId);
+      toMapResult.put("channelName", channelName);
+      toMapResult.put("channelDesc", channelDesc);
+      toMapResult.put("delete", delete);
       return toMapResult;
     }
     static NotifChannelPigeon fromMap(HashMap map) {
@@ -322,6 +330,12 @@ public class Pigeons {
       fromMapResult.packageId = (String)packageId;
       Object channelId = map.get("channelId");
       fromMapResult.channelId = (String)channelId;
+      Object channelName = map.get("channelName");
+      fromMapResult.channelName = (String)channelName;
+      Object channelDesc = map.get("channelDesc");
+      fromMapResult.channelDesc = (String)channelDesc;
+      Object delete = map.get("delete");
+      fromMapResult.delete = (Boolean)delete;
       return fromMapResult;
     }
   }
@@ -1358,6 +1372,14 @@ public class Pigeons {
         @SuppressWarnings("ConstantConditions")
         BooleanWrapper output = BooleanWrapper.fromMap(outputMap);
         callback.reply(output);
+      });
+    }
+    public void updateChannel(NotifChannelPigeon argInput, Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.NotificationListening.updateChannel", new StandardMessageCodec());
+      HashMap inputMap = argInput.toMap();
+      channel.send(inputMap, channelReply -> {
+        callback.reply(null);
       });
     }
   }

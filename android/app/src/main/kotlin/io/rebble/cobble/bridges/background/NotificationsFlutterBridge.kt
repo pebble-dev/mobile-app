@@ -7,7 +7,9 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.graphics.Color
 import android.graphics.ColorSpace
+import android.os.Build
 import android.os.Bundle
+import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
@@ -107,7 +109,7 @@ class NotificationsFlutterBridge @Inject constructor(
 
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun handleNotification(packageId: String,
-                                   notifId: Long, tagId: String?, tagName: String?, title: String,
+                                   notifId: Long, tagId: String?, title: String,
                                    text: String, category: String, color: Int, messages: List<NotificationMessage>,
                                    actions: List<NotificationAction>): Pair<TimelineItem, BlobResponse.BlobStatus>? {
         if (notifListening == null) {
@@ -137,7 +139,6 @@ class NotificationsFlutterBridge @Inject constructor(
             notif.appName = context.packageManager.getApplicationLabel(context.packageManager.getApplicationInfo(packageId, 0)) as String
             notif.notifId = notifId
             notif.tagId = tagId
-            notif.tagName = tagName
             notif.title = title
             notif.text = text
             notif.category = category
@@ -197,5 +198,19 @@ class NotificationsFlutterBridge @Inject constructor(
         val id = Pigeons.StringWrapper()
         id.value = uuid.toString()
         notifListening?.dismissNotification(id) {}
+    }
+
+    fun updateChannel(channelId: String, packageId: String, delete: Boolean, name: String?, desc: String?) {
+        val pigeon = Pigeons.NotifChannelPigeon()
+        pigeon.channelId = channelId
+        pigeon.packageId = packageId
+        pigeon.delete = delete
+        if (!delete) {
+            requireNotNull(name)
+            requireNotNull(desc)
+        }
+        pigeon.channelName = name
+        pigeon.channelDesc = desc
+        notifListening?.updateChannel(pigeon) {}
     }
 }

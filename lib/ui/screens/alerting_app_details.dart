@@ -76,7 +76,8 @@ class AlertingAppDetails extends HookWidget implements CobbleScreen {
                         return ListView(
                           children: snapshot.data!.map((e) =>
                               CobbleTile.setting
-                                (title: e.channelId,
+                                (title: e.name ?? e.channelId,
+                                  subtitle: e.description,
                                   child: Switch(
                                     value: e.shouldNotify,
                                     onChanged: (value) {

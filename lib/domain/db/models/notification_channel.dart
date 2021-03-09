@@ -9,12 +9,18 @@ part 'notification_channel.g.dart';
 class NotificationChannel {
   final String packageId;
   final String channelId;
+  final String? name;
+  final String? description;
   bool shouldNotify;
 
   NotificationChannel(
     this.packageId,
     this.channelId,
-    this.shouldNotify
+    this.shouldNotify,
+  {
+    this.name = null,
+    this.description = null
+  }
   );
 
   Map<String, dynamic> toMap() {

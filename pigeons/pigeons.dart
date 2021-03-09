@@ -95,7 +95,6 @@ class NotificationPigeon {
   int? notifId;
   String? appName;
   String? tagId;
-  String? tagName;
   String? title;
   String? text;
   String? category;
@@ -112,6 +111,9 @@ class AppEntriesPigeon {
 class NotifChannelPigeon {
   String? packageId;
   String? channelId;
+  String? channelName;
+  String? channelDesc;
+  bool? delete;
 }
 
 @FlutterApi()
@@ -158,6 +160,7 @@ abstract class NotificationListening {
   void dismissNotification(StringWrapper itemId);
   @async
   BooleanWrapper shouldNotify(NotifChannelPigeon channel);
+  void updateChannel(NotifChannelPigeon channel);
 }
 
 @HostApi()
