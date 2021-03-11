@@ -9,13 +9,14 @@ import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/entities/pbw_app_info_extension.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/logging.dart';
+import 'package:cobble/domain/timeline/watch_apps_syncer.dart';
 import 'package:cobble/domain/timeline/watch_timeline_syncer.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/util/container_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid_type/uuid_type.dart';
 
 import 'actions/master_action_handler.dart';
@@ -26,10 +27,16 @@ void main_background() {
   BackgroundReceiver();
 }
 
-class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, NotificationListening, BackgroundAppInstallCallbacks {
+class BackgroundReceiver
+    implements
+        CalendarCallbacks,
+        TimelineCallbacks,
+        NotificationListening,
+        BackgroundAppInstallCallbacks {
   final container = ProviderContainer();
   late CalendarSyncer calendarSyncer;
   late WatchTimelineSyncer watchTimelineSyncer;
+  late WatchAppsSyncer watchAppsSyncer;
   Future<Preferences>? preferences;
   late TimelinePinDao timelinePinDao;
   late MasterActionHandler masterActionHandler;
@@ -48,6 +55,7 @@ class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, Notifi
     calendarSyncer = container.listen(calendarSyncerProvider!).read();
     notificationManager = container.listen(notificationManagerProvider).read();
     watchTimelineSyncer = container.listen(watchTimelineSyncerProvider!).read();
+    watchAppsSyncer = container.listen(watchAppSyncerProvider).read();
     timelinePinDao = container.listen(timelinePinDaoProvider!).read();
     appDao = container.listen(appDaoProvider).read();
     preferences = Future.microtask(() async {
@@ -91,6 +99,8 @@ class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, Notifi
       await watchTimelineSyncer.clearAllPinsFromWatchAndResync();
     } else {
       await syncTimelineToWatch();
+      Log.d('Watch connected');
+      await watchAppsSyncer.syncAppDatabaseWithWatch();
     }
 
     (await preferences)!.setLastConnectedWatchAddress(watch.address!);
@@ -146,5 +156,8 @@ class BackgroundReceiver implements CalendarCallbacks, TimelineCallbacks, Notifi
         appOrder: allApps.length);
 
     await appDao.insertOrUpdateApp(newApp);
+
+    final blobDbSyncSuccess = await watchAppsSyncer.syncAppDatabaseWithWatch();
+    Log.d("Blob sync success: ${blobDbSyncSuccess}");
   }
 }

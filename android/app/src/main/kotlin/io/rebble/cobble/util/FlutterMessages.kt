@@ -4,10 +4,7 @@ import io.flutter.plugin.common.BasicMessageChannel
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.StandardMessageCodec
 import io.rebble.cobble.pigeons.Pigeons
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -59,6 +56,9 @@ fun <T> CoroutineScope.launchPigeonResult(result: Pigeons.Result<T>,
                                           coroutineContext: CoroutineContext = EmptyCoroutineContext,
                                           callback: suspend () -> T) {
     launch(coroutineContext) {
-        result.success(callback())
+        val callbackResult = callback()
+        withContext(Dispatchers.Main.immediate) {
+            result.success(callbackResult)
+        }
     }
 }

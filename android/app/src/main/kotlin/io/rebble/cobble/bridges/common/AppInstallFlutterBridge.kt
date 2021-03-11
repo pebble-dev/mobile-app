@@ -6,29 +6,40 @@ import com.squareup.moshi.Moshi
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.background.BackgroundAppInstallBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
-import io.rebble.cobble.data.pbw.PbwAppInfo
-import io.rebble.cobble.data.pbw.toPigeon
+import io.rebble.cobble.data.pbw.appinfo.PbwAppInfo
+import io.rebble.cobble.data.pbw.appinfo.toPigeon
+import io.rebble.cobble.data.pbw.manifest.PbwManifest
+import io.rebble.cobble.datasources.WatchMetadataStore
+import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.util.findFile
 import io.rebble.cobble.util.launchPigeonResult
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import io.rebble.cobble.util.zippedSource
+import io.rebble.libpebblecommon.disk.PbwBinHeader
+import io.rebble.libpebblecommon.metadata.WatchType
+import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
+import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
+import io.rebble.libpebblecommon.services.blobdb.BlobDBService
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.first
 import okio.buffer
 import okio.sink
 import okio.source
 import timber.log.Timber
 import java.io.File
 import java.io.InputStream
-import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import javax.inject.Inject
+import kotlin.random.Random
 
+@Suppress("BlockingMethodInNonBlockingContext")
 class AppInstallFlutterBridge @Inject constructor(
         private val context: Context,
         private val moshi: Moshi,
         private val coroutineScope: CoroutineScope,
         private val backgroundAppInstallBridge: BackgroundAppInstallBridge,
+        private val watchMetadataStore: WatchMetadataStore,
+        private val blobDBService: BlobDBService,
         bridgeLifecycleController: BridgeLifecycleController
 ) : FlutterBridge, Pigeons.AppInstallControl {
     init {
@@ -60,18 +71,8 @@ class AppInstallFlutterBridge @Inject constructor(
             val stream = context.contentResolver.openInputStream(Uri.parse(uri))
 
             ZipInputStream(stream).use { zipInputStream ->
-                var nextEntry: ZipEntry? = zipInputStream.nextEntry
-
-                while (nextEntry != null) {
-                    if (nextEntry.name == "appinfo.json") {
-                        return@use parseAppInfoJson(zipInputStream)
-                    }
-
-                    zipInputStream.closeEntry()
-                    nextEntry = zipInputStream.nextEntry
-                }
-
-                null
+                zipInputStream.findFile("appinfo.json") ?: return@use null
+                parseAppInfoJson(zipInputStream)
             }
         } catch (e: Exception) {
             Timber.e(e, "App parsing failed")
@@ -80,13 +81,11 @@ class AppInstallFlutterBridge @Inject constructor(
     }
 
 
-    @Suppress("BlockingMethodInNonBlockingContext")
     override fun beginAppInstall(installData: Pigeons.InstallData) {
         coroutineScope.launch {
             // Copy pbw file to the app's folder
-            val appsDir = File(context.filesDir, "apps")
-            appsDir.mkdirs()
-            val targetFileName = File(appsDir, "${installData.appInfo.uuid}.pbw")
+            val appUuid = installData.appInfo.uuid
+            val targetFileName = getAppFile(appUuid)
 
             val success = withContext(Dispatchers.IO) {
                 val openInputStream = context.contentResolver
@@ -116,6 +115,83 @@ class AppInstallFlutterBridge @Inject constructor(
                 backgroundAppInstallBridge.installAppNow(installData.uri, installData.appInfo)
             }
         }
+    }
+
+    override fun insertAppIntoBlobDb(arg: Pigeons.StringWrapper, result: Pigeons.Result<Pigeons.NumberWrapper>) {
+        coroutineScope.launchPigeonResult(result, Dispatchers.IO) {
+            NumberWrapper(try {
+                val appUuid = arg.value
+
+                val appFile = getAppFile(appUuid)
+                if (!appFile.exists()) {
+                    error("PBW file $appUuid missing")
+                }
+
+
+                // Wait some time for metadata to become available in case this has been called
+                // Right after watch has been connected
+
+                val hardwarePlatformNumber = withTimeoutOrNull(2_000) {
+                    watchMetadataStore.lastConnectedWatchMetadata.first { it != null }
+                }
+                        ?.running
+                        ?.hardwarePlatform
+                        ?.get()
+                        ?: error("Watch not connected")
+
+                // TODO Always install basalt version for now,
+                // until compatibility logic is ready
+                val watchType = WatchType.BASALT
+                /*WatchHardwarePlatform.fromProtocolNumber(hardwarePlatformNumber)
+                        ?.watchType
+                        ?: error("Unknown hardware platform $hardwarePlatformNumber")*/
+
+                val manifestFileName = "${watchType.codename}/manifest.json"
+                val manifestFile = appFile.zippedSource(manifestFileName)
+                        ?.buffer()
+                        ?: error("PBW does not contain $manifestFileName")
+
+                val manifest = manifestFile.use {
+                    moshi.adapter(PbwManifest::class.java).nonNull().fromJson(it)!!
+                }
+
+                Timber.d("Manifest %s", manifest)
+
+                val appBlobFileName = manifest.application.name
+                val appBlobDbFile = appFile
+                        .zippedSource("${watchType.codename}/$appBlobFileName")
+                        ?: error("Missing pbw file $appBlobFileName")
+
+                val headerData = appBlobDbFile
+                        .buffer().use { it.readByteArray(PbwBinHeader.SIZE.toLong()) }
+
+                Timber.d("App Blob %s", appBlobFileName)
+
+                val parsedHeader = PbwBinHeader.parseFileHeader(headerData.toUByteArray())
+
+                val insertResult = blobDBService.send(
+                        BlobCommand.InsertCommand(
+                                Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
+                                BlobCommand.BlobDatabase.App,
+                                parsedHeader.uuid.toBytes(),
+                                parsedHeader.toBlobDbApp().toBytes()
+                        )
+                )
+
+                insertResult.responseValue.value.toInt()
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to send PBW file to the BlobDB")
+                BlobResponse.BlobStatus.GeneralFailure.value.toInt()
+            })
+        }
+
+    }
+
+    private fun getAppFile(appUuid: String): File {
+        val appsDir = File(context.filesDir, "apps")
+        appsDir.mkdirs()
+        val targetFileName = File(appsDir, "$appUuid.pbw")
+        return targetFileName
     }
 
     private fun parseAppInfoJson(stream: InputStream): PbwAppInfo? {

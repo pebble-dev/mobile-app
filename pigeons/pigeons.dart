@@ -345,6 +345,11 @@ abstract class AppInstallControl {
 
   // Just relay method that triggers beginAppInstall on background flutter side
   void beginAppInstall(InstallData installData);
+
+  /// Read header from pbw file already in Cobble's storage and send it to
+  /// BlobDB on the watch
+  @async
+  NumberWrapper insertAppIntoBlobDb(StringWrapper uuidString);
 }
 
 @HostApi()
