@@ -1,9 +1,7 @@
 import 'dart:core';
 
 import 'package:cobble/domain/entities/base_obj.dart';
-import 'package:json_annotation/json_annotation.dart';
 
-@JsonSerializable()
 class PebbleScanDevice extends BaseObj {
   String name;
   int address;
