@@ -8,6 +8,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
+import io.rebble.cobble.datasources.json.BooleanOrStringAdapter
 import io.rebble.cobble.errors.GlobalExceptionHandler
 import kotlinx.coroutines.CoroutineExceptionHandler
 
@@ -28,7 +29,10 @@ abstract class AppModule {
         @Provides
         @Reusable
         fun provideMoshi(): Moshi {
-            return Moshi.Builder().build()
+            return Moshi
+                    .Builder()
+                    .add(BooleanOrStringAdapter())
+                    .build()
         }
 
         @Provides

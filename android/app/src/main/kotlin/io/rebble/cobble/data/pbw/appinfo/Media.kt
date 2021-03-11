@@ -1,14 +1,16 @@
-package io.rebble.cobble.data.pbw
+package io.rebble.cobble.data.pbw.appinfo
 
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import io.rebble.cobble.datasources.json.BooleanOrString
 import io.rebble.cobble.pigeons.Pigeons
 
 @JsonClass(generateAdapter = true)
 data class Media(
         @Json(name = "file")
         val resourceFile: String,
+        @BooleanOrString
         val menuIcon: Boolean = false,
         val name: String,
         val type: String

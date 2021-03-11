@@ -1,4 +1,4 @@
-package io.rebble.cobble.data.pbw
+package io.rebble.cobble.data.pbw.appinfo
 
 
 import com.squareup.moshi.JsonClass
