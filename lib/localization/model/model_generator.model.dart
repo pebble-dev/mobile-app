@@ -6,6 +6,7 @@
 
 import 'package:cobble/localization/model/annotations.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'dart:ui';
 
 part 'model_generator.model.g.dart';
 
@@ -47,3 +48,8 @@ class LanguageFirstRun {
   factory LanguageFirstRun.fromJson(Map<String, dynamic> json) =>
       _$LanguageFirstRunFromJson(json);
 }
+
+final supportedLocales = [
+  Locale('es'),
+  Locale('en'),
+];

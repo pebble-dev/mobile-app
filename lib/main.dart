@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:cobble/background/main_background.dart';
 import 'package:cobble/localization/localization_delegate.dart';
+import 'package:cobble/localization/model/model_generator.model.dart';
 import 'package:cobble/ui/splash/splash_page.dart';
 import 'package:cobble/ui/theme/cobble_scheme.dart';
 import 'package:cobble/ui/theme/cobble_theme.dart';
@@ -60,11 +61,6 @@ class MyApp extends HookWidget {
     }, ["one-time"]);
 
     final brightness = usePlatformBrightness();
-
-    final supportedLocales = [
-      Locale('en'),
-      Locale('es'),
-    ];
 
     return CobbleScheme(
       schemeData: CobbleSchemeData.fromBrightness(brightness),

@@ -17,7 +17,8 @@ class ModelGenerator extends Generator {
       final langs = await _findLangs(buildStep);
       _validateLangs(langs);
       final models = _extractModels(langs.first);
-      return _generateFile(models);
+      final locales = _extractLocales(langs);
+      return _generateFile(models, locales);
     } catch (e) {
       print(e);
       return null;
@@ -99,6 +100,35 @@ class ModelGenerator extends Generator {
     return models;
   }
 
+  List<String> _extractLocales(List<Lang> langs) {
+    return langs.map((lang) {
+      final filename = lang.assetId.path.split('/').last;
+      final match =
+          RegExp(r'(?<languageCode>\S+?)(?:[-_](?<countryCode>\S+?))?\.json')
+              .firstMatch(
+        filename,
+      );
+
+      /// dart:ui (from Flutter engine) isn't available in generators so we
+      /// can't use Locale class. We must generate output string directly from
+      /// regex match. :(
+      final languageCode = match?.namedGroup('languageCode');
+      final countryCode = match?.namedGroup('countryCode');
+      if (languageCode != null && countryCode != null) {
+        return "Locale('$languageCode', '$countryCode')";
+      } else {
+        if (languageCode != null) {
+          return "Locale('$languageCode')";
+        }
+      }
+
+      throw AssertionError(
+        "$filename isn't recognized as locale, "
+        "file's name should be the same as output of Locale().toString()",
+      );
+    }).toList();
+  }
+
   List<Model> _extractModelsInFragment(JsonFragment fragment) {
     final fields = fragment.fragment.keys.map((key) {
       if (fragment.fragment[key] is String) {
@@ -140,14 +170,19 @@ ${model.fields.map((field) => '''
     return text;
   }
 
-  String _generateFile(List<Model> models) {
+  String _generateFile(List<Model> models, List<String> locales) {
     final text = '''
 import 'package:cobble/localization/model/annotations.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'dart:ui';
 
 part 'model_generator.model.g.dart';
 
 ${models.map((model) => _generateModel(model)).join('\n\n')}
+
+final supportedLocales = [
+${locales.map((l) => '  $l,').join('\n')}
+];
 ''';
     return text;
   }
