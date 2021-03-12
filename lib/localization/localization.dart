@@ -46,32 +46,6 @@ class Localization {
   }
 }
 
-extension Tr on String {
-  String args({
-    List<String> positional,
-    Map<String, String> named,
-  }) {
-    String value = this;
-    value = _replaceNamedArgs(value, named);
-    value = _replaceArgs(value, positional);
-    return value;
-  }
-
-  String _replaceArgs(String res, List<String> args) {
-    if (args == null || args.isEmpty) return res;
-    args.forEach((str) => res = res.replaceFirst(RegExp(r'{}'), str));
-    return res;
-  }
-
-  String _replaceNamedArgs(String res, Map<String, String> args) {
-    if (args == null || args.isEmpty) return res;
-    args.forEach(
-      (key, value) => res = res.replaceAll(RegExp('{$key}'), value),
-    );
-    return res;
-  }
-}
-
 /// Singleton with parsed locale file.
 ///
 /// Example usage:

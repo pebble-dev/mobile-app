@@ -154,7 +154,7 @@ class ModelGenerator extends Generator {
   List<Model> _extractModelsInFragment(JsonFragment fragment) {
     final fields = fragment.fragment.keys.map((key) {
       if (fragment.fragment[key] is String) {
-        return Field('String', key);
+        return Field('String', key, value: fragment.fragment[key]);
       } else {
         return Field('${fragment.path}.$key'.pascalCase, key);
       }
@@ -174,6 +174,85 @@ class ModelGenerator extends Generator {
     return [model, ...children];
   }
 
+  String _generateHelpers() {
+    return '''
+String _args(String value, {
+  List<String> positional,
+  Map<String, String> named,
+}) {
+  named.forEach(
+    (key, _value) => value = value.replaceAll(RegExp('{\$key}'), _value),
+  );
+  positional.forEach((str) => value = value.replaceFirst(RegExp(r'{}'), str));
+  return value;
+}
+''';
+  }
+
+  String _generateField(Field field) {
+    if (!field.hasParams) {
+      return '''
+  @JsonKey(
+    name: '${field.sourceName}',
+    required: true,
+    disallowNullValue: true,
+  )
+  final ${field.type} ${field.publicName};
+''';
+    }
+
+    final positionalArguments = List.generate(
+      field.positional.length,
+      (index) => 'String pos$index, ',
+    ).join('');
+    final positional = '[${List.generate(
+      field.positional.length,
+      (index) => 'pos$index, ',
+    ).join('')}]';
+
+    String namedArguments = List.generate(
+      field.named.length,
+      (index) => 'String ${field.named[index].group(1)}, ',
+    ).join('');
+    if (namedArguments.isNotEmpty) {
+      namedArguments = '{$namedArguments}';
+    }
+    final named = '{${List.generate(
+      field.named.length,
+      (index) =>
+          "'${field.named[index].group(1)}': ${field.named[index].group(1)}, ",
+    ).join('')}}';
+
+    return '''
+  @JsonKey(
+    name: '${field.sourceName}',
+    required: true,
+    disallowNullValue: true,
+  )
+  @Deprecated('This localized string requires parameters, use ${field.publicName}() instead')
+  final ${field.type} ${field.publicName}Raw;
+  ${field.type} ${field.publicName}($positionalArguments$namedArguments) =>
+    _args(
+      ${field.publicName}Raw, // ignore: deprecated_member_use_from_same_package
+      positional: $positional, named: $named,);
+''';
+  }
+
+  String _generateConstructor(Model model) {
+    final className = model.name.pascalCase;
+    final args = model.fields.map((f) {
+      if (f.hasParams)
+        return 'this.${f.publicName}Raw';
+      else
+        return 'this.${f.publicName}';
+    }).join(', ');
+    String attempt = '$className($args);';
+    if (attempt.length > 77) {
+      attempt = '$className($args,);';
+    }
+    return attempt;
+  }
+
   String _generateModel(Model model) {
     final className = model.name.pascalCase;
     final text = '''
@@ -183,16 +262,9 @@ class ModelGenerator extends Generator {
   disallowUnrecognizedKeys: true,
 )
 class $className {
-${model.fields.map((field) => '''
-  @JsonKey(
-    name: '${field.name}',
-    required: true,
-    disallowNullValue: true,
-  )
-  final ${field.type} ${field.name.camelCase};
-''').join('\n')}
+${model.fields.map(_generateField).join('\n')}
 
-  $className(${model.fields.map((f) => 'this.${f.name.camelCase}').join(', ')});
+  ${_generateConstructor(model)}
 
   factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);
 }
@@ -206,6 +278,8 @@ import 'package:json_annotation/json_annotation.dart';
 import 'dart:ui';
 
 part 'model_generator.model.g.dart';
+
+${_generateHelpers()}
 
 ${models.map((model) => _generateModel(model)).join('\n\n')}
 
@@ -256,7 +330,50 @@ class Model {
 
 class Field {
   final String type;
-  final String name;
+  final String sourceName;
+  final String publicName;
+  final List<RegExpMatch> positional;
+  final List<RegExpMatch> named;
 
-  Field(this.type, this.name);
+  Field._(
+    this.type,
+    this.sourceName,
+    this.publicName,
+    this.positional,
+    this.named,
+  );
+
+  factory Field(String type, String name, {String value}) {
+    final positional = RegExp(r'{}').allMatches(value ?? '').toList();
+    final named = RegExp(r'{(\S+?)}').allMatches(value ?? '').toList();
+    named.forEach((m) {
+      final param = m.group(1);
+      if (param.camelCase != param) {
+        throw AssertionError(
+          "String '$name' contains named parameter '$param' with invalid case, "
+          "only camelCased named parameters are supported.",
+        );
+      }
+    });
+    if (positional.isNotEmpty || named.isNotEmpty) {
+      assert(type == 'String');
+      return Field._(
+        type,
+        name,
+        name.camelCase,
+        positional,
+        named,
+      );
+    } else {
+      return Field._(
+        type,
+        name,
+        name.camelCase,
+        [],
+        [],
+      );
+    }
+  }
+
+  bool get hasParams => positional.isNotEmpty || named.isNotEmpty;
 }

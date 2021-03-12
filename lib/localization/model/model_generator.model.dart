@@ -9,6 +9,18 @@ import 'dart:ui';
 
 part 'model_generator.model.g.dart';
 
+String _args(
+  String value, {
+  List<String> positional,
+  Map<String, String> named,
+}) {
+  named.forEach(
+    (key, _value) => value = value.replaceAll(RegExp('{$key}'), _value),
+  );
+  positional.forEach((str) => value = value.replaceFirst(RegExp(r'{}'), str));
+  return value;
+}
+
 @JsonSerializable(
   createToJson: false,
   nullable: false,
