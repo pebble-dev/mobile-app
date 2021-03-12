@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:cobble/background/main_background.dart';
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/localization/localization_delegate.dart';
 import 'package:cobble/localization/model/model_generator.model.dart';
 import 'package:cobble/ui/splash/splash_page.dart';
@@ -65,7 +66,7 @@ class MyApp extends HookWidget {
     return CobbleScheme(
       schemeData: CobbleSchemeData.fromBrightness(brightness),
       child: MaterialApp(
-        title: 'Cobble',
+        title: tr.common.title,
         theme: CobbleTheme.appTheme(brightness),
         home: SplashPage(),
         // List all of the app's supported locales here

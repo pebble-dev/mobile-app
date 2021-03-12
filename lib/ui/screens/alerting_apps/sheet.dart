@@ -1,3 +1,4 @@
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/components/cobble_form.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
@@ -14,6 +15,20 @@ enum AppSource {
   Phone,
   @JsonValue("Watch only")
   Watch,
+}
+
+extension on AppSource {
+  String toUiString() {
+    switch (this) {
+      case AppSource.All:
+        return tr.alertingAppsFilter.appSource.all;
+      case AppSource.Phone:
+        return tr.alertingAppsFilter.appSource.phone;
+      case AppSource.Watch:
+        return tr.alertingAppsFilter.appSource.watch;
+    }
+    throw AssertionError("$this isn't localized!");
+  }
 }
 
 @JsonSerializable()
@@ -57,7 +72,7 @@ class Sheet extends HookWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Filter'),
+                Text(tr.alertingAppsFilter.title),
                 IconButton(
                   padding: EdgeInsets.zero,
                   constraints: BoxConstraints(
@@ -76,7 +91,7 @@ class Sheet extends HookWidget {
             TextFormField(
               initialValue: _formHelper.get('query'),
               decoration: InputDecoration(
-                labelText: 'App name',
+                labelText: tr.alertingAppsFilter.appName,
               ),
               onSaved: _formHelper.onSaved('query'),
               onFieldSubmitted: (_) async {
@@ -91,7 +106,7 @@ class Sheet extends HookWidget {
                   .map((source) => DropdownMenuItem(
                         value: _$AppSourceEnumMap[source],
                         child: Text(
-                          _$AppSourceEnumMap[source],
+                          source.toUiString(),
                         ),
                       ))
                   .toList(),

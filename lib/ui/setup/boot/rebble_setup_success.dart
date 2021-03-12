@@ -1,4 +1,5 @@
 import 'package:cobble/infrastructure/datasources/web_services.dart';
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/home/home_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
@@ -15,11 +16,11 @@ class _RebbleSetupSuccessState extends State<RebbleSetupSuccess> {
   @override
   Widget build(BuildContext context) {
     return CobbleScaffold.page(
-      title: "Activate Rebble services",
+      title: tr.setup.success.title,
       child: Column(
         children: <Widget>[
           Text(
-            "All set and ready to Rebble!",
+            tr.setup.success.subtitle,
             style: Theme.of(context).textTheme.headline3,
           ),
           FutureBuilder<WSAuthUser>(
@@ -27,7 +28,7 @@ class _RebbleSetupSuccessState extends State<RebbleSetupSuccess> {
             builder:
                 (BuildContext context, AsyncSnapshot<WSAuthUser> snapshot) {
               if (snapshot.hasData) {
-                return Text("Welcome back, ${snapshot.data.name}!");
+                return Text(tr.setup.success.welcome(name: snapshot.data.name));
               } else {
                 return Text(" ");
               }
@@ -44,7 +45,7 @@ class _RebbleSetupSuccessState extends State<RebbleSetupSuccess> {
                     })
                 .then((value) => context.pushAndRemoveAllBelow(HomePage()));
           },
-          label: Text("ON TO REBBLE!")),
+          label: Text(tr.setup.success.fab)),
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/components/cobble_card.dart';
 import 'package:cobble/ui/common/components/cobble_tile.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
@@ -16,90 +17,90 @@ class Settings extends StatelessWidget implements CobbleScreen {
   @override
   Widget build(BuildContext context) {
     return CobbleScaffold.tab(
-      title: 'Settings',
+      title: tr.settings.title,
       child: ListView(
         children: [
           CobbleCard.inList(
             leading: Svg('images/app_icon.svg'),
-            title: 'Rebble account',
+            title: tr.settings.account,
             subtitle: 'support@rebble.io',
             child: Column(
               children: [
                 CobbleTile.info(
                   leading: RebbleIcons.dictation_microphone,
-                  title: 'Voice and weather subscription',
-                  subtitle: 'Not subscribed',
+                  title: tr.settings.subscription.title,
+                  subtitle: tr.settings.subscription.subtitle,
                 ),
                 CobbleTile.info(
                   leading: RebbleIcons.timeline_pin,
-                  title: 'Timeline sync',
-                  subtitle: 'Every 2 hours',
+                  title: tr.settings.timeline.title,
+                  subtitle: tr.settings.timeline.subtitle,
                 ),
               ],
             ),
             actions: [
               CobbleCardAction(
-                label: 'Sign out',
+                label: tr.settings.signOut,
                 onPressed: () {},
               ),
               CobbleCardAction(
-                label: 'Manage account',
+                label: tr.settings.manageAccount,
                 onPressed: () {},
               ),
             ],
           ),
           CobbleTile.navigation(
             leading: RebbleIcons.notification,
-            title: 'Notifications and muting',
+            title: tr.settings.notificationsAndMuting,
             navigateTo: Notifications(),
           ),
           CobbleTile.navigation(
             leading: RebbleIcons.health_heart,
-            title: 'Health',
+            title: tr.settings.health,
             navigateTo: Health(),
           ),
           CobbleTile.withIconColor(
             color: context.scheme.danger,
             child: CobbleTile.navigation(
               leading: RebbleIcons.unknown_app,
-              title: 'Calendar',
+              title: tr.settings.calendar,
               navigateTo: PlaceholderScreen(),
             ),
           ),
           CobbleTile.navigation(
             leading: RebbleIcons.sms_messages,
-            title: 'Messages and canned replies',
+            title: tr.settings.messagesAndCannedReplies,
             navigateTo: PlaceholderScreen(),
           ),
           CobbleTile.navigation(
             leading: RebbleIcons.system_language,
-            title: 'Language and voice',
+            title: tr.settings.languageAndVoice,
             navigateTo: PlaceholderScreen(),
           ),
           CobbleTile.navigation(
             leading: RebbleIcons.analytics,
-            title: 'Analytics',
+            title: tr.settings.analytics,
             navigateTo: PlaceholderScreen(),
           ),
           CobbleTile.navigation(
             leading: RebbleIcons.about_app,
-            title: 'About app',
+            title: tr.settings.aboutApp,
             navigateTo: PlaceholderScreen(),
           ),
           CobbleTile.navigation(
             leading: RebbleIcons.share,
-            title: 'Community and support',
+            title: tr.settings.communityAndSupport,
             navigateTo: PlaceholderScreen(),
           ),
           CobbleTile.navigation(
             leading: RebbleIcons.developer_settings,
-            title: 'Developer options',
+            title: tr.settings.developerOptions,
             navigateTo: PlaceholderScreen(),
           ),
           if (kDebugMode)
             CobbleTile.navigation(
               leading: RebbleIcons.developer_connection_console,
-              title: 'Widget Library',
+              title: tr.settings.widgetLibrary,
               navigateTo: WidgetLibrary(),
             ),
         ],

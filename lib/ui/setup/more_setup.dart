@@ -1,3 +1,4 @@
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
@@ -15,12 +16,12 @@ class _MoreSetupState extends State<MoreSetup> {
   @override
   Widget build(BuildContext context) {
     return CobbleScaffold.page(
-      title: "More setup",
+      title: tr.moreSetupPage.title,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.pushReplacement(RebbleSetup()),
         label: Row(
           children: <Widget>[
-            Text("LET'S GET STARTED"),
+            Text(tr.moreSetupPage.fab),
             Icon(RebbleIcons.caret_right)
           ],
           mainAxisAlignment: MainAxisAlignment.center,
@@ -29,7 +30,9 @@ class _MoreSetupState extends State<MoreSetup> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       child: SingleChildScrollView(
         child: Column(
-          children: <Widget>[Text("Setup language / health / privacy")],
+          children: <Widget>[
+            Text(tr.moreSetupPage.content),
+          ],
         ),
       ),
     );

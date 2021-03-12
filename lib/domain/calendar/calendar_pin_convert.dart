@@ -6,6 +6,7 @@ import 'package:cobble/domain/db/models/timeline_pin_type.dart';
 import 'package:cobble/domain/timeline/timeline_action.dart';
 import 'package:cobble/domain/timeline/timeline_attribute.dart';
 import 'package:cobble/domain/timeline/timeline_icon.dart';
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/util/string_extensions.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:uuid_type/uuid_type.dart';
@@ -33,7 +34,7 @@ extension CalendarEventConverter on Event {
           .join(", ");
 
       if (attendeesString.isNotEmpty) {
-        headings.add("Attendees");
+        headings.add(tr.timelineAttribute.heading.attendees);
         paragraphs.add(attendeesString);
       }
 
@@ -47,46 +48,46 @@ extension CalendarEventConverter on Event {
                 AndroidAttendanceStatus.Accepted ||
             selfAttendee.iosAttendeeDetails?.attendanceStatus ==
                 IosAttendanceStatus.Accepted) {
-          headings.add("Status");
-          paragraphs.add("Accepted");
+          headings.add(tr.timelineAttribute.heading.status);
+          paragraphs.add(tr.timelineAttribute.paragraph.accepted);
         } else if (selfAttendee.androidAttendeeDetails?.attendanceStatus ==
                 AndroidAttendanceStatus.Tentative ||
             selfAttendee.iosAttendeeDetails?.attendanceStatus ==
                 IosAttendanceStatus.Tentative) {
-          headings.add("Status");
-          paragraphs.add("Maybe");
+          headings.add(tr.timelineAttribute.heading.status);
+          paragraphs.add(tr.timelineAttribute.paragraph.maybe);
         } else if (selfAttendee.androidAttendeeDetails?.attendanceStatus ==
                 AndroidAttendanceStatus.Declined ||
             selfAttendee.iosAttendeeDetails?.attendanceStatus ==
                 IosAttendanceStatus.Declined) {
-          headings.add("Status");
-          paragraphs.add("Declined");
+          headings.add(tr.timelineAttribute.heading.status);
+          paragraphs.add(tr.timelineAttribute.paragraph.declined);
         }
       }
     }
 
     if (recurrenceRule != null) {
-      String recurrenceText = "Unknown";
+      String recurrenceText = tr.recurrence.unknown;
       switch (recurrenceRule.recurrenceFrequency) {
         case RecurrenceFrequency.Daily:
-          recurrenceText = "Repeats daily.";
+          recurrenceText = tr.recurrence.daily;
           break;
         case RecurrenceFrequency.Weekly:
-          recurrenceText = "Repeats weekly.";
+          recurrenceText = tr.recurrence.weekly;
           break;
         case RecurrenceFrequency.Monthly:
-          recurrenceText = "Repeats monthly.";
+          recurrenceText = tr.recurrence.monthly;
           break;
         case RecurrenceFrequency.Yearly:
-          recurrenceText = "Repeats yearly.";
+          recurrenceText = tr.recurrence.yearly;
           break;
       }
 
-      headings.add("Recurrence");
+      headings.add(tr.timelineAttribute.heading.recurrence);
       paragraphs.add(recurrenceText);
     }
 
-    headings.add("Calendar");
+    headings.add(tr.timelineAttribute.heading.calendar);
     paragraphs.add(calendar.name);
 
     return [
@@ -103,40 +104,40 @@ extension CalendarEventConverter on Event {
     final List<TimelineAction> actions = [];
 
     final selfAtteendee = attendees?.firstWhere(
-          (element) => element.isCurrentUser == true,
+      (element) => element.isCurrentUser == true,
       orElse: () => null,
     );
 
     if (selfAtteendee != null) {
       if (selfAtteendee.androidAttendeeDetails?.attendanceStatus !=
-          AndroidAttendanceStatus.Accepted &&
+              AndroidAttendanceStatus.Accepted &&
           selfAtteendee.iosAttendeeDetails?.attendanceStatus !=
               IosAttendanceStatus.Accepted) {
         actions.add(
           TimelineAction(calendarActionAccept, actionTypeGeneric, [
-            TimelineAttribute.title("Accept"),
+            TimelineAttribute.title(tr.timelineAttribute.title.accept),
           ]),
         );
       }
 
       if (selfAtteendee.androidAttendeeDetails?.attendanceStatus !=
-          AndroidAttendanceStatus.Tentative &&
+              AndroidAttendanceStatus.Tentative &&
           selfAtteendee.iosAttendeeDetails?.attendanceStatus !=
               IosAttendanceStatus.Tentative) {
         actions.add(
           TimelineAction(calendarActionMaybe, actionTypeGeneric, [
-            TimelineAttribute.title("Maybe"),
+            TimelineAttribute.title(tr.timelineAttribute.title.maybe),
           ]),
         );
       }
 
       if (selfAtteendee.androidAttendeeDetails?.attendanceStatus !=
-          AndroidAttendanceStatus.Declined &&
+              AndroidAttendanceStatus.Declined &&
           selfAtteendee.iosAttendeeDetails?.attendanceStatus !=
               IosAttendanceStatus.Declined) {
         actions.add(
           TimelineAction(calendarActionDecline, actionTypeGeneric, [
-            TimelineAttribute.title("Decline"),
+            TimelineAttribute.title(tr.timelineAttribute.title.decline),
           ]),
         );
       }
@@ -144,13 +145,13 @@ extension CalendarEventConverter on Event {
 
     actions.add(
       TimelineAction(calendarActionRemove, actionTypeGeneric, [
-        TimelineAttribute.title("Remove"),
+        TimelineAttribute.title(tr.timelineAttribute.title.remove),
       ]),
     );
 
     actions.add(
       TimelineAction(calendarActionMuteCalendar, actionTypeGeneric, [
-        TimelineAttribute.title("Mute calendar"),
+        TimelineAttribute.title(tr.timelineAttribute.title.mute),
       ]),
     );
 

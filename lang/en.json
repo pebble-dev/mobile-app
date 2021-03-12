@@ -1,9 +1,196 @@
 {
   "common": {
-    "skip": "skip"
+    "skip": "skip",
+    "title": "Cobble",
+    "yes": "Yes",
+    "no": "No"
   },
   "first_run": {
     "title": "Welcome to Rebble!",
     "fab": "LET'S GET STARTED"
+  },
+  "timeline_attribute": {
+    "heading": {
+      "attendees": "Attendees",
+      "status": "Status",
+      "recurrence": "Recurrence",
+      "calendar": "Calendar"
+    },
+    "subtitle": {
+      "removed": "Removed",
+      "calendar_muted": "Calendar muted",
+      "accepted": "Accepted",
+      "maybe": "Maybe",
+      "declined": "Declined"
+    },
+    "title": {
+      "accept": "Accept",
+      "maybe": "Maybe",
+      "decline": "Decline",
+      "remove": "Remove",
+      "mute": "Mute"
+    },
+    "paragraph": {
+      "accepted": "Accepted",
+      "maybe": "Maybe",
+      "declined": "Declined"
+    }
+  },
+  "timeline_sync": {
+    "watch_full": {
+      "p0": "Your watch is full",
+      "p1": "We could not sync all timeline pins to the watch."
+    }
+  },
+  "recurrence": {
+    "unknown": "Unknown",
+    "daily": "Repeats daily.",
+    "weekly": "Repeats weekly.",
+    "monthly": "Repeats monthly.",
+    "yearly": "Repeats yearly."
+  },
+  "splash_page": {
+    "title": "Log in to Rebble",
+    "body": "Do you want to configure this app for Rebble Web Services? (Selecting no runs the app with offline-only features)"
+  },
+  "home_page": {
+    "testing": "Testing",
+    "health": "Health",
+    "locker": "Locker",
+    "store": "Store",
+    "watches": "Watches",
+    "settings": "Settings"
+  },
+  "about_page": {
+    "title": "About",
+    "about": "About {name} v{version}",
+    "community": "Community",
+    "support": "Support"
+  },
+  "watches_page": {
+    "title": "My Watches",
+    "status": {
+      "nothing_connected": "Nothing connected",
+      "connected": "Connected",
+      "connecting": "Connecting...",
+      "disconnected": "Disconnected",
+      "background_service_stopped": "Background service stopped"
+    },
+    "action": {
+      "connect": "Connect to watch",
+      "disconnect": "Disconnect from watch",
+      "check_updates": "Check for updates",
+      "forget": "Forget watch"
+    },
+    "all_watches": "All watches",
+    "fab": "PAIR A WATCH"
+  },
+  "alerting_apps": {
+    "title": "Choose which apps can alert",
+    "subtitle": "{alerted} alerted, {muted} muted today",
+    "muted_today": "{muted} muted today",
+    "alerted_today": "{alerted} alerted today"
+  },
+  "alerting_apps_filter": {
+    "title": "filter",
+    "app_name": "App name",
+    "app_source": {
+      "all": "All apps",
+      "phone": "Phone only",
+      "watch": "Watch only"
+    }
+  },
+  "more_setup_page": {
+    "title": "More setup",
+    "fab": "LET'S GET STARTED",
+    "content": "Setup language / health / privacy"
+  },
+  "pair_page": {
+    "title": "Pair a watch",
+    "search_again": {
+      "ble": "Search again with BLE",
+      "classic": "Search again with BT Classic"
+    },
+    "status": {
+      "recovery": "Recovery",
+      "new_device": "New!"
+    }
+  },
+  "setup": {
+    "success": {
+      "title": "Activate Rebble services",
+      "subtitle": "All set and ready to Rebble!",
+      "welcome": "Welcome back, {name}!",
+      "fab": "ON TO REBBLE!"
+    }
+  },
+  "health": {
+    "title": "Health",
+    "subtitle": "Rebble Health",
+    "description": "Supported watches can keep track of your fitness data for you, including steps, sleep, and heart rate",
+    "track_me": "Track my health data",
+    "activity": {
+      "title": "Activity summary",
+      "subtitle": "Your watch will notify you at the end of the day with a summary of how active you were"
+    },
+    "sleep": {
+      "title": "Sleep summary",
+      "subtitle": "Your watch will notify you when you wake up with a summary of how well you slept"
+    },
+    "sync": {
+      "title": "Sync",
+      "subtitle": "Signed in as",
+      "sign_out": "Sign out",
+      "switch_account": "Switch account"
+    },
+    "database": {
+      "title": "More options",
+      "manage": "Manage health database",
+      "delete": "Delete all health data",
+      "backup": "Create backup of health data",
+      "restore": "Restore health data from backup",
+      "perm_delete": "Permanently delete all health data,",
+      "permanently_delete": {
+        "title": "Permanently delete ALL health data?",
+        "description": "This cannot be undone!",
+        "positive": "Delete",
+        "negative": "Cancel"
+      }
+    }
+  },
+  "notifications": {
+    "title": "Health",
+    "enabled": "Send notifications to my watch",
+    "choose_apps": "Choose which apps can alert your watch",
+    "silence": {
+      "title": "Silence notifications",
+      "description": "While your watch is connected, it can silence incoming calls and notifications on your phone, so that they only vibrate on your wrist.",
+      "notifications": "Silence notifications",
+      "calls": "Silence incoming calls"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "account": "Rebble account",
+    "subscription": {
+      "title": "Voice and weather subscription",
+      "subtitle": "Not subscribed"
+    },
+    "timeline": {
+      "title": "Timeline sync",
+      "subtitle": "Every 2 hours"
+    },
+    "sign_out": "Sign out",
+    "manage_account": "Manage account",
+    "notifications_and_muting": "Notifications and muting",
+    "health": "Health",
+    "calendar": "Calendar",
+    "messages_and_canned_replies": "Messages and canned replies",
+    "language_and_voice": "Language and voice",
+    "analytics": "Analytics",
+    "about_app": "About app",
+    "community_and_support": "Community and support",
+    "developer_options": "Developer options",
+    "widget_library": "Widget Library"
   }
 }

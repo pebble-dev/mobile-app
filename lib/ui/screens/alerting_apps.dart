@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/components/cobble_sheet.dart';
 import 'package:cobble/ui/common/components/cobble_tile.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
@@ -35,8 +36,11 @@ class AlertingApps extends HookWidget implements CobbleScreen {
     final sheet = CobbleSheet.useInline();
 
     return CobbleScaffold.tab(
-      title: 'Choose which apps can alert',
-      subtitle: '8 alerted, 5 muted today',
+      title: tr.alertingApps.title,
+      subtitle: tr.alertingApps.subtitle(
+        alerted: 5.toString(),
+        muted: 3.toString(),
+      ),
       actions: [
         Builder(
           builder: (context) => IconButton(
@@ -77,8 +81,13 @@ class AlertingApps extends HookWidget implements CobbleScreen {
               (app) => CobbleTile.app(
                 leading: Svg('images/temp_alerting_app.svg'),
                 title: app.name,
-                subtitle:
-                    '${random.nextInt(8)} ${app.enabled ? 'alerted' : 'muted'} today',
+                subtitle: app.enabled
+                    ? tr.alertingApps.alertedToday(
+                        alerted: random.nextInt(8).toString(),
+                      )
+                    : tr.alertingApps.mutedToday(
+                        muted: random.nextInt(8).toString(),
+                      ),
                 child: Switch(
                   value: app.enabled,
                   onChanged: (value) {},

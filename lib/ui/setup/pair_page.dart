@@ -5,6 +5,7 @@ import 'package:cobble/domain/connection/scan_provider.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
@@ -96,7 +97,7 @@ class PairPage extends HookWidget implements CobbleScreen {
       uiConnectionControl.connectToWatch(addressWrapper);
     };
 
-    final title = 'Pair a watch';
+    final title = tr.pairPage.title;
     final body = ListView(
       children: [
         if (scan.scanning)
@@ -144,12 +145,12 @@ class PairPage extends HookWidget implements CobbleScreen {
                               if (e.runningPRF && !e.firstUse)
                                 Chip(
                                   backgroundColor: Colors.deepOrange,
-                                  label: Text("Recovery"),
+                                  label: Text(tr.pairPage.status.recovery),
                                 ),
                               if (e.firstUse)
                                 Chip(
                                   backgroundColor: Color(0xffd4af37),
-                                  label: Text("New!"),
+                                  label: Text(tr.pairPage.status.newDevice),
                                 ),
                             ],
                           ),
@@ -176,7 +177,7 @@ class PairPage extends HookWidget implements CobbleScreen {
             padding: EdgeInsets.symmetric(horizontal: 32.0),
             child: CobbleButton(
               outlined: false,
-              label: "SEARCH AGAIN WITH BLE",
+              label: tr.pairPage.searchAgain.ble,
               color: Theme.of(context).accentColor,
               onPressed: _refreshDevicesBle,
             ),
@@ -185,7 +186,7 @@ class PairPage extends HookWidget implements CobbleScreen {
             padding: EdgeInsets.symmetric(horizontal: 32.0),
             child: CobbleButton(
               outlined: false,
-              label: "SEARCH AGAIN WITH BT CLASSIC",
+              label: tr.pairPage.searchAgain.classic,
               color: Theme.of(context).accentColor,
               onPressed: _refreshDevicesClassic,
             ),
@@ -196,7 +197,7 @@ class PairPage extends HookWidget implements CobbleScreen {
             padding: EdgeInsets.symmetric(horizontal: 32.0),
             child: CobbleButton(
               outlined: false,
-              label: "SKIP",
+              label: tr.common.skip,
               onPressed: () => context.pushAndRemoveAllBelow(
                 HomePage(),
               ),

@@ -5,6 +5,7 @@ import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
@@ -69,12 +70,12 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
     String _getStatusText(int address) {
       if (connectionState.isConnected &&
           connectionState.currentWatchAddress == address)
-        return "Connected";
+        return tr.watchesPage.status.connected;
       else if (connectionState.isConnecting &&
           connectionState.currentWatchAddress == address)
-        return "Connecting...";
+        return tr.watchesPage.status.connecting;
       else
-        return "Disconnected";
+        return tr.watchesPage.status.disconnected;
     }
 
     Color _getBrStatusColor(PebbleScanDevice device) {
@@ -174,7 +175,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                     offstage: isConnected,
                     child: ListTile(
                       leading: Icon(RebbleIcons.connect_to_watch),
-                      title: Text('Connect to watch'),
+                      title: Text(tr.watchesPage.action.connect),
                       onTap: () => _onConnectPressed(device, true),
                     ),
                   ),
@@ -182,13 +183,13 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                     offstage: !isConnected,
                     child: ListTile(
                       leading: Icon(RebbleIcons.disconnect_from_watch),
-                      title: Text('Disconnect from watch'),
+                      title: Text(tr.watchesPage.action.disconnect),
                       onTap: () => _onDisconnectPressed(true),
                     ),
                   ),
                   ListTile(
                     leading: Icon(RebbleIcons.check_for_updates),
-                    title: Text('Check for updates'),
+                    title: Text(tr.watchesPage.action.checkUpdates),
                     onTap: () => _onUpdatePressed(device),
                   ),
                   const Divider(
@@ -200,8 +201,10 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                   ),
                   ListTile(
                     leading: Icon(RebbleIcons.x_close, color: Colors.red),
-                    title: Text('Forget watch',
-                        style: TextStyle(color: Colors.red)),
+                    title: Text(
+                      tr.watchesPage.action.forget,
+                      style: TextStyle(color: Colors.red),
+                    ),
                     onTap: () => _onForgetPressed(device),
                   ),
                 ],
@@ -211,136 +214,151 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
     }
 
     return CobbleScaffold.tab(
-      title: "My Watches",
-      child: ListView(children: <Widget>[
-        if (!isConnecting && !isConnected) ...[
-          Column(children: <Widget>[
-            Container(
-                child: Row(children: <Widget>[
-                  Container(
-                    child: Center(
-                        child: Icon(RebbleIcons.disconnect_from_watch,
-                            color: Colors.black)),
-                    width: 56,
-                    height: 56,
-                    decoration: BoxDecoration(
-                        color: _disconnectedColor, shape: BoxShape.circle),
-                  ),
-                  SizedBox(width: 16),
-                  Column(
-                    children: <Widget>[
-                      Text("Nothing connected", style: TextStyle(fontSize: 16)),
-                      SizedBox(height: 4),
-                      Text("Background service stopped"),
-                      Wrap(
-                        spacing: 4,
-                        children: [],
-                      ),
-                    ],
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                  ),
-                  Expanded(child: Container(width: 0.0, height: 0.0)),
-                ]),
-                margin: EdgeInsets.all(16)),
-          ])
-        ],
-        if (isConnecting || isConnected) ...[
-          Column(
-              children: connectedWatchList
-                  .map((e) => InkWell(
-                        child: Container(
-                            child: Row(children: <Widget>[
-                              Container(
-                                child: Center(child: PebbleWatchIcon(e.model)),
-                                width: 56,
-                                height: 56,
-                                decoration: BoxDecoration(
-                                    color: _connectedBrColor,
-                                    shape: BoxShape.circle),
-                              ),
-                              SizedBox(width: 16),
-                              Column(
-                                children: <Widget>[
-                                  Text(e.name, style: TextStyle(fontSize: 16)),
-                                  SizedBox(height: 4),
-                                  Text(_getStatusText(e.address),
-                                      style: TextStyle(color: _connectedColor)),
-                                  Wrap(
-                                    spacing: 4,
-                                    children: [],
-                                  ),
-                                ],
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                              ),
-                              Expanded(
-                                  child: Container(width: 0.0, height: 0.0)),
-                              IconButton(
-                                icon: Icon(RebbleIcons.disconnect_from_watch,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .secondary),
-                                onPressed: () => _onDisconnectPressed(false),
-                              ),
-                            ]),
-                            margin: EdgeInsets.all(16)),
-                        onTap: () => _onSettingsPressed(true, e.address),
-                      ))
-                  .toList()),
-        ],
-        Padding(
+      title: tr.watchesPage.title,
+      child: ListView(
+        children: <Widget>[
+          if (!isConnecting && !isConnected) ...[
+            Column(children: <Widget>[
+              Container(
+                  child: Row(children: <Widget>[
+                    Container(
+                      child: Center(
+                          child: Icon(RebbleIcons.disconnect_from_watch,
+                              color: Colors.black)),
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                          color: _disconnectedColor, shape: BoxShape.circle),
+                    ),
+                    SizedBox(width: 16),
+                    Column(
+                      children: <Widget>[
+                        Text(
+                          tr.watchesPage.status.nothingConnected,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(height: 4),
+                        Text(tr.watchesPage.status.backgroundServiceStopped),
+                        Wrap(
+                          spacing: 4,
+                          children: [],
+                        ),
+                      ],
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                    ),
+                    Expanded(child: Container(width: 0.0, height: 0.0)),
+                  ]),
+                  margin: EdgeInsets.all(16)),
+            ])
+          ],
+          if (isConnecting || isConnected) ...[
+            Column(
+                children: connectedWatchList
+                    .map((e) => InkWell(
+                          child: Container(
+                              child: Row(children: <Widget>[
+                                Container(
+                                  child:
+                                      Center(child: PebbleWatchIcon(e.model)),
+                                  width: 56,
+                                  height: 56,
+                                  decoration: BoxDecoration(
+                                      color: _connectedBrColor,
+                                      shape: BoxShape.circle),
+                                ),
+                                SizedBox(width: 16),
+                                Column(
+                                  children: <Widget>[
+                                    Text(e.name,
+                                        style: TextStyle(fontSize: 16)),
+                                    SizedBox(height: 4),
+                                    Text(_getStatusText(e.address),
+                                        style:
+                                            TextStyle(color: _connectedColor)),
+                                    Wrap(
+                                      spacing: 4,
+                                      children: [],
+                                    ),
+                                  ],
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                ),
+                                Expanded(
+                                    child: Container(width: 0.0, height: 0.0)),
+                                IconButton(
+                                  icon: Icon(RebbleIcons.disconnect_from_watch,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
+                                  onPressed: () => _onDisconnectPressed(false),
+                                ),
+                              ]),
+                              margin: EdgeInsets.all(16)),
+                          onTap: () => _onSettingsPressed(true, e.address),
+                        ))
+                    .toList()),
+          ],
+          Padding(
             padding: EdgeInsets.fromLTRB(15, 25, 15, 5),
-            child: Text('All watches', style: TextStyle(fontSize: 18))),
-        const Divider(
-          color: Colors.white24,
-          height: 20,
-          thickness: 2,
-          indent: 15,
-          endIndent: 15,
-        ),
-        Column(
+            child: Text(
+              tr.watchesPage.allWatches,
+              style: TextStyle(fontSize: 18),
+            ),
+          ),
+          const Divider(
+            color: Colors.white24,
+            height: 20,
+            thickness: 2,
+            indent: 15,
+            endIndent: 15,
+          ),
+          Column(
             children: allDisconnectedWatches
-                .map((e) => InkWell(
-                      child: Container(
-                        child: Row(children: <Widget>[
-                          Container(
-                            child: Center(
-                                child: PebbleWatchIcon(
-                                    PebbleWatchModel.values[e.color])),
-                            width: 56,
-                            height: 56,
-                            decoration: BoxDecoration(
-                                color: _disconnectedColor,
-                                shape: BoxShape.circle),
-                          ),
-                          SizedBox(width: 16),
-                          Column(
-                            children: <Widget>[
-                              Text(e.name, style: TextStyle(fontSize: 16)),
-                              SizedBox(height: 4),
-                              Text(_getStatusText(e.address)),
-                              Wrap(
-                                spacing: 4,
-                                children: [],
-                              ),
-                            ],
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                          ),
-                          Expanded(child: Container(width: 0.0, height: 0.0)),
-                          IconButton(
-                            icon: Icon(RebbleIcons.connect_to_watch,
-                                color: Theme.of(context).colorScheme.secondary),
-                            onPressed: () => _onConnectPressed(e, false),
-                          ),
-                        ]),
-                        margin: EdgeInsets.fromLTRB(16, 10, 16, 16),
-                      ),
-                      onTap: () => _onSettingsPressed(false, e.address),
-                    ))
-                .toList()),
-      ]),
+                .map(
+                  (e) => InkWell(
+                    child: Container(
+                      child: Row(children: <Widget>[
+                        Container(
+                          child: Center(
+                              child: PebbleWatchIcon(
+                                  PebbleWatchModel.values[e.color])),
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                              color: _disconnectedColor,
+                              shape: BoxShape.circle),
+                        ),
+                        SizedBox(width: 16),
+                        Column(
+                          children: <Widget>[
+                            Text(e.name, style: TextStyle(fontSize: 16)),
+                            SizedBox(height: 4),
+                            Text(_getStatusText(e.address)),
+                            Wrap(
+                              spacing: 4,
+                              children: [],
+                            ),
+                          ],
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                        ),
+                        Expanded(child: Container(width: 0.0, height: 0.0)),
+                        IconButton(
+                          icon: Icon(RebbleIcons.connect_to_watch,
+                              color: Theme.of(context).colorScheme.secondary),
+                          onPressed: () => _onConnectPressed(e, false),
+                        ),
+                      ]),
+                      margin: EdgeInsets.fromLTRB(16, 10, 16, 16),
+                    ),
+                    onTap: () => _onSettingsPressed(false, e.address),
+                  ),
+                )
+                .toList(),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push(PairPage.fromTab()),
-        label: Text('PAIR A WATCH'),
+        label: Text(tr.watchesPage.fab),
         icon: Icon(Icons.add),
       ),
     );

@@ -14,6 +14,7 @@ import 'package:cobble/domain/timeline/timeline_attribute.dart';
 import 'package:cobble/domain/timeline/timeline_icon.dart';
 import 'package:cobble/domain/timeline/watch_timeline_syncer.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/util/state_provider_extension.dart';
 import 'package:cobble/util/stream_extensions.dart';
 import 'package:device_calendar/device_calendar.dart';
@@ -56,22 +57,25 @@ class CalendarActionHandler implements ActionHandler {
 
   @override
   Future<TimelineActionResponse> _handleRemoveEventAction(
-      TimelinePin pin,) async {
+    TimelinePin pin,
+  ) async {
     Future.microtask(() async {
       await _dao.setSyncAction(pin.itemId, NextSyncAction.Delete);
       await _watchSyncer.syncPinDatabaseWithWatch();
     });
 
     return TimelineActionResponse(true, attributes: [
-      TimelineAttribute.subtitle("Removed"),
+      TimelineAttribute.subtitle(tr.timelineAttribute.subtitle.removed),
       TimelineAttribute.largeIcon(TimelineIcon.resultDismissed)
     ]);
   }
 
   @override
-  Future<TimelineActionResponse> _handleMuteCalendarAction(TimelinePin pin,) async {
+  Future<TimelineActionResponse> _handleMuteCalendarAction(
+    TimelinePin pin,
+  ) async {
     final calendarList =
-    await _calendarList.streamWithExistingValue.firstSuccessOrError();
+        await _calendarList.streamWithExistingValue.firstSuccessOrError();
 
     final calendars = calendarList.data.value;
     if (calendars == null) {
@@ -90,14 +94,16 @@ class CalendarActionHandler implements ActionHandler {
     });
 
     return TimelineActionResponse(true, attributes: [
-      TimelineAttribute.subtitle("Calendar muted"),
+      TimelineAttribute.subtitle(tr.timelineAttribute.subtitle.calendarMuted),
       TimelineAttribute.largeIcon(TimelineIcon.resultMute)
     ]);
   }
 
   @override
-  Future<TimelineActionResponse> _handleAttendanceAction(TimelinePin pin,
-      int actionId,) async {
+  Future<TimelineActionResponse> _handleAttendanceAction(
+    TimelinePin pin,
+    int actionId,
+  ) async {
     final eventId = CalendarEventId.fromTimelinePin(pin);
     if (eventId == null) {
       Log.e("Unknown timeline pin backing ID ${pin.backingId}");
@@ -115,7 +121,7 @@ class CalendarActionHandler implements ActionHandler {
 
     final event = events.data.first;
     final selfAttendee = event.attendees.firstWhere(
-          (element) => element.isCurrentUser == true,
+      (element) => element.isCurrentUser == true,
       orElse: () => null,
     );
 
@@ -145,8 +151,7 @@ class CalendarActionHandler implements ActionHandler {
         role: selfAttendee.androidAttendeeDetails.role,
         attendanceStatus: targetAttendanceStatus,
       );
-    }
-    else if (Platform.isIOS) {
+    } else if (Platform.isIOS) {
       IosAttendanceStatus targetAttendanceStatus;
       switch (actionId) {
         case calendarActionAccept:
@@ -182,19 +187,19 @@ class CalendarActionHandler implements ActionHandler {
     switch (actionId) {
       case calendarActionAccept:
         attributes = [
-          TimelineAttribute.subtitle("Accepted"),
+          TimelineAttribute.subtitle(tr.timelineAttribute.subtitle.accepted),
           TimelineAttribute.largeIcon(TimelineIcon.resultSent)
         ];
         break;
       case calendarActionMaybe:
         attributes = [
-          TimelineAttribute.subtitle("Maybe"),
+          TimelineAttribute.subtitle(tr.timelineAttribute.subtitle.maybe),
           TimelineAttribute.largeIcon(TimelineIcon.resultSent)
         ];
         break;
       case calendarActionDecline:
         attributes = [
-          TimelineAttribute.subtitle("Declined"),
+          TimelineAttribute.subtitle(tr.timelineAttribute.subtitle.declined),
           TimelineAttribute.largeIcon(TimelineIcon.resultSent)
         ];
         break;
@@ -203,13 +208,11 @@ class CalendarActionHandler implements ActionHandler {
         return TimelineActionResponse(false);
     }
 
-
     return TimelineActionResponse(true, attributes: attributes);
   }
 }
 
-final calendarActionHandlerProvider = Provider((ref) =>
-    CalendarActionHandler(
+final calendarActionHandlerProvider = Provider((ref) => CalendarActionHandler(
       ref.read(timelinePinDaoProvider),
       ref.read(calendarSyncerProvider),
       ref.read(watchTimelineSyncerProvider),
