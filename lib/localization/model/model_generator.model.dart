@@ -4,18 +4,29 @@
 // ModelGenerator
 // **************************************************************************
 
-import 'package:cobble/localization/model/annotations.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'dart:ui';
 
 part 'model_generator.model.g.dart';
 
-@Model()
+@JsonSerializable(
+  createToJson: false,
+  nullable: false,
+  disallowUnrecognizedKeys: true,
+)
 class Language {
-  @Field()
+  @JsonKey(
+    name: 'common',
+    required: true,
+    disallowNullValue: true,
+  )
   final LanguageCommon common;
 
-  @Field()
+  @JsonKey(
+    name: 'first_run',
+    required: true,
+    disallowNullValue: true,
+  )
   final LanguageFirstRun firstRun;
 
   Language(this.common, this.firstRun);
@@ -24,9 +35,17 @@ class Language {
       _$LanguageFromJson(json);
 }
 
-@Model()
+@JsonSerializable(
+  createToJson: false,
+  nullable: false,
+  disallowUnrecognizedKeys: true,
+)
 class LanguageCommon {
-  @Field()
+  @JsonKey(
+    name: 'skip',
+    required: true,
+    disallowNullValue: true,
+  )
   final String skip;
 
   LanguageCommon(this.skip);
@@ -35,12 +54,24 @@ class LanguageCommon {
       _$LanguageCommonFromJson(json);
 }
 
-@Model()
+@JsonSerializable(
+  createToJson: false,
+  nullable: false,
+  disallowUnrecognizedKeys: true,
+)
 class LanguageFirstRun {
-  @Field()
+  @JsonKey(
+    name: 'title',
+    required: true,
+    disallowNullValue: true,
+  )
   final String title;
 
-  @Field()
+  @JsonKey(
+    name: 'fab',
+    required: true,
+    disallowNullValue: true,
+  )
   final String fab;
 
   LanguageFirstRun(this.title, this.fab);
@@ -50,6 +81,6 @@ class LanguageFirstRun {
 }
 
 final supportedLocales = [
-  Locale('es'),
   Locale('en'),
+  Locale('es'),
 ];

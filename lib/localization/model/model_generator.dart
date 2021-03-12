@@ -34,6 +34,9 @@ class ModelGenerator extends Generator {
       ).toList();
 
   void _validateLangs(List<Lang> langs) {
+    langs.forEach((lang) {
+      _validateFragment(JsonFragment.fromLang(lang));
+    });
     if (langs.length <= 1) return;
     langs.skip(1).forEach((lang) {
       _compareJson(
@@ -47,39 +50,58 @@ class ModelGenerator extends Generator {
     });
   }
 
-  void _compareJson(JsonFragment a, JsonFragment b) {
-    a.fragment.forEach((key, value) {
-      final path = '${a.path}.$key';
-      if (value == null) {
+  void _validateFragment(JsonFragment fr) {
+    fr.fragment.forEach((key, value) {
+      final path = '${fr.path}.$key';
+      if (key.snakeCase != key) {
         throw AssertionError(
-          "${a.file} contains null value at $path!",
+          "${fr.file} contains $path which isn't using snake_case!",
+        );
+      } else if (value == null) {
+        throw AssertionError(
+          "${fr.file} contains null value at $path!",
         );
       } else if (value is num) {
         throw AssertionError(
-          "${a.file} contains num value at $path, only strings are supported!",
+          "${fr.file} contains num value at $path, only strings are supported!",
         );
       } else if (value is bool) {
         throw AssertionError(
-          "${a.file} contains bool value at $path, only strings are supported!",
+          "${fr.file} contains bool value at $path, only strings are supported!",
         );
       } else if (value is List) {
         throw AssertionError(
-          "${a.file} contains list at $path, only strings are supported!",
+          "${fr.file} contains list at $path, only strings are supported!",
         );
       } else if (value is String) {
-        if (!b.fragment.containsKey(key))
+        if (value.isEmpty) {
           throw AssertionError(
-            "${a.file} contains $path but ${b.file} doesn't!",
+            "${fr.file} contains empty string at $path!",
           );
+        }
       } else if (value is Map) {
+        _validateFragment(JsonFragment.append(fr, key));
+      } else {
+        throw AssertionError(
+          "${fr.file} contains unknown type ${value.runtimeType} at $path, "
+          "I hope you know what you are doing.",
+        );
+      }
+    });
+  }
+
+  void _compareJson(JsonFragment a, JsonFragment b) {
+    a.fragment.forEach((key, value) {
+      final path = '${a.path}.$key';
+      if (!b.fragment.containsKey(key)) {
+        throw AssertionError(
+          "${a.file} contains $path but ${b.file} doesn't!",
+        );
+      }
+      if (value is Map) {
         _compareJson(
           JsonFragment.append(a, key),
           JsonFragment.append(b, key),
-        );
-      } else {
-        throw AssertionError(
-          "${a.file} contains unknown type ${value.runtimeType} at $path, "
-          "I hope you know what you are doing.",
         );
       }
     });
@@ -132,9 +154,9 @@ class ModelGenerator extends Generator {
   List<Model> _extractModelsInFragment(JsonFragment fragment) {
     final fields = fragment.fragment.keys.map((key) {
       if (fragment.fragment[key] is String) {
-        return Field('String', key.camelCase);
+        return Field('String', key);
       } else {
-        return Field('${fragment.path}.$key'.pascalCase, key.camelCase);
+        return Field('${fragment.path}.$key'.pascalCase, key);
       }
     }).toList();
     final model = Model(fragment.path, fields);
@@ -155,14 +177,22 @@ class ModelGenerator extends Generator {
   String _generateModel(Model model) {
     final className = model.name.pascalCase;
     final text = '''
-@Model()
+@JsonSerializable(
+  createToJson: false,
+  nullable: false,
+  disallowUnrecognizedKeys: true,
+)
 class $className {
 ${model.fields.map((field) => '''
-  @Field()
-  final ${field.type} ${field.name};
+  @JsonKey(
+    name: '${field.name}',
+    required: true,
+    disallowNullValue: true,
+  )
+  final ${field.type} ${field.name.camelCase};
 ''').join('\n')}
 
-  $className(${model.fields.map((f) => 'this.${f.name}').join(', ')});
+  $className(${model.fields.map((f) => 'this.${f.name.camelCase}').join(', ')});
 
   factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);
 }
@@ -172,7 +202,6 @@ ${model.fields.map((field) => '''
 
   String _generateFile(List<Model> models, List<String> locales) {
     final text = '''
-import 'package:cobble/localization/model/annotations.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'dart:ui';
 
