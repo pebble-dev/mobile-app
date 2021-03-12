@@ -1,4 +1,5 @@
 import 'package:cobble/main.dart';
+import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/home/home_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
@@ -32,8 +33,9 @@ class _SplashPageState extends State<SplashPage> {
             content: Text(
                 "Do you want to configure this app for Rebble Web Services?\n(Selecting no runs the app with offline-only features)"),
             actions: <Widget>[
-              FlatButton(
-                child: Text("Yes"),
+              CobbleButton(
+                outlined: false,
+                label: "Yes",
                 onPressed: () {
                   canLaunch(getBootUrl).then((value) => {
                         if (value)
@@ -43,8 +45,9 @@ class _SplashPageState extends State<SplashPage> {
                       });
                 },
               ),
-              FlatButton(
-                child: Text("No"),
+              CobbleButton(
+                outlined: false,
+                label: "No",
                 onPressed: () {
                   _openHome();
                 },

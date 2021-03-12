@@ -5,6 +5,7 @@ import 'package:cobble/domain/permissions.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
+import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/devoptions/dev_options_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
@@ -139,17 +140,18 @@ class TestTab extends HookWidget implements CobbleScreen {
                         style: Theme.of(context).textTheme.headline5,
                       ),
                       SizedBox(height: 8.0),
-                      FlatButton.icon(
-                        label: Text("Open developer options"),
-                        icon: Icon(RebbleIcons.developer_connection_console,
-                            size: 25.0),
-                        textColor: Theme.of(context).accentColor,
+                      CobbleButton(
+                        outlined: false,
+                        label: "Open developer options",
+                        icon: RebbleIcons.developer_connection_console,
+                        color: Theme.of(context).accentColor,
                         onPressed: () => context.push(DevOptionsPage()),
                       ),
-                      FlatButton.icon(
-                          label: Text("Here's another button"),
-                          icon: Icon(RebbleIcons.settings, size: 25.0),
-                          textColor: Theme.of(context).accentColor,
+                      CobbleButton(
+                          outlined: false,
+                          label: "Here's another button",
+                          icon: RebbleIcons.settings,
+                          color: Theme.of(context).accentColor,
                           onPressed: () => {}),
                     ],
                   ),

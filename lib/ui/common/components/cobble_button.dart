@@ -12,6 +12,7 @@ class CobbleButton extends StatelessWidget {
   final String label;
   final IconData icon;
   final bool outlined;
+  final Color color;
 
   const CobbleButton({
     Key key,
@@ -19,6 +20,7 @@ class CobbleButton extends StatelessWidget {
     this.label,
     this.icon,
     this.outlined = true,
+    this.color,
     this.focusNode,
   })  : assert(
           label is String && label.length > 0 || icon is IconData,
@@ -28,7 +30,7 @@ class CobbleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final child = Row(
+    Widget child = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         if (icon is IconData) Icon(icon, size: 21),
@@ -37,16 +39,26 @@ class CobbleButton extends StatelessWidget {
       ],
     );
     if (outlined)
-      return OutlinedButton(
+      child = OutlinedButton(
         onPressed: onPressed,
         focusNode: focusNode,
         child: child,
       );
-    return TextButton(
-      onPressed: onPressed,
-      focusNode: focusNode,
-      child: child,
-    );
+    else
+      child = TextButton(
+        onPressed: onPressed,
+        focusNode: focusNode,
+        child: child,
+      );
+
+    if (color != null) {
+      child = CobbleButton.withColor(
+        color: color,
+        child: child,
+      );
+    }
+
+    return child;
   }
 
   static Widget withColor({
@@ -63,6 +75,13 @@ class CobbleButton extends StatelessWidget {
               side: simpleMaterialStateProperty(
                 BorderSide(color: color),
               ),
+              foregroundColor: simpleMaterialStateProperty(
+                color,
+              ),
+            ),
+          ),
+          textButtonTheme: TextButtonThemeData(
+            style: context.theme.textButtonTheme.style.copyWith(
               foregroundColor: simpleMaterialStateProperty(
                 color,
               ),

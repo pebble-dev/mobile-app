@@ -5,6 +5,7 @@ import 'package:cobble/domain/connection/scan_provider.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
+import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/home/home_page.dart';
@@ -171,25 +172,34 @@ class PairPage extends HookWidget implements CobbleScreen {
             )
             .toList(),
         if (!scan.scanning) ...[
-          FlatButton(
-            child: Text("SEARCH AGAIN WITH BLE"),
+          Padding(
             padding: EdgeInsets.symmetric(horizontal: 32.0),
-            textColor: Theme.of(context).accentColor,
-            onPressed: _refreshDevicesBle,
+            child: CobbleButton(
+              outlined: false,
+              label: "SEARCH AGAIN WITH BLE",
+              color: Theme.of(context).accentColor,
+              onPressed: _refreshDevicesBle,
+            ),
           ),
-          FlatButton(
-            child: Text("SEARCH AGAIN WITH BT CLASSIC"),
+          Padding(
             padding: EdgeInsets.symmetric(horizontal: 32.0),
-            textColor: Theme.of(context).accentColor,
-            onPressed: _refreshDevicesClassic,
+            child: CobbleButton(
+              outlined: false,
+              label: "SEARCH AGAIN WITH BT CLASSIC",
+              color: Theme.of(context).accentColor,
+              onPressed: _refreshDevicesClassic,
+            ),
           ),
         ],
         if (fromLanding)
-          FlatButton(
-            child: Text("SKIP"),
+          Padding(
             padding: EdgeInsets.symmetric(horizontal: 32.0),
-            onPressed: () => context.pushAndRemoveAllBelow(
-              HomePage(),
+            child: CobbleButton(
+              outlined: false,
+              label: "SKIP",
+              onPressed: () => context.pushAndRemoveAllBelow(
+                HomePage(),
+              ),
             ),
           )
       ],

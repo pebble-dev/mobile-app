@@ -1,4 +1,5 @@
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
+import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
@@ -34,8 +35,9 @@ class RebbleSetup extends StatelessWidget implements CobbleScreen {
               }
             }),
           ),
-          FlatButton(
-            child: Text("SKIP"),
+          CobbleButton(
+            outlined: false,
+            label: "SKIP",
             onPressed: () => context.pushReplacement(RebbleSetupSuccess()),
           )
         ],
