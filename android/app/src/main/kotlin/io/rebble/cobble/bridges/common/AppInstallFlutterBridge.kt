@@ -9,11 +9,12 @@ import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.data.pbw.appinfo.PbwAppInfo
 import io.rebble.cobble.data.pbw.appinfo.toPigeon
 import io.rebble.cobble.datasources.WatchMetadataStore
+import io.rebble.cobble.middleware.getBestVariant
 import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.*
 import io.rebble.libpebblecommon.disk.PbwBinHeader
-import io.rebble.libpebblecommon.metadata.WatchType
+import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
 import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
@@ -126,7 +127,6 @@ class AppInstallFlutterBridge @Inject constructor(
 
                 // Wait some time for metadata to become available in case this has been called
                 // Right after watch has been connected
-
                 val hardwarePlatformNumber = withTimeoutOrNull(2_000) {
                     watchMetadataStore.lastConnectedWatchMetadata.first { it != null }
                 }
@@ -135,19 +135,23 @@ class AppInstallFlutterBridge @Inject constructor(
                         ?.get()
                         ?: error("Watch not connected")
 
-                // TODO Always install basalt version for now,
-                // until compatibility logic is ready
-                val watchType = WatchType.BASALT
-                /*WatchHardwarePlatform.fromProtocolNumber(hardwarePlatformNumber)
+                val connectedWatchType = WatchHardwarePlatform
+                        .fromProtocolNumber(hardwarePlatformNumber)
                         ?.watchType
-                        ?: error("Unknown hardware platform $hardwarePlatformNumber")*/
+                        ?: error("Unknown hardware platform $hardwarePlatformNumber")
+
+                val appInfo = requirePbwAppInfo(moshi, appFile)
+
+                val targetWatchType = getBestVariant(connectedWatchType, appInfo.targetPlatforms)
+                        ?: error("Watch $connectedWatchType is not compatible with app $appUuid. " +
+                                "Compatible apps: ${appInfo.targetPlatforms}")
 
 
-                val manifest = requirePbwManifest(moshi, appFile, watchType)
+                val manifest = requirePbwManifest(moshi, appFile, targetWatchType)
 
                 Timber.d("Manifest %s", manifest)
 
-                val appBlob = requirePbwBinaryBlob(appFile, watchType, manifest.application.name)
+                val appBlob = requirePbwBinaryBlob(appFile, targetWatchType, manifest.application.name)
 
                 val headerData = appBlob
                         .buffer().use { it.readByteArray(PbwBinHeader.SIZE.toLong()) }

@@ -3,6 +3,7 @@ package io.rebble.cobble.util
 import android.content.Context
 import androidx.annotation.WorkerThread
 import com.squareup.moshi.Moshi
+import io.rebble.cobble.data.pbw.appinfo.PbwAppInfo
 import io.rebble.cobble.data.pbw.manifest.PbwManifest
 import io.rebble.libpebblecommon.metadata.WatchType
 import okio.Source
@@ -18,8 +19,7 @@ fun getAppPbwFile(context: Context, appUuid: String): File {
 
 @WorkerThread
 fun getPbwManifest(moshi: Moshi, pbwFile: File, watchType: WatchType): PbwManifest? {
-    val manifestFileName = "${watchType.codename}/manifest.json"
-    val manifestFile = pbwFile.zippedSource(manifestFileName)
+    val manifestFile = pbwFile.zippedPlatformSource(watchType, "manifest.json")
             ?.buffer()
             ?: return null
 
@@ -39,7 +39,30 @@ fun requirePbwManifest(moshi: Moshi, pbwFile: File, watchType: WatchType): PbwMa
 /**
  * @throws IllegalStateException if pbw does not contain manifest with that watch type
  */
+fun requirePbwAppInfo(moshi: Moshi, pbwFile: File): PbwAppInfo {
+    val appInfoFile = pbwFile.zippedSource("appinfo.json")
+            ?.buffer()
+            ?: error("appinfo.json missing from app $pbwFile")
+
+    return appInfoFile.use {
+        moshi.adapter(PbwAppInfo::class.java).nonNull().fromJson(it)!!
+    }
+}
+
+/**
+ * @throws IllegalStateException if pbw does not contain manifest with that watch type
+ */
 fun requirePbwBinaryBlob(pbwFile: File, watchType: WatchType, blobName: String): Source {
-    return pbwFile.zippedSource("${watchType.codename}/$blobName")
+    return pbwFile.zippedPlatformSource(watchType, blobName)
             ?: error("Blob ${blobName} missing from app $pbwFile")
+}
+
+private fun File.zippedPlatformSource(watchType: WatchType, fileName: String): Source? {
+    return if (watchType == WatchType.APLITE) {
+        // Older aplite-only releases do not have folders for different platforms
+        // Everything is in root
+        zippedSource("aplite/$fileName") ?: zippedSource(fileName)
+    } else {
+        zippedSource("${watchType.codename}/$fileName")
+    }
 }

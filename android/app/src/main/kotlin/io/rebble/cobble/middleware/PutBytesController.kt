@@ -1,6 +1,5 @@
 package io.rebble.cobble.middleware
 
-import android.content.Context
 import com.squareup.moshi.Moshi
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.data.pbw.manifest.PbwBlob
@@ -28,7 +27,6 @@ import javax.inject.Singleton
 
 @Singleton
 class PutBytesController @Inject constructor(
-        private val context: Context,
         private val connectionLooper: ConnectionLooper,
         private val putBytesService: PutBytesService,
         private val metadataStore: WatchMetadataStore,
@@ -89,7 +87,8 @@ class PutBytesController @Inject constructor(
             type: ObjectType,
             progressMultiplier: Double
     ) {
-        Timber.d("Send app part %s %s %s %s %f", appId, manifestEntry, type, type.value, progressMultiplier)
+        Timber.d("Send app part %s %s %s %s %s %f",
+                watchType, appId, manifestEntry, type, type.value, progressMultiplier)
         putBytesService.send(
                 PutBytesAppInit(manifestEntry.size.toUInt(), type, appId)
         )
