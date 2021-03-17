@@ -8,13 +8,10 @@ import io.rebble.cobble.bridges.background.BackgroundAppInstallBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.data.pbw.appinfo.PbwAppInfo
 import io.rebble.cobble.data.pbw.appinfo.toPigeon
-import io.rebble.cobble.data.pbw.manifest.PbwManifest
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons
-import io.rebble.cobble.util.findFile
-import io.rebble.cobble.util.launchPigeonResult
-import io.rebble.cobble.util.zippedSource
+import io.rebble.cobble.util.*
 import io.rebble.libpebblecommon.disk.PbwBinHeader
 import io.rebble.libpebblecommon.metadata.WatchType
 import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
@@ -26,7 +23,6 @@ import okio.buffer
 import okio.sink
 import okio.source
 import timber.log.Timber
-import java.io.File
 import java.io.InputStream
 import java.util.zip.ZipInputStream
 import javax.inject.Inject
@@ -85,7 +81,7 @@ class AppInstallFlutterBridge @Inject constructor(
         coroutineScope.launch {
             // Copy pbw file to the app's folder
             val appUuid = installData.appInfo.uuid
-            val targetFileName = getAppFile(appUuid)
+            val targetFileName = getAppPbwFile(context, appUuid)
 
             val success = withContext(Dispatchers.IO) {
                 val openInputStream = context.contentResolver
@@ -122,7 +118,7 @@ class AppInstallFlutterBridge @Inject constructor(
             NumberWrapper(try {
                 val appUuid = arg.value
 
-                val appFile = getAppFile(appUuid)
+                val appFile = getAppPbwFile(context, appUuid)
                 if (!appFile.exists()) {
                     error("PBW file $appUuid missing")
                 }
@@ -146,26 +142,15 @@ class AppInstallFlutterBridge @Inject constructor(
                         ?.watchType
                         ?: error("Unknown hardware platform $hardwarePlatformNumber")*/
 
-                val manifestFileName = "${watchType.codename}/manifest.json"
-                val manifestFile = appFile.zippedSource(manifestFileName)
-                        ?.buffer()
-                        ?: error("PBW does not contain $manifestFileName")
 
-                val manifest = manifestFile.use {
-                    moshi.adapter(PbwManifest::class.java).nonNull().fromJson(it)!!
-                }
+                val manifest = requirePbwManifest(moshi, appFile, watchType)
 
                 Timber.d("Manifest %s", manifest)
 
-                val appBlobFileName = manifest.application.name
-                val appBlobDbFile = appFile
-                        .zippedSource("${watchType.codename}/$appBlobFileName")
-                        ?: error("Missing pbw file $appBlobFileName")
+                val appBlob = requirePbwBinaryBlob(appFile, watchType, manifest.application.name)
 
-                val headerData = appBlobDbFile
+                val headerData = appBlob
                         .buffer().use { it.readByteArray(PbwBinHeader.SIZE.toLong()) }
-
-                Timber.d("App Blob %s", appBlobFileName)
 
                 val parsedHeader = PbwBinHeader.parseFileHeader(headerData.toUByteArray())
 
@@ -185,13 +170,6 @@ class AppInstallFlutterBridge @Inject constructor(
             })
         }
 
-    }
-
-    private fun getAppFile(appUuid: String): File {
-        val appsDir = File(context.filesDir, "apps")
-        appsDir.mkdirs()
-        val targetFileName = File(appsDir, "$appUuid.pbw")
-        return targetFileName
     }
 
     private fun parseAppInfoJson(stream: InputStream): PbwAppInfo? {
