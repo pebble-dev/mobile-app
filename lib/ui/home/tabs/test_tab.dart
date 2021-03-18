@@ -1,8 +1,7 @@
+import 'package:cobble/domain/app_manager.dart';
 import 'package:cobble/domain/calendar/calendar_list.dart';
 import 'package:cobble/domain/calendar/device_calendar_plugin_provider.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
-import 'package:cobble/domain/db/dao/app_dao.dart';
-import 'package:cobble/domain/db/models/app.dart';
 import 'package:cobble/domain/permissions.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
@@ -15,7 +14,6 @@ import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/all.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../common/icons/fonts/rebble_icons.dart';
@@ -45,11 +43,8 @@ class TestTab extends HookWidget implements CobbleScreen {
       error: (e, s) => List<Workaround>.empty(),
     );
 
-    final allApps = useProvider(_appListProvider).when(
-      data: (data) => data,
-      loading: () => List<App>.empty(),
-      error: (e, s) => List<App>.empty(),
-    );
+    final appManager = useProvider(appManagerProvider);
+    final allApps = useProvider(appManagerProvider.state);
 
     useEffect(() {
       Future.microtask(() async {
@@ -170,8 +165,7 @@ class TestTab extends HookWidget implements CobbleScreen {
                 Switch(
                   value: calendarSyncEnabled.data?.value ?? false,
                   onChanged: (value) async {
-                    await preferences.data?.value
-                        ?.setCalendarSyncEnabled(value);
+                    await preferences.data?.value.setCalendarSyncEnabled(value);
 
                     if (!value) {
                       calendarControl.deleteCalendarPinsFromWatch();
@@ -181,7 +175,7 @@ class TestTab extends HookWidget implements CobbleScreen {
                 Text("Show calendar on the watch")
               ]),
               Text("Calendars: "),
-              ...calendars.data?.value?.map((e) {
+              ...calendars.data?.value.map((e) {
                     return Row(
                       children: [
                         Checkbox(
@@ -200,7 +194,7 @@ class TestTab extends HookWidget implements CobbleScreen {
               ...neededWorkarounds.map(
                 (workaround) => Row(children: [
                   Switch(
-                    value: workaround.disabled ?? false,
+                    value: workaround.disabled,
                     onChanged: (value) async {
                       await preferences.data?.value
                           .setWorkaroundDisabled(workaround.name, value);
@@ -211,8 +205,18 @@ class TestTab extends HookWidget implements CobbleScreen {
               ),
               Text("Installed apps: "),
               ...allApps.map(
-                (app) =>
-                    Row(children: [Text("${app.longName} by ${app.company}")]),
+                (app) => Row(children: [
+                  Container(
+                    margin: EdgeInsets.all(16),
+                    child: Text("${app.longName} by ${app.company}"),
+                  ),
+                  ElevatedButton(
+                    child: Text("Delete"),
+                    onPressed: () {
+                      appManager.deleteApp(app.uuid);
+                    },
+                  )
+                ]),
               )
             ],
           ),
@@ -238,10 +242,3 @@ class TestTab extends HookWidget implements CobbleScreen {
             ));
   }
 }
-
-/// Temporary provider to display debug app list. Will be moved elsewhere
-final FutureProvider<List<App>> _appListProvider = FutureProvider((ref) async {
-  final appDao = await ref.read(appDaoProvider);
-
-  return appDao.getAllInstalledApps();
-});

@@ -190,6 +190,9 @@ abstract class IntentCallbacks {
 @FlutterApi()
 abstract class BackgroundAppInstallCallbacks {
   void beginAppInstall(InstallData installData);
+
+  @async
+  void deleteApp(StringWrapper uuid);
 }
 
 @FlutterApi()
@@ -346,10 +349,19 @@ abstract class AppInstallControl {
   // Just relay method that triggers beginAppInstall on background flutter side
   void beginAppInstall(InstallData installData);
 
+  // Just relay method that triggers deleteApp on background flutter side
+  // Return BooleanWrapper as a
+  // workaround for https://github.com/flutter/flutter/issues/78536
+  @async
+  BooleanWrapper beginAppDeletion(StringWrapper uuid);
+
   /// Read header from pbw file already in Cobble's storage and send it to
   /// BlobDB on the watch
   @async
   NumberWrapper insertAppIntoBlobDb(StringWrapper uuidString);
+
+  @async
+  NumberWrapper removeAppFromBlobDb(StringWrapper appUuidString);
 }
 
 @HostApi()

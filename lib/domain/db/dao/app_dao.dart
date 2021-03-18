@@ -23,7 +23,11 @@ class AppDao {
   Future<List<App>> getAllInstalledApps() async {
     final db = await _dbFuture;
 
-    final receivedApps = (await db.query(tableApps));
+    final receivedApps = (await db.query(
+      tableApps,
+      where:
+          "nextSyncAction != \"Delete\" AND nextSyncAction != \"DeleteThenIgnore\"",
+    ));
 
     return receivedApps.map((e) => App.fromMap(e)).toList();
   }
@@ -59,12 +63,18 @@ class AppDao {
         where: "uuid = ?",
         whereArgs: [appId.toString()]);
   }
+
+  Future<void> delete(Uuid itemId) async {
+    final db = await _dbFuture;
+
+    await db
+        .delete(tableApps, where: "uuid = ?", whereArgs: [itemId.toString()]);
+  }
 }
 
 final AutoDisposeProvider<AppDao> appDaoProvider = Provider.autoDispose((ref) {
   final dbFuture = ref.watch(databaseProvider.future);
   return AppDao(dbFuture);
 });
-
 
 const tableApps = "app";

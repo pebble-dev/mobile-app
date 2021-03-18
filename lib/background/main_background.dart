@@ -160,4 +160,14 @@ class BackgroundReceiver
     final blobDbSyncSuccess = await watchAppsSyncer.syncAppDatabaseWithWatch();
     Log.d("Blob sync success: ${blobDbSyncSuccess}");
   }
+
+  @override
+  Future<void> deleteApp(StringWrapper uuidString) async {
+    final uuid = Uuid(uuidString.value);
+    await appDao.setSyncAction(uuid, NextSyncAction.Delete);
+
+    if (connectionSubscription.read().isConnected == true) {
+      await watchAppsSyncer.syncAppDatabaseWithWatch();
+    }
+  }
 }

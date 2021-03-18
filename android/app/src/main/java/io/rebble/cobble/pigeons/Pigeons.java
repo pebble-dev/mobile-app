@@ -1405,16 +1405,26 @@ public class Pigeons {
       this.binaryMessenger = argBinaryMessenger;
     }
     public interface Reply<T> {
-      void reply(T reply);
+        void reply(T reply);
     }
-    public void beginAppInstall(InstallData argInput, Reply<Void> callback) {
-      BasicMessageChannel<Object> channel =
-          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall", new StandardMessageCodec());
-      HashMap inputMap = argInput.toMap();
-      channel.send(inputMap, channelReply -> {
-        callback.reply(null);
-      });
-    }
+
+      public void beginAppInstall(InstallData argInput, Reply<Void> callback) {
+          BasicMessageChannel<Object> channel =
+                  new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall", new StandardMessageCodec());
+          HashMap inputMap = argInput.toMap();
+          channel.send(inputMap, channelReply -> {
+              callback.reply(null);
+          });
+      }
+
+      public void deleteApp(StringWrapper argInput, Reply<Void> callback) {
+          BasicMessageChannel<Object> channel =
+                  new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.BackgroundAppInstallCallbacks.deleteApp", new StandardMessageCodec());
+          HashMap inputMap = argInput.toMap();
+          channel.send(inputMap, channelReply -> {
+              callback.reply(null);
+          });
+      }
   }
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
@@ -1471,13 +1481,14 @@ public class Pigeons {
         callback.reply(null);
       });
     }
-    public void onScanStopped(Reply<Void> callback) {
-      BasicMessageChannel<Object> channel =
-          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ScanCallbacks.onScanStopped", new StandardMessageCodec());
-        channel.send(null, channelReply -> {
-            callback.reply(null);
-        });
-    }
+
+      public void onScanStopped(Reply<Void> callback) {
+          BasicMessageChannel<Object> channel =
+                  new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ScanCallbacks.onScanStopped", new StandardMessageCodec());
+          channel.send(null, channelReply -> {
+              callback.reply(null);
+          });
+      }
   }
 
     public interface Result<T> {
@@ -1492,7 +1503,11 @@ public class Pigeons {
 
         void beginAppInstall(InstallData arg);
 
+        void beginAppDeletion(StringWrapper arg, Result<BooleanWrapper> result);
+
         void insertAppIntoBlobDb(StringWrapper arg, Result<NumberWrapper> result);
+
+        void removeAppFromBlobDb(StringWrapper arg, Result<NumberWrapper> result);
 
         /**
          * Sets up an instance of `AppInstallControl` to handle messages through the `binaryMessenger`
@@ -1542,6 +1557,28 @@ public class Pigeons {
             }
             {
                 BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AppInstallControl.beginAppDeletion", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            StringWrapper input = StringWrapper.fromMap((HashMap) message);
+                            api.beginAppDeletion(input, result -> {
+                                wrapped.put("result", result.toMap());
+                                reply.reply(wrapped);
+                            });
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                            reply.reply(wrapped);
+                        }
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+            {
+                BasicMessageChannel<Object> channel =
                         new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AppInstallControl.insertAppIntoBlobDb", new StandardMessageCodec());
                 if (api != null) {
                     channel.setMessageHandler((message, reply) -> {
@@ -1562,8 +1599,30 @@ public class Pigeons {
                     channel.setMessageHandler(null);
                 }
             }
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AppInstallControl.removeAppFromBlobDb", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            StringWrapper input = StringWrapper.fromMap((HashMap) message);
+                            api.removeAppFromBlobDb(input, result -> {
+                                wrapped.put("result", result.toMap());
+                                reply.reply(wrapped);
+                            });
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                            reply.reply(wrapped);
+                        }
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
         }
-  }
+    }
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface IntentControl {
@@ -1731,9 +1790,7 @@ public class Pigeons {
 
         void executeAction(NotifActionExecuteReq arg);
 
-        /**
-         * Sets up an instance of `NotificationUtils` to handle messages through the `binaryMessenger`
-         */
+        /** Sets up an instance of `NotificationUtils` to handle messages through the `binaryMessenger` */
         static void setup(BinaryMessenger binaryMessenger, NotificationUtils api) {
             {
                 BasicMessageChannel<Object> channel =
@@ -1749,16 +1806,16 @@ public class Pigeons {
                                 reply.reply(wrapped);
                             });
                         } catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-              reply.reply(wrapped);
+                            wrapped.put("error", wrapError(exception));
+                            reply.reply(wrapped);
+                        }
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
             }
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
+            {
+                BasicMessageChannel<Object> channel =
             new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.NotificationUtils.dismissNotificationWatch", new StandardMessageCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {

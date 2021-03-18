@@ -53,21 +53,13 @@ class WatchAppsSyncer {
         final StringWrapper idWrapper = StringWrapper();
         idWrapper.value = appToDelete.uuid.toString();
 
-        // TODO deletion
-        // final res = await appInstallControl.removePin(idWrapper);
-        //
-        // if (res.value != statusSuccess) {
-        //   return res.value;
-        // }
-        //
-        // if (appToDelete.nextSyncAction == NextSyncAction.DeleteThenIgnore) {
-        //   await appDao.setSyncAction(
-        //     appToDelete.itemId,
-        //     NextSyncAction.Ignore,
-        //   );
-        // } else {
-        //   await appDao.delete(appToDelete.itemId);
-        // }
+        final res = await appInstallControl.removeAppFromBlobDb(idWrapper);
+
+        if (res.value != statusSuccess) {
+          return res.value;
+        }
+
+        await appDao.delete(appToDelete.uuid);
       }
 
       final appsToUpload = await appDao.getAllAppsWithPendingUpload();

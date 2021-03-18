@@ -10,6 +10,7 @@ import io.rebble.cobble.data.pbw.appinfo.PbwAppInfo
 import io.rebble.cobble.data.pbw.appinfo.toPigeon
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.middleware.getBestVariant
+import io.rebble.cobble.pigeons.BooleanWrapper
 import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.*
@@ -18,6 +19,8 @@ import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
 import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
+import io.rebble.libpebblecommon.structmapper.SUUID
+import io.rebble.libpebblecommon.structmapper.StructMapper
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
 import okio.buffer
@@ -25,6 +28,7 @@ import okio.sink
 import okio.source
 import timber.log.Timber
 import java.io.InputStream
+import java.util.*
 import java.util.zip.ZipInputStream
 import javax.inject.Inject
 import kotlin.random.Random
@@ -173,7 +177,30 @@ class AppInstallFlutterBridge @Inject constructor(
                 BlobResponse.BlobStatus.GeneralFailure.value.toInt()
             })
         }
+    }
 
+    override fun beginAppDeletion(arg: Pigeons.StringWrapper,
+                                  result: Pigeons.Result<Pigeons.BooleanWrapper>) {
+        coroutineScope.launchPigeonResult(result) {
+            BooleanWrapper(backgroundAppInstallBridge.deleteApp(arg))
+        }
+    }
+
+    override fun removeAppFromBlobDb(
+            arg: Pigeons.StringWrapper,
+            result: Pigeons.Result<Pigeons.NumberWrapper>
+    ) {
+        coroutineScope.launchPigeonResult(result) {
+            val blobDbResult = blobDBService.send(
+                    BlobCommand.DeleteCommand(
+                            Random.nextInt().toUShort(),
+                            BlobCommand.BlobDatabase.App,
+                            SUUID(StructMapper(), UUID.fromString(arg.value)).toBytes()
+                    )
+            )
+
+            NumberWrapper(blobDbResult.response.valueNumber)
+        }
     }
 
     private fun parseAppInfoJson(stream: InputStream): PbwAppInfo? {

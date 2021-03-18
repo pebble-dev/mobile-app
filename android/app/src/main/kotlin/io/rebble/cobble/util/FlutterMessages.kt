@@ -7,6 +7,8 @@ import io.rebble.cobble.pigeons.Pigeons
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 fun BasicMessageChannel<Any>.setCoroutineMessageHandler(
         coroutineScope: CoroutineScope,
@@ -60,5 +62,11 @@ fun <T> CoroutineScope.launchPigeonResult(result: Pigeons.Result<T>,
         withContext(Dispatchers.Main.immediate) {
             result.success(callbackResult)
         }
+    }
+}
+
+suspend fun <T> awaitPigeonMethod(block: (reply: (T) -> Unit) -> Unit): T {
+    return suspendCoroutine { continuation ->
+        block(continuation::resume)
     }
 }
