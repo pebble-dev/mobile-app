@@ -182,6 +182,8 @@ class AppInstallFlutterBridge @Inject constructor(
     override fun beginAppDeletion(arg: Pigeons.StringWrapper,
                                   result: Pigeons.Result<Pigeons.BooleanWrapper>) {
         coroutineScope.launchPigeonResult(result) {
+            getAppPbwFile(context, arg.value).delete()
+
             BooleanWrapper(backgroundAppInstallBridge.deleteApp(arg))
         }
     }
