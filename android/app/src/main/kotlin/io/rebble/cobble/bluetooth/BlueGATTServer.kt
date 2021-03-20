@@ -48,6 +48,8 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         data class ForceSendAck(val sequence: Int): SendActorMessage()
         object UpdateData: SendActorMessage()
     }
+    @OptIn(ObsoleteCoroutinesApi::class)
+    @Suppress("BlockingMethodInNonBlockingContext")
     private val sendActor = serverScope.actor<SendActorMessage> {
         for (message in this) {
             when (message) {
@@ -361,6 +363,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
     /**
      * Phone side reset, clears buffers, pending packets and resets sequence back to 0
      */
+    @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun reset() {
         Timber.d("Resetting LE")
         packetWriteInputStream.skip(packetWriteInputStream.available().toLong())
