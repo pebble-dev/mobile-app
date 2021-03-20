@@ -1,4 +1,5 @@
 import 'package:cobble/background/notification/notification_manager.dart';
+import 'package:cobble/domain/app_lifecycle_manager.dart';
 import 'package:cobble/domain/calendar/calendar_pin_convert.dart';
 import 'package:cobble/domain/calendar/calendar_syncer.db.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
@@ -41,6 +42,7 @@ class BackgroundReceiver
   late TimelinePinDao timelinePinDao;
   late MasterActionHandler masterActionHandler;
   late NotificationManager notificationManager;
+  late AppLifecycleManager appLifecycleManager;
   late AppDao appDao;
 
   late ProviderSubscription<WatchConnectionState> connectionSubscription;
@@ -58,6 +60,7 @@ class BackgroundReceiver
     watchAppsSyncer = container.listen(watchAppSyncerProvider).read();
     timelinePinDao = container.listen(timelinePinDaoProvider!).read();
     appDao = container.listen(appDaoProvider).read();
+    appLifecycleManager = container.listen(appLifecycleManagerProvider).read();
     preferences = Future.microtask(() async {
       final asyncValue =
           await container.readUntilFirstSuccessOrError(preferencesProvider);
@@ -159,6 +162,10 @@ class BackgroundReceiver
 
     final blobDbSyncSuccess = await watchAppsSyncer.syncAppDatabaseWithWatch();
     Log.d("Blob sync success: ${blobDbSyncSuccess}");
+
+    if (blobDbSyncSuccess) {
+      await appLifecycleManager.openApp(newApp.uuid);
+    }
   }
 
   @override

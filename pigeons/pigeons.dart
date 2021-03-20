@@ -365,6 +365,12 @@ abstract class AppInstallControl {
 }
 
 @HostApi()
+abstract class AppLifecycleControl {
+  @async
+  BooleanWrapper openAppOnTheWatch(StringWrapper uuidString);
+}
+
+@HostApi()
 abstract class PackageDetails {
   AppEntriesPigeon getPackageList();
 }

@@ -915,6 +915,31 @@ class PermissionControl {
   }
 }
 
+class AppLifecycleControl {
+  Future<BooleanWrapper> openAppOnTheWatch(StringWrapper arg) async {
+    final Object encoded = arg.encode();
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AppLifecycleControl.openAppOnTheWatch', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return BooleanWrapper.decode(replyMap['result']);
+    }
+  }
+}
+
 class ConnectionControl {
   Future<BooleanWrapper> isConnected() async {
     const BasicMessageChannel<Object> channel =
@@ -1054,20 +1079,16 @@ class NotificationsControl {
 
 abstract class BackgroundAppInstallCallbacks {
   void beginAppInstall(InstallData arg);
-
   Future<void> deleteApp(StringWrapper arg);
-
   static void setup(BackgroundAppInstallCallbacks api) {
     {
-      const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-          'dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall',
-          StandardMessageCodec());
+      const BasicMessageChannel<Object> channel =
+          BasicMessageChannel<Object>('dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall', StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall was null. Expected InstallData.');
+          assert(message != null, 'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall was null. Expected InstallData.');
           final InstallData input = InstallData.decode(message);
           api.beginAppInstall(input);
           return;
@@ -1075,15 +1096,13 @@ abstract class BackgroundAppInstallCallbacks {
       }
     }
     {
-      const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-          'dev.flutter.pigeon.BackgroundAppInstallCallbacks.deleteApp',
-          StandardMessageCodec());
+      const BasicMessageChannel<Object> channel =
+          BasicMessageChannel<Object>('dev.flutter.pigeon.BackgroundAppInstallCallbacks.deleteApp', StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object message) async {
-          assert(message != null,
-              'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.deleteApp was null. Expected StringWrapper.');
+          assert(message != null, 'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.deleteApp was null. Expected StringWrapper.');
           final StringWrapper input = StringWrapper.decode(message);
           await api.deleteApp(input);
           return;
@@ -1202,8 +1221,7 @@ class AppInstallControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -1216,11 +1234,9 @@ class AppInstallControl {
 
   Future<BooleanWrapper> beginAppDeletion(StringWrapper arg) async {
     final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.AppInstallControl.beginAppDeletion',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(encoded) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AppInstallControl.beginAppDeletion', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1228,8 +1244,7 @@ class AppInstallControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -1242,11 +1257,9 @@ class AppInstallControl {
 
   Future<NumberWrapper> insertAppIntoBlobDb(StringWrapper arg) async {
     final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.AppInstallControl.insertAppIntoBlobDb',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(encoded) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AppInstallControl.insertAppIntoBlobDb', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1254,8 +1267,7 @@ class AppInstallControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -1268,11 +1280,9 @@ class AppInstallControl {
 
   Future<NumberWrapper> removeAppFromBlobDb(StringWrapper arg) async {
     final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.AppInstallControl.removeAppFromBlobDb',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(encoded) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AppInstallControl.removeAppFromBlobDb', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1280,8 +1290,7 @@ class AppInstallControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
