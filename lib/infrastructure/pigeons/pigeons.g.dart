@@ -1078,7 +1078,8 @@ class NotificationsControl {
 }
 
 abstract class BackgroundAppInstallCallbacks {
-  void beginAppInstall(InstallData arg);
+  Future<void> beginAppInstall(InstallData arg);
+
   Future<void> deleteApp(StringWrapper arg);
   static void setup(BackgroundAppInstallCallbacks api) {
     {
@@ -1088,9 +1089,10 @@ abstract class BackgroundAppInstallCallbacks {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall was null. Expected InstallData.');
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall was null. Expected InstallData.');
           final InstallData input = InstallData.decode(message);
-          api.beginAppInstall(input);
+          await api.beginAppInstall(input);
           return;
         });
       }
@@ -1209,11 +1211,13 @@ class AppInstallControl {
     }
   }
 
-  Future<void> beginAppInstall(InstallData arg) async {
+  Future<BooleanWrapper> beginAppInstall(InstallData arg) async {
     final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.AppInstallControl.beginAppInstall', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
+        'dev.flutter.pigeon.AppInstallControl.beginAppInstall',
+        StandardMessageCodec());
+    final Map<Object, Object> replyMap =
+        await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1228,7 +1232,7 @@ class AppInstallControl {
         details: error['details'],
       );
     } else {
-      // noop
+      return BooleanWrapper.decode(replyMap['result']);
     }
   }
 

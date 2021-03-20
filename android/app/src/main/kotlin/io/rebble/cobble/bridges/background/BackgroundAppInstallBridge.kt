@@ -19,7 +19,10 @@ class BackgroundAppInstallBridge @Inject constructor(
             it.uri = uri
             it.appInfo = appInfo
         }
-        appInstallCallbacks.beginAppInstall(appInstallData) {}
+
+        awaitPigeonMethod<Void> { reply ->
+            appInstallCallbacks.beginAppInstall(appInstallData, reply)
+        }
 
         return true
     }

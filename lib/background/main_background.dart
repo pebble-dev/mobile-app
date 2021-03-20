@@ -141,7 +141,7 @@ class BackgroundReceiver
   }
 
   @override
-  void beginAppInstall(InstallData installData) async {
+  Future<void> beginAppInstall(InstallData installData) async {
     final allApps = await appDao.getAllInstalledApps();
 
     final appInfo = installData.appInfo;

@@ -3,11 +3,12 @@
 
 package io.rebble.cobble.pigeons;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.StandardMessageCodec;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /** Generated class from Pigeon. */
 @SuppressWarnings("unused")
@@ -1522,9 +1523,11 @@ public class Pigeons {
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface AppInstallControl {
-    void getAppInfo(StringWrapper arg, Result<PbwAppInfo> result);
-    void beginAppInstall(InstallData arg);
-    void beginAppDeletion(StringWrapper arg, Result<BooleanWrapper> result);
+      void getAppInfo(StringWrapper arg, Result<PbwAppInfo> result);
+
+      void beginAppInstall(InstallData arg, Result<BooleanWrapper> result);
+
+      void beginAppDeletion(StringWrapper arg, Result<BooleanWrapper> result);
     void insertAppIntoBlobDb(StringWrapper arg, Result<NumberWrapper> result);
     void removeAppFromBlobDb(StringWrapper arg, Result<NumberWrapper> result);
 
@@ -1559,13 +1562,15 @@ public class Pigeons {
             try {
               @SuppressWarnings("ConstantConditions")
               InstallData input = InstallData.fromMap((HashMap)message);
-              api.beginAppInstall(input);
-              wrapped.put("result", null);
+                api.beginAppInstall(input, result -> {
+                    wrapped.put("result", result.toMap());
+                    reply.reply(wrapped);
+                });
             }
             catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
+                wrapped.put("error", wrapError(exception));
+                reply.reply(wrapped);
             }
-            reply.reply(wrapped);
           });
         } else {
           channel.setMessageHandler(null);

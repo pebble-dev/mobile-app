@@ -189,6 +189,7 @@ abstract class IntentCallbacks {
 
 @FlutterApi()
 abstract class BackgroundAppInstallCallbacks {
+  @async
   void beginAppInstall(InstallData installData);
 
   @async
@@ -347,7 +348,8 @@ abstract class AppInstallControl {
   PbwAppInfo getAppInfo(StringWrapper localPbwUri);
 
   // Just relay method that triggers beginAppInstall on background flutter side
-  void beginAppInstall(InstallData installData);
+  @async
+  BooleanWrapper beginAppInstall(InstallData installData);
 
   // Just relay method that triggers deleteApp on background flutter side
   // Return BooleanWrapper as a

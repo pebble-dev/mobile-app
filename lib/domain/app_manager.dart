@@ -25,11 +25,13 @@ class AppManager extends StateNotifier<List<App>> {
     await refresh();
   }
 
-  void beginAppInstall(String uri, PbwAppInfo appInfo) {
+  void beginAppInstall(String uri, PbwAppInfo appInfo) async {
     final wrapper = InstallData();
     wrapper.uri = uri;
     wrapper.appInfo = appInfo;
-    appInstallControl.beginAppInstall(wrapper);
+    await appInstallControl.beginAppInstall(wrapper);
+
+    await refresh();
   }
 }
 

@@ -82,8 +82,11 @@ class AppInstallFlutterBridge @Inject constructor(
     }
 
 
-    override fun beginAppInstall(installData: Pigeons.InstallData) {
-        coroutineScope.launch {
+    override fun beginAppInstall(
+            installData: Pigeons.InstallData,
+            result: Pigeons.Result<Pigeons.BooleanWrapper>
+    ) {
+        coroutineScope.launchPigeonResult(result) {
             // Copy pbw file to the app's folder
             val appUuid = installData.appInfo.uuid
             val targetFileName = getAppPbwFile(context, appUuid)
@@ -115,6 +118,8 @@ class AppInstallFlutterBridge @Inject constructor(
             if (success) {
                 backgroundAppInstallBridge.installAppNow(installData.uri, installData.appInfo)
             }
+
+            BooleanWrapper(true)
         }
     }
 
