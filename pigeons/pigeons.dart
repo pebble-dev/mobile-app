@@ -145,6 +145,14 @@ class InstallData {
   InstallData(this.uri, this.appInfo);
 }
 
+class AppInstallStatus {
+  /// Progress in range [0-1]
+  double progress;
+  bool isInstalling;
+
+  AppInstallStatus(this.progress, this.isInstalling);
+}
+
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
@@ -189,13 +197,23 @@ abstract class IntentCallbacks {
 
 @FlutterApi()
 abstract class BackgroundAppInstallCallbacks {
+  @async
   void beginAppInstall(InstallData installData);
+
+  @async
+  void deleteApp(StringWrapper uuid);
+}
+
+@FlutterApi()
+abstract class AppInstallStatusCallbacks {
+  void onStatusUpdated(AppInstallStatus status);
 }
 
 @FlutterApi()
 abstract class NotificationListening {
   @async
   TimelinePinPigeon handleNotification(NotificationPigeon notification);
+
   void dismissNotification(StringWrapper itemId);
 }
 
@@ -344,7 +362,32 @@ abstract class AppInstallControl {
   PbwAppInfo getAppInfo(StringWrapper localPbwUri);
 
   // Just relay method that triggers beginAppInstall on background flutter side
-  void beginAppInstall(InstallData installData);
+  @async
+  BooleanWrapper beginAppInstall(InstallData installData);
+
+  // Just relay method that triggers deleteApp on background flutter side
+  // Return BooleanWrapper as a
+  // workaround for https://github.com/flutter/flutter/issues/78536
+  @async
+  BooleanWrapper beginAppDeletion(StringWrapper uuid);
+
+  /// Read header from pbw file already in Cobble's storage and send it to
+  /// BlobDB on the watch
+  @async
+  NumberWrapper insertAppIntoBlobDb(StringWrapper uuidString);
+
+  @async
+  NumberWrapper removeAppFromBlobDb(StringWrapper appUuidString);
+
+  void subscribeToAppStatus();
+
+  void unsubscribeFromAppStatus();
+}
+
+@HostApi()
+abstract class AppLifecycleControl {
+  @async
+  BooleanWrapper openAppOnTheWatch(StringWrapper uuidString);
 }
 
 @HostApi()

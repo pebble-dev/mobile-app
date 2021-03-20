@@ -6,9 +6,7 @@ import dagger.Provides
 import dagger.multibindings.IntoSet
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.ProtocolHandlerImpl
-import io.rebble.libpebblecommon.services.MusicService
-import io.rebble.libpebblecommon.services.ProtocolService
-import io.rebble.libpebblecommon.services.SystemService
+import io.rebble.libpebblecommon.services.*
 import io.rebble.libpebblecommon.services.app.AppRunStateService
 import io.rebble.libpebblecommon.services.appmessage.AppMessageService
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
@@ -65,6 +63,18 @@ abstract class LibPebbleModule {
         fun provideMusicService(
                 protocolHandler: ProtocolHandler
         ) = MusicService(protocolHandler)
+
+        @Provides
+        @Singleton
+        fun provideAppFetchService(
+                protocolHandler: ProtocolHandler
+        ) = AppFetchService(protocolHandler)
+
+        @Provides
+        @Singleton
+        fun providePutBytesService(
+                protocolHandler: ProtocolHandler
+        ) = PutBytesService(protocolHandler)
     }
 
     @Binds
@@ -96,4 +106,12 @@ abstract class LibPebbleModule {
     @Binds
     @IntoSet
     abstract fun bindMusicServiceIntoSet(musicService: MusicService): ProtocolService
+
+    @Binds
+    @IntoSet
+    abstract fun bindAppFetchServiceIntoSet(service: AppFetchService): ProtocolService
+
+    @Binds
+    @IntoSet
+    abstract fun bindPutBytesServiceIntoSet(service: PutBytesService): ProtocolService
 }

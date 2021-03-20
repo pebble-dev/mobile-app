@@ -2,6 +2,7 @@ package io.rebble.cobble.bridges.background
 
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.util.awaitPigeonMethod
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,7 +19,20 @@ class BackgroundAppInstallBridge @Inject constructor(
             it.uri = uri
             it.appInfo = appInfo
         }
-        appInstallCallbacks.beginAppInstall(appInstallData) {}
+
+        awaitPigeonMethod<Void> { reply ->
+            appInstallCallbacks.beginAppInstall(appInstallData, reply)
+        }
+
+        return true
+    }
+
+    suspend fun deleteApp(uuid: Pigeons.StringWrapper): Boolean {
+        val appInstallCallbacks = getAppInstallCallbacks() ?: return false
+
+        awaitPigeonMethod<Void> { reply ->
+            appInstallCallbacks.deleteApp(uuid, reply)
+        }
 
         return true
     }
