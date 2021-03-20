@@ -9,6 +9,7 @@ import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.data.pbw.appinfo.PbwAppInfo
 import io.rebble.cobble.data.pbw.appinfo.toPigeon
 import io.rebble.cobble.datasources.WatchMetadataStore
+import io.rebble.cobble.middleware.PutBytesController
 import io.rebble.cobble.middleware.getBestVariant
 import io.rebble.cobble.pigeons.BooleanWrapper
 import io.rebble.cobble.pigeons.NumberWrapper
@@ -22,6 +23,7 @@ import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import io.rebble.libpebblecommon.structmapper.SUUID
 import io.rebble.libpebblecommon.structmapper.StructMapper
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import okio.buffer
 import okio.sink
@@ -41,8 +43,15 @@ class AppInstallFlutterBridge @Inject constructor(
         private val backgroundAppInstallBridge: BackgroundAppInstallBridge,
         private val watchMetadataStore: WatchMetadataStore,
         private val blobDBService: BlobDBService,
+        private val putBytesController: PutBytesController,
         bridgeLifecycleController: BridgeLifecycleController
 ) : FlutterBridge, Pigeons.AppInstallControl {
+    private val statusCallbacks = bridgeLifecycleController.createCallbacks(
+            Pigeons::AppInstallStatusCallbacks
+    )
+
+    private var statusObservingJob: Job? = null
+
     init {
         bridgeLifecycleController.setupControl(Pigeons.AppInstallControl::setup, this)
     }
@@ -208,6 +217,23 @@ class AppInstallFlutterBridge @Inject constructor(
 
             NumberWrapper(blobDbResult.response.valueNumber)
         }
+    }
+
+    override fun subscribeToAppStatus() {
+        statusObservingJob = coroutineScope.launch {
+            putBytesController.status.collect {
+                val statusPigeon = Pigeons.AppInstallStatus().apply {
+                    isInstalling = it.state == PutBytesController.State.SENDING
+                    progress = it.progress
+                }
+
+                statusCallbacks.onStatusUpdated(statusPigeon) {}
+            }
+        }
+    }
+
+    override fun unsubscribeFromAppStatus() {
+        statusObservingJob?.cancel()
     }
 
     private fun parseAppInfoJson(stream: InputStream): PbwAppInfo? {

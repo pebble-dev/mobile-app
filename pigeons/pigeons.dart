@@ -145,6 +145,14 @@ class InstallData {
   InstallData(this.uri, this.appInfo);
 }
 
+class AppInstallStatus {
+  /// Progress in range [0-1]
+  double progress;
+  bool isInstalling;
+
+  AppInstallStatus(this.progress, this.isInstalling);
+}
+
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
@@ -197,9 +205,15 @@ abstract class BackgroundAppInstallCallbacks {
 }
 
 @FlutterApi()
+abstract class AppInstallStatusCallbacks {
+  void onStatusUpdated(AppInstallStatus status);
+}
+
+@FlutterApi()
 abstract class NotificationListening {
   @async
   TimelinePinPigeon handleNotification(NotificationPigeon notification);
+
   void dismissNotification(StringWrapper itemId);
 }
 
@@ -364,6 +378,10 @@ abstract class AppInstallControl {
 
   @async
   NumberWrapper removeAppFromBlobDb(StringWrapper appUuidString);
+
+  void subscribeToAppStatus();
+
+  void unsubscribeFromAppStatus();
 }
 
 @HostApi()
