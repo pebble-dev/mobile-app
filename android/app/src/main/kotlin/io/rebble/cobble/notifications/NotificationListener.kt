@@ -166,6 +166,10 @@ class NotificationListener : NotificationListenerService() {
                     flutterPreferences.mutePhoneCallSounds,
                     connectionLooper.connectionState
             ) { mutePhoneNotificationSounds, mutePhoneCallSounds, connectionState ->
+                if (connectionState is ConnectionState.Disconnected) {
+                    // Do nothing. Listener will be unbound anyway
+                    return@combine
+                }
 
                 val connected = connectionState is ConnectionState.Connected
 
