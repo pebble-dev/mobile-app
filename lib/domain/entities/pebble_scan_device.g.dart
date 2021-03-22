@@ -9,7 +9,7 @@ part of 'pebble_scan_device.dart';
 PebbleScanDevice _$PebbleScanDeviceFromJson(Map<String, dynamic> json) {
   return PebbleScanDevice(
     json['name'] as String?,
-    json['address'] as int?,
+    json['address'] as int,
     json['version'] as String?,
     json['serialNumber'] as String?,
     json['color'] as int?,

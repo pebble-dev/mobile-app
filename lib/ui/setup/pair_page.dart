@@ -62,6 +62,7 @@ class PairPage extends HookWidget implements CobbleScreen {
 
       WidgetsBinding.instance!.scheduleFrameCallback((timeStamp) {
         pairedStorage.register(dev);
+        pairedStorage.setDefault(dev.address);
         if (fromLanding) {
           context.pushReplacement(MoreSetup());
         } else {
@@ -134,7 +135,7 @@ class PairPage extends HookWidget implements CobbleScreen {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            e.address!
+                            e.address
                                 .toRadixString(16)
                                 .padLeft(6, '0')
                                 .toUpperCase(),

@@ -93,6 +93,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
 
     void _onDisconnectPressed(bool inSettings) {
       connectionControl.disconnect();
+      pairedStorage.clearDefault();
       if (inSettings) Navigator.pop(context);
     }
 
@@ -100,6 +101,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
       NumberWrapper addressWrapper = NumberWrapper();
       addressWrapper.value = device.address;
 
+      pairedStorage.setDefault(device.address);
       uiConnectionControl.connectToWatch(addressWrapper);
       if (inSettings) Navigator.pop(context);
     }

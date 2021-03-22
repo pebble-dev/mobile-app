@@ -1,9 +1,8 @@
 import 'dart:convert';
 
-import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:collection/collection.dart' show IterableExtension;
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StoredDevice {
@@ -46,13 +45,13 @@ class PairedStorage extends StateNotifier<List<StoredDevice>> {
     await _prefs.then((value) => value.setStringList("pairList", pairedJson));
   }
 
-  Future<void> register(PebbleScanDevice newDevice,
-      [bool isDefault = false]) async {
+  Future<void> register(PebbleScanDevice newDevice) async {
     //Only write device when it doesn't already exist
     if (state.any((element) => element.device.address == newDevice.address)) {
       return;
     }
 
+    bool isDefault = false;
     if (!state.any((element) => element.isDefault!)) {
       // Force newly registered device as default
       // if there is no existing default
@@ -76,6 +75,12 @@ class PairedStorage extends StateNotifier<List<StoredDevice>> {
         .map((element) =>
             StoredDevice(element.device, element.device.address == address))
         .toList();
+    await _storeState();
+  }
+
+  Future<void> clearDefault() async {
+    state =
+        state.map((element) => StoredDevice(element.device, false)).toList();
     await _storeState();
   }
 }

@@ -8,7 +8,7 @@ part 'pebble_scan_device.g.dart';
 @JsonSerializable()
 class PebbleScanDevice extends BaseObj {
   String? name;
-  int? address;
+  int address;
   String? version;
   String? serialNumber;
   int? color;
