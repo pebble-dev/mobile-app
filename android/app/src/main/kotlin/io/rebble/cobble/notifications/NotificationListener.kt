@@ -12,11 +12,11 @@ import androidx.core.app.NotificationCompat
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.ConnectionState
-import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.bridges.background.NotificationsFlutterBridge
 import io.rebble.cobble.data.NotificationAction
 import io.rebble.cobble.data.NotificationMessage
-import io.rebble.libpebblecommon.packets.blobdb.*
+import io.rebble.cobble.datasources.FlutterPreferences
+import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -163,24 +163,26 @@ class NotificationListener : NotificationListenerService() {
         coroutineScope.launch(Dispatchers.Main.immediate) {
             combine(
                     flutterPreferences.mutePhoneNotificationSounds,
-                    flutterPreferences.mutePhoneCallSounds
-            ) {
-                mutePhoneNotificationSounds, mutePhoneCallSounds ->
+                    flutterPreferences.mutePhoneCallSounds,
+                    connectionLooper.connectionState
+            ) { mutePhoneNotificationSounds, mutePhoneCallSounds, connectionState ->
+
+                val connected = connectionState is ConnectionState.Connected
 
                 val listenerHints = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     var hints = 0
 
-                    if (mutePhoneNotificationSounds) {
+                    if (connected && mutePhoneNotificationSounds) {
                         hints = hints or HINT_HOST_DISABLE_NOTIFICATION_EFFECTS
                     }
 
-                    if (mutePhoneCallSounds) {
+                    if (connected && mutePhoneCallSounds) {
                         hints = hints or HINT_HOST_DISABLE_CALL_EFFECTS
                     }
 
                     hints
                 } else {
-                    if (mutePhoneCallSounds || mutePhoneNotificationSounds) {
+                    if (connected && (mutePhoneCallSounds || mutePhoneNotificationSounds)) {
                         HINT_HOST_DISABLE_EFFECTS
                     } else {
                         0
