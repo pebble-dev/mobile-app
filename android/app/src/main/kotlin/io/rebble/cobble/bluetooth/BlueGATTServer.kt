@@ -2,17 +2,24 @@ package io.rebble.cobble.bluetooth
 
 import android.bluetooth.*
 import android.content.Context
+import io.rebble.libpebblecommon.ProtocolHandler
+import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
+import okio.Buffer
+import okio.Pipe
+import okio.buffer
 import timber.log.Timber
 import java.io.IOException
-import java.io.PipedInputStream
-import java.io.PipedOutputStream
-import java.nio.ByteBuffer
 import kotlin.experimental.and
 
-class BlueGATTServer(private val targetDevice: BluetoothDevice, private val context: Context, private val serverScope: CoroutineScope) : BluetoothGattServerCallback() {
+class BlueGATTServer(
+        private val targetDevice: BluetoothDevice,
+        private val context: Context,
+        private val serverScope: CoroutineScope,
+        private val protocolHandler: ProtocolHandler
+) : BluetoothGattServerCallback() {
     private val serverReady = CompletableDeferred<Boolean>()
     private val connectionStatusChannel = Channel<Boolean>(0)
 
@@ -32,21 +39,20 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
     private lateinit var bluetoothGattServer: BluetoothGattServer
     private lateinit var dataCharacteristic: BluetoothGattCharacteristic
 
-    val inputStream = PipedInputStream()
-    val packetOutputStream = PipedOutputStream(inputStream)
+    private val phoneToWatchBuffer = Buffer()
+    private val watchToPhonePipe = Pipe(8192)
 
-    private val packetWriteInputStream = PipedInputStream()
-    val outputStream = PipedOutputStream(packetWriteInputStream)
+    private val pendingPackets = Channel<ProtocolHandler.PendingPacket>(Channel.BUFFERED)
 
     var connected = false
     private var initialReset = false
 
     sealed class SendActorMessage {
-        object SendReset: SendActorMessage()
-        object SendResetAck: SendActorMessage()
-        data class SendAck(val sequence: Int): SendActorMessage()
-        data class ForceSendAck(val sequence: Int): SendActorMessage()
-        object UpdateData: SendActorMessage()
+        object SendReset : SendActorMessage()
+        object SendResetAck : SendActorMessage()
+        data class SendAck(val sequence: Int) : SendActorMessage()
+        data class ForceSendAck(val sequence: Int) : SendActorMessage()
+        object UpdateData : SendActorMessage()
     }
     @OptIn(ObsoleteCoroutinesApi::class)
     @Suppress("BlockingMethodInNonBlockingContext")
@@ -64,14 +70,14 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                         currentRxPend = 0
                         attemptWrite(ack)
                         lastAck = ack
-                    }else {
+                    } else {
                         currentRxPend++
                         delayedAckJob?.cancel()
                         if (currentRxPend >= maxRxWindow / 2) {
                             currentRxPend = 0
                             attemptWrite(ack)
                             lastAck = ack
-                        }else {
+                        } else {
                             delayedAckJob = serverScope.launch {
                                 delay(200)
                                 this@actor.channel.offer(SendActorMessage.ForceSendAck(message.sequence))
@@ -84,11 +90,23 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                 }
                 is SendActorMessage.UpdateData -> {
                     if (packetsInFlight < maxTxWindow) {
-                        if (packetWriteInputStream.available() > 0) {
-                            val count = packetWriteInputStream.available().coerceAtMost(mtu - 4)
-                            val buf = ByteBuffer.allocate(count)
-                            packetWriteInputStream.readFully(buf, 0, count)
-                            attemptWrite(GATTPacket(GATTPacket.PacketType.DATA, seq, buf.array()))
+                        val maxPacketSize = mtu - 4
+
+                        while (phoneToWatchBuffer.size < maxPacketSize) {
+                            val nextPacket = pendingPackets.poll()
+                                    ?: break
+                            nextPacket.notifyPacketStatus(true)
+                            phoneToWatchBuffer.write(nextPacket.data.toByteArray())
+                        }
+
+
+                        if (phoneToWatchBuffer.size > 0) {
+                            val numBytesToSend = phoneToWatchBuffer.size
+                                    .coerceAtMost(maxPacketSize.toLong())
+
+                            val dataToSend = phoneToWatchBuffer.readByteArray(numBytesToSend)
+
+                            attemptWrite(GATTPacket(GATTPacket.PacketType.DATA, seq, dataToSend))
                             seq = getNextSeq(seq)
                         }
                     }
@@ -103,7 +121,8 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         }
     }
 
-    fun onNewPacketToSend() {
+    suspend fun onNewPacketToSend(packet: ProtocolHandler.PendingPacket) {
+        pendingPackets.send(packet)
         sendActor.offer(SendActorMessage.UpdateData)
     }
 
@@ -151,7 +170,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                         GATTPacket.PacketType.ACK -> {
                             for (i in 0..packet.sequence) {
                                 ackPending.remove(i)?.complete(packet)
-                                packetsInFlight = (packetsInFlight-1).coerceAtLeast(0)
+                                packetsInFlight = (packetsInFlight - 1).coerceAtLeast(0)
                             }
                             Timber.d("Got ACK for ${packet.sequence}")
                         }
@@ -160,20 +179,24 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                             if (packet.sequence == remoteSeq) {
                                 try {
                                     remoteSeq = getNextSeq(remoteSeq)
-                                    packetOutputStream.write(packet.data.copyOfRange(1, packet.data.size))
-                                    packetOutputStream.flush()
+                                    val buffer = Buffer()
+                                    buffer.write(packet.data, 1, packet.data.size - 1)
+
+                                    watchToPhonePipe.sink.write(buffer, buffer.size)
+                                    watchToPhonePipe.sink.flush()
+
                                     sendAck(packet.sequence)
                                 } catch (e: IOException) {
                                     Timber.e(e, "Error writing to packetOutputStream")
                                     closePebble()
                                     return@launch
                                 }
-                            }else {
+                            } else {
                                 Timber.w("Unexpected sequence ${packet.sequence}")
                                 if (lastAck != null && lastAck!!.type != GATTPacket.PacketType.RESET_ACK) {
                                     Timber.d("Re-sending previous ACK")
                                     sendAck(lastAck!!.sequence)
-                                }else {
+                                } else {
                                     requestReset()
                                 }
                             }
@@ -203,7 +226,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
                 if (!bluetoothGattServer.sendResponse(device, requestId, 0, offset, BlueGATTConstants.SERVER_META_RESPONSE)) {
                     Timber.e("Error sending meta response to device")
                     closePebble()
-                }else {
+                } else {
                     serverScope.launch {
                         delay(5000)
                         if (!initialReset) {
@@ -296,6 +319,9 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
             Timber.e("Failed to add service")
             return false
         }
+
+        startPacketWriter()
+
         return true
     }
 
@@ -351,6 +377,35 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         }
     }
 
+    private fun startPacketWriter() {
+        serverScope.launch {
+            val source = watchToPhonePipe.source.buffer()
+            while (coroutineContext.isActive) {
+                var endpoint: Short = -1
+                var length: Short = -1
+
+                val packetData = runInterruptible(Dispatchers.IO) {
+                    val peekSource = source.peek()
+                    length = peekSource.readShort()
+                    endpoint = peekSource.readShort()
+
+                    if (length < 0) {
+                        Timber.w("Invalid length in packet (EP ${endpoint.toUShort()}): got ${length.toUShort()}")
+                        return@runInterruptible null
+                    }
+
+                    /* READ PACKET CONTENT */
+                    val totalLength = (length + 2 * Short.SIZE_BYTES).toLong()
+                    source.readByteArray(totalLength)
+                } ?: continue
+
+                Timber.d("Got packet: EP ${ProtocolEndpoint.getByValue(endpoint.toUShort())} | Length ${length.toUShort()}")
+
+                protocolHandler.receivePacket(packetData.toUByteArray())
+            }
+        }
+    }
+
     /**
      * Send reset packet to watch (usually should never need to happen) that resets sequence and pending pebble packet buffer
      */
@@ -366,8 +421,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
     @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun reset() {
         Timber.d("Resetting LE")
-        packetWriteInputStream.skip(packetWriteInputStream.available().toLong())
-        ackPending.forEach{
+        ackPending.forEach {
             it.value.cancel()
         }
         ackPending.clear()
@@ -375,7 +429,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         seq = 0
         lastAck = null
         packetsInFlight = 0
-        if(!initialReset) {
+        if (!initialReset) {
             connectionStatusChannel.send(true)
         }
         initialReset = true
@@ -409,11 +463,11 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
         Timber.d("Server closing connection")
         sendActor.close()
         connectionStatusChannel.offer(false)
-        packetOutputStream.close()
-        inputStream.close()
         bluetoothGattServer.cancelConnection(targetDevice)
         bluetoothGattServer.clearServices()
         bluetoothGattServer.close()
+
+        watchToPhonePipe.source.close()
     }
 
 }
