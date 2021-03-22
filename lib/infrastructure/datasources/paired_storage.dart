@@ -66,13 +66,16 @@ class PairedStorage extends StateNotifier<List<StoredDevice>> {
   }
 
   Future<void> unregister(int? address) async {
-    state = state.where((element) => element.device.address != address) as List<StoredDevice>;
+    state =
+        state.where((element) => element.device.address != address).toList();
     await _storeState();
   }
 
   Future<void> setDefault(int address) async {
-    state = state.map((element) =>
-        StoredDevice(element.device, element.device.address == address)) as List<StoredDevice>;
+    state = state
+        .map((element) =>
+            StoredDevice(element.device, element.device.address == address))
+        .toList();
     await _storeState();
   }
 }
@@ -82,7 +85,8 @@ final defaultWatchProvider = Provider((ref) => ref
     .watch(pairedStorageProvider.state)
     .firstWhereOrNull((element) => element.isDefault!)
     ?.device);
-final ProviderFamily<PebbleScanDevice, dynamic>? specificWatchProvider = Provider.family(((ref, dynamic address) => ref
-    .watch(pairedStorageProvider.state)
-    .firstWhereOrNull((element) => element.device.address == address)
-    ?.device) as PebbleScanDevice Function(ProviderReference, dynamic));
+final ProviderFamily<PebbleScanDevice, dynamic>? specificWatchProvider =
+    Provider.family(((ref, dynamic address) => ref
+        .watch(pairedStorageProvider.state)
+        .firstWhereOrNull((element) => element.device.address == address)
+        ?.device) as PebbleScanDevice Function(ProviderReference, dynamic));
