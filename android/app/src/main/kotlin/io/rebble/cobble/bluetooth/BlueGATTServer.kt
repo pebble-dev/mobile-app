@@ -50,7 +50,7 @@ class BlueGATTServer(private val targetDevice: BluetoothDevice, private val cont
     }
     @OptIn(ObsoleteCoroutinesApi::class)
     @Suppress("BlockingMethodInNonBlockingContext")
-    private val sendActor = serverScope.actor<SendActorMessage> {
+    private val sendActor = serverScope.actor<SendActorMessage>(capacity = Channel.UNLIMITED) {
         for (message in this) {
             when (message) {
                 is SendActorMessage.SendReset -> {
