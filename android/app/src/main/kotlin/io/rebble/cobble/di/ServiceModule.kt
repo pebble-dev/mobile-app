@@ -15,7 +15,7 @@ abstract class ServiceModule {
     companion object {
         @Provides
         fun provideCoroutineScope(watchService: WatchService): CoroutineScope {
-            return watchService.coroutineScope
+            return watchService.watchConnectionScope
         }
     }
 

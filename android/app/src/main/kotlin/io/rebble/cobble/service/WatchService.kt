@@ -12,18 +12,19 @@ import io.rebble.cobble.NOTIFICATION_CHANNEL_WATCH_CONNECTING
 import io.rebble.cobble.R
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.ConnectionState
+import io.rebble.cobble.handlers.CobbleHandler
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.notification.NotificationService
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
+import kotlinx.coroutines.flow.filterIsInstance
 import timber.log.Timber
+import javax.inject.Provider
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WatchService : LifecycleService() {
     lateinit var coroutineScope: CoroutineScope
+    lateinit var watchConnectionScope: CoroutineScope
 
     private val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
@@ -54,8 +55,6 @@ class WatchService : LifecycleService() {
         val serviceComponent = injectionComponent.createServiceSubcomponentFactory()
                 .create(this)
 
-        serviceComponent.initAllMessageHandlers()
-
         super.onCreate()
 
         if (!bluetoothAdapter.isEnabled) {
@@ -63,6 +62,7 @@ class WatchService : LifecycleService() {
         }
 
         startNotificationLoop()
+        startHandlersLoop(serviceComponent.getMessageHandlersProvider())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -113,6 +113,18 @@ class WatchService : LifecycleService() {
 
                 startForeground(1, mainNotifBuilder.build())
             }
+        }
+    }
+
+    private fun startHandlersLoop(handlers: Provider<Set<CobbleHandler>>) {
+        coroutineScope.launch {
+            connectionLooper.connectionState
+                    .filterIsInstance<ConnectionState.Connected>()
+                    .collect {
+                        watchConnectionScope = connectionLooper
+                                .getWatchConnectedScope(Dispatchers.Main.immediate)
+                        handlers.get()
+                    }
         }
     }
 }
