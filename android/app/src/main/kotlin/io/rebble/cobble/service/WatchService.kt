@@ -1,15 +1,13 @@
 package io.rebble.cobble.service
 
+import android.app.PendingIntent
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
-import io.rebble.cobble.CobbleApplication
-import io.rebble.cobble.NOTIFICATION_CHANNEL_WATCH_CONNECTED
-import io.rebble.cobble.NOTIFICATION_CHANNEL_WATCH_CONNECTING
-import io.rebble.cobble.R
+import io.rebble.cobble.*
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.ConnectionState
 import io.rebble.cobble.handlers.CobbleHandler
@@ -37,9 +35,7 @@ class WatchService : LifecycleService() {
 
 
     override fun onCreate() {
-        mainNotifBuilder = NotificationCompat
-                .Builder(this@WatchService, NOTIFICATION_CHANNEL_WATCH_CONNECTING)
-                .setSmallIcon(R.drawable.ic_notification_disconnected)
+        mainNotifBuilder = createBaseNotificationBuilder(NOTIFICATION_CHANNEL_WATCH_CONNECTING)
                 .setContentTitle("Waiting to connect")
                 .setContentText(null)
                 .setSmallIcon(R.drawable.ic_notification_disconnected)
@@ -104,9 +100,7 @@ class WatchService : LifecycleService() {
 
                 Timber.d("Notification Title Text %s", titleText)
 
-                mainNotifBuilder = NotificationCompat
-                        .Builder(this@WatchService, channel)
-                        .setSmallIcon(R.drawable.ic_notification_disconnected)
+                mainNotifBuilder = createBaseNotificationBuilder(channel)
                         .setContentTitle(titleText)
                         .setContentText(deviceName)
                         .setSmallIcon(icon)
@@ -114,6 +108,19 @@ class WatchService : LifecycleService() {
                 startForeground(1, mainNotifBuilder.build())
             }
         }
+    }
+
+    private fun createBaseNotificationBuilder(channel: String): NotificationCompat.Builder {
+        val mainActivityIntent = PendingIntent.getActivity(
+                this,
+                0,
+                Intent(this, MainActivity::class.java),
+                0
+        )
+
+        return NotificationCompat
+                .Builder(this@WatchService, channel)
+                .setContentIntent(mainActivityIntent)
     }
 
     private fun startHandlersLoop(handlers: Provider<Set<CobbleHandler>>) {
