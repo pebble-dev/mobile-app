@@ -205,7 +205,7 @@ class BlueGATTServer(
                             if (seq != 0) Timber.w("Got reset on non zero sequence")
                             gattConnectionVersion = packet.getPPoGConnectionVersion()
                             Timber.d("gattConnectionVersion updated: $gattConnectionVersion")
-                            reset()
+                            requestReset()
                             sendResetAck(packet.sequence)
                         }
                     }
@@ -409,10 +409,9 @@ class BlueGATTServer(
     /**
      * Send reset packet to watch (usually should never need to happen) that resets sequence and pending pebble packet buffer
      */
-    private suspend fun requestReset() {
+    private fun requestReset() {
         Timber.w("Requesting reset")
         sendActor.offer(SendActorMessage.SendReset)
-        reset()
     }
 
     /**
@@ -469,5 +468,4 @@ class BlueGATTServer(
 
         watchToPhonePipe.source.close()
     }
-
 }
