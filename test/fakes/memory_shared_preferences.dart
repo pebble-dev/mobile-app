@@ -8,6 +8,7 @@ class MemorySharedPreferences implements SharedPreferences {
   @override
   Future<bool> clear() {
     _data.clear();
+    return Future.value(true);
   }
 
   @override
@@ -26,17 +27,17 @@ class MemorySharedPreferences implements SharedPreferences {
   }
 
   @override
-  bool getBool(String key) {
+  bool? getBool(String key) {
     return _data[key];
   }
 
   @override
-  double getDouble(String key) {
+  double? getDouble(String key) {
     return _data[key];
   }
 
   @override
-  int getInt(String key) {
+  int? getInt(String key) {
     return _data[key];
   }
 
@@ -46,12 +47,12 @@ class MemorySharedPreferences implements SharedPreferences {
   }
 
   @override
-  String getString(String key) {
+  String? getString(String key) {
     return _data[key];
   }
 
   @override
-  List<String> getStringList(String key) {
+  List<String>? getStringList(String key) {
     return _data[key];
   }
 

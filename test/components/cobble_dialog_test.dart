@@ -23,7 +23,7 @@ Widget dialogs() => Column(
             content: 'This cannot be undone!',
             negative: 'Cancel',
             positive: 'Delete',
-            intent: context.scheme.destructive,
+            intent: context.scheme!.destructive,
           ),
         ),
       ],

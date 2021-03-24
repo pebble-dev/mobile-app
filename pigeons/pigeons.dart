@@ -3,84 +3,154 @@ import 'package:pigeon/pigeon.dart';
 /// Pigeon only supports classes as return/receive type.
 /// That is why we must wrap primitive types into wrapper
 class BooleanWrapper {
-  bool value;
+  bool? value;
 }
 
 class NumberWrapper {
-  int value;
+  int? value;
 }
 
 class StringWrapper {
-  String value;
+  String? value;
 }
 
 class ListWrapper {
-  List value;
+  List? value;
 }
 
 class PebbleFirmwarePigeon {
-  int timestamp;
-  String version;
-  String gitHash;
-  bool isRecovery;
-  int hardwarePlatform;
-  int metadataVersion;
+  int? timestamp;
+  String? version;
+  String? gitHash;
+  bool? isRecovery;
+  int? hardwarePlatform;
+  int? metadataVersion;
 }
 
 class PebbleDevicePigeon {
-  String name;
-  int address;
-  PebbleFirmwarePigeon runningFirmware;
-  PebbleFirmwarePigeon recoveryFirmware;
-  int model;
-  int bootloaderTimestamp;
-  String board;
-  String serial;
-  String language;
-  int languageVersion;
-  bool isUnfaithful;
+  String? name;
+  int? address;
+  PebbleFirmwarePigeon? runningFirmware;
+  PebbleFirmwarePigeon? recoveryFirmware;
+  int? model;
+  int? bootloaderTimestamp;
+  String? board;
+  String? serial;
+  String? language;
+  int? languageVersion;
+  bool? isUnfaithful;
 }
 
 class PebbleScanDevicePigeon {
-  String name;
-  int address;
-  String version;
-  String serialNumber;
-  int color;
-  bool runningPRF;
-  bool firstUse;
+  String? name;
+  int? address;
+  String? version;
+  String? serialNumber;
+  int? color;
+  bool? runningPRF;
+  bool? firstUse;
 }
 
 class WatchConnectionStatePigeon {
-  bool isConnected;
-  bool isConnecting;
-  int currentWatchAddress;
-  PebbleDevicePigeon currentConnectedWatch;
+  bool? isConnected;
+  bool? isConnecting;
+  int? currentWatchAddress;
+  PebbleDevicePigeon? currentConnectedWatch;
 }
 
 class TimelinePinPigeon {
-  String itemId;
-  String parentId;
-  int timestamp;
-  int type;
-  int duration;
-  bool isVisible;
-  bool isFloating;
-  bool isAllDay;
-  bool persistQuickView;
-  int layout;
-  String attributesJson;
-  String actionsJson;
+  String? itemId;
+  String? parentId;
+  int? timestamp;
+  int? type;
+  int? duration;
+  bool? isVisible;
+  bool? isFloating;
+  bool? isAllDay;
+  bool? persistQuickView;
+  int? layout;
+  String? attributesJson;
+  String? actionsJson;
 }
 
 class ActionTrigger {
-  String itemId;
-  int actionId;
+  String? itemId;
+  int? actionId;
+  String? attributesJson;
 }
 
 class ActionResponsePigeon {
-  bool success;
-  String attributesJson;
+  bool? success;
+  String? attributesJson;
+}
+
+class NotifActionExecuteReq {
+  String? itemId;
+  int? actionId;
+  String? responseText;
+}
+
+class NotificationPigeon {
+  String? packageId;
+  int? notifId;
+  String? appName;
+  String? tagId;
+  String? tagName;
+  String? title;
+  String? text;
+  String? category;
+  int? color;
+  String? messagesJson;
+  String? actionsJson;
+}
+
+class AppEntriesPigeon {
+  List<String>? appName;
+  List<String>? packageId;
+}
+
+class PbwAppInfo {
+  bool? isValid;
+  String? uuid;
+  String? shortName;
+  String? longName;
+  String? companyName;
+  int? versionCode;
+  String? versionLabel;
+  Map<String, int>? appKeys;
+  List<String>? capabilities;
+  List<WatchResource>? resources;
+  String? sdkVersion;
+  List<String>? targetPlatforms;
+  WatchappInfo? watchapp;
+}
+
+class WatchappInfo {
+  bool? watchface;
+  bool? hiddenApp;
+  bool? onlyShownOnCommunication;
+}
+
+class WatchResource {
+  String? file;
+  bool? menuIcon;
+  String? name;
+  String? type;
+}
+
+class InstallData {
+  String uri;
+  PbwAppInfo appInfo;
+
+  InstallData(this.uri, this.appInfo);
+}
+
+class AppInstallStatus {
+  /// Progress in range [0-1]
+  double progress;
+  bool isInstalling;
+
+  AppInstallStatus(this.progress, this.isInstalling);
 }
 
 @FlutterApi()
@@ -120,6 +190,42 @@ abstract class TimelineCallbacks {
   ActionResponsePigeon handleTimelineAction(ActionTrigger actionTrigger);
 }
 
+@FlutterApi()
+abstract class IntentCallbacks {
+  void openUri(StringWrapper uri);
+}
+
+@FlutterApi()
+abstract class BackgroundAppInstallCallbacks {
+  @async
+  void beginAppInstall(InstallData installData);
+
+  @async
+  void deleteApp(StringWrapper uuid);
+}
+
+@FlutterApi()
+abstract class AppInstallStatusCallbacks {
+  void onStatusUpdated(AppInstallStatus status);
+}
+
+@FlutterApi()
+abstract class NotificationListening {
+  @async
+  TimelinePinPigeon handleNotification(NotificationPigeon notification);
+
+  void dismissNotification(StringWrapper itemId);
+}
+
+@HostApi()
+abstract class NotificationUtils {
+  @async
+  BooleanWrapper dismissNotification(StringWrapper itemId);
+  void dismissNotificationWatch(StringWrapper itemId);
+  void openNotification(StringWrapper itemId);
+  void executeAction(NotifActionExecuteReq action);
+}
+
 @HostApi()
 abstract class ScanControl {
   void startBleScan();
@@ -153,7 +259,11 @@ abstract class NotificationsControl {
 }
 
 @HostApi()
-abstract class AppLifecycleControl {
+abstract class IntentControl {
+  void notifyFlutterReadyForIntents();
+
+  void notifyFlutterNotReadyForIntents();
+
   BooleanWrapper waitForBoot();
 }
 
@@ -236,8 +346,53 @@ abstract class PigeonLogger {
 }
 
 @HostApi()
-abstract class TimelineSyncControl{
+abstract class TimelineSyncControl {
   void syncTimelineToWatchLater();
+}
+
+@HostApi()
+abstract class WorkaroundsControl {
+  // List of workaround ID strings that apply to this device
+  ListWrapper getNeededWorkarounds();
+}
+
+@HostApi()
+abstract class AppInstallControl {
+  @async
+  PbwAppInfo getAppInfo(StringWrapper localPbwUri);
+
+  // Just relay method that triggers beginAppInstall on background flutter side
+  @async
+  BooleanWrapper beginAppInstall(InstallData installData);
+
+  // Just relay method that triggers deleteApp on background flutter side
+  // Return BooleanWrapper as a
+  // workaround for https://github.com/flutter/flutter/issues/78536
+  @async
+  BooleanWrapper beginAppDeletion(StringWrapper uuid);
+
+  /// Read header from pbw file already in Cobble's storage and send it to
+  /// BlobDB on the watch
+  @async
+  NumberWrapper insertAppIntoBlobDb(StringWrapper uuidString);
+
+  @async
+  NumberWrapper removeAppFromBlobDb(StringWrapper appUuidString);
+
+  void subscribeToAppStatus();
+
+  void unsubscribeFromAppStatus();
+}
+
+@HostApi()
+abstract class AppLifecycleControl {
+  @async
+  BooleanWrapper openAppOnTheWatch(StringWrapper uuidString);
+}
+
+@HostApi()
+abstract class PackageDetails {
+  AppEntriesPigeon getPackageList();
 }
 
 /// This class will keep all classes that appear in lists from being deleted
@@ -246,4 +401,6 @@ abstract class TimelineSyncControl{
 @HostApi()
 abstract class KeepUnusedHack {
   void keepPebbleScanDevicePigeon(PebbleScanDevicePigeon cls);
+
+  void keepWatchResource(WatchResource cls);
 }

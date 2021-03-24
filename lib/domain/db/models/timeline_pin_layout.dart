@@ -8,7 +8,7 @@ enum TimelinePinLayout {
   sportsPin
 }
 
-extension ProtocolExtension on TimelinePinLayout {
+extension ProtocolExtension on TimelinePinLayout? {
   int toProtocolNumber() {
     switch (this) {
       case TimelinePinLayout.genericPin:

@@ -7,12 +7,14 @@ import kotlinx.coroutines.flow.collect
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Singleton
 class ConnectionLooper @Inject constructor(
         private val blueCommon: BlueCommon,
-        errorHandler: CoroutineExceptionHandler
+        private val errorHandler: CoroutineExceptionHandler
 ) {
     val connectionState: StateFlow<ConnectionState> get() = _connectionState
     private val _connectionState: MutableStateFlow<ConnectionState> = MutableStateFlow(
@@ -65,6 +67,26 @@ class ConnectionLooper @Inject constructor(
 
     fun closeConnection() {
         currentConnection?.cancel()
+    }
+
+    /**
+     * Get [CoroutineScope] that is active while watch is connected and cancelled if watch
+     * disconnects.
+     */
+    fun getWatchConnectedScope(
+            context: CoroutineContext = EmptyCoroutineContext
+    ): CoroutineScope {
+        val scope = CoroutineScope(SupervisorJob() + errorHandler + context)
+
+        scope.launch(Dispatchers.Unconfined) {
+            connectionState.collect {
+                if (it !is ConnectionState.Connected) {
+                    scope.cancel()
+                }
+            }
+        }
+
+        return scope
     }
 }
 

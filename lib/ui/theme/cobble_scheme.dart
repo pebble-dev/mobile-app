@@ -4,9 +4,9 @@ class CobbleScheme extends InheritedWidget {
   final CobbleSchemeData schemeData;
 
   const CobbleScheme({
-    Key key,
-    @required this.schemeData,
-    @required Widget child,
+    Key? key,
+    required this.schemeData,
+    required Widget child,
   })  : assert(schemeData != null),
         assert(child != null),
         super(key: key, child: child);
@@ -15,7 +15,7 @@ class CobbleScheme extends InheritedWidget {
   bool updateShouldNotify(covariant CobbleScheme oldWidget) =>
       oldWidget.schemeData != schemeData;
 
-  static CobbleSchemeData of(BuildContext context) {
+  static CobbleSchemeData? of(BuildContext context) {
     return context
         .dependOnInheritedWidgetOfExactType<CobbleScheme>()
         ?.schemeData;
@@ -53,16 +53,16 @@ class CobbleSchemeData {
   final Color divider;
 
   CobbleSchemeData({
-    @required this.brightness,
-    @required this.primary,
-    @required this.danger,
-    @required this.destructive,
-    @required this.background,
-    @required this.surface,
-    @required this.elevated,
-    @required this.text,
-    @required this.muted,
-    @required this.divider,
+    required this.brightness,
+    required this.primary,
+    required this.danger,
+    required this.destructive,
+    required this.background,
+    required this.surface,
+    required this.elevated,
+    required this.text,
+    required this.muted,
+    required this.divider,
   });
 
   static final _darkScheme = CobbleSchemeData(
@@ -91,7 +91,7 @@ class CobbleSchemeData {
     divider: Color(0xFF000000).withOpacity(0.25),
   );
 
-  factory CobbleSchemeData.fromBrightness(Brightness brightness) =>
+  factory CobbleSchemeData.fromBrightness(Brightness? brightness) =>
       brightness == Brightness.light ? _lightScheme : _darkScheme;
 
   CobbleSchemeData invert() => this.brightness == Brightness.dark

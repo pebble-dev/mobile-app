@@ -76,7 +76,7 @@ class Health extends StatelessWidget implements CobbleScreen {
               CobbleTile.action(
                 leading: RebbleIcons.delete_trash,
                 title: tr.health.database.delete,
-                intent: context.scheme.destructive,
+                intent: context.scheme!.destructive,
                 onTap: deleteHealthDatabase(context),
               ),
             ],
@@ -94,7 +94,7 @@ class Health extends StatelessWidget implements CobbleScreen {
           content: tr.health.database.permanentlyDelete.description,
           positive: tr.health.database.permanentlyDelete.positive,
           negative: tr.health.database.permanentlyDelete.negative,
-          intent: context.scheme.destructive,
+          intent: context.scheme!.destructive,
         );
       };
 
@@ -120,7 +120,7 @@ class Health extends StatelessWidget implements CobbleScreen {
                 leading: RebbleIcons.delete_trash,
                 trailing: RebbleIcons.caret_right,
                 title: tr.health.database.permDelete,
-                intent: context.scheme.destructive,
+                intent: context.scheme!.destructive,
                 onTap: deleteHealthDatabase(context),
               ),
             ],

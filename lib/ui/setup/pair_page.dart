@@ -14,6 +14,7 @@ import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/setup/more_setup.dart';
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -26,12 +27,12 @@ class PairPage extends HookWidget implements CobbleScreen {
   final bool fromLanding;
 
   const PairPage._({
-    Key key,
+    Key? key,
     this.fromLanding = false,
   }) : super(key: key);
 
   factory PairPage.fromLanding({
-    Key key,
+    Key? key,
   }) =>
       PairPage._(
         fromLanding: true,
@@ -39,7 +40,7 @@ class PairPage extends HookWidget implements CobbleScreen {
       );
 
   factory PairPage.fromTab({
-    Key key,
+    Key? key,
   }) =>
       PairPage._(
         fromLanding: false,
@@ -55,14 +56,13 @@ class PairPage extends HookWidget implements CobbleScreen {
     useEffect(() {
       if (pair == null || scan.devices.isEmpty) return null;
 
-      PebbleScanDevice dev = scan.devices.firstWhere(
+      PebbleScanDevice? dev = scan.devices.firstWhereOrNull(
         (element) => element.address == pair,
-        orElse: () => null,
       );
 
       if (dev == null) return null;
 
-      WidgetsBinding.instance.scheduleFrameCallback((timeStamp) {
+      WidgetsBinding.instance!.scheduleFrameCallback((timeStamp) {
         pairedStorage.register(dev);
         if (fromLanding) {
           context.pushReplacement(MoreSetup());
@@ -81,12 +81,14 @@ class PairPage extends HookWidget implements CobbleScreen {
 
     final _refreshDevicesBle = () {
       if (!scan.scanning) {
+        context.refresh(scanProvider).onScanStarted();
         scanControl.startBleScan();
       }
     };
 
     final _refreshDevicesClassic = () {
       if (!scan.scanning) {
+        context.refresh(scanProvider).onScanStarted();
         scanControl.startClassicScan();
       }
     };
@@ -116,7 +118,7 @@ class PairPage extends HookWidget implements CobbleScreen {
                       Container(
                         child: Center(
                           child: PebbleWatchIcon(
-                            PebbleWatchModel.values[e.color],
+                            PebbleWatchModel.values[e.color!],
                           ),
                         ),
                         width: 56,
@@ -129,12 +131,12 @@ class PairPage extends HookWidget implements CobbleScreen {
                       Column(
                         children: <Widget>[
                           Text(
-                            e.name,
+                            e.name!,
                             style: TextStyle(fontSize: 16),
                           ),
                           SizedBox(height: 4),
                           Text(
-                            e.address
+                            e.address!
                                 .toRadixString(16)
                                 .padLeft(6, '0')
                                 .toUpperCase(),
@@ -142,12 +144,12 @@ class PairPage extends HookWidget implements CobbleScreen {
                           Wrap(
                             spacing: 4,
                             children: [
-                              if (e.runningPRF && !e.firstUse)
+                              if (e.runningPRF! && !e.firstUse!)
                                 Chip(
                                   backgroundColor: Colors.deepOrange,
                                   label: Text(tr.pairPage.status.recovery),
                                 ),
-                              if (e.firstUse)
+                              if (e.firstUse!)
                                 Chip(
                                   backgroundColor: Color(0xffd4af37),
                                   label: Text(tr.pairPage.status.newDevice),

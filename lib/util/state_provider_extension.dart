@@ -6,8 +6,8 @@ extension StateProviderExtension<T> on StateNotifier<T> {
   /// Variant of StateNotifier.stream that also returns existing value
   /// as the first element of the stream
   Stream<T> get streamWithExistingValue {
-    StreamController<T> streamController;
-    RemoveListener removeListener;
+    late StreamController<T> streamController;
+    RemoveListener? removeListener;
 
     streamController = StreamController(
       onListen: () {

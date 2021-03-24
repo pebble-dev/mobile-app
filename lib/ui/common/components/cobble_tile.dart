@@ -10,24 +10,24 @@ import 'package:flutter/material.dart';
 class CobbleTile extends StatelessWidget {
   final EdgeInsets padding;
   final bool grayscale;
-  final Widget leading;
-  final Widget trailing;
+  final Widget? leading;
+  final Widget? trailing;
   final String title;
-  final String subtitle;
-  final String body;
-  final void Function() onTap;
-  final CobbleScreen navigateTo;
-  final Color intent;
+  final String? subtitle;
+  final String? body;
+  final void Function()? onTap;
+  final CobbleScreen? navigateTo;
+  final Color? intent;
 
   /// Prefer using named constructors instead of this one.
   @protected
   const CobbleTile._({
-    Key key,
+    Key? key,
     this.padding = const EdgeInsets.all(0),
     this.grayscale = false,
     this.leading,
     this.trailing,
-    @required this.title,
+    required this.title,
     this.subtitle,
     this.body,
     this.onTap,
@@ -51,9 +51,9 @@ class CobbleTile extends StatelessWidget {
   /// Simple tile that displays [title] and optional [body], usually used as
   /// main title of ListView
   factory CobbleTile.title({
-    Key key,
-    @required String title,
-    String body,
+    Key? key,
+    required String title,
+    String? body,
   }) =>
       CobbleTile._(
         key: key,
@@ -68,10 +68,10 @@ class CobbleTile extends StatelessWidget {
   /// If you wish to visually align tiles without using [leading], you can
   /// use [reservedIconSpace].
   factory CobbleTile.sectionTitle({
-    Key key,
-    Object leading,
-    @required String title,
-    String body,
+    Key? key,
+    Object? leading,
+    required String title,
+    String? body,
   }) =>
       CobbleTile._(
         key: key,
@@ -85,13 +85,13 @@ class CobbleTile extends StatelessWidget {
   /// screen. It includes [leading] and [trailing] icons and can be colored
   /// with [intent].
   factory CobbleTile.navigation({
-    Key key,
-    Object leading,
+    Key? key,
+    Object? leading,
     IconData trailing = RebbleIcons.caret_right,
-    @required String title,
-    String subtitle,
-    @required CobbleScreen navigateTo,
-    Color intent,
+    required String title,
+    String? subtitle,
+    required CobbleScreen navigateTo,
+    Color? intent,
   }) =>
       CobbleTile._(
         key: key,
@@ -109,13 +109,13 @@ class CobbleTile extends StatelessWidget {
   /// Specialised to provide bigger tap area, with [leading] and [trailing]
   /// icons. Can be colored with [intent].
   factory CobbleTile.action({
-    Key key,
-    Object leading,
-    IconData trailing,
-    @required String title,
-    String subtitle,
-    @required void Function() onTap,
-    Color intent,
+    Key? key,
+    Object? leading,
+    IconData? trailing,
+    required String title,
+    String? subtitle,
+    required void Function() onTap,
+    Color? intent,
   }) =>
       CobbleTile._(
         key: key,
@@ -135,12 +135,12 @@ class CobbleTile extends StatelessWidget {
   /// Specialised to show simple interactive [trailing] widget, usually used to
   /// toggle some setting
   factory CobbleTile.setting({
-    Key key,
-    Object leading,
-    @required String title,
-    String subtitle,
-    @required Widget child,
-    Color intent,
+    Key? key,
+    Object? leading,
+    required String title,
+    String? subtitle,
+    required Widget child,
+    Color? intent,
   }) =>
       CobbleTile._(
         key: key,
@@ -155,10 +155,10 @@ class CobbleTile extends StatelessWidget {
   /// [CobbleTile.info] doesn't include padding as it's not meant to be used
   /// in ListView but in [CobbleCard]
   factory CobbleTile.info({
-    Key key,
-    Object leading,
-    @required String title,
-    String subtitle,
+    Key? key,
+    Object? leading,
+    required String title,
+    String? subtitle,
   }) =>
       CobbleTile._(
         key: key,
@@ -170,10 +170,10 @@ class CobbleTile extends StatelessWidget {
       );
 
   static CobbleAccordion accordion({
-    Key key,
-    Object leading,
-    @required String title,
-    @required List<CobbleTile> children,
+    Key? key,
+    Object? leading,
+    required String title,
+    required List<CobbleTile> children,
   }) =>
       CobbleAccordion(
         headerBuilder: (onTap, heightFactor) => CobbleTile._(
@@ -193,11 +193,11 @@ class CobbleTile extends StatelessWidget {
       );
 
   factory CobbleTile.app({
-    Key key,
-    ImageProvider leading,
-    @required String title,
-    String subtitle,
-    @required Widget child,
+    Key? key,
+    ImageProvider? leading,
+    required String title,
+    String? subtitle,
+    required Widget child,
   }) =>
       CobbleTile._(
         key: key,
@@ -221,7 +221,7 @@ class CobbleTile extends StatelessWidget {
         child: Row(
           children: [
             if (leading != null) ...[
-              leading,
+              leading!,
               SizedBox(width: 10),
             ],
             Expanded(
@@ -235,17 +235,17 @@ class CobbleTile extends StatelessWidget {
                   if (body is String) ...[
                     SizedBox(height: 4),
                     Text(
-                      body,
+                      body!,
                       style: context.textTheme.bodyText2,
                     ),
                   ],
                   if (subtitle is String) ...[
                     SizedBox(height: 4),
                     Text(
-                      subtitle,
-                      style: context.textTheme.bodyText2.copyWith(
-                        color: context.textTheme.bodyText2.color.withOpacity(
-                          context.scheme.muted.opacity,
+                      subtitle!,
+                      style: context.textTheme.bodyText2!.copyWith(
+                        color: context.textTheme.bodyText2!.color!.withOpacity(
+                          context.scheme!.muted.opacity,
                         ),
                       ),
                     ),
@@ -279,7 +279,7 @@ class CobbleTile extends StatelessWidget {
       child = Theme(
         data: context.theme.copyWith(
           iconTheme: context.theme.iconTheme.copyWith(
-            color: context.scheme.muted,
+            color: context.scheme!.muted,
           ),
         ),
         child: child,
@@ -291,10 +291,10 @@ class CobbleTile extends StatelessWidget {
             color: intent,
           ),
           textTheme: context.textTheme.copyWith(
-            bodyText2: context.textTheme.bodyText2.copyWith(
+            bodyText2: context.textTheme.bodyText2!.copyWith(
               color: intent,
             ),
-            headline6: context.textTheme.headline6.copyWith(
+            headline6: context.textTheme.headline6!.copyWith(
               color: intent,
             ),
           ),
@@ -313,8 +313,8 @@ class CobbleTile extends StatelessWidget {
 
   /// Wrap [CobbleTile] with this wrapper to provide color to icon.
   static Widget withIconColor({
-    @required Color color,
-    @required Widget child,
+    required Color color,
+    required Widget child,
   }) {
     assert(color != null);
     assert(child != null);
@@ -331,7 +331,7 @@ class CobbleTile extends StatelessWidget {
   }
 
   /// Will change IconData or ImageProvider to Widget
-  static Widget _leadingToWidget(Object leading, {double size = 25}) {
+  static Widget _leadingToWidget(Object? leading, {double size = 25}) {
     assert(leading == null || leading is IconData || leading is ImageProvider);
     if (leading is IconData && leading == reservedIconSpace)
       return SizedBox(width: size + 16.0);

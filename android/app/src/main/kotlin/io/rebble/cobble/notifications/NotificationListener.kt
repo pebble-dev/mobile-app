@@ -1,6 +1,8 @@
 package io.rebble.cobble.notifications
 
 import android.annotation.TargetApi
+import android.app.Notification
+import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
 import android.os.Build
@@ -11,6 +13,10 @@ import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.ConnectionState
 import io.rebble.cobble.datasources.FlutterPreferences
+import io.rebble.cobble.bridges.background.NotificationsFlutterBridge
+import io.rebble.cobble.data.NotificationAction
+import io.rebble.cobble.data.NotificationMessage
+import io.rebble.libpebblecommon.packets.blobdb.*
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,10 +31,11 @@ class NotificationListener : NotificationListenerService() {
     private lateinit var flutterPreferences: FlutterPreferences
 
     private var isListening = false
-
-    private var notifStates: MutableMap<NotificationKey, ParsedNotification> = mutableMapOf()
+    private var areNotificationsEnabled = true
+    private var mutedPackages = listOf<String>()
 
     private lateinit var notificationService: NotificationService
+    private lateinit var notificationBridge: NotificationsFlutterBridge
 
     override fun onCreate() {
         val injectionComponent = (applicationContext as CobbleApplication).component
@@ -39,6 +46,7 @@ class NotificationListener : NotificationListenerService() {
 
         connectionLooper = injectionComponent.createConnectionLooper()
         notificationService = injectionComponent.createNotificationService()
+        notificationBridge = injectionComponent.createNotificationsFlutterBridge()
         flutterPreferences = injectionComponent.createFlutterPreferences()
 
         super.onCreate()
@@ -60,38 +68,66 @@ class NotificationListener : NotificationListenerService() {
         }
 
         controlListenerHints()
+        observeNotificationToggle()
+        observeMutedPackages()
     }
 
     override fun onListenerDisconnected() {
         isListening = false
     }
 
-    private fun sendNotif(parsedNotification: ParsedNotification) {
-        coroutineScope.launch {
-            notificationService.send(parsedNotification.toBluetoothPacket())
-        }
-    }
-
+    @OptIn(ExperimentalStdlibApi::class)
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
-        if (isListening) {
+        if (isListening && areNotificationsEnabled) {
             if (sbn == null) return
             if (sbn.packageName == applicationContext.packageName) return // Don't show a notification if it's us
-
             if (sbn.notification.extras.containsKey(NotificationCompat.EXTRA_MEDIA_SESSION)) {
                 // Do not notify for media notifications
                 return
             }
+            if (NotificationCompat.getLocalOnly(sbn.notification)) return // ignore local notifications TODO: respect user preference
+            if (sbn.notification.flags and Notification.FLAG_ONGOING_EVENT != 0) return // ignore ongoing notifications
+            //if (sbn.notification.group != null && !NotificationCompat.isGroupSummary(sbn.notification)) return
+            if (mutedPackages.contains(sbn.packageName)) return // ignore muted packages
 
-            val parsedNotification = sbn.parseData(applicationContext)
-            val key = NotificationKey(sbn)
+            var tagId: String? = null
+            var tagName: String? = null
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                tagId = sbn.notification.channelId
+                try {
+                    tagName = (applicationContext.createPackageContext(sbn.packageName, 0).getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).getNotificationChannel(sbn.notification.channelId).name.toString()
+                } catch (e: SecurityException) {}
+                if (tagName == null) tagName = tagId
+            }
+            val title = sbn.notification.extras[Notification.EXTRA_TITLE] as? String
+                    ?: sbn.notification.extras[Notification.EXTRA_CONVERSATION_TITLE] as? String ?: ""
 
-            // If the content is the exact same as it was before (and the notif isnt new / previously dismissed), ignore the new notif
-            val existingNotification = notifStates.put(key, parsedNotification)
-            if (existingNotification == parsedNotification) {
-                return
+            val text = sbn.notification.extras[Notification.EXTRA_TEXT] as? String
+                    ?: sbn.notification.extras[Notification.EXTRA_BIG_TEXT] as? String ?: ""
+
+            val actions = sbn.notification.actions?.map {
+                NotificationAction(it.title.toString(), !it.remoteInputs.isNullOrEmpty())
+            } ?: listOf()
+
+            var messages: List<NotificationMessage>? = null
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                val messagesArr = sbn.notification.extras.getParcelableArray(Notification.EXTRA_MESSAGES)
+                if (messagesArr != null) {
+                    messages = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(sbn.notification)?.messages?.map {
+                        NotificationMessage(it.person?.name.toString(), it.text.toString(), it.timestamp)
+                    }
+                }
             }
 
-            sendNotif(parsedNotification)
+            GlobalScope.launch(Dispatchers.Main.immediate) {
+                var result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, tagName, title, text, sbn.notification.category?:"", sbn.notification.color, messages?: listOf(), actions)
+                while (result.second == BlobResponse.BlobStatus.TryLater) {
+                    delay(1000)
+                    result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, tagName, title, text, sbn.notification.category?:"", sbn.notification.color, messages?: listOf(), actions)
+                }
+                Timber.d(result.second.toString())
+                notificationBridge.activeNotifs[result.first.itemId.get()] = sbn
+            }
         }
     }
 
@@ -99,8 +135,10 @@ class NotificationListener : NotificationListenerService() {
         if (isListening) {
             Timber.d("Notification removed: ${sbn.packageName}")
 
-            notifStates.remove(NotificationKey(sbn))
-            //TODO: Dismissing on watch
+            val notif = notificationBridge.activeNotifs.toList().firstOrNull { it.second.id == sbn.id && it.second.packageName == sbn.packageName }?.first
+            if (notif != null) {
+                notificationBridge.dismiss(notif)
+            }
         }
     }
 
@@ -152,7 +190,23 @@ class NotificationListener : NotificationListenerService() {
                 requestListenerHints(listenerHints)
             }.collect()
         }
+    }
 
+    private fun observeNotificationToggle() {
+        coroutineScope.launch(Dispatchers.Main.immediate) {
+            flutterPreferences.masterNotificationsToggle.collect {
+                areNotificationsEnabled = it
+            }
+        }
+    }
+
+    private fun observeMutedPackages() {
+        coroutineScope.launch(Dispatchers.Main.immediate) {
+            flutterPreferences.mutedNotifPackages.collect {
+                Timber.d("${it}")
+                mutedPackages = it ?: listOf()
+            }
+        }
     }
 
     companion object {

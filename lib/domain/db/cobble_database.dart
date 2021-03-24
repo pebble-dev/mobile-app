@@ -1,10 +1,14 @@
+import 'dart:async';
+
+import 'package:cobble/domain/db/dao/active_notification_dao.dart';
+import 'package:cobble/domain/db/dao/app_dao.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'dao/timeline_pin_dao.dart';
 
-void createAllCobbleTables(Database db) async {
+Future<void> createTimelinePinsTable(Database db) async {
   await db.execute("""
     CREATE TABLE $tableTimelinePins(
       itemId TEXT PRIMARY KEY NOT NULL,
@@ -25,6 +29,40 @@ void createAllCobbleTables(Database db) async {
   """);
 }
 
+Future<void> createActiveNotificationsTable(Database db) async {
+  await db.execute("""
+    CREATE TABLE $tableActiveNotifications(
+      pinId TEXT PRIMARY KEY NOT NULL,
+      notifId INT NOT NULL,
+      packageId TEXT NOT NULL,
+      tagId TEXT NOT NULL
+    )
+  """);
+}
+
+Future<void> createAppsTable(Database db) async {
+  await db.execute("""
+    CREATE TABLE $tableApps(
+      uuid TEXT PRIMARY KEY NOT NULL,
+      shortName TEXT NOT NULL,
+      longName TEXT NOT NULL,
+      isWatchface INTEGER NOT NULL,
+      company TEXT NOT NULL,
+      appstoreId TEXT,
+      version TEXT NOT NULL,
+      appOrder INTEGER NOT NULL,
+      supportedHardware TEXT NOT NULL,
+      nextSyncAction TEXT NOT NULL
+    )
+  """);
+}
+
+void _createDb(Database db) async {
+  await createTimelinePinsTable(db);
+  await createActiveNotificationsTable(db);
+  await createAppsTable(db);
+}
+
 void _upgradeDb(Database db, int oldVersion, int newVersion) async {
   if (oldVersion < 2) {
     await db.execute("UPDATE $tableTimelinePins SET type = lower(type)");
@@ -32,15 +70,23 @@ void _upgradeDb(Database db, int oldVersion, int newVersion) async {
         "SET layout = 'calendarPin' "
         "WHERE layout = 'CALENDAR_PIN'");
   }
+
+  if (oldVersion < 3) {
+    createActiveNotificationsTable(db);
+    createAppsTable(db);
+  }
 }
 
-final databaseProvider = FutureProvider.autoDispose<Database>((key) async {
-  final dbFolder = await getDatabasesPath();
+final AutoDisposeFutureProvider<Database> databaseProvider =
+    FutureProvider.autoDispose<Database>((key) async {
+  final dbFolder = await (getDatabasesPath() as FutureOr<String>);
   final dbPath = join(dbFolder, "cobble.db");
 
   final db = await openDatabase(dbPath,
-      version: 2,
-      onCreate: (db, name) => createAllCobbleTables(db),
+      version: 3,
+      onCreate: (db, name) {
+        _createDb(db);
+      },
       onUpgrade: (db, oldVersion, newVersion) =>
           _upgradeDb(db, oldVersion, newVersion));
 

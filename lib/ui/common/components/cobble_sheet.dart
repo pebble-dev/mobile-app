@@ -17,8 +17,8 @@ class CobbleSheet {
   /// sheet is closed. Inside [builder] function you should use [context] provided
   /// to builder instead of one passed to [CobbleSheet.showModal].
   static Future<void> showModal({
-    @required BuildContext context,
-    @required Widget Function(BuildContext context) builder,
+    required BuildContext context,
+    required Widget Function(BuildContext context) builder,
   }) async {
     final borderRadius = BorderRadius.vertical(
       top: Radius.circular(4),
@@ -33,7 +33,7 @@ class CobbleSheet {
       builder: (context) {
         return Container(
           decoration: BoxDecoration(
-            color: context.scheme.elevated,
+            color: context.scheme!.elevated,
             borderRadius: borderRadius,
           ),
           padding: EdgeInsets.only(
@@ -59,7 +59,7 @@ class CobbleSheet {
                         child: Container(
                           height: 4,
                           decoration: BoxDecoration(
-                            color: context.scheme.divider,
+                            color: context.scheme!.divider,
                             borderRadius: BorderRadius.all(
                               Radius.circular(2),
                             ),
@@ -108,7 +108,7 @@ class CobbleSheet {
   /// }
   /// ```
   static InlineCobbleSheet useInline() {
-    final _controller = useState<PersistentBottomSheetController<void>>(null);
+    final _controller = useState<PersistentBottomSheetController<void>?>(null);
     final _sheet = useMemoized(() => InlineCobbleSheet(_controller));
     return _sheet;
   }
@@ -124,7 +124,7 @@ class CobbleSheet {
 /// * [CobbleSheet.useInline]
 /// * [InlineCobbleSheet.show]
 class InlineCobbleSheet {
-  final ValueNotifier<PersistentBottomSheetController<void>> _controller;
+  final ValueNotifier<PersistentBottomSheetController<void>?> _controller;
 
   InlineCobbleSheet(this._controller);
 
@@ -200,8 +200,8 @@ class InlineCobbleSheet {
   ///   );
   /// ```
   void show({
-    @required BuildContext context,
-    @required Widget Function(BuildContext context) builder,
+    required BuildContext context,
+    required Widget Function(BuildContext context) builder,
   }) {
     if (shown) return;
 
@@ -223,7 +223,7 @@ class InlineCobbleSheet {
       ),
       builder: (context) => Container(
         decoration: BoxDecoration(
-          color: context.scheme.elevated,
+          color: context.scheme!.elevated,
           borderRadius: borderRadius,
         ),
         padding: EdgeInsets.only(
@@ -245,6 +245,6 @@ class InlineCobbleSheet {
   /// on back button in app bar.
   void close() {
     if (!shown) return;
-    _controller.value.close();
+    _controller.value!.close();
   }
 }

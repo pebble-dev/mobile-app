@@ -4,7 +4,7 @@ import 'package:cobble/infrastructure/pigeons/pigeons.g.dart' as pigeon;
 import 'package:hooks_riverpod/all.dart';
 
 class PairCallbacks implements pigeon.PairCallbacks {
-  final StreamController<int> streamController;
+  final StreamController<int?> streamController;
 
   PairCallbacks(this.streamController);
 
@@ -15,7 +15,7 @@ class PairCallbacks implements pigeon.PairCallbacks {
 }
 
 /// Stores the address of device you are paired to. Can be null.
-final pairProvider = StreamProvider<int>((ref) {
+final pairProvider = StreamProvider<int?>((ref) {
   final StreamController<int> streamController = StreamController.broadcast();
   ref.onDispose(() {
     streamController.close();

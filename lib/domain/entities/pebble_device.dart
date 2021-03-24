@@ -3,12 +3,12 @@ import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 
 class PebbleFirmware {
-  final int timestamp;
-  final String version;
-  final String gitHash;
-  final bool isRecovery;
+  final int? timestamp;
+  final String? version;
+  final String? gitHash;
+  final bool? isRecovery;
   final PebbleHardwarePlatform hardwarePlatform;
-  final int metadataVersion;
+  final int? metadataVersion;
 
   PebbleFirmware(this.timestamp, this.version, this.gitHash, this.isRecovery,
       this.hardwarePlatform, this.metadataVersion);
@@ -26,17 +26,17 @@ class PebbleFirmware {
 }
 
 class PebbleDevice {
-  final String name;
-  final int address;
+  final String? name;
+  final int? address;
   final PebbleFirmware runningFirmware;
   final PebbleFirmware recoveryFirmware;
   final PebbleWatchModel model;
-  final int bootloaderTimestamp;
-  final String board;
-  final String serial;
-  final String language;
-  final int languageVersion;
-  final bool isUnfaithful;
+  final int? bootloaderTimestamp;
+  final String? board;
+  final String? serial;
+  final String? language;
+  final int? languageVersion;
+  final bool? isUnfaithful;
 
   PebbleDevice(
       this.name,
@@ -51,7 +51,7 @@ class PebbleDevice {
       this.languageVersion,
       this.isUnfaithful);
 
-  static PebbleDevice fromPigeon(PebbleDevicePigeon pigeon) {
+  static PebbleDevice? fromPigeon(PebbleDevicePigeon? pigeon) {
     if (pigeon == null) {
       return null;
     }
@@ -59,8 +59,8 @@ class PebbleDevice {
     return PebbleDevice(
       pigeon.name,
       pigeon.address,
-      PebbleFirmware.fromPigeon(pigeon.runningFirmware),
-      PebbleFirmware.fromPigeon(pigeon.recoveryFirmware),
+      PebbleFirmware.fromPigeon(pigeon.runningFirmware!),
+      PebbleFirmware.fromPigeon(pigeon.recoveryFirmware!),
       watchModelFromNumber(pigeon.model),
       pigeon.bootloaderTimestamp,
       pigeon.board,

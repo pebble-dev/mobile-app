@@ -24,9 +24,9 @@ class _DevOptionsPageState extends State<DevOptionsPage> {
     super.initState();
     SharedPreferences.getInstance().then((prefs) => {
           if (prefs.containsKey("boot"))
-            {_bootUrlC.text = prefs.getString("boot")},
+            {_bootUrlC.text = prefs.getString("boot")!},
           if (prefs.containsKey("bootOverride"))
-            {_bootOverrideC.text = prefs.getString("bootOverride")}
+            {_bootOverrideC.text = prefs.getString("bootOverride")!}
         });
     _devConControl.setCB((bool isConnected) {
       setState(() {

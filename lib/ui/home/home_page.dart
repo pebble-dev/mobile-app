@@ -5,6 +5,8 @@ import 'package:cobble/ui/home/tabs/test_tab.dart';
 import 'package:cobble/ui/home/tabs/watches_tab.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
+import 'package:cobble/ui/router/uri_navigator.dart';
+import 'package:cobble/ui/screens/placeholder_screen.dart';
 import 'package:cobble/ui/screens/settings.dart';
 import 'package:cobble/ui/test/watch_carousel.dart';
 import 'package:flutter/cupertino.dart';
@@ -43,6 +45,8 @@ class HomePage extends HookWidget implements CobbleScreen {
 
   @override
   Widget build(BuildContext context) {
+    useUriNavigator(context);
+
     final index = useState(0);
 
     return WillPopScope(
@@ -50,7 +54,7 @@ class HomePage extends HookWidget implements CobbleScreen {
         /// Ask currently active child Navigator to pop. If child Navigator has
         /// nothing to pop it will return `false`, allowing root navigator to
         /// pop itself, closing the app.
-        final popped = await _config[index.value].key.currentState?.maybePop();
+        final popped = (await _config[index.value].key.currentState?.maybePop())!;
         return popped == false;
       },
       child: CobbleScaffold.page(
@@ -61,19 +65,19 @@ class HomePage extends HookWidget implements CobbleScreen {
           items: _config
               .map(
                 (tab) => BottomNavigationBarItem(
-                  icon: Icon(tab.icon),
-                  label: tab.label,
-                  backgroundColor: Theme.of(context).colorScheme.surface,
-                ),
-              )
+              icon: Icon(tab.icon),
+              label: tab.label,
+              backgroundColor: Theme.of(context).colorScheme.surface,
+            ),
+          )
               .toList(),
         ),
         child: IndexedStack(
           children: _config
               .map(
                 (tab) => Navigator(
-                  key: tab.key,
-                  onGenerateInitialRoutes: (navigator, initialRoute) => [
+              key: tab.key,
+              onGenerateInitialRoutes: (navigator, initialRoute) => [
                     CupertinoPageRoute(builder: (_) => tab.child),
                   ],
                 ),

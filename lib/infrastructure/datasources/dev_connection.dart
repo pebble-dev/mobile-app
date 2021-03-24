@@ -8,9 +8,9 @@ final ConnectionControl connectionControl = ConnectionControl();
 class DevConnection {
   static final DevConnection _singleton = new DevConnection._internal();
   bool isConnected = false;
-  HttpServer _server;
-  Function _onServerStatChange; // (isrunning)
-  Function _onConnChange; // (isconnected)
+  late HttpServer _server;
+  late Function _onServerStatChange; // (isrunning)
+  late Function _onConnChange; // (isconnected)
 
   factory DevConnection() {
     return _singleton;

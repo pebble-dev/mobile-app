@@ -23,7 +23,7 @@ A multi platform watch companion app for Pebble/RebbleOS devices
 To build all the mappings in this project (such as entity <> map mapping for SQL), you have to
 run the following command:
 
-`flutter pub run build_runner build`
+`flutter pub run build_runner build --delete-conflicting-outputs`
 
 ## Building pigeons
 

@@ -5,6 +5,7 @@ import 'package:cobble/domain/db/dao/timeline_pin_dao.dart';
 import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/db/models/timeline_pin.dart';
 import 'package:cobble/domain/timeline/timeline_serializer.dart';
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:device_calendar/device_calendar.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:uuid_type/uuid_type.dart';
@@ -32,7 +33,7 @@ class CalendarSyncer {
       return false;
     }
 
-    final allCalendars = allCalendarsResult.data.value;
+    final allCalendars = allCalendarsResult.data!.value;
 
     final now = _dateTimeProvider();
     // 1 day is added since we need to get the start of the next day
@@ -73,9 +74,8 @@ class CalendarSyncer {
         await _timelinePinDao.getPinsFromParent(calendarWatchappId);
 
     for (TimelinePin newPin in newPins) {
-      final existingPin = existingPins.firstWhere(
+      final existingPin = existingPins.firstWhereOrNull(
         (element) => element.backingId == newPin.backingId,
-        orElse: () => null,
       );
 
       if (existingPin != null &&
@@ -86,7 +86,7 @@ class CalendarSyncer {
         continue;
       }
 
-      Uuid newItemId =
+      Uuid? newItemId =
           existingPin != null ? existingPin.itemId : _uuidGenerator.generate();
 
       newPin = newPin.copyWith(itemId: newItemId);
@@ -102,7 +102,7 @@ class CalendarSyncer {
     }
 
     for (final pin in existingPins) {
-      if (pin.timestamp.add(Duration(minutes: pin.duration)).isBefore(now)) {
+      if (pin.timestamp!.add(Duration(minutes: pin.duration!)).isBefore(now)) {
         await _timelinePinDao.delete(pin.itemId);
         anyChanges = true;
       } else if (!newPins.any((newPin) => newPin.backingId == pin.backingId)) {
@@ -137,11 +137,11 @@ class _EventInCalendar {
   _EventInCalendar(this.calendar, this.event);
 }
 
-final calendarSyncerProvider = Provider.autoDispose<CalendarSyncer>((ref) {
-  final calendarList = ref.watch(calendarListProvider);
+final AutoDisposeProvider<CalendarSyncer>? calendarSyncerProvider = Provider.autoDispose<CalendarSyncer>((ref) {
+  final calendarList = ref.watch(calendarListProvider!);
   final deviceCalendar = ref.watch(deviceCalendarPluginProvider);
   final dateTimeProvider = ref.watch(currentDateTimeProvider);
-  final timelinePinDao = ref.watch(timelinePinDaoProvider);
+  final timelinePinDao = ref.watch(timelinePinDaoProvider!);
 
   return CalendarSyncer(
       calendarList, deviceCalendar, dateTimeProvider, timelinePinDao);

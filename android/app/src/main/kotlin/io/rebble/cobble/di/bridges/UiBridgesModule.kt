@@ -21,7 +21,7 @@ abstract class UiBridgesModule {
     @Binds
     @IntoSet
     @UiBridge
-    abstract fun bindAppLifecycleBridge(appLifecycleFlutterBridge: AppLifecycleFlutterBridge): FlutterBridge
+    abstract fun bindIntentsBridge(intentsFlutterBridge: IntentsFlutterBridge): FlutterBridge
 
     @Binds
     @IntoSet
@@ -47,6 +47,13 @@ abstract class UiBridgesModule {
     @UiBridge
     abstract fun bindCalendarControl(
             calendarControlFlutterBridge: CalendarControlFlutterBridge
+    ): FlutterBridge
+
+    @Binds
+    @IntoSet
+    @UiBridge
+    abstract fun bindWorkaroundsControl(
+            bridge: WorkaroundsFlutterBridge
     ): FlutterBridge
 }
 

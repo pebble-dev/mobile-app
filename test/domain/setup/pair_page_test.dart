@@ -45,9 +45,9 @@ class Observer extends Mock implements NavigatorObserver {
 }
 
 Widget wrapper(
-        {ScanCallbacks scanMock,
-        StreamProvider<int> pairMock,
-        Observer navigatorObserver}) =>
+        {ScanCallbacks? scanMock,
+        StreamProvider<int?>? pairMock,
+        Observer? navigatorObserver}) =>
     ProviderScope(
       overrides: [
         scan_provider.scanProvider.overrideWithValue(
@@ -57,7 +57,7 @@ Widget wrapper(
           pairMock ??
               StreamProvider<int>((ref) async* {
                 yield null;
-              }),
+              } as Stream<int> Function(ProviderReference)),
         )
       ],
       child: MaterialApp(
@@ -119,8 +119,8 @@ void main() {
     });
     testWidgets('should respond to paired device', (tester) async {
       final scan = ScanCallbacks();
-      final StreamController<int> pairStream = StreamController.broadcast();
-      final pair = StreamProvider<int>((ref) => pairStream.stream);
+      final StreamController<int?> pairStream = StreamController.broadcast();
+      final pair = StreamProvider<int?>((ref) => pairStream.stream);
       final observer = Observer();
       scan.updateDevices(1);
 
@@ -131,7 +131,7 @@ void main() {
       ));
       pairStream.add(device.address);
       await tester.pump();
-      verify(observer.didPush(any, any)).called(1);
+      verify(observer.didPush(any!, any)).called(1);
       pairStream.close();
     });
   });

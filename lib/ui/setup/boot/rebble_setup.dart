@@ -11,7 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 String _getBootUrl = "https://boot.rebble.io/";
 
 class RebbleSetup extends StatelessWidget implements CobbleScreen {
-  static final AppLifecycleControl lifecycleControl = AppLifecycleControl();
+  static final IntentControl lifecycleControl = IntentControl();
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class RebbleSetup extends StatelessWidget implements CobbleScreen {
               if (value) {
                 launch(_getBootUrl);
                 lifecycleControl.waitForBoot().then((value) {
-                  if (value.value)
+                  if (value.value!)
                     context.pushReplacement(RebbleSetupSuccess());
                   else
                     context.pushReplacement(RebbleSetupFail());

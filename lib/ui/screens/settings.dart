@@ -60,7 +60,7 @@ class Settings extends StatelessWidget implements CobbleScreen {
             navigateTo: Health(),
           ),
           CobbleTile.withIconColor(
-            color: context.scheme.danger,
+            color: context.scheme!.danger,
             child: CobbleTile.navigation(
               leading: RebbleIcons.unknown_app,
               title: tr.settings.calendar,

@@ -54,4 +54,10 @@ abstract class ServiceModule {
     abstract fun bindFlutterBackgroundStart(
             flutterStartHandler: FlutterStartHandler
     ): CobbleHandler
+
+    @Binds
+    @IntoSet
+    abstract fun bindAppInstallHandlerIntoSet(
+            appInstallHandler: AppInstallHandler
+    ): CobbleHandler
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cobble/background/actions/master_action_handler.dart';
@@ -5,6 +6,7 @@ import 'package:cobble/domain/calendar/calendar_list.dart';
 import 'package:cobble/domain/calendar/calendar_pin_convert.dart';
 import 'package:cobble/domain/calendar/calendar_syncer.db.dart';
 import 'package:cobble/domain/calendar/device_calendar_plugin_provider.dart';
+import 'package:cobble/domain/calendar/selectable_calendar.dart';
 import 'package:cobble/domain/db/dao/timeline_pin_dao.dart';
 import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/db/models/timeline_pin.dart';
@@ -17,6 +19,7 @@ import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/util/state_provider_extension.dart';
 import 'package:cobble/util/stream_extensions.dart';
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:device_calendar/device_calendar.dart';
 import 'package:hooks_riverpod/all.dart';
 
@@ -75,9 +78,9 @@ class CalendarActionHandler implements ActionHandler {
     TimelinePin pin,
   ) async {
     final calendarList =
-        await _calendarList.streamWithExistingValue.firstSuccessOrError();
+    await (_calendarList.streamWithExistingValue.firstSuccessOrError() as FutureOr<AsyncValue<List<SelectableCalendar>>>);
 
-    final calendars = calendarList.data.value;
+    final calendars = calendarList.data!.value;
     if (calendars == null) {
       return TimelineActionResponse(false);
     }
@@ -100,10 +103,8 @@ class CalendarActionHandler implements ActionHandler {
   }
 
   @override
-  Future<TimelineActionResponse> _handleAttendanceAction(
-    TimelinePin pin,
-    int actionId,
-  ) async {
+  Future<TimelineActionResponse> _handleAttendanceAction(TimelinePin pin,
+      int? actionId,) async {
     final eventId = CalendarEventId.fromTimelinePin(pin);
     if (eventId == null) {
       Log.e("Unknown timeline pin backing ID ${pin.backingId}");
@@ -120,9 +121,8 @@ class CalendarActionHandler implements ActionHandler {
     }
 
     final event = events.data.first;
-    final selfAttendee = event.attendees.firstWhere(
-      (element) => element.isCurrentUser == true,
-      orElse: () => null,
+    final selfAttendee = event.attendees.firstWhereOrNull(
+          (element) => element.isCurrentUser == true,
     );
 
     if (selfAttendee == null) {
@@ -212,10 +212,11 @@ class CalendarActionHandler implements ActionHandler {
   }
 }
 
-final calendarActionHandlerProvider = Provider((ref) => CalendarActionHandler(
-      ref.read(timelinePinDaoProvider),
-      ref.read(calendarSyncerProvider),
-      ref.read(watchTimelineSyncerProvider),
-      ref.read(calendarListProvider),
+final calendarActionHandlerProvider = Provider((ref) =>
+    CalendarActionHandler(
+      ref.read(timelinePinDaoProvider!),
+      ref.read(calendarSyncerProvider!),
+      ref.read(watchTimelineSyncerProvider!),
+      ref.read(calendarListProvider!),
       ref.read(deviceCalendarPluginProvider),
     ));

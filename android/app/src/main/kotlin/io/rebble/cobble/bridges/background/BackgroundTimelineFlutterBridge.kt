@@ -12,6 +12,7 @@ import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.ConnectionState
 import io.rebble.cobble.bridges.FlutterBridge
+import io.rebble.cobble.data.TimelineAttribute
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.libpebblecommon.packets.blobdb.TimelineAction
 import io.rebble.libpebblecommon.services.blobdb.TimelineService
@@ -86,9 +87,18 @@ class BackgroundTimelineFlutterBridge @Inject constructor(
                 ?: return@withContext TimelineService.ActionResponse(false)
 
         suspendCoroutine { continuation ->
+            val attrs = actionRequest.attributes.list.map {
+                TimelineAttribute.fromProtocolAttribute(it)
+            }
             val pigeonActionTrigger = Pigeons.ActionTrigger().apply {
                 itemId = actionRequest.itemID.get().toString()
                 actionId = actionRequest.actionID.get().toLong()
+                attributesJson = moshi.adapter<List<TimelineAttribute>>(
+                        Types.newParameterizedType(
+                                List::class.java,
+                                TimelineAttribute::class.java
+                        )
+                ).toJson(attrs)
             }
 
             callbacks.handleTimelineAction(pigeonActionTrigger) { pigeonResponse ->

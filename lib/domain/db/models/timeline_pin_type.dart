@@ -1,6 +1,6 @@
 enum TimelinePinType { notification, pin, reminder }
 
-extension ProtocolExtension on TimelinePinType {
+extension ProtocolExtension on TimelinePinType? {
   int toProtocolNumber() {
     switch (this) {
       case TimelinePinType.notification:

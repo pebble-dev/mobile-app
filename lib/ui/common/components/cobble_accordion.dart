@@ -10,9 +10,9 @@ class CobbleAccordion extends HookWidget {
   final Widget child;
 
   const CobbleAccordion({
-    Key key,
-    @required this.headerBuilder,
-    @required this.child,
+    Key? key,
+    required this.headerBuilder,
+    required this.child,
     this.initialExpanded = false,
   })  : assert(headerBuilder != null),
         assert(child != null),

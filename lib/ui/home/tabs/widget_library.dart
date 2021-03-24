@@ -157,11 +157,11 @@ class WidgetLibrary extends HookWidget implements CobbleScreen {
                   ),
                   Checkbox(
                     value: true,
-                    onChanged: (bool value) {},
+                    onChanged: (bool? value) {},
                   ),
                   Checkbox(
                     value: false,
-                    onChanged: (bool value) {},
+                    onChanged: (bool? value) {},
                   ),
                 ],
               ),
@@ -205,7 +205,7 @@ class WidgetLibrary extends HookWidget implements CobbleScreen {
                         negative: 'Cancel',
                         positive: 'Delete',
                         // Can be styled differently with intents
-                        intent: context.scheme.destructive,
+                        intent: context.scheme!.destructive,
                       );
                     },
                   ),
@@ -244,7 +244,7 @@ class WidgetLibrary extends HookWidget implements CobbleScreen {
               CobbleCard(
                 title: 'Untrusted boot URL',
                 leading: RebbleIcons.notification,
-                intent: context.scheme.danger,
+                intent: context.scheme!.danger,
                 actions: [
                   CobbleCardAction(
                     onPressed: () {},
@@ -336,7 +336,7 @@ class WidgetLibrary extends HookWidget implements CobbleScreen {
                     CobbleTile.action(
                       leading: RebbleIcons.health_heart,
                       title: 'Permanently delete all health data',
-                      intent: context.scheme.destructive,
+                      intent: context.scheme!.destructive,
                       onTap: () {},
                     ),
                   ],
@@ -349,7 +349,7 @@ class WidgetLibrary extends HookWidget implements CobbleScreen {
     );
   }
 
-  Padding _row({List<Widget> children}) => Padding(
+  Padding _row({required List<Widget> children}) => Padding(
         padding: EdgeInsets.symmetric(vertical: 8),
         child: Wrap(
           children: children,

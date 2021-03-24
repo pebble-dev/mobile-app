@@ -5,9 +5,9 @@ import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WSAuthUser {
-  final String email;
-  final String id;
-  final String name;
+  final String? email;
+  final String? id;
+  final String? name;
   WSAuthUser(this.email, this.id, this.name);
 
   static Future<WSAuthUser> get() async {
@@ -32,9 +32,9 @@ class WSAuthUser {
 }
 
 class WSBoot {
-  static Map<String, dynamic> _conf;
+  static Map<String, dynamic>? _conf;
   static int _confExpiry = 0;
-  static String token;
+  static String? token;
   static Future<Map<String, dynamic>> get bootConf async {
     Completer<Map<String, dynamic>> _completer =
         new Completer<Map<String, dynamic>>();
@@ -47,7 +47,7 @@ class WSBoot {
       else {
         HttpClient client = HttpClient();
 
-        String bootUrl = sp.getString("boot");
+        String bootUrl = sp.getString("boot")!;
         String params = bootUrl.substring(bootUrl.indexOf('?'));
         Uri actualUrl = Uri.parse(bootUrl.substring(0, bootUrl.indexOf('?')) +
             '/android/v3/1405/' +

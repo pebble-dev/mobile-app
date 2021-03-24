@@ -17,24 +17,24 @@ part 'timeline_pin.g.dart';
 @CopyWith(generateCopyWithNull: true)
 class TimelinePin {
   /// Unique UUID of the item
-  final Uuid itemId;
+  final Uuid? itemId;
 
   /// UUID of the watchapp that owns this pin
-  final Uuid parentId;
+  final Uuid? parentId;
 
   /// ID of the item that is backing this pin
   /// (for example ID of the calendar event)
   /// can be null
-  final String backingId;
+  final String? backingId;
 
   /// Date of the pin start
-  final DateTime timestamp;
+  final DateTime? timestamp;
 
   /// Duration of the event in minutes
-  final int duration;
+  final int? duration;
 
   /// Type of the pin
-  final TimelinePinType type;
+  final TimelinePinType? type;
 
   /// ???
   /// (Name suggests that setting this to false would hide the pin on the watch
@@ -53,18 +53,18 @@ class TimelinePin {
   final bool persistQuickView;
 
   /// UI Layout of the pin
-  final TimelinePinLayout layout;
+  final TimelinePinLayout? layout;
 
   /// JSON of the timeline pin attributes. Those attributes must
   /// correspond to the specified [layout].
-  final String attributesJson;
+  final String? attributesJson;
 
   /// JSON of the pin actions. Can be *null* if pin has no actions.
-  final String actionsJson;
+  final String? actionsJson;
 
   /// Action that should be performed for this pin
   /// when the next sync-to-watch is performed
-  final NextSyncAction nextSyncAction;
+  final NextSyncAction? nextSyncAction;
 
   TimelinePin(
       {this.itemId,
@@ -73,10 +73,10 @@ class TimelinePin {
       this.timestamp,
       this.duration,
       this.type,
-      this.isVisible,
-      this.isFloating,
-      this.isAllDay,
-      this.persistQuickView,
+      this.isVisible = true,
+      this.isFloating = false,
+      this.isAllDay = false,
+      this.persistQuickView = false,
       this.layout,
       this.attributesJson,
       this.actionsJson,
@@ -87,7 +87,7 @@ class TimelinePin {
 
     pigeon.itemId = itemId.toString();
     pigeon.parentId = parentId.toString();
-    pigeon.timestamp = timestamp.millisecondsSinceEpoch ~/ 1000;
+    pigeon.timestamp = timestamp!.millisecondsSinceEpoch ~/ 1000;
     pigeon.type = type.toProtocolNumber();
     pigeon.duration = duration;
     pigeon.isVisible = isVisible;

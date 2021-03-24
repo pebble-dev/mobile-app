@@ -46,6 +46,27 @@ abstract class CommonBridgesModule {
     abstract fun bindLoggingBridge(
             loggingFlutterBridge: LoggingFlutterBridge
     ): FlutterBridge
+
+    @Binds
+    @IntoSet
+    @CommonBridge
+    abstract fun bindPackageDetailsBridge(
+            packageDetailsFlutterBridge: PackageDetailsFlutterBridge
+    ): FlutterBridge
+
+    @Binds
+    @IntoSet
+    @CommonBridge
+    abstract fun bindAppInstallBridge(
+            appInstallFlutterBridge: AppInstallFlutterBridge
+    ): FlutterBridge
+
+    @Binds
+    @IntoSet
+    @CommonBridge
+    abstract fun bindAppLifecycleBridge(
+            appLifecycleFlutterBridge: AppLifecycleFlutterBridge
+    ): FlutterBridge
 }
 
 @Qualifier

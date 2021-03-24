@@ -92,7 +92,7 @@ flutter {
     source '../..'
 }
 
-def libpebblecommon_version = '0.0.19'
+def libpebblecommon_version = '0.0.21'
 def coroutinesVersion = "1.4.2"
 def lifecycleVersion = "2.2.0"
 def timberVersion = "4.7.1"
@@ -101,6 +101,7 @@ def daggerVersion = '2.29.1'
 def ableVersion = '0.8.0'
 def moshiVersion = '1.11.0'
 def workManagerVersion = '2.4.0'
+def okioVersion = '2.4.0'
 
 def junitVersion = '4.13'
 def androidxTestVersion = "1.3.0"
@@ -117,6 +118,7 @@ dependencies {
     implementation "com.jakewharton.timber:timber:$timberVersion"
     implementation "androidx.core:core-ktx:$androidxCoreVersion"
     implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
+    implementation "com.squareup.okio:okio:$okioVersion"
 
     implementation "com.squareup.moshi:moshi:$moshiVersion"
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"

@@ -18,7 +18,7 @@ class TimelinePinDao {
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<TimelinePin> getPinById(Uuid id) async {
+  Future<TimelinePin?> getPinById(Uuid id) async {
     final db = await _dbFuture;
 
     final receivedPins = (await db.query(
@@ -74,7 +74,7 @@ class TimelinePinDao {
   }
 
   Future<void> setSyncAction(
-      Uuid itemId, NextSyncAction newNextSyncAction) async {
+      Uuid? itemId, NextSyncAction newNextSyncAction) async {
     final db = await _dbFuture;
 
     await db.update(
@@ -87,7 +87,7 @@ class TimelinePinDao {
         whereArgs: [itemId.toString()]);
   }
 
-  Future<void> delete(Uuid itemId) async {
+  Future<void> delete(Uuid? itemId) async {
     final db = await _dbFuture;
 
     await db.delete(tableTimelinePins,
@@ -135,7 +135,7 @@ class TimelinePinDao {
   }
 }
 
-final timelinePinDaoProvider = Provider.autoDispose((ref) {
+final AutoDisposeProvider<TimelinePinDao>? timelinePinDaoProvider = Provider.autoDispose((ref) {
   final dbFuture = ref.watch(databaseProvider.future);
   return TimelinePinDao(dbFuture);
 });

@@ -8,7 +8,7 @@ class CobbleDivider extends StatelessWidget {
     return Container(
       height: 2,
       decoration: BoxDecoration(
-        color: context.scheme.divider,
+        color: context.scheme!.divider,
       ),
     );
   }

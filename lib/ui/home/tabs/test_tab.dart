@@ -1,9 +1,11 @@
+import 'package:cobble/domain/app_manager.dart';
 import 'package:cobble/domain/calendar/calendar_list.dart';
 import 'package:cobble/domain/calendar/device_calendar_plugin_provider.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/permissions.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
+import 'package:cobble/infrastructure/datasources/workarounds.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
@@ -13,7 +15,6 @@ import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/all.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../common/icons/fonts/rebble_icons.dart';
@@ -26,10 +27,10 @@ class TestTab extends HookWidget implements CobbleScreen {
 
   @override
   Widget build(BuildContext context) {
-    final connectionState = useProvider(connectionStateProvider.state);
+    final connectionState = useProvider(connectionStateProvider!.state);
     final defaultWatch = useProvider(defaultWatchProvider);
-    final calendars = useProvider(calendarListProvider.state);
-    final calendarSelector = useProvider(calendarListProvider);
+    final calendars = useProvider(calendarListProvider!.state);
+    final calendarSelector = useProvider(calendarListProvider!);
     final calendarControl = useProvider(calendarControlProvider);
 
     final permissionControl = useProvider(permissionControlProvider);
@@ -37,25 +38,30 @@ class TestTab extends HookWidget implements CobbleScreen {
 
     final preferences = useProvider(preferencesProvider);
     final calendarSyncEnabled = useProvider(calendarSyncEnabledProvider);
-    final phoneNotificationsMuteEnabled =
-        useProvider(phoneNotificationsMuteProvider);
-    final phoneCallsMuteEnabled = useProvider(phoneCallsMuteProvider);
+    final neededWorkarounds = useProvider(neededWorkaroundsProvider).when(
+      data: (data) => data,
+      loading: () => List<Workaround>.empty(),
+      error: (e, s) => List<Workaround>.empty(),
+    );
+
+    final appManager = useProvider(appManagerProvider);
+    final allApps = useProvider(appManagerProvider.state);
 
     useEffect(() {
       Future.microtask(() async {
-        if (!(await permissionCheck.hasCalendarPermission()).value) {
+        if (!(await permissionCheck.hasCalendarPermission()).value!) {
           await permissionControl.requestCalendarPermission();
         }
-        if (!(await permissionCheck.hasLocationPermission()).value) {
+        if (!(await permissionCheck.hasLocationPermission()).value!) {
           await permissionControl.requestLocationPermission();
         }
 
         if (defaultWatch != null) {
-          if (!(await permissionCheck.hasNotificationAccess()).value) {
+          if (!(await permissionCheck.hasNotificationAccess()).value!) {
             permissionControl.requestNotificationAccess();
           }
 
-          if (!(await permissionCheck.hasBatteryExclusionEnabled()).value) {
+          if (!(await permissionCheck.hasBatteryExclusionEnabled()).value!) {
             permissionControl.requestBatteryExclusion();
           }
         }
@@ -68,12 +74,12 @@ class TestTab extends HookWidget implements CobbleScreen {
       statusText = "Connecting to ${connectionState.currentWatchAddress}";
     } else if (connectionState.isConnected == true) {
       PebbleWatchModel model = PebbleWatchModel.rebble_logo;
-      String fwVersion = "unknown";
+      String? fwVersion = "unknown";
 
       if (connectionState.currentConnectedWatch != null) {
-        model = connectionState.currentConnectedWatch.model;
+        model = connectionState.currentConnectedWatch!.model;
         fwVersion =
-            connectionState.currentConnectedWatch.runningFirmware.version;
+            connectionState.currentConnectedWatch!.runningFirmware.version;
       }
 
       statusText = "Connected to ${connectionState.currentWatchAddress}" +
@@ -157,34 +163,11 @@ class TestTab extends HookWidget implements CobbleScreen {
                   ),
                 ),
               ),
-              // TODO Separate call and notification mute is only possible on
-              //  Android 7 (SDK 24) and newer. On older releases,
-              //  we should only display one switch that controls both.
-              Row(children: [
-                Switch(
-                  value: phoneNotificationsMuteEnabled.data?.value ?? false,
-                  onChanged: (value) async {
-                    await preferences.data?.value
-                        ?.setPhoneNotificationMute(value);
-                  },
-                ),
-                Text("Mute phone notification sounds when watch connected")
-              ]),
-              Row(children: [
-                Switch(
-                  value: phoneCallsMuteEnabled.data?.value ?? false,
-                  onChanged: (value) async {
-                    await preferences.data?.value?.setPhoneCallsMute(value);
-                  },
-                ),
-                Text("Mute phone call ringing when watch connected")
-              ]),
               Row(children: [
                 Switch(
                   value: calendarSyncEnabled.data?.value ?? false,
                   onChanged: (value) async {
-                    await preferences.data?.value
-                        ?.setCalendarSyncEnabled(value);
+                    await preferences.data?.value.setCalendarSyncEnabled(value);
 
                     if (!value) {
                       calendarControl.deleteCalendarPinsFromWatch();
@@ -194,21 +177,49 @@ class TestTab extends HookWidget implements CobbleScreen {
                 Text("Show calendar on the watch")
               ]),
               Text("Calendars: "),
-              ...calendars.data?.value?.map((e) {
+              ...calendars.data?.value.map((e) {
                     return Row(
                       children: [
                         Checkbox(
                           value: e.enabled,
                           onChanged: (enabled) {
-                            calendarSelector.setCalendarEnabled(e.id, enabled);
+                            calendarSelector.setCalendarEnabled(e.id, enabled!);
                             calendarControl.requestCalendarSync();
                           },
                         ),
                         Text(e.name),
                       ],
                     );
-                  })?.toList() ??
+                  }).toList() ??
                   [],
+              Text("Disable BLE Workarounds: "),
+              ...neededWorkarounds.map(
+                (workaround) => Row(children: [
+                  Switch(
+                    value: workaround.disabled,
+                    onChanged: (value) async {
+                      await preferences.data?.value
+                          .setWorkaroundDisabled(workaround.name, value);
+                    },
+                  ),
+                  Text(workaround.name)
+                ]),
+              ),
+              Text("Installed apps: "),
+              ...allApps.map(
+                (app) => Row(children: [
+                  Container(
+                    margin: EdgeInsets.all(16),
+                    child: Text("${app.longName} by ${app.company}"),
+                  ),
+                  ElevatedButton(
+                    child: Text("Delete"),
+                    onPressed: () {
+                      appManager.deleteApp(app.uuid);
+                    },
+                  )
+                ]),
+              )
             ],
           ),
         ),

@@ -33,8 +33,8 @@ extension on AppSource {
 
 @JsonSerializable()
 class SheetOnChanged {
-  final String query;
-  final AppSource source;
+  final String? query;
+  final AppSource? source;
 
   const SheetOnChanged(this.query, this.source);
 
@@ -51,9 +51,9 @@ class Sheet extends HookWidget {
   final ValueChanged<SheetOnChanged> onChanged;
 
   Sheet({
-    Key key,
-    @required this.onClose,
-    @required this.onChanged,
+    Key? key,
+    required this.onClose,
+    required this.onChanged,
     this.initialFilter = SheetOnChanged.initial,
   })  : assert(onClose != null),
         assert(onChanged != null),
@@ -62,7 +62,7 @@ class Sheet extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final _formHelper = useFormHelper(initialFilter.toJson());
-    final iconSize = Theme.of(context).iconTheme.size;
+    final iconSize = Theme.of(context).iconTheme.size!;
     return Form(
       key: _formHelper.key,
       child: Padding(
@@ -81,7 +81,7 @@ class Sheet extends HookWidget {
                   ),
                   icon: Icon(
                     RebbleIcons.x_close,
-                    color: context.scheme.primary,
+                    color: context.scheme!.primary,
                   ),
                   onPressed: onClose,
                 ),

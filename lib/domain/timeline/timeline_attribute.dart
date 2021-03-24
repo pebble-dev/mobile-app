@@ -13,14 +13,14 @@ part 'timeline_attribute.g.dart';
 /// optionally maxLength on array types
 ///
 /// Use factory methods to create attributes with valid values.
-@JsonSerializable(includeIfNull: false, createFactory: false)
+@JsonSerializable(includeIfNull: false)
 class TimelineAttribute {
-  final int id;
-  final String string;
-  final List<String> listOfString;
-  final int uint8;
-  final int uint32;
-  final int maxLength;
+  final int? id;
+  final String? string;
+  final List<String>? listOfString;
+  final int? uint8;
+  final int? uint32;
+  final int? maxLength;
 
   TimelineAttribute({
     this.id,
@@ -33,6 +33,10 @@ class TimelineAttribute {
 
   Map<String, dynamic> toJson() {
     return _$TimelineAttributeToJson(this);
+  }
+
+  static TimelineAttribute fromJson(Map<String,dynamic> json) {
+    return _$TimelineAttributeFromJson(json);
   }
 
   @override
@@ -62,7 +66,7 @@ class TimelineAttribute {
     return 'TimelineAttribute{id: $id, string: $string, listOfString: $listOfString, uint8: $uint8, uint32: $uint32, maxLength: $maxLength}';
   }
 
-  static TimelineAttribute title(String title) {
+  static TimelineAttribute title(String? title) {
     return TimelineAttribute(
       id: 1,
       string: title,
