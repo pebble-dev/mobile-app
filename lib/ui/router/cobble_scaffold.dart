@@ -41,7 +41,7 @@ class CobbleScaffold extends StatelessWidget {
     Widget? leading;
     final route = ModalRoute.of(context);
     final bool canPop = route?.canPop ?? false;
-    final bool useCloseButton = route is PageRoute && route!.fullscreenDialog;
+    final bool useCloseButton = route is PageRoute && route.fullscreenDialog;
     if (canPop)
       leading = useCloseButton
           ? IconButton(
@@ -165,7 +165,7 @@ class EnsureTabScaffold extends InheritedWidget {
   const EnsureTabScaffold({
     Key? key,
     required Widget child,
-  })  : assert(child != null),
+  })   : assert(child != null),
         super(key: key, child: child);
 
   @override

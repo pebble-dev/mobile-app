@@ -12,7 +12,7 @@ class CobbleButton extends StatelessWidget {
   final String? label;
   final IconData? icon;
   final bool outlined;
-  final Color color;
+  final Color? color;
 
   const CobbleButton({
     Key? key,
@@ -53,7 +53,7 @@ class CobbleButton extends StatelessWidget {
 
     if (color != null) {
       child = CobbleButton.withColor(
-        color: color,
+        color: color!,
         child: child,
       );
     }
@@ -65,8 +65,6 @@ class CobbleButton extends StatelessWidget {
     required Color color,
     required Widget child,
   }) {
-    assert(color != null);
-    assert(child != null);
     return Builder(
       builder: (context) => Theme(
         data: context.theme.copyWith(
@@ -81,7 +79,7 @@ class CobbleButton extends StatelessWidget {
             ),
           ),
           textButtonTheme: TextButtonThemeData(
-            style: context.theme.textButtonTheme.style.copyWith(
+            style: context.theme.textButtonTheme.style?.copyWith(
               foregroundColor: simpleMaterialStateProperty(
                 color,
               ),

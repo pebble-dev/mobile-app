@@ -12,7 +12,7 @@ Builder modelGenerator(BuilderOptions options) => LibraryBuilder(
 
 class ModelGenerator extends Generator {
   @override
-  Future<String> generate(LibraryReader library, BuildStep buildStep) async {
+  Future<String?> generate(LibraryReader library, BuildStep buildStep) async {
     try {
       final langs = await _findLangs(buildStep);
       _validateLangs(langs);
@@ -169,17 +169,17 @@ class ModelGenerator extends Generator {
           return _extractModelsInFragment(JsonFragment.append(fragment, key));
         })
         .where((element) => element != null)
-        .expand((e) => e)
+        .expand((e) => e!)
         .toList();
     return [model, ...children];
   }
 
   String _generateHelpers() {
     return '''
-String _args(String value, {
+String _args(String value,
   List<String> positional,
   Map<String, String> named,
-}) {
+) {
   named.forEach(
     (key, _value) => value = value.replaceAll(RegExp('{\$key}'), _value),
   );
@@ -212,7 +212,7 @@ String _args(String value, {
 
     String namedArguments = List.generate(
       field.named.length,
-      (index) => 'String ${field.named[index].group(1)}, ',
+      (index) => 'required String ${field.named[index].group(1)}, ',
     ).join('');
     if (namedArguments.isNotEmpty) {
       namedArguments = '{$namedArguments}';
@@ -234,7 +234,9 @@ String _args(String value, {
   ${field.type} ${field.publicName}($positionalArguments$namedArguments) =>
     _args(
       ${field.publicName}Raw, // ignore: deprecated_member_use_from_same_package
-      positional: $positional, named: $named,);
+      $positional,
+      $named,
+    );
 ''';
   }
 
@@ -343,7 +345,7 @@ class Field {
     this.named,
   );
 
-  factory Field(String type, String name, {String value}) {
+  factory Field(String type, String name, {String? value}) {
     final positional = RegExp(r'{}').allMatches(value ?? '').toList();
     final named = RegExp(r'{(\S+?)}').allMatches(value ?? '').toList();
     named.forEach((m) {

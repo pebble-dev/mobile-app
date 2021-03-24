@@ -143,7 +143,7 @@ class _FirstRunPageState extends State<FirstRunPage> {
                 children: <Widget>[
                   CobbleButton(
                     outlined: false,
-                    color: context.textTheme.bodyText2.color,
+                    color: context.textTheme.bodyText2?.color,
                     label: tr.common.skip,
                     onPressed: () => context.pushAndRemoveAllBelow(
                       HomePage(),

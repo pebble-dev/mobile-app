@@ -10,10 +10,10 @@ import 'dart:ui';
 part 'model_generator.model.g.dart';
 
 String _args(
-  String value, {
+  String value,
   List<String> positional,
   Map<String, String> named,
-}) {
+) {
   named.forEach(
     (key, _value) => value = value.replaceAll(RegExp('{$key}'), _value),
   );
@@ -191,13 +191,13 @@ class LanguageAboutPage {
   @Deprecated('This localized string requires parameters, use about() instead')
   final String aboutRaw;
   String about({
-    String name,
-    String version,
+    required String name,
+    required String version,
   }) =>
       _args(
         aboutRaw, // ignore: deprecated_member_use_from_same_package
-        positional: [],
-        named: {
+        [],
+        {
           'name': name,
           'version': version,
         },
@@ -245,13 +245,13 @@ class LanguageAlertingApps {
       'This localized string requires parameters, use subtitle() instead')
   final String subtitleRaw;
   String subtitle({
-    String alerted,
-    String muted,
+    required String alerted,
+    required String muted,
   }) =>
       _args(
         subtitleRaw, // ignore: deprecated_member_use_from_same_package
-        positional: [],
-        named: {
+        [],
+        {
           'alerted': alerted,
           'muted': muted,
         },
@@ -266,12 +266,12 @@ class LanguageAlertingApps {
       'This localized string requires parameters, use mutedToday() instead')
   final String mutedTodayRaw;
   String mutedToday({
-    String muted,
+    required String muted,
   }) =>
       _args(
         mutedTodayRaw, // ignore: deprecated_member_use_from_same_package
-        positional: [],
-        named: {
+        [],
+        {
           'muted': muted,
         },
       );
@@ -285,12 +285,12 @@ class LanguageAlertingApps {
       'This localized string requires parameters, use alertedToday() instead')
   final String alertedTodayRaw;
   String alertedToday({
-    String alerted,
+    required String alerted,
   }) =>
       _args(
         alertedTodayRaw, // ignore: deprecated_member_use_from_same_package
-        positional: [],
-        named: {
+        [],
+        {
           'alerted': alerted,
         },
       );
@@ -1291,12 +1291,12 @@ class LanguageSetupSuccess {
       'This localized string requires parameters, use welcome() instead')
   final String welcomeRaw;
   String welcome({
-    String name,
+    required String name,
   }) =>
       _args(
         welcomeRaw, // ignore: deprecated_member_use_from_same_package
-        positional: [],
-        named: {
+        [],
+        {
           'name': name,
         },
       );

@@ -6,16 +6,16 @@ import 'package:flutter/widgets.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 class Localization {
-  final Language _language;
-  final StateError _error;
+  final Language? _language;
+  final StateError? _error;
 
   Localization({
-    Language language,
-    StateError error,
+    Language? language,
+    StateError? error,
   })  : _language = language,
         _error = error;
 
-  static Localization _instance;
+  static Localization? _instance;
 
   static Localization get instance {
     if (_instance == null) {
@@ -25,7 +25,7 @@ class Localization {
         'did you configure it correctly?',
       );
     }
-    return _instance;
+    return _instance!;
   }
 
   static Future<Localization> load(Locale locale) async {
@@ -40,9 +40,8 @@ class Localization {
       instance = Localization(error: StateError(e.message));
     }
 
-    assert(instance != null);
     _instance = instance;
-    return _instance;
+    return instance;
   }
 }
 
@@ -61,7 +60,7 @@ class Localization {
 /// ```
 Language get tr {
   if (Localization.instance._error != null) {
-    throw Localization.instance._error;
+    throw Localization.instance._error!;
   }
-  return Localization.instance._language;
+  return Localization.instance._language!;
 }
