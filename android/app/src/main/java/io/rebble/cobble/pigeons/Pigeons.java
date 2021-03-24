@@ -828,7 +828,7 @@ public class Pigeons {
       return toMapResult;
     }
     static ActionTrigger fromMap(HashMap map) {
-      ActionTrigger fromMapResult = new ActionTrigger();
+        ActionTrigger fromMapResult = new ActionTrigger();
         Object itemId = map.get("itemId");
         fromMapResult.itemId = (String) itemId;
         Object actionId = map.get("actionId");
@@ -926,14 +926,14 @@ public class Pigeons {
         void e(StringWrapper arg);
 
         /** Sets up an instance of `PigeonLogger` to handle messages through the `binaryMessenger` */
-    static void setup(BinaryMessenger binaryMessenger, PigeonLogger api) {
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PigeonLogger.v", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
+        static void setup(BinaryMessenger binaryMessenger, PigeonLogger api) {
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PigeonLogger.v", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
               @SuppressWarnings("ConstantConditions")
               StringWrapper input = StringWrapper.fromMap((HashMap)message);
               api.v(input);
@@ -1587,16 +1587,17 @@ public class Pigeons {
       BasicMessageChannel<Object> channel =
           new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ScanCallbacks.onScanStarted", new StandardMessageCodec());
       channel.send(null, channelReply -> {
-        callback.reply(null);
-      });
-    }
-    public void onScanStopped(Reply<Void> callback) {
-      BasicMessageChannel<Object> channel =
-          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ScanCallbacks.onScanStopped", new StandardMessageCodec());
-      channel.send(null, channelReply -> {
           callback.reply(null);
       });
     }
+
+      public void onScanStopped(Reply<Void> callback) {
+          BasicMessageChannel<Object> channel =
+                  new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ScanCallbacks.onScanStopped", new StandardMessageCodec());
+          channel.send(null, channelReply -> {
+              callback.reply(null);
+          });
+      }
   }
 
     /**
@@ -1625,14 +1626,16 @@ public class Pigeons {
                 if (api != null) {
                     channel.setMessageHandler((message, reply) -> {
                         HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              StringWrapper input = StringWrapper.fromMap((HashMap)message);
-              api.getAppInfo(input, result -> { wrapped.put("result", result.toMap()); reply.reply(wrapped); });
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-              reply.reply(wrapped);
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            StringWrapper input = StringWrapper.fromMap((HashMap) message);
+                            api.getAppInfo(input, result -> {
+                                wrapped.put("result", result.toMap());
+                                reply.reply(wrapped);
+                            });
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                            reply.reply(wrapped);
             }
           });
         } else {
@@ -1644,14 +1647,16 @@ public class Pigeons {
             new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AppInstallControl.beginAppInstall", new StandardMessageCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              InstallData input = InstallData.fromMap((HashMap) message);
-                api.beginAppInstall(input, result -> { wrapped.put("result", result.toMap()); reply.reply(wrapped);
-                });
-            } catch (Exception exception) {
-                wrapped.put("error", wrapError(exception));
+              HashMap<String, HashMap> wrapped = new HashMap<>();
+              try {
+                  @SuppressWarnings("ConstantConditions")
+                  InstallData input = InstallData.fromMap((HashMap) message);
+                  api.beginAppInstall(input, result -> {
+                      wrapped.put("result", result.toMap());
+                      reply.reply(wrapped);
+                  });
+              } catch (Exception exception) {
+                  wrapped.put("error", wrapError(exception));
               reply.reply(wrapped);
             }
           });
@@ -1688,15 +1693,17 @@ public class Pigeons {
             try {
               @SuppressWarnings("ConstantConditions")
               StringWrapper input = StringWrapper.fromMap((HashMap)message);
-              api.insertAppIntoBlobDb(input, result -> { wrapped.put("result", result.toMap()); reply.reply(wrapped); });
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-              reply.reply(wrapped);
+              api.insertAppIntoBlobDb(input, result -> {
+                  wrapped.put("result", result.toMap());
+                  reply.reply(wrapped);
+              });
+            } catch (Exception exception) {
+                wrapped.put("error", wrapError(exception));
+                reply.reply(wrapped);
             }
           });
         } else {
-          channel.setMessageHandler(null);
+            channel.setMessageHandler(null);
         }
       }
             {
@@ -1707,7 +1714,7 @@ public class Pigeons {
                         HashMap<String, HashMap> wrapped = new HashMap<>();
                         try {
                             @SuppressWarnings("ConstantConditions")
-                            StringWrapper input = StringWrapper.fromMap((HashMap)message);
+                            StringWrapper input = StringWrapper.fromMap((HashMap) message);
                             api.removeAppFromBlobDb(input, result -> {
                                 wrapped.put("result", result.toMap());
                                 reply.reply(wrapped);
@@ -1754,9 +1761,9 @@ public class Pigeons {
                         reply.reply(wrapped);
                     });
                 } else {
-                    channel.setMessageHandler(null);
-                }
-            }
+          channel.setMessageHandler(null);
+        }
+      }
     }
   }
 
@@ -2267,19 +2274,21 @@ public class Pigeons {
   /** Generated class from Pigeon that represents Flutter messages that can be called from Java.*/
   public static class CalendarCallbacks {
     private final BinaryMessenger binaryMessenger;
-    public CalendarCallbacks(BinaryMessenger argBinaryMessenger){
-      this.binaryMessenger = argBinaryMessenger;
+    public CalendarCallbacks(BinaryMessenger argBinaryMessenger) {
+        this.binaryMessenger = argBinaryMessenger;
     }
-    public interface Reply<T> {
-      void reply(T reply);
-    }
-    public void doFullCalendarSync(Reply<Void> callback) {
-      BasicMessageChannel<Object> channel =
-          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.CalendarCallbacks.doFullCalendarSync", new StandardMessageCodec());
-      channel.send(null, channelReply -> {
-          callback.reply(null);
-      });
-    }
+
+      public interface Reply<T> {
+          void reply(T reply);
+      }
+
+      public void doFullCalendarSync(Reply<Void> callback) {
+          BasicMessageChannel<Object> channel =
+                  new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.CalendarCallbacks.doFullCalendarSync", new StandardMessageCodec());
+          channel.send(null, channelReply -> {
+              callback.reply(null);
+          });
+      }
 
       public void deleteCalendarPinsFromWatch(Reply<Void> callback) {
           BasicMessageChannel<Object> channel =
@@ -2320,29 +2329,50 @@ public class Pigeons {
     public interface UiConnectionControl {
         void connectToWatch(NumberWrapper arg);
 
+        void unpairWatch(NumberWrapper arg);
+
         /** Sets up an instance of `UiConnectionControl` to handle messages through the `binaryMessenger` */
         static void setup(BinaryMessenger binaryMessenger, UiConnectionControl api) {
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.UiConnectionControl.connectToWatch", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              NumberWrapper input = NumberWrapper.fromMap((HashMap)message);
-              api.connectToWatch(input);
-              wrapped.put("result", null);
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.UiConnectionControl.connectToWatch", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            NumberWrapper input = NumberWrapper.fromMap((HashMap) message);
+                            api.connectToWatch(input);
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
             }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.UiConnectionControl.unpairWatch", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            NumberWrapper input = NumberWrapper.fromMap((HashMap) message);
+                            api.unpairWatch(input);
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
             }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
     }
   }
   private static HashMap wrapError(Exception exception) {

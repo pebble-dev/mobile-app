@@ -36,7 +36,8 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
         allWatches.map((e) => e.device).toList();
     List<PebbleScanDevice> allDisconnectedWatches = allWatchesList.toList();
     if (defaultWatch != null &&
-        (connectionState.isConnected == true || connectionState.isConnecting!)) {
+        (connectionState.isConnected == true ||
+            connectionState.isConnecting!)) {
       //TODO: Save the data from the connected watch after first connection(i.e, not here)
       defaultWatch.color = connectionState.currentConnectedWatch!.model.index;
       defaultWatch.version =
@@ -107,6 +108,14 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
     }
 
     void _onForgetPressed(PebbleScanDevice device) {
+      if (connectionState.currentWatchAddress == device.address) {
+        connectionControl.disconnect();
+      }
+
+      final deviceAddressWrapper = NumberWrapper();
+      deviceAddressWrapper.value = device.address;
+      uiConnectionControl.unpairWatch(deviceAddressWrapper);
+
       pairedStorage.unregister(device.address);
       Navigator.pop(context);
     }
