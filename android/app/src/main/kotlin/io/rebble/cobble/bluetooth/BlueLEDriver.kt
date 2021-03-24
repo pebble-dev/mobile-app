@@ -205,6 +205,8 @@ class BlueLEDriver(
                 } else {
                     Timber.e("connectionStatus was false")
                 }
+
+                cancel()
             }
         } finally {
             closePebble()
