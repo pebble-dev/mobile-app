@@ -1,8 +1,8 @@
 name: Android Nightly
 
-on: 
+on:
   push:
-    paths: 
+    paths:
       - 'android/**'
       - 'lib/**'
       - 'lang/**'
@@ -22,12 +22,13 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
-      
+
       - run: flutter pub get
+      - run: flutter test
       - run: flutter build apk --debug
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v1
-        with: 
+        with:
           name: debug-apk
           path: build/app/outputs/apk/debug/app-debug.apk

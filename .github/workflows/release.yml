@@ -1,14 +1,14 @@
 name: Android Release
 
-# Controls when the action will run. 
+# Controls when the action will run.
 # This could probably use improvement
 on:
   issues:
     types: [closed]
-    
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-  
+
 jobs:
   build:
     environment: Staging
@@ -24,13 +24,14 @@ jobs:
       - run: echo $KEY_JKS | base64 -d > android/key.jks
         env:
           KEY_JKS: ${{ secrets.KEY_JKS }}
-      - run: flutter pub get 
+      - run: flutter pub get
+      - run: flutter test
       - run: flutter build apk --release
         env:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           ALIAS_PASSWORD: ${{ secrets.ALIAS_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v1
-        with: 
+        with:
           name: release-apk
           path: build/app/outputs/apk/release/app-release.apk
