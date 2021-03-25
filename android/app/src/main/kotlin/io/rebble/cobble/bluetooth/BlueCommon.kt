@@ -21,7 +21,7 @@ class BlueCommon @Inject constructor(
         private val protocolHandler: ProtocolHandler,
         private val flutterPreferences: FlutterPreferences
 ) {
-    private var bluetoothAdapter: BluetoothAdapter? = null
+    private val bluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     private var driver: BlueIO? = null
 
     private var externalIncomingPacketHandler: (suspend (ByteArray) -> Unit)? = null
@@ -29,9 +29,6 @@ class BlueCommon @Inject constructor(
     fun startSingleWatchConnection(macAddress: String): Flow<SingleConnectionStatus> {
         bleScanner.stopScan()
         classicScanner.stopScan()
-
-        val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-        this@BlueCommon.bluetoothAdapter = bluetoothAdapter
 
         val bluetoothDevice = bluetoothAdapter.getRemoteDevice(macAddress)
 
