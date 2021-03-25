@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/theme/cobble_scheme.dart';
 import 'package:cobble/ui/theme/cobble_theme.dart';
@@ -9,6 +10,7 @@ import 'package:golden_toolkit/golden_toolkit.dart';
 
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   await loadAppFonts();
+  Localization.load(Locale('en'));
   return testMain();
 }
 

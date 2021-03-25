@@ -69,7 +69,7 @@ class CobbleButton extends StatelessWidget {
       builder: (context) => Theme(
         data: context.theme.copyWith(
           outlinedButtonTheme: OutlinedButtonThemeData(
-            style: context.theme.outlinedButtonTheme.style!.copyWith(
+            style: context.theme.outlinedButtonTheme.style?.copyWith(
               side: simpleMaterialStateProperty(
                 BorderSide(color: color),
               ),

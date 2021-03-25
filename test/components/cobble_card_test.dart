@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 
-import 'flutter_test_config.dart';
+import '../flutter_test_config.dart';
 
 Widget cards() => Column(
       children: [

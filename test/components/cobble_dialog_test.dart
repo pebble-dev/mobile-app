@@ -2,7 +2,7 @@ import 'package:cobble/ui/common/components/cobble_dialog.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'flutter_test_config.dart';
+import '../flutter_test_config.dart';
 
 Widget dialogs() => Column(
       children: [
