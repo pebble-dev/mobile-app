@@ -5,7 +5,7 @@ import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:flutter/material.dart';
 
-import 'flutter_test_config.dart';
+import '../flutter_test_config.dart';
 
 Widget tiles() => Column(
       children: [
