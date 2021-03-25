@@ -25,6 +25,7 @@ jobs:
         env:
           KEY_JKS: ${{ secrets.KEY_JKS }}
       - run: flutter pub get
+      - run: flutter analyze --no-fatal-infos
       - run: flutter test
       - run: flutter build apk --release
         env:
