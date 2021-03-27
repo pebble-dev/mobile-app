@@ -18,7 +18,7 @@ allprojects {
         jcenter()
 
         maven {
-            url = "https://maven.pkg.github.com/crc-32/libpebblecommon"
+            url = "https://maven.pkg.github.com/pebble-dev/libpebblecommon"
             credentials {
                 Properties properties = new Properties()
                 if (rootProject.file('local.properties').canRead()) {
