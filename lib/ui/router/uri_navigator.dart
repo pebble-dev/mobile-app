@@ -25,6 +25,11 @@ class UriNavigator implements IntentCallbacks {
   void openUri(StringWrapper arg) async {
     String uri = arg.value;
 
+    if (!uri.startsWith("content://")) {
+      // Only content URIs are supported
+      return;
+    }
+
     AppInstallControl control = AppInstallControl();
 
     final uriWrapper = StringWrapper();

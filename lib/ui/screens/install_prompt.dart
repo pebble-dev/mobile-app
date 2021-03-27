@@ -35,7 +35,7 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
     } else if (!_appInfo.isValid) {
       body = Column(
         children: [
-          Text("Sorry, this is not a valid APK file"),
+          Text("Sorry, this is not a valid PBW file"),
           RaisedButton(
               onPressed: () {
                 Navigator.of(context).pop();
