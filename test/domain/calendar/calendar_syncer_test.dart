@@ -44,7 +44,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider!.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithValue(AsyncValue.data(db)),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -155,7 +155,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider!.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithValue(AsyncValue.data(db)),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -290,7 +290,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider!.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithValue(AsyncValue.data(db)),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -341,9 +341,9 @@ void main() async {
         layout: TimelinePinLayout.calendarPin,
         nextSyncAction: NextSyncAction.Nothing,
         attributesJson:
-        """[{"id":4,"uint32":2147483669},{"id":1,"maxLength":64},{"id":25,"listOfString":["Calendar"],"maxLength":128},{"id":26,"listOfString":["Calendar A"],"maxLength":1024}]""",
+            """[{"id":4,"uint32":2147483669},{"id":1,"maxLength":64},{"id":25,"listOfString":["Calendar"],"maxLength":128},{"id":26,"listOfString":["Calendar A"],"maxLength":1024}]""",
         actionsJson:
-        """[{"actionId":0,"actionType":2,"attributes":[{"id":1,"string":"Remove","maxLength":64}]},{"actionId":1,"actionType":2,"attributes":[{"id":1,"string":"Mute calendar","maxLength":64}]}]""",
+            """[{"actionId":0,"actionType":2,"attributes":[{"id":1,"string":"Remove","maxLength":64}]},{"actionId":1,"actionType":2,"attributes":[{"id":1,"string":"Mute calendar","maxLength":64}]}]""",
       ),
     );
 
@@ -362,7 +362,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider!.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithValue(AsyncValue.data(db)),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -412,7 +412,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider!.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithValue(AsyncValue.data(db)),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -515,7 +515,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider!.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithValue(AsyncValue.data(db)),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -618,7 +618,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider!.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithValue(AsyncValue.data(db)),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -739,7 +739,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider!.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithValue(AsyncValue.data(db)),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -882,7 +882,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider!.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithValue(AsyncValue.data(db)),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -1122,7 +1122,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider!.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithValue(AsyncValue.data(db)),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);

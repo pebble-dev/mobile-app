@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:cobble/domain/package_details.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
+import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/ui/common/components/cobble_sheet.dart';
 import 'package:cobble/ui/common/components/cobble_tile.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
@@ -11,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:hooks_riverpod/all.dart';
-import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 
 import './alerting_apps/sheet.dart';
 
@@ -98,15 +98,17 @@ class AlertingApps extends HookWidget implements CobbleScreen {
                           child: Switch(
                             value: app.enabled,
                             onChanged: (value) async {
-                              var mutedPkgList = mutedPackages.data?.value ?? [];
+                              var mutedPkgList =
+                                  mutedPackages.data?.value ?? [];
                               if (value) {
-                                mutedPkgList.removeWhere((element) => element == app.packageId);
-                              }else {
+                                mutedPkgList.removeWhere(
+                                    (element) => element == app.packageId);
+                              } else {
                                 print(app.packageId);
                                 mutedPkgList.add(app.packageId);
                               }
                               await preferences.data?.value
-                                  ?.setNotificationsMutedPackages(mutedPkgList);
+                                  .setNotificationsMutedPackages(mutedPkgList);
                             },
                           ),
                         ),

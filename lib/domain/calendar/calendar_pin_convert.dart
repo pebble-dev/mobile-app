@@ -24,7 +24,7 @@ extension CalendarEventConverter on Event {
     if (attendees != null && attendees.isNotEmpty) {
       final attendeesString = attendees
           .map((e) {
-            if (e.name?.trim()?.isNotEmpty == true) {
+            if (e.name?.trim().isNotEmpty == true) {
               return e.name;
             } else {
               return e.emailAddress;
@@ -103,12 +103,12 @@ extension CalendarEventConverter on Event {
     final List<TimelineAction> actions = [];
 
     final selfAtteendee = attendees?.firstWhereOrNull(
-          (element) => element.isCurrentUser == true,
+      (element) => element.isCurrentUser == true,
     );
 
     if (selfAtteendee != null) {
       if (selfAtteendee.androidAttendeeDetails?.attendanceStatus !=
-          AndroidAttendanceStatus.Accepted &&
+              AndroidAttendanceStatus.Accepted &&
           selfAtteendee.iosAttendeeDetails?.attendanceStatus !=
               IosAttendanceStatus.Accepted) {
         actions.add(
@@ -119,7 +119,7 @@ extension CalendarEventConverter on Event {
       }
 
       if (selfAtteendee.androidAttendeeDetails?.attendanceStatus !=
-          AndroidAttendanceStatus.Tentative &&
+              AndroidAttendanceStatus.Tentative &&
           selfAtteendee.iosAttendeeDetails?.attendanceStatus !=
               IosAttendanceStatus.Tentative) {
         actions.add(
@@ -130,7 +130,7 @@ extension CalendarEventConverter on Event {
       }
 
       if (selfAtteendee.androidAttendeeDetails?.attendanceStatus !=
-          AndroidAttendanceStatus.Declined &&
+              AndroidAttendanceStatus.Declined &&
           selfAtteendee.iosAttendeeDetails?.attendanceStatus !=
               IosAttendanceStatus.Declined) {
         actions.add(

@@ -1,3 +1,5 @@
+// @dart=2.9
+
 import 'package:cobble/ui/common/components/cobble_card.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
@@ -6,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 
-import 'flutter_test_config.dart';
+import '../flutter_test_config.dart';
 
 Widget cards() => Column(
       children: [
@@ -49,7 +51,7 @@ Widget cards() => Column(
           builder: (context) => CobbleCard(
             title: 'Untrusted boot URL',
             leading: RebbleIcons.notification,
-            intent: context.scheme!.danger,
+            intent: context.scheme.danger,
             actions: [
               CobbleCardAction(
                 onPressed: () {},

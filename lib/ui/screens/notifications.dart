@@ -16,7 +16,7 @@ class Notifications extends HookWidget implements CobbleScreen {
     final preferences = useProvider(preferencesProvider);
     final notifcationsEnabled = useProvider(notificationToggleProvider);
     final phoneNotificationsMuteEnabled =
-      useProvider(phoneNotificationsMuteProvider);
+        useProvider(phoneNotificationsMuteProvider);
     final phoneCallsMuteEnabled = useProvider(phoneCallsMuteProvider);
 
     return CobbleScaffold.tab(
@@ -29,7 +29,7 @@ class Notifications extends HookWidget implements CobbleScreen {
             child: Switch(
               value: notifcationsEnabled.data?.value ?? true,
               onChanged: (bool value) async {
-                await preferences.data?.value?.setNotificationsEnabled(value);
+                await preferences.data?.value.setNotificationsEnabled(value);
               },
             ),
           ),
@@ -58,7 +58,7 @@ class Notifications extends HookWidget implements CobbleScreen {
             child: Switch(
               value: phoneNotificationsMuteEnabled.data?.value ?? false,
               onChanged: (bool value) async {
-                await preferences.data?.value?.setPhoneNotificationMute(value);
+                await preferences.data?.value.setPhoneNotificationMute(value);
               },
             ),
           ),
@@ -68,7 +68,7 @@ class Notifications extends HookWidget implements CobbleScreen {
             child: Switch(
               value: phoneCallsMuteEnabled.data?.value ?? false,
               onChanged: (bool value) async {
-                await preferences.data?.value?.setPhoneCallsMute(value);
+                await preferences.data?.value.setPhoneCallsMute(value);
               },
             ),
           ),
