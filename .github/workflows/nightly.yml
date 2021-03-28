@@ -10,6 +10,7 @@ on:
       - 'pubspec*'
       - 'pigeons/**'
       - 'test/**'
+      - '.github/workflows/nightly.yml'
 jobs:
   build:
     if: github.repository == 'pebble-dev/mobile-app'
