@@ -26,7 +26,9 @@ jobs:
 
       - run: flutter pub get
       - run: flutter analyze --no-fatal-infos
-      - run: flutter test
+      - name: Flutter test
+        continue-on-error: true
+        run: flutter test
       - run: flutter build apk --debug
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -34,3 +36,8 @@ jobs:
         with:
           name: debug-apk
           path: build/app/outputs/apk/debug/app-debug.apk
+      - name: Upload golden failures
+        uses: actions/upload-artifact@v1
+        with:
+          name: goldens-failures
+          path: test/components/failures/
