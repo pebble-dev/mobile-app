@@ -67,7 +67,7 @@ class MyApp extends HookWidget {
     return CobbleScheme(
       schemeData: CobbleSchemeData.fromBrightness(brightness),
       child: MaterialApp(
-        title: tr.common.title,
+        onGenerateTitle: (context) => tr.common.title,
         theme: CobbleTheme.appTheme(brightness),
         home: SplashPage(),
         // List all of the app's supported locales here
