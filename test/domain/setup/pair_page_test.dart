@@ -8,7 +8,7 @@ import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/setup/pair_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:hooks_riverpod/all.dart';
 import 'package:mockito/mockito.dart';
 
 final device = PebbleScanDevice(
@@ -132,7 +132,7 @@ void main() {
       ));
       pairStream.add(device.address);
       await tester.pump();
-      // verify(observer.didPush(any!, any)).called(1);
+      verify(observer.didPush(any, any)).called(1);
       pairStream.close();
     });
   });
