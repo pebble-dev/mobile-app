@@ -1,3 +1,4 @@
+// @dart=2.9
 import 'dart:async';
 
 import 'package:cobble/domain/connection/pair_provider.dart' as pair_provider;
@@ -45,9 +46,9 @@ class Observer extends Mock implements NavigatorObserver {
 }
 
 Widget wrapper(
-        {ScanCallbacks? scanMock,
-        StreamProvider<int?>? pairMock,
-        Observer? navigatorObserver}) =>
+        {ScanCallbacks scanMock,
+        StreamProvider<int> pairMock,
+        Observer navigatorObserver}) =>
     ProviderScope(
       overrides: [
         scan_provider.scanProvider.overrideWithValue(
@@ -119,8 +120,8 @@ void main() {
     });
     testWidgets('should respond to paired device', (tester) async {
       final scan = ScanCallbacks();
-      final StreamController<int?> pairStream = StreamController.broadcast();
-      final pair = StreamProvider<int?>((ref) => pairStream.stream);
+      final StreamController<int> pairStream = StreamController.broadcast();
+      final pair = StreamProvider<int>((ref) => pairStream.stream);
       final observer = Observer();
       scan.updateDevices(1);
 

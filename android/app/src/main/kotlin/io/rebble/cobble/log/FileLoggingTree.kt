@@ -16,7 +16,7 @@ class FileLoggingTree(context: Context, appTag: String) : AppTaggedDebugTree(app
     val logsFolder = File(context.cacheDir, "logs")
 
     private var writer: BufferedWriter? = null
-    private val currentDayOfYear: Int = -1
+    private var currentDayOfYear: Int = -1
 
     @Suppress("BlockingMethodInNonBlockingContext")
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
@@ -51,11 +51,13 @@ class FileLoggingTree(context: Context, appTag: String) : AppTaggedDebugTree(app
     }
 
     private fun openFileIfNeeded() {
-        val today = Calendar.getInstance()
-        if (writer != null && today.get(Calendar.DAY_OF_YEAR) == currentDayOfYear) {
+        val today = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
+        if (writer != null && today == currentDayOfYear) {
             // Latest file is already open. No need to do anything.
             return
         }
+
+        currentDayOfYear = today
 
         if (!logsFolder.exists()) {
             if (!logsFolder.mkdir()) {

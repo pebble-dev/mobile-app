@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:cobble/domain/package_details.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
+import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/components/cobble_sheet.dart';
 import 'package:cobble/ui/common/components/cobble_tile.dart';
@@ -12,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:hooks_riverpod/all.dart';
-import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 
 import './alerting_apps/sheet.dart';
 
@@ -117,7 +117,7 @@ class AlertingApps extends HookWidget implements CobbleScreen {
                                 mutedPkgList.add(app.packageId);
                               }
                               await preferences.data?.value
-                                  ?.setNotificationsMutedPackages(mutedPkgList);
+                                  .setNotificationsMutedPackages(mutedPkgList);
                             },
                           ),
                         ),

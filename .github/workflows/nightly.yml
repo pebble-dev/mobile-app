@@ -1,8 +1,8 @@
 name: Android Nightly
 
-on: 
+on:
   push:
-    paths: 
+    paths:
       - 'android/**'
       - 'lib/**'
       - 'lang/**'
@@ -10,6 +10,7 @@ on:
       - 'pubspec*'
       - 'pigeons/**'
       - 'test/**'
+      - '.github/workflows/nightly.yml'
 jobs:
   build:
     if: github.repository == 'pebble-dev/mobile-app'
@@ -22,12 +23,21 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
-      
+
       - run: flutter pub get
+      - run: flutter analyze --no-fatal-infos
+      - name: Flutter test
+        continue-on-error: true
+        run: flutter test
       - run: flutter build apk --debug
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v1
-        with: 
+        with:
           name: debug-apk
           path: build/app/outputs/apk/debug/app-debug.apk
+      - name: Upload golden failures
+        uses: actions/upload-artifact@v1
+        with:
+          name: goldens-failures
+          path: test/components/failures/

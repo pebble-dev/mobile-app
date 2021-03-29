@@ -22,11 +22,9 @@ class CobbleScaffold extends StatelessWidget {
     this.floatingActionButton,
     this.floatingActionButtonLocation,
     this.bottomNavigationBar,
-  })  : assert(child != null),
-        assert(title == null || title.length > 0),
+  })  : assert(title == null || title.length > 0),
         assert(subtitle == null ||
             (subtitle.length > 0 && title != null && title.length > 0)),
-        assert(actions != null),
         super(key: key);
 
   @override

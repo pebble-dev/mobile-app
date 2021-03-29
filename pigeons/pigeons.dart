@@ -251,6 +251,8 @@ abstract class ConnectionControl {
 @HostApi()
 abstract class UiConnectionControl {
   void connectToWatch(NumberWrapper macAddress);
+
+  void unpairWatch(NumberWrapper macAddress);
 }
 
 @HostApi()

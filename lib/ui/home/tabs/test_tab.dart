@@ -121,12 +121,6 @@ class TestTab extends HookWidget implements CobbleScreen {
               ),
               RaisedButton(
                 onPressed: () {
-                  connectionControl.disconnect();
-                },
-                child: Text("Disconnect"),
-              ),
-              RaisedButton(
-                onPressed: () {
                   debug.collectLogs();
                 },
                 child: Text("Send logs"),

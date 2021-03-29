@@ -13,6 +13,10 @@ class CobbleApplication : FlutterApplication() {
         private set
 
     override fun onCreate() {
+        if (BuildConfig.DEBUG) {
+            System.setProperty("kotlinx.coroutines.debug", "on")
+        }
+
         component = DaggerAppComponent.factory().build(this)
 
         super.onCreate()

@@ -4,7 +4,7 @@ import 'package:cobble/domain/entities/base_obj.dart';
 
 class PebbleScanDevice extends BaseObj {
   String? name;
-  int? address;
+  int address;
   String? version;
   String? serialNumber;
   int? color;
