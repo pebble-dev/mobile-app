@@ -1,5 +1,6 @@
 import 'package:cobble/domain/app_install_status.dart';
 import 'package:cobble/domain/app_manager.dart';
+import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
@@ -21,6 +22,7 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
 
     final installStatus = useProvider(appInstallStatusProvider.state);
     final appManager = useProvider(appManagerProvider);
+    final connectionStatus = useProvider(connectionStateProvider.state);
 
     useEffect(() {
       if (watchUploadHasStarted.value && !installStatus.isInstalling) {
@@ -46,6 +48,17 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
       body = Column(
         children: [
           Text("Sorry, this is not a valid PBW file"),
+          RaisedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Go Back")),
+        ],
+      );
+    } else if (connectionStatus.isConnected != true) {
+      body = Column(
+        children: [
+          Text("Watch not connected"),
           RaisedButton(
               onPressed: () {
                 Navigator.of(context).pop();
