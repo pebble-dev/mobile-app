@@ -16,12 +16,22 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
 
   @override
   Widget build(BuildContext context) {
-    final isInstalling = useState(false);
+    final userInitiatedInstall = useState(false);
+    final watchUploadHasStarted = useState(false);
+
     final installStatus = useProvider(appInstallStatusProvider.state);
     final appManager = useProvider(appManagerProvider);
 
+    useEffect(() {
+      if (watchUploadHasStarted.value && !installStatus.isInstalling) {
+        Navigator.of(context).pop();
+      } else if (!watchUploadHasStarted.value && installStatus.isInstalling) {
+        watchUploadHasStarted.value = true;
+      }
+    }, [watchUploadHasStarted, installStatus]);
+
     Widget body;
-    if (isInstalling.value) {
+    if (userInitiatedInstall.value) {
       String statusText;
       if (installStatus.isInstalling) {
         final roundedPercentage =
@@ -51,7 +61,7 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
           RaisedButton(
               onPressed: () {
                 appManager.beginAppInstall(_appUri, _appInfo);
-                isInstalling.value = true;
+                userInitiatedInstall.value = true;
               },
               child: Text("Yes")),
           RaisedButton(
