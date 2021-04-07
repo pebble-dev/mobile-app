@@ -32,6 +32,21 @@ class AppDao {
     return receivedApps.map((e) => App.fromMap(e)).toList();
   }
 
+  Future<App?> getApp(Uuid itemId) async {
+    final db = await _dbFuture;
+
+    final list = (await db.query(tableApps,
+            where: "uuid = ?", whereArgs: [itemId.toString()]))
+        .map((e) => App.fromMap(e))
+        .toList();
+
+    if (!list.isEmpty) {
+      return list.first;
+    } else {
+      return null;
+    }
+  }
+
   Future<List<App>> getAllAppsWithPendingUpload() async {
     final db = await _dbFuture;
 

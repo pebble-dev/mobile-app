@@ -46,12 +46,22 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
 
   @override
   Future<void> beginAppInstall(InstallData installData) async {
+    final newAppUuid = Uuid.parse(installData.appInfo.uuid);
+
+    final existingApp = await appDao.getApp(newAppUuid);
+    if (existingApp != null) {
+      final deleteWrapper = StringWrapper();
+      deleteWrapper.value = installData.appInfo.uuid;
+
+      await deleteApp(deleteWrapper);
+    }
+
     final allApps = await appDao.getAllInstalledApps();
 
     final appInfo = installData.appInfo;
 
     final newApp = App(
-        uuid: Uuid.parse(installData.appInfo.uuid),
+        uuid: newAppUuid,
         shortName: appInfo.shortName,
         longName: appInfo.longName,
         company: appInfo.companyName,
