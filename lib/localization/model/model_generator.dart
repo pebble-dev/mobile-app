@@ -10,6 +10,16 @@ Builder modelGenerator(BuilderOptions options) => LibraryBuilder(
       generatedExtension: '.model.dart',
     );
 
+/// Generator that validates `.json` files and generate statically typed
+/// model based on their structure. This model is annotated with annotations from
+/// `json_serializable` that allows it to automatically generate JSON parser.
+///
+/// Rules for `.json` files:
+/// * keys can be nested
+/// * keys must be snake_case
+/// * values must be non-empty strings or JSON objects
+/// * values can include parameters, '{} or {named}'
+/// * named parameters must be camelCase
 class ModelGenerator extends Generator {
   @override
   Future<String?> generate(LibraryReader library, BuildStep buildStep) async {
@@ -50,6 +60,8 @@ class ModelGenerator extends Generator {
     });
   }
 
+  /// Validate fragment/value. If value is another Map, it will recursively call
+  /// this function with nested Map.
   void _validateFragment(JsonFragment fr) {
     fr.fragment.forEach((key, value) {
       final path = '${fr.path}.$key';
@@ -90,6 +102,7 @@ class ModelGenerator extends Generator {
     });
   }
 
+  /// Compare structure of 2 Maps to see if both contain same keys.
   void _compareJson(JsonFragment a, JsonFragment b) {
     a.fragment.forEach((key, value) {
       final path = '${a.path}.$key';
@@ -174,6 +187,7 @@ class ModelGenerator extends Generator {
     return [model, ...children];
   }
 
+  /// Generate helpers for named and positional parameters
   String _generateHelpers() {
     return '''
 String _args(String value,
@@ -189,6 +203,7 @@ String _args(String value,
 ''';
   }
 
+  /// Generate field with @JsonKey
   String _generateField(Field field) {
     if (!field.hasParams) {
       return '''
@@ -240,6 +255,7 @@ String _args(String value,
 ''';
   }
 
+  /// Generate constructor for class
   String _generateConstructor(Model model) {
     final className = model.name.pascalCase;
     final args = model.fields.map((f) {
@@ -255,12 +271,12 @@ String _args(String value,
     return attempt;
   }
 
+  /// Generate class with @JsonSerializable and unique name
   String _generateModel(Model model) {
     final className = model.name.pascalCase;
     final text = '''
 @JsonSerializable(
   createToJson: false,
-  nullable: false,
   disallowUnrecognizedKeys: true,
 )
 class $className {
@@ -274,6 +290,8 @@ ${model.fields.map(_generateField).join('\n')}
     return text;
   }
 
+  /// Generate entire file, with imports, helpers, models and list of supported
+  /// locales.
   String _generateFile(List<Model> models, List<String> locales) {
     final text = '''
 import 'package:json_annotation/json_annotation.dart';
@@ -320,6 +338,8 @@ class JsonFragment {
       );
 }
 
+/// Data container for JSON object. Each JSON object in `.json` file gets
+/// converted to [Model].
 class Model {
   final String name;
   final List<Field> fields;
@@ -330,6 +350,8 @@ class Model {
   Model(String path, this.fields) : this.name = path.pascalCase;
 }
 
+/// Data container for JSON value. Each JSON value gets converted to [Field],
+/// be it [String] or another [Model].
 class Field {
   final String type;
   final String sourceName;
