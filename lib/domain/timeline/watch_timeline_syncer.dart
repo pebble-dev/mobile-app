@@ -6,7 +6,7 @@ import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/util/container_extensions.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../logging.dart';
 
@@ -152,9 +152,9 @@ class WatchTimelineSyncer {
   }
 }
 
-final AutoDisposeProvider<WatchTimelineSyncer>? watchTimelineSyncerProvider =
-Provider.autoDispose<WatchTimelineSyncer>((ref) {
-  final timelinePinDao = ref.watch(timelinePinDaoProvider!);
+final AutoDisposeProvider<WatchTimelineSyncer> watchTimelineSyncerProvider =
+    Provider.autoDispose<WatchTimelineSyncer>((ref) {
+  final timelinePinDao = ref.watch(timelinePinDaoProvider);
   final timelineSyncControl = ref.watch(timelineSyncControlProvider);
   final localNotificationsPlugin = ref.readUntilFirstSuccessOrError(
     localNotificationsPluginProvider,

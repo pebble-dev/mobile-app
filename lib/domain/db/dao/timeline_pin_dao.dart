@@ -1,7 +1,7 @@
 import 'package:cobble/domain/db/cobble_database.dart';
 import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/db/models/timeline_pin.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:uuid_type/uuid_type.dart';
@@ -135,7 +135,8 @@ class TimelinePinDao {
   }
 }
 
-final AutoDisposeProvider<TimelinePinDao>? timelinePinDaoProvider = Provider.autoDispose((ref) {
+final AutoDisposeProvider<TimelinePinDao> timelinePinDaoProvider =
+    Provider.autoDispose((ref) {
   final dbFuture = ref.watch(databaseProvider.future);
   return TimelinePinDao(dbFuture);
 });
