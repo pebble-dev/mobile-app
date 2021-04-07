@@ -1,5 +1,8 @@
+import 'package:cobble/domain/app_compatibility.dart';
+import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/db/dao/app_dao.dart';
 import 'package:cobble/domain/db/models/next_sync_action.dart';
+import 'package:cobble/domain/entities/hardware_platform.dart';
 import 'package:cobble/domain/timeline/blob_status.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -13,8 +16,10 @@ import '../logging.dart';
 class WatchAppsSyncer {
   final AppDao appDao;
   final AppInstallControl appInstallControl;
+  final ConnectionCallbacksStateNotifier connectionStateProvider;
 
-  WatchAppsSyncer(this.appDao, this.appInstallControl);
+  WatchAppsSyncer(
+      this.appDao, this.appInstallControl, this.connectionStateProvider);
 
   Future<bool> syncAppDatabaseWithWatch() async {
     Log.d('Syncing apps');
@@ -47,6 +52,14 @@ class WatchAppsSyncer {
   }
 
   Future<int?> _performSync() async {
+    final connectedWatch = connectionStateProvider.state.currentConnectedWatch;
+    if (connectedWatch == null) {
+      return statusWatchDisconnected;
+    }
+
+    final connectedWatchType =
+        connectedWatch.runningFirmware.hardwarePlatform.getWatchType();
+
     try {
       final appsToDelete = await appDao.getAllAppsWithPendingDelete();
       for (final appToDelete in appsToDelete) {
@@ -65,6 +78,12 @@ class WatchAppsSyncer {
       final appsToUpload = await appDao.getAllAppsWithPendingUpload();
       for (final appToSync in appsToUpload) {
         Log.d('Pending app $appToSync');
+
+        if (!appToSync.isCompatibleWith(connectedWatchType)) {
+          Log.d("App not compatible. Skipping...");
+          continue;
+        }
+
         final StringWrapper uuidWrapper = StringWrapper();
         uuidWrapper.value = appToSync.uuid.toString();
         Log.d('Inserting app');
@@ -102,11 +121,12 @@ class WatchAppsSyncer {
 }
 
 final AutoDisposeProvider<WatchAppsSyncer> watchAppSyncerProvider =
-    Provider.autoDispose<WatchAppsSyncer>((ref) {
+Provider.autoDispose<WatchAppsSyncer>((ref) {
   final appDao = ref.watch(appDaoProvider);
   final appInstallControl = ref.watch(appInstallControlProvider);
+  final connectionState = ref.watch(connectionStateProvider);
 
-  return WatchAppsSyncer(appDao, appInstallControl);
+  return WatchAppsSyncer(appDao, appInstallControl, connectionState);
 });
 
 final appInstallControlProvider = Provider((ref) => AppInstallControl());
