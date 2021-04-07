@@ -1,6 +1,9 @@
+import 'package:cobble/domain/app_compatibility.dart';
 import 'package:cobble/domain/app_install_status.dart';
 import 'package:cobble/domain/app_manager.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
+import 'package:cobble/domain/entities/hardware_platform.dart';
+import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
@@ -24,6 +27,8 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
     final appManager = useProvider(appManagerProvider);
     final connectionStatus = useProvider(connectionStateProvider.state);
 
+    final connectedWatch = connectionStatus.currentConnectedWatch;
+
     useEffect(() {
       if (watchUploadHasStarted.value && !installStatus.isInstalling) {
         Navigator.of(context).pop();
@@ -37,7 +42,7 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
       String statusText;
       if (installStatus.isInstalling) {
         final roundedPercentage =
-            (installStatus.progress * 100).round().toInt().toString();
+        (installStatus.progress * 100).round().toInt().toString();
         statusText = "Installing... [" + roundedPercentage + "%]";
       } else {
         statusText = "Installing...";
@@ -55,10 +60,21 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
               child: Text("Go Back")),
         ],
       );
-    } else if (connectionStatus.isConnected != true) {
+    } else if (connectedWatch == null) {
       body = Column(
         children: [
           Text("Watch not connected"),
+          RaisedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Go Back")),
+        ],
+      );
+    } else if (!_isCompatible(_appInfo, connectedWatch)) {
+      body = Column(
+        children: [
+          Text("Watch not compatible"),
           RaisedButton(
               onPressed: () {
                 Navigator.of(context).pop();
@@ -93,5 +109,11 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
           alignment: Alignment.topCenter,
           child: body,
         ));
+  }
+
+  bool _isCompatible(PbwAppInfo app, PebbleDevice watch) {
+    final watchType = watch.runningFirmware.hardwarePlatform.getWatchType();
+
+    return app.isCompatibleWith(watchType);
   }
 }
