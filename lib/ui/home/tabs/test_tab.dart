@@ -27,10 +27,10 @@ class TestTab extends HookWidget implements CobbleScreen {
 
   @override
   Widget build(BuildContext context) {
-    final connectionState = useProvider(connectionStateProvider!.state);
+    final connectionState = useProvider(connectionStateProvider.state);
     final defaultWatch = useProvider(defaultWatchProvider);
-    final calendars = useProvider(calendarListProvider!.state);
-    final calendarSelector = useProvider(calendarListProvider!);
+    final calendars = useProvider(calendarListProvider.state);
+    final calendarSelector = useProvider(calendarListProvider);
     final calendarControl = useProvider(calendarControlProvider);
 
     final permissionControl = useProvider(permissionControlProvider);
