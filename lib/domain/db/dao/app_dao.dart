@@ -70,6 +70,28 @@ class AppDao {
     await db
         .delete(tableApps, where: "uuid = ?", whereArgs: [itemId.toString()]);
   }
+
+  Future<void> resetSyncStatus() async {
+    final db = await _dbFuture;
+
+    // Watch has been reset. We can delete all apps that were pending
+    // deletion
+    await db.delete(tableApps, where: "nextSyncAction = ?", whereArgs: [
+      TimelinePin.nextSyncActionEnumMap()[NextSyncAction.Delete]
+    ]);
+
+    // Mark all apps to re-upload
+    await db.update(
+        tableApps,
+        {
+          "nextSyncAction":
+              TimelinePin.nextSyncActionEnumMap()[NextSyncAction.Upload]
+        },
+        where: "nextSyncAction = ?",
+        whereArgs: [
+          TimelinePin.nextSyncActionEnumMap()[NextSyncAction.Nothing]
+        ]);
+  }
 }
 
 final AutoDisposeProvider<AppDao> appDaoProvider = Provider.autoDispose((ref) {

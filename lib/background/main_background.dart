@@ -81,6 +81,7 @@ class BackgroundReceiver implements TimelineCallbacks {
     }
 
     await calendarBackground.onWatchConnected(watch, unfaithful);
+    await appsBackground.onWatchConnected(watch, unfaithful);
 
     Log.d('Watch connected');
 

@@ -87,6 +87,18 @@ class WatchAppsSyncer {
 
     return statusSuccess;
   }
+
+  Future<bool> clearAllAppsFromWatchAndResync() async {
+    final res = await appInstallControl.removeAllApps();
+
+    if (res.value != statusSuccess) {
+      Log.d("App clearing failed  ${res.value}");
+      return false;
+    }
+
+    await appDao.resetSyncStatus();
+    return syncAppDatabaseWithWatch();
+  }
 }
 
 final AutoDisposeProvider<WatchAppsSyncer> watchAppSyncerProvider =

@@ -35,8 +35,13 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
   }
 
   Future<void> onWatchConnected(PebbleDevice watch, bool unfaithful) async {
-    Log.d('Performing normal app sync');
-    await watchAppsSyncer.syncAppDatabaseWithWatch();
+    if (unfaithful) {
+      Log.d('Clearing all apps and re-syncing');
+      await watchAppsSyncer.clearAllAppsFromWatchAndResync();
+    } else {
+      Log.d('Performing normal app sync');
+      await watchAppsSyncer.syncAppDatabaseWithWatch();
+    }
   }
 
   @override

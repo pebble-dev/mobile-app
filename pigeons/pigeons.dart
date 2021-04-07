@@ -381,6 +381,9 @@ abstract class AppInstallControl {
   @async
   NumberWrapper removeAppFromBlobDb(StringWrapper appUuidString);
 
+  @async
+  NumberWrapper removeAllApps();
+
   void subscribeToAppStatus();
 
   void unsubscribeFromAppStatus();
