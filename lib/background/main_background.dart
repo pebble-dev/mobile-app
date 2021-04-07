@@ -1,4 +1,4 @@
-import 'package:cobble/background/notification/notification_manager.dart';
+import 'package:cobble/background/modules/notifications_background.dart';
 import 'package:cobble/domain/app_lifecycle_manager.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/db/dao/app_dao.dart';
@@ -28,16 +28,15 @@ void main_background() {
 class BackgroundReceiver
     implements
         TimelineCallbacks,
-        NotificationListening,
         BackgroundAppInstallCallbacks {
   final container = ProviderContainer();
 
   late CalendarBackground calendarBackground;
+  late NotificationsBackground notificationsBackground;
 
   late Future<Preferences> preferences;
   late WatchAppsSyncer watchAppsSyncer;
   late MasterActionHandler masterActionHandler;
-  late NotificationManager notificationManager;
   late AppLifecycleManager appLifecycleManager;
   late AppDao appDao;
 
@@ -50,7 +49,6 @@ class BackgroundReceiver
   void init() async {
     await BackgroundControl().notifyFlutterBackgroundStarted();
 
-    notificationManager = container.listen(notificationManagerProvider).read();
     watchAppsSyncer = container.listen(watchAppSyncerProvider).read();
     appDao = container.listen(appDaoProvider).read();
     appLifecycleManager = container.listen(appLifecycleManagerProvider).read();
@@ -73,11 +71,12 @@ class BackgroundReceiver
     );
 
     TimelineCallbacks.setup(this);
-    NotificationListening.setup(this);
     BackgroundAppInstallCallbacks.setup(this);
 
     calendarBackground = CalendarBackground(this.container);
     calendarBackground.init();
+    notificationsBackground = NotificationsBackground(this.container);
+    notificationsBackground.init();
   }
 
   void onWatchConnected(PebbleDevice watch) async {
@@ -114,15 +113,6 @@ class BackgroundReceiver
     return (await masterActionHandler.handleTimelineAction(arg))!.toPigeon();
   }
 
-  @override
-  Future<TimelinePinPigeon> handleNotification(NotificationPigeon arg) async {
-    return (await notificationManager.handleNotification(arg)).toPigeon();
-  }
-
-  @override
-  void dismissNotification(StringWrapper arg) {
-    notificationManager.dismissNotification(Uuid(arg.value!));
-  }
 
   @override
   Future<void> beginAppInstall(InstallData installData) async {
