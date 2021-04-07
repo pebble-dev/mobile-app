@@ -1,3 +1,4 @@
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/ui/common/components/cobble_divider.dart';
 import 'package:cobble/ui/common/components/cobble_tile.dart';
@@ -20,12 +21,12 @@ class Notifications extends HookWidget implements CobbleScreen {
     final phoneCallsMuteEnabled = useProvider(phoneCallsMuteProvider);
 
     return CobbleScaffold.tab(
-      title: 'Notifications and muting',
+      title: tr.notifications.title,
       child: ListView(
         children: [
           CobbleTile.setting(
             leading: RebbleIcons.notification,
-            title: 'Send notifications to my watch',
+            title: tr.notifications.enabled,
             child: Switch(
               value: notifcationsEnabled.data?.value ?? true,
               onChanged: (bool value) async {
@@ -35,7 +36,7 @@ class Notifications extends HookWidget implements CobbleScreen {
           ),
           CobbleTile.navigation(
             leading: RebbleIcons.locker,
-            title: 'Choose which apps can alert your watch',
+            title: tr.notifications.chooseApps,
             navigateTo: AlertingApps(),
           ),
           CobbleDivider(),
@@ -43,10 +44,8 @@ class Notifications extends HookWidget implements CobbleScreen {
             color: context.scheme!.muted,
             child: CobbleTile.sectionTitle(
               leading: RebbleIcons.settings,
-              title: 'Silence notifications',
-              body: 'While your watch is connected, it can silence incoming '
-                  'calls and notifications on your phone, so that they only '
-                  'vibrate on your wrist.',
+              title: tr.notifications.silence.title,
+              body: tr.notifications.silence.description,
             ),
           ),
           // TODO Separate call and notification mute is only possible on
@@ -54,7 +53,7 @@ class Notifications extends HookWidget implements CobbleScreen {
           //  we should only display one switch that controls both.
           CobbleTile.setting(
             leading: CobbleTile.reservedIconSpace,
-            title: 'Silence notifications',
+            title: tr.notifications.silence.notifications,
             child: Switch(
               value: phoneNotificationsMuteEnabled.data?.value ?? false,
               onChanged: (bool value) async {
@@ -64,7 +63,7 @@ class Notifications extends HookWidget implements CobbleScreen {
           ),
           CobbleTile.setting(
             leading: CobbleTile.reservedIconSpace,
-            title: 'Silence incoming calls',
+            title: tr.notifications.silence.calls,
             child: Switch(
               value: phoneCallsMuteEnabled.data?.value ?? false,
               onChanged: (bool value) async {

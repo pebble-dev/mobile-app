@@ -163,7 +163,8 @@ class EnsureTabScaffold extends InheritedWidget {
   const EnsureTabScaffold({
     Key? key,
     required Widget child,
-  }) : super(key: key, child: child);
+  })   : assert(child != null),
+        super(key: key, child: child);
 
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) => false;

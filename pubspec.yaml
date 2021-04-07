@@ -71,6 +71,8 @@ dev_dependencies:
   copy_with_extension_gen: ^2.0.0-nullsafety.1
   sqflite_common_ffi: ^2.0.0
   mockito: ^4.1.4
+  source_gen: ^0.9.10
+  recase: ^3.0.1
 
 flutter_icons:
   ios: true

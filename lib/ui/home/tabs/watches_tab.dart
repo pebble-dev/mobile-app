@@ -5,6 +5,7 @@ import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
@@ -70,12 +71,12 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
     String _getStatusText(int? address) {
       if (connectionState.isConnected! &&
           connectionState.currentWatchAddress == address)
-        return "Connected";
+        return tr.watchesPage.status.connected;
       else if (connectionState.isConnecting! &&
           connectionState.currentWatchAddress == address)
-        return "Connecting...";
+        return tr.watchesPage.status.connecting;
       else
-        return "Disconnected";
+        return tr.watchesPage.status.disconnected;
     }
 
     Color _getBrStatusColor(PebbleScanDevice device) {
@@ -185,7 +186,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                     offstage: isConnected,
                     child: ListTile(
                       leading: Icon(RebbleIcons.connect_to_watch),
-                      title: Text('Connect to watch'),
+                      title: Text(tr.watchesPage.action.connect),
                       onTap: () => _onConnectPressed(device, true),
                     ),
                   ),
@@ -193,13 +194,13 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                     offstage: !isConnected,
                     child: ListTile(
                       leading: Icon(RebbleIcons.disconnect_from_watch),
-                      title: Text('Disconnect from watch'),
+                      title: Text(tr.watchesPage.action.disconnect),
                       onTap: () => _onDisconnectPressed(true),
                     ),
                   ),
                   ListTile(
                     leading: Icon(RebbleIcons.check_for_updates),
-                    title: Text('Check for updates'),
+                    title: Text(tr.watchesPage.action.checkUpdates),
                     onTap: () => _onUpdatePressed(device),
                   ),
                   const Divider(
@@ -211,8 +212,10 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                   ),
                   ListTile(
                     leading: Icon(RebbleIcons.x_close, color: Colors.red),
-                    title: Text('Forget watch',
-                        style: TextStyle(color: Colors.red)),
+                    title: Text(
+                      tr.watchesPage.action.forget,
+                      style: TextStyle(color: Colors.red),
+                    ),
                     onTap: () => _onForgetPressed(device),
                   ),
                 ],
@@ -222,7 +225,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
     }
 
     return CobbleScaffold.tab(
-      title: "My Watches",
+      title: tr.watchesPage.title,
       child: ListView(children: <Widget>[
         if (!isConnecting && !isConnected) ...[
           Column(children: <Widget>[
@@ -240,9 +243,9 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                   SizedBox(width: 16),
                   Column(
                     children: <Widget>[
-                      Text("Nothing connected", style: TextStyle(fontSize: 16)),
+                      Text(tr.watchesPage.status.nothingConnected, style: TextStyle(fontSize: 16)),
                       SizedBox(height: 4),
-                      Text("Background service stopped"),
+                      Text(tr.watchesPage.status.backgroundServiceStopped),
                       Wrap(
                         spacing: 4,
                         children: [],
@@ -300,7 +303,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
         ],
         Padding(
             padding: EdgeInsets.fromLTRB(15, 25, 15, 5),
-            child: Text('My Other Watches', style: TextStyle(fontSize: 18))),
+            child: Text(tr.watchesPage.allWatches, style: TextStyle(fontSize: 18))),
         const Divider(
           color: Colors.white24,
           height: 20,
@@ -351,7 +354,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
       ]),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push(PairPage.fromTab()),
-        label: Text('PAIR A WATCH'),
+        label: Text(tr.watchesPage.fab),
         icon: Icon(Icons.add),
       ),
     );

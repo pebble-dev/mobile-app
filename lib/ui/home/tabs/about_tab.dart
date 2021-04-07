@@ -1,11 +1,14 @@
+import 'package:cobble/localization/localization.dart';
+import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
+import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../common/icons/fonts/rebble_icons.dart';
 
-class AboutTab extends StatefulWidget {
+class AboutTab extends StatefulWidget implements CobbleScreen {
   @override
   State<StatefulWidget> createState() => _AboutTabState();
 }
@@ -38,7 +41,7 @@ class _AboutTabState extends State<AboutTab> {
   @override
   Widget build(BuildContext context) {
     return CobbleScaffold.tab(
-      title: "About",
+      title: tr.aboutPage.title,
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
@@ -51,20 +54,24 @@ class _AboutTabState extends State<AboutTab> {
                   children: <Widget>[
                     Row(),
                     Text(
-                      "About " + _appName + " v" + _appVersion,
+                      tr.aboutPage.about(
+                        name: _appName,
+                        version: _appVersion,
+                      ),
                       style: Theme.of(context).textTheme.headline5,
                     ),
                     SizedBox(height: 8.0),
-                    FlatButton.icon(
-                        label: Text("Community"),
-                        icon: Icon(RebbleIcons.share, size: 25.0),
-                        textColor: Theme.of(context).accentColor,
+                    CobbleButton(
+                        outlined: false,
+                        label: tr.aboutPage.community,
+                        icon: RebbleIcons.share,
+                        color: Theme.of(context).accentColor,
                         onPressed: () => {launchURL(communityURL)}),
-                    FlatButton.icon(
-                        label: Text("Support"),
-                        icon: Icon(RebbleIcons.developer_connection_console,
-                            size: 25.0),
-                        textColor: Theme.of(context).accentColor,
+                    CobbleButton(
+                        outlined: false,
+                        label: tr.aboutPage.support,
+                        icon: RebbleIcons.developer_connection_console,
+                        color: Theme.of(context).accentColor,
                         onPressed: () => {launchURL(supportURL)}),
                   ],
                 ),

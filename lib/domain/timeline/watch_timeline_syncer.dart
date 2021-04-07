@@ -3,6 +3,7 @@ import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/local_notifications.dart';
 import 'package:cobble/domain/timeline/blob_status.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/util/container_extensions.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hooks_riverpod/all.dart';
@@ -144,8 +145,8 @@ class WatchTimelineSyncer {
         NotificationDetails(android: androidPlatformChannelSpecifics);
     await plugin.show(
       0,
-      "Your watch is full",
-      "We could not sync all timeline pins to the watch.",
+      tr.timelineSync.watchFull.p0,
+      tr.timelineSync.watchFull.p1,
       platformChannelSpecifics,
     );
   }

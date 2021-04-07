@@ -1,4 +1,6 @@
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/main.dart';
+import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/home/home_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
@@ -23,17 +25,18 @@ class _SplashPageState extends State<SplashPage> {
     });
   }
 
+  // ignore: unused_element
   void _askToBoot() {
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Log in to Rebble"),
-            content: Text(
-                "Do you want to configure this app for Rebble Web Services?\n(Selecting no runs the app with offline-only features)"),
+            title: Text(tr.splashPage.title),
+            content: Text(tr.splashPage.body),
             actions: <Widget>[
-              FlatButton(
-                child: Text("Yes"),
+              CobbleButton(
+                outlined: false,
+                label: tr.common.yes,
                 onPressed: () {
                   canLaunch(getBootUrl).then((value) => {
                         if (value)
@@ -43,8 +46,9 @@ class _SplashPageState extends State<SplashPage> {
                       });
                 },
               ),
-              FlatButton(
-                child: Text("No"),
+              CobbleButton(
+                outlined: false,
+                label: tr.common.no,
                 onPressed: () {
                   _openHome();
                 },

@@ -1,9 +1,12 @@
+import 'package:cobble/localization/localization.dart';
+import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/home/home_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/setup/pair_page.dart';
+import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../common/icons/fonts/rebble_icons.dart';
@@ -106,9 +109,12 @@ class _FirstRunPageState extends State<FirstRunPage> {
                 ),
                 SizedBox(height: 16.0), // spacer
                 Container(
-                    margin: EdgeInsets.symmetric(vertical: 8),
-                    child: Text("Welcome to Rebble!",
-                        style: Theme.of(context).textTheme.headline4)),
+                  margin: EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    tr.firstRun.title,
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
+                ),
                 SizedBox(height: 24.0), // spacer
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -135,12 +141,16 @@ class _FirstRunPageState extends State<FirstRunPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  FlatButton(
-                    child: Text("SKIP"),
-                    onPressed: () => context.pushAndRemoveAllBelow(HomePage()),
+                  CobbleButton(
+                    outlined: false,
+                    color: context.textTheme.bodyText2?.color,
+                    label: tr.common.skip,
+                    onPressed: () => context.pushAndRemoveAllBelow(
+                      HomePage(),
+                    ),
                   ),
                   FloatingActionButton.extended(
-                    icon: Text("LET'S GET STARTED"),
+                    icon: Text(tr.firstRun.fab),
                     label: Icon(RebbleIcons.caret_right),
                     backgroundColor: Theme.of(context).primaryColor,
                     onPressed: () => context.push(
