@@ -75,12 +75,11 @@ should look) are included in /test/components/goldens.
 ## Using localization
 
 To use localized string, add it to all `.json` files in `/lang`, start build_runner to generate 
-localized models and then use it as `tr.canBeNested.yourKey`. Generator also supports named 
-and positional parameters:  
+localized models (see [Building mappings](#building-mappings) above) and then use it as 
+`tr.canBeNested.yourKey`. Generator also supports named  and positional parameters:  
 `"key": "fixed value, named parameter -> {named}, positional parameter -> {}` and generates 
 function instead of string. Use this function similar to string:  
-`tr.canBeNested.yourKey('positional', named: 'named param')`. To re-generate localized model, run 
-build_runner as described in [Building mappings](##building-mappings).
+`tr.canBeNested.yourKey('positional', named: 'named param')`.
 
 App's localization is stored in /lang directory, one `.json` file for one language. Structure of 
 these `.json` files is then converted to localized model with a help of `ModelGenerator`. Model
