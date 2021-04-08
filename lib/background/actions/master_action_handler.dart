@@ -46,6 +46,9 @@ abstract class ActionHandler {
 }
 
 final masterActionHandlerProvider = Provider<MasterActionHandler>((ref) {
-  return MasterActionHandler(ref.read(timelinePinDaoProvider!), ref.read(activeNotifDaoProvider!),
-      ref.read(calendarActionHandlerProvider), ref.read(notificationManagerProvider));
+  return MasterActionHandler(
+      ref.read(timelinePinDaoProvider),
+      ref.read(activeNotifDaoProvider!),
+      ref.read(calendarActionHandlerProvider),
+      ref.read(notificationManagerProvider));
 });

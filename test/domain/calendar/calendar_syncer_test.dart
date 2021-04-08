@@ -49,7 +49,7 @@ void main() async {
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
 
-    final pinDao = container.read(timelinePinDaoProvider!);
+    final pinDao = container.read(timelinePinDaoProvider);
 
     calendarPlugin.reportedCalendars = [Calendar(id: "22", name: "Calendar A")];
 
@@ -92,7 +92,7 @@ void main() async {
       )
     ];
 
-    final calendarSyncer = container.listen(calendarSyncerProvider!).read();
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final insertedEvents = await pinDao.getAllPins();
@@ -160,7 +160,7 @@ void main() async {
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
 
-    final pinDao = container.read(timelinePinDaoProvider!);
+    final pinDao = container.read(timelinePinDaoProvider);
 
     calendarPlugin.reportedCalendars = [Calendar(id: "22", name: "Calendar A")];
 
@@ -230,7 +230,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.listen(calendarSyncerProvider!).read();
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
@@ -295,7 +295,7 @@ void main() async {
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
 
-    final pinDao = container.read(timelinePinDaoProvider!);
+    final pinDao = container.read(timelinePinDaoProvider);
 
     calendarPlugin.reportedCalendars = [Calendar(id: "22", name: "Calendar A")];
 
@@ -347,7 +347,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.listen(calendarSyncerProvider!).read();
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     expect(anyChanges, false);
@@ -367,6 +367,7 @@ void main() async {
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
 
+    // ignore: unnecessary_non_null_assertion
     final pinDao = container.read(timelinePinDaoProvider!);
 
     calendarPlugin.reportedCalendars = [Calendar(id: "22", name: "Calendar A")];
@@ -394,7 +395,7 @@ void main() async {
       )
     ];
 
-    final calendarSyncer = container.listen(calendarSyncerProvider!).read();
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     await calendarSyncer.syncDeviceCalendarsToDb();
 
     final insertedEvents = await pinDao.getAllPins();
@@ -417,7 +418,7 @@ void main() async {
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
 
-    final pinDao = container.read(timelinePinDaoProvider!);
+    final pinDao = container.read(timelinePinDaoProvider);
 
     calendarPlugin.reportedCalendars = [Calendar(id: "22", name: "Calendar A")];
 
@@ -468,7 +469,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.listen(calendarSyncerProvider!).read();
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
@@ -520,7 +521,7 @@ void main() async {
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
 
-    final pinDao = container.read(timelinePinDaoProvider!);
+    final pinDao = container.read(timelinePinDaoProvider);
 
     calendarPlugin.reportedCalendars = [Calendar(id: "22", name: "Calendar A")];
 
@@ -571,7 +572,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.listen(calendarSyncerProvider!).read();
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
@@ -623,6 +624,7 @@ void main() async {
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
 
+    // ignore: unnecessary_non_null_assertion
     final pinDao = container.read(timelinePinDaoProvider!);
 
     calendarPlugin.reportedCalendars = [Calendar(id: "22", name: "Calendar A")];
@@ -672,7 +674,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.listen(calendarSyncerProvider!).read();
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
@@ -744,7 +746,7 @@ void main() async {
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
 
-    final pinDao = container.read(timelinePinDaoProvider!);
+    final pinDao = container.read(timelinePinDaoProvider);
 
     calendarPlugin.reportedCalendars = [Calendar(id: "22", name: "Calendar A")];
 
@@ -835,7 +837,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.listen(calendarSyncerProvider!).read();
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
@@ -887,7 +889,7 @@ void main() async {
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
 
-    final pinDao = container.read(timelinePinDaoProvider!);
+    final pinDao = container.read(timelinePinDaoProvider);
 
     calendarPlugin.reportedCalendars = [Calendar(id: "22", name: "Calendar A")];
 
@@ -1019,7 +1021,7 @@ void main() async {
       ),
     ];
 
-    final calendarSyncer = container.listen(calendarSyncerProvider!).read();
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final insertedEvents = await pinDao.getAllPins();
@@ -1127,8 +1129,8 @@ void main() async {
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
 
-    final pinDao = container.read(timelinePinDaoProvider!);
-    final calendarList = container.read(calendarListProvider!);
+    final pinDao = container.read(timelinePinDaoProvider);
+    final calendarList = container.read(calendarListProvider);
 
     calendarPlugin.reportedCalendars = [
       Calendar(id: "22", name: "Calendar A"),
@@ -1176,7 +1178,7 @@ void main() async {
 
     calendarList.setCalendarEnabled("23", false);
 
-    final calendarSyncer = container.listen(calendarSyncerProvider!).read();
+    final calendarSyncer = container.listen(calendarSyncerProvider).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final insertedEvents = await pinDao.getAllPins();
