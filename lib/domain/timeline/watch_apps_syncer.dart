@@ -1,4 +1,4 @@
-import 'package:cobble/domain/app_compatibility.dart';
+import 'package:cobble/domain/apps/app_compatibility.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/db/dao/app_dao.dart';
 import 'package:cobble/domain/db/models/next_sync_action.dart';

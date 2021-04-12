@@ -3,7 +3,7 @@ import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid_type/uuid_type.dart';
 
-import 'db/models/app.dart';
+import '../db/models/app.dart';
 
 class AppManager extends StateNotifier<List<App>> {
   final appInstallControl = AppInstallControl();

@@ -1,4 +1,3 @@
-import 'package:cobble/domain/db/dao/app_dao.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid_type/uuid_type.dart';

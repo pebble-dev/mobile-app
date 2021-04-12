@@ -1,5 +1,5 @@
-import 'package:cobble/domain/app_compatibility.dart';
-import 'package:cobble/domain/app_manager.dart';
+import 'package:cobble/domain/apps/app_compatibility.dart';
+import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/domain/calendar/calendar_list.dart';
 import 'package:cobble/domain/calendar/device_calendar_plugin_provider.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';

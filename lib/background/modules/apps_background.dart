@@ -1,4 +1,4 @@
-import 'package:cobble/domain/app_lifecycle_manager.dart';
+import 'package:cobble/domain/apps/app_lifecycle_manager.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/db/dao/app_dao.dart';
 import 'package:cobble/domain/db/models/app.dart';

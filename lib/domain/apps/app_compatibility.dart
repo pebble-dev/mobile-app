@@ -2,7 +2,7 @@ import 'package:cobble/domain/entities/hardware_platform.dart';
 import 'package:cobble/domain/entities/pbw_app_info_extension.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 
-import 'db/models/app.dart';
+import '../db/models/app.dart';
 
 extension AppCompatibility on App {
   bool isCompatibleWith(WatchType watchType) {

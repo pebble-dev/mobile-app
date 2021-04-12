@@ -1,6 +1,6 @@
-import 'package:cobble/domain/app_compatibility.dart';
-import 'package:cobble/domain/app_install_status.dart';
-import 'package:cobble/domain/app_manager.dart';
+import 'package:cobble/domain/apps/app_compatibility.dart';
+import 'package:cobble/domain/apps/app_install_status.dart';
+import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
