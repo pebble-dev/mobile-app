@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:cobble/localization/model/model_generator.dart';
 import 'package:flutter/widgets.dart' as widgets;
 
 import 'localization.dart';
