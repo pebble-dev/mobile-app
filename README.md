@@ -71,3 +71,18 @@ A lot of components were refactored in custom Widgets, like CobbleCard, CobbleTi
 and these components should serve you as building blocks upon which to build your UI. They are 
 showcased in WidgetLibrary screen and in golden (aka snapshot) tests. All golden images (how widgets 
 should look) are included in /test/components/goldens.
+
+## Using localization
+
+To use localized string, add it to all `.json` files in `/lang`, start build_runner to generate 
+localized models (see [Building mappings](#building-mappings) above) and then use it as 
+`tr.canBeNested.yourKey`. Generator also supports named  and positional parameters:  
+`"key": "fixed value, named parameter -> {named}, positional parameter -> {}` and generates 
+function instead of string. Use this function similar to string:  
+`tr.canBeNested.yourKey('positional', named: 'named param')`.
+
+App's localization is stored in /lang directory, one `.json` file for one language. Structure of 
+these `.json` files is then converted to localized model with a help of `ModelGenerator`. Model
+is in turn used to load and parse correct `.json` file at app's startup. Refer to 
+[build.yaml](build.yaml) and [CobbleLocalizationDelegate](lib/localization/localization_delegate.dart)
+for more info.
