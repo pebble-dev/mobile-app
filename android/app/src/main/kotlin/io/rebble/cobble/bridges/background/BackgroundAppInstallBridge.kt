@@ -2,6 +2,7 @@ package io.rebble.cobble.bridges.background
 
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.pigeons.Pigeons.AppReorderRequest
 import io.rebble.cobble.util.awaitPigeonMethod
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -37,6 +38,17 @@ class BackgroundAppInstallBridge @Inject constructor(
         return true
     }
 
+    suspend fun beginAppOrderChange(reorderRequest: AppReorderRequest): Boolean {
+        val appInstallCallbacks = getAppInstallCallbacks() ?: return false
+
+        awaitPigeonMethod<Void> { reply ->
+            appInstallCallbacks.beginAppOrderChange(reorderRequest, reply)
+        }
+
+        return true
+
+    }
+
     private suspend fun getAppInstallCallbacks(): Pigeons.BackgroundAppInstallCallbacks? {
         val cachedAppInstallCallbacks = cachedAppInstallCallbacks
         if (cachedAppInstallCallbacks != null) {
@@ -47,4 +59,5 @@ class BackgroundAppInstallBridge @Inject constructor(
         return Pigeons.BackgroundAppInstallCallbacks(flutterEngine.dartExecutor.binaryMessenger)
                 .also { this.cachedAppInstallCallbacks = it }
     }
+
 }

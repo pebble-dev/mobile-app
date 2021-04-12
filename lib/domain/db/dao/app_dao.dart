@@ -37,11 +37,10 @@ class AppDao {
   Future<List<App>> getAllInstalledApps() async {
     final db = await _dbFuture;
 
-    final receivedApps = (await db.query(
-      tableApps,
-      where:
-          "nextSyncAction != \"Delete\" AND nextSyncAction != \"DeleteThenIgnore\"",
-    ));
+    final receivedApps = (await db.query(tableApps,
+        where:
+            "nextSyncAction != \"Delete\" AND nextSyncAction != \"DeleteThenIgnore\"",
+        orderBy: "appOrder"));
 
     return receivedApps.map((e) => App.fromMap(e)).toList();
   }
@@ -120,6 +119,48 @@ class AppDao {
         whereArgs: [
           TimelinePin.nextSyncActionEnumMap()[NextSyncAction.Nothing]
         ]);
+  }
+
+  Future<bool> move(Uuid appId, int newPosition) async {
+    final db = await _dbFuture;
+
+    var appIdString = appId.toString();
+
+    final oldPositionQuery = await db.query(
+      tableApps,
+      columns: ["appOrder"],
+      where: "uuid = ?",
+      whereArgs: [appIdString],
+      limit: 1,
+    );
+
+    if (oldPositionQuery.isEmpty) {
+      return false;
+    }
+
+    final oldPosition = oldPositionQuery.first.values.first as int;
+
+    if (newPosition > oldPosition) {
+      await db.rawUpdate(
+          "UPDATE $tableApps SET "
+          "appOrder = appOrder - 1 "
+          "WHERE appOrder <= ? AND appOrder >= ?",
+          [newPosition, oldPosition]);
+    } else {
+      await db.rawUpdate(
+          "UPDATE $tableApps SET "
+          "appOrder = appOrder + 1 "
+          "WHERE appOrder >= ? AND appOrder <= ?",
+          [newPosition, oldPosition]);
+    }
+
+    await db.rawUpdate(
+        "UPDATE $tableApps SET "
+        "appOrder = ? "
+        "WHERE uuid = ?",
+        [newPosition, appIdString]);
+
+    return true;
   }
 }
 

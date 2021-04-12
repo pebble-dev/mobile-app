@@ -206,6 +206,10 @@ class TestTab extends HookWidget implements CobbleScreen {
                 (app) {
                   String compatibleText = "";
                   final currentWatch = connectionState.currentConnectedWatch;
+
+                  final atTop = app.appOrder == 0;
+                  final atBottom = app.appOrder == allApps.length - 1;
+
                   if (currentWatch != null) {
                     final watchType = currentWatch
                         .runningFirmware.hardwarePlatform
@@ -230,7 +234,27 @@ class TestTab extends HookWidget implements CobbleScreen {
                         onPressed: () {
                           appManager.deleteApp(app.uuid);
                         },
-                      )
+                      ),
+                    if (!atTop)
+                      Container(
+                        margin: EdgeInsets.only(left: 8),
+                        child: ElevatedButton(
+                          child: Text("Up"),
+                          onPressed: () {
+                            appManager.reorderApp(app.uuid, app.appOrder - 1);
+                          },
+                        ),
+                      ),
+                    if (!atBottom)
+                      Container(
+                        margin: EdgeInsets.only(left: 8),
+                        child: ElevatedButton(
+                          child: Text("Down"),
+                          onPressed: () {
+                            appManager.reorderApp(app.uuid, app.appOrder + 1);
+                          },
+                        ),
+                      ),
                   ]);
                 },
               )

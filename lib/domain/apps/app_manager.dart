@@ -33,6 +33,15 @@ class AppManager extends StateNotifier<List<App>> {
 
     await refresh();
   }
+
+  Future<void> reorderApp(Uuid uuid, int newPosition) async {
+    final request = AppReorderRequest();
+    request.uuid = uuid.toString();
+    request.newPosition = newPosition;
+
+    await appInstallControl.beginAppOrderChange(request);
+    await refresh();
+  }
 }
 
 final appManagerProvider = AutoDisposeStateNotifierProvider<AppManager>((ref) {

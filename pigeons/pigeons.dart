@@ -153,6 +153,13 @@ class AppInstallStatus {
   AppInstallStatus(this.progress, this.isInstalling);
 }
 
+class AppReorderRequest {
+  String uuid;
+  int newPosition;
+
+  AppReorderRequest(this.uuid, this.newPosition);
+}
+
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
@@ -202,6 +209,9 @@ abstract class BackgroundAppInstallCallbacks {
 
   @async
   void deleteApp(StringWrapper uuid);
+
+  @async
+  void beginAppOrderChange(AppReorderRequest appReorderRequest);
 }
 
 @FlutterApi()
@@ -383,6 +393,9 @@ abstract class AppInstallControl {
 
   @async
   NumberWrapper removeAllApps();
+
+  @async
+  NumberWrapper beginAppOrderChange(AppReorderRequest appReorderRequest);
 
   void subscribeToAppStatus();
 

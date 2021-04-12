@@ -92,4 +92,13 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
       await watchAppsSyncer.syncAppDatabaseWithWatch();
     }
   }
+
+  @override
+  Future<void> beginAppOrderChange(AppReorderRequest arg) async {
+    final uuid = Uuid(arg.uuid);
+
+    await appDao.move(uuid, arg.newPosition);
+
+    // TODO send this to watch
+  }
 }
