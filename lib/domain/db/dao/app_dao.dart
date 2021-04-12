@@ -95,6 +95,24 @@ class AppDao {
   Future<void> delete(Uuid itemId) async {
     final db = await _dbFuture;
 
+    final appPositionQuery = await db.query(
+      tableApps,
+      columns: ["appOrder"],
+      where: "uuid = ?",
+      whereArgs: [itemId.toString()],
+      limit: 1,
+    );
+
+    if (appPositionQuery.isNotEmpty) {
+      final appPosition = appPositionQuery.first.values.first as int;
+
+      await db.rawUpdate(
+          "UPDATE $tableApps SET "
+          "appOrder = appOrder - 1 "
+          "WHERE appOrder >= ?",
+          [appPosition]);
+    }
+
     await db
         .delete(tableApps, where: "uuid = ?", whereArgs: [itemId.toString()]);
   }
