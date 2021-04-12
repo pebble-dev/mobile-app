@@ -190,7 +190,7 @@ class TestTab extends HookWidget implements CobbleScreen {
                   [],
               Text("Disable BLE Workarounds: "),
               ...neededWorkarounds.map(
-                    (workaround) => Row(children: [
+                (workaround) => Row(children: [
                   Switch(
                     value: workaround.disabled,
                     onChanged: (value) async {
@@ -224,12 +224,13 @@ class TestTab extends HookWidget implements CobbleScreen {
                       child: Text(
                           "${app.longName}$compatibleText by ${app.company}"),
                     ),
-                    ElevatedButton(
-                      child: Text("Delete"),
-                      onPressed: () {
-                        appManager.deleteApp(app.uuid);
-                      },
-                    )
+                    if (!app.isSystem)
+                      ElevatedButton(
+                        child: Text("Delete"),
+                        onPressed: () {
+                          appManager.deleteApp(app.uuid);
+                        },
+                      )
                   ]);
                 },
               )
