@@ -1,12 +1,11 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-import 'dart:ui';
-
 // **************************************************************************
 // ModelGenerator
 // **************************************************************************
 
 import 'package:json_annotation/json_annotation.dart';
+import 'dart:ui';
 
 part 'model_generator.model.g.dart';
 
@@ -146,6 +145,13 @@ class Language {
   )
   final LanguageSettings settings;
 
+  @JsonKey(
+    name: 'system_apps',
+    required: true,
+    disallowNullValue: true,
+  )
+  final LanguageSystemApps systemApps;
+
   Language(
     this.common,
     this.firstRun,
@@ -164,6 +170,7 @@ class Language {
     this.health,
     this.notifications,
     this.settings,
+    this.systemApps,
   );
 
   factory Language.fromJson(Map<String, dynamic> json) =>
@@ -1312,6 +1319,58 @@ class LanguageSplashPage {
 
   factory LanguageSplashPage.fromJson(Map<String, dynamic> json) =>
       _$LanguageSplashPageFromJson(json);
+}
+
+@JsonSerializable(
+  createToJson: false,
+  disallowUnrecognizedKeys: true,
+)
+class LanguageSystemApps {
+  @JsonKey(
+    name: 'settings',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String settings;
+
+  @JsonKey(
+    name: 'music',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String music;
+
+  @JsonKey(
+    name: 'notifications',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String notifications;
+
+  @JsonKey(
+    name: 'alarms',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String alarms;
+
+  @JsonKey(
+    name: 'watchfaces',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String watchfaces;
+
+  LanguageSystemApps(
+    this.settings,
+    this.music,
+    this.notifications,
+    this.alarms,
+    this.watchfaces,
+  );
+
+  factory LanguageSystemApps.fromJson(Map<String, dynamic> json) =>
+      _$LanguageSystemAppsFromJson(json);
 }
 
 @JsonSerializable(

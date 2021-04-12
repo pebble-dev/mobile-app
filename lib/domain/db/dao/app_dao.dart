@@ -20,6 +20,20 @@ class AppDao {
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
+  Future<int> getNumberOfAllInstalledApps() async {
+    final db = await _dbFuture;
+
+    final receivedApps = (await db.query(
+      tableApps,
+      columns: ["COUNT (*)"],
+      where:
+          "nextSyncAction != \"Delete\" AND nextSyncAction != \"DeleteThenIgnore\"",
+    ))
+        .first;
+
+    return receivedApps.values.first as int;
+  }
+
   Future<List<App>> getAllInstalledApps() async {
     final db = await _dbFuture;
 

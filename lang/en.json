@@ -192,5 +192,12 @@
     "community_and_support": "Community and support",
     "developer_options": "Developer options",
     "widget_library": "Widget Library"
+  },
+  "system_apps": {
+    "settings": "Settings",
+    "music": "Music",
+    "notifications": "Notifications",
+    "alarms": "Alarms",
+    "watchfaces": "Watchfaces"
   }
 }

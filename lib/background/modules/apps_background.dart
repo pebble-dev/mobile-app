@@ -68,6 +68,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
         appstoreId: null,
         version: appInfo.versionLabel,
         isWatchface: appInfo.watchapp.watchface,
+        isSystem: false,
         supportedHardware: appInfo.targetPlatformsCast(),
         nextSyncAction: NextSyncAction.Upload,
         appOrder: allApps.length);
