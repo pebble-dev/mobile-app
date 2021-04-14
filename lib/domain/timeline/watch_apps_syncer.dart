@@ -61,7 +61,7 @@ class WatchAppsSyncer {
         connectedWatch.runningFirmware.hardwarePlatform.getWatchType();
 
     try {
-      final appsToDelete = await appDao.getAllAppsWithPendingDelete();
+      final appsToDelete = await appDao.getAllPackagesWithPendingDelete();
       for (final appToDelete in appsToDelete) {
         final StringWrapper idWrapper = StringWrapper();
         idWrapper.value = appToDelete.uuid.toString();
@@ -75,7 +75,7 @@ class WatchAppsSyncer {
         await appDao.delete(appToDelete.uuid);
       }
 
-      final appsToUpload = await appDao.getAllAppsWithPendingUpload();
+      final appsToUpload = await appDao.getAllPackagesWithPendingUpload();
       for (final appToSync in appsToUpload) {
         Log.d('Pending app $appToSync');
 

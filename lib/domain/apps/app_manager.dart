@@ -14,7 +14,7 @@ class AppManager extends StateNotifier<List<App>> {
   }
 
   Future<void> refresh() async {
-    state = await appDao.getAllInstalledApps();
+    state = await appDao.getAllInstalledPackages();
   }
 
   Future<void> deleteApp(Uuid uuid) async {

@@ -13,14 +13,14 @@ class AppDao {
 
   AppDao(this._dbFuture);
 
-  Future<void> insertOrUpdateApp(App app) async {
+  Future<void> insertOrUpdatePackage(App app) async {
     final db = await _dbFuture;
 
     db.insert(tableApps, app.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<int> getNumberOfAllInstalledApps() async {
+  Future<int> getNumberOfAllInstalledPackages() async {
     final db = await _dbFuture;
 
     final receivedApps = (await db.query(
@@ -34,7 +34,7 @@ class AppDao {
     return receivedApps.values.first as int;
   }
 
-  Future<List<App>> getAllInstalledApps() async {
+  Future<List<App>> getAllInstalledPackages() async {
     final db = await _dbFuture;
 
     final receivedApps = (await db.query(tableApps,
@@ -45,7 +45,7 @@ class AppDao {
     return receivedApps.map((e) => App.fromMap(e)).toList();
   }
 
-  Future<App?> getApp(Uuid itemId) async {
+  Future<App?> getPackage(Uuid itemId) async {
     final db = await _dbFuture;
 
     final list = (await db.query(tableApps,
@@ -60,7 +60,7 @@ class AppDao {
     }
   }
 
-  Future<List<App>> getAllAppsWithPendingUpload() async {
+  Future<List<App>> getAllPackagesWithPendingUpload() async {
     final db = await _dbFuture;
 
     return (await db.query(tableApps, where: "nextSyncAction = \"Upload\""))
@@ -68,7 +68,7 @@ class AppDao {
         .toList();
   }
 
-  Future<List<App>> getAllAppsWithPendingDelete() async {
+  Future<List<App>> getAllPackagesWithPendingDelete() async {
     final db = await _dbFuture;
 
     return (await db.query(tableApps,

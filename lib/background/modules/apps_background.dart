@@ -48,7 +48,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
   Future<void> beginAppInstall(InstallData installData) async {
     final newAppUuid = Uuid.parse(installData.appInfo.uuid);
 
-    final existingApp = await appDao.getApp(newAppUuid);
+    final existingApp = await appDao.getPackage(newAppUuid);
     if (existingApp != null) {
       final deleteWrapper = StringWrapper();
       deleteWrapper.value = installData.appInfo.uuid;
@@ -56,7 +56,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
       await deleteApp(deleteWrapper);
     }
 
-    final allApps = await appDao.getAllInstalledApps();
+    final allApps = await appDao.getAllInstalledPackages();
 
     final appInfo = installData.appInfo;
 
@@ -73,7 +73,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
         nextSyncAction: NextSyncAction.Upload,
         appOrder: allApps.length);
 
-    await appDao.insertOrUpdateApp(newApp);
+    await appDao.insertOrUpdatePackage(newApp);
 
     final blobDbSyncSuccess = await watchAppsSyncer.syncAppDatabaseWithWatch();
     Log.d("Blob sync success: $blobDbSyncSuccess");

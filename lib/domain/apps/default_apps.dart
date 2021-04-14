@@ -37,9 +37,9 @@ Future<void> populate_system_apps(AppDao dao) async {
 }
 
 Future<void> _add_system_app(AppDao dao, String uuid, String name) async {
-  final nextOrder = await dao.getNumberOfAllInstalledApps();
+  final nextOrder = await dao.getNumberOfAllInstalledPackages();
 
-  await dao.insertOrUpdateApp(
+  await dao.insertOrUpdatePackage(
     App(
         uuid: Uuid(uuid),
         shortName: name,
