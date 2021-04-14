@@ -20,18 +20,29 @@ class AppDao {
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<int> getNumberOfAllInstalledPackages() async {
+  Future<int> getNumberOfAllInstalledApps() async {
     final db = await _dbFuture;
 
     final receivedApps = (await db.query(
       tableApps,
       columns: ["COUNT (*)"],
-      where:
-          "nextSyncAction != \"Delete\" AND nextSyncAction != \"DeleteThenIgnore\"",
+      where: "isWatchface = 0",
     ))
         .first;
 
     return receivedApps.values.first as int;
+  }
+
+  Future<List<App>> getAllInstalledApps() async {
+    final db = await _dbFuture;
+
+    final receivedApps = (await db.query(tableApps,
+        where: "nextSyncAction != \"Delete\" AND "
+            "nextSyncAction != \"DeleteThenIgnore\" AND "
+            "isWatchface = 0",
+        orderBy: "appOrder"));
+
+    return receivedApps.map((e) => App.fromMap(e)).toList();
   }
 
   Future<List<App>> getAllInstalledPackages() async {
@@ -40,7 +51,7 @@ class AppDao {
     final receivedApps = (await db.query(tableApps,
         where:
             "nextSyncAction != \"Delete\" AND nextSyncAction != \"DeleteThenIgnore\"",
-        orderBy: "appOrder"));
+        orderBy: "appOrder, shortName COLLATE NOCASE ASC"));
 
     return receivedApps.map((e) => App.fromMap(e)).toList();
   }
@@ -98,7 +109,7 @@ class AppDao {
     final appPositionQuery = await db.query(
       tableApps,
       columns: ["appOrder"],
-      where: "uuid = ?",
+      where: "uuid = ? AND isWatchface = 0",
       whereArgs: [itemId.toString()],
       limit: 1,
     );
@@ -162,13 +173,13 @@ class AppDao {
       await db.rawUpdate(
           "UPDATE $tableApps SET "
           "appOrder = appOrder - 1 "
-          "WHERE appOrder <= ? AND appOrder >= ?",
+          "WHERE appOrder <= ? AND appOrder >= ? AND isWatchface = 0",
           [newPosition, oldPosition]);
     } else {
       await db.rawUpdate(
           "UPDATE $tableApps SET "
           "appOrder = appOrder + 1 "
-          "WHERE appOrder >= ? AND appOrder <= ?",
+          "WHERE appOrder >= ? AND appOrder <= ? AND isWatchface = 0",
           [newPosition, oldPosition]);
     }
 
@@ -179,6 +190,23 @@ class AppDao {
         [newPosition, appIdString]);
 
     return true;
+  }
+
+  /// Eliminate any gaps in app ordering (excluding watchfaces).
+  /// Ensure all apps have contiguous numbers in their ordering
+  Future<void> fixAppOrdering() async {
+    final db = await _dbFuture;
+
+    final installedApps = await getAllInstalledApps();
+
+    int currentIndex = 0;
+
+    for (App app in installedApps) {
+      await db.update(tableApps, {"appOrder": currentIndex},
+          where: "uuid = ?", whereArgs: [app.uuid.toString()]);
+
+      currentIndex++;
+    }
   }
 }
 

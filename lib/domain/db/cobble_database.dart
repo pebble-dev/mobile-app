@@ -89,6 +89,15 @@ void _upgradeDb(Database db, int oldVersion, int newVersion) async {
     final appDao = AppDao(Future.value(db));
     await populate_system_apps(appDao);
   }
+
+  if (oldVersion < 5) {
+    final appDao = AppDao(Future.value(db));
+    await appDao.fixAppOrdering();
+
+    await db.execute("UPDATE $tableApps SET "
+        "appOrder = -1 WHERE "
+        "isWatchface = 1");
+  }
 }
 
 final AutoDisposeFutureProvider<Database> databaseProvider =
@@ -97,7 +106,7 @@ final AutoDisposeFutureProvider<Database> databaseProvider =
   final dbPath = join(dbFolder, "cobble.db");
 
   final db = await openDatabase(dbPath,
-      version: 4,
+      version: 5,
       onCreate: (db, name) {
         _createDb(db);
       },

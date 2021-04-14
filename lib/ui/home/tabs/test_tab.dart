@@ -47,7 +47,9 @@ class TestTab extends HookWidget implements CobbleScreen {
     );
 
     final appManager = useProvider(appManagerProvider);
-    final allApps = useProvider(appManagerProvider.state);
+    final allPackages = useProvider(appManagerProvider.state);
+    final allApps =
+        allPackages.where((element) => !element.isWatchface).toList();
 
     useEffect(() {
       Future.microtask(() async {
@@ -200,6 +202,40 @@ class TestTab extends HookWidget implements CobbleScreen {
                   ),
                   Text(workaround.name)
                 ]),
+              ),
+              Text("Installed watchfaces: "),
+              ...allPackages.where((element) => element.isWatchface).map(
+                (face) {
+                  String compatibleText = "";
+                  final currentWatch = connectionState.currentConnectedWatch;
+
+                  if (currentWatch != null) {
+                    final watchType = currentWatch
+                        .runningFirmware.hardwarePlatform
+                        .getWatchType();
+
+                    if (face.isCompatibleWith(watchType)) {
+                      compatibleText = " (Compatible)";
+                    } else {
+                      compatibleText = " (Incompatible)";
+                    }
+                  }
+
+                  return Row(children: [
+                    Container(
+                      margin: EdgeInsets.all(16),
+                      child: Text(
+                          "${face.longName}$compatibleText by ${face.company}"),
+                    ),
+                    if (!face.isSystem)
+                      ElevatedButton(
+                        child: Text("Delete"),
+                        onPressed: () {
+                          appManager.deleteApp(face.uuid);
+                        },
+                      ),
+                  ]);
+                },
               ),
               Text("Installed apps: "),
               ...allApps.map(

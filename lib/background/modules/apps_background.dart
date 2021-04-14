@@ -56,7 +56,12 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
       await deleteApp(deleteWrapper);
     }
 
-    final allApps = await appDao.getAllInstalledPackages();
+    int newAppOrder;
+    if (installData.appInfo.watchapp.watchface) {
+      newAppOrder = -1;
+    } else {
+      newAppOrder = await appDao.getNumberOfAllInstalledApps();
+    }
 
     final appInfo = installData.appInfo;
 
@@ -71,7 +76,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
         isSystem: false,
         supportedHardware: appInfo.targetPlatformsCast(),
         nextSyncAction: NextSyncAction.Upload,
-        appOrder: allApps.length);
+        appOrder: newAppOrder);
 
     await appDao.insertOrUpdatePackage(newApp);
 
