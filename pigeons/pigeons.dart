@@ -300,7 +300,8 @@ abstract class BackgroundSetupControl {
 
 @HostApi()
 abstract class BackgroundControl {
-  void notifyFlutterBackgroundStarted();
+  @async
+  NumberWrapper notifyFlutterBackgroundStarted();
 }
 
 @HostApi()

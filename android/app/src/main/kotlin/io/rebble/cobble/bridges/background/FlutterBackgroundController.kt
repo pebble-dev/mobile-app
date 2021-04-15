@@ -8,16 +8,14 @@ import io.flutter.embedding.engine.plugins.util.GeneratedPluginRegister
 import io.flutter.view.FlutterCallbackInformation
 import io.rebble.cobble.datasources.AndroidPreferences
 import io.rebble.cobble.di.BackgroundFlutterSubcomponent
+import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons
-import io.rebble.cobble.util.registerAsyncPigeonCallback
-import io.rebble.cobble.util.voidResult
+import io.rebble.cobble.util.launchPigeonResult
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 @Singleton
 class FlutterBackgroundController @Inject constructor(
@@ -81,40 +79,40 @@ class FlutterBackgroundController @Inject constructor(
     ): Unit = coroutineScope {
         val bridgeScope = CoroutineScope(SupervisorJob())
 
-        val dartExecutor = flutterEngine.dartExecutor
-        val binaryMessenger = dartExecutor.binaryMessenger
+        val flutterSideReadyCompletable = CompletableDeferred<Unit>()
         val androidSideReadyCompletable = CompletableDeferred<Unit>()
 
-        val dartInitWait = launch {
-            suspendCoroutine { continuation ->
-                binaryMessenger.registerAsyncPigeonCallback(
-                        GlobalScope + Dispatchers.Main.immediate,
-                        "dev.flutter.pigeon.BackgroundControl.notifyFlutterBackgroundStarted"
-                ) {
-                    continuation.resume(Unit)
+        val component = backgroundFlutterSubcomponentFactory.create(flutterEngine, bridgeScope)
 
-                    // Do not return from notifyFlutterBackgroundStarted() method until
-                    // initEngine() has completed
-                    androidSideReadyCompletable.join()
+        val lifecycleController = component.createBridgeLifecycleController()
 
-                    // Kill this callback to prevent re-call when flutter hot restarts
-                    Pigeons.BackgroundControl.setup(binaryMessenger, null)
+        lifecycleController.setupControl(
+                Pigeons.BackgroundControl::setup,
+                object : Pigeons.BackgroundControl {
+                    override fun notifyFlutterBackgroundStarted(
+                            result: Pigeons.Result<Pigeons.NumberWrapper>
+                    ) {
+                        launchPigeonResult(result) {
+                            flutterSideReadyCompletable.complete(Unit)
 
-                    // Return blank result
-                    voidResult
-                }
-            }
-        }
+                            // Do not return from notifyFlutterBackgroundStarted() method until
+                            // initEngine() has completed
+                            androidSideReadyCompletable.join()
+
+                            // Return blank result
+                            NumberWrapper(0)
+                        }
+                    }
+                })
 
         if (callbackToStart != null) {
             // We are starting the engine from scratch. Register all plugins and begin its run
-            dartExecutor.executeDartCallback(callbackToStart)
+            flutterEngine.dartExecutor.executeDartCallback(callbackToStart)
             GeneratedPluginRegister.registerGeneratedPlugins(flutterEngine)
         }
 
-        dartInitWait.join()
+        flutterSideReadyCompletable.join()
 
-        val component = backgroundFlutterSubcomponentFactory.create(flutterEngine, bridgeScope)
         component.createCommonBridges()
         component.createBackgroundBridges()
 
@@ -125,6 +123,8 @@ class FlutterBackgroundController @Inject constructor(
                 bridgeScope.cancel()
 
                 GlobalScope.launch(Dispatchers.Main.immediate) {
+                    bridgeScope.coroutineContext.job.cancelAndJoin()
+
                     createFlutterBridges(flutterEngine, null)
                 }
             }

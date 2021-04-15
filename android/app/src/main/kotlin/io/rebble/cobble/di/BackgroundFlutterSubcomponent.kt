@@ -4,6 +4,7 @@ import dagger.BindsInstance
 import dagger.Subcomponent
 import io.flutter.embedding.engine.FlutterEngine
 import io.rebble.cobble.bridges.FlutterBridge
+import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.di.bridges.BackgroundBridge
 import io.rebble.cobble.di.bridges.BackgroundBridgesModule
 import io.rebble.cobble.di.bridges.CommonBridge
@@ -21,6 +22,8 @@ interface BackgroundFlutterSubcomponent {
 
     @BackgroundBridge
     fun createBackgroundBridges(): Set<FlutterBridge>
+
+    fun createBridgeLifecycleController(): BridgeLifecycleController
 
     @Subcomponent.Factory
     interface Factory {
