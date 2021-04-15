@@ -8,6 +8,7 @@ import io.rebble.cobble.di.bridges.BackgroundBridge
 import io.rebble.cobble.di.bridges.BackgroundBridgesModule
 import io.rebble.cobble.di.bridges.CommonBridge
 import io.rebble.cobble.di.bridges.CommonBridgesModule
+import kotlinx.coroutines.CoroutineScope
 
 @Subcomponent(modules = [
     CommonBridgesModule::class,
@@ -23,6 +24,9 @@ interface BackgroundFlutterSubcomponent {
 
     @Subcomponent.Factory
     interface Factory {
-        fun create(@BindsInstance flutterEngine: FlutterEngine): BackgroundFlutterSubcomponent
+        fun create(
+                @BindsInstance flutterEngine: FlutterEngine,
+                @BindsInstance coroutineScope: CoroutineScope
+        ): BackgroundFlutterSubcomponent
     }
 }

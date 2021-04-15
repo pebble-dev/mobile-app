@@ -45,68 +45,93 @@ class FlutterBackgroundController @Inject constructor(
     private suspend fun initEngine(): FlutterEngine? = withContext(Dispatchers.Main.immediate) {
         // Flutter must be initialized on the main thread
 
-        coroutineScope {
-            val backgroundEndpointMethodHandle = androidPreferences.backgroundEndpoint
-                    ?: return@coroutineScope null
+        val backgroundEndpointMethodHandle = androidPreferences.backgroundEndpoint
+                ?: return@withContext null
 
-            val callbackInformation: FlutterCallbackInformation = try {
-                FlutterCallbackInformation
-                        .lookupCallbackInformation(backgroundEndpointMethodHandle)
-            } catch (e: NullPointerException) {
-                // Even though this method is marked as @NonNull, it can still return null which
-                // confuses Kotlin runtime and crashes the app.
+        val callbackInformation: FlutterCallbackInformation = try {
+            FlutterCallbackInformation
+                    .lookupCallbackInformation(backgroundEndpointMethodHandle)
+        } catch (e: NullPointerException) {
+            // Even though this method is marked as @NonNull, it can still return null which
+            // confuses Kotlin runtime and crashes the app.
 
-                // Catch this exception here and treat this error
-                // as if set method handle is invalid.
-                return@coroutineScope null
+            // Catch this exception here and treat this error
+            // as if set method handle is invalid.
+            return@withContext null
+        }
+
+        val bundlePath = FlutterInjector.instance().flutterLoader().findAppBundlePath()
+
+        val callback = DartExecutor.DartCallback(
+                context.assets,
+                bundlePath,
+                callbackInformation
+        )
+
+        val flutterEngine = FlutterEngine(context)
+
+        createFlutterBridges(flutterEngine, callback)
+
+        flutterEngine
+    }
+
+    private suspend fun createFlutterBridges(
+            flutterEngine: FlutterEngine,
+            callbackToStart: DartExecutor.DartCallback?
+    ): Unit = coroutineScope {
+        val bridgeScope = CoroutineScope(SupervisorJob())
+
+        val dartExecutor = flutterEngine.dartExecutor
+        val binaryMessenger = dartExecutor.binaryMessenger
+        val androidSideReadyCompletable = CompletableDeferred<Unit>()
+
+        val dartInitWait = launch {
+            suspendCoroutine { continuation ->
+                binaryMessenger.registerAsyncPigeonCallback(
+                        GlobalScope + Dispatchers.Main.immediate,
+                        "dev.flutter.pigeon.BackgroundControl.notifyFlutterBackgroundStarted"
+                ) {
+                    continuation.resume(Unit)
+
+                    // Do not return from notifyFlutterBackgroundStarted() method until
+                    // initEngine() has completed
+                    androidSideReadyCompletable.join()
+
+                    // Kill this callback to prevent re-call when flutter hot restarts
+                    Pigeons.BackgroundControl.setup(binaryMessenger, null)
+
+                    // Return blank result
+                    voidResult
+                }
             }
+        }
 
-            val bundlePath = FlutterInjector.instance().flutterLoader().findAppBundlePath()
+        if (callbackToStart != null) {
+            // We are starting the engine from scratch. Register all plugins and begin its run
+            dartExecutor.executeDartCallback(callbackToStart)
+            GeneratedPluginRegister.registerGeneratedPlugins(flutterEngine)
+        }
 
-            val callback = DartExecutor.DartCallback(
-                    context.assets,
-                    bundlePath,
-                    callbackInformation
-            )
+        dartInitWait.join()
 
-            val flutterEngine = FlutterEngine(context)
+        val component = backgroundFlutterSubcomponentFactory.create(flutterEngine, bridgeScope)
+        component.createCommonBridges()
+        component.createBackgroundBridges()
 
-            val dartExecutor = flutterEngine.dartExecutor
-            val binaryMessenger = dartExecutor.binaryMessenger
-            val androidSideReadyCompletable = CompletableDeferred<Unit>()
+        androidSideReadyCompletable.complete(Unit)
 
-            val dartInitWait = launch {
-                suspendCoroutine { continuation ->
-                    binaryMessenger.registerAsyncPigeonCallback(
-                            GlobalScope + Dispatchers.Main.immediate,
-                            "dev.flutter.pigeon.BackgroundControl.notifyFlutterBackgroundStarted"
-                    ) {
-                        continuation.resume(Unit)
+        flutterEngine.addEngineLifecycleListener(object : FlutterEngine.EngineLifecycleListener {
+            override fun onPreEngineRestart() {
+                bridgeScope.cancel()
 
-                        // Do not return from notifyFlutterBackgroundStarted() method until
-                        // initEngine() has completed
-                        androidSideReadyCompletable.join()
-
-                        // Kill this callback to prevent re-call when flutter hot restarts
-                        Pigeons.BackgroundControl.setup(binaryMessenger, null)
-
-                        // Return blank result
-                        voidResult
-                    }
+                GlobalScope.launch(Dispatchers.Main.immediate) {
+                    createFlutterBridges(flutterEngine, null)
                 }
             }
 
-            dartExecutor.executeDartCallback(callback)
-
-            GeneratedPluginRegister.registerGeneratedPlugins(flutterEngine)
-
-
-            dartInitWait.join()
-            backgroundFlutterSubcomponentFactory.create(flutterEngine).createCommonBridges()
-            backgroundFlutterSubcomponentFactory.create(flutterEngine).createBackgroundBridges()
-            androidSideReadyCompletable.complete(Unit)
-
-            return@coroutineScope flutterEngine
-        }
+            override fun onEngineWillDestroy() {
+                bridgeScope.cancel()
+            }
+        })
     }
 }
