@@ -65,6 +65,9 @@ dev_dependencies:
   flutter_launcher_icons: ^0.8.1
   flutter_test:
     sdk: flutter
+  # Do NOT update pigeon until https://github.com/flutter/flutter/issues/59118 is resolved
+  # Otherwise we will have lots of work to convert things to nullable,
+  # only to convert them back when non-null support will be added
   pigeon: 0.1.21
   build_runner: ^1.11.5
   json_serializable: ^4.0.2
