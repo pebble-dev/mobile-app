@@ -69,7 +69,7 @@ class WatchAppsSyncer {
 
         final res = await appInstallControl.removeAppFromBlobDb(idWrapper);
 
-        if (res.value != statusSuccess) {
+        if (res.value != statusSuccess && res.value != statusKeyDoesNotExist) {
           return res.value;
         }
 
