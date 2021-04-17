@@ -401,6 +401,9 @@ abstract class AppInstallControl {
   void subscribeToAppStatus();
 
   void unsubscribeFromAppStatus();
+
+  @async
+  NumberWrapper sendAppOrderToWatch(ListWrapper uuidStringList);
 }
 
 @HostApi()

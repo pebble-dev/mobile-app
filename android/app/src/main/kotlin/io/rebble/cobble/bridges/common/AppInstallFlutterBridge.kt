@@ -17,8 +17,11 @@ import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.*
 import io.rebble.libpebblecommon.disk.PbwBinHeader
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
+import io.rebble.libpebblecommon.packets.AppOrderResultCode
+import io.rebble.libpebblecommon.packets.AppReorderRequest
 import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
+import io.rebble.libpebblecommon.services.AppReorderService
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import io.rebble.libpebblecommon.structmapper.SUUID
 import io.rebble.libpebblecommon.structmapper.StructMapper
@@ -43,6 +46,7 @@ class AppInstallFlutterBridge @Inject constructor(
         private val backgroundAppInstallBridge: BackgroundAppInstallBridge,
         private val watchMetadataStore: WatchMetadataStore,
         private val blobDBService: BlobDBService,
+        private val reorderService: AppReorderService,
         private val putBytesController: PutBytesController,
         bridgeLifecycleController: BridgeLifecycleController
 ) : FlutterBridge, Pigeons.AppInstallControl {
@@ -217,6 +221,29 @@ class AppInstallFlutterBridge @Inject constructor(
 
             NumberWrapper(blobDbResult.response.valueNumber)
         }
+    }
+
+    override fun sendAppOrderToWatch(
+            arg: Pigeons.ListWrapper,
+            result: Pigeons.Result<Pigeons.NumberWrapper>
+    ) {
+        coroutineScope.launchPigeonResult(result) {
+            val uuids = arg.value.map { UUID.fromString(it as String) }
+            reorderService.send(
+                    AppReorderRequest(uuids)
+            )
+
+            val resultPacket = withTimeoutOrNull(10_000) {
+                reorderService.receivedMessages.receive()
+            }
+
+            if (resultPacket?.status?.get() == AppOrderResultCode.SUCCESS.value) {
+                NumberWrapper(BlobResponse.BlobStatus.Success.value.toInt())
+            } else {
+                NumberWrapper(BlobResponse.BlobStatus.WatchDisconnected.value.toInt())
+            }
+        }
+
     }
 
     override fun removeAllApps(result: Pigeons.Result<Pigeons.NumberWrapper>) {

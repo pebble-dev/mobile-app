@@ -75,6 +75,12 @@ abstract class LibPebbleModule {
         fun providePutBytesService(
                 protocolHandler: ProtocolHandler
         ) = PutBytesService(protocolHandler)
+
+        @Provides
+        @Singleton
+        fun provideAppReorderService(
+                protocolHandler: ProtocolHandler
+        ) = AppReorderService(protocolHandler)
     }
 
     @Binds
@@ -114,4 +120,8 @@ abstract class LibPebbleModule {
     @Binds
     @IntoSet
     abstract fun bindPutBytesServiceIntoSet(service: PutBytesService): ProtocolService
+
+    @Binds
+    @IntoSet
+    abstract fun bindAppReorderServiceIntoSet(service: AppReorderService): ProtocolService
 }
