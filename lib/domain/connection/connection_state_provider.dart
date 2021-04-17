@@ -37,8 +37,9 @@ class ConnectionCallbacksStateNotifier
   }
 }
 
-final AutoDisposeStateNotifierProvider<ConnectionCallbacksStateNotifier>? connectionStateProvider =
-StateNotifierProvider.autoDispose<ConnectionCallbacksStateNotifier>((ref) {
+final AutoDisposeStateNotifierProvider<ConnectionCallbacksStateNotifier>
+    connectionStateProvider =
+    StateNotifierProvider.autoDispose<ConnectionCallbacksStateNotifier>((ref) {
   final notifier = ConnectionCallbacksStateNotifier();
   ref.onDispose(notifier.dispose);
   return notifier;

@@ -214,9 +214,9 @@ class CalendarActionHandler implements ActionHandler {
 
 final calendarActionHandlerProvider = Provider((ref) =>
     CalendarActionHandler(
-      ref.read(timelinePinDaoProvider!),
-      ref.read(calendarSyncerProvider!),
-      ref.read(watchTimelineSyncerProvider!),
-      ref.read(calendarListProvider!),
+      ref.read(timelinePinDaoProvider),
+      ref.read(calendarSyncerProvider),
+      ref.read(watchTimelineSyncerProvider),
+      ref.read(calendarListProvider),
       ref.read(deviceCalendarPluginProvider),
     ));

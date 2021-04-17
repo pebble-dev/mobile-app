@@ -1,7 +1,9 @@
-import 'package:cobble/domain/app_manager.dart';
+import 'package:cobble/domain/apps/app_compatibility.dart';
+import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/domain/calendar/calendar_list.dart';
 import 'package:cobble/domain/calendar/device_calendar_plugin_provider.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
+import 'package:cobble/domain/entities/hardware_platform.dart';
 import 'package:cobble/domain/permissions.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
@@ -27,10 +29,10 @@ class TestTab extends HookWidget implements CobbleScreen {
 
   @override
   Widget build(BuildContext context) {
-    final connectionState = useProvider(connectionStateProvider!.state);
+    final connectionState = useProvider(connectionStateProvider.state);
     final defaultWatch = useProvider(defaultWatchProvider);
-    final calendars = useProvider(calendarListProvider!.state);
-    final calendarSelector = useProvider(calendarListProvider!);
+    final calendars = useProvider(calendarListProvider.state);
+    final calendarSelector = useProvider(calendarListProvider);
     final calendarControl = useProvider(calendarControlProvider);
 
     final permissionControl = useProvider(permissionControlProvider);
@@ -188,7 +190,7 @@ class TestTab extends HookWidget implements CobbleScreen {
                   [],
               Text("Disable BLE Workarounds: "),
               ...neededWorkarounds.map(
-                (workaround) => Row(children: [
+                    (workaround) => Row(children: [
                   Switch(
                     value: workaround.disabled,
                     onChanged: (value) async {
@@ -201,18 +203,35 @@ class TestTab extends HookWidget implements CobbleScreen {
               ),
               Text("Installed apps: "),
               ...allApps.map(
-                (app) => Row(children: [
-                  Container(
-                    margin: EdgeInsets.all(16),
-                    child: Text("${app.longName} by ${app.company}"),
-                  ),
-                  ElevatedButton(
-                    child: Text("Delete"),
-                    onPressed: () {
-                      appManager.deleteApp(app.uuid);
-                    },
-                  )
-                ]),
+                (app) {
+                  String compatibleText = "";
+                  final currentWatch = connectionState.currentConnectedWatch;
+                  if (currentWatch != null) {
+                    final watchType = currentWatch
+                        .runningFirmware.hardwarePlatform
+                        .getWatchType();
+
+                    if (app.isCompatibleWith(watchType)) {
+                      compatibleText = " (Compatible)";
+                    } else {
+                      compatibleText = " (Incompatible)";
+                    }
+                  }
+
+                  return Row(children: [
+                    Container(
+                      margin: EdgeInsets.all(16),
+                      child: Text(
+                          "${app.longName}$compatibleText by ${app.company}"),
+                    ),
+                    ElevatedButton(
+                      child: Text("Delete"),
+                      onPressed: () {
+                        appManager.deleteApp(app.uuid);
+                      },
+                    )
+                  ]);
+                },
               )
             ],
           ),

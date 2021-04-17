@@ -219,6 +219,17 @@ class AppInstallFlutterBridge @Inject constructor(
         }
     }
 
+    override fun removeAllApps(result: Pigeons.Result<Pigeons.NumberWrapper>) {
+        coroutineScope.launchPigeonResult(result) {
+            NumberWrapper(
+                    blobDBService.send(BlobCommand.ClearCommand(
+                            Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
+                            BlobCommand.BlobDatabase.App
+                    )).response.get().toInt()
+            )
+        }
+    }
+
     override fun subscribeToAppStatus() {
         statusObservingJob = coroutineScope.launch {
             putBytesController.status.collect {
