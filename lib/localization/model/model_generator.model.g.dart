@@ -712,26 +712,26 @@ LanguageTimelineAttributeTitle _$LanguageTimelineAttributeTitleFromJson(
     'maybe',
     'decline',
     'remove',
-    'mute'
+    'mute_calendar'
   ], requiredKeys: const [
     'accept',
     'maybe',
     'decline',
     'remove',
-    'mute'
+    'mute_calendar'
   ], disallowNullValues: const [
     'accept',
     'maybe',
     'decline',
     'remove',
-    'mute'
+    'mute_calendar'
   ]);
   return LanguageTimelineAttributeTitle(
     json['accept'] as String,
     json['maybe'] as String,
     json['decline'] as String,
     json['remove'] as String,
-    json['mute'] as String,
+    json['mute_calendar'] as String,
   );
 }
 

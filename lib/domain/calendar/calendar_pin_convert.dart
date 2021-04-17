@@ -150,7 +150,7 @@ extension CalendarEventConverter on Event {
 
     actions.add(
       TimelineAction(calendarActionMuteCalendar, actionTypeGeneric, [
-        TimelineAttribute.title(tr.timelineAttribute.title.mute),
+        TimelineAttribute.title(tr.timelineAttribute.title.muteCalendar),
       ]),
     );
 
