@@ -74,7 +74,9 @@ class AppDao {
   Future<List<App>> getAllPackagesWithPendingUpload() async {
     final db = await _dbFuture;
 
-    return (await db.query(tableApps, where: "nextSyncAction = \"Upload\""))
+    return (await db.query(tableApps,
+            where: "nextSyncAction = \"Upload\""
+                " AND isSystem = 0"))
         .map((e) => App.fromMap(e))
         .toList();
   }
@@ -83,8 +85,9 @@ class AppDao {
     final db = await _dbFuture;
 
     return (await db.query(tableApps,
-            where:
-                "nextSyncAction = \"Delete\" OR nextSyncAction = \"DeleteThenIgnore\""))
+            where: "(nextSyncAction = \"Delete\" OR "
+                "nextSyncAction = \"DeleteThenIgnore\")"
+                " AND isSystem = 0"))
         .map((e) => App.fromMap(e))
         .toList();
   }
