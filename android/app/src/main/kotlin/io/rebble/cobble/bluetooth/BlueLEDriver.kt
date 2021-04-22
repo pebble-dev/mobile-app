@@ -41,8 +41,10 @@ class BlueLEDriver(
 
     private suspend fun sendPacket(bytes: UByteArray): Boolean {
         val protocolIO = protocolIO ?: return false
+        val gattDriver = gattDriver ?: return false
         @Suppress("BlockingMethodInNonBlockingContext")
         protocolIO.write(bytes.toByteArray())
+        gattDriver.onNewPacketToSend()
         return true
     }
 
