@@ -9,10 +9,7 @@ import io.rebble.cobble.util.toBytes
 import io.rebble.cobble.util.toHexString
 import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
 
 
@@ -25,9 +22,10 @@ class BlueLEDriver(
     private var connectionParamManager: ConnectionParamManager? = null
     private var gattDriver: BlueGATTServer? = null
     lateinit var targetPebble: BluetoothDevice
-    private var protocolIO: ProtocolIO? = null
 
-    private val connectionStatusChannel = Channel<Boolean>(0)
+    private val connectionStatusFlow = MutableStateFlow<Boolean?>(null)
+
+    private var readLoopJob: Job? = null
 
     enum class LEConnectionState {
         IDLE,
@@ -39,15 +37,6 @@ class BlueLEDriver(
     var connectionState = LEConnectionState.IDLE
     private var gatt: BlueGATTConnection? = null
 
-    private suspend fun sendPacket(bytes: UByteArray): Boolean {
-        val protocolIO = protocolIO ?: return false
-        val gattDriver = gattDriver ?: return false
-        @Suppress("BlockingMethodInNonBlockingContext")
-        protocolIO.write(bytes.toByteArray())
-        gattDriver.onNewPacketToSend()
-        return true
-    }
-
     private suspend fun closePebble() {
         Timber.d("Driver shutting down")
         gattDriver?.closePebble()
@@ -55,7 +44,9 @@ class BlueLEDriver(
         gatt?.close()
         gatt = null
         connectionState = LEConnectionState.CLOSED
-        connectionStatusChannel.offer(false)
+        connectionStatusFlow.value = false
+        readLoopJob?.cancel()
+        protocolHandler.closeProtocol()
     }
 
     /**
@@ -94,7 +85,7 @@ class BlueLEDriver(
                             val bondReceiver = BluetoothBondReceiver.registerBondReceiver(context, targetPebble.address)
                             if (pairTrigger.properties and BluetoothGattCharacteristic.PROPERTY_WRITE > 0) {
                                 GlobalScope.launch(Dispatchers.Main.immediate) { gatt!!.writeCharacteristic(pairTrigger, pairTriggerFlagsToBytes(status.supportsPinningWithoutSlaveSecurity, belowLollipop = false, clientMode = false)) }
-                            }else {
+                            } else {
                                 Timber.d("Pair characteristic can't be written, won't use")
                             }
                             targetPebble.createBond()
@@ -133,7 +124,6 @@ class BlueLEDriver(
 
     @FlowPreview
     override fun startSingleWatchConnection(device: BluetoothDevice): Flow<SingleConnectionStatus> = flow {
-        var connectJob: Job? = null
         try {
             coroutineScope {
                 if (device.type == BluetoothDevice.DEVICE_TYPE_CLASSIC || device.type == BluetoothDevice.DEVICE_TYPE_UNKNOWN) {
@@ -149,22 +139,24 @@ class BlueLEDriver(
                 } else {
                     emit(SingleConnectionStatus.Connecting(device))
 
+                    protocolHandler.openProtocol()
+
                     this@BlueLEDriver.targetPebble = device
 
-                    val server = BlueGATTServer(device, context, this)
+                    val server = BlueGATTServer(device, context, this, protocolHandler)
                     gattDriver = server
 
                     connectionState = LEConnectionState.CONNECTING
-                    connectJob = launch {
+                    launch {
                         if (!server.initServer()) {
                             Timber.e("initServer failed")
-                            connectionStatusChannel.offer(false)
+                            connectionStatusFlow.value = false
                             return@launch
                         }
                         gatt = targetPebble.connectGatt(context, flutterPreferences)
                         if (gatt == null) {
                             Timber.e("connectGatt null")
-                            connectionStatusChannel.offer(false)
+                            connectionStatusFlow.value = false
                             return@launch
                         }
 
@@ -206,41 +198,42 @@ class BlueLEDriver(
                     }
                 }
 
-                if (connectionStatusChannel.receive()) {
-                    protocolIO = ProtocolIO(gattDriver!!.inputStream, gattDriver!!.outputStream, protocolHandler)
-                    val sendLoop = launch(Dispatchers.IO) {
-                        try {
-                            protocolHandler.startPacketSendingLoop(::sendPacket)
-                        } finally {
-                            Timber.d("Packet sending loop exited")
-                            closePebble()
-                            connectJob?.cancelAndJoin()
-                        }
-                    }
-
-                    try {
-                        connectionState = LEConnectionState.CONNECTED
-                        emit(SingleConnectionStatus.Connected(device))
-
-                        protocolIO!!.readLoop()
-                    } finally {
-                        sendLoop.cancel()
-                    }
+                if (connectionStatusFlow.first { it != null } == true) {
+                    connectionState = LEConnectionState.CONNECTED
+                    emit(SingleConnectionStatus.Connected(device))
+                    packetReadLoop()
                 } else {
                     Timber.e("connectionStatus was false")
                 }
+
+                cancel()
             }
-        }finally {
+        } finally {
             closePebble()
         }
     }
 
+    @OptIn(FlowPreview::class)
+    private suspend fun packetReadLoop() = coroutineScope {
+        val job = launch {
+            while (connectionStatusFlow.value == true) {
+                val nextPacket = protocolHandler.waitForNextPacket()
+                val driver = gattDriver ?: break
+
+                driver.onNewPacketToSend(nextPacket)
+            }
+        }
+
+        readLoopJob = job
+    }
+
     private suspend fun connect() {
         Timber.d("Connect called")
+
         if (!gattDriver?.connectPebble()!!) {
             closePebble()
         } else {
-            connectionStatusChannel.send(true)
+            connectionStatusFlow.value = true
         }
     }
 }
