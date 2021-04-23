@@ -68,7 +68,7 @@ class WatchTimelineSyncer {
 
         final res = await timelineControl.removePin(idWrapper);
 
-        if (res.value != statusSuccess) {
+        if (res.value != statusSuccess && res.value != statusKeyDoesNotExist) {
           return res.value;
         }
 

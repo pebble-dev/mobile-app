@@ -7,6 +7,7 @@ import 'package:cobble/domain/entities/pbw_app_info_extension.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/logging.dart';
 import 'package:cobble/domain/timeline/watch_apps_syncer.dart';
+import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid_type/uuid_type.dart';
@@ -17,6 +18,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
   late WatchAppsSyncer watchAppsSyncer;
   late AppDao appDao;
   late AppLifecycleManager appLifecycleManager;
+  late Future<Preferences> preferences;
 
   late ProviderSubscription<WatchConnectionState> connectionSubscription;
 
@@ -26,6 +28,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
     watchAppsSyncer = container.listen(watchAppSyncerProvider).read();
     appDao = container.listen(appDaoProvider).read();
     appLifecycleManager = container.listen(appLifecycleManagerProvider).read();
+    preferences = container.listen(preferencesProvider.future).read();
 
     BackgroundAppInstallCallbacks.setup(this);
 
@@ -48,7 +51,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
   Future<void> beginAppInstall(InstallData installData) async {
     final newAppUuid = Uuid.parse(installData.appInfo.uuid);
 
-    final existingApp = await appDao.getApp(newAppUuid);
+    final existingApp = await appDao.getPackage(newAppUuid);
     if (existingApp != null) {
       final deleteWrapper = StringWrapper();
       deleteWrapper.value = installData.appInfo.uuid;
@@ -56,7 +59,12 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
       await deleteApp(deleteWrapper);
     }
 
-    final allApps = await appDao.getAllInstalledApps();
+    int newAppOrder;
+    if (installData.appInfo.watchapp.watchface) {
+      newAppOrder = -1;
+    } else {
+      newAppOrder = await appDao.getNumberOfAllInstalledApps();
+    }
 
     final appInfo = installData.appInfo;
 
@@ -68,11 +76,14 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
         appstoreId: null,
         version: appInfo.versionLabel,
         isWatchface: appInfo.watchapp.watchface,
+        isSystem: false,
         supportedHardware: appInfo.targetPlatformsCast(),
         nextSyncAction: NextSyncAction.Upload,
-        appOrder: allApps.length);
+        appOrder: newAppOrder);
 
-    await appDao.insertOrUpdateApp(newApp);
+    await appDao.insertOrUpdatePackage(newApp);
+
+    await (await preferences).setAppReorderPending(true);
 
     final blobDbSyncSuccess = await watchAppsSyncer.syncAppDatabaseWithWatch();
     Log.d("Blob sync success: $blobDbSyncSuccess");
@@ -90,5 +101,15 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
     if (connectionSubscription.read().isConnected == true) {
       await watchAppsSyncer.syncAppDatabaseWithWatch();
     }
+  }
+
+  @override
+  Future<void> beginAppOrderChange(AppReorderRequest arg) async {
+    final uuid = Uuid(arg.uuid);
+
+    await appDao.move(uuid, arg.newPosition);
+
+    await (await preferences).setAppReorderPending(true);
+    await watchAppsSyncer.syncAppDatabaseWithWatch();
   }
 }

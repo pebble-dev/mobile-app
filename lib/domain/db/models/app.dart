@@ -32,6 +32,9 @@ class App {
   /// Whether app is a watchapp or a watchface.
   final bool isWatchface;
 
+  /// Whether app is a system app that cannot be uninstalled
+  final bool isSystem;
+
   /// List of supported hardware codenames
   /// (see WatchType enum for list of all entries)
   final List<String> supportedHardware;
@@ -50,6 +53,7 @@ class App {
       required this.appstoreId,
       required this.version,
       required this.isWatchface,
+      required this.isSystem,
       required this.supportedHardware,
       required this.nextSyncAction,
       required this.appOrder});

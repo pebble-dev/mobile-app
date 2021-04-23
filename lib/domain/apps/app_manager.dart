@@ -14,7 +14,7 @@ class AppManager extends StateNotifier<List<App>> {
   }
 
   Future<void> refresh() async {
-    state = await appDao.getAllInstalledApps();
+    state = await appDao.getAllInstalledPackages();
   }
 
   Future<void> deleteApp(Uuid uuid) async {
@@ -31,6 +31,15 @@ class AppManager extends StateNotifier<List<App>> {
     wrapper.appInfo = appInfo;
     await appInstallControl.beginAppInstall(wrapper);
 
+    await refresh();
+  }
+
+  Future<void> reorderApp(Uuid uuid, int newPosition) async {
+    final request = AppReorderRequest();
+    request.uuid = uuid.toString();
+    request.newPosition = newPosition;
+
+    await appInstallControl.beginAppOrderChange(request);
     await refresh();
   }
 }

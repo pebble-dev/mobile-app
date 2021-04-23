@@ -24,7 +24,8 @@ Language _$LanguageFromJson(Map<String, dynamic> json) {
     'setup',
     'health',
     'notifications',
-    'settings'
+    'settings',
+    'system_apps'
   ], requiredKeys: const [
     'common',
     'first_run',
@@ -42,7 +43,8 @@ Language _$LanguageFromJson(Map<String, dynamic> json) {
     'setup',
     'health',
     'notifications',
-    'settings'
+    'settings',
+    'system_apps'
   ], disallowNullValues: const [
     'common',
     'first_run',
@@ -60,7 +62,8 @@ Language _$LanguageFromJson(Map<String, dynamic> json) {
     'setup',
     'health',
     'notifications',
-    'settings'
+    'settings',
+    'system_apps'
   ]);
   return Language(
     LanguageCommon.fromJson(json['common'] as Map<String, dynamic>),
@@ -86,6 +89,7 @@ Language _$LanguageFromJson(Map<String, dynamic> json) {
     LanguageNotifications.fromJson(
         json['notifications'] as Map<String, dynamic>),
     LanguageSettings.fromJson(json['settings'] as Map<String, dynamic>),
+    LanguageSystemApps.fromJson(json['system_apps'] as Map<String, dynamic>),
   );
 }
 
@@ -615,6 +619,35 @@ LanguageSplashPage _$LanguageSplashPageFromJson(Map<String, dynamic> json) {
   return LanguageSplashPage(
     json['title'] as String,
     json['body'] as String,
+  );
+}
+
+LanguageSystemApps _$LanguageSystemAppsFromJson(Map<String, dynamic> json) {
+  $checkKeys(json, allowedKeys: const [
+    'settings',
+    'music',
+    'notifications',
+    'alarms',
+    'watchfaces'
+  ], requiredKeys: const [
+    'settings',
+    'music',
+    'notifications',
+    'alarms',
+    'watchfaces'
+  ], disallowNullValues: const [
+    'settings',
+    'music',
+    'notifications',
+    'alarms',
+    'watchfaces'
+  ]);
+  return LanguageSystemApps(
+    json['settings'] as String,
+    json['music'] as String,
+    json['notifications'] as String,
+    json['alarms'] as String,
+    json['watchfaces'] as String,
   );
 }
 

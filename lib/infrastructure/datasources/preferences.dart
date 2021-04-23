@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cobble/domain/preferences.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stream_transform/stream_transform.dart';
 
@@ -15,6 +15,10 @@ class Preferences {
     _preferencesUpdateStream = StreamController<Preferences>.broadcast();
 
     preferencesUpdateStream = _preferencesUpdateStream.stream;
+  }
+
+  Future<void> reload() async {
+    await _sharedPrefs.reload();
   }
 
   int? getLastConnectedWatchAddress() {
@@ -76,7 +80,17 @@ class Preferences {
   }
 
   Future<void> setNotificationsMutedPackages(List<String?> packages) async {
-    await _sharedPrefs.setStringList("MUTED_NOTIF_PACKAGES", packages as List<String>);
+    await _sharedPrefs.setStringList(
+        "MUTED_NOTIF_PACKAGES", packages as List<String>);
+    _preferencesUpdateStream.add(this);
+  }
+
+  bool isAppReorderPending() {
+    return _sharedPrefs.getBool("APP_REORDER_PENDING") ?? false;
+  }
+
+  Future<void> setAppReorderPending(bool value) async {
+    await _sharedPrefs.setBool("APP_REORDER_PENDING", value);
     _preferencesUpdateStream.add(this);
   }
 }

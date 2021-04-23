@@ -16,6 +16,7 @@ App _$AppFromJson(Map<String, dynamic> json) {
     version: json['version'] as String,
     isWatchface:
         const BooleanNumberConverter().fromJson(json['isWatchface'] as int),
+    isSystem: const BooleanNumberConverter().fromJson(json['isSystem'] as int),
     supportedHardware: const CommaSeparatedListConverter()
         .fromJson(json['supportedHardware'] as String),
     nextSyncAction:
@@ -33,6 +34,7 @@ Map<String, dynamic> _$AppToJson(App instance) => <String, dynamic>{
       'version': instance.version,
       'isWatchface':
           const BooleanNumberConverter().toJson(instance.isWatchface),
+      'isSystem': const BooleanNumberConverter().toJson(instance.isSystem),
       'supportedHardware': const CommaSeparatedListConverter()
           .toJson(instance.supportedHardware),
       'nextSyncAction': _$NextSyncActionEnumMap[instance.nextSyncAction],

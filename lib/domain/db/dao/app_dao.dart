@@ -13,26 +13,50 @@ class AppDao {
 
   AppDao(this._dbFuture);
 
-  Future<void> insertOrUpdateApp(App app) async {
+  Future<void> insertOrUpdatePackage(App app) async {
     final db = await _dbFuture;
 
     db.insert(tableApps, app.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<List<App>> getAllInstalledApps() async {
+  Future<int> getNumberOfAllInstalledApps() async {
     final db = await _dbFuture;
 
     final receivedApps = (await db.query(
       tableApps,
-      where:
-          "nextSyncAction != \"Delete\" AND nextSyncAction != \"DeleteThenIgnore\"",
-    ));
+      columns: ["COUNT (*)"],
+      where: "isWatchface = 0",
+    ))
+        .first;
+
+    return receivedApps.values.first as int;
+  }
+
+  Future<List<App>> getAllInstalledApps() async {
+    final db = await _dbFuture;
+
+    final receivedApps = (await db.query(tableApps,
+        where: "nextSyncAction != \"Delete\" AND "
+            "nextSyncAction != \"DeleteThenIgnore\" AND "
+            "isWatchface = 0",
+        orderBy: "appOrder"));
 
     return receivedApps.map((e) => App.fromMap(e)).toList();
   }
 
-  Future<App?> getApp(Uuid itemId) async {
+  Future<List<App>> getAllInstalledPackages() async {
+    final db = await _dbFuture;
+
+    final receivedApps = (await db.query(tableApps,
+        where:
+            "nextSyncAction != \"Delete\" AND nextSyncAction != \"DeleteThenIgnore\"",
+        orderBy: "appOrder, shortName COLLATE NOCASE ASC"));
+
+    return receivedApps.map((e) => App.fromMap(e)).toList();
+  }
+
+  Future<App?> getPackage(Uuid itemId) async {
     final db = await _dbFuture;
 
     final list = (await db.query(tableApps,
@@ -47,20 +71,23 @@ class AppDao {
     }
   }
 
-  Future<List<App>> getAllAppsWithPendingUpload() async {
+  Future<List<App>> getAllPackagesWithPendingUpload() async {
     final db = await _dbFuture;
 
-    return (await db.query(tableApps, where: "nextSyncAction = \"Upload\""))
+    return (await db.query(tableApps,
+            where: "nextSyncAction = \"Upload\""
+                " AND isSystem = 0"))
         .map((e) => App.fromMap(e))
         .toList();
   }
 
-  Future<List<App>> getAllAppsWithPendingDelete() async {
+  Future<List<App>> getAllPackagesWithPendingDelete() async {
     final db = await _dbFuture;
 
     return (await db.query(tableApps,
-            where:
-                "nextSyncAction = \"Delete\" OR nextSyncAction = \"DeleteThenIgnore\""))
+            where: "(nextSyncAction = \"Delete\" OR "
+                "nextSyncAction = \"DeleteThenIgnore\")"
+                " AND isSystem = 0"))
         .map((e) => App.fromMap(e))
         .toList();
   }
@@ -81,6 +108,24 @@ class AppDao {
 
   Future<void> delete(Uuid itemId) async {
     final db = await _dbFuture;
+
+    final appPositionQuery = await db.query(
+      tableApps,
+      columns: ["appOrder"],
+      where: "uuid = ? AND isWatchface = 0",
+      whereArgs: [itemId.toString()],
+      limit: 1,
+    );
+
+    if (appPositionQuery.isNotEmpty) {
+      final appPosition = appPositionQuery.first.values.first as int;
+
+      await db.rawUpdate(
+          "UPDATE $tableApps SET "
+          "appOrder = appOrder - 1 "
+          "WHERE appOrder >= ?",
+          [appPosition]);
+    }
 
     await db
         .delete(tableApps, where: "uuid = ?", whereArgs: [itemId.toString()]);
@@ -106,6 +151,65 @@ class AppDao {
         whereArgs: [
           TimelinePin.nextSyncActionEnumMap()[NextSyncAction.Nothing]
         ]);
+  }
+
+  Future<bool> move(Uuid appId, int newPosition) async {
+    final db = await _dbFuture;
+
+    var appIdString = appId.toString();
+
+    final oldPositionQuery = await db.query(
+      tableApps,
+      columns: ["appOrder"],
+      where: "uuid = ?",
+      whereArgs: [appIdString],
+      limit: 1,
+    );
+
+    if (oldPositionQuery.isEmpty) {
+      return false;
+    }
+
+    final oldPosition = oldPositionQuery.first.values.first as int;
+
+    if (newPosition > oldPosition) {
+      await db.rawUpdate(
+          "UPDATE $tableApps SET "
+          "appOrder = appOrder - 1 "
+          "WHERE appOrder <= ? AND appOrder >= ? AND isWatchface = 0",
+          [newPosition, oldPosition]);
+    } else {
+      await db.rawUpdate(
+          "UPDATE $tableApps SET "
+          "appOrder = appOrder + 1 "
+          "WHERE appOrder >= ? AND appOrder <= ? AND isWatchface = 0",
+          [newPosition, oldPosition]);
+    }
+
+    await db.rawUpdate(
+        "UPDATE $tableApps SET "
+        "appOrder = ? "
+        "WHERE uuid = ?",
+        [newPosition, appIdString]);
+
+    return true;
+  }
+
+  /// Eliminate any gaps in app ordering (excluding watchfaces).
+  /// Ensure all apps have contiguous numbers in their ordering
+  Future<void> fixAppOrdering() async {
+    final db = await _dbFuture;
+
+    final installedApps = await getAllInstalledApps();
+
+    int currentIndex = 0;
+
+    for (App app in installedApps) {
+      await db.update(tableApps, {"appOrder": currentIndex},
+          where: "uuid = ?", whereArgs: [app.uuid.toString()]);
+
+      currentIndex++;
+    }
   }
 }
 

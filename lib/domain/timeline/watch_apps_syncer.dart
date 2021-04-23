@@ -4,6 +4,7 @@ import 'package:cobble/domain/db/dao/app_dao.dart';
 import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
 import 'package:cobble/domain/timeline/blob_status.dart';
+import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -17,9 +18,10 @@ class WatchAppsSyncer {
   final AppDao appDao;
   final AppInstallControl appInstallControl;
   final ConnectionCallbacksStateNotifier connectionStateProvider;
+  final Future<Preferences> preferences;
 
-  WatchAppsSyncer(
-      this.appDao, this.appInstallControl, this.connectionStateProvider);
+  WatchAppsSyncer(this.appDao, this.appInstallControl,
+      this.connectionStateProvider, this.preferences);
 
   Future<bool> syncAppDatabaseWithWatch() async {
     Log.d('Syncing apps');
@@ -32,7 +34,6 @@ class WatchAppsSyncer {
       case statusInvalidOperation:
       case statusInvalidDatabaseId:
       case statusInvalidData:
-      case statusKeyDoesNotExist:
       case statusDataStale:
       case statusNotSupported:
       case statusLocked:
@@ -61,21 +62,21 @@ class WatchAppsSyncer {
         connectedWatch.runningFirmware.hardwarePlatform.getWatchType();
 
     try {
-      final appsToDelete = await appDao.getAllAppsWithPendingDelete();
+      final appsToDelete = await appDao.getAllPackagesWithPendingDelete();
       for (final appToDelete in appsToDelete) {
         final StringWrapper idWrapper = StringWrapper();
         idWrapper.value = appToDelete.uuid.toString();
 
         final res = await appInstallControl.removeAppFromBlobDb(idWrapper);
 
-        if (res.value != statusSuccess) {
+        if (res.value != statusSuccess && res.value != statusKeyDoesNotExist) {
           return res.value;
         }
 
         await appDao.delete(appToDelete.uuid);
       }
 
-      final appsToUpload = await appDao.getAllAppsWithPendingUpload();
+      final appsToUpload = await appDao.getAllPackagesWithPendingUpload();
       for (final appToSync in appsToUpload) {
         Log.d('Pending app $appToSync');
 
@@ -104,6 +105,27 @@ class WatchAppsSyncer {
       return statusInvalidData;
     }
 
+    final preferences = await this.preferences;
+
+    await preferences.reload();
+    if (preferences.isAppReorderPending()) {
+      final allApps = await appDao.getAllInstalledApps();
+      final uuidStrings = allApps.map((e) => e.uuid.toString()).toList();
+      final listWrapper = ListWrapper();
+      listWrapper.value = uuidStrings;
+
+      final statusWrapper =
+          await appInstallControl.sendAppOrderToWatch(listWrapper);
+      final status = statusWrapper.value;
+
+      if (status != statusSuccess) {
+        Log.e("Reorder failed: $status");
+        return status;
+      }
+
+      await preferences.setAppReorderPending(false);
+    }
+
     return statusSuccess;
   }
 
@@ -125,8 +147,14 @@ Provider.autoDispose<WatchAppsSyncer>((ref) {
   final appDao = ref.watch(appDaoProvider);
   final appInstallControl = ref.watch(appInstallControlProvider);
   final connectionState = ref.watch(connectionStateProvider);
+  final preferences = ref.read(preferencesProvider.future);
 
-  return WatchAppsSyncer(appDao, appInstallControl, connectionState);
+  return WatchAppsSyncer(
+    appDao,
+    appInstallControl,
+    connectionState,
+    preferences,
+  );
 });
 
 final appInstallControlProvider = Provider((ref) => AppInstallControl());
