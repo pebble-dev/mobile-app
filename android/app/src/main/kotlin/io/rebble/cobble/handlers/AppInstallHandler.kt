@@ -3,7 +3,6 @@ package io.rebble.cobble.handlers
 import android.content.Context
 import com.squareup.moshi.Moshi
 import io.rebble.cobble.datasources.WatchMetadataStore
-import io.rebble.cobble.di.PerService
 import io.rebble.cobble.middleware.PutBytesController
 import io.rebble.cobble.middleware.getBestVariant
 import io.rebble.cobble.util.getAppPbwFile
@@ -20,7 +19,6 @@ import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 import javax.inject.Inject
 
-@PerService
 class AppInstallHandler @Inject constructor(
         coroutineScope: CoroutineScope,
         private val context: Context,
