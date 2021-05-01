@@ -5,6 +5,8 @@ import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/logging.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
+import 'package:cobble/localization/localization.dart';
+import 'package:cobble/localization/model/model_generator.model.dart';
 import 'package:cobble/util/container_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -36,6 +38,13 @@ class BackgroundReceiver implements TimelineCallbacks {
   }
 
   void init() async {
+    final locale = WidgetsBinding.instance?.computePlatformResolvedLocale(
+          supportedLocales,
+        ) ??
+        Locale('en');
+
+    await Localization.load(locale);
+
     await BackgroundControl().notifyFlutterBackgroundStarted();
 
     masterActionHandler = container.read(masterActionHandlerProvider);
@@ -52,7 +61,7 @@ class BackgroundReceiver implements TimelineCallbacks {
 
     preferences = Future.microtask(() async {
       final asyncValue =
-          await container.readUntilFirstSuccessOrError(preferencesProvider);
+      await container.readUntilFirstSuccessOrError(preferencesProvider);
 
       return asyncValue.data!.value;
     });
@@ -68,8 +77,10 @@ class BackgroundReceiver implements TimelineCallbacks {
   }
 
   void onWatchConnected(PebbleDevice watch) async {
+    Log.d('On watch connected ${watch.address}');
     final lastConnectedWatch =
-    (await preferences).getLastConnectedWatchAddress();
+        (await preferences).getLastConnectedWatchAddress();
+    Log.d('Last connected watch ${lastConnectedWatch}');
 
     bool unfaithful = false;
     if (lastConnectedWatch != watch.address) {
