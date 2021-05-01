@@ -76,7 +76,7 @@ class PebbleKitProvider : ContentProvider() {
             val majorVersion = groupValues?.elementAtOrNull(1)?.toIntOrNull() ?: 0
             val minorVersion = groupValues?.elementAtOrNull(2)?.toIntOrNull() ?: 0
             val pointVersion = groupValues?.elementAtOrNull(3)?.toIntOrNull() ?: 0
-            val tag = groupValues?.elementAtOrNull(4)
+            val tag = groupValues?.elementAtOrNull(4) ?: ""
 
             cursor.addRow(
                     listOf(
