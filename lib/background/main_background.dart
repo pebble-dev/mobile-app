@@ -61,7 +61,7 @@ class BackgroundReceiver implements TimelineCallbacks {
 
     preferences = Future.microtask(() async {
       final asyncValue =
-      await container.readUntilFirstSuccessOrError(preferencesProvider);
+          await container.readUntilFirstSuccessOrError(preferencesProvider);
 
       return asyncValue.data!.value;
     });
@@ -77,10 +77,8 @@ class BackgroundReceiver implements TimelineCallbacks {
   }
 
   void onWatchConnected(PebbleDevice watch) async {
-    Log.d('On watch connected ${watch.address}');
     final lastConnectedWatch =
         (await preferences).getLastConnectedWatchAddress();
-    Log.d('Last connected watch ${lastConnectedWatch}');
 
     bool unfaithful = false;
     if (lastConnectedWatch != watch.address) {
