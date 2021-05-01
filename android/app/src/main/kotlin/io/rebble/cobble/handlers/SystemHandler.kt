@@ -10,7 +10,6 @@ import androidx.core.content.ContextCompat.getSystemService
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.ConnectionState
 import io.rebble.cobble.datasources.WatchMetadataStore
-import io.rebble.cobble.di.PerService
 import io.rebble.cobble.util.coroutines.asFlow
 import io.rebble.libpebblecommon.PacketPriority
 import io.rebble.libpebblecommon.packets.PhoneAppVersion
@@ -27,7 +26,6 @@ import java.util.*
 import javax.inject.Inject
 
 @OptIn(ExperimentalUnsignedTypes::class, ExperimentalStdlibApi::class)
-@PerService
 class SystemHandler @Inject constructor(
         private val context: Context,
         private val coroutineScope: CoroutineScope,
