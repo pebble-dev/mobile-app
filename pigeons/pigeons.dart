@@ -160,6 +160,13 @@ class AppReorderRequest {
   AppReorderRequest(this.uuid, this.newPosition);
 }
 
+class ScreenshotResult {
+  bool success;
+  String? imagePath;
+
+  ScreenshotResult(this.success, this.imagePath);
+}
+
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
@@ -415,6 +422,12 @@ abstract class AppLifecycleControl {
 @HostApi()
 abstract class PackageDetails {
   AppEntriesPigeon getPackageList();
+}
+
+@HostApi()
+abstract class ScreenshotsControl {
+  @async
+  ScreenshotResult takeWatchScreenshot();
 }
 
 /// This class will keep all classes that appear in lists from being deleted
