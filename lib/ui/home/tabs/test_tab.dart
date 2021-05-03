@@ -18,6 +18,7 @@ import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:share/share.dart';
 
 import '../../common/icons/fonts/rebble_icons.dart';
 
@@ -129,6 +130,21 @@ class TestTab extends HookWidget implements CobbleScreen {
                 },
                 child: Text("Send logs"),
               ),
+              ElevatedButton(
+                  onPressed: () async {
+                    // Proper UI should display progress bar here
+                    // (Downloading color screenshots can take several seconds)
+                    // and display proper error message if operation fails
+
+                    final result =
+                        await ScreenshotsControl().takeWatchScreenshot();
+
+                    if (result.success) {
+                      Share.shareFiles([result.imagePath],
+                          mimeTypes: ["image/png"]);
+                    }
+                  },
+                  child: Text("Take a watch screenshot")),
               Text(statusText),
               Card(
                 margin: EdgeInsets.all(16.0),
