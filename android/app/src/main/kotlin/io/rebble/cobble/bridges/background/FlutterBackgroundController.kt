@@ -68,6 +68,8 @@ class FlutterBackgroundController @Inject constructor(
 
         val flutterEngine = FlutterEngine(context)
 
+        flutterEngine.localizationPlugin.sendLocalesToFlutter(context.resources.configuration)
+
         createFlutterBridges(flutterEngine, callback)
 
         flutterEngine

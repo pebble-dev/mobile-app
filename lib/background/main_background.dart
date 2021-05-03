@@ -38,10 +38,8 @@ class BackgroundReceiver implements TimelineCallbacks {
   }
 
   void init() async {
-    final locale = WidgetsBinding.instance?.computePlatformResolvedLocale(
-          supportedLocales,
-        ) ??
-        Locale('en');
+    final locale = resolveLocale(
+        WidgetsBinding.instance?.window.locales, supportedLocales);
 
     await Localization.load(locale);
 
