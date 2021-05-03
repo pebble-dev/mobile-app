@@ -81,6 +81,9 @@ class MyApp extends HookWidget {
           // Built-in localization for text direction LTR/RTL
           GlobalWidgetsLocalizations.delegate,
         ],
+        localeListResolutionCallback:
+            (List<Locale> locales, Iterable<Locale> supportedLocales) =>
+                resolveLocale(locales, supportedLocales),
       ),
     );
   }
