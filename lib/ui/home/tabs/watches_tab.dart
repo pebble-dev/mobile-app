@@ -4,6 +4,7 @@ import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
+import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
@@ -32,6 +33,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
     final defaultWatch = useProvider(defaultWatchProvider);
     final pairedStorage = useProvider(pairedStorageProvider);
     final allWatches = useProvider(pairedStorageProvider.state);
+    final preferencesFuture = useProvider(preferencesProvider.future);
 
     List<PebbleScanDevice> allWatchesList =
         allWatches.map((e) => e.device).toList();
@@ -108,7 +110,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
       if (inSettings) Navigator.pop(context);
     }
 
-    void _onForgetPressed(PebbleScanDevice device) {
+    void _onForgetPressed(PebbleScanDevice device) async {
       if (connectionState.currentWatchAddress == device.address) {
         connectionControl.disconnect();
       }
@@ -116,6 +118,12 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
       final deviceAddressWrapper = NumberWrapper();
       deviceAddressWrapper.value = device.address;
       uiConnectionControl.unpairWatch(deviceAddressWrapper);
+
+      final preferences = await preferencesFuture;
+      preferences.reload();
+      if (preferences.getLastConnectedWatchAddress() == device.address) {
+        preferences.setLastConnectedWatchAddress(0);
+      }
 
       pairedStorage.unregister(device.address);
       Navigator.pop(context);

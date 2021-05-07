@@ -75,6 +75,8 @@ class BackgroundReceiver implements TimelineCallbacks {
   }
 
   void onWatchConnected(PebbleDevice watch) async {
+    await (await preferences).reload();
+
     final lastConnectedWatch =
         (await preferences).getLastConnectedWatchAddress();
 
