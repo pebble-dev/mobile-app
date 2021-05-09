@@ -81,6 +81,12 @@ abstract class LibPebbleModule {
         fun provideAppReorderService(
                 protocolHandler: ProtocolHandler
         ) = AppReorderService(protocolHandler)
+
+        @Provides
+        @Singleton
+        fun provideScreenshotService(
+                protocolHandler: ProtocolHandler
+        ) = ScreenshotService(protocolHandler)
     }
 
     @Binds
@@ -124,4 +130,8 @@ abstract class LibPebbleModule {
     @Binds
     @IntoSet
     abstract fun bindAppReorderServiceIntoSet(service: AppReorderService): ProtocolService
+
+    @Binds
+    @IntoSet
+    abstract fun bindScrenshotServiceIntoSet(service: ScreenshotService): ProtocolService
 }
