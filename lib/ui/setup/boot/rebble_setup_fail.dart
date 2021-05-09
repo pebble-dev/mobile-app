@@ -22,14 +22,11 @@ class RebbleSetupFail extends StatelessWidget implements CobbleScreen {
       ),
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
-            SharedPreferences.getInstance()
-                .then((value) => {
-                      value.setBool("firstRun", false),
-                      value.setBool("bootSetup", false)
-                    })
-                .then(
-                  (value) => context.pushAndRemoveAllBelow(HomePage()),
-                );
+            SharedPreferences.getInstance().then((prefs) {
+              prefs.setBool("bootSetup", false);
+            }).then((_) {
+              context.pushAndRemoveAllBelow(HomePage());
+            });
           },
           label: Text("OKAY")),
     );

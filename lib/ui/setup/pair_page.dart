@@ -4,6 +4,7 @@ import 'package:cobble/domain/connection/pair_provider.dart';
 import 'package:cobble/domain/connection/scan_provider.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
+import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
@@ -52,6 +53,7 @@ class PairPage extends HookWidget implements CobbleScreen {
     final pairedStorage = useProvider(pairedStorageProvider);
     final scan = useProvider(scanProvider.state);
     final pair = useProvider(pairProvider).data?.value;
+    final preferences = useProvider(preferencesProvider);
 
     useEffect(() {
       if (pair == null || scan.devices.isEmpty) return null;
@@ -98,6 +100,7 @@ class PairPage extends HookWidget implements CobbleScreen {
       NumberWrapper addressWrapper = NumberWrapper();
       addressWrapper.value = dev.address;
       uiConnectionControl.connectToWatch(addressWrapper);
+      preferences.data?.value.setHasBeenConnected();
     };
 
     final title = tr.pairPage.title;
