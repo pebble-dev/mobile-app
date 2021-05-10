@@ -60,4 +60,10 @@ abstract class ServiceModule {
     abstract fun bindAppInstallHandlerIntoSet(
             appInstallHandler: AppInstallHandler
     ): CobbleHandler
+
+    @Binds
+    @IntoSet
+    abstract fun bindAppRunStateHandler(
+            appRunStateHandler: AppRunStateHandler
+    ): CobbleHandler
 }

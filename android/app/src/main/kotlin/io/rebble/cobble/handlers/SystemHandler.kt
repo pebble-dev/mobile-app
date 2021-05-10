@@ -18,6 +18,7 @@ import io.rebble.libpebblecommon.packets.TimeMessage
 import io.rebble.libpebblecommon.services.SystemService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
@@ -116,7 +117,8 @@ class SystemHandler @Inject constructor(
                 ProtocolCapsFlag.makeFlags(
                         listOf(
                                 ProtocolCapsFlag.Supports8kAppMessage,
-                                ProtocolCapsFlag.SupportsExtendedMusicProtocol
+                                ProtocolCapsFlag.SupportsExtendedMusicProtocol,
+                                ProtocolCapsFlag.SupportsAppRunStateProtocol
                         )
                 )
 
