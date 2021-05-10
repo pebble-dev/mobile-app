@@ -40,7 +40,7 @@ class RebbleSetupSuccess extends HookWidget implements CobbleScreen {
           onPressed: () {
             SharedPreferences.getInstance().then((prefs) async {
               await preferences.data?.value.setHasBeenConnected();
-              prefs.setBool("bootSetup", true);
+              await preferences.data?.value.setWasSetupSuccessful(true);
             }).then((_) {
               context.pushAndRemoveAllBelow(HomePage());
             });

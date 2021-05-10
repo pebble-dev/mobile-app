@@ -103,6 +103,15 @@ class Preferences {
     await _sharedPrefs.setBool("firstRun", true);
     _preferencesUpdateStream.add(this);
   }
+
+  bool wasSetupSuccessful() {
+    return _sharedPrefs.getBool("bootSetup") ?? false;
+  }
+
+  Future<void> setWasSetupSuccessful(bool value) async {
+    await _sharedPrefs.setBool("bootSetup", value);
+    _preferencesUpdateStream.add(this);
+  }
 }
 
 final preferencesProvider = FutureProvider<Preferences>((ref) async {
@@ -143,6 +152,10 @@ final notificationsMutedPackagesProvider = _createPreferenceProvider(
 /// ```
 final hasBeenConnectedProvider = _createPreferenceProvider(
   (preferences) => preferences.hasBeenConnected(),
+);
+
+final wasSetupSuccessfulProvider = _createPreferenceProvider(
+  (preferences) => preferences.wasSetupSuccessful(),
 );
 
 StreamProvider<T> _createPreferenceProvider<T>(
