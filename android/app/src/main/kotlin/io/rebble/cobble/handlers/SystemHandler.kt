@@ -45,13 +45,12 @@ class SystemHandler @Inject constructor(
         }
 
         coroutineScope.launch {
-            connectionLooper.connectionState.collect {
-                if (it is ConnectionState.Connected) {
-                    refreshWatchMetadata()
-                } else {
-                    watchMetadataStore.lastConnectedWatchMetadata.value = null
-                    watchMetadataStore.lastConnectedWatchModel.value = null
-                }
+            try {
+                refreshWatchMetadata()
+                awaitCancellation()
+            } finally {
+                watchMetadataStore.lastConnectedWatchMetadata.value = null
+                watchMetadataStore.lastConnectedWatchModel.value = null
             }
         }
     }
