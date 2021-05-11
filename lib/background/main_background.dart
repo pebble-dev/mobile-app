@@ -89,12 +89,21 @@ class BackgroundReceiver implements TimelineCallbacks {
       unfaithful = true;
     }
 
-    await calendarBackground.onWatchConnected(watch, unfaithful);
-    await appsBackground.onWatchConnected(watch, unfaithful);
+    if (unfaithful) {
+      // Ensure we will stay in unfaithful mode until sync succeeds
+      await (await preferences).setLastConnectedWatchAddress(0);
+    }
+
+    bool success = true;
+
+    success &= await calendarBackground.onWatchConnected(watch, unfaithful);
+    success &= await appsBackground.onWatchConnected(watch, unfaithful);
 
     Log.d('Watch connected');
 
-    (await preferences).setLastConnectedWatchAddress(watch.address!);
+    if (success) {
+      (await preferences).setLastConnectedWatchAddress(watch.address!);
+    }
   }
 
   Future syncTimelineToWatch() async {
