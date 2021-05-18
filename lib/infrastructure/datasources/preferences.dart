@@ -93,6 +93,25 @@ class Preferences {
     await _sharedPrefs.setBool("APP_REORDER_PENDING", value);
     _preferencesUpdateStream.add(this);
   }
+
+  /// Is set to bool after user has connected to their first watch.
+  bool hasBeenConnected() {
+    return _sharedPrefs.containsKey("firstRun");
+  }
+
+  Future<void> setHasBeenConnected() async {
+    await _sharedPrefs.setBool("firstRun", true);
+    _preferencesUpdateStream.add(this);
+  }
+
+  bool wasSetupSuccessful() {
+    return _sharedPrefs.getBool("bootSetup") ?? false;
+  }
+
+  Future<void> setWasSetupSuccessful(bool value) async {
+    await _sharedPrefs.setBool("bootSetup", value);
+    _preferencesUpdateStream.add(this);
+  }
 }
 
 final preferencesProvider = FutureProvider<Preferences>((ref) async {
@@ -118,6 +137,25 @@ final notificationToggleProvider = _createPreferenceProvider(
 
 final notificationsMutedPackagesProvider = _createPreferenceProvider(
   (preferences) => preferences.getNotificationsMutedPackages(),
+);
+
+/// ```dart
+/// final hasBeenConnected =
+///   useProvider(hasBeenConnectedProvider).data?.value ?? false;
+/// ```
+/// OR
+/// ```dart
+/// final hasBeenConnected = useProvider(hasBeenConnectedProvider.last);
+/// useEffect(() {
+///   hasBeenConnected.then((value) => /*...*/);
+/// }, []);
+/// ```
+final hasBeenConnectedProvider = _createPreferenceProvider(
+  (preferences) => preferences.hasBeenConnected(),
+);
+
+final wasSetupSuccessfulProvider = _createPreferenceProvider(
+  (preferences) => preferences.wasSetupSuccessful(),
 );
 
 StreamProvider<T> _createPreferenceProvider<T>(
