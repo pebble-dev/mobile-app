@@ -222,7 +222,7 @@ class CobbleTile extends StatelessWidget {
           children: [
             if (leading != null) ...[
               leading!,
-              SizedBox(width: 10),
+              SizedBox(width: 16),
             ],
             Expanded(
               child: Column(
@@ -332,7 +332,7 @@ class CobbleTile extends StatelessWidget {
 
   /// Will change IconData or ImageProvider to Widget
   static Widget _leadingToWidget(Object? leading, {double size = 25}) {
-    assert(leading == null || leading is IconData || leading is ImageProvider);
+    assert(leading == null || leading is IconData || leading is ImageProvider || leading is Widget);
     if (leading is IconData && leading == reservedIconSpace)
       return SizedBox(width: size + 16.0);
     if (leading is IconData && leading != reservedIconSpace)
@@ -340,6 +340,8 @@ class CobbleTile extends StatelessWidget {
         leading,
         size: size,
       );
+    if (leading is Widget)
+      return leading;
     if (leading is ImageProvider)
       return SizedBox(
         width: size,

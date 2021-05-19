@@ -223,7 +223,146 @@ class LanguageAboutPage {
   )
   final String support;
 
-  LanguageAboutPage(this.title, this.aboutRaw, this.community, this.support);
+  @JsonKey(
+    name: 'help_center',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String helpCenter;
+
+  @JsonKey(
+    name: 'help_center_subtitle',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String helpCenterSubtitle;
+
+  @JsonKey(
+    name: 'email_us',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String emailUs;
+
+  @JsonKey(
+    name: 'email_us_subtitle',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String emailUsSubtitle;
+
+  @JsonKey(
+    name: 'discord_server',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String discordServer;
+
+  @JsonKey(
+    name: 'discord_server_subtitle',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String discordServerSubtitle;
+
+  @JsonKey(
+    name: 'reddit',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String reddit;
+
+  @JsonKey(
+    name: 'reddit_subtitle',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String redditSubtitle;
+
+  @JsonKey(
+    name: 'discord',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String discord;
+
+  @JsonKey(
+    name: 'discord_subtitle',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String discordSubtitle;
+
+  @JsonKey(
+    name: 'twitter',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String twitter;
+
+  @JsonKey(
+    name: 'twitter_subtitle',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String twitterSubtitle;
+
+  @JsonKey(
+    name: 'source_code',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String sourceCode;
+
+  @JsonKey(
+    name: 'licenses',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String licenses;
+
+  @JsonKey(
+    name: 'version_string',
+    required: true,
+    disallowNullValue: true,
+  )
+  @Deprecated(
+      'This localized string requires parameters, use versionString() instead')
+  final String versionStringRaw;
+  String versionString({
+    required String version,
+    required String platform,
+  }) =>
+      _args(
+        versionStringRaw, // ignore: deprecated_member_use_from_same_package
+        [],
+        {
+          'version': version,
+          'platform': platform,
+        },
+      );
+
+  LanguageAboutPage(
+    this.title,
+    this.aboutRaw,
+    this.community,
+    this.support,
+    this.helpCenter,
+    this.helpCenterSubtitle,
+    this.emailUs,
+    this.emailUsSubtitle,
+    this.discordServer,
+    this.discordServerSubtitle,
+    this.reddit,
+    this.redditSubtitle,
+    this.discord,
+    this.discordSubtitle,
+    this.twitter,
+    this.twitterSubtitle,
+    this.sourceCode,
+    this.licenses,
+    this.versionStringRaw,
+  );
 
   factory LanguageAboutPage.fromJson(Map<String, dynamic> json) =>
       _$LanguageAboutPageFromJson(json);
@@ -1127,18 +1266,11 @@ class LanguageSettings {
   final String analytics;
 
   @JsonKey(
-    name: 'about_app',
+    name: 'about_and_support',
     required: true,
     disallowNullValue: true,
   )
-  final String aboutApp;
-
-  @JsonKey(
-    name: 'community_and_support',
-    required: true,
-    disallowNullValue: true,
-  )
-  final String communityAndSupport;
+  final String aboutAndSupport;
 
   @JsonKey(
     name: 'developer_options',
@@ -1167,8 +1299,7 @@ class LanguageSettings {
     this.messagesAndCannedReplies,
     this.languageAndVoice,
     this.analytics,
-    this.aboutApp,
-    this.communityAndSupport,
+    this.aboutAndSupport,
     this.developerOptions,
     this.widgetLibrary,
   );
