@@ -26,8 +26,6 @@ class _AboutState extends State<About> {
   static const emailURL = "mailto:support@rebble.io";
   static const twitterURL = "https://twitter.com/pebble_dev";
   static const sourceURL = "https://github.com/pebble-dev/mobile-app";
-  static const licensesURL =
-      "https://github.com/pebble-dev/mobile-app/blob/master/LICENSE"; // This should be its own view with license list, but it's this for now
   String _appVersion = '';
   String _appName = '';
   String os = toBeginningOfSentenceCase(Platform.operatingSystem) ?? '';
@@ -109,7 +107,7 @@ class _AboutState extends State<About> {
                           child: CobbleButton(
                             outlined: false,
                             label: tr.aboutPage.licenses,
-                            onPressed: () => {launchURL(licensesURL)},
+                            onPressed: () => {showLicensePage(context: context)},
                           ))),
                 ])
               ]),
