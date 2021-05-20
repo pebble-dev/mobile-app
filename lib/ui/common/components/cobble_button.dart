@@ -33,7 +33,7 @@ class CobbleButton extends StatelessWidget {
     Widget child = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (icon is IconData) Icon(icon, size: 21),
+        if (icon is IconData) Icon(icon),
         if (icon is IconData && label is String) SizedBox(width: 8),
         if (label is String) Text(label!.toUpperCase()),
       ],
