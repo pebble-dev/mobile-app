@@ -75,8 +75,11 @@ class BackgroundReceiver implements TimelineCallbacks {
   }
 
   void onWatchConnected(PebbleDevice watch) async {
-    final lastConnectedWatch =
-        (await preferences).getLastConnectedWatchAddress();
+    var prefs = await preferences;
+
+    await prefs.reload();
+
+    final lastConnectedWatch = prefs.getLastConnectedWatchAddress();
 
     bool unfaithful = false;
     if (lastConnectedWatch != watch.address) {
@@ -87,12 +90,21 @@ class BackgroundReceiver implements TimelineCallbacks {
       unfaithful = true;
     }
 
-    await calendarBackground.onWatchConnected(watch, unfaithful);
-    await appsBackground.onWatchConnected(watch, unfaithful);
+    if (unfaithful) {
+      // Ensure we will stay in unfaithful mode until sync succeeds
+      await prefs.setLastConnectedWatchAddress(0);
+    }
+
+    bool success = true;
+
+    success &= await calendarBackground.onWatchConnected(watch, unfaithful);
+    success &= await appsBackground.onWatchConnected(watch, unfaithful);
 
     Log.d('Watch connected');
 
-    (await preferences).setLastConnectedWatchAddress(watch.address!);
+    if (success) {
+      prefs.setLastConnectedWatchAddress(watch.address!);
+    }
   }
 
   Future syncTimelineToWatch() async {

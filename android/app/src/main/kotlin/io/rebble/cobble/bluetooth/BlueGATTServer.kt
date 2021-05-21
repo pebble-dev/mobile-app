@@ -173,6 +173,7 @@ class BlueGATTServer(
                                 packetsInFlight = (packetsInFlight - 1).coerceAtLeast(0)
                             }
                             Timber.d("Got ACK for ${packet.sequence}")
+                            sendActor.send(SendActorMessage.UpdateData)
                         }
                         GATTPacket.PacketType.DATA -> {
                             Timber.d("Packet ${packet.sequence}, Expected $remoteSeq")

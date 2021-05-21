@@ -31,13 +31,13 @@ class CalendarBackground implements CalendarCallbacks {
     );
   }
 
-  Future<void> onWatchConnected(PebbleDevice watch, bool unfaithful) async {
+  Future<bool> onWatchConnected(PebbleDevice watch, bool unfaithful) async {
     if (unfaithful) {
       Log.d("Clearing all pins");
-      await watchTimelineSyncer.clearAllPinsFromWatchAndResync();
+      return watchTimelineSyncer.clearAllPinsFromWatchAndResync();
     } else {
       Log.d('Performing normal calendar sync');
-      await syncTimelineToWatch();
+      return syncTimelineToWatch();
     }
   }
 
@@ -53,10 +53,12 @@ class CalendarBackground implements CalendarCallbacks {
     await syncTimelineToWatch();
   }
 
-  Future syncTimelineToWatch() async {
+  Future<bool> syncTimelineToWatch() async {
     if (isConnectedToWatch()!) {
       await watchTimelineSyncer.syncPinDatabaseWithWatch();
     }
+
+    return false;
   }
 
   bool? isConnectedToWatch() {
