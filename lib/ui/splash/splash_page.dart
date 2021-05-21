@@ -58,12 +58,14 @@ class SplashPage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasBeenConnected = useProvider(hasBeenConnectedProvider.last);
+    final hasBeenConnected = useProvider(hasBeenConnectedProvider).data;
     // Let's not do a timed splash screen here, it's a waste of
     // the user's time and there are better platform ways to do it
     useEffect(() {
-      hasBeenConnected.then((value) => _openHome(value, context: context)());
-    }, []);
+      if (hasBeenConnected != null) {
+        Future.microtask(_openHome(hasBeenConnected.value, context: context));
+      }
+    }, [hasBeenConnected]);
     return CobbleScaffold.page(
       child: Center(
         // This page shouldn't be visible for more than a split second, but if
