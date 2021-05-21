@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:cobble/ui/common/components/cobble_accordion.dart';
+import 'package:cobble/ui/common/icons/back_comp_icon.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
@@ -332,7 +333,7 @@ class CobbleTile extends StatelessWidget {
 
   /// Will change IconData or ImageProvider to Widget
   static Widget _leadingToWidget(Object? leading, {double size = 25}) {
-    assert(leading == null || leading is IconData || leading is ImageProvider || leading is Widget);
+    assert(leading == null || leading is IconData || leading is ImageProvider || leading is BackCompIcon);
     if (leading is IconData && leading == reservedIconSpace)
       return SizedBox(width: size + 16.0);
     if (leading is IconData && leading != reservedIconSpace)
@@ -340,7 +341,7 @@ class CobbleTile extends StatelessWidget {
         leading,
         size: size,
       );
-    if (leading is Widget)
+    if (leading is BackCompIcon)
       return leading;
     if (leading is ImageProvider)
       return SizedBox(

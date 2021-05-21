@@ -12,7 +12,7 @@ class CobbleScaffold extends StatelessWidget {
   final FloatingActionButton? floatingActionButton;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
   final Widget? bottomNavigationBar;
-  final PreferredSizeWidget? bottom;
+  final PreferredSizeWidget? bottomAppBar;
 
   const CobbleScaffold._({
     Key? key,
@@ -23,7 +23,7 @@ class CobbleScaffold extends StatelessWidget {
     this.floatingActionButton,
     this.floatingActionButtonLocation,
     this.bottomNavigationBar,
-    this.bottom,
+    this.bottomAppBar,
   })  : assert(title == null || title.length > 0),
         assert(subtitle == null ||
             (subtitle.length > 0 && title != null && title.length > 0)),
@@ -55,8 +55,8 @@ class CobbleScaffold extends StatelessWidget {
               tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             );
 
-    final bottomHeight = bottom != null ? bottom?.preferredSize.height : 0;
-    final height = 25.0 + 16 * 2 + (bottomHeight ?? 0);
+    final bottomHeight = bottomAppBar?.preferredSize.height ?? 0;
+    final height = 25.0 + 16 * 2 + bottomHeight;
 
     return Scaffold(
       appBar: navBarTitle == null
@@ -67,7 +67,7 @@ class CobbleScaffold extends StatelessWidget {
                 leading: leading,
                 title: navBarTitle,
                 actions: actions,
-                bottom: bottom,
+                bottom: bottomAppBar,
               ),
             ),
       floatingActionButton: floatingActionButton,
@@ -127,7 +127,6 @@ class CobbleScaffold extends StatelessWidget {
         floatingActionButtonLocation: floatingActionButtonLocation,
         actions: actions,
         bottomNavigationBar: bottomNavigationBar,
-        bottom: null,
       );
 
   /// Implements the basic material design visual layout structure.
@@ -148,7 +147,7 @@ class CobbleScaffold extends StatelessWidget {
     List<Widget> actions = const [],
     FloatingActionButton? floatingActionButton,
     FloatingActionButtonLocation? floatingActionButtonLocation,
-    PreferredSizeWidget? bottom,
+    PreferredSizeWidget? bottomAppBar,
   }) =>
       EnsureTabScaffold(
         child: CobbleScaffold._(
@@ -159,7 +158,7 @@ class CobbleScaffold extends StatelessWidget {
           floatingActionButton: floatingActionButton,
           floatingActionButtonLocation: floatingActionButtonLocation,
           actions: actions,
-          bottom: bottom,
+          bottomAppBar: bottomAppBar,
         ),
       );
 }
