@@ -35,7 +35,7 @@ class CalendarHandler @Inject constructor(
     private var initialSyncJob: Job? = null
     private var calendarHandlerStarted = false
 
-    val calendarDebouncer = Debouncer(debouncingTimeMs = 1_000, coroutineScope)
+    val calendarDebouncer = Debouncer(debouncingTimeMs = 1_000, scope = coroutineScope)
 
     private val contentObserver = object : ContentObserver(null) {
         override fun onChange(selfChange: Boolean, uri: Uri?) {

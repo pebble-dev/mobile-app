@@ -17,7 +17,7 @@ class CalendarControlFlutterBridge @Inject constructor(
         private val coroutineScope: CoroutineScope,
         bridgeLifecycleController: BridgeLifecycleController
 ) : Pigeons.CalendarControl, FlutterBridge {
-    private val debouncer = Debouncer(debouncingTimeMs = 5_000L, coroutineScope)
+    private val debouncer = Debouncer(debouncingTimeMs = 5_000L, scope = coroutineScope)
 
     init {
         bridgeLifecycleController.setupControl(Pigeons.CalendarControl::setup, this)
