@@ -104,22 +104,19 @@ class AlertingApps extends HookWidget implements CobbleScreen {
                               : tr.alertingApps.mutedToday(
                                   muted: random.nextInt(8).toString(),
                                 ),
-                          child: Switch(
-                            value: app.enabled,
-                            onChanged: (value) async {
-                              var mutedPkgList =
-                                  mutedPackages.data?.value ?? [];
-                              if (value) {
-                                mutedPkgList.removeWhere(
-                                    (element) => element == app.packageId);
-                              } else {
-                                print(app.packageId);
-                                mutedPkgList.add(app.packageId);
-                              }
-                              await preferences.data?.value
-                                  .setNotificationsMutedPackages(mutedPkgList);
-                            },
-                          ),
+                          enabled: app.enabled,
+                          onChanged: (value) async {
+                            var mutedPkgList = mutedPackages.data?.value ?? [];
+                            if (value) {
+                              mutedPkgList.removeWhere(
+                                  (element) => element == app.packageId);
+                            } else {
+                              print(app.packageId);
+                              mutedPkgList.add(app.packageId);
+                            }
+                            await preferences.data?.value
+                                .setNotificationsMutedPackages(mutedPkgList);
+                          },
                         ),
                       )
                       .toList(),
