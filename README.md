@@ -14,8 +14,9 @@ A multi platform watch companion app for Pebble/RebbleOS devices
     GITHUB_TOKEN=<GENERATED TOKEN>
     ```
 
-4. [Install flutter on your machine](https://flutter.dev/docs/get-started/install)
-5. [Setup flutter in the IDE of your choice](https://flutter.dev/docs/get-started/editor)
+4. Install flutter on your machine. To make builds reproducible, we use exact flutter version in pubspec.yml. Thus we recommend you use [FVM](https://fvm.app/docs/getting_started/installation) to install flutter. After you install FVM, just run `fvm install` command in the
+ project folder and you will automatically get the required flutter version. 
+5. [Setup flutter in the IDE of your choice](https://flutter.dev/docs/get-started/editor). Be sure to also configure it with [FVM Flutter path](https://fvm.app/docs/getting_started/configuration#ide).
 6. Open this repo in the IDE set up in step 5
 
 ## Building mappings
