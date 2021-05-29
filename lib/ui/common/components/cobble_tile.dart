@@ -198,7 +198,8 @@ class CobbleTile extends StatelessWidget {
     ImageProvider? leading,
     required String title,
     String? subtitle,
-    required Widget child,
+    Widget? child,
+    void Function()? onTap,
   }) =>
       CobbleTile._(
         key: key,
@@ -207,6 +208,7 @@ class CobbleTile extends StatelessWidget {
         title: title,
         subtitle: subtitle,
         trailing: child,
+        onTap: onTap,
       );
 
   @override

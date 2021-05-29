@@ -1,5 +1,6 @@
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/home/tabs/about_tab.dart';
+import 'package:cobble/ui/home/tabs/locker_tab.dart';
 import 'package:cobble/ui/home/tabs/store_tab.dart';
 import 'package:cobble/ui/home/tabs/test_tab.dart';
 import 'package:cobble/ui/home/tabs/watches_tab.dart';
@@ -8,7 +9,6 @@ import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/router/uri_navigator.dart';
 import 'package:cobble/ui/screens/placeholder_screen.dart';
 import 'package:cobble/ui/screens/settings.dart';
-import 'package:cobble/ui/test/watch_carousel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -37,7 +37,7 @@ class HomePage extends HookWidget implements CobbleScreen {
       tr.homePage.health,
       RebbleIcons.health_journal,
     ),
-    _TabConfig(WatchCarousel(), tr.homePage.locker, RebbleIcons.locker),
+    _TabConfig(LockerTab(), tr.homePage.locker, RebbleIcons.locker),
     _TabConfig(StoreTab(), tr.homePage.store, RebbleIcons.rebble_store),
     _TabConfig(MyWatchesTab(), tr.homePage.watches, RebbleIcons.devices),
     _TabConfig(Settings(), tr.homePage.settings, RebbleIcons.settings),

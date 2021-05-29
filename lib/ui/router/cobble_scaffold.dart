@@ -13,6 +13,7 @@ class CobbleScaffold extends StatelessWidget {
   final FloatingActionButtonLocation? floatingActionButtonLocation;
   final Widget? bottomNavigationBar;
   final PreferredSizeWidget? bottomAppBar;
+  final bool? expandedAppBar;
 
   const CobbleScaffold._({
     Key? key,
@@ -24,6 +25,7 @@ class CobbleScaffold extends StatelessWidget {
     this.floatingActionButtonLocation,
     this.bottomNavigationBar,
     this.bottomAppBar,
+    this.expandedAppBar,
   })  : assert(title == null || title.length > 0),
         assert(subtitle == null ||
             (subtitle.length > 0 && title != null && title.length > 0)),
@@ -55,7 +57,7 @@ class CobbleScaffold extends StatelessWidget {
               tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             );
 
-    final bottomHeight = bottomAppBar?.preferredSize.height ?? 0;
+    final bottomHeight = (expandedAppBar ?? false) ? bottomAppBar?.preferredSize.height ?? 0 : 0;
     final height = 25.0 + 16 * 2 + bottomHeight;
 
     return Scaffold(
@@ -148,6 +150,7 @@ class CobbleScaffold extends StatelessWidget {
     FloatingActionButton? floatingActionButton,
     FloatingActionButtonLocation? floatingActionButtonLocation,
     PreferredSizeWidget? bottomAppBar,
+    bool? expandedAppBar,
   }) =>
       EnsureTabScaffold(
         child: CobbleScaffold._(
@@ -159,6 +162,7 @@ class CobbleScaffold extends StatelessWidget {
           floatingActionButtonLocation: floatingActionButtonLocation,
           actions: actions,
           bottomAppBar: bottomAppBar,
+          expandedAppBar: expandedAppBar,
         ),
       );
 }
@@ -175,3 +179,4 @@ class EnsureTabScaffold extends InheritedWidget {
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) => false;
 }
+
