@@ -152,6 +152,13 @@ class Language {
   )
   final LanguageSystemApps systemApps;
 
+  @JsonKey(
+    name: 'calendar',
+    required: true,
+    disallowNullValue: true,
+  )
+  final LanguageCalendar calendar;
+
   Language(
     this.common,
     this.firstRun,
@@ -171,6 +178,7 @@ class Language {
     this.notifications,
     this.settings,
     this.systemApps,
+    this.calendar,
   );
 
   factory Language.fromJson(Map<String, dynamic> json) =>
@@ -513,6 +521,50 @@ class LanguageAlertingAppsFilterAppSource {
   factory LanguageAlertingAppsFilterAppSource.fromJson(
           Map<String, dynamic> json) =>
       _$LanguageAlertingAppsFilterAppSourceFromJson(json);
+}
+
+@JsonSerializable(
+  createToJson: false,
+  disallowUnrecognizedKeys: true,
+)
+class LanguageCalendar {
+  @JsonKey(
+    name: 'title',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String title;
+
+  @JsonKey(
+    name: 'toggle_title',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String toggleTitle;
+
+  @JsonKey(
+    name: 'toggle_subtitle',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String toggleSubtitle;
+
+  @JsonKey(
+    name: 'choose',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String choose;
+
+  LanguageCalendar(
+    this.title,
+    this.toggleTitle,
+    this.toggleSubtitle,
+    this.choose,
+  );
+
+  factory LanguageCalendar.fromJson(Map<String, dynamic> json) =>
+      _$LanguageCalendarFromJson(json);
 }
 
 @JsonSerializable(

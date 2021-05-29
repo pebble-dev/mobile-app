@@ -25,7 +25,8 @@ Language _$LanguageFromJson(Map<String, dynamic> json) {
     'health',
     'notifications',
     'settings',
-    'system_apps'
+    'system_apps',
+    'calendar'
   ], requiredKeys: const [
     'common',
     'first_run',
@@ -44,7 +45,8 @@ Language _$LanguageFromJson(Map<String, dynamic> json) {
     'health',
     'notifications',
     'settings',
-    'system_apps'
+    'system_apps',
+    'calendar'
   ], disallowNullValues: const [
     'common',
     'first_run',
@@ -63,7 +65,8 @@ Language _$LanguageFromJson(Map<String, dynamic> json) {
     'health',
     'notifications',
     'settings',
-    'system_apps'
+    'system_apps',
+    'calendar'
   ]);
   return Language(
     LanguageCommon.fromJson(json['common'] as Map<String, dynamic>),
@@ -90,6 +93,7 @@ Language _$LanguageFromJson(Map<String, dynamic> json) {
         json['notifications'] as Map<String, dynamic>),
     LanguageSettings.fromJson(json['settings'] as Map<String, dynamic>),
     LanguageSystemApps.fromJson(json['system_apps'] as Map<String, dynamic>),
+    LanguageCalendar.fromJson(json['calendar'] as Map<String, dynamic>),
   );
 }
 
@@ -227,6 +231,31 @@ LanguageAlertingAppsFilterAppSource
     json['all'] as String,
     json['phone'] as String,
     json['watch'] as String,
+  );
+}
+
+LanguageCalendar _$LanguageCalendarFromJson(Map<String, dynamic> json) {
+  $checkKeys(json, allowedKeys: const [
+    'title',
+    'toggle_title',
+    'toggle_subtitle',
+    'choose'
+  ], requiredKeys: const [
+    'title',
+    'toggle_title',
+    'toggle_subtitle',
+    'choose'
+  ], disallowNullValues: const [
+    'title',
+    'toggle_title',
+    'toggle_subtitle',
+    'choose'
+  ]);
+  return LanguageCalendar(
+    json['title'] as String,
+    json['toggle_title'] as String,
+    json['toggle_subtitle'] as String,
+    json['choose'] as String,
   );
 }
 

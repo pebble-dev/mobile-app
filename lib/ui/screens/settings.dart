@@ -6,6 +6,7 @@ import 'package:cobble/ui/home/tabs/widget_library.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/screens/about.dart';
+import 'package:cobble/ui/screens/calendar.dart';
 import 'package:cobble/ui/screens/health.dart';
 import 'package:cobble/ui/screens/notifications.dart';
 import 'package:cobble/ui/screens/placeholder_screen.dart';
@@ -60,13 +61,10 @@ class Settings extends StatelessWidget implements CobbleScreen {
             title: tr.settings.health,
             navigateTo: Health(),
           ),
-          CobbleTile.withIconColor(
-            color: context.scheme!.danger,
-            child: CobbleTile.navigation(
-              leading: RebbleIcons.unknown_app,
-              title: tr.settings.calendar,
-              navigateTo: PlaceholderScreen(),
-            ),
+          CobbleTile.navigation(
+            leading: RebbleIcons.calendar,
+            title: tr.settings.calendar,
+            navigateTo: Calendar(),
           ),
           CobbleTile.navigation(
             leading: RebbleIcons.sms_messages,
