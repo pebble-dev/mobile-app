@@ -3,6 +3,7 @@ import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/db/models/app.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/components/cobble_divider.dart';
 import 'package:cobble/ui/common/components/cobble_fab.dart';
@@ -35,10 +36,12 @@ class LockerTab extends HookWidget implements CobbleScreen {
     List compatibleFaces = [];
     WatchType watchType;
     bool circleConnected = false;
+    PebbleWatchLine lineConnected = PebbleWatchLine.unknown;
 
     if (currentWatch != null) {
       watchType = currentWatch.runningFirmware.hardwarePlatform.getWatchType();
       circleConnected = watchType == WatchType.chalk;
+      lineConnected = currentWatch.line;
       compatibleApps = incompatibleApps
           .where((element) =>
               AppCompatibility(element).isCompatibleWith(watchType))
@@ -137,19 +140,19 @@ class LockerTab extends HookWidget implements CobbleScreen {
                   children: [
                     CobbleTile.action(
                       leading: RebbleIcons.send_to_watch_unchecked,
-                      title: "Apply on watch",
+                      title: tr.lockerPage.apply,
                       onTap: () {},
                     ),
                     CobbleDivider(),
                     // TODO: Implement permissions
                     CobbleTile.action(
                       leading: RebbleIcons.permissions,
-                      title: "Manage permissions",
+                      title: tr.lockerPage.permissions,
                       onTap: () {},
                     ),
                     CobbleTile.action(
                       leading: RebbleIcons.settings,
-                      title: "Watch face settings",
+                      title: tr.lockerPage.faceSettings,
                       onTap: () {},
                     ),
                   ],
@@ -158,13 +161,15 @@ class LockerTab extends HookWidget implements CobbleScreen {
             else
               CobbleTile.action(
                 leading: RebbleIcons.unpair_from_watch,
-                title: "Not compatible with",
+                title: tr.lockerPage.notCompatible(
+                  watch: stringFromWatchLine(lineConnected),
+                ),
                 onTap: () {},
               ),
             CobbleDivider(),
             CobbleTile.action(
               leading: RebbleIcons.delete_trash,
-              title: "Delete from locker",
+              title: tr.lockerPage.delete,
               onTap: () => appManager.deleteApp(face.uuid),
             ),
           ],
@@ -261,12 +266,12 @@ class LockerTab extends HookWidget implements CobbleScreen {
                   children: [
                     CobbleTile.action(
                       leading: RebbleIcons.permissions,
-                      title: "Manage permissions",
+                      title: tr.lockerPage.permissions,
                       onTap: () {},
                     ),
                     CobbleTile.action(
                       leading: RebbleIcons.settings,
-                      title: "Watch app settings",
+                      title: tr.lockerPage.appSettings,
                       onTap: () {},
                     ),
                   ],
@@ -275,13 +280,15 @@ class LockerTab extends HookWidget implements CobbleScreen {
             else
               CobbleTile.action(
                 leading: RebbleIcons.unpair_from_watch,
-                title: "Not compatible with",
+                title: tr.lockerPage.notCompatible(
+                  watch: stringFromWatchLine(lineConnected),
+                ),
                 onTap: () {},
               ),
             CobbleDivider(),
             CobbleTile.action(
               leading: RebbleIcons.delete_trash,
-              title: "Delete from locker",
+              title: tr.lockerPage.delete,
               onTap: () => appManager.deleteApp(app.uuid),
             ),
           ],
@@ -337,12 +344,12 @@ class LockerTab extends HookWidget implements CobbleScreen {
             indexTab.value = index;
           },
           tabs: [
-            Tab(text: "My watch faces"),
-            Tab(text: "My apps"),
+            Tab(text: tr.lockerPage.myFaces),
+            Tab(text: tr.lockerPage.myApps),
           ],
         ),
         floatingActionButton: CobbleFab(
-          label: indexTab.value == 0 ? "Get watch faces" : "Get watch apps",
+          label: indexTab.value == 0 ? tr.lockerPage.getFaces : tr.lockerPage.getApps,
           icon: RebbleIcons.plus_add,
           onPressed: () {},
         ),
@@ -373,7 +380,7 @@ class LockerTab extends HookWidget implements CobbleScreen {
                           children: [
                             Padding(
                               padding: EdgeInsets.all(16),
-                              child: Text("Incompatible Watch Faces"),
+                              child: Text(tr.lockerPage.incompatibleFaces),
                             ),
                             CobbleDivider(),
                           ],
@@ -424,7 +431,7 @@ class LockerTab extends HookWidget implements CobbleScreen {
                         children: [
                           Padding(
                             padding: EdgeInsets.all(16),
-                            child: Text("Incompatible Watch Apps"),
+                            child: Text(tr.lockerPage.incompatibleApps),
                           ),
                           CobbleDivider(),
                         ],
