@@ -23,13 +23,13 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
-
-      - run: flutter pub get
-      - run: flutter analyze --no-fatal-infos
+      - run: fvm install
+      - run: fvm flutter pub get
+      - run: fvm flutter analyze --no-fatal-infos
       - name: Flutter test
         continue-on-error: true
-        run: flutter test
-      - run: flutter build apk --debug
+        run: fvm flutter test
+      - run: fvm flutter build apk --debug
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v1

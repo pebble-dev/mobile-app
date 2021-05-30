@@ -24,10 +24,11 @@ jobs:
       - run: echo $KEY_JKS | base64 -d > android/key.jks
         env:
           KEY_JKS: ${{ secrets.KEY_JKS }}
-      - run: flutter pub get
-      - run: flutter analyze --no-fatal-infos
-      - run: flutter test
-      - run: flutter build apk --release
+      - run: fvm install
+      - run: fvm flutter pub get
+      - run: fvm flutter analyze --no-fatal-infos
+      - run: fvm flutter test
+      - run: fvm flutter build apk --release
         env:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           ALIAS_PASSWORD: ${{ secrets.ALIAS_PASSWORD }}
