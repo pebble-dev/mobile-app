@@ -7,11 +7,19 @@ import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/localization/localization.dart';
+import 'package:cobble/ui/common/components/cobble_button.dart';
+import 'package:cobble/ui/common/components/cobble_divider.dart';
+import 'package:cobble/ui/common/components/cobble_fab.dart';
+import 'package:cobble/ui/common/components/cobble_sheet.dart';
+import 'package:cobble/ui/common/components/cobble_tile.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
+import 'package:cobble/ui/common/icons/comp_icon.dart';
+import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/setup/pair_page.dart';
+import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -20,8 +28,7 @@ import '../../common/icons/fonts/rebble_icons.dart';
 
 class MyWatchesTab extends HookWidget implements CobbleScreen {
   final Color _disconnectedColor = Color.fromRGBO(255, 255, 255, 0.5);
-  final Color _connectedColor = Color.fromARGB(255, 0, 255, 170);
-  final Color _connectedBrColor = Color.fromARGB(255, 0, 169, 130);
+  final Color _connectedColor = Color.fromARGB(255, 0, 169, 130);
 
   void getCurrentWatchStatus() {}
   final UiConnectionControl uiConnectionControl = UiConnectionControl();
@@ -81,18 +88,17 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
         return tr.watchesPage.status.disconnected;
     }
 
-    Color _getBrStatusColor(PebbleScanDevice device) {
-      if (connectionState.currentWatchAddress == device.address)
-        return _connectedBrColor;
+    Color _getBrStatusColor(dynamic device) {
+      if (connectionState.currentWatchAddress == device.address &&
+          !isConnecting)
+        return _connectedColor;
       else
         return _disconnectedColor;
     }
 
     Color _getStatusColor(PebbleScanDevice device) {
-      if (connectionState.currentWatchAddress == device.address)
-        return _connectedColor;
-      else
-        return _disconnectedColor;
+      // In the future this will return green for firmware update status
+      return context.scheme!.muted;
     }
 
     void _onDisconnectPressed(bool inSettings) {
@@ -138,23 +144,16 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
       PebbleScanDevice device =
           allWatchesList.firstWhere((e) => e.address == address);
 
-      showModalBottomSheet(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
-          ),
+      CobbleSheet.showModal(
           context: context,
-          isScrollControlled: true,
           builder: (context) {
             return Container(
-              //Todo:use theme
-              color: Color.fromARGB(1, 65, 65, 65),
               child: Wrap(
                 children: <Widget>[
                   Container(
                     child: Row(children: <Widget>[
-                      PebbleWatchIcon(
-                        PebbleWatchModel.values[device.color!],
-                        backgroundColor: _getBrStatusColor(device)),
+                      PebbleWatchIcon(PebbleWatchModel.values[device.color!],
+                          backgroundColor: _getBrStatusColor(device)),
                       SizedBox(width: 16),
                       Column(
                         children: <Widget>[
@@ -174,49 +173,35 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                       ),
                       Expanded(child: Container(width: 0.0, height: 0.0)),
                     ]),
-                    margin: EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    margin: EdgeInsets.all(16.0),
                   ),
-                  const Divider(
-                    color: Colors.white24,
-                    height: 20,
-                    thickness: 2,
-                    indent: 0,
-                    endIndent: 0,
-                  ),
+                  CobbleDivider(),
                   Offstage(
                     offstage: isConnected,
-                    child: ListTile(
-                      leading: Icon(RebbleIcons.connect_to_watch),
-                      title: Text(tr.watchesPage.action.connect),
+                    child: CobbleTile.action(
+                      leading: RebbleIcons.connect_to_watch,
+                      title: tr.watchesPage.action.connect,
                       onTap: () => _onConnectPressed(device, true),
                     ),
                   ),
                   Offstage(
                     offstage: !isConnected,
-                    child: ListTile(
-                      leading: Icon(RebbleIcons.disconnect_from_watch),
-                      title: Text(tr.watchesPage.action.disconnect),
+                    child: CobbleTile.action(
+                      leading: RebbleIcons.disconnect_from_watch,
+                      title: tr.watchesPage.action.disconnect,
                       onTap: () => _onDisconnectPressed(true),
                     ),
                   ),
-                  ListTile(
-                    leading: Icon(RebbleIcons.check_for_updates),
-                    title: Text(tr.watchesPage.action.checkUpdates),
+                  CobbleTile.action(
+                    leading: RebbleIcons.check_for_updates,
+                    title: tr.watchesPage.action.checkUpdates,
                     onTap: () => _onUpdatePressed(device),
                   ),
-                  const Divider(
-                    color: Colors.white24,
-                    height: 20,
-                    thickness: 2,
-                    indent: 0,
-                    endIndent: 0,
-                  ),
-                  ListTile(
-                    leading: Icon(RebbleIcons.x_close, color: Colors.red),
-                    title: Text(
-                      tr.watchesPage.action.forget,
-                      style: TextStyle(color: Colors.red),
-                    ),
+                  CobbleDivider(),
+                  CobbleTile.action(
+                    leading: RebbleIcons.x_close,
+                    title: tr.watchesPage.action.forget,
+                    intent: context.scheme!.destructive,
                     onTap: () => _onForgetPressed(device),
                   ),
                 ],
@@ -234,8 +219,8 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                 child: Row(children: <Widget>[
                   Container(
                     child: Center(
-                        child: Icon(RebbleIcons.disconnect_from_watch,
-                            color: Colors.black)),
+                        child: CompIcon(RebbleIcons.disconnect_from_watch,
+                            RebbleIcons.disconnect_from_watch_background)),
                     width: 56,
                     height: 56,
                     decoration: BoxDecoration(
@@ -244,7 +229,8 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                   SizedBox(width: 16),
                   Column(
                     children: <Widget>[
-                      Text(tr.watchesPage.status.nothingConnected, style: TextStyle(fontSize: 16)),
+                      Text(tr.watchesPage.status.nothingConnected,
+                          style: TextStyle(fontSize: 16)),
                       SizedBox(height: 4),
                       Text(tr.watchesPage.status.backgroundServiceStopped),
                       Wrap(
@@ -265,15 +251,19 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                   .map((e) => InkWell(
                         child: Container(
                             child: Row(children: <Widget>[
-                              PebbleWatchIcon(e!.model,
-                                backgroundColor: _connectedBrColor),
+                              Container(
+                                child: Center(
+                                    child: PebbleWatchIcon(e!.model,
+                                        backgroundColor: _getBrStatusColor(e))),
+                              ),
                               SizedBox(width: 16),
                               Column(
                                 children: <Widget>[
                                   Text(e.name!, style: TextStyle(fontSize: 16)),
                                   SizedBox(height: 4),
                                   Text(_getStatusText(e.address),
-                                      style: TextStyle(color: _connectedColor)),
+                                      style: TextStyle(
+                                          color: context.scheme!.muted)),
                                   Wrap(
                                     spacing: 4,
                                     children: [],
@@ -283,11 +273,9 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                               ),
                               Expanded(
                                   child: Container(width: 0.0, height: 0.0)),
-                              IconButton(
-                                icon: Icon(RebbleIcons.disconnect_from_watch,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .secondary),
+                              CobbleButton(
+                                outlined: false,
+                                icon: RebbleIcons.disconnect_from_watch,
                                 onPressed: () => _onDisconnectPressed(false),
                               ),
                             ]),
@@ -296,24 +284,18 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                       ))
                   .toList()),
         ],
-        Padding(
-            padding: EdgeInsets.fromLTRB(15, 25, 15, 5),
-            child: Text(tr.watchesPage.allWatches, style: TextStyle(fontSize: 18))),
-        const Divider(
-          color: Colors.white24,
-          height: 20,
-          thickness: 2,
-          indent: 15,
-          endIndent: 15,
-        ),
+        CobbleTile.title(title: tr.watchesPage.allWatches),
+        CobbleDivider(),
         Column(
             children: allDisconnectedWatches
                 .map((e) => InkWell(
                       child: Container(
                         child: Row(children: <Widget>[
-                          PebbleWatchIcon(
-                            PebbleWatchModel.values[e.color!],
-                            backgroundColor: _disconnectedColor,
+                          Container(
+                            child: Center(
+                                child: PebbleWatchIcon(
+                                    PebbleWatchModel.values[e.color!],
+                                    backgroundColor: _getBrStatusColor(e))),
                           ),
                           SizedBox(width: 16),
                           Column(
@@ -329,9 +311,9 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                             crossAxisAlignment: CrossAxisAlignment.start,
                           ),
                           Expanded(child: Container(width: 0.0, height: 0.0)),
-                          IconButton(
-                            icon: Icon(RebbleIcons.connect_to_watch,
-                                color: Theme.of(context).colorScheme.secondary),
+                          CobbleButton(
+                            outlined: false,
+                            icon: RebbleIcons.connect_to_watch,
                             onPressed: () => _onConnectPressed(e, false),
                           ),
                         ]),
@@ -341,10 +323,10 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                     ))
                 .toList()),
       ]),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: CobbleFab(
         onPressed: () => context.push(PairPage.fromTab()),
-        label: Text(tr.watchesPage.fab),
-        icon: Icon(Icons.add),
+        label: tr.watchesPage.fab,
+        icon: RebbleIcons.plus_add,
       ),
     );
   }
