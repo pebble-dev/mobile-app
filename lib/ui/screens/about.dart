@@ -17,12 +17,12 @@ import 'package:intl/intl.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 class About extends HookWidget implements CobbleScreen {
-  static const discordURL = "https://discord.gg/aRUAYFN";
-  static const helpCenterURL = "https://help.rebble.io/";
-  static const redditURL = "https://reddit.com/r/pebble";
-  static const emailURL = "mailto:support@rebble.io";
-  static const twitterURL = "https://twitter.com/pebble_dev";
-  static const sourceURL = "https://github.com/pebble-dev/mobile-app";
+  static const _discordURL = "https://discord.gg/aRUAYFN";
+  static const _helpCenterURL = "https://help.rebble.io/";
+  static const _redditURL = "https://reddit.com/r/pebble";
+  static const _emailURL = "mailto:support@rebble.io";
+  static const _twitterURL = "https://twitter.com/pebble_dev";
+  static const _sourceURL = "https://github.com/pebble-dev/mobile-app";
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +95,7 @@ class About extends HookWidget implements CobbleScreen {
                               ),
                             ],
                           ),
-                          onPressed: () => {launchURL(sourceURL)},
+                          onPressed: () => launchURL(_sourceURL),
                         ),
                       ),
                     ),
@@ -106,7 +106,7 @@ class About extends HookWidget implements CobbleScreen {
                         child: CobbleButton(
                           outlined: false,
                           label: tr.aboutPage.licenses,
-                          onPressed: () => {showLicensePage(context: context)},
+                          onPressed: () => showLicensePage(context: context),
                         ),
                       ),
                     ),
@@ -143,7 +143,7 @@ class About extends HookWidget implements CobbleScreen {
                     trailing: RebbleIcons.caret_right,
                     title: tr.aboutPage.helpCenter,
                     subtitle: tr.aboutPage.helpCenterSubtitle,
-                    onTap: () => {launchURL(helpCenterURL)},
+                    onTap: () => launchURL(_helpCenterURL),
                   ),
                   CobbleTile.action(
                     leading: BackCompIcon(
@@ -153,7 +153,7 @@ class About extends HookWidget implements CobbleScreen {
                     trailing: RebbleIcons.caret_right,
                     title: tr.aboutPage.emailUs,
                     subtitle: tr.aboutPage.emailUsSubtitle,
-                    onTap: () => {launchURL(emailURL)},
+                    onTap: () => launchURL(_emailURL),
                   ),
                   CobbleTile.action(
                     leading: BackCompIcon(
@@ -163,7 +163,7 @@ class About extends HookWidget implements CobbleScreen {
                     trailing: RebbleIcons.caret_right,
                     title: tr.aboutPage.discordServer,
                     subtitle: tr.aboutPage.discordServerSubtitle,
-                    onTap: () => {launchURL(discordURL)},
+                    onTap: () => launchURL(_discordURL),
                   ),
                   SizedBox(height: 8.0),
                 ],
@@ -192,7 +192,7 @@ class About extends HookWidget implements CobbleScreen {
                     trailing: RebbleIcons.caret_right,
                     title: tr.aboutPage.reddit,
                     subtitle: tr.aboutPage.redditSubtitle,
-                    onTap: () => {launchURL(redditURL)},
+                    onTap: () => launchURL(_redditURL),
                   ),
                   CobbleTile.action(
                     leading: BackCompIcon(
@@ -202,7 +202,7 @@ class About extends HookWidget implements CobbleScreen {
                     trailing: RebbleIcons.caret_right,
                     title: tr.aboutPage.discord,
                     subtitle: tr.aboutPage.discordSubtitle,
-                    onTap: () => {launchURL(discordURL)},
+                    onTap: () => launchURL(_discordURL),
                   ),
                   CobbleTile.action(
                     leading: BackCompIcon(
@@ -212,7 +212,7 @@ class About extends HookWidget implements CobbleScreen {
                     trailing: RebbleIcons.caret_right,
                     title: tr.aboutPage.twitter,
                     subtitle: tr.aboutPage.twitterSubtitle,
-                    onTap: () => {launchURL(twitterURL)},
+                    onTap: () => launchURL(_twitterURL),
                   ),
                   SizedBox(height: 8.0),
                 ],
