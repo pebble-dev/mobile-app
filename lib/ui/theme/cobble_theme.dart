@@ -1,5 +1,6 @@
 import 'package:cobble/ui/theme/cobble_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CobbleTheme {
   static appTheme(Brightness? brightness) {
@@ -88,12 +89,21 @@ class CobbleTheme {
       ),
     );
 
+    final invertedBrightness = brightness == Brightness.dark ? Brightness.light : Brightness.dark;
+
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: materialScheme.surface,
+        statusBarIconBrightness: invertedBrightness,
+        statusBarBrightness: invertedBrightness,
+      ),
+    );
+
     return ThemeData(
       brightness: brightness,
       visualDensity: VisualDensity.adaptivePlatformDensity,
       primaryColor: materialScheme.primary,
-      primaryColorBrightness:
-          brightness == Brightness.dark ? Brightness.light : Brightness.dark,
+      primaryColorBrightness: invertedBrightness,
       accentColor: materialScheme.secondary,
       backgroundColor: materialScheme.background,
       colorScheme: materialScheme,
