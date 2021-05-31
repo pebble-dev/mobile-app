@@ -177,7 +177,7 @@ class LockerTab extends HookWidget implements CobbleScreen {
       );
     }
 
-    Card facesCard(App face, bool compatible) {
+    Card _facesCard(App face, bool compatible) {
       return Card(
         key: ValueKey(face.uuid),
         child: Container(
@@ -296,7 +296,7 @@ class LockerTab extends HookWidget implements CobbleScreen {
       );
     }
 
-    Widget appsItem(App app, bool compatible) {
+    Widget _appsItem(App app, bool compatible) {
       return Container(
         key: ValueKey(app.uuid),
         height: 72.0,
@@ -368,7 +368,7 @@ class LockerTab extends HookWidget implements CobbleScreen {
                     ),
                     delegate: SliverChildListDelegate(
                       compatibleFaces
-                          .map<Widget>((face) => facesCard(face, true))
+                          .map<Widget>((face) => _facesCard(face, true))
                           .toList(),
                     ),
                   ),
@@ -396,7 +396,7 @@ class LockerTab extends HookWidget implements CobbleScreen {
                     ),
                     delegate: SliverChildListDelegate(
                       incompatibleFaces
-                          .map<Widget>((face) => facesCard(face, false))
+                          .map<Widget>((face) => _facesCard(face, false))
                           .toList(),
                     ),
                   ),
@@ -407,7 +407,7 @@ class LockerTab extends HookWidget implements CobbleScreen {
               slivers: [
                 SliverReorderableList(
                   itemBuilder: (BuildContext context, int index) {
-                    return appsItem(compatibleApps[index], true);
+                    return _appsItem(compatibleApps[index], true);
                   },
                   itemCount: compatibleApps.length,
                   onReorder: (int fromIndex, int toIndex) {
@@ -441,7 +441,7 @@ class LockerTab extends HookWidget implements CobbleScreen {
                 SliverList(
                   delegate: SliverChildListDelegate(
                     incompatibleApps
-                        .map<Widget>((app) => appsItem(app, false))
+                        .map<Widget>((app) => _appsItem(app, false))
                         .toList(),
                   ),
                 ),

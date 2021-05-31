@@ -165,7 +165,7 @@ class CobbleTheme {
         ),
         labelPadding: EdgeInsets.only(top: 5, bottom: 4),
         unselectedLabelColor: scheme.muted,
-        // Indicator should be rounded and not straight, implement that later
+        // TODO: Indicator should be rounded and not straight, implement that later
         indicator: UnderlineTabIndicator(
           borderSide: BorderSide(
             width: 4.0,
