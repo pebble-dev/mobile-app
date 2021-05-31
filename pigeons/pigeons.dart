@@ -125,6 +125,16 @@ class PbwAppInfo {
   WatchappInfo? watchapp;
 }
 
+class AppstoreAppInfo {
+  String? id;
+  String? uuid;
+  String? title;
+  String? type;
+  String? list_image;
+  String? icon_image;
+  String? screenshot_image;
+}
+
 class WatchappInfo {
   bool? watchface;
   bool? hiddenApp;
@@ -141,8 +151,9 @@ class WatchResource {
 class InstallData {
   String uri;
   PbwAppInfo appInfo;
+  String? appstoreId;
 
-  InstallData(this.uri, this.appInfo);
+  InstallData(this.uri, this.appInfo, this.appstoreId);
 }
 
 class AppInstallStatus {
@@ -211,6 +222,9 @@ abstract class IntentCallbacks {
 
 @FlutterApi()
 abstract class BackgroundAppInstallCallbacks {
+  @async
+  void insertAppstoreApp(AppstoreAppInfo data);
+
   @async
   void beginAppInstall(InstallData installData);
 

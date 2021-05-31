@@ -346,14 +346,50 @@ class AppInstallStatus {
   }
 }
 
+class AppstoreAppInfo {
+  String id;
+  String uuid;
+  String title;
+  String type;
+  String list_image;
+  String icon_image;
+  String screenshot_image;
+
+  Object encode() {
+    final Map<Object, Object> pigeonMap = <Object, Object>{};
+    pigeonMap['id'] = id;
+    pigeonMap['uuid'] = uuid;
+    pigeonMap['title'] = title;
+    pigeonMap['type'] = type;
+    pigeonMap['list_image'] = list_image;
+    pigeonMap['icon_image'] = icon_image;
+    pigeonMap['screenshot_image'] = screenshot_image;
+    return pigeonMap;
+  }
+
+  static AppstoreAppInfo decode(Object message) {
+    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
+    return AppstoreAppInfo()
+      ..id = pigeonMap['id'] as String
+      ..uuid = pigeonMap['uuid'] as String
+      ..title = pigeonMap['title'] as String
+      ..type = pigeonMap['type'] as String
+      ..list_image = pigeonMap['list_image'] as String
+      ..icon_image = pigeonMap['icon_image'] as String
+      ..screenshot_image = pigeonMap['screenshot_image'] as String;
+  }
+}
+
 class InstallData {
   String uri;
   PbwAppInfo appInfo;
+  String appstoreId;
 
   Object encode() {
     final Map<Object, Object> pigeonMap = <Object, Object>{};
     pigeonMap['uri'] = uri;
     pigeonMap['appInfo'] = appInfo == null ? null : appInfo.encode();
+    pigeonMap['appstoreId'] = appstoreId;
     return pigeonMap;
   }
 
@@ -361,7 +397,8 @@ class InstallData {
     final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
     return InstallData()
       ..uri = pigeonMap['uri'] as String
-      ..appInfo = pigeonMap['appInfo'] != null ? PbwAppInfo.decode(pigeonMap['appInfo']) : null;
+      ..appInfo = pigeonMap['appInfo'] != null ? PbwAppInfo.decode(pigeonMap['appInfo']) : null
+      ..appstoreId = pigeonMap['appstoreId'] as String;
   }
 }
 
@@ -1566,10 +1603,25 @@ class NotificationsControl {
 }
 
 abstract class BackgroundAppInstallCallbacks {
+  Future<void> insertAppstoreApp(AppstoreAppInfo arg);
   Future<void> beginAppInstall(InstallData arg);
   Future<void> deleteApp(StringWrapper arg);
   Future<void> beginAppOrderChange(AppReorderRequest arg);
   static void setup(BackgroundAppInstallCallbacks api) {
+    {
+      const BasicMessageChannel<Object> channel =
+          BasicMessageChannel<Object>('dev.flutter.pigeon.BackgroundAppInstallCallbacks.insertAppstoreApp', StandardMessageCodec());
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object message) async {
+          assert(message != null, 'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.insertAppstoreApp was null. Expected AppstoreAppInfo.');
+          final AppstoreAppInfo input = AppstoreAppInfo.decode(message);
+          await api.insertAppstoreApp(input);
+          return;
+        });
+      }
+    }
     {
       const BasicMessageChannel<Object> channel =
           BasicMessageChannel<Object>('dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall', StandardMessageCodec());
@@ -1809,8 +1861,7 @@ class AppInstallControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -1823,11 +1874,9 @@ class AppInstallControl {
 
   Future<NumberWrapper> sendAppOrderToWatch(ListWrapper arg) async {
     final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.AppInstallControl.sendAppOrderToWatch',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(encoded) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.AppInstallControl.sendAppOrderToWatch', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1835,8 +1884,7 @@ class AppInstallControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -1898,11 +1946,9 @@ class TimelineSyncControl {
 
 class ScreenshotsControl {
   Future<ScreenshotResult> takeWatchScreenshot() async {
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.ScreenshotsControl.takeWatchScreenshot',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.ScreenshotsControl.takeWatchScreenshot', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1910,8 +1956,7 @@ class ScreenshotsControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error =
-          replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -1926,11 +1971,9 @@ class ScreenshotsControl {
 class NotificationUtils {
   Future<BooleanWrapper> dismissNotification(StringWrapper arg) async {
     final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
-        'dev.flutter.pigeon.NotificationUtils.dismissNotification',
-        StandardMessageCodec());
-    final Map<Object, Object> replyMap =
-        await channel.send(encoded) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel =
+        BasicMessageChannel<Object>('dev.flutter.pigeon.NotificationUtils.dismissNotification', StandardMessageCodec());
+    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',

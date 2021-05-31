@@ -13,12 +13,23 @@ class BackgroundAppInstallBridge @Inject constructor(
 ) : FlutterBridge {
     private var cachedAppInstallCallbacks: Pigeons.BackgroundAppInstallCallbacks? = null
 
-    suspend fun installAppNow(uri: String, appInfo: Pigeons.PbwAppInfo): Boolean {
+    suspend fun setAppstoreApp(appstoreData: Pigeons.AppstoreAppInfo): Boolean {
+        val appInstallCallbacks = getAppInstallCallbacks() ?: return false
+
+        awaitPigeonMethod<Void> { reply ->
+            appInstallCallbacks.insertAppstoreApp(appstoreData, reply)
+        }
+
+        return true
+    }
+
+    suspend fun installAppNow(uri: String, appInfo: Pigeons.PbwAppInfo, appstoreId: String?): Boolean {
         val appInstallCallbacks = getAppInstallCallbacks() ?: return false
 
         val appInstallData = Pigeons.InstallData().also {
             it.uri = uri
             it.appInfo = appInfo
+            it.appstoreId = appstoreId
         }
 
         awaitPigeonMethod<Void> { reply ->

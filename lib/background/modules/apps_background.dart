@@ -1,7 +1,9 @@
 import 'package:cobble/domain/apps/app_lifecycle_manager.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/db/dao/app_dao.dart';
+import 'package:cobble/domain/db/dao/appstore_app_dao.dart';
 import 'package:cobble/domain/db/models/app.dart';
+import 'package:cobble/domain/db/models/appstore_app.dart';
 import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/entities/pbw_app_info_extension.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
@@ -11,12 +13,14 @@ import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid_type/uuid_type.dart';
+import 'package:http/http.dart' as http;
 
 class AppsBackground implements BackgroundAppInstallCallbacks {
   final ProviderContainer container;
 
   late WatchAppsSyncer watchAppsSyncer;
   late AppDao appDao;
+  late AppstoreAppDao appstoreAppDao;
   late AppLifecycleManager appLifecycleManager;
   late Future<Preferences> preferences;
 
@@ -27,6 +31,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
   void init() async {
     watchAppsSyncer = container.listen(watchAppSyncerProvider).read();
     appDao = container.listen(appDaoProvider).read();
+    appstoreAppDao = container.listen(appstoreAppDaoProvider).read();
     appLifecycleManager = container.listen(appLifecycleManagerProvider).read();
     preferences = container.listen(preferencesProvider.future).read();
 
@@ -48,8 +53,34 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
   }
 
   @override
+  Future<void> insertAppstoreApp(AppstoreAppInfo data) async {
+    final uuid = Uuid.parse(data.uuid);
+
+    List<String> imageUrls = [data.list_image, data.icon_image, data.screenshot_image];
+    List<List<int>?> imageLists = imageUrls.map((url) {
+      Uri? uri = Uri.tryParse(url);
+      // Apparently an empty string is a fine uri
+      if (uri != null && url.isEmpty)
+        http.get(uri).then((response) { return response.bodyBytes.toList(); });
+      return null;
+    }).toList();
+    
+    final newApp = AppstoreApp(
+        id: data.id,
+        uuid: uuid,
+        title: data.title,
+        isWatchface: data.type == "watchface",
+        listImage: imageLists[0],
+        iconImage: imageLists[1],
+        screenshotImage: imageLists[2]);
+
+    await appstoreAppDao.insertOrUpdatePackage(newApp);
+  }
+
+  @override
   Future<void> beginAppInstall(InstallData installData) async {
     final newAppUuid = Uuid.parse(installData.appInfo.uuid);
+    final appstoreId = installData.appstoreId;
 
     final existingApp = await appDao.getPackage(newAppUuid);
     if (existingApp != null) {
@@ -73,7 +104,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
         shortName: appInfo.shortName,
         longName: appInfo.longName,
         company: appInfo.companyName,
-        appstoreId: null,
+        appstoreId: appstoreId,
         version: appInfo.versionLabel,
         isWatchface: appInfo.watchapp.watchface,
         isSystem: false,

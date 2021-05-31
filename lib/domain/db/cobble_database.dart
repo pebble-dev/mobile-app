@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cobble/domain/apps/default_apps.dart';
 import 'package:cobble/domain/db/dao/active_notification_dao.dart';
 import 'package:cobble/domain/db/dao/app_dao.dart';
+import 'package:cobble/domain/db/dao/appstore_app_dao.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -63,10 +64,25 @@ Future<void> createAppsTable(Database db) async {
   await populate_system_apps(appDao);
 }
 
+Future<void> createAppstoreAppsTable(Database db) async {
+  await db.execute("""
+    CREATE TABLE $tableAppstoreApps(
+      id TEXT PRIMARY KEY NOT NULL,
+      uuid TEXT PRIMARY KEY NOT NULL,
+      title TEXT NOT NULL,
+      isWatchface INTEGER NOT NULL,
+      listImage BLOB,
+      iconImage BLOB,
+      screenshotImage BLOB,
+    )
+  """);
+}
+
 void _createDb(Database db) async {
   await createTimelinePinsTable(db);
   await createActiveNotificationsTable(db);
   await createAppsTable(db);
+  await createAppstoreAppsTable(db);
 }
 
 void _upgradeDb(Database db, int oldVersion, int newVersion) async {
@@ -98,6 +114,10 @@ void _upgradeDb(Database db, int oldVersion, int newVersion) async {
         "appOrder = -1 WHERE "
         "isWatchface = 1");
   }
+  
+  if (oldVersion < 6) {
+    createAppstoreAppsTable(db);
+  }
 }
 
 final AutoDisposeFutureProvider<Database> databaseProvider =
@@ -106,7 +126,7 @@ final AutoDisposeFutureProvider<Database> databaseProvider =
   final dbPath = join(dbFolder, "cobble.db");
 
   final db = await openDatabase(dbPath,
-      version: 5,
+      version: 6,
       onCreate: (db, name) {
         _createDb(db);
       },

@@ -8,6 +8,8 @@ import io.rebble.cobble.bridges.background.BackgroundAppInstallBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.data.pbw.appinfo.PbwAppInfo
 import io.rebble.cobble.data.pbw.appinfo.toPigeon
+import io.rebble.cobble.data.AppstoreAppInfo
+import io.rebble.cobble.data.toPigeon
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.middleware.PutBytesController
 import io.rebble.cobble.middleware.getBestVariant
@@ -33,6 +35,7 @@ import okio.sink
 import okio.source
 import timber.log.Timber
 import java.io.InputStream
+import java.net.URL
 import java.util.*
 import java.util.zip.ZipInputStream
 import javax.inject.Inject
@@ -77,12 +80,20 @@ class AppInstallFlutterBridge @Inject constructor(
         }
     }
 
+
+    private fun getStreamFromUri(uri: String): InputStream? {
+        if (uri.startsWith("content"))
+            return context.contentResolver
+                    .openInputStream(Uri.parse(uri))
+        return URL(uri).openStream()
+    }
+
     @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun parsePbwFileMetadata(
             uri: String
     ): PbwAppInfo? = withContext(Dispatchers.IO) {
         try {
-            val stream = context.contentResolver.openInputStream(Uri.parse(uri))
+            val stream = getStreamFromUri(uri)
 
             ZipInputStream(stream).use { zipInputStream ->
                 zipInputStream.findFile("appinfo.json") ?: return@use null
@@ -102,11 +113,19 @@ class AppInstallFlutterBridge @Inject constructor(
         coroutineScope.launchPigeonResult(result) {
             // Copy pbw file to the app's folder
             val appUuid = installData.appInfo.uuid
+            var appstoreId: String? = null
+            val appstoreData = installData.appstoreId
+            if (appstoreData != null) {
+                val parsed = moshi.adapter(AppstoreAppInfo::class.java).fromJson(appstoreData)
+                if (parsed != null) {
+                    appstoreId = parsed.id
+                    backgroundAppInstallBridge.setAppstoreApp(parsed.toPigeon())
+                }
+            }
             val targetFileName = getAppPbwFile(context, appUuid)
 
             val success = withContext(Dispatchers.IO) {
-                val openInputStream = context.contentResolver
-                        .openInputStream(Uri.parse(installData.uri))
+                val openInputStream = getStreamFromUri(installData.uri)
 
                 if (openInputStream == null) {
                     Timber.e("Unknown URI '%s'. This should have been filtered before it reached beginAppInstall. Aborting.", installData.uri)
@@ -129,7 +148,8 @@ class AppInstallFlutterBridge @Inject constructor(
             }
 
             if (success) {
-                backgroundAppInstallBridge.installAppNow(installData.uri, installData.appInfo)
+                backgroundAppInstallBridge.installAppNow(installData.uri, installData.appInfo, appstoreId)
+                
             }
 
             BooleanWrapper(true)

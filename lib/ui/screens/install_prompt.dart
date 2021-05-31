@@ -89,7 +89,7 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
               "Do you want to install ${_appInfo.longName} by ${_appInfo.companyName}?"),
           RaisedButton(
               onPressed: () {
-                appManager.beginAppInstall(_appUri, _appInfo);
+                appManager.beginAppInstall(_appUri, _appInfo, null);
                 userInitiatedInstall.value = true;
               },
               child: Text("Yes")),
