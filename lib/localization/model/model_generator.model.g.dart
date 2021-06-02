@@ -94,15 +94,87 @@ Language _$LanguageFromJson(Map<String, dynamic> json) {
 }
 
 LanguageAboutPage _$LanguageAboutPageFromJson(Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['title', 'about', 'community', 'support'],
-      requiredKeys: const ['title', 'about', 'community', 'support'],
-      disallowNullValues: const ['title', 'about', 'community', 'support']);
+  $checkKeys(json, allowedKeys: const [
+    'title',
+    'about',
+    'community',
+    'support',
+    'help_center',
+    'help_center_subtitle',
+    'email_us',
+    'email_us_subtitle',
+    'discord_server',
+    'discord_server_subtitle',
+    'reddit',
+    'reddit_subtitle',
+    'discord',
+    'discord_subtitle',
+    'twitter',
+    'twitter_subtitle',
+    'source_code',
+    'licenses',
+    'version_string'
+  ], requiredKeys: const [
+    'title',
+    'about',
+    'community',
+    'support',
+    'help_center',
+    'help_center_subtitle',
+    'email_us',
+    'email_us_subtitle',
+    'discord_server',
+    'discord_server_subtitle',
+    'reddit',
+    'reddit_subtitle',
+    'discord',
+    'discord_subtitle',
+    'twitter',
+    'twitter_subtitle',
+    'source_code',
+    'licenses',
+    'version_string'
+  ], disallowNullValues: const [
+    'title',
+    'about',
+    'community',
+    'support',
+    'help_center',
+    'help_center_subtitle',
+    'email_us',
+    'email_us_subtitle',
+    'discord_server',
+    'discord_server_subtitle',
+    'reddit',
+    'reddit_subtitle',
+    'discord',
+    'discord_subtitle',
+    'twitter',
+    'twitter_subtitle',
+    'source_code',
+    'licenses',
+    'version_string'
+  ]);
   return LanguageAboutPage(
     json['title'] as String,
     json['about'] as String,
     json['community'] as String,
     json['support'] as String,
+    json['help_center'] as String,
+    json['help_center_subtitle'] as String,
+    json['email_us'] as String,
+    json['email_us_subtitle'] as String,
+    json['discord_server'] as String,
+    json['discord_server_subtitle'] as String,
+    json['reddit'] as String,
+    json['reddit_subtitle'] as String,
+    json['discord'] as String,
+    json['discord_subtitle'] as String,
+    json['twitter'] as String,
+    json['twitter_subtitle'] as String,
+    json['source_code'] as String,
+    json['licenses'] as String,
+    json['version_string'] as String,
   );
 }
 
@@ -504,8 +576,7 @@ LanguageSettings _$LanguageSettingsFromJson(Map<String, dynamic> json) {
     'messages_and_canned_replies',
     'language_and_voice',
     'analytics',
-    'about_app',
-    'community_and_support',
+    'about_and_support',
     'developer_options',
     'widget_library'
   ], requiredKeys: const [
@@ -521,8 +592,7 @@ LanguageSettings _$LanguageSettingsFromJson(Map<String, dynamic> json) {
     'messages_and_canned_replies',
     'language_and_voice',
     'analytics',
-    'about_app',
-    'community_and_support',
+    'about_and_support',
     'developer_options',
     'widget_library'
   ], disallowNullValues: const [
@@ -538,8 +608,7 @@ LanguageSettings _$LanguageSettingsFromJson(Map<String, dynamic> json) {
     'messages_and_canned_replies',
     'language_and_voice',
     'analytics',
-    'about_app',
-    'community_and_support',
+    'about_and_support',
     'developer_options',
     'widget_library'
   ]);
@@ -557,8 +626,7 @@ LanguageSettings _$LanguageSettingsFromJson(Map<String, dynamic> json) {
     json['messages_and_canned_replies'] as String,
     json['language_and_voice'] as String,
     json['analytics'] as String,
-    json['about_app'] as String,
-    json['community_and_support'] as String,
+    json['about_and_support'] as String,
     json['developer_options'] as String,
     json['widget_library'] as String,
   );

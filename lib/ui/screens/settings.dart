@@ -5,6 +5,7 @@ import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/home/tabs/widget_library.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
+import 'package:cobble/ui/screens/about.dart';
 import 'package:cobble/ui/screens/health.dart';
 import 'package:cobble/ui/screens/notifications.dart';
 import 'package:cobble/ui/screens/placeholder_screen.dart';
@@ -84,13 +85,8 @@ class Settings extends StatelessWidget implements CobbleScreen {
           ),
           CobbleTile.navigation(
             leading: RebbleIcons.about_app,
-            title: tr.settings.aboutApp,
-            navigateTo: PlaceholderScreen(),
-          ),
-          CobbleTile.navigation(
-            leading: RebbleIcons.share,
-            title: tr.settings.communityAndSupport,
-            navigateTo: PlaceholderScreen(),
+            title: tr.settings.aboutAndSupport,
+            navigateTo: About(),
           ),
           CobbleTile.navigation(
             leading: RebbleIcons.developer_settings,
