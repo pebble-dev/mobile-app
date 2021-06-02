@@ -90,6 +90,12 @@ class WatchService : LifecycleService() {
                         deviceName = null
                         channel = NOTIFICATION_CHANNEL_WATCH_CONNECTING
                     }
+                    is ConnectionState.WaitingForBluetoothToEnable -> {
+                        icon = R.drawable.ic_notification_disconnected
+                        titleText = getString(R.string.bluetooth_off)
+                        deviceName = null
+                        channel = NOTIFICATION_CHANNEL_WATCH_CONNECTING
+                    }
                     is ConnectionState.Connected -> {
                         icon = R.drawable.ic_notification_connected
                         titleText = "Connected to device"

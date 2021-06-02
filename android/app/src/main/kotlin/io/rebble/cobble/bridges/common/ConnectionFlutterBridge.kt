@@ -60,7 +60,8 @@ class ConnectionFlutterBridge @Inject constructor(
                 Pigeons.WatchConnectionStatePigeon().apply {
                     isConnected = connectionState is ConnectionState.Connected
                     isConnecting = connectionState is ConnectionState.Connecting ||
-                            connectionState is ConnectionState.WaitingForReconnect
+                            connectionState is ConnectionState.WaitingForReconnect ||
+                            connectionState is ConnectionState.WaitingForBluetoothToEnable
                     val bluetoothDevice = connectionState.watchOrNull
                     currentWatchAddress = bluetoothDevice?.address?.macAddressToLong()
                     currentConnectedWatch = watchMetadata.toPigeon(bluetoothDevice, model)
