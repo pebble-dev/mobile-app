@@ -198,7 +198,8 @@ class CobbleTile extends StatelessWidget {
     ImageProvider? leading,
     required String title,
     String? subtitle,
-    required Widget child,
+    required void Function(bool)? onChanged,
+    required bool enabled,
   }) =>
       CobbleTile._(
         key: key,
@@ -206,7 +207,11 @@ class CobbleTile extends StatelessWidget {
         leading: _leadingToWidget(leading, size: 48),
         title: title,
         subtitle: subtitle,
-        trailing: child,
+        trailing: Switch(
+          value: enabled,
+          onChanged: onChanged,
+        ),
+        onTap: () => onChanged!(!enabled),
       );
 
   @override
