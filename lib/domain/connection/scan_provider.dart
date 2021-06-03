@@ -40,7 +40,7 @@ class ScanCallbacks extends StateNotifier<ScanState>
   }
 }
 
-final scanProvider = StateNotifierProvider<ScanCallbacks>((ref) {
+final scanProvider = StateNotifierProvider<ScanCallbacks, ScanState>((ref) {
   final notifier = ScanCallbacks();
   pigeon.ScanCallbacks.setup(notifier);
   ref.onDispose(() {

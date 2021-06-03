@@ -34,7 +34,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
     BackgroundAppInstallCallbacks.setup(this);
 
     connectionSubscription = container.listen(
-      connectionStateProvider.state,
+      connectionStateProvider,
     );
   }
 
@@ -104,7 +104,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
 
   @override
   Future<void> deleteApp(StringWrapper uuidString) async {
-    final uuid = Uuid(uuidString.value);
+    final uuid = Uuid.parse(uuidString.value);
     await appDao.setSyncAction(uuid, NextSyncAction.Delete);
 
     if (connectionSubscription.read().isConnected == true) {

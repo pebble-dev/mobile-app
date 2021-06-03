@@ -6,7 +6,7 @@ import 'package:cobble/domain/db/dao/timeline_pin_dao.dart';
 import 'package:cobble/domain/db/models/timeline_pin.dart';
 import 'package:cobble/domain/timeline/timeline_action_response.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid_type/uuid_type.dart';
 
 class MasterActionHandler {
@@ -22,9 +22,9 @@ class MasterActionHandler {
   Future<TimelineActionResponse?> handleTimelineAction(
     ActionTrigger trigger,
   ) async {
-    final pin = await _dao.getPinById(Uuid(trigger.itemId!));
+    final pin = await _dao.getPinById(Uuid.parse(trigger.itemId!));
     if (pin == null) {
-      final notif = _notifDao.getActiveNotifByPinId(Uuid(trigger.itemId!));
+      final notif = _notifDao.getActiveNotifByPinId(Uuid.parse(trigger.itemId!));
       if (notif != null) {
         return notificationManager.handleNotifAction(trigger);
       }

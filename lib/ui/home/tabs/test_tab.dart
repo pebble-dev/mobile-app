@@ -27,7 +27,7 @@ class TestTab extends HookWidget implements CobbleScreen {
 
   @override
   Widget build(BuildContext context) {
-    final connectionState = useProvider(connectionStateProvider.state);
+    final connectionState = useProvider(connectionStateProvider);
     final defaultWatch = useProvider(defaultWatchProvider);
 
     final permissionControl = useProvider(permissionControlProvider);
