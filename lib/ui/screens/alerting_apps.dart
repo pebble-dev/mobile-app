@@ -86,15 +86,17 @@ class AlertingApps extends HookWidget implements CobbleScreen {
                       snapshot.data!.packageId![i] as String));
                 }
 
-                return ListView(
-                  children: apps
-                      .where(
-                        (app) => app.name.toLowerCase().contains(
-                              filter.value.query?.toLowerCase() ?? '',
-                            ),
-                      )
-                      .map(
-                        (app) => CobbleTile.app(
+                List filteredApps = apps.where(
+                  (app) => app.name.toLowerCase().contains(
+                    filter.value.query?.toLowerCase() ?? '',
+                  ),
+                ).toList();
+                
+                return ListView.builder(
+                  itemCount: filteredApps.length,
+                  itemBuilder: (BuildContext context, int index) {
+                      _App app = filteredApps[index];
+                      return CobbleTile.app(
                           leading: Svg('images/temp_alerting_app.svg'),
                           title: app.name,
                           subtitle: app.enabled
@@ -120,9 +122,8 @@ class AlertingApps extends HookWidget implements CobbleScreen {
                                   .setNotificationsMutedPackages(mutedPkgList);
                             },
                           ),
-                        ),
-                      )
-                      .toList(),
+                        );
+                      }
                 );
               } else {
                 return CircularProgressIndicator();

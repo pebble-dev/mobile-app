@@ -174,7 +174,7 @@
     }
   },
   "notifications": {
-    "title": "Health",
+    "title": "Notifications and Muting",
     "enabled": "Send notifications to my watch",
     "choose_apps": "Choose which apps can alert your watch",
     "silence": {

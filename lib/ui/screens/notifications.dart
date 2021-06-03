@@ -35,7 +35,7 @@ class Notifications extends HookWidget implements CobbleScreen {
             ),
           ),
           CobbleTile.navigation(
-            leading: RebbleIcons.locker,
+            leading: RebbleIcons.vibrating_watch,
             title: tr.notifications.chooseApps,
             navigateTo: AlertingApps(),
           ),
@@ -43,7 +43,7 @@ class Notifications extends HookWidget implements CobbleScreen {
           CobbleTile.withIconColor(
             color: context.scheme!.muted,
             child: CobbleTile.sectionTitle(
-              leading: RebbleIcons.settings,
+              leading: RebbleIcons.silence_phone,
               title: tr.notifications.silence.title,
               body: tr.notifications.silence.description,
             ),
