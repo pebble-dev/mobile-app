@@ -27,7 +27,7 @@ class CobbleFab extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
       onPressed: null,
-      icon: icon is IconData ? Icon(icon, size: 21) : null,
+      icon: icon is IconData ? Icon(icon) : null,
       label: Text(label.toUpperCase()),
       heroTag: heroTag,
     );
