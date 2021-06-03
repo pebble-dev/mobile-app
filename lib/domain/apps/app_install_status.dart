@@ -29,7 +29,7 @@ AppInstallStatus _getDefault() {
 }
 
 final appInstallStatusProvider =
-    AutoDisposeStateNotifierProvider<AppInstallStatusStateNotifier>((ref) {
+    AutoDisposeStateNotifierProvider<AppInstallStatusStateNotifier, AppInstallStatus>((ref) {
   final notifier = AppInstallStatusStateNotifier();
 
   ref.onDispose(() {

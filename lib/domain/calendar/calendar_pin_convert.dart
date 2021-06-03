@@ -233,7 +233,7 @@ class CalendarEventId {
   }
 }
 
-final calendarWatchappId = Uuid("6c6c6fc2-1912-4d25-8396-3547d1dfac5b");
+final calendarWatchappId = Uuid.parse("6c6c6fc2-1912-4d25-8396-3547d1dfac5b");
 
 const calendarActionRemove = 0;
 const calendarActionMuteCalendar = 1;

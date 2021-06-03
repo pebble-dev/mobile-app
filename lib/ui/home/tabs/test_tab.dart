@@ -29,7 +29,7 @@ class TestTab extends HookWidget implements CobbleScreen {
 
   @override
   Widget build(BuildContext context) {
-    final connectionState = useProvider(connectionStateProvider.state);
+    final connectionState = useProvider(connectionStateProvider);
     final defaultWatch = useProvider(defaultWatchProvider);
 
     final permissionControl = useProvider(permissionControlProvider);
@@ -42,8 +42,8 @@ class TestTab extends HookWidget implements CobbleScreen {
       error: (e, s) => List<Workaround>.empty(),
     );
 
-    final appManager = useProvider(appManagerProvider);
-    final allPackages = useProvider(appManagerProvider.state);
+    final appManager = useProvider(appManagerProvider.notifier);
+    final allPackages = useProvider(appManagerProvider);
     final allApps =
         allPackages.where((element) => !element.isWatchface).toList();
 

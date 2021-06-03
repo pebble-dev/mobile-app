@@ -16,8 +16,8 @@ class Calendar extends HookWidget implements CobbleScreen {
 
   @override
   Widget build(BuildContext context) {
-    final calendars = useProvider(calendarListProvider.state);
-    final calendarSelector = useProvider(calendarListProvider);
+    final calendars = useProvider(calendarListProvider);
+    final calendarSelector = useProvider(calendarListProvider.notifier);
     final calendarControl = useProvider(calendarControlProvider);
   
     final preferences = useProvider(preferencesProvider);

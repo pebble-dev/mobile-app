@@ -41,7 +41,7 @@ Future<void> _add_system_app(AppDao dao, String uuid, String name) async {
 
   await dao.insertOrUpdatePackage(
     App(
-        uuid: Uuid(uuid),
+        uuid: Uuid.parse(uuid),
         shortName: name,
         longName: name,
         company: "Pebble",

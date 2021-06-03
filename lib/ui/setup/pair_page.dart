@@ -51,7 +51,7 @@ class PairPage extends HookWidget implements CobbleScreen {
   @override
   Widget build(BuildContext context) {
     final pairedStorage = useProvider(pairedStorageProvider);
-    final scan = useProvider(scanProvider.state);
+    final scan = useProvider(scanProvider);
     final pair = useProvider(pairProvider).data?.value;
     final preferences = useProvider(preferencesProvider);
 
