@@ -213,5 +213,11 @@
     "notifications": "Notifications",
     "alarms": "Alarms",
     "watchfaces": "Watchfaces"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "toggle_title": "Show calendar events in Timeline",
+    "toggle_subtitle": "To see your upcoming events, press the down button on your watch face",
+    "choose": "Choose calendars to show:"
   }
 }

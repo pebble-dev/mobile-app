@@ -1,7 +1,5 @@
 import 'package:cobble/domain/apps/app_compatibility.dart';
 import 'package:cobble/domain/apps/app_manager.dart';
-import 'package:cobble/domain/calendar/calendar_list.dart';
-import 'package:cobble/domain/calendar/device_calendar_plugin_provider.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
 import 'package:cobble/domain/permissions.dart';
@@ -32,15 +30,11 @@ class TestTab extends HookWidget implements CobbleScreen {
   Widget build(BuildContext context) {
     final connectionState = useProvider(connectionStateProvider.state);
     final defaultWatch = useProvider(defaultWatchProvider);
-    final calendars = useProvider(calendarListProvider.state);
-    final calendarSelector = useProvider(calendarListProvider);
-    final calendarControl = useProvider(calendarControlProvider);
 
     final permissionControl = useProvider(permissionControlProvider);
     final permissionCheck = useProvider(permissionCheckProvider);
 
     final preferences = useProvider(preferencesProvider);
-    final calendarSyncEnabled = useProvider(calendarSyncEnabledProvider);
     final neededWorkarounds = useProvider(neededWorkaroundsProvider).when(
       data: (data) => data,
       loading: () => List<Workaround>.empty(),
@@ -54,9 +48,6 @@ class TestTab extends HookWidget implements CobbleScreen {
 
     useEffect(() {
       Future.microtask(() async {
-        if (!(await permissionCheck.hasCalendarPermission()).value!) {
-          await permissionControl.requestCalendarPermission();
-        }
         if (!(await permissionCheck.hasLocationPermission()).value!) {
           await permissionControl.requestLocationPermission();
         }
@@ -177,35 +168,6 @@ class TestTab extends HookWidget implements CobbleScreen {
                   ),
                 ),
               ),
-              Row(children: [
-                Switch(
-                  value: calendarSyncEnabled.data?.value ?? false,
-                  onChanged: (value) async {
-                    await preferences.data?.value.setCalendarSyncEnabled(value);
-
-                    if (!value) {
-                      calendarControl.deleteCalendarPinsFromWatch();
-                    }
-                  },
-                ),
-                Text("Show calendar on the watch")
-              ]),
-              Text("Calendars: "),
-              ...calendars.data?.value.map((e) {
-                    return Row(
-                      children: [
-                        Checkbox(
-                          value: e.enabled,
-                          onChanged: (enabled) {
-                            calendarSelector.setCalendarEnabled(e.id, enabled!);
-                            calendarControl.requestCalendarSync();
-                          },
-                        ),
-                        Text(e.name),
-                      ],
-                    );
-                  }).toList() ??
-                  [],
               Text("Disable BLE Workarounds: "),
               ...neededWorkarounds.map(
                 (workaround) => Row(children: [
