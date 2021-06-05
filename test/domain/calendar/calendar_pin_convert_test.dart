@@ -10,11 +10,8 @@ import 'package:cobble/domain/timeline/timeline_icon.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-final TEST_CALENDAR = SelectableCalendar(
-  "Test@Calendar",
-  "10",
-  true,
-);
+final TEST_CALENDAR =
+    SelectableCalendar("Test@Calendar", "10", true, 0xFFFFFFFF);
 
 void main() {
   test("Generate pin from basic event", () {

@@ -26,15 +26,15 @@ void main() {
     ]);
 
     calendarPlugin.reportedCalendars = [
-      Calendar(id: "22", name: "Calendar A"),
-      Calendar(id: "34", name: "Calendar B"),
-      Calendar(id: "18", name: "Calendar C")
+      Calendar(id: "22", name: "Calendar A", color: 0xFFFFFFFF),
+      Calendar(id: "34", name: "Calendar B", color: 0xFFFFFFFF),
+      Calendar(id: "18", name: "Calendar C", color: 0xFFFFFFFF)
     ];
 
     final expectedReceivedCalendars = [
-      SelectableCalendar("Calendar A", "22", true),
-      SelectableCalendar("Calendar B", "34", true),
-      SelectableCalendar("Calendar C", "18", true)
+      SelectableCalendar("Calendar A", "22", true, 0xFFFFFFFF),
+      SelectableCalendar("Calendar B", "34", true, 0xFFFFFFFF),
+      SelectableCalendar("Calendar C", "18", true, 0xFFFFFFFF)
     ];
 
     final receivedCalendars = (await container
@@ -82,9 +82,9 @@ void main() {
     ]);
 
     calendarPlugin.reportedCalendars = [
-      Calendar(id: "22", name: "Calendar A"),
-      Calendar(id: "34", name: "Calendar B"),
-      Calendar(id: "18", name: "Calendar C")
+      Calendar(id: "22", name: "Calendar A", color: 0xFFFFFFFF),
+      Calendar(id: "34", name: "Calendar B", color: 0xFFFFFFFF),
+      Calendar(id: "18", name: "Calendar C", color: 0xFFFFFFFF)
     ];
 
     await container
@@ -93,9 +93,9 @@ void main() {
         .setCalendarEnabled("22", false);
 
     final expectedReceivedCalendars = [
-      SelectableCalendar("Calendar A", "22", false),
-      SelectableCalendar("Calendar B", "34", true),
-      SelectableCalendar("Calendar C", "18", true)
+      SelectableCalendar("Calendar A", "22", false, 0xFFFFFFFF),
+      SelectableCalendar("Calendar B", "34", true, 0xFFFFFFFF),
+      SelectableCalendar("Calendar C", "18", true, 0xFFFFFFFF)
     ];
 
     final receivedCalendars = (await container
@@ -117,9 +117,9 @@ void main() {
     ]);
 
     calendarPlugin.reportedCalendars = [
-      Calendar(id: "22", name: "Calendar A"),
-      Calendar(id: "34", name: "Calendar B"),
-      Calendar(id: "18", name: "Calendar C")
+      Calendar(id: "22", name: "Calendar A", color: 0xFFFFFFFF),
+      Calendar(id: "34", name: "Calendar B", color: 0xFFFFFFFF),
+      Calendar(id: "18", name: "Calendar C", color: 0xFFFFFFFF)
     ];
 
     await container
@@ -132,9 +132,9 @@ void main() {
         .setCalendarEnabled("22", true);
 
     final expectedReceivedCalendars = [
-      SelectableCalendar("Calendar A", "22", true),
-      SelectableCalendar("Calendar B", "34", true),
-      SelectableCalendar("Calendar C", "18", true)
+      SelectableCalendar("Calendar A", "22", true, 0xFFFFFFFF),
+      SelectableCalendar("Calendar B", "34", true, 0xFFFFFFFF),
+      SelectableCalendar("Calendar C", "18", true, 0xFFFFFFFF)
     ];
 
     final receivedCalendars = (await container
