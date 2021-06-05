@@ -152,16 +152,9 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                 children: <Widget>[
                   Container(
                     child: Row(children: <Widget>[
-                      Container(
-                        child: Center(
-                            child: PebbleWatchIcon(
-                                PebbleWatchModel.values[device.color!])),
-                        width: 56,
-                        height: 56,
-                        decoration: BoxDecoration(
-                            color: _getBrStatusColor(device),
-                            shape: BoxShape.circle),
-                      ),
+                      PebbleWatchIcon(
+                        PebbleWatchModel.values[device.color!],
+                        backgroundColor: _getBrStatusColor(device)),
                       SizedBox(width: 16),
                       Column(
                         children: <Widget>[
@@ -272,14 +265,8 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                   .map((e) => InkWell(
                         child: Container(
                             child: Row(children: <Widget>[
-                              Container(
-                                child: Center(child: PebbleWatchIcon(e!.model)),
-                                width: 56,
-                                height: 56,
-                                decoration: BoxDecoration(
-                                    color: _connectedBrColor,
-                                    shape: BoxShape.circle),
-                              ),
+                              PebbleWatchIcon(e!.model,
+                                backgroundColor: _connectedBrColor),
                               SizedBox(width: 16),
                               Column(
                                 children: <Widget>[
@@ -324,15 +311,9 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                 .map((e) => InkWell(
                       child: Container(
                         child: Row(children: <Widget>[
-                          Container(
-                            child: Center(
-                                child: PebbleWatchIcon(
-                                    PebbleWatchModel.values[e.color!])),
-                            width: 56,
-                            height: 56,
-                            decoration: BoxDecoration(
-                                color: _disconnectedColor,
-                                shape: BoxShape.circle),
+                          PebbleWatchIcon(
+                            PebbleWatchModel.values[e.color!],
+                            backgroundColor: _disconnectedColor,
                           ),
                           SizedBox(width: 16),
                           Column(
