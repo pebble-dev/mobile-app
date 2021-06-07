@@ -98,6 +98,14 @@ flutter:
   assets:
     - lang/
     - images/
+    - images/kickstart/
+    - images/tictoc/classic/
+    - images/tictoc/time/
+    - images/tictoc/time_round/silver_14/
+    - images/tictoc/time_round/silver_20/
+    - images/tictoc/time_round/black_14/
+    - images/tictoc/time_round/black_20/
+    - images/tictoc/time_round/gold_14/
 
   fonts:
       - family:  RebbleIcons
@@ -106,6 +114,15 @@ flutter:
       - family:  PebbleWatchIcons
         fonts:
           - asset: fonts/PebbleWatchIcons.ttf
+      - family: Kickstart
+        fonts:
+          - asset: fonts/Kickstart.ttf
+      - family: KickstartLight
+        fonts:
+          - asset: fonts/Kickstart-Light.ttf
+      - family: LecoBold
+        fonts:
+          - asset: fonts/Leco-Bold.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

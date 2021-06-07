@@ -8,6 +8,7 @@ import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/datasources/workarounds.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
+import 'package:cobble/ui/common/faces/pebble_faces.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/devoptions/dev_options_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
@@ -66,6 +67,7 @@ class TestTab extends HookWidget implements CobbleScreen {
     }, ["one-time"]);
 
     String statusText;
+    Widget defaultWatchfaces = Container();
     if (connectionState.isConnecting == true) {
       statusText = "Connecting to ${connectionState.currentWatchAddress}";
     } else if (connectionState.isConnected == true) {
@@ -77,6 +79,12 @@ class TestTab extends HookWidget implements CobbleScreen {
         fwVersion =
             connectionState.currentConnectedWatch!.runningFirmware.version;
       }
+      defaultWatchfaces = Row(
+        children: [
+          PebbleWatchFace(DefaultWatchface.tictoc, model),
+          PebbleWatchFace(DefaultWatchface.kickstart, model),
+        ]
+      );
 
       statusText = "Connected to ${connectionState.currentWatchAddress}" +
           " ($model, firmware $fwVersion)";
@@ -91,6 +99,8 @@ class TestTab extends HookWidget implements CobbleScreen {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
+              defaultWatchfaces,
+              
               RaisedButton(
                 onPressed: () {
                   notifications.sendTestNotification();
