@@ -13,8 +13,12 @@ import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
 
 class FacesPreview extends StatelessWidget {
-  FacesPreview(this.face, this.compatible, this.extended,
-      {this.circleConnected});
+  FacesPreview({
+    required this.face,
+    this.compatible = false,
+    this.extended = false,
+    this.circleConnected,
+  });
 
   final App face;
   final bool compatible;
@@ -63,16 +67,25 @@ class FacesPreview extends StatelessWidget {
 }
 
 class FacesSheet {
-  static void showModal(
-      BuildContext context, App face, bool compatible, AppManager appManager,
-      {PebbleWatchLine? lineConnected, bool? circleConnected}) {
+  static void showModal({
+    required BuildContext context,
+    required App face,
+    bool compatible = false,
+    required AppManager appManager,
+    PebbleWatchLine? lineConnected,
+    bool? circleConnected,
+  }) {
     CobbleSheet.showModal(
       context: context,
       builder: (context) => Column(
         children: [
           SizedBox(height: 8),
-          FacesPreview(face, compatible, false,
-              circleConnected: (circleConnected ?? false)),
+          FacesPreview(
+            face: face,
+            compatible: compatible,
+            extended: true,
+            circleConnected: (circleConnected ?? false),
+          ),
           SizedBox(height: 4),
           // TODO: Implement getting metadata from the store (including the preview)
           if (face.appstoreId != null)
@@ -96,7 +109,8 @@ class FacesSheet {
                   outlined: false,
                   icon: RebbleIcons.share,
                   onPressed: () => Share.share(
-                      "https://store-beta.rebble.io/app/${face.appstoreId}"),
+                    "https://store-beta.rebble.io/app/${face.appstoreId}",
+                  ),
                 ),
               ],
             ),
@@ -131,7 +145,8 @@ class FacesSheet {
               leading: RebbleIcons.unpair_from_watch,
               title: tr.lockerPage.notCompatible(
                 watch: stringFromWatchLine(
-                    lineConnected ?? PebbleWatchLine.unknown),
+                  lineConnected ?? PebbleWatchLine.unknown,
+                ),
               ),
               onTap: () {},
             ),

@@ -14,10 +14,10 @@ class FacesCard extends StatelessWidget {
   final PebbleWatchLine? lineConnected;
   final bool? circleConnected;
 
-  const FacesCard(
-    this.face,
-    this.compatible,
-    this.appManager, {
+  const FacesCard({
+    required this.face,
+    this.compatible = false,
+    required this.appManager,
     this.lineConnected,
     this.circleConnected,
     Key? key,
@@ -32,7 +32,9 @@ class FacesCard extends StatelessWidget {
         child: Row(
           children: <Widget>[
             Expanded(
-              child: FacesPreview(face, compatible, false,
+              child: FacesPreview(
+                  face: face,
+                  compatible: compatible,
                   circleConnected: circleConnected),
             ),
             Column(
@@ -60,9 +62,13 @@ class FacesCard extends StatelessWidget {
                     outlined: false,
                     icon: RebbleIcons.menu_vertical,
                     onPressed: () => FacesSheet.showModal(
-                        context, face, compatible, appManager,
-                        lineConnected: lineConnected,
-                        circleConnected: circleConnected),
+                      context: context,
+                      face: face,
+                      compatible: compatible,
+                      appManager: appManager,
+                      lineConnected: lineConnected,
+                      circleConnected: circleConnected,
+                    ),
                   ),
                 ),
               ],

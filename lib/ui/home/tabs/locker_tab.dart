@@ -78,7 +78,9 @@ class LockerTab extends HookWidget implements CobbleScreen {
           ],
         ),
         floatingActionButton: CobbleFab(
-          label: indexTab.value == 0 ? tr.lockerPage.getFaces : tr.lockerPage.getApps,
+          label: indexTab.value == 0
+              ? tr.lockerPage.getFaces
+              : tr.lockerPage.getApps,
           icon: RebbleIcons.plus_add,
           onPressed: () {},
         ),
@@ -97,7 +99,15 @@ class LockerTab extends HookWidget implements CobbleScreen {
                     ),
                     delegate: SliverChildListDelegate(
                       compatibleFaces
-                          .map<Widget>((face) => FacesCard(face, true, appManager, circleConnected: circleConnected, key: ValueKey(face.uuid)))
+                          .map<Widget>(
+                            (face) => FacesCard(
+                              face: face,
+                              compatible: true,
+                              appManager: appManager,
+                              circleConnected: circleConnected,
+                              key: ValueKey(face.uuid),
+                            ),
+                          )
                           .toList(),
                     ),
                   ),
@@ -125,7 +135,14 @@ class LockerTab extends HookWidget implements CobbleScreen {
                     ),
                     delegate: SliverChildListDelegate(
                       incompatibleFaces
-                          .map<Widget>((face) => FacesCard(face, false, appManager, lineConnected: lineConnected, key: ValueKey(face.uuid)))
+                          .map<Widget>(
+                            (face) => FacesCard(
+                              face: face,
+                              appManager: appManager,
+                              lineConnected: lineConnected,
+                              key: ValueKey(face.uuid),
+                            ),
+                          )
                           .toList(),
                     ),
                   ),
@@ -136,7 +153,13 @@ class LockerTab extends HookWidget implements CobbleScreen {
               slivers: [
                 SliverReorderableList(
                   itemBuilder: (BuildContext context, int index) {
-                    return AppsItem(compatibleApps[index], true, appManager, index: index, key: ValueKey(compatibleApps[index].uuid));
+                    return AppsItem(
+                      app: compatibleApps[index],
+                      compatible: true,
+                      appManager: appManager,
+                      index: index,
+                      key: ValueKey(compatibleApps[index].uuid),
+                    );
                   },
                   itemCount: compatibleApps.length,
                   onReorder: (int fromIndex, int toIndex) {
@@ -146,8 +169,9 @@ class LockerTab extends HookWidget implements CobbleScreen {
                     App app = compatibleApps[fromIndex];
                     int newOrder = compatibleApps[toIndex].appOrder;
                     appManager.reorderApp(app.uuid, newOrder);
-                    // This would be refreshed anyway, but we will do it manually here so the user doesn't have to see the items jump around
-                    // It may actually cause issues if the user moves this before appManager catches up, so it would probably be worth the effort to add a timeout for reordering with some user feedback
+
+                    /// This would be refreshed anyway, but we will do it manually here so the user doesn't have to see the items jump around
+                    /// It may actually cause issues if the user moves this before appManager catches up, so it would probably be worth the effort to add a timeout for reordering with some user feedback
                     compatibleApps.insert(
                         toIndex, compatibleApps.removeAt(fromIndex));
                   },
@@ -170,7 +194,14 @@ class LockerTab extends HookWidget implements CobbleScreen {
                 SliverList(
                   delegate: SliverChildListDelegate(
                     incompatibleApps
-                        .map<Widget>((app) => AppsItem(app, false, appManager, lineConnected: lineConnected, key: ValueKey(app.uuid)))
+                        .map<Widget>(
+                          (app) => AppsItem(
+                            app: app,
+                            appManager: appManager,
+                            lineConnected: lineConnected,
+                            key: ValueKey(app.uuid),
+                          ),
+                        )
                         .toList(),
                   ),
                 ),

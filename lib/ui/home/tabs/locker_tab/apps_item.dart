@@ -16,10 +16,10 @@ class AppsItem extends StatelessWidget {
   final PebbleWatchLine? lineConnected;
   final int? index;
 
-  const AppsItem(
-    this.app,
-    this.compatible,
-    this.appManager, {
+  const AppsItem({
+    required this.app,
+    this.compatible = false,
+    required this.appManager,
     this.lineConnected,
     this.index,
     Key? key,
@@ -36,8 +36,11 @@ class AppsItem extends StatelessWidget {
             ReorderableDragStartListener(
               child: Padding(
                 padding: EdgeInsets.only(left: 16),
-                child: Icon(RebbleIcons.drag_handle,
-                    size: 25.0, color: context.scheme!.muted),
+                child: Icon(
+                  RebbleIcons.drag_handle,
+                  size: 25.0,
+                  color: context.scheme!.muted,
+                ),
               ),
               index: index ?? 0,
             )
@@ -48,8 +51,12 @@ class AppsItem extends StatelessWidget {
               leading: Svg('images/temp_watch_app.svg'),
               title: app.longName,
               subtitle: app.company,
-              onTap: () =>
-                  AppsSheet.showModal(context, app, compatible, appManager),
+              onTap: () => AppsSheet.showModal(
+                context: context,
+                app: app,
+                compatible: compatible,
+                appManager: appManager,
+              ),
               child: CobbleButton(
                 outlined: false,
                 icon: compatible

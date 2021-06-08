@@ -12,9 +12,13 @@ import 'package:share/share.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
 
 class AppsSheet {
-  static void showModal(
-      BuildContext context, App app, bool compatible, AppManager appManager,
-      {PebbleWatchLine? lineConnected}) {
+  static void showModal({
+    required BuildContext context,
+    required App app,
+    bool compatible = false,
+    required AppManager appManager,
+    PebbleWatchLine? lineConnected,
+  }) {
     CobbleSheet.showModal(
       context: context,
       builder: (context) => Column(
@@ -46,30 +50,25 @@ class AppsSheet {
                   outlined: false,
                   icon: RebbleIcons.share,
                   onPressed: () => Share.share(
-                      "https://store-beta.rebble.io/app/${app.appstoreId}"),
+                    "https://store-beta.rebble.io/app/${app.appstoreId}",
+                  ),
                 ),
               ],
             ),
           SizedBox(height: 16),
           CobbleDivider(),
-          if (compatible)
-            Container(
-              child: Column(
-                children: [
-                  CobbleTile.action(
-                    leading: RebbleIcons.permissions,
-                    title: tr.lockerPage.permissions,
-                    onTap: () {},
-                  ),
-                  CobbleTile.action(
-                    leading: RebbleIcons.settings,
-                    title: tr.lockerPage.appSettings,
-                    onTap: () {},
-                  ),
-                ],
-              ),
-            )
-          else
+          if (compatible) ...[
+            CobbleTile.action(
+              leading: RebbleIcons.permissions,
+              title: tr.lockerPage.permissions,
+              onTap: () {},
+            ),
+            CobbleTile.action(
+              leading: RebbleIcons.settings,
+              title: tr.lockerPage.appSettings,
+              onTap: () {},
+            ),
+          ] else
             CobbleTile.action(
               leading: RebbleIcons.unpair_from_watch,
               title: tr.lockerPage.notCompatible(
