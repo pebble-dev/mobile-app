@@ -64,7 +64,7 @@ class AppDao {
         .map((e) => App.fromMap(e))
         .toList();
 
-    if (!list.isEmpty) {
+    if (list.isNotEmpty) {
       return list.first;
     } else {
       return null;

@@ -10,7 +10,7 @@ class TestPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          RaisedButton(
+          ElevatedButton(
             child: Text("Connect"),
             onPressed: () {
               //TODO

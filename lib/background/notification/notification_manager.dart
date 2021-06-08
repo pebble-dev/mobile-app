@@ -1,16 +1,11 @@
-
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:cobble/background/actions/master_action_handler.dart';
 import 'package:cobble/domain/db/dao/active_notification_dao.dart';
 import 'package:cobble/domain/db/models/active_notification.dart';
 import 'package:cobble/domain/db/models/timeline_pin.dart';
 import 'package:cobble/domain/db/models/timeline_pin_layout.dart';
 import 'package:cobble/domain/db/models/timeline_pin_type.dart';
-import 'package:cobble/domain/logging.dart';
 import 'package:cobble/domain/notification/notification_action.dart';
 import 'package:cobble/domain/notification/notification_category_android.dart';
 import 'package:cobble/domain/notification/notification_message.dart';
@@ -22,9 +17,8 @@ import 'package:cobble/domain/timeline/timeline_icon.dart';
 import 'package:cobble/domain/timeline/timeline_serializer.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid_type/uuid_type.dart';
 
@@ -114,13 +108,11 @@ class NotificationManager {
     List<String>? disabledActionPkgs = (await _preferencesFuture).getStringList(disabledActionPackagesKey);
     if (disabledActionPkgs == null || !disabledActionPkgs.contains(notif.packageId)) {
       List<Map<String, dynamic>> notifActions = new List<Map<String, dynamic>>.from(jsonDecode(notif.actionsJson!));
-      if (notifActions != null) {
-        for (int i=0; i<notifActions.length; i++) {
-          NotificationAction action = NotificationAction.fromJson(notifActions[i]);
-          actions.add(TimelineAction((MetaAction.values.length)+i, action.isResponse! ? actionTypeResponse : actionTypeGeneric, [
-            TimelineAttribute.title(action.title)
-          ]));
-        }
+      for (int i=0; i<notifActions.length; i++) {
+        NotificationAction action = NotificationAction.fromJson(notifActions[i]);
+        actions.add(TimelineAction((MetaAction.values.length)+i, action.isResponse! ? actionTypeResponse : actionTypeGeneric, [
+          TimelineAttribute.title(action.title)
+        ]));
       }
     }
     attributes.add(content);

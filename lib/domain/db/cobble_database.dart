@@ -60,7 +60,7 @@ Future<void> createAppsTable(Database db) async {
 
   final appDao = AppDao(Future.value(db));
 
-  await populate_system_apps(appDao);
+  await populateSystemApps(appDao);
 }
 
 void _createDb(Database db) async {
@@ -87,7 +87,7 @@ void _upgradeDb(Database db, int oldVersion, int newVersion) async {
         "ALTER TABLE $tableApps ADD COLUMN isSystem INTEGER NOT NULL DEFAULT 0;");
 
     final appDao = AppDao(Future.value(db));
-    await populate_system_apps(appDao);
+    await populateSystemApps(appDao);
   }
 
   if (oldVersion < 5) {
@@ -102,7 +102,7 @@ void _upgradeDb(Database db, int oldVersion, int newVersion) async {
 
 final AutoDisposeFutureProvider<Database> databaseProvider =
     FutureProvider.autoDispose<Database>((key) async {
-  final dbFolder = await (getDatabasesPath() as FutureOr<String>);
+  final dbFolder = await getDatabasesPath();
   final dbPath = join(dbFolder, "cobble.db");
 
   final db = await openDatabase(dbPath,

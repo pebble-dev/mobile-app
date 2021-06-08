@@ -51,19 +51,18 @@ class FakeDeviceCalendarPlugin implements DeviceCalendarPlugin {
       String calendarId, RetrieveEventsParams retrieveEventsParams) {
     final filteredEvents = reportedEvents.where(
       (element) =>
-          element.calendarId == calendarId &&
-          (retrieveEventsParams == null ||
-              (retrieveEventsParams.eventIds == null ||
-                      retrieveEventsParams.eventIds
-                          .contains(element.eventId)) &&
-                  (retrieveEventsParams.startDate == null ||
-                      element.end
-                          .isAtSameMomentAs(retrieveEventsParams.startDate) ||
-                      element.end.isAfter(retrieveEventsParams.startDate)) &&
-                  (retrieveEventsParams.endDate == null ||
-                      element.start
-                          .isAtSameMomentAs(retrieveEventsParams.endDate) ||
-                      element.start.isBefore(retrieveEventsParams.endDate))),
+          (element.calendarId == calendarId &&
+            (retrieveEventsParams.eventIds == null ||
+                    retrieveEventsParams.eventIds
+                        .contains(element.eventId)) &&
+                (retrieveEventsParams.startDate == null ||
+                    element.end
+                        .isAtSameMomentAs(retrieveEventsParams.startDate) ||
+                    element.end.isAfter(retrieveEventsParams.startDate)) &&
+                (retrieveEventsParams.endDate == null ||
+                    element.start
+                        .isAtSameMomentAs(retrieveEventsParams.endDate) ||
+                    element.start.isBefore(retrieveEventsParams.endDate))),
     );
 
     final result = Result<UnmodifiableListView<Event>>();

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

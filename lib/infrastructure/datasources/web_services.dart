@@ -13,20 +13,17 @@ class WSAuthUser {
   static Future<WSAuthUser> get() async {
     Map<String, dynamic> boot = await WSBoot.bootConf;
     Completer<WSAuthUser> _completer = new Completer<WSAuthUser>();
-    if (boot != null) {
-      HttpClient client = HttpClient();
-      Uri userUri = Uri.parse(boot['config']['links']['authentication/me'] +
-          "?access_token=${WSBoot.token}");
-      HttpClientResponse res = await (await client.getUrl(userUri)).done;
-      print(res.statusCode);
-      res.listen((event) {
-        print(String.fromCharCodes(event));
-        Map<String, dynamic> user = jsonDecode(String.fromCharCodes(event));
-        _completer
-            .complete(WSAuthUser(user['email'], user['id'], user['name']));
-      });
-    } else
-      _completer.complete(null);
+    HttpClient client = HttpClient();
+    Uri userUri = Uri.parse(boot['config']['links']['authentication/me'] +
+        "?access_token=${WSBoot.token}");
+    HttpClientResponse res = await (await client.getUrl(userUri)).done;
+    print(res.statusCode);
+    res.listen((event) {
+      print(String.fromCharCodes(event));
+      Map<String, dynamic> user = jsonDecode(String.fromCharCodes(event));
+      _completer
+          .complete(WSAuthUser(user['email'], user['id'], user['name']));
+    });
     return _completer.future;
   }
 }

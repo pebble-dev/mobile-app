@@ -1,5 +1,3 @@
-import 'package:flutter/widgets.dart';
-
 /// ```dart
 /// String attributeName; // The attribute name
 /// List<String> attributes; // List of values attribute can be

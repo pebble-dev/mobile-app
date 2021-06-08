@@ -1,6 +1,5 @@
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
-import 'package:cobble/ui/common/components/cobble_card.dart';
 import 'package:cobble/ui/common/components/cobble_tile.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/common/icons/back_comp_icon.dart';
@@ -85,7 +84,7 @@ class About extends HookWidget implements CobbleScreen {
                     Expanded(
                       child: SizedBox(
                         height: 40.0,
-                        child: RaisedButton(
+                        child: ElevatedButton(
                           child: Row(
                             children: <Widget>[
                               Icon(RebbleIcons.rocket, size: 25),

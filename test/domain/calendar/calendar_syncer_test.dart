@@ -15,7 +15,7 @@ import 'package:cobble/domain/permissions.dart';
 import 'package:cobble/domain/preferences.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid_type/uuid_type.dart';
 
 import '../../fakes/fake_database.dart';
@@ -205,7 +205,7 @@ void main() async {
 
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
-        itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
+        itemId: Uuid.parse("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
         backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
@@ -322,7 +322,7 @@ void main() async {
 
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
-        itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
+        itemId: Uuid.parse("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
         backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
@@ -447,7 +447,7 @@ void main() async {
 
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
-        itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
+        itemId: Uuid.parse("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
         backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
@@ -550,7 +550,7 @@ void main() async {
 
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
-        itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
+        itemId: Uuid.parse("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
         backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
@@ -652,7 +652,7 @@ void main() async {
 
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
-        itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
+        itemId: Uuid.parse("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
         backingId: "22T1338T1607599800000",
         timestamp: DateTime.utc(
@@ -791,7 +791,7 @@ void main() async {
 
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
-        itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
+        itemId: Uuid.parse("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
         backingId: "22T1337T1604745000000",
         timestamp: DateTime.utc(
@@ -815,7 +815,7 @@ void main() async {
 
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
-        itemId: Uuid("24b88efe-6b43-41cd-a1f6-06b0e5940f94"),
+        itemId: Uuid.parse("24b88efe-6b43-41cd-a1f6-06b0e5940f94"),
         parentId: calendarWatchappId,
         backingId: "22T1338T1605006000000",
         timestamp: DateTime.utc(
@@ -844,7 +844,7 @@ void main() async {
 
     final List<TimelinePin> expectedEvents = [
       TimelinePin(
-        itemId: Uuid("24b88efe-6b43-41cd-a1f6-06b0e5940f94"),
+        itemId: Uuid.parse("24b88efe-6b43-41cd-a1f6-06b0e5940f94"),
         parentId: calendarWatchappId,
         backingId: "22T1338T1605006000000",
         timestamp: DateTime.utc(
@@ -1130,7 +1130,7 @@ void main() async {
     ]);
 
     final pinDao = container.read(timelinePinDaoProvider);
-    final calendarList = container.read(calendarListProvider);
+    final calendarList = container.read(calendarListProvider.notifier);
 
     calendarPlugin.reportedCalendars = [
       Calendar(id: "22", name: "Calendar A"),
@@ -1226,13 +1226,13 @@ void expectEventsWithoutItemIdAndJsonsIgnoringOrder(
   List<TimelinePin> expected,
 ) {
   final expectedWithoutJsons = expected.map((e) => e.copyWith(
-        itemId: Uuid("00000000-0000-0000-0000-000000000000"),
+        itemId: Uuid.parse("00000000-0000-0000-0000-000000000000"),
         actionsJson: "[IGNORED]",
         attributesJson: "[IGNORED]",
       ));
 
   final actualWithoutJsons = actual.map((e) => e.copyWith(
-        itemId: Uuid("00000000-0000-0000-0000-000000000000"),
+        itemId: Uuid.parse("00000000-0000-0000-0000-000000000000"),
         actionsJson: "[IGNORED]",
         attributesJson: "[IGNORED]",
       ));

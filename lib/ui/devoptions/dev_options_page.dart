@@ -111,7 +111,7 @@ class _DevOptionsPageState extends State<DevOptionsPage> {
                 ),
                 Container(
                     alignment: Alignment.centerRight,
-                    child: RaisedButton(
+                    child: ElevatedButton(
                         child: Text("Save"),
                         onPressed: () => SharedPreferences.getInstance().then(
                             (_) => _.setString(
