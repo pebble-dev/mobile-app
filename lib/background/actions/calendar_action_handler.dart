@@ -58,7 +58,6 @@ class CalendarActionHandler implements ActionHandler {
     }
   }
 
-  @override
   Future<TimelineActionResponse> _handleRemoveEventAction(
     TimelinePin pin,
   ) async {
@@ -73,7 +72,6 @@ class CalendarActionHandler implements ActionHandler {
     ]);
   }
 
-  @override
   Future<TimelineActionResponse> _handleMuteCalendarAction(
     TimelinePin pin,
   ) async {
@@ -102,7 +100,6 @@ class CalendarActionHandler implements ActionHandler {
     ]);
   }
 
-  @override
   Future<TimelineActionResponse> _handleAttendanceAction(TimelinePin pin,
       int? actionId,) async {
     final eventId = CalendarEventId.fromTimelinePin(pin);

@@ -32,6 +32,7 @@ class ConnectionCallbacksStateNotifier
   }
 
   void dispose() {
+    super.dispose();
     ConnectionCallbacks.setup(null);
     _connectionControl.cancelObservingConnectionChanges();
   }

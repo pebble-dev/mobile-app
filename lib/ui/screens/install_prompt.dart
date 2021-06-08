@@ -53,7 +53,7 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
       body = Column(
         children: [
           Text("Sorry, this is not a valid PBW file"),
-          RaisedButton(
+          ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -64,7 +64,7 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
       body = Column(
         children: [
           Text("Watch not connected"),
-          RaisedButton(
+          ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -75,7 +75,7 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
       body = Column(
         children: [
           Text("Watch not compatible"),
-          RaisedButton(
+          ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -87,13 +87,13 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
         children: [
           Text(
               "Do you want to install ${_appInfo.longName} by ${_appInfo.companyName}?"),
-          RaisedButton(
+          ElevatedButton(
               onPressed: () {
                 appManager.beginAppInstall(_appUri, _appInfo);
                 userInitiatedInstall.value = true;
               },
               child: Text("Yes")),
-          RaisedButton(
+          ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },

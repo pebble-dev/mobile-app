@@ -14,10 +14,7 @@ class CobbleAccordion extends HookWidget {
     required this.headerBuilder,
     required this.child,
     this.initialExpanded = false,
-  })  : assert(headerBuilder != null),
-        assert(child != null),
-        assert(initialExpanded != null),
-        super(key: key);
+  })  : super(key: key);
 
   @override
   Widget build(BuildContext context) {

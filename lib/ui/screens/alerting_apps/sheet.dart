@@ -27,7 +27,6 @@ extension on AppSource {
       case AppSource.Watch:
         return tr.alertingAppsFilter.appSource.watch;
     }
-    throw AssertionError("$this isn't localized!");
   }
 }
 
@@ -55,9 +54,7 @@ class Sheet extends HookWidget {
     required this.onClose,
     required this.onChanged,
     this.initialFilter = SheetOnChanged.initial,
-  })  : assert(onClose != null),
-        assert(onChanged != null),
-        super(key: key);
+  })  : super(key: key);
 
   @override
   Widget build(BuildContext context) {

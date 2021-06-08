@@ -12,7 +12,7 @@ import 'package:cobble/ui/theme/use_platform_brightness.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'domain/permissions.dart';
 import 'infrastructure/datasources/paired_storage.dart';
@@ -27,7 +27,7 @@ void main() {
 
 void initBackground() {
   final CallbackHandle backgroundCallbackHandle =
-      PluginUtilities.getCallbackHandle(main_background);
+      PluginUtilities.getCallbackHandle(mainBackground);
   final wrapper = NumberWrapper();
   wrapper.value = backgroundCallbackHandle.toRawHandle();
   BackgroundSetupControl().setupBackground(wrapper);

@@ -16,7 +16,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'actions/master_action_handler.dart';
 import 'modules/calendar_background.dart';
 
-void main_background() {
+void mainBackground() {
   WidgetsFlutterBinding.ensureInitialized();
 
   BackgroundReceiver();

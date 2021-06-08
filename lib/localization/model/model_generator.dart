@@ -372,7 +372,7 @@ class Field {
     final named = RegExp(r'{(\S+?)}').allMatches(value ?? '').toList();
     named.forEach((m) {
       final param = m.group(1);
-      if (param.camelCase != param) {
+      if (param!.camelCase != param) {
         throw AssertionError(
           "String '$name' contains named parameter '$param' with invalid case, "
           "only camelCased named parameters are supported.",
