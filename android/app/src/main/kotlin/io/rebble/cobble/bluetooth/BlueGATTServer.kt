@@ -3,7 +3,6 @@ package io.rebble.cobble.bluetooth
 import android.bluetooth.*
 import android.content.Context
 import io.rebble.libpebblecommon.ProtocolHandler
-import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
@@ -12,6 +11,7 @@ import okio.Pipe
 import okio.buffer
 import timber.log.Timber
 import java.io.IOException
+import java.io.InterruptedIOException
 import kotlin.experimental.and
 
 class BlueGATTServer(
@@ -40,7 +40,7 @@ class BlueGATTServer(
     private lateinit var dataCharacteristic: BluetoothGattCharacteristic
 
     private val phoneToWatchBuffer = Buffer()
-    private val watchToPhonePipe = Pipe(8192)
+    private val watchToPhonePipe = Pipe(WATCH_TO_PHONE_BUFFER_SIZE)
 
     private val pendingPackets = Channel<ProtocolHandler.PendingPacket>(Channel.BUFFERED)
 
@@ -382,25 +382,43 @@ class BlueGATTServer(
         serverScope.launch {
             val source = watchToPhonePipe.source.buffer()
             while (coroutineContext.isActive) {
-                var endpoint: Short = -1
-                var length: Short = -1
 
-                val packetData = runInterruptible(Dispatchers.IO) {
+                val (endpoint, length) = runInterruptible(Dispatchers.IO) {
                     val peekSource = source.peek()
-                    length = peekSource.readShort()
-                    endpoint = peekSource.readShort()
+                    val length = peekSource.readShort().toUShort()
+                    val endpoint = peekSource.readShort().toUShort()
 
-                    if (length < 0) {
-                        Timber.w("Invalid length in packet (EP ${endpoint.toUShort()}): got ${length.toUShort()}")
-                        return@runInterruptible null
+                    if (length <= 0u) {
+                        Timber.w("Packet Writer Invalid length in packet (EP ${endpoint}): got ${length}")
+                        UShort.MIN_VALUE to UShort.MIN_VALUE
+                    } else {
+                        endpoint to length
                     }
+                }
 
-                    /* READ PACKET CONTENT */
-                    val totalLength = (length + 2 * Short.SIZE_BYTES).toLong()
-                    source.readByteArray(totalLength)
-                } ?: continue
+                if (length == UShort.MIN_VALUE) {
+                    // Read pipe fully to flush invalid data from the buffer
+                    source.read(Buffer(), WATCH_TO_PHONE_BUFFER_SIZE)
 
-                Timber.d("Got packet: EP ${ProtocolEndpoint.getByValue(endpoint.toUShort())} | Length ${length.toUShort()}")
+                    continue
+                }
+
+                val packetData = try {
+                    withTimeout(20_000) {
+                        runInterruptible {
+                            /* READ PACKET CONTENT */
+                            val totalLength = (length.toInt() + 2 * Short.SIZE_BYTES).toLong()
+                            source.readByteArray(totalLength)
+                        }
+                    }
+                } catch (e: TimeoutCancellationException) {
+                    Timber.w("Cancel - Failed to read packet (EP ${endpoint}, LEN $length) in 20 seconds. Flushing")
+
+                    throw IOException("Packet timeout")
+                } catch (e: InterruptedIOException) {
+                    Timber.w("IO - Failed to read packet (EP ${endpoint}, LEN $length) in 20 seconds. Flushing")
+                    throw IOException("Packet timeout")
+                }
 
                 protocolHandler.receivePacket(packetData.toUByteArray())
             }
@@ -470,3 +488,5 @@ class BlueGATTServer(
         watchToPhonePipe.source.close()
     }
 }
+
+const val WATCH_TO_PHONE_BUFFER_SIZE: Long = 8192

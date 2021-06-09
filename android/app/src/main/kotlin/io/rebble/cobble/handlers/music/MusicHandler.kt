@@ -5,15 +5,14 @@ import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.MediaMetadata
 import android.media.session.MediaController
-import android.media.session.MediaSession
 import android.media.session.PlaybackState
-import android.os.Bundle
 import android.os.SystemClock
 import android.view.KeyEvent
 import androidx.lifecycle.asFlow
 import io.rebble.cobble.datasources.PermissionChangeBus
 import io.rebble.cobble.datasources.notificationPermissionFlow
 import io.rebble.cobble.handlers.CobbleHandler
+import io.rebble.cobble.util.Debouncer
 import io.rebble.libpebblecommon.packets.MusicControl
 import io.rebble.libpebblecommon.services.MusicService
 import kotlinx.coroutines.*
@@ -33,6 +32,24 @@ class MusicHandler @Inject constructor(
 ) : CobbleHandler {
     private var currentMediaController: MediaController? = null
     private var hasPermission: Boolean = false
+
+    private val playStateDebouncer = Debouncer(
+            debouncingTimeMs = 500L,
+            triggerFirstImmediately = true,
+            scope = coroutineScope
+    )
+
+    private val trackDebouncer = Debouncer(
+            debouncingTimeMs = 500L,
+            triggerFirstImmediately = true,
+            scope = coroutineScope
+    )
+
+    private val volumDebouncer = Debouncer(
+            debouncingTimeMs = 500L,
+            triggerFirstImmediately = true,
+            scope = coroutineScope
+    )
 
     private fun onMediaPlayerChanged(newPlayer: MediaController?) {
         Timber.d("New Player %s %s", newPlayer?.packageName, newPlayer.hashCode())
@@ -118,7 +135,8 @@ class MusicHandler @Inject constructor(
             }
         }
 
-        coroutineScope.launch(Dispatchers.Main.immediate) {
+        trackDebouncer.executeDebouncing {
+            Timber.d("transmit track")
             musicService.send(updateTrackObject)
         }
     }
@@ -126,7 +144,8 @@ class MusicHandler @Inject constructor(
 
     private fun sendVolumeUpdate(playbackInfo: MediaController.PlaybackInfo) {
         Timber.d("Send volume update %s", playbackInfo)
-        coroutineScope.launch(Dispatchers.Main.immediate) {
+        volumDebouncer.executeDebouncing {
+            Timber.d("Transmit volume")
             musicService.send(MusicControl.UpdateVolumeInfo(
                     (100f * playbackInfo.currentVolume / playbackInfo.maxVolume)
                             .roundToInt()
@@ -158,7 +177,8 @@ class MusicHandler @Inject constructor(
         val position = (playbackState?.position ?: 0) + timeSinceLastPositionUpdate
 
         val playbackSpeed = playbackState?.playbackSpeed ?: 1f
-        coroutineScope.launch(Dispatchers.Main.immediate) {
+        playStateDebouncer.executeDebouncing {
+            Timber.d("Transmit play state")
             musicService.send(MusicControl.UpdatePlayStateInfo(
                     state,
                     position.toUInt(),
@@ -167,7 +187,6 @@ class MusicHandler @Inject constructor(
                     MusicControl.RepeatState.Unknown
             ))
         }
-
     }
 
     private fun listenForPlayerChanges() {

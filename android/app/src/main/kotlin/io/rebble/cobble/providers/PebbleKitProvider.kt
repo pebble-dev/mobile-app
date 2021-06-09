@@ -29,6 +29,7 @@ class PebbleKitProvider : ContentProvider() {
         return true
     }
 
+    @Synchronized
     private fun initializeIfNeeded() {
         if (initialized) {
             return
