@@ -14,9 +14,7 @@ class WatchCarousel extends StatelessWidget implements CobbleScreen {
         itemBuilder: (context, index) {
           PebbleWatchModel model = values[Random().nextInt(values.length)];
 
-          return CarouselIcon(
-            icon: PebbleWatchIcon(model, size: 96.0),
-          );
+          return PebbleWatchIcon(model, size: 128.0, margin: EdgeInsets.symmetric(horizontal: 8.0));
         });
   }
 }
