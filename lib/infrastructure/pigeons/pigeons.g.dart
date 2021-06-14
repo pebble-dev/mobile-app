@@ -346,6 +346,37 @@ class AppInstallStatus {
   }
 }
 
+class AppLogEntry {
+  String uuid;
+  int timestamp;
+  int level;
+  int lineNumber;
+  String filename;
+  String message;
+
+  Object encode() {
+    final Map<Object, Object> pigeonMap = <Object, Object>{};
+    pigeonMap['uuid'] = uuid;
+    pigeonMap['timestamp'] = timestamp;
+    pigeonMap['level'] = level;
+    pigeonMap['lineNumber'] = lineNumber;
+    pigeonMap['filename'] = filename;
+    pigeonMap['message'] = message;
+    return pigeonMap;
+  }
+
+  static AppLogEntry decode(Object message) {
+    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
+    return AppLogEntry()
+      ..uuid = pigeonMap['uuid'] as String
+      ..timestamp = pigeonMap['timestamp'] as int
+      ..level = pigeonMap['level'] as int
+      ..lineNumber = pigeonMap['lineNumber'] as int
+      ..filename = pigeonMap['filename'] as String
+      ..message = pigeonMap['message'] as String;
+  }
+}
+
 class InstallData {
   String uri;
   PbwAppInfo appInfo;
@@ -774,19 +805,76 @@ class BackgroundSetupControl {
   }
 }
 
+class AppLogControl {
+  Future<void> startSendingLogs() async {
+    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
+        'dev.flutter.pigeon.AppLogControl.startSendingLogs',
+        StandardMessageCodec());
+    final Map<Object, Object> replyMap =
+        await channel.send(null) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error =
+          replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      // noop
+    }
+  }
+
+  Future<void> stopSendingLogs() async {
+    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
+        'dev.flutter.pigeon.AppLogControl.stopSendingLogs',
+        StandardMessageCodec());
+    final Map<Object, Object> replyMap =
+        await channel.send(null) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error =
+          replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      // noop
+    }
+  }
+}
+
 abstract class ScanCallbacks {
   void onScanUpdate(ListWrapper arg);
+
   void onScanStarted();
+
   void onScanStopped();
+
   static void setup(ScanCallbacks api) {
     {
-      const BasicMessageChannel<Object> channel =
-          BasicMessageChannel<Object>('dev.flutter.pigeon.ScanCallbacks.onScanUpdate', StandardMessageCodec());
+      const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
+          'dev.flutter.pigeon.ScanCallbacks.onScanUpdate',
+          StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.ScanCallbacks.onScanUpdate was null. Expected ListWrapper.');
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.ScanCallbacks.onScanUpdate was null. Expected ListWrapper.');
           final ListWrapper input = ListWrapper.decode(message);
           api.onScanUpdate(input);
           return;
@@ -1428,11 +1516,36 @@ class PermissionControl {
   }
 }
 
+abstract class AppLogCallbacks {
+  void onLogReceived(AppLogEntry arg);
+
+  static void setup(AppLogCallbacks api) {
+    {
+      const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
+          'dev.flutter.pigeon.AppLogCallbacks.onLogReceived',
+          StandardMessageCodec());
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.AppLogCallbacks.onLogReceived was null. Expected AppLogEntry.');
+          final AppLogEntry input = AppLogEntry.decode(message);
+          api.onLogReceived(input);
+          return;
+        });
+      }
+    }
+  }
+}
+
 class ConnectionControl {
   Future<BooleanWrapper> isConnected() async {
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.ConnectionControl.isConnected', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
+        'dev.flutter.pigeon.ConnectionControl.isConnected',
+        StandardMessageCodec());
+    final Map<Object, Object> replyMap =
+        await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1440,7 +1553,8 @@ class ConnectionControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error =
+          replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -1848,35 +1962,13 @@ class AppInstallControl {
   }
 }
 
-class PackageDetails {
-  Future<AppEntriesPigeon> getPackageList() async {
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.PackageDetails.getPackageList', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
-      throw PlatformException(
-        code: error['code'] as String,
-        message: error['message'] as String,
-        details: error['details'],
-      );
-    } else {
-      return AppEntriesPigeon.decode(replyMap['result']);
-    }
-  }
-}
-
 class TimelineSyncControl {
   Future<void> syncTimelineToWatchLater() async {
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.TimelineSyncControl.syncTimelineToWatchLater', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
+    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
+        'dev.flutter.pigeon.TimelineSyncControl.syncTimelineToWatchLater',
+        StandardMessageCodec());
+    final Map<Object, Object> replyMap =
+        await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1884,7 +1976,8 @@ class TimelineSyncControl {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error =
+          replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,
@@ -1892,6 +1985,33 @@ class TimelineSyncControl {
       );
     } else {
       // noop
+    }
+  }
+}
+
+class PackageDetails {
+  Future<AppEntriesPigeon> getPackageList() async {
+    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
+        'dev.flutter.pigeon.PackageDetails.getPackageList',
+        StandardMessageCodec());
+    final Map<Object, Object> replyMap =
+        await channel.send(null) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error =
+          replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      return AppEntriesPigeon.decode(replyMap['result']);
     }
   }
 }
@@ -1938,7 +2058,8 @@ class NotificationUtils {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
+      final Map<Object, Object> error =
+          replyMap['error'] as Map<Object, Object>;
       throw PlatformException(
         code: error['code'] as String,
         message: error['message'] as String,

@@ -30,23 +30,21 @@ public class Pigeons {
             this.value = setterArg;
         }
 
-      HashMap toMap() {
-          HashMap<String, Object> toMapResult = new HashMap<>();
-          toMapResult.put("value", value);
-          return toMapResult;
-      }
+        HashMap toMap() {
+            HashMap<String, Object> toMapResult = new HashMap<>();
+            toMapResult.put("value", value);
+            return toMapResult;
+        }
 
-      static StringWrapper fromMap(HashMap map) {
-          StringWrapper fromMapResult = new StringWrapper();
-          Object value = map.get("value");
-          fromMapResult.value = (String) value;
-          return fromMapResult;
-      }
-  }
+        static StringWrapper fromMap(HashMap map) {
+            StringWrapper fromMapResult = new StringWrapper();
+            Object value = map.get("value");
+            fromMapResult.value = (String) value;
+            return fromMapResult;
+        }
+    }
 
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
+    /** Generated class from Pigeon that represents data sent in messages. */
     public static class ListWrapper {
         private ArrayList value;
 
@@ -72,9 +70,7 @@ public class Pigeons {
         }
     }
 
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
+    /** Generated class from Pigeon that represents data sent in messages. */
     public static class BooleanWrapper {
         private Boolean value;
 
@@ -100,9 +96,7 @@ public class Pigeons {
         }
     }
 
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
+    /** Generated class from Pigeon that represents data sent in messages. */
     public static class NumberWrapper {
         private Long value;
 
@@ -501,10 +495,10 @@ public class Pigeons {
     public void setIsUnfaithful(Boolean setterArg) { this.isUnfaithful = setterArg; }
 
     HashMap toMap() {
-      HashMap<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("name", name);
-      toMapResult.put("address", address);
-      toMapResult.put("runningFirmware", runningFirmware.toMap());
+        HashMap<String, Object> toMapResult = new HashMap<>();
+        toMapResult.put("name", name);
+        toMapResult.put("address", address);
+        toMapResult.put("runningFirmware", runningFirmware.toMap());
         toMapResult.put("recoveryFirmware", recoveryFirmware.toMap());
         toMapResult.put("model", model);
         toMapResult.put("bootloaderTimestamp", bootloaderTimestamp);
@@ -674,6 +668,99 @@ public class Pigeons {
             fromMapResult.progress = (Double) progress;
             Object isInstalling = map.get("isInstalling");
             fromMapResult.isInstalling = (Boolean) isInstalling;
+            return fromMapResult;
+        }
+    }
+
+    /**
+     * Generated class from Pigeon that represents data sent in messages.
+     */
+    public static class AppLogEntry {
+        private String uuid;
+
+        public String getUuid() {
+            return uuid;
+        }
+
+        public void setUuid(String setterArg) {
+            this.uuid = setterArg;
+        }
+
+        private Long timestamp;
+
+        public Long getTimestamp() {
+            return timestamp;
+        }
+
+        public void setTimestamp(Long setterArg) {
+            this.timestamp = setterArg;
+        }
+
+        private Long level;
+
+        public Long getLevel() {
+            return level;
+        }
+
+        public void setLevel(Long setterArg) {
+            this.level = setterArg;
+        }
+
+        private Long lineNumber;
+
+        public Long getLineNumber() {
+            return lineNumber;
+        }
+
+        public void setLineNumber(Long setterArg) {
+            this.lineNumber = setterArg;
+        }
+
+        private String filename;
+
+        public String getFilename() {
+            return filename;
+        }
+
+        public void setFilename(String setterArg) {
+            this.filename = setterArg;
+        }
+
+        private String message;
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String setterArg) {
+            this.message = setterArg;
+        }
+
+        HashMap toMap() {
+            HashMap<String, Object> toMapResult = new HashMap<>();
+            toMapResult.put("uuid", uuid);
+            toMapResult.put("timestamp", timestamp);
+            toMapResult.put("level", level);
+            toMapResult.put("lineNumber", lineNumber);
+            toMapResult.put("filename", filename);
+            toMapResult.put("message", message);
+            return toMapResult;
+        }
+
+        static AppLogEntry fromMap(HashMap map) {
+            AppLogEntry fromMapResult = new AppLogEntry();
+            Object uuid = map.get("uuid");
+            fromMapResult.uuid = (String) uuid;
+            Object timestamp = map.get("timestamp");
+            fromMapResult.timestamp = (timestamp == null) ? null : ((timestamp instanceof Integer) ? (Integer) timestamp : (Long) timestamp);
+            Object level = map.get("level");
+            fromMapResult.level = (level == null) ? null : ((level instanceof Integer) ? (Integer) level : (Long) level);
+            Object lineNumber = map.get("lineNumber");
+            fromMapResult.lineNumber = (lineNumber == null) ? null : ((lineNumber instanceof Integer) ? (Integer) lineNumber : (Long) lineNumber);
+            Object filename = map.get("filename");
+            fromMapResult.filename = (String) filename;
+            Object message = map.get("message");
+            fromMapResult.message = (String) message;
             return fromMapResult;
         }
     }
@@ -1243,7 +1330,9 @@ public class Pigeons {
 
         void e(StringWrapper arg);
 
-        /** Sets up an instance of `PigeonLogger` to handle messages through the `binaryMessenger` */
+        /**
+         * Sets up an instance of `PigeonLogger` to handle messages through the `binaryMessenger`
+         */
         static void setup(BinaryMessenger binaryMessenger, PigeonLogger api) {
             {
                 BasicMessageChannel<Object> channel =
@@ -1297,7 +1386,7 @@ public class Pigeons {
                             api.i(input);
                             wrapped.put("result", null);
                         } catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
+                            wrapped.put("error", wrapError(exception));
                         }
                         reply.reply(wrapped);
                     });
@@ -1471,6 +1560,57 @@ public class Pigeons {
                             @SuppressWarnings("ConstantConditions")
                             NumberWrapper input = NumberWrapper.fromMap((HashMap) message);
                             api.setupBackground(input);
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+        }
+    }
+
+    /**
+     * Generated interface from Pigeon that represents a handler of messages from Flutter.
+     */
+    public interface AppLogControl {
+        void startSendingLogs();
+
+        void stopSendingLogs();
+
+        /**
+         * Sets up an instance of `AppLogControl` to handle messages through the `binaryMessenger`
+         */
+        static void setup(BinaryMessenger binaryMessenger, AppLogControl api) {
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AppLogControl.startSendingLogs", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            api.startSendingLogs();
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AppLogControl.stopSendingLogs", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            api.stopSendingLogs();
                             wrapped.put("result", null);
                         } catch (Exception exception) {
                             wrapped.put("error", wrapError(exception));
@@ -1953,11 +2093,11 @@ public class Pigeons {
                         }
                         reply.reply(wrapped);
                     });
-        } else {
-          channel.setMessageHandler(null);
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
         }
-      }
-    }
   }
 
   /** Generated class from Pigeon that represents Flutter messages that can be called from Java.*/
@@ -2042,132 +2182,165 @@ public class Pigeons {
             catch (Exception exception) {
               wrapped.put("error", wrapError(exception));
             }
-            reply.reply(wrapped);
+              reply.reply(wrapped);
           });
         } else {
-          channel.setMessageHandler(null);
+            channel.setMessageHandler(null);
         }
       }
     }
   }
 
-  /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
-  public interface PermissionControl {
-    NumberWrapper requestLocationPermission();
-    NumberWrapper requestCalendarPermission();
-    void requestNotificationAccess();
-    void requestBatteryExclusion();
-    void openPermissionSettings();
+    /**
+     * Generated interface from Pigeon that represents a handler of messages from Flutter.
+     */
+    public interface PermissionControl {
+        NumberWrapper requestLocationPermission();
 
-    /** Sets up an instance of `PermissionControl` to handle messages through the `binaryMessenger` */
-    static void setup(BinaryMessenger binaryMessenger, PermissionControl api) {
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestLocationPermission", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              NumberWrapper output = api.requestLocationPermission();
-              wrapped.put("result", output.toMap());
+        NumberWrapper requestCalendarPermission();
+
+        void requestNotificationAccess();
+
+        void requestBatteryExclusion();
+
+        void openPermissionSettings();
+
+        /**
+         * Sets up an instance of `PermissionControl` to handle messages through the `binaryMessenger`
+         */
+        static void setup(BinaryMessenger binaryMessenger, PermissionControl api) {
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestLocationPermission", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            NumberWrapper output = api.requestLocationPermission();
+                            wrapped.put("result", output.toMap());
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
             }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestCalendarPermission", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            NumberWrapper output = api.requestCalendarPermission();
+                            wrapped.put("result", output.toMap());
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
             }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestNotificationAccess", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            api.requestNotificationAccess();
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestBatteryExclusion", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            api.requestBatteryExclusion();
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PermissionControl.openPermissionSettings", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            api.openPermissionSettings();
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
         }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestCalendarPermission", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              NumberWrapper output = api.requestCalendarPermission();
-              wrapped.put("result", output.toMap());
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestNotificationAccess", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              api.requestNotificationAccess();
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestBatteryExclusion", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              api.requestBatteryExclusion();
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PermissionControl.openPermissionSettings", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              api.openPermissionSettings();
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
     }
-  }
 
-  /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
-  public interface ConnectionControl {
-    BooleanWrapper isConnected();
-    void disconnect();
-    void sendRawPacket(ListWrapper arg);
-    void observeConnectionChanges();
-    void cancelObservingConnectionChanges();
+    /**
+     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
+     */
+    public static class AppLogCallbacks {
+        private final BinaryMessenger binaryMessenger;
 
-    /** Sets up an instance of `ConnectionControl` to handle messages through the `binaryMessenger` */
+        public AppLogCallbacks(BinaryMessenger argBinaryMessenger) {
+            this.binaryMessenger = argBinaryMessenger;
+        }
+
+        public interface Reply<T> {
+            void reply(T reply);
+        }
+
+        public void onLogReceived(AppLogEntry argInput, Reply<Void> callback) {
+            BasicMessageChannel<Object> channel =
+                    new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.AppLogCallbacks.onLogReceived", new StandardMessageCodec());
+            HashMap inputMap = argInput.toMap();
+            channel.send(inputMap, channelReply -> {
+                callback.reply(null);
+            });
+        }
+    }
+
+    /**
+     * Generated interface from Pigeon that represents a handler of messages from Flutter.
+     */
+    public interface ConnectionControl {
+        BooleanWrapper isConnected();
+
+        void disconnect();
+
+        void sendRawPacket(ListWrapper arg);
+
+        void observeConnectionChanges();
+
+        void cancelObservingConnectionChanges();
+
+        /** Sets up an instance of `ConnectionControl` to handle messages through the `binaryMessenger` */
     static void setup(BinaryMessenger binaryMessenger, ConnectionControl api) {
       {
         BasicMessageChannel<Object> channel =
@@ -2217,28 +2390,8 @@ public class Pigeons {
               @SuppressWarnings("ConstantConditions")
               ListWrapper input = ListWrapper.fromMap((HashMap)message);
               api.sendRawPacket(input);
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ConnectionControl.observeConnectionChanges", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              api.observeConnectionChanges();
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
+                wrapped.put("result", null);
+            } catch (Exception exception) {
                 wrapped.put("error", wrapError(exception));
             }
               reply.reply(wrapped);
@@ -2247,6 +2400,24 @@ public class Pigeons {
             channel.setMessageHandler(null);
         }
       }
+        {
+            BasicMessageChannel<Object> channel =
+                    new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ConnectionControl.observeConnectionChanges", new StandardMessageCodec());
+            if (api != null) {
+                channel.setMessageHandler((message, reply) -> {
+                    HashMap<String, HashMap> wrapped = new HashMap<>();
+                    try {
+                        api.observeConnectionChanges();
+                        wrapped.put("result", null);
+                    } catch (Exception exception) {
+                        wrapped.put("error", wrapError(exception));
+                    }
+                    reply.reply(wrapped);
+                });
+            } else {
+                channel.setMessageHandler(null);
+            }
+        }
         {
             BasicMessageChannel<Object> channel =
                     new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.ConnectionControl.cancelObservingConnectionChanges", new StandardMessageCodec());
@@ -2585,35 +2756,6 @@ public class Pigeons {
     /**
      * Generated interface from Pigeon that represents a handler of messages from Flutter.
      */
-    public interface PackageDetails {
-        AppEntriesPigeon getPackageList();
-
-        /** Sets up an instance of `PackageDetails` to handle messages through the `binaryMessenger` */
-        static void setup(BinaryMessenger binaryMessenger, PackageDetails api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PackageDetails.getPackageList", new StandardMessageCodec());
-                if (api != null) {
-                    channel.setMessageHandler((message, reply) -> {
-                        HashMap<String, HashMap> wrapped = new HashMap<>();
-                        try {
-                            AppEntriesPigeon output = api.getPackageList();
-                            wrapped.put("result", output.toMap());
-                        } catch (Exception exception) {
-                            wrapped.put("error", wrapError(exception));
-                        }
-                        reply.reply(wrapped);
-                    });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
     public interface TimelineSyncControl {
         void syncTimelineToWatchLater();
 
@@ -2630,6 +2772,37 @@ public class Pigeons {
                         try {
                             api.syncTimelineToWatchLater();
                             wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
+        }
+    }
+
+    /**
+     * Generated interface from Pigeon that represents a handler of messages from Flutter.
+     */
+    public interface PackageDetails {
+        AppEntriesPigeon getPackageList();
+
+        /**
+         * Sets up an instance of `PackageDetails` to handle messages through the `binaryMessenger`
+         */
+        static void setup(BinaryMessenger binaryMessenger, PackageDetails api) {
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PackageDetails.getPackageList", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            AppEntriesPigeon output = api.getPackageList();
+                            wrapped.put("result", output.toMap());
                         } catch (Exception exception) {
                             wrapped.put("error", wrapError(exception));
                         }
@@ -2689,16 +2862,19 @@ public class Pigeons {
 
         /** Sets up an instance of `NotificationUtils` to handle messages through the `binaryMessenger` */
         static void setup(BinaryMessenger binaryMessenger, NotificationUtils api) {
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.NotificationUtils.dismissNotification", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              StringWrapper input = StringWrapper.fromMap((HashMap)message);
-              api.dismissNotification(input, result -> { wrapped.put("result", result.toMap()); reply.reply(wrapped); });
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.NotificationUtils.dismissNotification", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            StringWrapper input = StringWrapper.fromMap((HashMap) message);
+                            api.dismissNotification(input, result -> {
+                                wrapped.put("result", result.toMap());
+                                reply.reply(wrapped);
+                            });
             }
             catch (Exception exception) {
               wrapped.put("error", wrapError(exception));
@@ -2740,31 +2916,9 @@ public class Pigeons {
               @SuppressWarnings("ConstantConditions")
               StringWrapper input = StringWrapper.fromMap((HashMap)message);
               api.openNotification(input);
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.NotificationUtils.executeAction", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              @SuppressWarnings("ConstantConditions")
-              NotifActionExecuteReq input = NotifActionExecuteReq.fromMap((HashMap)message);
-              api.executeAction(input);
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
+                wrapped.put("result", null);
+            } catch (Exception exception) {
+                wrapped.put("error", wrapError(exception));
             }
               reply.reply(wrapped);
           });
@@ -2772,6 +2926,26 @@ public class Pigeons {
             channel.setMessageHandler(null);
         }
       }
+            {
+                BasicMessageChannel<Object> channel =
+                        new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.NotificationUtils.executeAction", new StandardMessageCodec());
+                if (api != null) {
+                    channel.setMessageHandler((message, reply) -> {
+                        HashMap<String, HashMap> wrapped = new HashMap<>();
+                        try {
+                            @SuppressWarnings("ConstantConditions")
+                            NotifActionExecuteReq input = NotifActionExecuteReq.fromMap((HashMap) message);
+                            api.executeAction(input);
+                            wrapped.put("result", null);
+                        } catch (Exception exception) {
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
+                }
+            }
         }
     }
 
@@ -2903,12 +3077,12 @@ public class Pigeons {
                             api.unpairWatch(input);
                             wrapped.put("result", null);
                         } catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
+                            wrapped.put("error", wrapError(exception));
+                        }
+                        reply.reply(wrapped);
+                    });
+                } else {
+                    channel.setMessageHandler(null);
         }
       }
     }

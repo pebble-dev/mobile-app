@@ -10,6 +10,7 @@ import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/devoptions/dev_options_page.dart';
+import 'package:cobble/ui/devoptions/test_logs_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
@@ -136,6 +137,11 @@ class TestTab extends HookWidget implements CobbleScreen {
                     }
                   },
                   child: Text("Take a watch screenshot")),
+              ElevatedButton(
+                  onPressed: () {
+                    context.push(TestLogsPage());
+                  },
+                  child: Text("Logs")),
               Text(statusText),
               Card(
                 margin: EdgeInsets.all(16.0),
