@@ -24,7 +24,7 @@ A multi platform watch companion app for Pebble/RebbleOS devices
 To build all the mappings in this project (such as entity <> map mapping for SQL), you have to
 run the following command:
 
-`flutter pub run build_runner build --delete-conflicting-outputs`
+`fvm flutter pub run build_runner build --delete-conflicting-outputs`
 
 ## Building pigeons
 
@@ -34,7 +34,7 @@ using [Pigeon](https://pub.dev/packages/pigeon). To add new communication interf
 with the following command:
 
 ```
-flutter pub run pigeon \
+fvm flutter pub run pigeon \
   --input pigeons/pigeons.dart \
   --dart_out lib/infrastructure/pigeons/pigeons.g.dart \
   --java_out ./android/app/src/main/java/io/rebble/cobble/pigeons/Pigeons.java \
