@@ -1581,13 +1581,6 @@ public class Pigeons {
         callback.reply(null);
       });
     }
-    public void deleteCalendarPinsFromWatch(Reply<Void> callback) {
-      BasicMessageChannel<Object> channel =
-          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.CalendarCallbacks.deleteCalendarPinsFromWatch", new StandardMessageCodec());
-      channel.send(null, channelReply -> {
-        callback.reply(null);
-      });
-    }
   }
 
   /** Generated class from Pigeon that represents Flutter messages that can be called from Java.*/
@@ -2414,7 +2407,6 @@ public class Pigeons {
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface CalendarControl {
     void requestCalendarSync();
-    void deleteCalendarPinsFromWatch();
 
     /** Sets up an instance of `CalendarControl` to handle messages through the `binaryMessenger` */
     static void setup(BinaryMessenger binaryMessenger, CalendarControl api) {
@@ -2426,25 +2418,6 @@ public class Pigeons {
             HashMap<String, HashMap> wrapped = new HashMap<>();
             try {
               api.requestCalendarSync();
-              wrapped.put("result", null);
-            }
-            catch (Exception exception) {
-              wrapped.put("error", wrapError(exception));
-            }
-            reply.reply(wrapped);
-          });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.CalendarControl.deleteCalendarPinsFromWatch", new StandardMessageCodec());
-        if (api != null) {
-          channel.setMessageHandler((message, reply) -> {
-            HashMap<String, HashMap> wrapped = new HashMap<>();
-            try {
-              api.deleteCalendarPinsFromWatch();
               wrapped.put("result", null);
             }
             catch (Exception exception) {

@@ -1,5 +1,6 @@
 import 'package:cobble/domain/calendar/calendar_pin_convert.dart';
 import 'package:cobble/domain/calendar/calendar_syncer.db.dart';
+import 'package:cobble/domain/calendar/requests/delete_all_pins_request.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/db/dao/timeline_pin_dao.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
@@ -41,10 +42,19 @@ class CalendarBackground implements CalendarCallbacks {
     }
   }
 
-  @override
-  Future<void> deleteCalendarPinsFromWatch() async {
+  Future<Object>? onMessageFromUi(Object message) {
+    if (message is DeleteAllCalendarPinsRequest) {
+      return deleteCalendarPinsFromWatch();
+    }
+
+    return null;
+  }
+
+  Future<bool> deleteCalendarPinsFromWatch() async {
     await timelinePinDao.markAllPinsFromAppForDeletion(calendarWatchappId);
     await syncTimelineToWatch();
+
+    return true;
   }
 
   @override

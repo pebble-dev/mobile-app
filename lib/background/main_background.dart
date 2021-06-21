@@ -118,6 +118,11 @@ class BackgroundReceiver implements TimelineCallbacks {
       return result;
     }
 
+    result = calendarBackground.onMessageFromUi(message);
+    if (result != null) {
+      return result;
+    }
+
     throw Exception("Unknown message $message");
   }
 

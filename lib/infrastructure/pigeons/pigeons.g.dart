@@ -1195,7 +1195,6 @@ class DebugControl {
 
 abstract class CalendarCallbacks {
   Future<void> doFullCalendarSync();
-  Future<void> deleteCalendarPinsFromWatch();
   static void setup(CalendarCallbacks api) {
     {
       const BasicMessageChannel<Object> channel =
@@ -1206,19 +1205,6 @@ abstract class CalendarCallbacks {
         channel.setMessageHandler((Object message) async {
           // ignore message
           await api.doFullCalendarSync();
-          return;
-        });
-      }
-    }
-    {
-      const BasicMessageChannel<Object> channel =
-          BasicMessageChannel<Object>('dev.flutter.pigeon.CalendarCallbacks.deleteCalendarPinsFromWatch', StandardMessageCodec());
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object message) async {
-          // ignore message
-          await api.deleteCalendarPinsFromWatch();
           return;
         });
       }
@@ -2083,28 +2069,6 @@ class CalendarControl {
   Future<void> requestCalendarSync() async {
     const BasicMessageChannel<Object> channel =
         BasicMessageChannel<Object>('dev.flutter.pigeon.CalendarControl.requestCalendarSync', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
-      throw PlatformException(
-        code: error['code'] as String,
-        message: error['message'] as String,
-        details: error['details'],
-      );
-    } else {
-      // noop
-    }
-  }
-
-  Future<void> deleteCalendarPinsFromWatch() async {
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.CalendarControl.deleteCalendarPinsFromWatch', StandardMessageCodec());
     final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(

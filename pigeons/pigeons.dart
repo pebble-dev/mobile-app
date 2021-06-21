@@ -196,9 +196,6 @@ abstract class PairCallbacks {
 abstract class CalendarCallbacks {
   @async
   void doFullCalendarSync();
-
-  @async
-  void deleteCalendarPinsFromWatch();
 }
 
 @FlutterApi()
@@ -358,8 +355,6 @@ abstract class PermissionControl {
 @HostApi()
 abstract class CalendarControl {
   void requestCalendarSync();
-
-  void deleteCalendarPinsFromWatch();
 }
 
 @HostApi()
