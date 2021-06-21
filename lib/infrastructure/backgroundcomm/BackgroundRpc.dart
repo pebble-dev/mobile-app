@@ -47,6 +47,8 @@ class BackgroundRpc {
 
   void _startReceivingResults() {
     final returnPort = ReceivePort();
+    IsolateNameServer.removePortNameMapping(
+        isolatePortNameReturnFromBackground);
     IsolateNameServer.registerPortWithName(
         returnPort.sendPort, isolatePortNameReturnFromBackground);
 
