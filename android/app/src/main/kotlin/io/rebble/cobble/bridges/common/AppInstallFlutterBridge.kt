@@ -257,16 +257,6 @@ class AppInstallFlutterBridge @Inject constructor(
         }
     }
 
-    override fun beginAppOrderChange(
-            reorderRequest: Pigeons.AppReorderRequest,
-            result: Pigeons.Result<Pigeons.NumberWrapper>
-    ) {
-        coroutineScope.launchPigeonResult(result) {
-            backgroundAppInstallBridge.beginAppOrderChange(reorderRequest)
-            NumberWrapper(1)
-        }
-    }
-
     override fun subscribeToAppStatus() {
         statusObservingJob = coroutineScope.launch {
             putBytesController.status.collect {
