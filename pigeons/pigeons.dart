@@ -386,11 +386,13 @@ abstract class AppInstallControl {
   @async
   PbwAppInfo getAppInfo(StringWrapper localPbwUri);
 
-  // Just relay method that triggers beginAppInstall on background flutter side
+  // Just relay method that triggers copies the app into local storage and
+  // begins install on the background flutter side
   @async
   BooleanWrapper beginAppInstall(InstallData installData);
 
-  // Just relay method that triggers deleteApp on background flutter side
+  // Just relay method that deletes app from the local store and triggers
+  // deleteApp on background flutter side
   // Return BooleanWrapper as a
   // workaround for https://github.com/flutter/flutter/issues/78536
   @async
