@@ -18,7 +18,7 @@ class BlueGATTServer(
         private val targetDevice: BluetoothDevice,
         private val context: Context,
         private val serverScope: CoroutineScope,
-        private val protocolHandler: ProtocolHandler
+        private val protocolHandler: ProtocolHandler,
 ) : BluetoothGattServerCallback() {
     private val serverReady = CompletableDeferred<Boolean>()
     private val connectionStatusChannel = Channel<Boolean>(0)
@@ -486,6 +486,7 @@ class BlueGATTServer(
         bluetoothGattServer.close()
 
         watchToPhonePipe.source.close()
+        serverScope.cancel()
     }
 }
 
