@@ -23,6 +23,7 @@ jobs:
         with:
           channel: 'stable'
       - run: dart --version
+      - run: dart pub global activate fvm
       - run: fvm -h
       - run: fvm install
       - run: fvm flutter pub get
