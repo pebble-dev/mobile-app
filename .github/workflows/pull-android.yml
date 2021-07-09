@@ -23,6 +23,7 @@ jobs:
         with:
           channel: 'stable'
       - run: dart --version
+      - run: fvm -h
       - run: fvm install
       - run: fvm flutter pub get
       - run: fvm flutter analyze --no-fatal-infos
