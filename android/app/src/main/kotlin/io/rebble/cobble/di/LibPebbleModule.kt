@@ -87,6 +87,12 @@ abstract class LibPebbleModule {
         fun provideScreenshotService(
                 protocolHandler: ProtocolHandler
         ) = ScreenshotService(protocolHandler)
+
+        @Provides
+        @Singleton
+        fun provideAppLogService(
+                protocolHandler: ProtocolHandler
+        ) = AppLogService(protocolHandler)
     }
 
     @Binds
@@ -134,4 +140,8 @@ abstract class LibPebbleModule {
     @Binds
     @IntoSet
     abstract fun bindScrenshotServiceIntoSet(service: ScreenshotService): ProtocolService
+
+    @Binds
+    @IntoSet
+    abstract fun bindAppLogServiceIntoSet(service: AppLogService): ProtocolService
 }

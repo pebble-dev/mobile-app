@@ -167,6 +167,18 @@ class ScreenshotResult {
   ScreenshotResult(this.success, this.imagePath);
 }
 
+class AppLogEntry {
+  String uuid;
+  int timestamp;
+  int level;
+  int lineNumber;
+  String filename;
+  String message;
+
+  AppLogEntry(this.uuid, this.timestamp, this.level, this.lineNumber,
+      this.filename, this.message);
+}
+
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
@@ -234,12 +246,20 @@ abstract class NotificationListening {
   void dismissNotification(StringWrapper itemId);
 }
 
+@FlutterApi()
+abstract class AppLogCallbacks {
+  void onLogReceived(AppLogEntry entry);
+}
+
 @HostApi()
 abstract class NotificationUtils {
   @async
   BooleanWrapper dismissNotification(StringWrapper itemId);
+
   void dismissNotificationWatch(StringWrapper itemId);
+
   void openNotification(StringWrapper itemId);
+
   void executeAction(NotifActionExecuteReq action);
 }
 
@@ -428,6 +448,13 @@ abstract class PackageDetails {
 abstract class ScreenshotsControl {
   @async
   ScreenshotResult takeWatchScreenshot();
+}
+
+@HostApi()
+abstract class AppLogControl {
+  void startSendingLogs();
+
+  void stopSendingLogs();
 }
 
 /// This class will keep all classes that appear in lists from being deleted
