@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -85,12 +86,12 @@ class PairedStorage extends StateNotifier<List<StoredDevice>> {
 }
 
 final pairedStorageProvider = StateNotifierProvider((ref) => PairedStorage());
-final defaultWatchProvider = Provider((ref) => ref
-    .watch(pairedStorageProvider)
+final defaultWatchProvider = Provider((ref) => IterableExtension(ref
+    .watch(pairedStorageProvider))
     .firstWhereOrNull((element) => element.isDefault!)
     ?.device);
 final ProviderFamily<PebbleScanDevice, dynamic>? specificWatchProvider =
-    Provider.family(((ref, dynamic address) => ref
-        .watch(pairedStorageProvider)
+    Provider.family(((ref, dynamic address) => IterableExtension(ref
+        .watch(pairedStorageProvider))
         .firstWhereOrNull((element) => element.device.address == address)
         ?.device) as PebbleScanDevice Function(ProviderReference, dynamic));

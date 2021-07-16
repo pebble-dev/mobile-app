@@ -50,7 +50,7 @@ class PairPage extends HookWidget implements CobbleScreen {
 
   @override
   Widget build(BuildContext context) {
-    final pairedStorage = useProvider(pairedStorageProvider);
+    final pairedStorage = useProvider(pairedStorageProvider.notifier);
     final scan = useProvider(scanProvider);
     final pair = useProvider(pairProvider).data?.value;
     final preferences = useProvider(preferencesProvider);
@@ -58,7 +58,7 @@ class PairPage extends HookWidget implements CobbleScreen {
     useEffect(() {
       if (pair == null || scan.devices.isEmpty) return null;
 
-      PebbleScanDevice? dev = scan.devices.firstWhereOrNull(
+      PebbleScanDevice? dev = IterableExtension(scan.devices).firstWhereOrNull(
         (element) => element.address == pair,
       );
 

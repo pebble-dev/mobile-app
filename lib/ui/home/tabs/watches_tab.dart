@@ -31,13 +31,13 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
   Widget build(BuildContext context) {
     final connectionState = useProvider(connectionStateProvider);
     final defaultWatch = useProvider(defaultWatchProvider);
-    final pairedStorage = useProvider(pairedStorageProvider);
+    final pairedStorage = useProvider(pairedStorageProvider.notifier);
     final allWatches = useProvider(pairedStorageProvider);
     final preferencesFuture = useProvider(preferencesProvider.future);
 
     List<PebbleScanDevice> allWatchesList =
-        allWatches.map((e) => e.device).toList();
-    List<PebbleScanDevice> allDisconnectedWatches = allWatchesList.toList();
+        List<PebbleScanDevice>.from(allWatches.map((e) => e.device));
+    List<PebbleScanDevice> allDisconnectedWatches = List<PebbleScanDevice>.from(allWatchesList);
     if (defaultWatch != null &&
         (connectionState.isConnected == true ||
             connectionState.isConnecting!)) {
