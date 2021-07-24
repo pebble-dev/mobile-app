@@ -7,7 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class TestLogsPage extends HookWidget implements CobbleScreen {
   @override
   Widget build(BuildContext context) {
-    final logs = useProvider(recievedLogsProvider.state);
+    final logs = useProvider(recievedLogsProvider);
 
     return ListView.builder(
         itemBuilder: (context, index) {
