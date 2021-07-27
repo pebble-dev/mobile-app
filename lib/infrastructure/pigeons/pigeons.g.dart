@@ -470,25 +470,6 @@ class WatchappInfo {
   }
 }
 
-class AppReorderRequest {
-  String uuid;
-  int newPosition;
-
-  Object encode() {
-    final Map<Object, Object> pigeonMap = <Object, Object>{};
-    pigeonMap['uuid'] = uuid;
-    pigeonMap['newPosition'] = newPosition;
-    return pigeonMap;
-  }
-
-  static AppReorderRequest decode(Object message) {
-    final Map<Object, Object> pigeonMap = message as Map<Object, Object>;
-    return AppReorderRequest()
-      ..uuid = pigeonMap['uuid'] as String
-      ..newPosition = pigeonMap['newPosition'] as int;
-  }
-}
-
 class AppEntriesPigeon {
   List<Object> appName;
   List<Object> packageId;
@@ -859,11 +840,8 @@ class AppLogControl {
 
 abstract class ScanCallbacks {
   void onScanUpdate(ListWrapper arg);
-
   void onScanStarted();
-
   void onScanStopped();
-
   static void setup(ScanCallbacks api) {
     {
       const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
@@ -1217,7 +1195,6 @@ class DebugControl {
 
 abstract class CalendarCallbacks {
   Future<void> doFullCalendarSync();
-  Future<void> deleteCalendarPinsFromWatch();
   static void setup(CalendarCallbacks api) {
     {
       const BasicMessageChannel<Object> channel =
@@ -1228,19 +1205,6 @@ abstract class CalendarCallbacks {
         channel.setMessageHandler((Object message) async {
           // ignore message
           await api.doFullCalendarSync();
-          return;
-        });
-      }
-    }
-    {
-      const BasicMessageChannel<Object> channel =
-          BasicMessageChannel<Object>('dev.flutter.pigeon.CalendarCallbacks.deleteCalendarPinsFromWatch', StandardMessageCodec());
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object message) async {
-          // ignore message
-          await api.deleteCalendarPinsFromWatch();
           return;
         });
       }
@@ -1518,7 +1482,6 @@ class PermissionControl {
 
 abstract class AppLogCallbacks {
   void onLogReceived(AppLogEntry arg);
-
   static void setup(AppLogCallbacks api) {
     {
       const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
@@ -1682,7 +1645,6 @@ class NotificationsControl {
 abstract class BackgroundAppInstallCallbacks {
   Future<void> beginAppInstall(InstallData arg);
   Future<void> deleteApp(StringWrapper arg);
-  Future<void> beginAppOrderChange(AppReorderRequest arg);
   static void setup(BackgroundAppInstallCallbacks api) {
     {
       const BasicMessageChannel<Object> channel =
@@ -1708,20 +1670,6 @@ abstract class BackgroundAppInstallCallbacks {
           assert(message != null, 'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.deleteApp was null. Expected StringWrapper.');
           final StringWrapper input = StringWrapper.decode(message);
           await api.deleteApp(input);
-          return;
-        });
-      }
-    }
-    {
-      const BasicMessageChannel<Object> channel =
-          BasicMessageChannel<Object>('dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppOrderChange', StandardMessageCodec());
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppOrderChange was null. Expected AppReorderRequest.');
-          final AppReorderRequest input = AppReorderRequest.decode(message);
-          await api.beginAppOrderChange(input);
           return;
         });
       }
@@ -1849,29 +1797,6 @@ class AppInstallControl {
     const BasicMessageChannel<Object> channel =
         BasicMessageChannel<Object>('dev.flutter.pigeon.AppInstallControl.removeAllApps', StandardMessageCodec());
     final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
-      throw PlatformException(
-        code: error['code'] as String,
-        message: error['message'] as String,
-        details: error['details'],
-      );
-    } else {
-      return NumberWrapper.decode(replyMap['result']);
-    }
-  }
-
-  Future<NumberWrapper> beginAppOrderChange(AppReorderRequest arg) async {
-    final Object encoded = arg.encode();
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.AppInstallControl.beginAppOrderChange', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(encoded) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -2144,28 +2069,6 @@ class CalendarControl {
   Future<void> requestCalendarSync() async {
     const BasicMessageChannel<Object> channel =
         BasicMessageChannel<Object>('dev.flutter.pigeon.CalendarControl.requestCalendarSync', StandardMessageCodec());
-    final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
-    if (replyMap == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-        details: null,
-      );
-    } else if (replyMap['error'] != null) {
-      final Map<Object, Object> error = replyMap['error'] as Map<Object, Object>;
-      throw PlatformException(
-        code: error['code'] as String,
-        message: error['message'] as String,
-        details: error['details'],
-      );
-    } else {
-      // noop
-    }
-  }
-
-  Future<void> deleteCalendarPinsFromWatch() async {
-    const BasicMessageChannel<Object> channel =
-        BasicMessageChannel<Object>('dev.flutter.pigeon.CalendarControl.deleteCalendarPinsFromWatch', StandardMessageCodec());
     final Map<Object, Object> replyMap = await channel.send(null) as Map<Object, Object>;
     if (replyMap == null) {
       throw PlatformException(

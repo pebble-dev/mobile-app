@@ -153,13 +153,6 @@ class AppInstallStatus {
   AppInstallStatus(this.progress, this.isInstalling);
 }
 
-class AppReorderRequest {
-  String uuid;
-  int newPosition;
-
-  AppReorderRequest(this.uuid, this.newPosition);
-}
-
 class ScreenshotResult {
   bool success;
   String? imagePath;
@@ -203,9 +196,6 @@ abstract class PairCallbacks {
 abstract class CalendarCallbacks {
   @async
   void doFullCalendarSync();
-
-  @async
-  void deleteCalendarPinsFromWatch();
 }
 
 @FlutterApi()
@@ -228,9 +218,6 @@ abstract class BackgroundAppInstallCallbacks {
 
   @async
   void deleteApp(StringWrapper uuid);
-
-  @async
-  void beginAppOrderChange(AppReorderRequest appReorderRequest);
 }
 
 @FlutterApi()
@@ -368,8 +355,6 @@ abstract class PermissionControl {
 @HostApi()
 abstract class CalendarControl {
   void requestCalendarSync();
-
-  void deleteCalendarPinsFromWatch();
 }
 
 @HostApi()
@@ -401,11 +386,13 @@ abstract class AppInstallControl {
   @async
   PbwAppInfo getAppInfo(StringWrapper localPbwUri);
 
-  // Just relay method that triggers beginAppInstall on background flutter side
+  // Just relay method that triggers copies the app into local storage and
+  // begins install on the background flutter side
   @async
   BooleanWrapper beginAppInstall(InstallData installData);
 
-  // Just relay method that triggers deleteApp on background flutter side
+  // Just relay method that deletes app from the local store and triggers
+  // deleteApp on background flutter side
   // Return BooleanWrapper as a
   // workaround for https://github.com/flutter/flutter/issues/78536
   @async
@@ -421,9 +408,6 @@ abstract class AppInstallControl {
 
   @async
   NumberWrapper removeAllApps();
-
-  @async
-  NumberWrapper beginAppOrderChange(AppReorderRequest appReorderRequest);
 
   void subscribeToAppStatus();
 

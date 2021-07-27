@@ -38,10 +38,4 @@ class CalendarControlFlutterBridge @Inject constructor(
             calendarFlutterBridge.syncCalendar()
         }
     }
-
-    override fun deleteCalendarPinsFromWatch() {
-        coroutineScope.launch {
-            calendarFlutterBridge.deleteCalendarPinsFromWatch()
-        }
-    }
 }

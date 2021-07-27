@@ -1,4 +1,5 @@
 import 'package:cobble/domain/apps/app_lifecycle_manager.dart';
+import 'package:cobble/domain/apps/requests/app_reorder_request.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/db/dao/app_dao.dart';
 import 'package:cobble/domain/db/models/app.dart';
@@ -45,6 +46,14 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
       Log.d('Performing normal app sync');
       return watchAppsSyncer.syncAppDatabaseWithWatch();
     }
+  }
+
+  Future<Object>? onMessageFromUi(Object message) {
+    if (message is AppReorderRequest) {
+      return beginAppOrderChange(message);
+    }
+
+    return null;
   }
 
   @override
@@ -104,12 +113,12 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
   }
 
   @override
-  Future<void> beginAppOrderChange(AppReorderRequest arg) async {
-    final uuid = Uuid(arg.uuid);
-
-    await appDao.move(uuid, arg.newPosition);
+  Future<bool> beginAppOrderChange(AppReorderRequest arg) async {
+    await appDao.move(arg.uuid, arg.newPosition);
 
     await (await preferences).setAppReorderPending(true);
     await watchAppsSyncer.syncAppDatabaseWithWatch();
+
+    return true;
   }
 }

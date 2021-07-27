@@ -3,6 +3,7 @@ import 'package:cobble/background/modules/notifications_background.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/logging.dart';
+import 'package:cobble/infrastructure/backgroundcomm/BackgroundReceiver.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/localization/localization.dart';
@@ -72,6 +73,8 @@ class BackgroundReceiver implements TimelineCallbacks {
     notificationsBackground.init();
     appsBackground = AppsBackground(this.container);
     appsBackground.init();
+
+    startReceivingRpcRequests(onMessageFromUi);
   }
 
   void onWatchConnected(PebbleDevice watch) async {
@@ -105,6 +108,22 @@ class BackgroundReceiver implements TimelineCallbacks {
     if (success) {
       prefs.setLastConnectedWatchAddress(watch.address!);
     }
+  }
+
+  Future<Object> onMessageFromUi(Object message) async {
+    Object? result;
+
+    result = appsBackground.onMessageFromUi(message);
+    if (result != null) {
+      return result;
+    }
+
+    result = calendarBackground.onMessageFromUi(message);
+    if (result != null) {
+      return result;
+    }
+
+    throw Exception("Unknown message $message");
   }
 
   Future syncTimelineToWatch() async {
