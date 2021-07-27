@@ -1,5 +1,3 @@
-import 'package:cobble/domain/apps/app_compatibility.dart';
-import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
 import 'package:cobble/domain/permissions.dart';
@@ -41,11 +39,6 @@ class TestTab extends HookWidget implements CobbleScreen {
       loading: () => List<Workaround>.empty(),
       error: (e, s) => List<Workaround>.empty(),
     );
-
-    final appManager = useProvider(appManagerProvider);
-    final allPackages = useProvider(appManagerProvider.state);
-    final allApps =
-        allPackages.where((element) => !element.isWatchface).toList();
 
     useEffect(() {
       Future.microtask(() async {
@@ -187,97 +180,6 @@ class TestTab extends HookWidget implements CobbleScreen {
                   Text(workaround.name)
                 ]),
               ),
-              Text("Installed watchfaces: "),
-              ...allPackages.where((element) => element.isWatchface).map(
-                (face) {
-                  String compatibleText = "";
-                  final currentWatch = connectionState.currentConnectedWatch;
-
-                  if (currentWatch != null) {
-                    final watchType = currentWatch
-                        .runningFirmware.hardwarePlatform
-                        .getWatchType();
-
-                    if (face.isCompatibleWith(watchType)) {
-                      compatibleText = " (Compatible)";
-                    } else {
-                      compatibleText = " (Incompatible)";
-                    }
-                  }
-
-                  return Row(children: [
-                    Container(
-                      margin: EdgeInsets.all(16),
-                      child: Text(
-                          "${face.longName}$compatibleText by ${face.company}"),
-                    ),
-                    if (!face.isSystem)
-                      ElevatedButton(
-                        child: Text("Delete"),
-                        onPressed: () {
-                          appManager.deleteApp(face.uuid);
-                        },
-                      ),
-                  ]);
-                },
-              ),
-              Text("Installed apps: "),
-              ...allApps.map(
-                (app) {
-                  String compatibleText = "";
-                  final currentWatch = connectionState.currentConnectedWatch;
-
-                  final atTop = app.appOrder == 0;
-                  final atBottom = app.appOrder == allApps.length - 1;
-
-                  if (currentWatch != null) {
-                    final watchType = currentWatch
-                        .runningFirmware.hardwarePlatform
-                        .getWatchType();
-
-                    if (app.isCompatibleWith(watchType)) {
-                      compatibleText = " (Compatible)";
-                    } else {
-                      compatibleText = " (Incompatible)";
-                    }
-                  }
-
-                  return Row(children: [
-                    Container(
-                      margin: EdgeInsets.all(16),
-                      child: Text(
-                          "${app.longName}$compatibleText by ${app.company}"),
-                    ),
-                    if (!app.isSystem)
-                      ElevatedButton(
-                        child: Text("Delete"),
-                        onPressed: () {
-                          appManager.deleteApp(app.uuid);
-                        },
-                      ),
-                    if (!atTop)
-                      Container(
-                        margin: EdgeInsets.only(left: 8),
-                        child: ElevatedButton(
-                          child: Text("Up"),
-                          onPressed: () {
-                            appManager.reorderApp(app.uuid, app.appOrder - 1);
-                          },
-                        ),
-                      ),
-                    if (!atBottom)
-                      Container(
-                        margin: EdgeInsets.only(left: 8),
-                        child: ElevatedButton(
-                          child: Text("Down"),
-                          onPressed: () {
-                            appManager.reorderApp(app.uuid, app.appOrder + 1);
-                          },
-                        ),
-                      ),
-                  ]);
-                },
-              )
             ],
           ),
         ),

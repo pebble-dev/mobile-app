@@ -155,6 +155,24 @@ class CobbleTheme {
           ),
         ),
       ),
+      tabBarTheme: TabBarTheme(
+        labelStyle: textTheme.bodyText2!.copyWith(
+          fontSize: 16,
+        ),
+        labelColor: scheme.text,
+        unselectedLabelStyle: textTheme.bodyText2!.copyWith(
+          fontSize: 16,
+        ),
+        labelPadding: EdgeInsets.only(top: 5, bottom: 4),
+        unselectedLabelColor: scheme.muted,
+        // TODO: Indicator should be rounded and not straight, implement that later
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(
+            width: 4.0,
+            color: scheme.primary,
+          ),
+        ),
+      ),
     );
   }
 }

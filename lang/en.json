@@ -219,5 +219,19 @@
     "toggle_title": "Show calendar events in Timeline",
     "toggle_subtitle": "To see your upcoming events, press the down button on your watch face",
     "choose": "Choose calendars to show:"
+  },
+  "locker_page": {
+    "apply": "Apply on watch",
+    "permissions": "Manage permissions",
+    "face_settings": "Watch face settings",
+    "app_settings": "Watch app settings",
+    "not_compatible": "Not compatible with {watch}",
+    "delete": "Delete from locker",
+    "my_faces": "My watch faces",
+    "my_apps": "My apps",
+    "get_faces": "Get watch faces",
+    "get_apps": "Get watch apps",
+    "incompatible_faces": "Incompatible Watch Faces",
+    "incompatible_apps": "Incompatible Watch Apps"
   }
 }

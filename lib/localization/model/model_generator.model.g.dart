@@ -26,7 +26,8 @@ Language _$LanguageFromJson(Map<String, dynamic> json) {
     'notifications',
     'settings',
     'system_apps',
-    'calendar'
+    'calendar',
+    'locker_page'
   ], requiredKeys: const [
     'common',
     'first_run',
@@ -46,7 +47,8 @@ Language _$LanguageFromJson(Map<String, dynamic> json) {
     'notifications',
     'settings',
     'system_apps',
-    'calendar'
+    'calendar',
+    'locker_page'
   ], disallowNullValues: const [
     'common',
     'first_run',
@@ -66,7 +68,8 @@ Language _$LanguageFromJson(Map<String, dynamic> json) {
     'notifications',
     'settings',
     'system_apps',
-    'calendar'
+    'calendar',
+    'locker_page'
   ]);
   return Language(
     LanguageCommon.fromJson(json['common'] as Map<String, dynamic>),
@@ -94,6 +97,7 @@ Language _$LanguageFromJson(Map<String, dynamic> json) {
     LanguageSettings.fromJson(json['settings'] as Map<String, dynamic>),
     LanguageSystemApps.fromJson(json['system_apps'] as Map<String, dynamic>),
     LanguageCalendar.fromJson(json['calendar'] as Map<String, dynamic>),
+    LanguageLockerPage.fromJson(json['locker_page'] as Map<String, dynamic>),
   );
 }
 
@@ -468,6 +472,63 @@ LanguageHomePage _$LanguageHomePageFromJson(Map<String, dynamic> json) {
     json['store'] as String,
     json['watches'] as String,
     json['settings'] as String,
+  );
+}
+
+LanguageLockerPage _$LanguageLockerPageFromJson(Map<String, dynamic> json) {
+  $checkKeys(json, allowedKeys: const [
+    'apply',
+    'permissions',
+    'face_settings',
+    'app_settings',
+    'not_compatible',
+    'delete',
+    'my_faces',
+    'my_apps',
+    'get_faces',
+    'get_apps',
+    'incompatible_faces',
+    'incompatible_apps'
+  ], requiredKeys: const [
+    'apply',
+    'permissions',
+    'face_settings',
+    'app_settings',
+    'not_compatible',
+    'delete',
+    'my_faces',
+    'my_apps',
+    'get_faces',
+    'get_apps',
+    'incompatible_faces',
+    'incompatible_apps'
+  ], disallowNullValues: const [
+    'apply',
+    'permissions',
+    'face_settings',
+    'app_settings',
+    'not_compatible',
+    'delete',
+    'my_faces',
+    'my_apps',
+    'get_faces',
+    'get_apps',
+    'incompatible_faces',
+    'incompatible_apps'
+  ]);
+  return LanguageLockerPage(
+    json['apply'] as String,
+    json['permissions'] as String,
+    json['face_settings'] as String,
+    json['app_settings'] as String,
+    json['not_compatible'] as String,
+    json['delete'] as String,
+    json['my_faces'] as String,
+    json['my_apps'] as String,
+    json['get_faces'] as String,
+    json['get_apps'] as String,
+    json['incompatible_faces'] as String,
+    json['incompatible_apps'] as String,
   );
 }
 

@@ -159,6 +159,13 @@ class Language {
   )
   final LanguageCalendar calendar;
 
+  @JsonKey(
+    name: 'locker_page',
+    required: true,
+    disallowNullValue: true,
+  )
+  final LanguageLockerPage lockerPage;
+
   Language(
     this.common,
     this.firstRun,
@@ -179,6 +186,7 @@ class Language {
     this.settings,
     this.systemApps,
     this.calendar,
+    this.lockerPage,
   );
 
   factory Language.fromJson(Map<String, dynamic> json) =>
@@ -972,6 +980,126 @@ class LanguageHomePage {
 
   factory LanguageHomePage.fromJson(Map<String, dynamic> json) =>
       _$LanguageHomePageFromJson(json);
+}
+
+@JsonSerializable(
+  createToJson: false,
+  disallowUnrecognizedKeys: true,
+)
+class LanguageLockerPage {
+  @JsonKey(
+    name: 'apply',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String apply;
+
+  @JsonKey(
+    name: 'permissions',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String permissions;
+
+  @JsonKey(
+    name: 'face_settings',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String faceSettings;
+
+  @JsonKey(
+    name: 'app_settings',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String appSettings;
+
+  @JsonKey(
+    name: 'not_compatible',
+    required: true,
+    disallowNullValue: true,
+  )
+  @Deprecated(
+      'This localized string requires parameters, use notCompatible() instead')
+  final String notCompatibleRaw;
+  String notCompatible({
+    required String watch,
+  }) =>
+      _args(
+        notCompatibleRaw, // ignore: deprecated_member_use_from_same_package
+        [],
+        {
+          'watch': watch,
+        },
+      );
+
+  @JsonKey(
+    name: 'delete',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String delete;
+
+  @JsonKey(
+    name: 'my_faces',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String myFaces;
+
+  @JsonKey(
+    name: 'my_apps',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String myApps;
+
+  @JsonKey(
+    name: 'get_faces',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String getFaces;
+
+  @JsonKey(
+    name: 'get_apps',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String getApps;
+
+  @JsonKey(
+    name: 'incompatible_faces',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String incompatibleFaces;
+
+  @JsonKey(
+    name: 'incompatible_apps',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String incompatibleApps;
+
+  LanguageLockerPage(
+    this.apply,
+    this.permissions,
+    this.faceSettings,
+    this.appSettings,
+    this.notCompatibleRaw,
+    this.delete,
+    this.myFaces,
+    this.myApps,
+    this.getFaces,
+    this.getApps,
+    this.incompatibleFaces,
+    this.incompatibleApps,
+  );
+
+  factory LanguageLockerPage.fromJson(Map<String, dynamic> json) =>
+      _$LanguageLockerPageFromJson(json);
 }
 
 @JsonSerializable(
