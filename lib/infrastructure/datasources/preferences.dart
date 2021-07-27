@@ -21,6 +21,33 @@ class Preferences {
     await _sharedPrefs.reload();
   }
 
+  String? getBoot() {
+    return _sharedPrefs.getString("boot");
+  }
+
+  Future<void> setBoot(String value) async {
+    await _sharedPrefs.setString("overrideBoot", value);
+    _preferencesUpdateStream.add(this);
+  }
+
+  bool? shouldOverrideBoot() {
+    return _sharedPrefs.getBool("overrideBoot");
+  }
+
+  Future<void> setShouldOverrideBoot(bool value) async {
+    await _sharedPrefs.setBool("overrideBoot", value);
+    _preferencesUpdateStream.add(this);
+  }
+
+  String? getOverrideBootValue() {
+    return _sharedPrefs.getString("overrideBoot");
+  }
+
+  Future<void> setOverrideBootValue(String value) async {
+    await _sharedPrefs.setString("boot", value);
+    _preferencesUpdateStream.add(this);
+  }
+
   int? getLastConnectedWatchAddress() {
     return _sharedPrefs.getInt("LAST_CONNECTED_WATCH");
   }
@@ -156,6 +183,18 @@ final hasBeenConnectedProvider = _createPreferenceProvider(
 
 final wasSetupSuccessfulProvider = _createPreferenceProvider(
   (preferences) => preferences.wasSetupSuccessful(),
+);
+
+final bootUrlProvider = _createPreferenceProvider(
+  (preferences) => preferences.getBoot(),
+);
+
+final overrideBootValueProvider = _createPreferenceProvider(
+  (preferences) => preferences.getOverrideBootValue(),
+);
+
+final shouldOverrideBootProvider = _createPreferenceProvider(
+  (preferences) => preferences.shouldOverrideBoot(),
 );
 
 StreamProvider<T> _createPreferenceProvider<T>(

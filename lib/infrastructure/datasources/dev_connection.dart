@@ -2,39 +2,29 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final ConnectionControl connectionControl = ConnectionControl();
 
-class DevConnection {
-  static final DevConnection _singleton = new DevConnection._internal();
-  bool isConnected = false;
-  late HttpServer _server;
-  late Function _onServerStatChange; // (isrunning)
-  late Function _onConnChange; // (isconnected)
+class DevConnection extends StateNotifier<DevConnState> {
+  HttpServer? _server;
+  bool _isConnected = false;
 
-  factory DevConnection() {
-    return _singleton;
-  }
-
-  DevConnection._internal() {
-    //init
-  }
-
-  void setCB(Function onConnChange, Function onServerStatChange) {
-    _onServerStatChange = onServerStatChange;
-    _onConnChange = onConnChange;
-  }
+  DevConnection() : super(DevConnState(false, false));
 
   void close() {
-    _server.close();
-    isConnected = false;
-    _onServerStatChange(false);
+    _server?.close();
+    _server = null;
+    _isConnected = false;
+
+    _updateState();
   }
 
   void handleDevConnection(WebSocket socket, String ip) {
-    if (!isConnected) {
-      isConnected = true;
-      _onConnChange(true);
+    if (!_isConnected) {
+      _isConnected = true;
+      _updateState();
+
       socket.listen((event) {
         Uint8List indata = event as Uint8List;
         if (indata[0] == 0x01) {
@@ -48,12 +38,12 @@ class DevConnection {
           });*/
         }
       }, onDone: () {
-        _onConnChange(false);
-        isConnected = false;
+        _isConnected = false;
+        _updateState();
       }, onError: (error) {
-        _onConnChange(false);
+        _isConnected = false;
+        _updateState();
         print("Dev connection error: error");
-        isConnected = false;
       }, cancelOnError: true);
     } else {
       socket.close(WebSocketStatus.internalServerError,
@@ -62,14 +52,37 @@ class DevConnection {
   }
 
   Future<void> start() async {
-    _server =
-        await HttpServer.bind(InternetAddress.anyIPv4, 9000, shared: true);
-    _onServerStatChange(true);
-    _server.listen((event) {
+    final server = await HttpServer.bind(
+      InternetAddress.anyIPv4,
+      9000,
+      shared: true,
+    );
+
+    _server = server;
+
+    server.listen((event) {
       if (WebSocketTransformer.isUpgradeRequest(event)) {
         WebSocketTransformer.upgrade(event).then(
-            (value) => handleDevConnection(value, _server.address.address));
+            (value) => handleDevConnection(value, server.address.address));
       }
     });
+
+    _updateState();
+  }
+
+  void _updateState() {
+    print('Update state ${_server} ${_isConnected}');
+    state = DevConnState(_server != null, _isConnected);
   }
 }
+
+class DevConnState {
+  final bool running;
+  final bool connected;
+
+  DevConnState(this.running, this.connected);
+}
+
+final devConnectionProvider = StateNotifierProvider<DevConnection>((ref) {
+  return DevConnection();
+});
