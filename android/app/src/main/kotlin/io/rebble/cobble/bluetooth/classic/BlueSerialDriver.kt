@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothDevice
 import io.rebble.cobble.bluetooth.BlueIO
 import io.rebble.cobble.bluetooth.ProtocolIO
 import io.rebble.cobble.bluetooth.SingleConnectionStatus
+import io.rebble.cobble.datasources.IncomingPacketsListener
 import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -16,7 +17,8 @@ import java.util.*
 
 @Suppress("BlockingMethodInNonBlockingContext")
 class BlueSerialDriver(
-        private val protocolHandler: ProtocolHandler
+        private val protocolHandler: ProtocolHandler,
+        private val incomingPacketsListener: IncomingPacketsListener
 ) : BlueIO {
     private var protocolIO: ProtocolIO? = null
 
@@ -37,7 +39,12 @@ class BlueSerialDriver(
 
             emit(SingleConnectionStatus.Connected(device))
 
-            protocolIO = ProtocolIO(serialSocket.inputStream, serialSocket.outputStream, protocolHandler)
+            protocolIO = ProtocolIO(
+                    serialSocket.inputStream,
+                    serialSocket.outputStream,
+                    protocolHandler,
+                    incomingPacketsListener
+            )
 
             protocolIO!!.readLoop()
             try {

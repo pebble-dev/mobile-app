@@ -2,6 +2,7 @@ package io.rebble.cobble.bluetooth
 
 import android.bluetooth.*
 import android.content.Context
+import io.rebble.cobble.datasources.IncomingPacketsListener
 import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -19,6 +20,7 @@ class BlueGATTServer(
         private val context: Context,
         private val serverScope: CoroutineScope,
         private val protocolHandler: ProtocolHandler,
+        private val incomingPacketsListener: IncomingPacketsListener
 ) : BluetoothGattServerCallback() {
     private val serverReady = CompletableDeferred<Boolean>()
     private val connectionStatusChannel = Channel<Boolean>(0)
@@ -420,6 +422,7 @@ class BlueGATTServer(
                     throw IOException("Packet timeout")
                 }
 
+                incomingPacketsListener.receivedPackets.emit(packetData)
                 protocolHandler.receivePacket(packetData.toUByteArray())
             }
         }

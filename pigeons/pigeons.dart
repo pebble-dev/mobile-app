@@ -188,6 +188,11 @@ abstract class ConnectionCallbacks {
 }
 
 @FlutterApi()
+abstract class RawIncomingPacketsCallbacks {
+  void onPacketReceived(ListWrapper listOfBytes);
+}
+
+@FlutterApi()
 abstract class PairCallbacks {
   void onWatchPairComplete(NumberWrapper address);
 }
@@ -268,6 +273,13 @@ abstract class ConnectionControl {
   void observeConnectionChanges();
 
   void cancelObservingConnectionChanges();
+}
+
+@HostApi()
+abstract class RawIncomingPacketsControl {
+  void observeIncomingPackets();
+
+  void cancelObservingIncomingPackets();
 }
 
 /// Connection methods that require UI reside in separate pigeon class.
