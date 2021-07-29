@@ -200,12 +200,14 @@ class BlueGATTServer(
                                     Timber.d("Re-sending previous ACK")
                                     sendAck(lastAck!!.sequence)
                                 } else {
-                                    requestReset()
+                                    throw IOException("Unpexpected sequence. Resetting...")
                                 }
                             }
                         }
                         GATTPacket.PacketType.RESET -> {
-                            if (seq != 0) Timber.w("Got reset on non zero sequence")
+                            if (seq != 0) {
+                                throw IOException("Got reset on non zero sequence")
+                            }
                             gattConnectionVersion = packet.getPPoGConnectionVersion()
                             Timber.d("gattConnectionVersion updated: $gattConnectionVersion")
                             requestReset()
@@ -233,8 +235,7 @@ class BlueGATTServer(
                     serverScope.launch {
                         delay(5000)
                         if (!initialReset) {
-                            Timber.w("No initial reset from watch after 5s, requesting reset")
-                            requestReset()
+                            throw IOException("No initial reset from watch after 5s, requesting reset")
                         }
                     }
                 }
