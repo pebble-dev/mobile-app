@@ -1039,12 +1039,37 @@ class KeepUnusedHack {
   }
 }
 
+abstract class RawIncomingPacketsCallbacks {
+  void onPacketReceived(ListWrapper arg);
+
+  static void setup(RawIncomingPacketsCallbacks api) {
+    {
+      const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
+          'dev.flutter.pigeon.RawIncomingPacketsCallbacks.onPacketReceived',
+          StandardMessageCodec());
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.RawIncomingPacketsCallbacks.onPacketReceived was null. Expected ListWrapper.');
+          final ListWrapper input = ListWrapper.decode(message);
+          api.onPacketReceived(input);
+          return;
+        });
+      }
+    }
+  }
+}
+
 abstract class PairCallbacks {
   void onWatchPairComplete(NumberWrapper arg);
+
   static void setup(PairCallbacks api) {
     {
-      const BasicMessageChannel<Object> channel =
-          BasicMessageChannel<Object>('dev.flutter.pigeon.PairCallbacks.onWatchPairComplete', StandardMessageCodec());
+      const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
+          'dev.flutter.pigeon.PairCallbacks.onWatchPairComplete',
+          StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
@@ -1642,13 +1667,68 @@ class NotificationsControl {
   }
 }
 
+class RawIncomingPacketsControl {
+  Future<void> observeIncomingPackets() async {
+    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
+        'dev.flutter.pigeon.RawIncomingPacketsControl.observeIncomingPackets',
+        StandardMessageCodec());
+    final Map<Object, Object> replyMap =
+        await channel.send(null) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error =
+          replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      // noop
+    }
+  }
+
+  Future<void> cancelObservingIncomingPackets() async {
+    const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
+        'dev.flutter.pigeon.RawIncomingPacketsControl.cancelObservingIncomingPackets',
+        StandardMessageCodec());
+    final Map<Object, Object> replyMap =
+        await channel.send(null) as Map<Object, Object>;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object, Object> error =
+          replyMap['error'] as Map<Object, Object>;
+      throw PlatformException(
+        code: error['code'] as String,
+        message: error['message'] as String,
+        details: error['details'],
+      );
+    } else {
+      // noop
+    }
+  }
+}
+
 abstract class BackgroundAppInstallCallbacks {
   Future<void> beginAppInstall(InstallData arg);
+
   Future<void> deleteApp(StringWrapper arg);
+
   static void setup(BackgroundAppInstallCallbacks api) {
     {
-      const BasicMessageChannel<Object> channel =
-          BasicMessageChannel<Object>('dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall', StandardMessageCodec());
+      const BasicMessageChannel<Object> channel = BasicMessageChannel<Object>(
+          'dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall',
+          StandardMessageCodec());
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
