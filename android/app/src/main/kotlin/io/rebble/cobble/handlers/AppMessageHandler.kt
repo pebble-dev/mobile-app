@@ -15,6 +15,7 @@ import io.rebble.libpebblecommon.packets.AppRunStateMessage
 import io.rebble.libpebblecommon.services.app.AppRunStateService
 import io.rebble.libpebblecommon.services.appmessage.AppMessageService
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -42,6 +43,8 @@ class AppMessageHandler @Inject constructor(
 
         listenForOutgoingAppStartMessages()
         listenForOutgoingAppStopMessages()
+
+        sendConnectDisconnectIntents()
     }
 
     private fun sendPushIntent(message: AppMessage.AppMessagePush) {
@@ -159,6 +162,17 @@ class AppMessageHandler @Inject constructor(
                 val uuid = intent.getSerializableExtra(Constants.APP_UUID) as UUID
                 val packet = AppRunStateMessage.AppRunStateStop(uuid)
                 appRunStateService.send(packet)
+            }
+        }
+    }
+
+    private fun sendConnectDisconnectIntents() {
+        coroutineScope.launch {
+            try {
+                context.sendBroadcast(Intent(Constants.INTENT_PEBBLE_CONNECTED))
+                awaitCancellation()
+            } finally {
+                context.sendBroadcast(Intent(Constants.INTENT_PEBBLE_DISCONNECTED))
             }
         }
     }
