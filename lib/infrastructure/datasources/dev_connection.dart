@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:cobble/domain/connection/raw_incoming_packets_provider.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:network_info_plus/network_info_plus.dart';
 
 final ConnectionControl connectionControl = ConnectionControl();
 
@@ -15,8 +16,10 @@ class DevConnection extends StateNotifier<DevConnState> {
 
   final Stream<Uint8List> _pebbleIncomingPacketStream;
 
+  String _localIp = "";
+
   DevConnection(this._pebbleIncomingPacketStream)
-      : super(DevConnState(false, false));
+      : super(DevConnState(false, false, ""));
 
   void close() {
     disconnect();
@@ -91,6 +94,8 @@ class DevConnection extends StateNotifier<DevConnState> {
   }
 
   Future<void> start() async {
+    _localIp = await (NetworkInfo().getWifiIP()) ?? "";
+
     final server = await HttpServer.bind(
       InternetAddress.anyIPv4,
       9000,
@@ -110,7 +115,7 @@ class DevConnection extends StateNotifier<DevConnState> {
   }
 
   void _updateState() {
-    state = DevConnState(_server != null, _connectedSocket != null);
+    state = DevConnState(_server != null, _connectedSocket != null, _localIp);
   }
 }
 
@@ -118,7 +123,9 @@ class DevConnState {
   final bool running;
   final bool connected;
 
-  DevConnState(this.running, this.connected);
+  final String localIp;
+
+  DevConnState(this.running, this.connected, this.localIp);
 }
 
 final devConnectionProvider = StateNotifierProvider<DevConnection>((ref) {
