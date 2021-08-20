@@ -48,7 +48,7 @@ class DevOptionsPage extends HookWidget implements CobbleScreen {
             title: Text("Developer Connection"),
             subtitle: Text("Extremely insecure, resets outside of page" +
                 (devConnState.running
-                    ? "\nRunning..." +
+                    ? "\nRunning... ${devConnState.localIp}" +
                         (devConnState.connected ? " **CONNECTED**" : "")
                     : "")),
             isThreeLine: devConnState.connected,
