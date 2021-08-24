@@ -2,6 +2,7 @@ package io.rebble.cobble.bridges.common
 
 import android.content.Context
 import android.net.Uri
+import androidx.core.net.toFile
 import com.squareup.moshi.Moshi
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.background.BackgroundAppInstallBridge
@@ -82,7 +83,7 @@ class AppInstallFlutterBridge @Inject constructor(
             uri: String
     ): PbwAppInfo? = withContext(Dispatchers.IO) {
         try {
-            val stream = context.contentResolver.openInputStream(Uri.parse(uri))
+            val stream = openUriStream(uri)
 
             ZipInputStream(stream).use { zipInputStream ->
                 zipInputStream.findFile("appinfo.json") ?: return@use null
@@ -105,8 +106,7 @@ class AppInstallFlutterBridge @Inject constructor(
             val targetFileName = getAppPbwFile(context, appUuid)
 
             val success = withContext(Dispatchers.IO) {
-                val openInputStream = context.contentResolver
-                        .openInputStream(Uri.parse(installData.uri))
+                val openInputStream = openUriStream(installData.uri)
 
                 if (openInputStream == null) {
                     Timber.e("Unknown URI '%s'. This should have been filtered before it reached beginAppInstall. Aborting.", installData.uri)
@@ -272,6 +272,19 @@ class AppInstallFlutterBridge @Inject constructor(
 
     override fun unsubscribeFromAppStatus() {
         statusObservingJob?.cancel()
+    }
+
+    private fun openUriStream(uri: String): InputStream? {
+        val parsedUri = Uri.parse(uri)
+
+        return when (parsedUri.scheme) {
+            "content" -> context.contentResolver.openInputStream(parsedUri)
+            "file" -> parsedUri.toFile().inputStream().buffered()
+            else -> {
+                Timber.e("Unknown uri type: %s", uri)
+                null
+            }
+        }
     }
 
     private fun parseAppInfoJson(stream: InputStream): PbwAppInfo? {

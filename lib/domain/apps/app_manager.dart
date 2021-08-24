@@ -38,6 +38,22 @@ class AppManager extends StateNotifier<List<App>> {
     await refresh();
   }
 
+  Future<bool> getAppInfoAndBeginAppInstall(String uri) async {
+    final appInfoRequestWrapper = StringWrapper();
+    appInfoRequestWrapper.value = uri;
+    final appInfo = await appInstallControl.getAppInfo(appInfoRequestWrapper);
+
+    final wrapper = InstallData();
+    wrapper.uri = uri;
+    wrapper.appInfo = appInfo;
+
+    final success = await appInstallControl.beginAppInstall(wrapper);
+
+    await refresh();
+
+    return success.value;
+  }
+
   Future<void> reorderApp(Uuid uuid, int newPosition) async {
     final request = AppReorderRequest(uuid, newPosition);
 
