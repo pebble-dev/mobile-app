@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/domain/connection/raw_incoming_packets_provider.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:network_info_plus/network_info_plus.dart';
+import 'package:path_provider/path_provider.dart';
 
 final ConnectionControl connectionControl = ConnectionControl();
 
@@ -13,12 +15,13 @@ class DevConnection extends StateNotifier<DevConnState> {
   HttpServer? _server;
   WebSocket? _connectedSocket;
   StreamSubscription<Uint8List>? _incomingWatchPacketsSubscription;
+  final AppManager _appManager;
 
   final Stream<Uint8List> _pebbleIncomingPacketStream;
 
   String _localIp = "";
 
-  DevConnection(this._pebbleIncomingPacketStream)
+  DevConnection(this._pebbleIncomingPacketStream, this._appManager)
       : super(DevConnState(false, false, ""));
 
   void close() {
@@ -48,7 +51,7 @@ class DevConnection extends StateNotifier<DevConnState> {
 
       socket.listen(
         (event) {
-          onPacketReceivedFromWebsocket(event as Uint8List);
+          onPacketReceivedFromWebsocket(socket, event as Uint8List);
         },
         onDone: () {
           disconnect();
@@ -66,8 +69,8 @@ class DevConnection extends StateNotifier<DevConnState> {
     }
   }
 
-  void onPacketReceivedFromWebsocket(Uint8List indata) {
-    if (indata[0] == 0x01) {
+  void onPacketReceivedFromWebsocket(WebSocket socket, Uint8List indata) {
+    if (indata[0] == _packetFromWebsocketRelayToWatch) {
       Uint8List packet = indata.sublist(1);
       ListWrapper packetDataWrapper = ListWrapper();
       packetDataWrapper.value = packet.map((e) => e.toInt()).toList();
@@ -76,6 +79,9 @@ class DevConnection extends StateNotifier<DevConnState> {
         Uint8List rpacket = Uint8List(0x00) + (res as Uint8List);
         socket.add(rpacket);
       });*/
+    } else if (indata[0] == _packetFromWebsocketInstallBundle) {
+      Uint8List pbw = indata.sublist(1);
+      _beginAppInstall(pbw, socket);
     }
   }
 
@@ -93,6 +99,30 @@ class DevConnection extends StateNotifier<DevConnState> {
     connectedSocket.add(bytes);
   }
 
+  void _beginAppInstall(Uint8List pbwData, WebSocket socket) async {
+    final dir = await getTemporaryDirectory();
+    final tempPbwFile = File("${dir.path}/tmp.pbw");
+
+    await tempPbwFile.writeAsBytes(pbwData, flush: true);
+
+    final uri = tempPbwFile.uri.toString();
+    final success = await _appManager.getAppInfoAndBeginAppInstall(uri);
+
+    int status;
+    if (success) {
+      status = 0x00;
+    } else {
+      status = 0x01;
+    }
+
+    final builder = BytesBuilder();
+    builder.addByte(0x05);
+    builder.add(Uint8List(4)..buffer.asByteData().setInt32(0, status));
+
+    var bytes = builder.toBytes();
+    socket.add(bytes);
+  }
+
   Future<void> start() async {
     _localIp = await (NetworkInfo().getWifiIP()) ?? "";
 
@@ -107,7 +137,7 @@ class DevConnection extends StateNotifier<DevConnState> {
     server.listen((event) {
       if (WebSocketTransformer.isUpgradeRequest(event)) {
         WebSocketTransformer.upgrade(event).then(
-                (value) => handleDevConnection(value, server.address.address));
+            (value) => handleDevConnection(value, server.address.address));
       }
     });
 
@@ -130,5 +160,9 @@ class DevConnState {
 
 final devConnectionProvider = StateNotifierProvider<DevConnection>((ref) {
   final incomingPacketsStream = ref.read(rawPacketStreamProvider);
-  return DevConnection(incomingPacketsStream);
+  final appManager = ref.read(appManagerProvider);
+  return DevConnection(incomingPacketsStream, appManager);
 });
+
+final _packetFromWebsocketRelayToWatch = 0x01;
+final _packetFromWebsocketInstallBundle = 0x04;
