@@ -21,7 +21,10 @@ import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import io.rebble.libpebblecommon.structmapper.SUUID
 import io.rebble.libpebblecommon.structmapper.StructMapper
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
@@ -45,9 +48,12 @@ class NotificationsFlutterBridge @Inject constructor(
         override fun executeAction(arg: Pigeons.NotifActionExecuteReq?) {
             if (arg != null) {
                 val id = UUID.fromString(arg.itemId)
-                val action = NotificationCompat.getAction(activeNotifs[id]?.notification, arg.actionId.toInt())
+                val notification = activeNotifs[id]?.notification ?: return
+                val action = NotificationCompat.getAction(notification, arg.actionId.toInt())
+                        ?: return
+
                 if (arg.responseText?.isEmpty() == false) {
-                    val key = action?.remoteInputs?.first()?.resultKey
+                    val key = action.remoteInputs?.first()?.resultKey
                     if (key != null) {
                         val intent = Intent()
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -79,8 +85,10 @@ class NotificationsFlutterBridge @Inject constructor(
             if (arg != null) {
                 val id = UUID.fromString(arg.value)
                 try {
-                    activeNotifs.remove(id)?.notification?.deleteIntent?.send() ?: Timber.w("Dismiss on untracked notif")
-                } catch (e: PendingIntent.CanceledException) {}
+                    activeNotifs.remove(id)?.notification?.deleteIntent?.send()
+                            ?: Timber.w("Dismiss on untracked notif")
+                } catch (e: PendingIntent.CanceledException) {
+                }
                 result?.success(BooleanWrapper(true))
 
                 val command = BlobCommand.DeleteCommand(Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(), BlobCommand.BlobDatabase.Notification, SUUID(StructMapper(), id).toBytes())
