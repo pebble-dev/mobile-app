@@ -64,7 +64,9 @@ fvm flutter pub run pigeon \
   --input pigeons/pigeons.dart \
   --dart_out lib/infrastructure/pigeons/pigeons.g.dart \
   --java_out ./android/app/src/main/java/io/rebble/cobble/pigeons/Pigeons.java \
-  --java_package "io.rebble.cobble.pigeons"
+  --java_package "io.rebble.cobble.pigeons" \
+  --objc_header_out ./ios/Runner/Pigeon/Pigeons.h \
+  --objc_source_out ./ios/Runner/Pigeon/Pigeons.m
 ```
 
 # Architecture
