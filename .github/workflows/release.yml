@@ -18,9 +18,7 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '12.x'
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: 'stable'
+      - run: dart pub global activate fvm
       - run: echo $KEY_JKS | base64 -d > android/key.jks
         env:
           KEY_JKS: ${{ secrets.KEY_JKS }}
