@@ -19,9 +19,7 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '12.x'
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: 'stable'
+      - run: dart pub global activate fvm
       - run: fvm install
       - run: fvm flutter pub get
       - run: fvm flutter analyze --no-fatal-infos
