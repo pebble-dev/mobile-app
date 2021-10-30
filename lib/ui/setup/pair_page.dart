@@ -119,17 +119,9 @@ class PairPage extends HookWidget implements CobbleScreen {
                 child: Container(
                   child: Row(
                     children: <Widget>[
-                      Container(
-                        child: Center(
-                          child: PebbleWatchIcon(
-                            PebbleWatchModel.values[e.color!],
-                          ),
-                        ),
-                        width: 56,
-                        height: 56,
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).dividerColor,
-                            shape: BoxShape.circle),
+                      PebbleWatchIcon(
+                        PebbleWatchModel.values[e.color!],
+                        size: 56,
                       ),
                       SizedBox(width: 16),
                       Column(
