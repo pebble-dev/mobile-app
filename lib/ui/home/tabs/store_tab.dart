@@ -73,26 +73,12 @@ class StoreTab extends HookWidget implements CobbleScreen {
     //rootUrl is used for the initial url and to block going back too far in history, since this is all done with a single WebView, where we don't get to remove history
     //it also gives us some flexibility in terms of navigation
     final rootUrl = useState<String>("${_config[0].url}?$baseAttrs");
-
+    
     void onEachPageLoad() async {
       WebViewController controller = await _controller.future;
       String current = await controller.currentUrl() ?? rootUrl.value;
       bool canGoBack = await controller.canGoBack();
       backButton.value = canGoBack && rootUrl.value != current;
-    }
-
-    Future<String?> _downloadPbw(Uri uri) async {
-      HttpClient httpClient = new HttpClient();
-      String? filePath;
-      var request = await httpClient.getUrl(uri);
-      var response = await request.close();
-      if(response.statusCode == 200) {
-        var bytes = await consolidateHttpClientResponseBytes(response);
-        filePath = path.join(Directory.systemTemp.toString(), uri.pathSegments.last);
-        File file = File(filePath);
-        await file.writeAsBytes(bytes);
-      }
-      return filePath;
     }
     
     void Function(String, Map) _handleMethod = useCallback<void Function()>((method, data) async {
@@ -106,20 +92,21 @@ class StoreTab extends HookWidget implements CobbleScreen {
           launchURL(data["url"]);
           break;
         case "loadAppToDeviceAndLocker":
-          Uri? uri = Uri.tryParse(data["pbw_file"]);
-          if (uri != null) {
-            String? filePath = await _downloadPbw(uri);
-            if (filePath != null) {
-              String fileUrl = "file://${filePath}";
-              final uriWrapper = StringWrapper();
-              uriWrapper.value = fileUrl;
+          // TODO: Implement this on kotlin side, so it works on iOS as well
+          // Uri? uri = Uri.tryParse(data["pbw_file"]);
+          // if (uri != null) {
+          //   String? filePath = await _downloadPbw(uri);
+          //   if (filePath != null) {
+          //     String fileUrl = "file://${filePath}";
+          //     final uriWrapper = StringWrapper();
+          //     uriWrapper.value = fileUrl;
 
-              final appInfo = await control.getAppInfo(uriWrapper);
-              appManager.beginAppInstall(fileUrl, appInfo);
-              // TODO: Fill out the rest of the metadata provided by the data map
-              // Needed for the locker: appstoreId (id in the json), list_image (faces), icon_image (apps), api endpoints for interacting with the store item from the locker
-            }
-          }
+          //     final appInfo = await control.getAppInfo(uriWrapper);
+          //     appManager.beginAppInstall(fileUrl, appInfo);
+          //     // TODO: Fill out the rest of the metadata provided by the data map
+          //     // Needed for the locker: appstoreId (id in the json), list_image (faces), icon_image (apps), api endpoints for interacting with the store item from the locker
+          //   }
+          // }
           break;
         case "setVisibleApp":
           // I don't see the use for this, unless we decide to fetch metadata for pbws installed from the outside (we can easily match with uuid)
@@ -152,6 +139,14 @@ class StoreTab extends HookWidget implements CobbleScreen {
       // This would be changed anyway, but it looked ugly when it jumped from the previous title
       pageTitle.value = _config[newValue].label;
     }
+
+    useEffect(() {
+        // When the rootUrl changes, reset the webview to the default values
+        _setWebviewUrl(rootUrl.value);
+        _setIndexTab(0);
+      },
+      [rootUrl.value],
+    );
 
     return CobbleScaffold.tab(
       leading: backButton.value
