@@ -10,6 +10,7 @@ import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:package_info/package_info.dart';
@@ -17,12 +18,20 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/domain/apps/app_manager.dart';
+import 'package:path/path.dart' as path;
+
+class _TabConfig {
+  final String label;
+  final String url;
+
+  _TabConfig(this.label, this.url);
+}
 
 class StoreTab extends HookWidget implements CobbleScreen {
-  final String baseUrl = "https://store-beta.rebble.io";
-  final Completer<WebViewController> _controller =
-      Completer<WebViewController>();
-  final TextEditingController searchController = TextEditingController();
+  final _config = [
+    _TabConfig("Watchfaces", "https://store-beta.rebble.io/faces/"),
+    _TabConfig("Apps", "https://store-beta.rebble.io/apps/"),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +39,10 @@ class StoreTab extends HookWidget implements CobbleScreen {
     final pageTitle = useState<String>("Loading");
     final backButton = useState<bool>(false);
     final searchBar = useState<bool>(false);
+
+    final Completer<WebViewController> _controller =
+      Completer<WebViewController>();
+    final searchController = useTextEditingController();
 
     final appManager = useProvider(appManagerProvider);
     AppInstallControl control = AppInstallControl();
@@ -57,12 +70,9 @@ class StoreTab extends HookWidget implements CobbleScreen {
 
     baseAttrs += "&platform=${Platform.operatingSystem}";
 
-    List<String> tabNames = ["Watchfaces", "Apps"];
-    List<String> tabUrls = ["$baseUrl/faces/", "$baseUrl/apps/"];
-
-    //rootUrl is used for the initial url and to block going back too far in history, since this is all done with a single WebView
+    //rootUrl is used for the initial url and to block going back too far in history, since this is all done with a single WebView, where we don't get to remove history
     //it also gives us some flexibility in terms of navigation
-    final rootUrl = useState<String>("${tabUrls[0]}?$baseAttrs");
+    final rootUrl = useState<String>("${_config[0].url}?$baseAttrs");
 
     void onEachPageLoad() async {
       WebViewController controller = await _controller.future;
@@ -71,7 +81,21 @@ class StoreTab extends HookWidget implements CobbleScreen {
       backButton.value = canGoBack && rootUrl.value != current;
     }
 
-    void handleMethod(String method, Map data) async {
+    Future<String?> _downloadPbw(Uri uri) async {
+      HttpClient httpClient = new HttpClient();
+      String? filePath;
+      var request = await httpClient.getUrl(uri);
+      var response = await request.close();
+      if(response.statusCode == 200) {
+        var bytes = await consolidateHttpClientResponseBytes(response);
+        filePath = path.join(Directory.systemTemp.toString(), uri.pathSegments.last);
+        File file = File(filePath);
+        await file.writeAsBytes(bytes);
+      }
+      return filePath;
+    }
+    
+    void Function(String, Map) _handleMethod = useCallback<void Function()>((method, data) async {
       switch (method) {
         case "setNavBarTitle":
           // the title is set once per page load, and at the start of every page load, so we attach a hook for that here
@@ -82,17 +106,26 @@ class StoreTab extends HookWidget implements CobbleScreen {
           launchURL(data["url"]);
           break;
         case "loadAppToDeviceAndLocker":
-          final uriWrapper = StringWrapper();
-          uriWrapper.value = data["pbw_file"];
+          Uri? uri = Uri.tryParse(data["pbw_file"]);
+          if (uri != null) {
+            String? filePath = await _downloadPbw(uri);
+            if (filePath != null) {
+              String fileUrl = "file://${filePath}";
+              final uriWrapper = StringWrapper();
+              uriWrapper.value = fileUrl;
 
-          final appInfo = await control.getAppInfo(uriWrapper);
-          appManager.beginAppInstall(data["pbw_file"], appInfo, json.encode(data));
+              final appInfo = await control.getAppInfo(uriWrapper);
+              appManager.beginAppInstall(fileUrl, appInfo);
+              // TODO: Fill out the rest of the metadata provided by the data map
+              // Needed for the locker: appstoreId (id in the json), list_image (faces), icon_image (apps), api endpoints for interacting with the store item from the locker
+            }
+          }
           break;
         case "setVisibleApp":
-          // I don't see the use for this
+          // I don't see the use for this, unless we decide to fetch metadata for pbws installed from the outside (we can easily match with uuid)
           break;
       }
-    }
+    }, []);
 
     void _goBack() async {
       WebViewController controller = await _controller.future;
@@ -100,16 +133,24 @@ class StoreTab extends HookWidget implements CobbleScreen {
       if (rootUrl.value != current) controller.goBack();
     }
 
-    void setWebviewUrl(String url) async {
+    void _setWebviewUrl(String url) async {
       WebViewController controller = await _controller.future;
       controller.loadUrl("$url?$baseAttrs");
     }
 
-    void performSearch() {
-      setWebviewUrl(
-          "${tabUrls[indexTab.value]}search?query=${searchController.text}&$baseAttrs");
+    void _performSearch() {
+      _setWebviewUrl(
+          "${_config[indexTab.value].url}search?query=${searchController.text}&$baseAttrs");
       searchBar.value = false;
       searchController.clear();
+    }
+    
+    void _setIndexTab(int newValue)  {
+      indexTab.value = newValue;
+      rootUrl.value = "${_config[newValue].url}?$baseAttrs";
+      _setWebviewUrl(rootUrl.value);
+      // This would be changed anyway, but it looked ugly when it jumped from the previous title
+      pageTitle.value = _config[newValue].label;
     }
 
     return CobbleScaffold.tab(
@@ -154,12 +195,12 @@ class StoreTab extends HookWidget implements CobbleScreen {
                       autofocus: true,
                       maxLines: 1,
                       expands: false,
-                      onSubmitted: (String value) => performSearch(),
+                      onSubmitted: (String value) => _performSearch(),
                     ),
                   ),
                   IconButton(
                     icon: Icon(RebbleIcons.caret_right),
-                    onPressed: () => performSearch(),
+                    onPressed: () => _performSearch(),
                     tooltip: MaterialLocalizations.of(context).searchFieldLabel,
                   )
                 ],
@@ -173,19 +214,13 @@ class StoreTab extends HookWidget implements CobbleScreen {
         underline: Container(
           height: 0,
         ),
-        onChanged: (int? newValue) {
-          indexTab.value = newValue!;
-          rootUrl.value = "${tabUrls[newValue]}?$baseAttrs";
-          setWebviewUrl(tabUrls[newValue]);
-          // This would be changed anyway, but it looked ugly when it jumped from the previous title
-          pageTitle.value = tabNames[newValue];
-        },
+        onChanged: (int? newValue) => _setIndexTab(newValue!),
         selectedItemBuilder: (BuildContext context) {
           return [0, 1].map<Widget>((int value) {
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(width: 25.0),
+                SizedBox(width: 25.0), //Offset to appear centered
                 Container(
                   width: 125,
                   height: 57,
@@ -196,10 +231,10 @@ class StoreTab extends HookWidget implements CobbleScreen {
                         pageTitle.value,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      if (pageTitle.value != tabNames[value]) ...[
+                      if (pageTitle.value != _config[value].label) ...[
                         SizedBox(height: 4),
                         Text(
-                          tabNames[value],
+                          _config[value].label,
                           style: context.theme.appBarTheme.textTheme!.headline6!
                               .copyWith(
                             fontSize: 14,
@@ -217,7 +252,7 @@ class StoreTab extends HookWidget implements CobbleScreen {
         items: <int>[0, 1].map<DropdownMenuItem<int>>((int value) {
           return DropdownMenuItem<int>(
             value: value,
-            child: Text(tabNames[value]),
+            child: Text(_config[value].label),
           );
         }).toList(),
       ),
@@ -229,12 +264,13 @@ class StoreTab extends HookWidget implements CobbleScreen {
         },
         navigationDelegate: (NavigationRequest request) {
           String url = request.url;
+          // This is an annoying difference between the ios and android urls, so we normalize that to make parsing easier
           if (url[30] != "?")
             url = url.substring(0, 29) + "?" + url.substring(30, url.length);
           Uri uri = Uri.parse(url);
           if (uri.isScheme("pebble-method-call-js-frame")) {
             Map args = json.decode(uri.queryParameters["args"]!);
-            handleMethod(args["methodName"], args["data"]);
+            _handleMethod(args["methodName"], args["data"]);
           }
           // We don't actually want to open any other website
           return NavigationDecision.prevent;
