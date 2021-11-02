@@ -1,0 +1,237 @@
+{
+  "common": {
+    "skip": "pasar",
+    "title": "Cobble",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "first_run": {
+    "title": "¡Bienvenidos a Rebble!",
+    "fab": "VAMOS A COMENZAR"
+  },
+  "timeline_attribute": {
+    "heading": {
+      "attendees": "Asistentes",
+      "status": "Estatus",
+      "recurrence": "Recurrence",
+      "calendar": "Calendario"
+    },
+    "subtitle": {
+      "removed": "Removido",
+      "calendar_muted": "Calendario silenciado",
+      "accepted": "Aceptado",
+      "maybe": "Tal vez",
+      "declined": "Declinado"
+    },
+    "title": {
+      "accept": "Aceptar",
+      "maybe": "Tal vez",
+      "decline": "Declinar",
+      "remove": "Quitar",
+      "mute_calendar": "Silenciar calendario"
+    },
+    "paragraph": {
+      "accepted": "Aceptado",
+      "maybe": "Tal vez",
+      "declined": "Declinado"
+    }
+  },
+  "timeline_sync": {
+    "watch_full": {
+      "p0": "Tu reloj esta lleno",
+      "p1": "No pudimos sincronizar todos los pines del timeline al reloj."
+    }
+  },
+  "recurrence": {
+    "unknown": "Desconocido",
+    "daily": "Repetir a diario.",
+    "weekly": "Repetir semanalmente.",
+    "monthly": "Repetir mensualmente.",
+    "yearly": "Repetir anualmente."
+  },
+  "splash_page": {
+    "title": "Iniciar sesión en Rebble",
+    "body": "¿Desea configurar esta aplicación para Rebble Web Services? (Seleccionar no corre la aplicación solo con funciones sin conexión)"
+  },
+  "home_page": {
+    "testing": "Pruebas",
+    "health": "Salud",
+    "locker": "Casillero",
+    "store": "Tienda",
+    "watches": "Relojes",
+    "settings": "Configuración"
+  },
+  "about_page": {
+    "title": "Acerca de",
+    "about": "Acerca de {name} v{version}",
+    "community": "Comunidad",
+    "support": "Soporte",
+    "help_center": "Centro de ayuda",
+    "help_center_subtitle": "Nuestro sitio de ayuda tiene soluciones para problemas comunes.",
+    "email_us": "Envíanos un correo",
+    "email_us_subtitle": "Nuestro correo de contacto oficial para soporte uno a uno",
+    "discord_server": "Servidor de Discord",
+    "discord_server_subtitle": "¡El servidor de Discord de Rebble está repleto de gente dispuesta a ayudar!",
+    "reddit": "Reddit",
+    "reddit_subtitle": "Un buen lugar para hablar del Pebble y otros relojes.",
+    "discord": "Discord",
+    "discord_subtitle": "¡Una comunidad cálida para fanes y desarrolladores por igual!",
+    "twitter": "Twitter",
+    "twitter_subtitle": "Nuestro Twitter tiene actualizaciones y noticias sobre Rebble.",
+    "source_code": "Código fuente",
+    "licenses": "Licencias",
+    "version_string": "v{version} en {platform}"
+  },
+  "watches_page": {
+    "title": "Mis relojes",
+    "status": {
+      "nothing_connected": "Nada esta conectado",
+      "connected": "Conectado",
+      "connecting": "Conectando...",
+      "disconnected": "Desconectado",
+      "background_service_stopped": "Servicio de Fondo Detenido"
+    },
+    "action": {
+      "connect": "Conectar reloj",
+      "disconnect": "Desconectar reloj",
+      "check_updates": "Buscar actualizaciones",
+      "forget": "Olvidar reloj"
+    },
+    "all_watches": "Todos los relojes",
+    "fab": "EMPAREJAR RELOJ"
+  },
+  "alerting_apps": {
+    "title": "Elegir que aplicaciones puede alertar",
+    "subtitle": "{alerted} alertó, {muted} silenciada por hoy",
+    "muted_today": "{muted} silenciada por hoy",
+    "alerted_today": "{alerted} alertó hoy"
+  },
+  "alerting_apps_filter": {
+    "title": "filter",
+    "app_name": "Nombre de aplicación",
+    "app_source": {
+      "all": "Todas las aplicaciones",
+      "phone": "Solo en télefono",
+      "watch": "Solo en reloj"
+    }
+  },
+  "more_setup_page": {
+    "title": "Más configuración",
+    "fab": "VAMOS A COMENZAR",
+    "content": "Configurar lenguaje / salud / privacidad"
+  },
+  "pair_page": {
+    "title": "Emparejar reloj",
+    "search_again": {
+      "ble": "Buscar de nuevo con BLE",
+      "classic": "Buscar de nuevo con BT tradicional"
+    },
+    "status": {
+      "recovery": "Recuperación",
+      "new_device": "¡Nuevo!"
+    }
+  },
+  "setup": {
+    "success": {
+      "title": "Activa servicios de Rebble",
+      "subtitle": "¡Todo preparado y listo para Rebble!",
+      "welcome": "Hola de vuelta, {name}!",
+      "fab": "¡A REBBLE!"
+    }
+  },
+  "health": {
+    "title": "Salud",
+    "subtitle": "Salud Rebble",
+    "description": "Relojes soportados pueden seguir sus datos de salud por usted, incluyendo pasos, sueño y ritmo cardiaco",
+    "track_me": "Seguir mis datos de salud",
+    "activity": {
+      "title": "Resumen de actividad",
+      "subtitle": "Su reloj le alertará al final del día con un resumen de que tan activo fue"
+    },
+    "sleep": {
+      "title": "Resumen de sueño",
+      "subtitle": "Su reloj le alertará cuando se levante con un resumen de como estuvo su sueño"
+    },
+    "sync": {
+      "title": "Sincronizar",
+      "subtitle": "Iniciada sesión como",
+      "sign_out": "Cerrar sesión",
+      "switch_account": "Cambiar cuenta"
+    },
+    "database": {
+      "title": "Más opciones",
+      "manage": "Administrar base de datos de salud",
+      "delete": "Borrar información de salud",
+      "backup": "Crear respaldo de información de salud",
+      "restore": "Restaurar información de salud de respaldo",
+      "perm_delete": "Borrar permanentemente toda la información de salud,",
+      "permanently_delete": {
+        "title": "¿Borrar permanentemente TODA la información de salud?",
+        "description": "¡Esto no se puede deshacer!",
+        "positive": "Borrar",
+        "negative": "Cancelar"
+      }
+    }
+  },
+  "notifications": {
+    "title": "Notificaciones y Silencio",
+    "enabled": "Mandar notificaciones a mi reloj",
+    "choose_apps": "Elegir que aplicaciones pueden notificar a tu reloj",
+    "silence": {
+      "title": "Silenciar notificaciones",
+      "description": "Mientras tu reloj esta conectado, puede silenciar llamadas entrantes y notificaciones en tu telefono, para que solo vibren en tu muñeca.",
+      "notifications": "Silenciar notificaciones",
+      "calls": "Silenciar llamadas entrantes"
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "account": "Cuenta de Rebble",
+    "subscription": {
+      "title": "Subscripcion de Reconocimiento de Voz y Clima",
+      "subtitle": "Sin subscripción"
+    },
+    "timeline": {
+      "title": "Sincronización de Timeline",
+      "subtitle": "Cada dos horas"
+    },
+    "sign_out": "Cerrar sesión",
+    "manage_account": "Administrar cuenta",
+    "notifications_and_muting": "Notificaciones y silencio",
+    "health": "Salud",
+    "calendar": "Calendario",
+    "messages_and_canned_replies": "Mensajes y respuestas predefinidas",
+    "language_and_voice": "Lenguaje y voz",
+    "analytics": "Analíticas",
+    "about_and_support": "Acerca De y Soporte",
+    "developer_options": "Opciones de desarrollador",
+    "widget_library": "Biblioteca de widgets"
+  },
+  "system_apps": {
+    "settings": "Configuración",
+    "music": "Música",
+    "notifications": "Notificaciones",
+    "alarms": "Alarmas",
+    "watchfaces": "Esferas"
+  },
+  "calendar": {
+    "title": "Calendario",
+    "toggle_title": "Mostrar eventos del calendario en Timeline",
+    "toggle_subtitle": "Para ver tus eventos proximos, presiona el boton abajo en su esfera",
+    "choose": "Elige calendarios a mostrar:"
+  },
+  "locker_page": {
+    "apply": "Aplicar en reloj",
+    "permissions": "Administrar permisos",
+    "face_settings": "Configuración de esferas",
+    "app_settings": "Configuracion de aplicaciones",
+    "not_compatible": "No compatible con {watch}",
+    "delete": "Borrar del casillero",
+    "my_faces": "Mis esferas",
+    "my_apps": "Mis aplicaciones",
+    "get_faces": "Obtener esferas",
+    "get_apps": "Obtener aplicaciones",
+    "incompatible_faces": "Esferas no compatibles",
+    "incompatible_apps": "Aplicaciones no compatibles"
+  }
+}
