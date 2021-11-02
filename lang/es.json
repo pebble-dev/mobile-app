@@ -1,12 +1,12 @@
 {
   "common": {
-    "skip": "pasar",
+    "skip": "saltar",
     "title": "Cobble",
     "yes": "Sí",
     "no": "No"
   },
   "first_run": {
-    "title": "¡Bienvenidos a Rebble!",
+    "title": "¡Bienvenido a Rebble!",
     "fab": "VAMOS A COMENZAR"
   },
   "timeline_attribute": {
@@ -101,10 +101,10 @@
     "fab": "EMPAREJAR RELOJ"
   },
   "alerting_apps": {
-    "title": "Elegir que aplicaciones puede alertar",
-    "subtitle": "{alerted} alertó, {muted} silenciada por hoy",
-    "muted_today": "{muted} silenciada por hoy",
-    "alerted_today": "{alerted} alertó hoy"
+    "title": "Elegir que aplicaciones pueden notificar",
+    "subtitle": "{alerted} tuvieron notificaciones, {muted} silenciadas por hoy",
+    "muted_today": "{muted} silenciadas  hoy",
+    "alerted_today": "{alerted} notificaciones hoy"
   },
   "alerting_apps_filter": {
     "title": "filter",
@@ -188,7 +188,7 @@
     "title": "Configuración",
     "account": "Cuenta de Rebble",
     "subscription": {
-      "title": "Subscripcion de Reconocimiento de Voz y Clima",
+      "title": "Subscripción de Reconocimiento de Voz y Clima",
       "subtitle": "Sin subscripción"
     },
     "timeline": {
@@ -217,7 +217,7 @@
   "calendar": {
     "title": "Calendario",
     "toggle_title": "Mostrar eventos del calendario en Timeline",
-    "toggle_subtitle": "Para ver tus eventos proximos, presiona el boton abajo en su esfera",
+    "toggle_subtitle": "Para ver sus eventos próximos, presiona el botón abajo en su esfera",
     "choose": "Elige calendarios a mostrar:"
   },
   "locker_page": {
