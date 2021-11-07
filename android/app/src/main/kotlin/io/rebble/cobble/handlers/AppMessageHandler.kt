@@ -10,8 +10,8 @@ import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.middleware.getPebbleDictionary
 import io.rebble.cobble.middleware.toPacket
 import io.rebble.cobble.util.coroutines.asFlow
-import io.rebble.libpebblecommon.packets.AppMessage
-import io.rebble.libpebblecommon.packets.AppRunStateMessage
+import io.rebble.cobble.util.getIntExtraOrNull
+import io.rebble.libpebblecommon.packets.*
 import io.rebble.libpebblecommon.services.app.AppRunStateService
 import io.rebble.libpebblecommon.services.appmessage.AppMessageService
 import kotlinx.coroutines.CoroutineScope
@@ -43,6 +43,8 @@ class AppMessageHandler @Inject constructor(
 
         listenForOutgoingAppStartMessages()
         listenForOutgoingAppStopMessages()
+
+        listenForOutgoingAppCustomizeMessages()
 
         sendConnectDisconnectIntents()
     }
@@ -162,6 +164,44 @@ class AppMessageHandler @Inject constructor(
                 val uuid = intent.getSerializableExtra(Constants.APP_UUID) as UUID
                 val packet = AppRunStateMessage.AppRunStateStop(uuid)
                 appRunStateService.send(packet)
+            }
+        }
+    }
+
+    private fun listenForOutgoingAppCustomizeMessages() {
+        coroutineScope.launch {
+            IntentFilter(Constants.INTENT_APP_CUSTOMIZE).asFlow(context).collect { intent ->
+                val appType = intent.getIntExtraOrNull(Constants.CUST_APP_TYPE)
+                        ?.let {
+                            if (it == 0) {
+                                AppType.SPORTS
+                            } else {
+                                AppType.GOLF
+                            }
+                        }
+                        ?: return@collect
+
+                val name = intent.getStringExtra(Constants.CUST_NAME) ?: return@collect
+
+                appMessageService.send(
+                        AppCustomizationSetStockAppTitleMessage(appType, name)
+                )
+
+                // Pebble watch is also supposed to support customizing the icon of the
+                // sports/golf app, but this does not appear to work, even with the stock app
+                // maybe it was removed during later firmware upgrades?
+
+                // Packets are there, but they do not work. Let's comment this until/if we
+                // ever figure this one out or if RebbleOS fixes it.
+
+//                val image = intent.getParcelableExtra<Bitmap>(Constants.CUST_ICON) ?: return@collect
+//
+//                appMessageService.send(
+//                        AppCustomizationSetStockAppIconMessage(
+//                                appType,
+//                                io.rebble.libpebblecommon.util.Bitmap(image)
+//                        )
+//                )
             }
         }
     }

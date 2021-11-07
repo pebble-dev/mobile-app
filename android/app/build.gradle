@@ -92,7 +92,7 @@ flutter {
     source '../..'
 }
 
-def libpebblecommon_version = '0.0.24'
+def libpebblecommon_version = '0.0.26'
 def coroutinesVersion = "1.5.2"
 def lifecycleVersion = "2.3.1"
 def timberVersion = "4.7.1"
