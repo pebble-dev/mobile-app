@@ -21,8 +21,16 @@ class ScanFlutterBridge: ScanControl {
     func startBleScan(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         queue.async { [self] in
             scanCallbacks.onScanStarted {_ in }
-            LECentral.controller.startScan {
-                
+            LECentral.shared.waitForReady {
+                let _ = LECentral.shared.scan(foundDevices: { foundDevices in
+                    let list = ListWrapper()
+                    list.value = foundDevices.map {
+                        $0.toPigeon().toMap()
+                    }
+                    scanCallbacks.onScanUpdate(list) {_ in }
+                }, scanEnded: {
+                    scanCallbacks.onScanStopped() {_ in }
+                })
             }
         }
     }

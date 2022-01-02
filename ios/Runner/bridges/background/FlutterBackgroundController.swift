@@ -33,7 +33,6 @@ class FlutterBackgroundController: BackgroundControl {
         }
     }
     
-    
     private func initEngine(result: @escaping (FlutterEngine?) -> ()) {
         DispatchQueue.main.async { [self] in
             let persistentState = UserDefaults.standard
