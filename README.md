@@ -19,6 +19,32 @@ A multi platform watch companion app for Pebble/RebbleOS devices
 5. [Setup flutter in the IDE of your choice](https://flutter.dev/docs/get-started/editor). Be sure to also configure it with [FVM Flutter path](https://fvm.app/docs/getting_started/configuration#ide).
 6. Open this repo in the IDE set up in step 5
 
+If you do not have an IDE, from step 5, you'll instead:
+
+1. `fvm flutter pub get`
+2. Launch an emulator: `fvm flutter emulators --launch Pixel_2_API_30`
+3. `fvm flutter run`
+
+### Host-specific instructions: Ubuntu and similar
+
+To install FVM on Ubuntu, try something like:
+
+1. `sudo snap install flutter --classic`
+2. `flutter`
+3. `flutter config --no-analytics # if you want`
+4. `dart --disable-analytics # if you want`
+5. `dart pub global activate fvm`
+6. `export PATH="$PATH":"$HOME/.pub-cache/bin"`
+
+If you don't have Android Studio installed, and you want an emulator, do:
+
+1. `sudo snap install android-studio --classic` (hey, what's 900MB between friends?)
+2. Launch `android-studio`.  Update everything in sight (hey, what's 400MB between friends?)
+3. `sudo apt-get install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils` (hey, what's 140MB between friends?)
+4. Hit 'More actions...', then 'AVD Manager'.  Then 'Create Virtual Device'. 
+Then choose a device (I chose Pixel 2), then download R (hey, what's 620MB
+between friends?), then hit finish.
+
 ## Building mappings
 
 To build all the mappings in this project (such as entity <> map mapping for SQL), you have to
