@@ -22,8 +22,8 @@ A multi platform watch companion app for Pebble/RebbleOS devices
 If you do not have an IDE, from step 5, you'll instead:
 
 1. `fvm flutter pub get`
-2. Launch an emulator: `fvm flutter emulators --launch Pixel_2_API_30`
-3. `fvm flutter run`
+2. On Android, launch an emulator: `fvm flutter emulators --launch Pixel_2_API_30`, then `fvm flutter run`
+3. On iOS, launch an emulator through Xcode, and `fvm flutter run -d 'iPhone 12 mini'` (or whatever your emulator, or iDevice, is).
 
 ### Host-specific instructions: Ubuntu and similar
 
@@ -44,6 +44,23 @@ If you don't have Android Studio installed, and you want an emulator, do:
 4. Hit 'More actions...', then 'AVD Manager'.  Then 'Create Virtual Device'. 
 Then choose a device (I chose Pixel 2), then download R (hey, what's 620MB
 between friends?), then hit finish.
+
+### Host-specific instructions: macOS for iOS
+
+To install FVM on macOS, try something like:
+
+1. `brew tap leoafarias/fvm`
+2. `brew install fvm`
+
+You may have to work around various SwiftPM bugs:
+
+* If you get a "packages are not supported when using legacy build
+  locations" message, use [this
+  workaround](https://dev.to/dnsmnds/flutter-packages-are-not-supported-when-using-legacy-build-locations-but-the-current-project-has-them-enabled-2nbh).
+* If you get a complaint that the `Package.swift` manifest doesn't exist,
+  SwiftPM probably randomly choked on its own phlegm when trying to check
+  out CobbleLEKit.  Go to File -> Packages... -> Reset Package Cache to fix
+  this.
 
 ## Building mappings
 
