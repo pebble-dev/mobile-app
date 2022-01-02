@@ -76,6 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface PebbleScanDevicePigeon : NSObject
+-(NSDictionary*)toMap;
 @property(nonatomic, copy, nullable) NSString * name;
 @property(nonatomic, strong, nullable) NSNumber * address;
 @property(nonatomic, copy, nullable) NSString * version;

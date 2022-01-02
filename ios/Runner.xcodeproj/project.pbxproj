@@ -15,11 +15,22 @@
 		670D55C2271BB4E900002F78 /* BackgroundSetupFlutterBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 670D55C1271BB4E900002F78 /* BackgroundSetupFlutterBridge.swift */; };
 		670D55C4271BB88100002F78 /* PermissionCheckFlutterBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 670D55C3271BB88100002F78 /* PermissionCheckFlutterBridge.swift */; };
 		670D55C7271BBB7D00002F78 /* Pigeons.m in Sources */ = {isa = PBXBuildFile; fileRef = 670D55C5271BBB7D00002F78 /* Pigeons.m */; };
+		6729BD3A271DF80300919CE5 /* ConnectionControlBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6729BD39271DF80300919CE5 /* ConnectionControlBridge.swift */; };
+		6729BD3C271E09E000919CE5 /* IntentControlFlutterBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6729BD3B271E09E000919CE5 /* IntentControlFlutterBridge.swift */; };
+		674B0B5927208B7A00C38849 /* SystemHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 674B0B5827208B7A00C38849 /* SystemHandler.swift */; };
+		674B0B5B27209B5300C38849 /* LEPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 674B0B5A27209B5300C38849 /* LEPeripheral.swift */; };
+		674B0B612720B1E100C38849 /* libpebblecommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 674B0B5F2720B1D200C38849 /* libpebblecommon.framework */; };
+		674B0B622720B1E100C38849 /* libpebblecommon.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 674B0B5F2720B1D200C38849 /* libpebblecommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		674B0B642720D3CC00C38849 /* PPoGATTService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 674B0B632720D3CC00C38849 /* PPoGATTService.swift */; };
 		677AF01B271BBD19001EBD29 /* PermissionControlFlutterBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 677AF01A271BBD19001EBD29 /* PermissionControlFlutterBridge.swift */; };
 		677AF01E271BC185001EBD29 /* CobbleLE in Frameworks */ = {isa = PBXBuildFile; productRef = 677AF01D271BC185001EBD29 /* CobbleLE */; };
 		677AF021271BC1FB001EBD29 /* LECentral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 677AF020271BC1FB001EBD29 /* LECentral.swift */; };
 		677AF023271BC335001EBD29 /* BluePebbleDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 677AF022271BC335001EBD29 /* BluePebbleDevice.swift */; };
-		677AF025271BC35F001EBD29 /* LEMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = 677AF024271BC35F001EBD29 /* LEMeta.swift */; };
+		6786449527207B5500C2BE71 /* ConnectionFlutterBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6786449427207B5500C2BE71 /* ConnectionFlutterBridge.swift */; };
+		6786449827207CE700C2BE71 /* ProtocolService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6786449727207CE700C2BE71 /* ProtocolService.swift */; };
+		678D0352272218170005D120 /* TransportErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 678D0351272218170005D120 /* TransportErrors.swift */; };
+		67C4D44D2728885C00816945 /* PebbleDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67C4D44C2728885C00816945 /* PebbleDevice.swift */; };
+		67F332012727987E00E7E892 /* PersistentStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67F332002727987E00E7E892 /* PersistentStorage.swift */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
@@ -28,12 +39,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		9705A1C41CF9048500538489 /* Embed Frameworks */ = {
+		674B0B5E2720A2A300C38849 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				674B0B622720B1E100C38849 /* libpebblecommon.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -53,10 +65,20 @@
 		670D55C3271BB88100002F78 /* PermissionCheckFlutterBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionCheckFlutterBridge.swift; sourceTree = "<group>"; };
 		670D55C5271BBB7D00002F78 /* Pigeons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Pigeons.m; sourceTree = "<group>"; };
 		670D55C6271BBB7D00002F78 /* Pigeons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Pigeons.h; sourceTree = "<group>"; };
+		6729BD39271DF80300919CE5 /* ConnectionControlBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionControlBridge.swift; sourceTree = "<group>"; };
+		6729BD3B271E09E000919CE5 /* IntentControlFlutterBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentControlFlutterBridge.swift; sourceTree = "<group>"; };
+		674B0B5827208B7A00C38849 /* SystemHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemHandler.swift; sourceTree = "<group>"; };
+		674B0B5A27209B5300C38849 /* LEPeripheral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LEPeripheral.swift; sourceTree = "<group>"; };
+		674B0B5F2720B1D200C38849 /* libpebblecommon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libpebblecommon.framework; path = ../../../libpebblecommon/build/bin/ios/debugFramework/libpebblecommon.framework; sourceTree = "<group>"; };
+		674B0B632720D3CC00C38849 /* PPoGATTService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PPoGATTService.swift; sourceTree = "<group>"; };
 		677AF01A271BBD19001EBD29 /* PermissionControlFlutterBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionControlFlutterBridge.swift; sourceTree = "<group>"; };
 		677AF020271BC1FB001EBD29 /* LECentral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LECentral.swift; sourceTree = "<group>"; };
 		677AF022271BC335001EBD29 /* BluePebbleDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluePebbleDevice.swift; sourceTree = "<group>"; };
-		677AF024271BC35F001EBD29 /* LEMeta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LEMeta.swift; sourceTree = "<group>"; };
+		6786449427207B5500C2BE71 /* ConnectionFlutterBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionFlutterBridge.swift; sourceTree = "<group>"; };
+		6786449727207CE700C2BE71 /* ProtocolService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtocolService.swift; sourceTree = "<group>"; };
+		678D0351272218170005D120 /* TransportErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportErrors.swift; sourceTree = "<group>"; };
+		67C4D44C2728885C00816945 /* PebbleDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PebbleDevice.swift; sourceTree = "<group>"; };
+		67F332002727987E00E7E892 /* PersistentStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistentStorage.swift; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
@@ -78,6 +100,7 @@
 			files = (
 				677AF01E271BC185001EBD29 /* CobbleLE in Frameworks */,
 				E97F0D32F61B96A98A779DBA /* Pods_Runner.framework in Frameworks */,
+				674B0B612720B1E100C38849 /* libpebblecommon.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,6 +131,7 @@
 			isa = PBXGroup;
 			children = (
 				670D55BC271BA71C00002F78 /* FlutterBackgroundController.swift */,
+				6786449427207B5500C2BE71 /* ConnectionFlutterBridge.swift */,
 			);
 			path = background;
 			sourceTree = "<group>";
@@ -117,6 +141,8 @@
 			children = (
 				670D55C1271BB4E900002F78 /* BackgroundSetupFlutterBridge.swift */,
 				677AF01A271BBD19001EBD29 /* PermissionControlFlutterBridge.swift */,
+				6729BD39271DF80300919CE5 /* ConnectionControlBridge.swift */,
+				6729BD3B271E09E000919CE5 /* IntentControlFlutterBridge.swift */,
 			);
 			path = ui;
 			sourceTree = "<group>";
@@ -134,10 +160,21 @@
 			isa = PBXGroup;
 			children = (
 				677AF020271BC1FB001EBD29 /* LECentral.swift */,
+				674B0B632720D3CC00C38849 /* PPoGATTService.swift */,
 				677AF022271BC335001EBD29 /* BluePebbleDevice.swift */,
-				677AF024271BC35F001EBD29 /* LEMeta.swift */,
+				674B0B5A27209B5300C38849 /* LEPeripheral.swift */,
+				678D0351272218170005D120 /* TransportErrors.swift */,
 			);
 			path = bluetooth;
+			sourceTree = "<group>";
+		};
+		6786449627207CD100C2BE71 /* PebbleProtocol */ = {
+			isa = PBXGroup;
+			children = (
+				6786449727207CE700C2BE71 /* ProtocolService.swift */,
+				674B0B5827208B7A00C38849 /* SystemHandler.swift */,
+			);
+			path = PebbleProtocol;
 			sourceTree = "<group>";
 		};
 		9740EEB11CF90186004384FC /* Flutter */ = {
@@ -173,6 +210,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				6786449627207CD100C2BE71 /* PebbleProtocol */,
 				677AF01F271BC1D5001EBD29 /* bluetooth */,
 				670D55B6271BA28300002F78 /* bridges */,
 				676871CF271B917F008593D0 /* Pigeon */,
@@ -184,6 +222,8 @@
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
+				67F332002727987E00E7E892 /* PersistentStorage.swift */,
+				67C4D44C2728885C00816945 /* PebbleDevice.swift */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -201,6 +241,7 @@
 		EDBC7F55C882531D51B6B061 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				674B0B5F2720B1D200C38849 /* libpebblecommon.framework */,
 				C2609948BBFEC4A103DF00E4 /* Pods_Runner.framework */,
 			);
 			name = Frameworks;
@@ -218,9 +259,9 @@
 				97C146EA1CF9000F007C117D /* Sources */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
 				97C146EC1CF9000F007C117D /* Resources */,
-				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				24B7D1EE2419A8F54C0E9382 /* [CP] Embed Pods Frameworks */,
+				674B0B5E2720A2A300C38849 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -314,7 +355,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
+			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin\n";
 		};
 		9740EEB61CF901F6004384FC /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -328,7 +369,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build";
+			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
 		};
 		CFD5C8FED5F697BDD207AC4C /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -360,17 +401,26 @@
 			buildActionMask = 2147483647;
 			files = (
 				670D55BD271BA71C00002F78 /* FlutterBackgroundController.swift in Sources */,
+				674B0B5927208B7A00C38849 /* SystemHandler.swift in Sources */,
 				670D55C7271BBB7D00002F78 /* Pigeons.m in Sources */,
+				6729BD3A271DF80300919CE5 /* ConnectionControlBridge.swift in Sources */,
+				6729BD3C271E09E000919CE5 /* IntentControlFlutterBridge.swift in Sources */,
 				670D55C2271BB4E900002F78 /* BackgroundSetupFlutterBridge.swift in Sources */,
+				6786449527207B5500C2BE71 /* ConnectionFlutterBridge.swift in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
+				67F332012727987E00E7E892 /* PersistentStorage.swift in Sources */,
+				674B0B642720D3CC00C38849 /* PPoGATTService.swift in Sources */,
+				674B0B5B27209B5300C38849 /* LEPeripheral.swift in Sources */,
 				670D55C4271BB88100002F78 /* PermissionCheckFlutterBridge.swift in Sources */,
+				6786449827207CE700C2BE71 /* ProtocolService.swift in Sources */,
 				677AF01B271BBD19001EBD29 /* PermissionControlFlutterBridge.swift in Sources */,
+				67C4D44D2728885C00816945 /* PebbleDevice.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				677AF023271BC335001EBD29 /* BluePebbleDevice.swift in Sources */,
+				678D0352272218170005D120 /* TransportErrors.swift in Sources */,
 				670D55BF271BB2DB00002F78 /* FlutterBridgeSetup.swift in Sources */,
 				677AF021271BC1FB001EBD29 /* LECentral.swift in Sources */,
 				670D55B9271BA34600002F78 /* ScanFlutterBridge.swift in Sources */,
-				677AF025271BC35F001EBD29 /* LEMeta.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -454,14 +504,42 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2MFZU35H44;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/FMDB\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/device_calendar\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/flutter_local_notifications\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/package_info\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/path_provider\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/share\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/shared_preferences\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/sqflite\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/url_launcher\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/webview_flutter\"",
+					/Users/crc32/Documents/libpebblecommon/build/bin/ios/releaseFramework,
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/FMDB/FMDB.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/device_calendar/device_calendar.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/flutter_local_notifications/flutter_local_notifications.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/package_info/package_info.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/path_provider/path_provider.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/share/share.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/shared_preferences/shared_preferences.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/sqflite/sqflite.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/url_launcher/url_launcher.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/webview_flutter/webview_flutter.framework/Headers\"",
+					/Users/crc32/Documents/libpebblecommon/build/bin/ios/releaseFramework/libpebblecommon.framework/Headers,
+				);
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.cobble;
+				PRODUCT_BUNDLE_IDENTIFIER = io.rebble.cobble;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -585,14 +663,42 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2MFZU35H44;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/FMDB\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/device_calendar\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/flutter_local_notifications\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/package_info\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/path_provider\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/share\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/shared_preferences\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/sqflite\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/url_launcher\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/webview_flutter\"",
+					/Users/crc32/Documents/libpebblecommon/build/bin/ios/debugFramework,
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/FMDB/FMDB.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/device_calendar/device_calendar.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/flutter_local_notifications/flutter_local_notifications.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/package_info/package_info.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/path_provider/path_provider.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/share/share.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/shared_preferences/shared_preferences.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/sqflite/sqflite.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/url_launcher/url_launcher.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/webview_flutter/webview_flutter.framework/Headers\"",
+					/Users/crc32/Documents/libpebblecommon/build/bin/ios/debugFramework/libpebblecommon.framework/Headers,
+				);
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.cobble;
+				PRODUCT_BUNDLE_IDENTIFIER = io.rebble.cobble;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -608,14 +714,42 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2MFZU35H44;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/FMDB\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/device_calendar\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/flutter_local_notifications\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/package_info\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/path_provider\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/share\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/shared_preferences\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/sqflite\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/url_launcher\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/webview_flutter\"",
+					/Users/crc32/Documents/libpebblecommon/build/bin/ios/releaseFramework,
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/FMDB/FMDB.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/device_calendar/device_calendar.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/flutter_local_notifications/flutter_local_notifications.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/package_info/package_info.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/path_provider/path_provider.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/share/share.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/shared_preferences/shared_preferences.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/sqflite/sqflite.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/url_launcher/url_launcher.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/webview_flutter/webview_flutter.framework/Headers\"",
+					/Users/crc32/Documents/libpebblecommon/build/bin/ios/releaseFramework/libpebblecommon.framework/Headers,
+				);
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.cobble;
+				PRODUCT_BUNDLE_IDENTIFIER = io.rebble.cobble;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
