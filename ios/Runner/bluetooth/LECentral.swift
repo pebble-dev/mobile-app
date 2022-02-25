@@ -11,6 +11,7 @@ import CoreBluetooth
 
 class LECentral {
     static let shared = LECentral()
+    static let scanDuration: TimeInterval = 30
     
     let centralController: LECentralController
     
@@ -43,11 +44,22 @@ class LECentral {
         return connected
     }
     
+    
     func waitForReady(onReady: @escaping () -> ()) {
         readyGroup.notify(queue: queue) {
             onReady()
         }
     }
+    
+    @available(iOS 13.0, *)
+    func waitForReadyAsync() async {
+        return await withCheckedContinuation { continuation in
+            waitForReady() {
+                continuation.resume(returning: ())
+            }
+        }
+    }
+    
     
     func scan(foundDevices: @escaping ([BluePebbleDevice]) -> (), scanEnded: @escaping () -> ()) -> Bool {
         if centralController.centralManager.state != .poweredOn {
@@ -66,14 +78,14 @@ class LECentral {
                 foundDevices(self.scannedDevices)
             }
         }
-        queue.asyncAfter(deadline: .now()+30) {
+        queue.asyncAfter(deadline: .now()+LECentral.scanDuration) {
             self.centralController.stopScan()
             scanEnded()
         }
         return true
     }
     
-    func connectToWatchHash(watchHash: Int, onConnectState: @escaping (Bool) -> ()) {
+    func getAssociatedWatchFromhHash(watchHash: Int) -> BluePebbleDevice? {
         var device = scannedDevices.first {
             $0.peripheral.identifier.uuidString.hashValue == watchHash
         }
@@ -86,8 +98,14 @@ class LECentral {
                 }
             }
         }
-        
-        
+        return device
+    }
+    
+    func connectToWatchHash(watchHash: Int, onConnectState: @escaping (Bool) -> ()) {
+        let device = getAssociatedWatchFromhHash(watchHash: watchHash)
+        ProtocolService.shared.systemHandler.waitNegotiationComplete { [self] in
+            connStateCallback?(true)
+        }
         if let device = device {
             targetDevice = device
             if let serv = LEPeripheral.shared.gattService {
@@ -118,14 +136,11 @@ class LECentral {
             print("LECentral: Error \(connStatus.pairingErrorCode)")
         } else if connStatus.connected == true && connStatus.paired == true {
             print("LECentral: Connected")
-            connStateCallback?(true)
-            connected = true
             if let targetDevice = targetDevice {
-                if !PersistentStorage.shared.devices.contains(where: {dev in dev.identifier == targetDevice.peripheral.identifier}) {
+                if !PersistentStorage.shared.devices.contains(where: { $0.identifier == targetDevice.peripheral.identifier }) {
                     var devs = PersistentStorage.shared.devices
                     devs.append(targetDevice.toStoredPebbleDevice())
                     PersistentStorage.shared.devices = devs
-                    print(PersistentStorage.shared.devices)
                 }
             }
         }else if connStatus.connected == true && connStatus.paired == false {

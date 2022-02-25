@@ -51,9 +51,24 @@ class ProtocolService {
         protocolHandler.receivePacket(bytes: ubytes) {_, _ in }
     }
     
-    public func sendPacket(packet: PebblePacket) {
-        protocolHandler.send(packet: packet, priority: .normal) { success, err in
-            
+    public func sendPacket(packet: PebblePacket, completionHandler: @escaping (Bool, Error?) -> Void) {
+        DispatchQueue.main.async {[self] in
+            protocolHandler.send(packet: packet, priority: .normal) { success, err in
+                completionHandler(success?.boolValue ?? false, err)
+            }
+        }
+    }
+    
+    @available(iOS 13.0.0, *)
+    public func sendPacketAsync(packet: PebblePacket) async throws -> Bool {
+        return try await withCheckedThrowingContinuation { continuation in
+            sendPacket(packet: packet) { result, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                continuation.resume(returning: result)
+            }
         }
     }
     
