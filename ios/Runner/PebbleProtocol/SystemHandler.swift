@@ -8,11 +8,15 @@
 import Foundation
 import libpebblecommon
 class SystemHandler {
+    private let handleAppVersionRequest = HandleAppVersionRequest()
+    private var negotiatedListeners: [() -> ()] = []
     init(systemService: SystemService) {
-        systemService.appVersionRequestHandler = HandleAppVersionRequest()
+        handleAppVersionRequest.negotiatedCallback = onNegotiationComplete
+        systemService.appVersionRequestHandler = handleAppVersionRequest
     }
     
     private class HandleAppVersionRequest: KotlinSuspendFunction0 {
+        public var negotiatedCallback: (() -> ())?
         func invoke(completionHandler: @escaping (Any?, Error?) -> Void) {
             var platformFlags = [PhoneAppVersion.PlatformFlag]()
             platformFlags.append(.btle)
@@ -27,6 +31,28 @@ class SystemHandler {
                                                          ])
             )
             completionHandler(res, nil)
+            negotiatedCallback?()
         }
     }
+    
+    private func onNegotiationComplete() {
+        for listener in negotiatedListeners {
+            listener()
+        }
+        negotiatedListeners.removeAll()
+    }
+    
+    public func waitNegotiationComplete(completionHandler: @escaping () -> ()) {
+        negotiatedListeners.append(completionHandler)
+    }
+    
+    @available(iOS 13.0.0, *)
+    public func waitNegotiationCompleteAsync() async {
+        return await withCheckedContinuation { continuation in
+            waitNegotiationComplete() {
+                continuation.resume(returning: ())
+            }
+        }
+    }
+    
 }

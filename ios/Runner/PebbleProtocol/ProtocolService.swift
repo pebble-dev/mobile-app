@@ -12,13 +12,17 @@ class ProtocolService {
     
     private let protocolHandler = ProtocolHandlerImpl()
     
-    private let systemService: SystemService
-    private let systemHandler: SystemHandler
     private let rawSend = RawSend()
+    
+    public let systemHandler: SystemHandler
+    public let systemService: SystemService
+    
+    public let screenshotService: ScreenshotService
     
     init() {
         systemService = SystemService(protocolHandler: protocolHandler)
         systemHandler = SystemHandler(systemService: systemService)
+        screenshotService = ScreenshotService(protocolHandler: protocolHandler)
     }
     
     private class RawSend: KotlinSuspendFunction1 {
