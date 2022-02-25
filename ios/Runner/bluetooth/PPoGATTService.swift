@@ -30,8 +30,8 @@ public class PPoGATTService {
     
     private var initialReset = false
     private var connectionVersion: GATTPacket.PPoGConnectionVersion = .zero
-    private var maxRXWindow: UInt8 = 1
-    private var maxTXWindow: UInt8 = 1
+    private var maxRXWindow: UInt8 = UInt8(LEConstants.shared.MAX_RX_WINDOW)
+    private var maxTXWindow: UInt8 = UInt8(LEConstants.shared.MAX_TX_WINDOW)
     private var pendingPackets = [GATTPacket]()
     private var ackPending = Dictionary<Int32, DispatchSemaphore>()
     
