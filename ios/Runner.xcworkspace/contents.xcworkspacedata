@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Workspace
    version = "1.0">
-   <Group
-      location = "container:"
-      name = "Kotlin Debug">
-      <FileRef
-         location = "group:../../../libpebblecommon/src/commonMain">
-      </FileRef>
-      <FileRef
-         location = "group:../../../libpebblecommon/src/iosMain">
-      </FileRef>
-   </Group>
    <FileRef
       location = "group:Runner.xcodeproj">
    </FileRef>

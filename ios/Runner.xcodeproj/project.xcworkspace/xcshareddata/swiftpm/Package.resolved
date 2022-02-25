@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "CobbleLEKit",
+        "repositoryURL": "https://github.com/crc-32/CobbleLEKit",
+        "state": {
+          "branch": "main",
+          "revision": "8c6355e1d064c99bab7d4d2b0c33e6e8896b909a",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}

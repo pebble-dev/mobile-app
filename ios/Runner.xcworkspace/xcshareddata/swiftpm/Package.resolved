@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "CobbleLEKit",
+        "repositoryURL": "https://github.com/crc-32/CobbleLEKit",
+        "state": {
+          "branch": "main",
+          "revision": "8c6355e1d064c99bab7d4d2b0c33e6e8896b909a",
+          "version": null
+        }
+      },
+      {
+        "package": "libpebblecommon",
+        "repositoryURL": "https://github.com/pebble-dev/libpebblecommon",
+        "state": {
+          "branch": "swiftpm-0.1.0",
+          "revision": "e39236878d12e6f172c3c3916e4a5906d337d380",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
