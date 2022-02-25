@@ -3,8 +3,8 @@ import 'package:hooks_riverpod/all.dart';
 
 extension ResultConverter<T> on Result<T> {
   AsyncValue<T> toAsyncValue() {
-    if (isSuccess) {
-      return AsyncValue.data(data);
+    if (isSuccess && data != null) {
+      return AsyncValue.data(data!);
     } else {
       return AsyncValue.error(errors);
     }

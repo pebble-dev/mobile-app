@@ -95,7 +95,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
 
   @override
   Future<void> deleteApp(StringWrapper uuidString) async {
-    final uuid = Uuid(uuidString.value);
+    final uuid = Uuid.parse(uuidString.value);
     await appDao.setSyncAction(uuid, NextSyncAction.Delete);
 
     if (connectionSubscription.read().isConnected == true) {
@@ -105,7 +105,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
 
   @override
   Future<void> beginAppOrderChange(AppReorderRequest arg) async {
-    final uuid = Uuid(arg.uuid);
+    final uuid = Uuid.parse(arg.uuid);
 
     await appDao.move(uuid, arg.newPosition);
 

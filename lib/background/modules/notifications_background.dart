@@ -23,6 +23,6 @@ class NotificationsBackground implements NotificationListening {
 
   @override
   void dismissNotification(StringWrapper arg) {
-    notificationManager.dismissNotification(Uuid(arg.value!));
+    notificationManager.dismissNotification(Uuid.parse(arg.value!));
   }
 }

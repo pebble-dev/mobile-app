@@ -115,14 +115,14 @@ class CalendarActionHandler implements ActionHandler {
       eventId.calendarId,
       RetrieveEventsParams(eventIds: [eventId.eventId]),
     );
-    if (!events.isSuccess || events.data.isEmpty) {
+    if (!events.isSuccess || events.data?.isEmpty == false) {
       Log.e("Unknown event ${eventId.eventId}");
       return TimelineActionResponse(false);
     }
 
-    final event = events.data.first;
-    final selfAttendee = event.attendees.firstWhereOrNull(
-          (element) => element.isCurrentUser == true,
+    final event = events.data!.first;
+    final selfAttendee = event.attendees?.firstWhereOrNull(
+          (element) => element?.isCurrentUser == true,
     );
 
     if (selfAttendee == null) {
@@ -148,7 +148,6 @@ class CalendarActionHandler implements ActionHandler {
       }
 
       selfAttendee.androidAttendeeDetails = AndroidAttendeeDetails(
-        role: selfAttendee.androidAttendeeDetails.role,
         attendanceStatus: targetAttendanceStatus,
       );
     } else if (Platform.isIOS) {
@@ -169,7 +168,6 @@ class CalendarActionHandler implements ActionHandler {
       }
 
       selfAttendee.iosAttendeeDetails = IosAttendeeDetails(
-        role: selfAttendee.iosAttendeeDetails.role,
         attendanceStatus: targetAttendanceStatus,
       );
     } else {
