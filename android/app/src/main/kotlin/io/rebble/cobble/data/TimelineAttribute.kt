@@ -1,14 +1,13 @@
 package io.rebble.cobble.data
 
-import com.squareup.moshi.JsonClass
 import io.rebble.cobble.util.encodeToByteArrayTrimmed
 import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
-import io.rebble.libpebblecommon.structmapper.SInt
 import io.rebble.libpebblecommon.structmapper.SUInt
 import io.rebble.libpebblecommon.structmapper.StructMapper
+import kotlinx.serialization.Serializable
 import java.nio.ByteBuffer
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class TimelineAttribute(
         val id: Int,
         val string: String? = null,

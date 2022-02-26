@@ -1,7 +1,5 @@
 package io.rebble.cobble.bridges.common
 
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
 import io.flutter.plugin.common.BinaryMessenger
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.data.TimelineAction
@@ -16,6 +14,8 @@ import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import io.rebble.libpebblecommon.structmapper.SUUID
 import io.rebble.libpebblecommon.structmapper.StructMapper
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import java.util.*
 import javax.inject.Inject
 import kotlin.random.Random
@@ -23,7 +23,6 @@ import kotlin.random.Random
 class TimelineControlFlutterBridge @Inject constructor(
         binaryMessenger: BinaryMessenger,
         coroutineScope: CoroutineScope,
-        private val moshi: Moshi,
         private val blobDBService: BlobDBService
 ) : FlutterBridge {
     init {
@@ -61,17 +60,9 @@ class TimelineControlFlutterBridge @Inject constructor(
     @OptIn(ExperimentalStdlibApi::class)
     @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun addTimelinePin(pin: Pigeons.TimelinePinPigeon): BlobResponse.BlobStatus {
-        val parsedAttributes = moshi
-                .adapter<List<TimelineAttribute>>(
-                        Types.newParameterizedType(List::class.java, TimelineAttribute::class.java)
-                )
-                .fromJson(pin.attributesJson) ?: emptyList()
+        val parsedAttributes: List<TimelineAttribute> = Json.decodeFromString(pin.attributesJson) ?: emptyList()
 
-        val parsedActions = moshi
-                .adapter<List<TimelineAction>>(
-                        Types.newParameterizedType(List::class.java, TimelineAction::class.java)
-                )
-                .fromJson(pin.actionsJson) ?: emptyList()
+        val parsedActions: List<TimelineAction> = Json.decodeFromString(pin.actionsJson) ?: emptyList()
 
         val flags = buildList {
             if (pin.isVisible) {

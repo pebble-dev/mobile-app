@@ -1,12 +1,11 @@
 package io.rebble.cobble.middleware
 
-import com.squareup.moshi.Moshi
 import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.data.pbw.manifest.PbwBlob
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.util.requirePbwBinaryBlob
 import io.rebble.cobble.util.requirePbwManifest
 import io.rebble.libpebblecommon.metadata.WatchType
+import io.rebble.libpebblecommon.metadata.pbw.manifest.PbwBlob
 import io.rebble.libpebblecommon.packets.*
 import io.rebble.libpebblecommon.services.PutBytesService
 import io.rebble.libpebblecommon.util.Crc32Calculator
@@ -29,8 +28,7 @@ import javax.inject.Singleton
 class PutBytesController @Inject constructor(
         private val connectionLooper: ConnectionLooper,
         private val putBytesService: PutBytesService,
-        private val metadataStore: WatchMetadataStore,
-        private val moshi: Moshi
+        private val metadataStore: WatchMetadataStore
 ) {
     private val _status: MutableStateFlow<Status> = MutableStateFlow(Status(State.IDLE))
     val status: StateFlow<Status> get() = _status
@@ -38,7 +36,7 @@ class PutBytesController @Inject constructor(
     private var lastCookie: UInt? = null
 
     fun startAppInstall(appId: UInt, pbwFile: File, watchType: WatchType) = launchNewPutBytesSession {
-        val manifest = requirePbwManifest(moshi, pbwFile, watchType)
+        val manifest = requirePbwManifest(pbwFile, watchType)
 
         val totalSize = manifest.application.size +
                 (manifest.resources?.size ?: 0) +
@@ -60,7 +58,7 @@ class PutBytesController @Inject constructor(
                     appId,
                     pbwFile,
                     watchType,
-                    manifest.resources,
+                    manifest.resources!!,
                     ObjectType.APP_RESOURCE,
                     progressMultiplier
             )
@@ -70,7 +68,7 @@ class PutBytesController @Inject constructor(
                     appId,
                     pbwFile,
                     watchType,
-                    manifest.worker,
+                    manifest.worker!!,
                     ObjectType.WORKER,
                     progressMultiplier
             )

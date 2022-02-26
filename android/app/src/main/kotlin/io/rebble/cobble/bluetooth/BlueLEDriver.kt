@@ -8,9 +8,11 @@ import io.rebble.cobble.receivers.BluetoothBondReceiver
 import io.rebble.cobble.util.toBytes
 import io.rebble.cobble.util.toHexString
 import io.rebble.libpebblecommon.ProtocolHandler
+import io.rebble.libpebblecommon.ble.LEConstants
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
+import java.util.*
 
 
 class BlueLEDriver(
@@ -78,9 +80,9 @@ class BlueLEDriver(
                         Timber.d("Phone already paired but watch not paired, removing bond and re-pairing")
                         targetPebble::class.java.getMethod("removeBond").invoke(targetPebble)
                     }
-                    val pairService = gatt!!.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)
+                    val pairService = gatt!!.getService(UUID.fromString(LEConstants.UUIDs.PAIRING_SERVICE_UUID))
                     if (pairService != null) {
-                        val pairTrigger = pairService.getCharacteristic(BlueGATTConstants.UUIDs.PAIRING_TRIGGER_CHARACTERISTIC)
+                        val pairTrigger = pairService.getCharacteristic(UUID.fromString(LEConstants.UUIDs.PAIRING_TRIGGER_CHARACTERISTIC))
                         if (pairTrigger != null) {
                             val bondReceiver = BluetoothBondReceiver.registerBondReceiver(context, targetPebble.address)
                             if (pairTrigger.properties and BluetoothGattCharacteristic.PROPERTY_WRITE > 0) {
@@ -160,7 +162,7 @@ class BlueLEDriver(
                             return@launch
                         }
 
-                        val mtu = gatt?.requestMtu(BlueGATTConstants.TARGET_MTU)
+                        val mtu = gatt?.requestMtu(LEConstants.TARGET_MTU)
                         if (mtu?.isSuccess() == true) {
                             Timber.d("MTU Changed, new mtu ${mtu.mtu}")
                             gattDriver!!.setMTU(mtu.mtu)
@@ -181,7 +183,7 @@ class BlueLEDriver(
                         connectivityWatcher = ConnectivityWatcher(gatt!!)
                         val servicesRes = gatt!!.discoverServices()
                         if (servicesRes != null && servicesRes.isSuccess()) {
-                            if (gatt?.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)?.getCharacteristic(BlueGATTConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC) != null) {
+                            if (gatt?.getService(UUID.fromString(LEConstants.UUIDs.PAIRING_SERVICE_UUID))?.getCharacteristic(UUID.fromString(LEConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC)) != null) {
                                 Timber.d("Subscribing to connparams")
                                 if (connectionParamManager!!.subscribe() || gattDriver?.connected == true) {
                                     Timber.d("Starting connectivity after connparams")

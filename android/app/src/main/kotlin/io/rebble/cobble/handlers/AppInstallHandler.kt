@@ -1,7 +1,6 @@
 package io.rebble.cobble.handlers
 
 import android.content.Context
-import com.squareup.moshi.Moshi
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.middleware.PutBytesController
 import io.rebble.cobble.middleware.getBestVariant
@@ -24,8 +23,7 @@ class AppInstallHandler @Inject constructor(
         private val context: Context,
         private val appFetchService: AppFetchService,
         private val putBytesController: PutBytesController,
-        private val watchMetadataStore: WatchMetadataStore,
-        private val moshi: Moshi
+        private val watchMetadataStore: WatchMetadataStore
 ) : CobbleHandler {
     init {
         coroutineScope.launch {
@@ -80,7 +78,7 @@ class AppInstallHandler @Inject constructor(
                 return
             }
 
-            val appInfo = requirePbwAppInfo(moshi, appFile)
+            val appInfo = requirePbwAppInfo(appFile)
 
             val targetWatchType = getBestVariant(connectedWatchType, appInfo.targetPlatforms)
             if (targetWatchType == null) {

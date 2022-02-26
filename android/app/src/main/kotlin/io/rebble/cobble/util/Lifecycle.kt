@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.callbackFlow
 @OptIn(ExperimentalCoroutinesApi::class)
 fun Lifecycle.asFlow(): Flow<Lifecycle.State> {
     return callbackFlow {
-        offer(currentState)
+        trySend(currentState).isSuccess
 
         val observer = LifecycleEventObserver { _, _ ->
-            offer(currentState)
+            trySend(currentState).isSuccess
         }
 
         addObserver(observer)

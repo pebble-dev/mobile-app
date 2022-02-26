@@ -1149,10 +1149,6 @@ public class Pigeons {
     }
   }
 
-  public interface Result<T> {
-    void success(T result);
-  }
-
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface BackgroundControl {
     void notifyFlutterBackgroundStarted(Result<NumberWrapper> result);
@@ -2078,10 +2074,6 @@ public class Pigeons {
     }
   }
 
-  public interface Result<T> {
-    void success(T result);
-  }
-
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface AppInstallControl {
     void getAppInfo(StringWrapper arg, Result<PbwAppInfo> result);
@@ -2352,10 +2344,6 @@ public class Pigeons {
     }
   }
 
-  public interface Result<T> {
-    void success(T result);
-  }
-
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface ScreenshotsControl {
     void takeWatchScreenshot(Result<ScreenshotResult> result);
@@ -2381,10 +2369,6 @@ public class Pigeons {
         }
       }
     }
-  }
-
-  public interface Result<T> {
-    void success(T result);
   }
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/

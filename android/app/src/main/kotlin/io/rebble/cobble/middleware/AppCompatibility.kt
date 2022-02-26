@@ -1,6 +1,5 @@
 package io.rebble.cobble.middleware
 
-import io.rebble.cobble.data.pbw.appinfo.PbwAppInfo
 import io.rebble.libpebblecommon.metadata.WatchType
 
 fun getCompatibleAppVariants(watchType: WatchType): List<WatchType> {

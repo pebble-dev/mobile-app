@@ -7,7 +7,7 @@ import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.launchPigeonResult
-import io.rebble.cobble.util.ushr
+import io.rebble.libpebblecommon.util.ushr
 import io.rebble.libpebblecommon.packets.*
 import io.rebble.libpebblecommon.services.ScreenshotService
 import io.rebble.libpebblecommon.util.DataBuffer
