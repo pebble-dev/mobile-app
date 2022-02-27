@@ -7,37 +7,45 @@
 
 import Foundation
 import libpebblecommon
-class ProtocolService {
-    static var shared: ProtocolService!
+import CocoaLumberjackSwift
+class ProtocolComms {
+    static var shared: ProtocolComms!
     
     private let protocolHandler = ProtocolHandlerImpl()
     
     private let rawSend = RawSend()
     
-    public let systemHandler: SystemHandler
     public let systemService: SystemService
+    public let appFetchService: AppFetchService
+    public let putBytesService: PutBytesService
     
-    public let screenshotService: ScreenshotService
+    public let systemHandler: SystemHandler
+    public let appInstallHandler: AppInstallHandler
+    public let putBytesController: PutBytesController
     
     init() {
         systemService = SystemService(protocolHandler: protocolHandler)
+        appFetchService = AppFetchService(protocolHandler: protocolHandler)
+        putBytesService = PutBytesService(protocolHandler: protocolHandler)
+        
         systemHandler = SystemHandler(systemService: systemService)
-        screenshotService = ScreenshotService(protocolHandler: protocolHandler)
+        self.appInstallHandler = AppInstallHandler(appFetchService: appFetchService)
+        
+        putBytesController = PutBytesController(putBytesService: putBytesService)
     }
     
     private class RawSend: KotlinSuspendFunction1 {
         func invoke(p1: Any?, completionHandler: @escaping (Any?, Error?) -> Void) {
             let bytearray = KUtil.shared.uByteArrayAsByteArray(arr: p1!)
-            print("rsend")
             do {
                 try LEPeripheral.shared.writePacket(rawProtocolPacket: [UInt8](bytearray.toNative()))
             }catch is PPoGATTServiceNotInitialized {
-                print("Tried to send packet before GATT was init'd")
+                DDLogWarn("Tried to send packet before GATT was init'd")
                 assertionFailure()
                 completionHandler(false, nil)
                 return
             }catch {
-                print(error)
+                DDLogError(error)
                 completionHandler(false, nil)
                 return
             }
@@ -79,7 +87,7 @@ class ProtocolService {
     public func startPacketSendingLoop() {
         DispatchQueue.main.async {[self] in
             protocolHandler.startPacketSendingLoop(rawSend: rawSend) { _, e in
-                print("Sending loop ended")
+                DDLogInfo("Sending loop ended")
             }
         }
     }

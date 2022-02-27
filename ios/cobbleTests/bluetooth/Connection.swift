@@ -1,5 +1,5 @@
 //
-//  cobbleTests.swift
+//  Connection.swift
 //  cobbleTests
 //
 //  Created by crc32 on 24/02/2022.
@@ -9,7 +9,7 @@ import XCTest
 import libpebblecommon
 @testable import Runner
 
-class TransportTests: XCTestCase {
+class Connection: XCTestCase {
     private let queue = DispatchQueue(label: "io.rebble.cobbleTests.TransportTests", qos: .utility)
     
     override func setUp() async throws {
@@ -20,7 +20,7 @@ class TransportTests: XCTestCase {
         LECentral.shared.disconnect()
     }
 
-    func testConnectionFromScratch() async throws {
+    func connectionFromScratch() async throws {
         let remote: BluePebbleDevice? = await withCheckedContinuation { continuation in
             var remote: BluePebbleDevice?
             let success = LECentral.shared.scan { foundDevices in

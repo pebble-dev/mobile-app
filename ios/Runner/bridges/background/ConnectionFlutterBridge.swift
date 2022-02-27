@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CocoaLumberjackSwift
 class ConnectionFlutterBridge: ConnectionControl {
     func isConnected(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> BooleanWrapper? {
         let ret = BooleanWrapper()
@@ -22,10 +23,10 @@ class ConnectionFlutterBridge: ConnectionControl {
             do {
                 try LEPeripheral.shared.writePacket(rawProtocolPacket: rawPacket)
             } catch is PPoGATTServiceNotInitialized {
-                print("ConnectionFlutterBridge: Tried to send packet via uninitialized transport, ignoring")
+                DDLogWarn("ConnectionFlutterBridge: Tried to send packet via uninitialized transport, ignoring")
                 assertionFailure()
             } catch {
-                print("ConnectionFlutterBridge: Unexpected error sending raw packet")
+                DDLogWarn("ConnectionFlutterBridge: Unexpected error sending raw packet")
                 assertionFailure()
             }
         }

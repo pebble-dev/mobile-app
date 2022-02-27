@@ -21,7 +21,7 @@ class LEPeripheral {
     }
     
     private func packetHandler(rawPacket: [UInt8]) {
-        ProtocolService.shared.receivePacket(packet: rawPacket)
+        ProtocolComms.shared.receivePacket(packet: rawPacket)
     }
     
     public func writePacket(rawProtocolPacket: [UInt8]) throws {

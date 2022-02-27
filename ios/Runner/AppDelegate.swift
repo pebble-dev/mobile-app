@@ -1,5 +1,8 @@
 import UIKit
 import Flutter
+import CocoaLumberjackSwift
+import CocoaLumberjackSwiftLogBackend
+import Logging
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -8,8 +11,9 @@ import Flutter
       _ application: UIApplication,
       didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        setupLogging()
         GeneratedPluginRegistrant.register(with: self)
-        ProtocolService.shared = ProtocolService()
+        ProtocolComms.shared = ProtocolComms()
         LEPeripheral.shared = LEPeripheral()
         
         setupFlutter()
@@ -21,5 +25,9 @@ import Flutter
         let binaryMessenger = (window?.rootViewController as! FlutterViewController).binaryMessenger
         FlutterBridgeSetup.createUIBridges(binaryMessenger: binaryMessenger)
         FlutterBridgeSetup.createCommonBridges(binaryMessenger: binaryMessenger)
+    }
+    
+    private func setupLogging() {
+        DDLog.add(DDOSLogger.sharedInstance)
     }
 }

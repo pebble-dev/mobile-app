@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CocoaLumberjackSwift
 class PersistentStorage {
     static let shared = PersistentStorage()
     
@@ -19,7 +20,7 @@ class PersistentStorage {
                     let res = try decoder.decode([StoredPebbleDevice].self, from: data)
                     return res
                 } catch {
-                    print("PersistentStorage: Error decoding stored devices")
+                    DDLogError("PersistentStorage: Error decoding stored devices")
                 }
             }
             return []
@@ -31,7 +32,7 @@ class PersistentStorage {
                 let res = try encoder.encode(nw)
                 UserDefaults.standard.set(res, forKey: PersistentStorage.KEY_DEVICES)
             }catch {
-                print("PerisistentStorage: Error encoding stored devices")
+                DDLogError("PerisistentStorage: Error encoding stored devices")
             }
         }
     }

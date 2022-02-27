@@ -8,6 +8,7 @@
 import Foundation
 import CobbleLE
 import CoreBluetooth
+import CocoaLumberjackSwift
 
 class LECentral {
     static let shared = LECentral()
@@ -29,6 +30,16 @@ class LECentral {
         readyGroup.enter()
         centralController = LECentralController()
         centralController.stateUpdateCallback = stateUpdate
+    }
+    
+    public var currentDevice: BluePebbleDevice? {
+        get {
+            if (connected) {
+                return targetDevice
+            } else {
+                return nil
+            }
+        }
     }
     
     private func stateUpdate(manager: CBCentralManager) {
@@ -90,9 +101,11 @@ class LECentral {
             $0.peripheral.identifier.uuidString.hashValue == watchHash
         }
         if device == nil {
+            DDLogDebug(PersistentStorage.shared.devices)
             if let stored = PersistentStorage.shared.devices.first(where: {device in
                 return device.identifier.uuidString.hashValue == watchHash
             }) {
+                DDLogDebug(stored.identifier)
                 if let periph = centralController.centralManager.retrievePeripherals(withIdentifiers: [stored.identifier]).first {
                     device = BluePebbleDevice(peripheral: periph, advertiseData: nil)
                 }
@@ -103,7 +116,8 @@ class LECentral {
     
     func connectToWatchHash(watchHash: Int, onConnectState: @escaping (Bool) -> ()) {
         let device = getAssociatedWatchFromhHash(watchHash: watchHash)
-        ProtocolService.shared.systemHandler.waitNegotiationComplete { [self] in
+        ProtocolComms.shared.systemHandler.waitNegotiationComplete { [self] in
+            connected = true
             connStateCallback?(true)
         }
         if let device = device {
@@ -116,11 +130,11 @@ class LECentral {
             centralController.centralManager.cancelPeripheralConnection(device.peripheral)
             peripheralClient = LEClientController(peripheral: device.peripheral, centralManager: centralController.centralManager, stateCallback: connStatusChange)
             peripheralClient!.connect()
-            ProtocolService.shared.startPacketSendingLoop()
+            ProtocolComms.shared.startPacketSendingLoop()
         }else {
             onConnectState(false)
             connected = false
-            print("LECentral: Couldn't find peripheral from scanned devices or iOS side")
+            DDLogError("LECentral: Couldn't find peripheral from scanned devices or iOS side")
         }
     }
     
@@ -133,9 +147,9 @@ class LECentral {
             peripheralClient?.disconnect()
             connStateCallback?(false)
             connected = false
-            print("LECentral: Error \(connStatus.pairingErrorCode)")
+            DDLogError("LECentral: Error \(connStatus.pairingErrorCode)")
         } else if connStatus.connected == true && connStatus.paired == true {
-            print("LECentral: Connected")
+            DDLogInfo("LECentral: Connected")
             if let targetDevice = targetDevice {
                 if !PersistentStorage.shared.devices.contains(where: { $0.identifier == targetDevice.peripheral.identifier }) {
                     var devs = PersistentStorage.shared.devices
@@ -144,9 +158,9 @@ class LECentral {
                 }
             }
         }else if connStatus.connected == true && connStatus.paired == false {
-            print("LECentral: Pairing")
+            DDLogInfo("LECentral: Pairing")
         }else {
-            print("LECentral: Connecting")
+            DDLogInfo("LECentral: Connecting")
         }
     }
 }
