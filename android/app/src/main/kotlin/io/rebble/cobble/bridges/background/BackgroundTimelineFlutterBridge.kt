@@ -97,11 +97,11 @@ class BackgroundTimelineFlutterBridge @Inject constructor(
             }
 
             callbacks.handleTimelineAction(pigeonActionTrigger) { pigeonResponse ->
-                val parsedAttributes: List<TimelineAttribute> = Json.decodeFromString(pigeonResponse.attributesJson) ?: emptyList()
+                val parsedAttributes: List<TimelineAttribute> = Json.decodeFromString(pigeonResponse.attributesJson!!) ?: emptyList()
 
                 continuation.resume(
                         TimelineService.ActionResponse(
-                                pigeonResponse.success,
+                                pigeonResponse.success!!,
                                 parsedAttributes.map { it.toProtocolAttribute() }
                         )
                 )

@@ -49,7 +49,7 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
       }
 
       body = Text(statusText);
-    } else if (!_appInfo.isValid) {
+    } else if (_appInfo.isValid != true) {
       body = Column(
         children: [
           Text("Sorry, this is not a valid PBW file"),

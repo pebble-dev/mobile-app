@@ -20,6 +20,7 @@ import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.pigeons.toMapExt
 import io.rebble.cobble.util.asFlow
+import io.rebble.cobble.util.launchPigeonResult
 import io.rebble.cobble.util.registerAsyncPigeonCallback
 import io.rebble.cobble.util.voidResult
 import kotlinx.coroutines.CompletableDeferred
@@ -32,58 +33,9 @@ import javax.inject.Inject
 class PermissionControlFlutterBridge @Inject constructor(
         private val activity: MainActivity,
         private val activityLifecycle: Lifecycle,
-        coroutineScope: CoroutineScope,
+        private val coroutineScope: CoroutineScope,
         binaryMessenger: BinaryMessenger
-) : FlutterBridge {
-    init {
-        binaryMessenger.registerAsyncPigeonCallback(
-                coroutineScope,
-                "dev.flutter.pigeon.PermissionControl.requestLocationPermission"
-        ) {
-            requestPermission(
-                    REQUEST_CODE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-            ).toMapExt()
-        }
-
-        binaryMessenger.registerAsyncPigeonCallback(
-                coroutineScope,
-                "dev.flutter.pigeon.PermissionControl.requestCalendarPermission"
-        ) {
-            requestPermission(
-                    REQUEST_CODE_CALENDAR,
-                    Manifest.permission.READ_CALENDAR,
-                    Manifest.permission.WRITE_CALENDAR
-            ).toMapExt()
-        }
-
-        binaryMessenger.registerAsyncPigeonCallback(
-                coroutineScope,
-                "dev.flutter.pigeon.PermissionControl.requestNotificationAccess"
-        ) {
-            requestNotificationAccess()
-
-            voidResult
-        }
-
-        binaryMessenger.registerAsyncPigeonCallback(
-                coroutineScope,
-                "dev.flutter.pigeon.PermissionControl.requestBatteryExclusion"
-        ) {
-            requestBatteryExclusion()
-
-            voidResult
-        }
-
-        binaryMessenger.registerAsyncPigeonCallback(
-                coroutineScope,
-                "dev.flutter.pigeon.PermissionControl.openPermissionSettings"
-        ) {
-            openPermissionSettings()
-
-            voidResult
-        }
-    }
+) : FlutterBridge, Pigeons.PermissionControl {
 
     private suspend fun requestNotificationAccess() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -191,6 +143,49 @@ class PermissionControlFlutterBridge @Inject constructor(
 
         val result = completableDeferred.await()
         return NumberWrapper(result)
+    }
+
+    override fun requestLocationPermission(result: Pigeons.Result<Pigeons.NumberWrapper>?) {
+        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
+            requestPermission(
+                    REQUEST_CODE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        }
+    }
+
+    override fun requestCalendarPermission(result: Pigeons.Result<Pigeons.NumberWrapper>?) {
+        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
+            requestPermission(
+                    REQUEST_CODE_CALENDAR,
+                    Manifest.permission.READ_CALENDAR,
+                    Manifest.permission.WRITE_CALENDAR
+            )
+        }
+    }
+
+    override fun requestNotificationAccess(result: Pigeons.Result<Void?>?) {
+        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
+            requestNotificationAccess()
+
+            null
+        }
+    }
+
+    override fun requestBatteryExclusion(result: Pigeons.Result<Void?>?) {
+        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
+            requestBatteryExclusion()
+
+            null
+        }
+    }
+
+    override fun openPermissionSettings(result: Pigeons.Result<Void?>?) {
+        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
+            openPermissionSettings()
+
+            null
+        }
     }
 }
 

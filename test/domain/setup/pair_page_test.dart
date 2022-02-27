@@ -13,7 +13,7 @@ import 'package:mockito/mockito.dart';
 
 final device = PebbleScanDevice(
   'Test',
-  1,
+  "a",
   'v1',
   'asdasdsd',
   0,
@@ -47,7 +47,7 @@ class Observer extends Mock implements NavigatorObserver {
 
 Widget wrapper(
         {ScanCallbacks scanMock,
-        StreamProvider<int> pairMock,
+        StreamProvider<String> pairMock,
         Observer navigatorObserver}) =>
     ProviderScope(
       overrides: [
@@ -56,9 +56,9 @@ Widget wrapper(
         ),
         pair_provider.pairProvider.overrideWithProvider(
           pairMock ??
-              StreamProvider<int>((ref) async* {
+              StreamProvider<String>((ref) async* {
                 yield null;
-              } as Stream<int> Function(ProviderReference)),
+              } as Stream<String> Function(ProviderReference)),
         )
       ],
       child: MaterialApp(
@@ -120,8 +120,8 @@ void main() {
     });
     testWidgets('should respond to paired device', (tester) async {
       final scan = ScanCallbacks();
-      final StreamController<int> pairStream = StreamController.broadcast();
-      final pair = StreamProvider<int>((ref) => pairStream.stream);
+      final StreamController<String> pairStream = StreamController.broadcast();
+      final pair = StreamProvider<String>((ref) => pairStream.stream);
       final observer = Observer();
       scan.updateDevices(1);
 

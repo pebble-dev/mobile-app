@@ -132,7 +132,7 @@ class TestTab extends HookWidget implements CobbleScreen {
                         await ScreenshotsControl().takeWatchScreenshot();
 
                     if (result.success) {
-                      Share.shareFiles([result.imagePath],
+                      Share.shareFiles([result.imagePath!],
                           mimeTypes: ["image/png"]);
                     }
                   },

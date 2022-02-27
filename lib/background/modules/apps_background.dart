@@ -49,7 +49,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
 
   @override
   Future<void> beginAppInstall(InstallData installData) async {
-    final newAppUuid = Uuid.parse(installData.appInfo.uuid);
+    final newAppUuid = Uuid.parse(installData.appInfo.uuid!);
 
     final existingApp = await appDao.getPackage(newAppUuid);
     if (existingApp != null) {
@@ -60,7 +60,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
     }
 
     int newAppOrder;
-    if (installData.appInfo.watchapp.watchface) {
+    if (installData.appInfo.watchapp!.watchface!) {
       newAppOrder = -1;
     } else {
       newAppOrder = await appDao.getNumberOfAllInstalledApps();
@@ -70,12 +70,12 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
 
     final newApp = App(
         uuid: newAppUuid,
-        shortName: appInfo.shortName,
-        longName: appInfo.longName,
-        company: appInfo.companyName,
+        shortName: appInfo.shortName ?? "??",
+        longName: appInfo.longName ?? "??",
+        company: appInfo.companyName ?? "??",
         appstoreId: null,
-        version: appInfo.versionLabel,
-        isWatchface: appInfo.watchapp.watchface,
+        version: appInfo.versionLabel!,
+        isWatchface: appInfo.watchapp!.watchface!,
         isSystem: false,
         supportedHardware: appInfo.targetPlatformsCast(),
         nextSyncAction: NextSyncAction.Upload,
@@ -95,7 +95,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
 
   @override
   Future<void> deleteApp(StringWrapper uuidString) async {
-    final uuid = Uuid.parse(uuidString.value);
+    final uuid = Uuid.parse(uuidString.value!);
     await appDao.setSyncAction(uuid, NextSyncAction.Delete);
 
     if (connectionSubscription.read().isConnected == true) {

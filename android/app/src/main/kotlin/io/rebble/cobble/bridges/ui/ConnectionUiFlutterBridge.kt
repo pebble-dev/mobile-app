@@ -67,8 +67,8 @@ class ConnectionUiFlutterBridge @Inject constructor(
         }
     }
 
-    override fun connectToWatch(arg: Pigeons.NumberWrapper) {
-        val address = arg.value.macAddressToString()
+    override fun connectToWatch(arg: Pigeons.StringWrapper) {
+        val address = arg.value!!
         lastSelectedDeviceAddress = address
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -160,9 +160,9 @@ class ConnectionUiFlutterBridge @Inject constructor(
         openConnectionToWatch(address)
     }
 
-    override fun unpairWatch(arg: Pigeons.NumberWrapper) {
+    override fun unpairWatch(arg: Pigeons.StringWrapper) {
         val bluetoothDevice = BluetoothAdapter.getDefaultAdapter()
-                ?.getRemoteDevice(arg.value.macAddressToString())
+                ?.getRemoteDevice(arg.value!!)
                 ?: return
 
 
@@ -178,7 +178,7 @@ class ConnectionUiFlutterBridge @Inject constructor(
     }
 
     private fun openConnectionToWatch(macAddress: String) {
-        pairCallbacks.onWatchPairComplete(NumberWrapper(macAddress.macAddressToLong())) {}
+        pairCallbacks.onWatchPairComplete(Pigeons.StringWrapper.Builder().setValue(macAddress).build()) {}
         connectionLooper.connectToWatch(macAddress)
     }
 }

@@ -66,7 +66,7 @@ class AppInstallFlutterBridge @Inject constructor(
             arg: Pigeons.StringWrapper,
             result: Pigeons.Result<Pigeons.PbwAppInfo>) {
         coroutineScope.launchPigeonResult(result) {
-            val uri: String = arg.value
+            val uri: String = arg.value!!
 
 
             val parsingResult = parsePbwFileMetadata(uri)
@@ -102,7 +102,7 @@ class AppInstallFlutterBridge @Inject constructor(
     ) {
         coroutineScope.launchPigeonResult(result) {
             // Copy pbw file to the app's folder
-            val appUuid = installData.appInfo.uuid
+            val appUuid = installData.appInfo.uuid!!
             val targetFileName = getAppPbwFile(context, appUuid)
 
             val success = withContext(Dispatchers.IO) {
@@ -140,7 +140,7 @@ class AppInstallFlutterBridge @Inject constructor(
     override fun insertAppIntoBlobDb(arg: Pigeons.StringWrapper, result: Pigeons.Result<Pigeons.NumberWrapper>) {
         coroutineScope.launchPigeonResult(result, Dispatchers.IO) {
             NumberWrapper(try {
-                val appUuid = arg.value
+                val appUuid = arg.value!!
 
                 val appFile = getAppPbwFile(context, appUuid)
                 if (!appFile.exists()) {
@@ -201,7 +201,7 @@ class AppInstallFlutterBridge @Inject constructor(
     override fun beginAppDeletion(arg: Pigeons.StringWrapper,
                                   result: Pigeons.Result<Pigeons.BooleanWrapper>) {
         coroutineScope.launchPigeonResult(result) {
-            getAppPbwFile(context, arg.value).delete()
+            getAppPbwFile(context, arg.value!!).delete()
 
             BooleanWrapper(backgroundAppInstallBridge.deleteApp(arg))
         }
@@ -229,7 +229,7 @@ class AppInstallFlutterBridge @Inject constructor(
             result: Pigeons.Result<Pigeons.NumberWrapper>
     ) {
         coroutineScope.launchPigeonResult(result) {
-            val uuids = arg.value.map { UUID.fromString(it as String) }
+            val uuids = arg.value!!.map { UUID.fromString(it!! as String) }
             reorderService.send(
                     AppReorderRequest(uuids)
             )
@@ -271,10 +271,10 @@ class AppInstallFlutterBridge @Inject constructor(
     override fun subscribeToAppStatus() {
         statusObservingJob = coroutineScope.launch {
             putBytesController.status.collect {
-                val statusPigeon = Pigeons.AppInstallStatus().apply {
-                    isInstalling = it.state == PutBytesController.State.SENDING
-                    progress = it.progress
-                }
+                val statusPigeon = Pigeons.AppInstallStatus.Builder()
+                        .setIsInstalling(it.state == PutBytesController.State.SENDING)
+                        .setProgress(it.progress)
+                        .build()
 
                 statusCallbacks.onStatusUpdated(statusPigeon) {}
             }

@@ -5,7 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class WatchConnectionState {
   final bool? isConnected;
   final bool? isConnecting;
-  final int? currentWatchAddress;
+  final String? currentWatchAddress;
   final PebbleDevice? currentConnectedWatch;
 
   WatchConnectionState(this.isConnected, this.isConnecting,

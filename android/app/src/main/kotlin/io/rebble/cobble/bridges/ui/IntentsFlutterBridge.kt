@@ -7,6 +7,7 @@ import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.pigeons.BooleanWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.pigeons.toMapExt
+import io.rebble.cobble.util.launchPigeonResult
 import io.rebble.cobble.util.registerAsyncPigeonCallback
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -15,7 +16,7 @@ import javax.inject.Inject
 class IntentsFlutterBridge @Inject constructor(
         binaryMessenger: BinaryMessenger,
         mainActivity: MainActivity,
-        coroutineScope: CoroutineScope,
+        private val coroutineScope: CoroutineScope,
         bridgeLifecycleController: BridgeLifecycleController
 ) : FlutterBridge, Pigeons.IntentControl {
 
@@ -35,13 +36,6 @@ class IntentsFlutterBridge @Inject constructor(
 
         bridgeLifecycleController.setupControl(Pigeons.IntentControl::setup, this)
         intentCallbacks = bridgeLifecycleController.createCallbacks(Pigeons::IntentCallbacks)
-
-        binaryMessenger.registerAsyncPigeonCallback(
-                coroutineScope,
-                "dev.flutter.pigeon.IntentControl.waitForBoot"
-        ) {
-            BooleanWrapper(bootTrigger.await()).toMapExt()
-        }
     }
 
     private fun forwardIntentToFlutter(intent: Intent) {
@@ -63,8 +57,9 @@ class IntentsFlutterBridge @Inject constructor(
         flutterReadyToReceiveIntents = false
     }
 
-    override fun waitForBoot(): Pigeons.BooleanWrapper {
-        throw UnsupportedOperationException("This method should never trigger. We override it " +
-                "with async handler above")
+    override fun waitForBoot(result: Pigeons.Result<Pigeons.BooleanWrapper>?) {
+        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
+            BooleanWrapper(bootTrigger.await())
+        }
     }
 }

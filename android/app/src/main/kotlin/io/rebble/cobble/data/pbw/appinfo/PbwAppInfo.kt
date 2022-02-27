@@ -13,9 +13,9 @@ fun PbwAppInfo.toPigeon(): Pigeons.PbwAppInfo {
         it.companyName = companyName
         it.versionCode = versionCode
         it.versionLabel = versionLabel
-        it.appKeys = HashMap(appKeys)
+        it.appKeys = HashMap(appKeys.mapValues { it.value.toLong() })
         it.capabilities = ArrayList(capabilities)
-        it.resources = ArrayList(resources.media.map { it.toPigeon().toMapExt() })
+        it.resources = ArrayList(resources.media.map { it.toPigeon() })
         it.targetPlatforms = ArrayList(targetPlatforms)
         it.watchapp = watchapp.toPigeon()
 

@@ -92,7 +92,7 @@ class BackgroundReceiver implements TimelineCallbacks {
 
     if (unfaithful) {
       // Ensure we will stay in unfaithful mode until sync succeeds
-      await prefs.setLastConnectedWatchAddress(0);
+      await prefs.setLastConnectedWatchAddress("");
     }
 
     bool success = true;

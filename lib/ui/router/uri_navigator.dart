@@ -23,7 +23,7 @@ class UriNavigator implements IntentCallbacks {
 
   @override
   void openUri(StringWrapper arg) async {
-    String uri = arg.value;
+    String uri = arg.value!;
 
     if (!uri.startsWith("content://")) {
       // Only content URIs are supported

@@ -46,7 +46,7 @@ class NotificationsFlutterBridge @Inject constructor(
         override fun executeAction(arg: Pigeons.NotifActionExecuteReq?) {
             if (arg != null) {
                 val id = UUID.fromString(arg.itemId)
-                val action = activeNotifs[id]?.notification?.let { NotificationCompat.getAction(it, arg.actionId.toInt()) }
+                val action = activeNotifs[id]?.notification?.let { NotificationCompat.getAction(it, arg.actionId!!.toInt()) }
                 if (arg.responseText?.isEmpty() == false) {
                     val key = action?.remoteInputs?.first()?.resultKey
                     if (key != null) {
@@ -134,19 +134,19 @@ class NotificationsFlutterBridge @Inject constructor(
             Timber.w("Notification listening pigeon null")
         }
         notifListening?.handleNotification(notif) { notifToSend ->
-            val parsedAttributes: List<TimelineAttribute> = Json.decodeFromString(notifToSend.attributesJson) ?: emptyList()
+            val parsedAttributes: List<TimelineAttribute> = Json.decodeFromString(notifToSend.attributesJson!!) ?: emptyList()
 
-            val parsedActions: List<TimelineAction> = Json.decodeFromString(notifToSend.actionsJson) ?: emptyList()
+            val parsedActions: List<TimelineAction> = Json.decodeFromString(notifToSend.actionsJson!!) ?: emptyList()
 
             val itemId = UUID.fromString(notifToSend.itemId)
             val timelineItem = TimelineItem(
                     itemId,
                     UUID.fromString(notifToSend.parentId),
-                    notifToSend.timestamp.toUInt(),
-                    notifToSend.duration.toUShort(),
+                    notifToSend.timestamp!!.toUInt(),
+                    notifToSend.duration!!.toUShort(),
                     TimelineItem.Type.Notification,
                     TimelineItem.Flag.makeFlags(listOf()),
-                    notifToSend.layout.toUByte(),
+                    notifToSend.layout!!.toUByte(),
                     parsedAttributes.map { it.toProtocolAttribute() },
                     parsedActions.map { it.toProtocolAction() }
             )

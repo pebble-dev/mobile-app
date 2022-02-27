@@ -29,7 +29,7 @@ class PebbleFirmwarePigeon {
 
 class PebbleDevicePigeon {
   String? name;
-  int? address;
+  String? address;
   PebbleFirmwarePigeon? runningFirmware;
   PebbleFirmwarePigeon? recoveryFirmware;
   int? model;
@@ -43,7 +43,7 @@ class PebbleDevicePigeon {
 
 class PebbleScanDevicePigeon {
   String? name;
-  int? address;
+  String? address;
   String? version;
   String? serialNumber;
   int? color;
@@ -54,7 +54,7 @@ class PebbleScanDevicePigeon {
 class WatchConnectionStatePigeon {
   bool? isConnected;
   bool? isConnecting;
-  int? currentWatchAddress;
+  String? currentWatchAddress;
   PebbleDevicePigeon? currentConnectedWatch;
 }
 
@@ -105,8 +105,8 @@ class NotificationPigeon {
 }
 
 class AppEntriesPigeon {
-  List<String>? appName;
-  List<String>? packageId;
+  List<String?>? appName;
+  List<String?>? packageId;
 }
 
 class PbwAppInfo {
@@ -117,11 +117,11 @@ class PbwAppInfo {
   String? companyName;
   int? versionCode;
   String? versionLabel;
-  Map<String, int>? appKeys;
-  List<String>? capabilities;
-  List<WatchResource>? resources;
+  Map<String?, int?>? appKeys;
+  List<String?>? capabilities;
+  List<WatchResource?>? resources;
   String? sdkVersion;
-  List<String>? targetPlatforms;
+  List<String?>? targetPlatforms;
   WatchappInfo? watchapp;
 }
 
@@ -196,7 +196,7 @@ abstract class ConnectionCallbacks {
 
 @FlutterApi()
 abstract class PairCallbacks {
-  void onWatchPairComplete(NumberWrapper address);
+  void onWatchPairComplete(StringWrapper address);
 }
 
 @FlutterApi()
@@ -287,9 +287,9 @@ abstract class ConnectionControl {
 /// This allows easier separation between background and UI methods.
 @HostApi()
 abstract class UiConnectionControl {
-  void connectToWatch(NumberWrapper macAddress);
+  void connectToWatch(StringWrapper macAddress);
 
-  void unpairWatch(NumberWrapper macAddress);
+  void unpairWatch(StringWrapper macAddress);
 }
 
 @HostApi()
@@ -303,6 +303,7 @@ abstract class IntentControl {
 
   void notifyFlutterNotReadyForIntents();
 
+  @async
   BooleanWrapper waitForBoot();
 }
 
@@ -313,10 +314,13 @@ abstract class DebugControl {
 
 @HostApi()
 abstract class TimelineControl {
+  @async
   NumberWrapper addPin(TimelinePinPigeon pin);
 
+  @async
   NumberWrapper removePin(StringWrapper pinUuid);
 
+  @async
   NumberWrapper removeAllPins();
 }
 
@@ -352,16 +356,21 @@ abstract class PermissionControl {
   //     we must direct user to the settings (use openPermissionSettings())
   //     This might be Android-specific behavior.
 
+  @async
   NumberWrapper requestLocationPermission();
 
+  @async
   NumberWrapper requestCalendarPermission();
 
   /// This can only be performed when at least one watch is paired
+  @async
   void requestNotificationAccess();
 
   /// This can only be performed when at least one watch is paired
+  @async
   void requestBatteryExclusion();
 
+  @async
   void openPermissionSettings();
 }
 
