@@ -13,8 +13,10 @@ import Logging
     ) -> Bool {
         setupLogging()
         GeneratedPluginRegistrant.register(with: self)
+        WatchMetadataStore.shared = WatchMetadataStore()
         ProtocolComms.shared = ProtocolComms()
         LEPeripheral.shared = LEPeripheral()
+        LECentral.shared = LECentral()
         
         setupFlutter()
         flutterBG = FlutterBackgroundController()

@@ -9,7 +9,7 @@ import Foundation
 import libpebblecommon
 //TODO: plumb in watch version req
 class WatchMetadataStore {
-    static let shared = WatchMetadataStore()
+    static var shared: WatchMetadataStore!
     var lastConnectedWatchMetadata: WatchVersion.WatchVersionResponse? = nil
     var lastConnectedWatchModel: Int? = nil
 }
