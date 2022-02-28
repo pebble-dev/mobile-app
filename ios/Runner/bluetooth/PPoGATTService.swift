@@ -36,8 +36,8 @@ public class PPoGATTService {
     private var pendingPackets = [GATTPacket]()
     private var ackPending = Dictionary<Int32, DispatchSemaphore>()
     
-    private let queue = DispatchQueue(label: Bundle.main.bundleIdentifier!+".PPoGATTServiceQueue", qos: .utility)
-    private let highPrioQueue = DispatchQueue(label: Bundle.main.bundleIdentifier!+".PPoGATTServiceHighPrioQueue", qos: .userInteractive)
+    private let rxQueue = DispatchQueue(label: Bundle.main.bundleIdentifier!+".PPoGATTServiceRXQueue", qos: .utility)
+    private let txQueue = DispatchQueue(label: Bundle.main.bundleIdentifier!+".PPoGATTServiceTXQueue", qos: .utility)
     private let packetWriteSemaphore = DispatchSemaphore(value: 1)
     private let packetReadSemaphore = DispatchSemaphore(value: 1)
     private let dataUpdateSemaphore = DispatchSemaphore(value: 1)
@@ -115,7 +115,7 @@ public class PPoGATTService {
     /// Called on write to PPoGATT device characteristic
     /// - Parameter requests: The ATT write request(s) holding written data
     private func onWrite(requests: [CBATTRequest]) {
-        queue.async { [self] in
+        rxQueue.async { [self] in
             packetReadSemaphore.wait()
             defer {
                 packetReadSemaphore.signal()
@@ -218,11 +218,11 @@ public class PPoGATTService {
                 currentRXPend = 0
                 writePacket(type: .ack, data: nil, sequence: sequence)
             }else {
-                delayedAckJob = DispatchWorkItem { [self] in
+                delayedAckJob = DispatchWorkItem(qos: .userInteractive) { [self] in
                     currentRXPend = 0
                     writePacket(type: .ack, data: nil, sequence: sequence)
                 }
-                highPrioQueue.asyncAfter(deadline: .now() + 0.5, execute: delayedAckJob!)
+                txQueue.asyncAfter(deadline: .now() + 0.5, execute: delayedAckJob!)
             }
         }
     }
@@ -235,7 +235,7 @@ public class PPoGATTService {
     
     /// Non-blocking function to update the PPoGATT device characteristic's value with new data that was pending (TX to pebble)
     private func updateData() {
-        highPrioQueue.async { [self] in
+        txQueue.async(qos: .userInitiated) { [self] in
             dataUpdateSemaphore.wait()
             if !pendingPackets.isEmpty {
                 if ackPending.count-1 < maxTXWindow {
@@ -282,7 +282,7 @@ public class PPoGATTService {
     ///   - data: The packet body
     ///   - sequence: The sequence of the packet
     private func writePacket(type: GATTPacket.PacketType, data: [UInt8]?, sequence: UInt8? = nil) {
-        queue.async { [self] in
+        txQueue.async { [self] in
             let timeout = packetWriteSemaphore.wait(timeout: .now() + 3)
             assert(timeout == .success, "Timed out waiting for packetWrite unlock")
             let kData = KUtil.shared.byteArrayFromNative(arr: Data(data ?? []))
@@ -292,21 +292,19 @@ public class PPoGATTService {
                 lastAck = packet
             }
             if type == .data {
-                highPrioQueue.async {
-                    dataUpdateSemaphore.wait()
-                    let sem = DispatchSemaphore(value: 0)
-                    ackPending[packet.sequence] = sem
-                    pendingPackets.append(packet)
-                    if sequence == nil {
-                        self.seq = self.getNextSeq(current: self.seq)
-                    }
-                    dataUpdateSemaphore.signal()
-                    updateData()
-                    if ackPending.count >= maxTXWindow {
-                        sem.wait()
-                    }
-                    packetWriteSemaphore.signal()
+                dataUpdateSemaphore.wait()
+                let sem = DispatchSemaphore(value: 0)
+                ackPending[packet.sequence] = sem
+                pendingPackets.append(packet)
+                if sequence == nil {
+                    self.seq = self.getNextSeq(current: self.seq)
                 }
+                dataUpdateSemaphore.signal()
+                updateData()
+                if ackPending.count >= maxTXWindow {
+                    sem.wait()
+                }
+                packetWriteSemaphore.signal()
             }else {
                 serverController.updateValue(value: packet.data.toNative(), forChar: deviceCharacteristic) {
                     packetWriteSemaphore.signal()
