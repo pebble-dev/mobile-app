@@ -36,8 +36,8 @@ public class PPoGATTService {
     private var pendingPackets = [GATTPacket]()
     private var ackPending = Dictionary<Int32, DispatchSemaphore>()
     
-    private let queue = DispatchQueue.global(qos: .utility)
-    private let highPrioQueue = DispatchQueue.global(qos: .userInteractive)
+    private let queue = DispatchQueue(label: Bundle.main.bundleIdentifier!+".PPoGATTServiceQueue", qos: .utility)
+    private let highPrioQueue = DispatchQueue(label: Bundle.main.bundleIdentifier!+".PPoGATTServiceHighPrioQueue", qos: .userInteractive)
     private let packetWriteSemaphore = DispatchSemaphore(value: 1)
     private let packetReadSemaphore = DispatchSemaphore(value: 1)
     private let dataUpdateSemaphore = DispatchSemaphore(value: 1)
