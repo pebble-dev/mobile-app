@@ -7,10 +7,15 @@
 
 import Foundation
 import libpebblecommon
+import PromiseKit
+import CocoaLumberjackSwift
+
 class SystemHandler {
     private let handleAppVersionRequest = HandleAppVersionRequest()
     private var negotiatedListeners: [() -> ()] = []
+    private let systemService: SystemService
     init(systemService: SystemService) {
+        self.systemService = systemService
         handleAppVersionRequest.negotiatedCallback = onNegotiationComplete
         systemService.appVersionRequestHandler = handleAppVersionRequest
     }
@@ -36,10 +41,46 @@ class SystemHandler {
     }
     
     private func onNegotiationComplete() {
-        for listener in negotiatedListeners {
-            listener()
+        firstly {
+            sendCurrentTime()
+        }.then {
+            self.refreshWatchMetadata()
+        }.done {
+            for listener in self.negotiatedListeners {
+                listener()
+            }
+            self.negotiatedListeners.removeAll()
+        }.cauterize()
+    }
+    
+    private func sendCurrentTime() -> Promise<Void> {
+        let timezone = TimeZone.current
+        let utcTime = Date().timeIntervalSince1970
+        let utcOffset = timezone.secondsFromGMT()
+
+        let updateTimePacket = TimeMessage.SetUTC(unixTime: UInt32(round(utcTime)), utcOffset: Int16(utcOffset), timeZoneName: timezone.identifier)
+        return systemService.sendPromise(packet: updateTimePacket, priority: .low)
+    }
+    
+    private func refreshWatchMetadata() -> Promise<Void> {
+        return Promise { seal in
+            DDLogDebug("Refreshing watch metadata")
+            firstly {
+                return self.systemService.requestWatchModelPromise()
+            }.done { model in
+                DDLogDebug("Refreshing watch metadata: model")
+                WatchMetadataStore.shared.lastConnectedWatchModel = model
+            }.then {
+                return self.systemService.requestWatchVersionPromise()
+            }.done {version in
+                DDLogDebug("Refreshing watch metadata: version")
+                WatchMetadataStore.shared.lastConnectedWatchMetadata = version
+                DDLogDebug("Watch metadata refreshed: \(WatchMetadataStore.shared.lastConnectedWatchMetadata?.debugDescription ?? "nil") - Model \(WatchMetadataStore.shared.lastConnectedWatchModel?.description ?? "nil")")
+                seal.fulfill(())
+            }.catch { error in
+                DDLogError("Exception while refreshing watch metadata: \(error)")
+            }
         }
-        negotiatedListeners.removeAll()
     }
     
     public func waitNegotiationComplete(completionHandler: @escaping () -> ()) {
