@@ -99,6 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
     color:(nullable NSNumber *)color
     runningPRF:(nullable NSNumber *)runningPRF
     firstUse:(nullable NSNumber *)firstUse;
+- (NSDictionary *)toMap;
 @property(nonatomic, copy, nullable) NSString * name;
 @property(nonatomic, copy, nullable) NSString * address;
 @property(nonatomic, copy, nullable) NSString * version;
@@ -276,7 +277,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)makeWithUuid:(NSString *)uuid
     newPosition:(NSNumber *)newPosition;
 @property(nonatomic, copy) NSString * uuid;
-@property(nonatomic, strong) NSNumber * newPosition;
+@property(nonatomic, strong) NSNumber * newPosition NS_RETURNS_NOT_RETAINED;
 @end
 
 @interface ScreenshotResult : NSObject
