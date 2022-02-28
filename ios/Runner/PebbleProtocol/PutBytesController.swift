@@ -17,11 +17,25 @@ class PutBytesController {
         case Idle
         case Sending
     }
-    enum PutBytesError: Error {
-        case putBytesBusy
+    enum PutBytesError: LocalizedError {
+        var errorDescription: String? {
+            switch self {
+            case .putBytesBusy(let string):
+                return string
+            case .packetSendFail(let string):
+                return string
+            case .ioException(let string):
+                return string
+            case .timeout(let string):
+                return string
+            case .checksumException(let string):
+                return string
+            }
+        }
+        case putBytesBusy(String)
         case packetSendFail(String)
         case ioException(String)
-        case timeout
+        case timeout(String)
         case checksumException(String)
     }
     
