@@ -46,7 +46,7 @@ public class PPoGATTService {
     private var pendingLength = 0
     private var receiveBuf = [UInt8]()
     
-    public var targetWatchHash: Int?
+    public var targetWatchIdentifier: UUID?
     
     /// - Parameters:
     ///   - serverController: Server controller to add the service to
@@ -117,8 +117,11 @@ public class PPoGATTService {
     private func onWrite(requests: [CBATTRequest]) {
         queue.async { [self] in
             packetReadSemaphore.wait()
+            defer {
+                packetReadSemaphore.signal()
+            }
             for request in requests {
-                if request.central.identifier.uuidString.hashValue != targetWatchHash {
+                if request.central.identifier != targetWatchIdentifier {
                     break
                 }
                 if request.value != nil {
@@ -136,11 +139,9 @@ public class PPoGATTService {
                             receiveBuf.append(contentsOf: nData)
                             
                             // Handle like a stream, multiple protocol packets / packet boundaries can be in a single gatt chunk
-                            while receiveBuf.count >= pendingLength {
+                            while receiveBuf.count >= pendingLength+4 {
                                 let range = ...(pendingLength+3)
-                                DispatchQueue.main.sync {
-                                    packetHandler([UInt8](receiveBuf[range]))
-                                }
+                                packetHandler([UInt8](receiveBuf[range]))
                                 receiveBuf.removeSubrange(range)
                                 if !receiveBuf.isEmpty {
                                     pendingLength = getPacketLength(packet: receiveBuf)
@@ -153,7 +154,7 @@ public class PPoGATTService {
                                 sendAck(sequence: UInt8(lastAck.sequence))
                                 writePacket(type: .ack, data: nil, sequence: UInt8(lastAck.sequence))
                             }else {
-                                assertionFailure("No previous ACK to send on sequence mismatch")
+                                DDLogWarn("No previous ACK to send on sequence mismatch")
                             }
                         }
                         
@@ -168,7 +169,9 @@ public class PPoGATTService {
                         DDLogDebug("GATTService: Got ACK for \(packet.sequence)")
                         
                     case .reset:
-                        assert(seq == 0, "GATTService: Got reset on non zero sequence")
+                        if (seq != 0) {
+                            DDLogError("GATTService: Got reset on non zero sequence")
+                        }
                         connectionVersion = packet.getPPoGConnectionVersion()
                         sendResetAck()
                     case .resetAck:
@@ -194,7 +197,6 @@ public class PPoGATTService {
                     }
                 }
             }
-            packetReadSemaphore.signal()
         }
     }
     
@@ -253,7 +255,7 @@ public class PPoGATTService {
     /// Called on read of the PPoGATT meta characteristic, which is done as part of the connection handshake
     /// - Parameter request: The ATT read request
     private func onMetaRead(request: CBATTRequest) {
-        if request.central.identifier.uuidString.hashValue == targetWatchHash {
+        if request.central.identifier == targetWatchIdentifier {
             serverController.respond(to: request, withResult: .success, data: Data(metaResponse))
         }else {
             maxPayload = request.central.maximumUpdateValueLength
@@ -268,7 +270,7 @@ public class PPoGATTService {
     /// - Parameter central: The central that subscribed
     private func onDataSubscribed(central: CBCentral) {
         DDLogDebug("GATTService: Data subscribed")
-        if central.identifier.uuidString.hashValue == targetWatchHash {
+        if central.identifier == targetWatchIdentifier {
             maxPayload = central.maximumUpdateValueLength
             requestReset()
         }
@@ -326,13 +328,11 @@ public class PPoGATTService {
     
     /// Resets the PPoGATT service
     private func reset() {
-        DispatchQueue.main.sync { [self] in
-            DDLogInfo("GATTService: Resetting LE")
-            remoteSeq = 0
-            seq = 0
-            lastAck = nil
-            pendingPackets.removeAll()
-            ackPending.removeAll()
-        }
+        DDLogInfo("GATTService: Resetting LE")
+        remoteSeq = 0
+        seq = 0
+        lastAck = nil
+        pendingPackets.removeAll()
+        ackPending.removeAll()
     }
 }
