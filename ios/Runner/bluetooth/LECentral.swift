@@ -96,16 +96,15 @@ class LECentral {
         return true
     }
     
-    func getAssociatedWatchFromhHash(watchHash: Int) -> BluePebbleDevice? {
+    func getAssociatedWatchFromIdentifier(identifier: UUID) -> BluePebbleDevice? {
         var device = scannedDevices.first {
-            $0.peripheral.identifier.uuidString.hashValue == watchHash
+            $0.peripheral.identifier == identifier
         }
         if device == nil {
             DDLogDebug(PersistentStorage.shared.devices)
             if let stored = PersistentStorage.shared.devices.first(where: {device in
-                return device.identifier.uuidString.hashValue == watchHash
+                return device.identifier == identifier
             }) {
-                DDLogDebug(stored.identifier)
                 if let periph = centralController.centralManager.retrievePeripherals(withIdentifiers: [stored.identifier]).first {
                     device = BluePebbleDevice(peripheral: periph, advertiseData: nil)
                 }
@@ -114,8 +113,8 @@ class LECentral {
         return device
     }
     
-    func connectToWatchHash(watchHash: Int, onConnectState: @escaping (Bool) -> ()) {
-        let device = getAssociatedWatchFromhHash(watchHash: watchHash)
+    func connectToWatchHash(watchIdentifier: UUID, onConnectState: @escaping (Bool) -> ()) {
+        let device = getAssociatedWatchFromIdentifier(identifier: watchIdentifier)
         ProtocolComms.shared.systemHandler.waitNegotiationComplete { [self] in
             connected = true
             connStateCallback?(true)
@@ -123,7 +122,7 @@ class LECentral {
         if let device = device {
             targetDevice = device
             if let serv = LEPeripheral.shared.gattService {
-                serv.targetWatchHash = watchHash
+                serv.targetWatchIdentifier = watchIdentifier
             }
             centralController.stopScan()
             connStateCallback = onConnectState

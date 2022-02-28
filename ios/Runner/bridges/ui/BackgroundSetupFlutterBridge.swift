@@ -6,9 +6,9 @@
 //
 
 import Foundation
-class BackgroundSetupFlutterBridge: BackgroundSetupControl {
-    func setupBackground(_ input: NumberWrapper, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
+class BackgroundSetupFlutterBridge: NSObject, BackgroundSetupControl {
+    func setupBackgroundCallbackHandle(_ callbackHandle: NumberWrapper, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         let persistentState = UserDefaults.standard
-        persistentState.set(input.value! as! Int64, forKey: "FlutterBackgroundHandle")
+        persistentState.set(callbackHandle.value! as! Int64, forKey: "FlutterBackgroundHandle")
     }
 }

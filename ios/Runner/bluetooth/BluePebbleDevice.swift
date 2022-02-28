@@ -23,7 +23,7 @@ class BluePebbleDevice {
     func toPigeon() -> PebbleScanDevicePigeon {
         let pigeon = PebbleScanDevicePigeon()
         pigeon.name = peripheral.name
-        pigeon.address = NSNumber(value: peripheral.identifier.uuidString.hashValue)
+        pigeon.address = peripheral.identifier.uuidString
         
         if leMeta?.major != nil {
             pigeon.version = "\(leMeta!.major!).\(leMeta!.minor!).\(leMeta!.patch!)"

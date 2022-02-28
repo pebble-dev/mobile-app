@@ -6,13 +6,13 @@
 //
 
 import Foundation
-class FlutterBackgroundController: BackgroundControl {
+class FlutterBackgroundController: NSObject, BackgroundControl {
     private var engine: FlutterEngine?
     
     private let flutterSideReady = DispatchSemaphore(value: 0)
     private let iOSSideReady = DispatchSemaphore(value: 0)
     
-    func notifyFlutterBackgroundStarted(_ completion: @escaping (NumberWrapper?, FlutterError?) -> Void) {
+    func notifyFlutterBackgroundStarted(completion: @escaping (NumberWrapper?, FlutterError?) -> Void) {
         DispatchQueue.main.async { [self] in
             flutterSideReady.signal()
             iOSSideReady.wait()

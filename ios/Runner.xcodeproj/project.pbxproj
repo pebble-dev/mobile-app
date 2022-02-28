@@ -8,7 +8,17 @@
 
 /* Begin PBXBuildFile section */
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
-		6765560027C7CD96008C1D4D /* libpebblecommon in Frameworks */ = {isa = PBXBuildFile; productRef = 676555FF27C7CD96008C1D4D /* libpebblecommon */; };
+		67442F7127C9B0D900ACED5B /* AppInstallHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67442F7027C9B0D900ACED5B /* AppInstallHandler.swift */; };
+		6746228D27CC0FCC0056EB6B /* libpebblecommon.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 675F0EB227CB17EE0018C0F7 /* libpebblecommon.xcframework */; };
+		6746228E27CC0FCC0056EB6B /* libpebblecommon.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 675F0EB227CB17EE0018C0F7 /* libpebblecommon.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		675F0EA327CAF82E0018C0F7 /* AppInstallUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 675F0EA227CAF82E0018C0F7 /* AppInstallUtils.swift */; };
+		675F0EA827CB050E0018C0F7 /* CocoaLumberjack in Frameworks */ = {isa = PBXBuildFile; productRef = 675F0EA727CB050E0018C0F7 /* CocoaLumberjack */; };
+		675F0EAA27CB050E0018C0F7 /* CocoaLumberjackSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 675F0EA927CB050E0018C0F7 /* CocoaLumberjackSwift */; };
+		675F0EAC27CB06440018C0F7 /* CocoaLumberjackSwiftLogBackend in Frameworks */ = {isa = PBXBuildFile; productRef = 675F0EAB27CB06440018C0F7 /* CocoaLumberjackSwiftLogBackend */; };
+		675F0EAE27CB0A970018C0F7 /* PutBytesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 675F0EAD27CB0A970018C0F7 /* PutBytesController.swift */; };
+		675F0EB127CB12EC0018C0F7 /* SwiftZip in Frameworks */ = {isa = PBXBuildFile; productRef = 675F0EB027CB12EC0018C0F7 /* SwiftZip */; };
+		675F0EB627CB32ED0018C0F7 /* WatchMetadataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 675F0EB527CB32ED0018C0F7 /* WatchMetadataStore.swift */; };
+		6764D80227C974FB00E2BB86 /* AppInstall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6764D80127C974FB00E2BB86 /* AppInstall.swift */; };
 		676CAE5927C479E8001B9211 /* CobbleLE in Frameworks */ = {isa = PBXBuildFile; productRef = 676CAE5827C479E8001B9211 /* CobbleLE */; };
 		67945BA927C8140500DE13E8 /* cobbleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67945BA827C8140500DE13E8 /* cobbleTests.swift */; };
 		67945BB227C81A4D00DE13E8 /* Pigeons.m in Sources */ = {isa = PBXBuildFile; fileRef = 67945BB027C81A4D00DE13E8 /* Pigeons.m */; };
@@ -34,6 +44,8 @@
 		67B33CF927C464B1007FBA39 /* PebbleDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67B33CE127C464B0007FBA39 /* PebbleDevice.swift */; };
 		67B33CFA27C464B1007FBA39 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67B33CE227C464B0007FBA39 /* AppDelegate.swift */; };
 		67B33CFB27C464B1007FBA39 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 67B33CE327C464B0007FBA39 /* GeneratedPluginRegistrant.m */; };
+		67C33E1E27CBBC2A005C14F2 /* PromiseKit in Frameworks */ = {isa = PBXBuildFile; productRef = 67C33E1D27CBBC2A005C14F2 /* PromiseKit */; };
+		67D7CB5F27CC4D9B00F69E7F /* 5838ac91ca309491ab000283.pbw in Resources */ = {isa = PBXBuildFile; fileRef = 67D7CB5E27CC4D9A00F69E7F /* 5838ac91ca309491ab000283.pbw */; };
 		84544F477929DB68C98B9C52 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 620666896E8FA2E5FECAB423 /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
 

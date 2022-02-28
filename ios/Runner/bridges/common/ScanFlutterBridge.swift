@@ -8,7 +8,7 @@
 import Foundation
 import CobbleLE
 
-class ScanFlutterBridge: ScanControl {
+class ScanFlutterBridge: NSObject, ScanControl {
     private let binaryMessenger: FlutterBinaryMessenger
     
     private let queue = DispatchQueue(label: "io.rebble.cobble.Bridges.common.ScanFlutterBridge", qos: .userInitiated)
@@ -18,7 +18,7 @@ class ScanFlutterBridge: ScanControl {
         self.binaryMessenger = callbackMessenger
     }
     
-    func startBleScan(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
+    func startBleScanWithError(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         queue.async { [self] in
             scanCallbacks.onScanStarted {_ in }
             LECentral.shared.waitForReady {
@@ -27,7 +27,7 @@ class ScanFlutterBridge: ScanControl {
                     list.value = foundDevices.map {
                         $0.toPigeon().toMap()
                     }
-                    scanCallbacks.onScanUpdate(list) {_ in }
+                    scanCallbacks.onScanUpdatePebbles(list) {_ in }
                 }, scanEnded: {
                     scanCallbacks.onScanStopped() {_ in }
                 })
@@ -35,7 +35,7 @@ class ScanFlutterBridge: ScanControl {
         }
     }
     
-    func startClassicScan(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
+    func startClassicScanWithError(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         error.pointee = FlutterError(code: "UNSUPPORTED", message: "iOS does not support classic bluetooth", details: nil)
     }
 }

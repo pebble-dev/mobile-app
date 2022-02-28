@@ -7,18 +7,18 @@
 
 import Foundation
 import CocoaLumberjackSwift
-class ConnectionFlutterBridge: ConnectionControl {
-    func isConnected(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> BooleanWrapper? {
+class ConnectionFlutterBridge: NSObject, ConnectionControl {
+    func isConnectedWithError(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> BooleanWrapper? {
         let ret = BooleanWrapper()
         ret.value = NSNumber(value: LECentral.shared.isConnected())
         return ret
     }
     
-    func disconnect(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
+    func disconnectWithError(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         LECentral.shared.disconnect()
     }
     
-    func sendRawPacket(_ input: ListWrapper, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
+    func sendRawPacketList(ofBytes input: ListWrapper, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         if let rawPacket = input.value as? [UInt8] {
             do {
                 try LEPeripheral.shared.writePacket(rawProtocolPacket: rawPacket)
@@ -33,11 +33,11 @@ class ConnectionFlutterBridge: ConnectionControl {
         
     }
     
-    func observeConnectionChanges(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
+    func observeConnectionChangesWithError(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         
     }
     
-    func cancelObservingConnectionChanges(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
+    func cancelObservingConnectionChangesWithError(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         
     }
 }

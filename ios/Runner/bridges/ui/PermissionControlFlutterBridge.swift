@@ -6,33 +6,35 @@
 //
 
 import Foundation
-class PermissionControlFlutterBridge: PermissionControl { //TODO
-    func requestLocationPermission(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> NumberWrapper? {
+class PermissionControlFlutterBridge: NSObject, PermissionControl {
+    //TODO: finish impl
+    func requestLocationPermission(completion: @escaping (NumberWrapper?, FlutterError?) -> Void) {
         let num = NumberWrapper()
         num.value = 0
-        return num
+        completion(num, nil)
     }
     
-    func requestCalendarPermission(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> NumberWrapper? {
+    func requestCalendarPermission(completion: @escaping (NumberWrapper?, FlutterError?) -> Void) {
         let num = NumberWrapper()
         num.value = 0
-        return num
+        completion(num, nil)
     }
     
-    func requestNotificationAccess(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
-        
+    func requestNotificationAccess(completion: @escaping (FlutterError?) -> Void) {
+        completion(nil)
     }
     
-    func requestBatteryExclusion(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
-        
+    func requestBatteryExclusion(completion: @escaping (FlutterError?) -> Void) {
+        completion(nil)
     }
     
-    func openPermissionSettings(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
+    func openPermissionSettings(completion: @escaping (FlutterError?) -> Void) {
         let settingsUrl = URL.init(string: UIApplication.openSettingsURLString)!
         if #available(iOS 10.0, *) {
             UIApplication.shared.open(settingsUrl, options: [:], completionHandler: nil)
         } else {
             UIApplication.shared.openURL(settingsUrl)
         }
+        completion(nil)
     }
 }
