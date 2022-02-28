@@ -9,9 +9,10 @@ import Foundation
 import CobbleLE
 import CoreBluetooth
 import CocoaLumberjackSwift
+import libpebblecommon
 
 class LECentral {
-    static let shared = LECentral()
+    static var shared: LECentral!
     static let scanDuration: TimeInterval = 30
     
     let centralController: LECentralController
@@ -26,7 +27,7 @@ class LECentral {
     
     private var connected = false
     
-    private init() {
+    init() {
         readyGroup.enter()
         centralController = LECentralController()
         centralController.stateUpdateCallback = stateUpdate
