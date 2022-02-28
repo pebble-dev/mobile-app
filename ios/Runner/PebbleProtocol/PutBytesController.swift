@@ -223,14 +223,7 @@ class PutBytesController {
                     return
                 }
                 
-                var complete = false
-                self.dataQueue.asyncAfter(deadline: .now() + 20) {
-                    if (!complete) {
-                        seal.reject(PutBytesError.timeout)
-                    }
-                }
                 self.putBytesService.receivedMessages.receive {resp, e in
-                    complete = true
                     guard let resp = resp else {
                         seal.reject(PutBytesError.ioException("Error receiving packet: \(String(describing: e?.localizedDescription))"))
                         return
@@ -249,7 +242,7 @@ class PutBytesController {
             do {
                 try syncQueue.sync {
                     guard _status.state == .Idle else {
-                        throw PutBytesError.putBytesBusy
+                        throw PutBytesError.putBytesBusy("PutBytes busy: state != Idle")
                     }
                     _status = Status(state: .Sending)
                 }
