@@ -19,6 +19,9 @@ class AppInstallHandler {
     }
     
     func onAppFetchServiceMessage(message: Any?, e: Error?) {
+        defer {
+            appFetchService.receivedMessages.receive(completionHandler: onAppFetchServiceMessage)
+        }
         if (message is AppFetchRequest) {
             let message: AppFetchRequest = message as! AppFetchRequest
             let appUuid = message.uuid.get()
@@ -26,7 +29,7 @@ class AppInstallHandler {
                 let appFile = try getAppPbwFile(appUuid: appUuid?.description() ?? "")
                 guard FileManager.default.fileExists(atPath: appFile.path) else {
                     respondFetchRequest(status: .invalidUuid).cauterize()
-                    DDLogError("Watch requested nonexistent app data \(String(describing: appUuid))")
+                    DDLogError("Watch requested nonexistent app data \(appUuid?.description() ?? "nil")")
                     return
                 }
                 
@@ -36,7 +39,7 @@ class AppInstallHandler {
                     return
                 }
                 
-                guard let hardwarePlatformNumber = LECentral.shared.currentDevice?.leMeta?.hardwarePlatform else {
+                guard let hardwarePlatformNumber = WatchMetadataStore.shared.lastConnectedWatchMetadata?.running.hardwarePlatform.get()?.uint8Value else {
                     DDLogError("No watch metadata available. Cannot deduce watch type.")
                     respondFetchRequest(status: .noData).cauterize()
                     return
@@ -68,17 +71,17 @@ class AppInstallHandler {
                 DDLogError("Exception while handling AppFetchService message:" + error.localizedDescription)
             }
         }
-        appFetchService.receivedMessages.receive(completionHandler: onAppFetchServiceMessage)
     }
     
     private func respondFetchRequest(status: AppFetchResponseStatus) -> Promise<Void> {
         return Promise<Void> { (seal) throws -> () in
             appFetchService.send(packet: AppFetchResponse(status: status)) {_,e in
-                guard e != nil else {
-                    DDLogError("Failed to respond to AppFetchRequest: " + e!.localizedDescription)
+                guard e == nil else {
+                    DDLogError("Failed to respond to AppFetchRequest: " + String(describing: e!))
                     seal.reject(e!)
                     return
                 }
+                DDLogDebug("Responded with: \(status.name)")
                 seal.fulfill(())
             }
         }
