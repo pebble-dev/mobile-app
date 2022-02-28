@@ -196,18 +196,19 @@ class PutBytesController {
     
     private func awaitAck() -> Promise<PutBytesResponse> {
         return Promise { seal in
-            firstly {
-                getResponse()
-            }.done { resp in
-                let result = resp.result.get()
-                if (result?.uint8Value != PutBytesResult.ack.value) {
-                    seal.reject(PutBytesError.ioException("Watch responded with NACK (\(String(describing: result?.uint8Value))). Aborting transfer"))
-                }else {
-                    seal.fulfill(resp)
+            let timeout = after(seconds: 10).then( { Promise<PutBytesResponse> { seal in seal.reject(PutBytesError.timeout("Timeout awaiting ack")) } })
+            race(getResponse(), timeout)
+                .done { resp in
+                    DDLogDebug("PutBytesResponse received")
+                    let result = resp.result.get()
+                    if (result?.uint8Value != PutBytesResult.ack.value) {
+                        seal.reject(PutBytesError.ioException("Watch responded with NACK (\(String(describing: result?.uint8Value))). Aborting transfer"))
+                    }else {
+                        seal.fulfill(resp)
+                    }
+                }.catch { error in
+                    seal.reject(error)
                 }
-            }.catch { error in
-                seal.reject(error)
-            }
         }
     }
     
