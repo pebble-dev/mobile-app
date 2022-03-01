@@ -6,16 +6,43 @@
         "repositoryURL": "https://github.com/crc-32/CobbleLEKit",
         "state": {
           "branch": "main",
-          "revision": "8c6355e1d064c99bab7d4d2b0c33e6e8896b909a",
+          "revision": "0f3253306b0bb797ec432a492ea4870d58e17ecd",
           "version": null
         }
       },
       {
-        "package": "libpebblecommon",
-        "repositoryURL": "https://github.com/pebble-dev/libpebblecommon",
+        "package": "CocoaLumberjack",
+        "repositoryURL": "https://github.com/CocoaLumberjack/CocoaLumberjack.git",
         "state": {
-          "branch": "swiftpm-0.1.0",
-          "revision": "e39236878d12e6f172c3c3916e4a5906d337d380",
+          "branch": null,
+          "revision": "80ada1f753b0d53d9b57c465936a7c4169375002",
+          "version": "3.7.4"
+        }
+      },
+      {
+        "package": "PromiseKit",
+        "repositoryURL": "https://github.com/mxcl/PromiseKit",
+        "state": {
+          "branch": null,
+          "revision": "7b07b214dacecb22ca4b680531c7e981d52483f9",
+          "version": "6.16.3"
+        }
+      },
+      {
+        "package": "swift-log",
+        "repositoryURL": "https://github.com/apple/swift-log.git",
+        "state": {
+          "branch": null,
+          "revision": "5d66f7ba25daf4f94100e7022febf3c75e37a6c7",
+          "version": "1.4.2"
+        }
+      },
+      {
+        "package": "SwiftZip",
+        "repositoryURL": "https://github.com/SwiftZip/SwiftZip.git",
+        "state": {
+          "branch": "master",
+          "revision": "97c2303d0fcc0bb6ae78a93ee10bdb91a1467c8f",
           "version": null
         }
       }

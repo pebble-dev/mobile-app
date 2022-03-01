@@ -20,7 +20,8 @@
 		675F0EB627CB32ED0018C0F7 /* WatchMetadataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 675F0EB527CB32ED0018C0F7 /* WatchMetadataStore.swift */; };
 		6764D80227C974FB00E2BB86 /* AppInstall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6764D80127C974FB00E2BB86 /* AppInstall.swift */; };
 		676CAE5927C479E8001B9211 /* CobbleLE in Frameworks */ = {isa = PBXBuildFile; productRef = 676CAE5827C479E8001B9211 /* CobbleLE */; };
-		67945BA927C8140500DE13E8 /* cobbleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67945BA827C8140500DE13E8 /* cobbleTests.swift */; };
+		678C213E27CBBE3C0042B895 /* extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 678C213D27CBBE3C0042B895 /* extensions.swift */; };
+		67945BA927C8140500DE13E8 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67945BA827C8140500DE13E8 /* Connection.swift */; };
 		67945BB227C81A4D00DE13E8 /* Pigeons.m in Sources */ = {isa = PBXBuildFile; fileRef = 67945BB027C81A4D00DE13E8 /* Pigeons.m */; };
 		67B33CE527C464B1007FBA39 /* PersistentStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67B33CC127C464B0007FBA39 /* PersistentStorage.swift */; };
 		67B33CE727C464B1007FBA39 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 67B33CC627C464B0007FBA39 /* Assets.xcassets */; };
@@ -34,7 +35,7 @@
 		67B33CEF27C464B1007FBA39 /* PermissionCheckFlutterBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67B33CD527C464B0007FBA39 /* PermissionCheckFlutterBridge.swift */; };
 		67B33CF027C464B1007FBA39 /* ScanFlutterBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67B33CD627C464B0007FBA39 /* ScanFlutterBridge.swift */; };
 		67B33CF127C464B1007FBA39 /* FlutterBridgeSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67B33CD727C464B0007FBA39 /* FlutterBridgeSetup.swift */; };
-		67B33CF227C464B1007FBA39 /* ProtocolService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67B33CD927C464B0007FBA39 /* ProtocolService.swift */; };
+		67B33CF227C464B1007FBA39 /* ProtocolComms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67B33CD927C464B0007FBA39 /* ProtocolComms.swift */; };
 		67B33CF327C464B1007FBA39 /* SystemHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67B33CDA27C464B0007FBA39 /* SystemHandler.swift */; };
 		67B33CF427C464B1007FBA39 /* LECentral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67B33CDC27C464B0007FBA39 /* LECentral.swift */; };
 		67B33CF527C464B1007FBA39 /* PPoGATTService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67B33CDD27C464B0007FBA39 /* PPoGATTService.swift */; };
@@ -66,6 +67,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				6746228E27CC0FCC0056EB6B /* libpebblecommon.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -76,8 +78,15 @@
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		46435D4C3A881E1DFE6583FC /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		620666896E8FA2E5FECAB423 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		67442F7027C9B0D900ACED5B /* AppInstallHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInstallHandler.swift; sourceTree = "<group>"; };
+		675F0EA227CAF82E0018C0F7 /* AppInstallUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInstallUtils.swift; sourceTree = "<group>"; };
+		675F0EAD27CB0A970018C0F7 /* PutBytesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PutBytesController.swift; sourceTree = "<group>"; };
+		675F0EB227CB17EE0018C0F7 /* libpebblecommon.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libpebblecommon.xcframework; path = ../../../libpebblecommon/build/XCFrameworks/debug/libpebblecommon.xcframework; sourceTree = "<group>"; };
+		675F0EB527CB32ED0018C0F7 /* WatchMetadataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchMetadataStore.swift; sourceTree = "<group>"; };
+		6764D80127C974FB00E2BB86 /* AppInstall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInstall.swift; sourceTree = "<group>"; };
+		678C213D27CBBE3C0042B895 /* extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = extensions.swift; sourceTree = "<group>"; };
 		67945BA627C8140500DE13E8 /* cobbleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = cobbleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		67945BA827C8140500DE13E8 /* cobbleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cobbleTests.swift; sourceTree = "<group>"; };
+		67945BA827C8140500DE13E8 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
 		67945BB027C81A4D00DE13E8 /* Pigeons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Pigeons.m; sourceTree = "<group>"; };
 		67945BB127C81A4D00DE13E8 /* Pigeons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Pigeons.h; sourceTree = "<group>"; };
 		67945BB327C81A7F00DE13E8 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -94,7 +103,7 @@
 		67B33CD527C464B0007FBA39 /* PermissionCheckFlutterBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PermissionCheckFlutterBridge.swift; sourceTree = "<group>"; };
 		67B33CD627C464B0007FBA39 /* ScanFlutterBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanFlutterBridge.swift; sourceTree = "<group>"; };
 		67B33CD727C464B0007FBA39 /* FlutterBridgeSetup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlutterBridgeSetup.swift; sourceTree = "<group>"; };
-		67B33CD927C464B0007FBA39 /* ProtocolService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProtocolService.swift; sourceTree = "<group>"; };
+		67B33CD927C464B0007FBA39 /* ProtocolComms.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProtocolComms.swift; sourceTree = "<group>"; };
 		67B33CDA27C464B0007FBA39 /* SystemHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemHandler.swift; sourceTree = "<group>"; };
 		67B33CDC27C464B0007FBA39 /* LECentral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LECentral.swift; sourceTree = "<group>"; };
 		67B33CDD27C464B0007FBA39 /* PPoGATTService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PPoGATTService.swift; sourceTree = "<group>"; };
@@ -105,6 +114,7 @@
 		67B33CE227C464B0007FBA39 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		67B33CE327C464B0007FBA39 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		67B33CE427C464B0007FBA39 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		67D7CB5E27CC4D9A00F69E7F /* 5838ac91ca309491ab000283.pbw */ = {isa = PBXFileReference; lastKnownFileType = file; name = 5838ac91ca309491ab000283.pbw; path = ../../../../../Downloads/5838ac91ca309491ab000283.pbw; sourceTree = "<group>"; };
 		703F0CECA9F9B877FA874376 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
@@ -125,9 +135,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				67C33E1E27CBBC2A005C14F2 /* PromiseKit in Frameworks */,
+				675F0EA827CB050E0018C0F7 /* CocoaLumberjack in Frameworks */,
 				676CAE5927C479E8001B9211 /* CobbleLE in Frameworks */,
-				6765560027C7CD96008C1D4D /* libpebblecommon in Frameworks */,
 				84544F477929DB68C98B9C52 /* Pods_Runner.framework in Frameworks */,
+				6746228D27CC0FCC0056EB6B /* libpebblecommon.xcframework in Frameworks */,
+				675F0EAC27CB06440018C0F7 /* CocoaLumberjackSwiftLogBackend in Frameworks */,
+				675F0EB127CB12EC0018C0F7 /* SwiftZip in Frameworks */,
+				675F0EAA27CB050E0018C0F7 /* CocoaLumberjackSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,10 +159,36 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		675F0EB427CB32DC0018C0F7 /* datasources */ = {
+			isa = PBXGroup;
+			children = (
+				67B33CC127C464B0007FBA39 /* PersistentStorage.swift */,
+				675F0EB527CB32ED0018C0F7 /* WatchMetadataStore.swift */,
+			);
+			path = datasources;
+			sourceTree = "<group>";
+		};
+		6764D7FF27C9746B00E2BB86 /* bluetooth */ = {
+			isa = PBXGroup;
+			children = (
+				67945BA827C8140500DE13E8 /* Connection.swift */,
+			);
+			path = bluetooth;
+			sourceTree = "<group>";
+		};
+		6764D80027C974E200E2BB86 /* protocol */ = {
+			isa = PBXGroup;
+			children = (
+				6764D80127C974FB00E2BB86 /* AppInstall.swift */,
+			);
+			path = protocol;
+			sourceTree = "<group>";
+		};
 		67945BA727C8140500DE13E8 /* cobbleTests */ = {
 			isa = PBXGroup;
 			children = (
-				67945BA827C8140500DE13E8 /* cobbleTests.swift */,
+				6764D80027C974E200E2BB86 /* protocol */,
+				6764D7FF27C9746B00E2BB86 /* bluetooth */,
 			);
 			path = cobbleTests;
 			sourceTree = "<group>";
@@ -155,8 +196,10 @@
 		67B33CC027C464B0007FBA39 /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				67D7CB5E27CC4D9A00F69E7F /* 5838ac91ca309491ab000283.pbw */,
+				67C33E1927CBB1E3005C14F2 /* util */,
+				675F0EB427CB32DC0018C0F7 /* datasources */,
 				67945BB327C81A7F00DE13E8 /* Runner-Bridging-Header.h */,
-				67B33CC127C464B0007FBA39 /* PersistentStorage.swift */,
 				67B33CC227C464B0007FBA39 /* Pigeon */,
 				67B33CC627C464B0007FBA39 /* Assets.xcassets */,
 				67B33CC727C464B0007FBA39 /* GeneratedPluginRegistrant.h */,
@@ -224,8 +267,10 @@
 		67B33CD827C464B0007FBA39 /* PebbleProtocol */ = {
 			isa = PBXGroup;
 			children = (
-				67B33CD927C464B0007FBA39 /* ProtocolService.swift */,
+				67B33CD927C464B0007FBA39 /* ProtocolComms.swift */,
 				67B33CDA27C464B0007FBA39 /* SystemHandler.swift */,
+				67442F7027C9B0D900ACED5B /* AppInstallHandler.swift */,
+				675F0EAD27CB0A970018C0F7 /* PutBytesController.swift */,
 			);
 			path = PebbleProtocol;
 			sourceTree = "<group>";
@@ -242,9 +287,19 @@
 			path = bluetooth;
 			sourceTree = "<group>";
 		};
+		67C33E1927CBB1E3005C14F2 /* util */ = {
+			isa = PBXGroup;
+			children = (
+				675F0EA227CAF82E0018C0F7 /* AppInstallUtils.swift */,
+				678C213D27CBBE3C0042B895 /* extensions.swift */,
+			);
+			path = util;
+			sourceTree = "<group>";
+		};
 		7440D18109719C0940F427A4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				675F0EB227CB17EE0018C0F7 /* libpebblecommon.xcframework */,
 				620666896E8FA2E5FECAB423 /* Pods_Runner.framework */,
 			);
 			name = Frameworks;
@@ -323,7 +378,11 @@
 			name = Runner;
 			packageProductDependencies = (
 				676CAE5827C479E8001B9211 /* CobbleLE */,
-				676555FF27C7CD96008C1D4D /* libpebblecommon */,
+				675F0EA727CB050E0018C0F7 /* CocoaLumberjack */,
+				675F0EA927CB050E0018C0F7 /* CocoaLumberjackSwift */,
+				675F0EAB27CB06440018C0F7 /* CocoaLumberjackSwiftLogBackend */,
+				675F0EB027CB12EC0018C0F7 /* SwiftZip */,
+				67C33E1D27CBBC2A005C14F2 /* PromiseKit */,
 			);
 			productName = Runner;
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
@@ -360,7 +419,9 @@
 			mainGroup = 97C146E51CF9000F007C117D;
 			packageReferences = (
 				676CAE5727C479E8001B9211 /* XCRemoteSwiftPackageReference "CobbleLEKit" */,
-				676555FE27C7CD96008C1D4D /* XCRemoteSwiftPackageReference "libpebblecommon" */,
+				675F0EA627CB050E0018C0F7 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */,
+				675F0EAF27CB12EC0018C0F7 /* XCRemoteSwiftPackageReference "SwiftZip" */,
+				67C33E1C27CBBC2A005C14F2 /* XCRemoteSwiftPackageReference "PromiseKit" */,
 			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
@@ -384,6 +445,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				67D7CB5F27CC4D9B00F69E7F /* 5838ac91ca309491ab000283.pbw in Resources */,
 				67B33CE827C464B1007FBA39 /* LaunchScreen.storyboard in Resources */,
 				67B33CE727C464B1007FBA39 /* Assets.xcassets in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
@@ -468,7 +530,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				67945BA927C8140500DE13E8 /* cobbleTests.swift in Sources */,
+				67945BA927C8140500DE13E8 /* Connection.swift in Sources */,
+				6764D80227C974FB00E2BB86 /* AppInstall.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -476,24 +539,29 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				67B33CF227C464B1007FBA39 /* ProtocolService.swift in Sources */,
+				675F0EB627CB32ED0018C0F7 /* WatchMetadataStore.swift in Sources */,
+				67B33CF227C464B1007FBA39 /* ProtocolComms.swift in Sources */,
 				67B33CF527C464B1007FBA39 /* PPoGATTService.swift in Sources */,
 				67B33CFA27C464B1007FBA39 /* AppDelegate.swift in Sources */,
 				67B33CF827C464B1007FBA39 /* TransportErrors.swift in Sources */,
+				675F0EAE27CB0A970018C0F7 /* PutBytesController.swift in Sources */,
 				67B33CF327C464B1007FBA39 /* SystemHandler.swift in Sources */,
 				67945BB227C81A4D00DE13E8 /* Pigeons.m in Sources */,
 				67B33CEA27C464B1007FBA39 /* ConnectionFlutterBridge.swift in Sources */,
+				67442F7127C9B0D900ACED5B /* AppInstallHandler.swift in Sources */,
 				67B33CF927C464B1007FBA39 /* PebbleDevice.swift in Sources */,
 				67B33CF427C464B1007FBA39 /* LECentral.swift in Sources */,
 				67B33CEE27C464B1007FBA39 /* BackgroundSetupFlutterBridge.swift in Sources */,
 				67B33CE527C464B1007FBA39 /* PersistentStorage.swift in Sources */,
 				67B33CF627C464B1007FBA39 /* BluePebbleDevice.swift in Sources */,
+				678C213E27CBBE3C0042B895 /* extensions.swift in Sources */,
 				67B33CEF27C464B1007FBA39 /* PermissionCheckFlutterBridge.swift in Sources */,
 				67B33CED27C464B1007FBA39 /* PermissionControlFlutterBridge.swift in Sources */,
 				67B33CF727C464B1007FBA39 /* LEPeripheral.swift in Sources */,
 				67B33CF127C464B1007FBA39 /* FlutterBridgeSetup.swift in Sources */,
 				67B33CEB27C464B1007FBA39 /* FlutterBackgroundController.swift in Sources */,
 				67B33CEC27C464B1007FBA39 /* ConnectionControlBridge.swift in Sources */,
+				675F0EA327CAF82E0018C0F7 /* AppInstallUtils.swift in Sources */,
 				67B33CF027C464B1007FBA39 /* ScanFlutterBridge.swift in Sources */,
 				67B33CFB27C464B1007FBA39 /* GeneratedPluginRegistrant.m in Sources */,
 			);
@@ -570,7 +638,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = iphoneos;
@@ -589,7 +657,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = XF262X892Y;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -750,7 +818,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -800,7 +868,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = iphoneos;
@@ -927,11 +995,19 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		676555FE27C7CD96008C1D4D /* XCRemoteSwiftPackageReference "libpebblecommon" */ = {
+		675F0EA627CB050E0018C0F7 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/pebble-dev/libpebblecommon";
+			repositoryURL = "https://github.com/CocoaLumberjack/CocoaLumberjack.git";
 			requirement = {
-				branch = "swiftpm-0.1.0";
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+		675F0EAF27CB12EC0018C0F7 /* XCRemoteSwiftPackageReference "SwiftZip" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftZip/SwiftZip.git";
+			requirement = {
+				branch = master;
 				kind = branch;
 			};
 		};
@@ -943,18 +1019,46 @@
 				kind = branch;
 			};
 		};
+		67C33E1C27CBBC2A005C14F2 /* XCRemoteSwiftPackageReference "PromiseKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mxcl/PromiseKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		676555FF27C7CD96008C1D4D /* libpebblecommon */ = {
+		675F0EA727CB050E0018C0F7 /* CocoaLumberjack */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 676555FE27C7CD96008C1D4D /* XCRemoteSwiftPackageReference "libpebblecommon" */;
-			productName = libpebblecommon;
+			package = 675F0EA627CB050E0018C0F7 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */;
+			productName = CocoaLumberjack;
+		};
+		675F0EA927CB050E0018C0F7 /* CocoaLumberjackSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 675F0EA627CB050E0018C0F7 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */;
+			productName = CocoaLumberjackSwift;
+		};
+		675F0EAB27CB06440018C0F7 /* CocoaLumberjackSwiftLogBackend */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 675F0EA627CB050E0018C0F7 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */;
+			productName = CocoaLumberjackSwiftLogBackend;
+		};
+		675F0EB027CB12EC0018C0F7 /* SwiftZip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 675F0EAF27CB12EC0018C0F7 /* XCRemoteSwiftPackageReference "SwiftZip" */;
+			productName = SwiftZip;
 		};
 		676CAE5827C479E8001B9211 /* CobbleLE */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 676CAE5727C479E8001B9211 /* XCRemoteSwiftPackageReference "CobbleLEKit" */;
 			productName = CobbleLE;
+		};
+		67C33E1D27CBBC2A005C14F2 /* PromiseKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 67C33E1C27CBBC2A005C14F2 /* XCRemoteSwiftPackageReference "PromiseKit" */;
+			productName = PromiseKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
