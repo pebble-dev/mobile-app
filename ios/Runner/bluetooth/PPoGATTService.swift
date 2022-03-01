@@ -116,7 +116,8 @@ public class PPoGATTService {
     /// - Parameter requests: The ATT write request(s) holding written data
     private func onWrite(requests: [CBATTRequest]) {
         rxQueue.async { [self] in
-            packetReadSemaphore.wait()
+            let timeout = packetReadSemaphore.wait(timeout: .now() + 5)
+            assert(timeout == .success, "Timed out waiting for packetRead unlock")
             defer {
                 packetReadSemaphore.signal()
             }
@@ -126,9 +127,9 @@ public class PPoGATTService {
                 }
                 if request.value != nil {
                     let packet = GATTPacket(data: KUtil.shared.byteArrayFromNative(arr: request.value!))
-                    DDLogDebug("-> \(packet.sequence)")
                     switch packet.type {
                     case .data:
+                        DDLogDebug("-> DATA \(packet.sequence)")
                         if packet.sequence == remoteSeq {
                             sendAck(sequence: UInt8(packet.sequence))
                             remoteSeq = getNextSeq(current: remoteSeq)
@@ -159,6 +160,7 @@ public class PPoGATTService {
                         }
                         
                     case .ack:
+                        DDLogDebug("-> ACK \(packet.sequence)")
                         for i in 0...packet.sequence {
                             let ind = ackPending.index(forKey: i)
                             if ind != nil {
@@ -169,12 +171,14 @@ public class PPoGATTService {
                         DDLogDebug("GATTService: Got ACK for \(packet.sequence)")
                         
                     case .reset:
+                        DDLogDebug("-> RESET \(packet.sequence)")
                         if (seq != 0) {
                             DDLogError("GATTService: Got reset on non zero sequence")
                         }
                         connectionVersion = packet.getPPoGConnectionVersion()
                         sendResetAck()
                     case .resetAck:
+                        DDLogDebug("-> RESETACK \(packet.sequence)")
                         DDLogDebug("GATTService: Got reset ACK")
                         DDLogDebug("GATTService: Connection version \(connectionVersion.value)")
                         if connectionVersion.supportsWindowNegotiation, !packet.hasWindowSizes() {
@@ -236,7 +240,9 @@ public class PPoGATTService {
     /// Non-blocking function to update the PPoGATT device characteristic's value with new data that was pending (TX to pebble)
     private func updateData() {
         txQueue.async(qos: .userInitiated) { [self] in
-            dataUpdateSemaphore.wait()
+            let timeout = dataUpdateSemaphore.wait(timeout: .now() + 5)
+            assert(timeout == .success, "Timed out waiting for dataUpdate unlock")
+            
             if !pendingPackets.isEmpty {
                 if ackPending.count-1 < maxTXWindow {
                     let packet = pendingPackets.removeFirst()
@@ -249,6 +255,17 @@ public class PPoGATTService {
             }else {
                 dataUpdateSemaphore.signal()
             }
+        }
+    }
+    
+    /// Non-blocking function to update the PPoGATT device characteristic's value with new meta packet (ACK etc.) that was pending (TX to pebble)
+    private func updateMeta(packet: GATTPacket) {
+        assert(packet.type != .data)
+        let timeout = dataUpdateSemaphore.wait(timeout: .now() + 5)
+        assert(timeout == .success, "Timed out waiting for dataUpdate unlock")
+        serverController.updateValue(value: packet.data.toNative(), forChar: deviceCharacteristic) {
+            self.dataUpdateSemaphore.signal()
+            self.packetWriteSemaphore.signal()
         }
     }
     
@@ -283,16 +300,16 @@ public class PPoGATTService {
     ///   - sequence: The sequence of the packet
     private func writePacket(type: GATTPacket.PacketType, data: [UInt8]?, sequence: UInt8? = nil) {
         txQueue.async { [self] in
-            let timeout = packetWriteSemaphore.wait(timeout: .now() + 3)
+            let timeout = packetWriteSemaphore.wait(timeout: .now() + 5)
             assert(timeout == .success, "Timed out waiting for packetWrite unlock")
             let kData = KUtil.shared.byteArrayFromNative(arr: Data(data ?? []))
             let packet = GATTPacket(type: type, sequence: Int32(sequence ?? UInt8(seq)), data: kData.size > 0 ? kData : nil)
-            if type == .ack {
-                DDLogDebug("<- ACK \(packet.sequence)")
-                lastAck = packet
-            }
-            if type == .data {
-                dataUpdateSemaphore.wait()
+            switch (type) {
+            case .data:
+                DDLogDebug("<- DATA \(packet.sequence)")
+                let timeout = dataUpdateSemaphore.wait(timeout: .now() + 5)
+                assert(timeout == .success, "Timed out waiting for dataUpdate unlock")
+                
                 let sem = DispatchSemaphore(value: 0)
                 ackPending[packet.sequence] = sem
                 pendingPackets.append(packet)
@@ -302,13 +319,30 @@ public class PPoGATTService {
                 dataUpdateSemaphore.signal()
                 updateData()
                 if ackPending.count >= maxTXWindow {
-                    sem.wait()
+                    let timeout = sem.wait(timeout: .now() + 5)
+                    assert(timeout == .success, "Timed out waiting for packet notify")
                 }
                 packetWriteSemaphore.signal()
-            }else {
-                serverController.updateValue(value: packet.data.toNative(), forChar: deviceCharacteristic) {
-                    packetWriteSemaphore.signal()
-                }
+                break
+                
+            case .reset:
+                DDLogDebug("<- RESET \(packet.sequence)")
+                updateMeta(packet: packet)
+                break
+            
+            case .resetAck:
+                DDLogDebug("<- RESETACK \(packet.sequence)")
+                updateMeta(packet: packet)
+                break
+            
+            case .ack:
+                DDLogDebug("<- ACK \(packet.sequence)")
+                lastAck = packet
+                updateMeta(packet: packet)
+                break
+            
+            default:
+                assertionFailure()
             }
         }
     }
