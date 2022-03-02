@@ -65,7 +65,7 @@ class AppInstallHandler {
                     }
                     return try ProtocolComms.shared.putBytesController.startAppInstall(appId: appId, pbwFile: appFile, watchType: targetWatchType).asVoid()
                 }.catch { error in
-                    DDLogError("Exception while catering to to AppFetchService message:" + error.localizedDescription)
+                    DDLogError("Exception while catering to to AppFetchService message:" + ((error as? CobbleError)?.message ?? error.localizedDescription))
                 }
             } catch {
                 DDLogError("Exception while handling AppFetchService message:" + error.localizedDescription)

@@ -57,6 +57,7 @@ class PutBytesController {
     }
     
     private let syncQueue = DispatchQueue(label: "PutBytesSyncQueue")
+    private let dataUtilQueue = DispatchQueue(label: "PutBytesDataUtilQueue", qos: .utility)
     private let dataQueue = DispatchQueue(label: "PutBytesDataQueue", qos: .userInitiated)
     
     private let putBytesService: PutBytesService
@@ -68,19 +69,19 @@ class PutBytesController {
     }
     
     func startAppInstall(appId: UInt, pbwFile: URL, watchType: WatchType) throws -> Promise<Void> {
-        return launchNewPutBytesSession { seal in
+        return launchNewPutBytesSession {
             let manifest = try requirePbwManifest(pbwFile: pbwFile, watchType: watchType)
             let totalSize = manifest.application.size + (manifest.resources?.size ?? 0) + (manifest.worker?.size ?? 0)
             let progressMultiplier = 1 / Double(totalSize)
             
-            firstly {
+            try firstly {
                 self.sendAppPart(appID: appId,
                                  pbwFile: pbwFile,
                                  watchType: watchType,
                                  manifestEntry: manifest.application,
                                  type: ObjectType.appExecutable,
                                  progressMultiplier: progressMultiplier)
-            }.then { () -> Promise<Void> in
+            }.then(on: self.dataUtilQueue) { () -> Promise<Void> in
                 if let resources = manifest.resources {
                     return self.sendAppPart(appID: appId,
                                      pbwFile: pbwFile,
@@ -91,7 +92,7 @@ class PutBytesController {
                 }else {
                     return Promise<Void> {$0.fulfill(())}
                 }
-            }.then { () -> Promise<Void> in
+            }.then(on: self.dataUtilQueue) { () -> Promise<Void> in
                 if let worker = manifest.worker {
                     return self.sendAppPart(appID: appId,
                                      pbwFile: pbwFile,
@@ -104,10 +105,7 @@ class PutBytesController {
                 }
             }.done {
                 self._status = Status(state: .Idle)
-                seal.fulfill(())
-            }.catch { error in
-                seal.reject(error)
-            }
+            }.wait()
         }
     }
     
@@ -140,50 +138,54 @@ class PutBytesController {
         return Promise { seal in
             firstly {
                 awaitAck()
-            }.then(on: dataQueue) { res -> Promise<Void> in
+            }.then { res -> Promise<Void> in
                 let cookie = res.cookie.get()!.uint32Value
                 self.lastCookie = cookie
-                
                 let maxDataSize = PacketSizeKt.getPutBytesMaximumDataSize(watchVersion: WatchMetadataStore.shared.lastConnectedWatchMetadata)
                 var buf = Data(capacity: Int(maxDataSize))
                 let crcCalculator = Crc32Calculator()
                 var totalBytes = 0
-                while (true) {
-                    let readBytes = try buf.withUnsafeMutableBytes {
-                        return try reader.read(buf: $0)
+                return Promise<Void> { subseal in
+                    self.dataQueue.async {
+                        do {
+                            while (true) {
+                                let readBytes = try buf.withUnsafeMutableBytes {
+                                    return try reader.read(buf: $0)
+                                }
+                                if (readBytes <= 0) {
+                                    break
+                                }
+                                
+                                var payload = Data(capacity: readBytes)
+                                payload.withUnsafeMutableBytes { pUnsafe in
+                                    buf.copyBytes(to: pUnsafe)
+                                    return
+                                }
+                                let payloadKt = KUtil.shared.byteArrayAsUByteArray(arr: KUtil.shared.byteArrayFromNative(arr: buf))
+                                crcCalculator.addBytes(bytes: payloadKt)
+                                
+                                try firstly {
+                                    self.putBytesService.sendPromise(packet: PutBytesPut(cookie: cookie, payload: payloadKt)).asVoid()
+                                }.then {
+                                    self.awaitAck().asVoid()
+                                }.done {
+                                    let newProgress = self.status.progress + progressMultiplier * Double(readBytes)
+                                    DDLogDebug("Progress \(newProgress)")
+                                    self._status = Status(state: .Sending, progress: newProgress)
+                                    totalBytes += readBytes
+                                }.wait()
+                            }
+                            let calculatedCrc = crcCalculator.finalize()
+                            guard expectedCrc == nil || calculatedCrc == UInt32(expectedCrc!) else {
+                                throw PutBytesError.checksumException("Sending fail: Crc mismatch (\(String(describing: calculatedCrc)) != \(String(describing: expectedCrc)))")
+                            }
+                            DDLogDebug("Sending commit")
+                            self.putBytesService.sendPromise(packet: PutBytesCommit(cookie: cookie, objectCrc: calculatedCrc)).asVoid().pipe(to: subseal.resolve)
+                        } catch {
+                            subseal.reject(error)
+                        }
                     }
-                    if (readBytes <= 0) {
-                        break
-                    }
-                    
-                    var payload = Data(capacity: readBytes)
-                    payload.withUnsafeMutableBytes { pUnsafe in
-                        buf.copyBytes(to: pUnsafe)
-                        return
-                    }
-                    let payloadKt = KUtil.shared.byteArrayAsUByteArray(arr: KUtil.shared.byteArrayFromNative(arr: buf))
-                    crcCalculator.addBytes(bytes: payloadKt)
-                    
-                    try firstly {
-                        self.putBytesService.sendPromise(packet: PutBytesPut(cookie: cookie, payload: payloadKt)).asVoid()
-                    }.then(on: self.dataQueue) {
-                        self.awaitAck().asVoid()
-                    }.done(on: self.dataQueue) {
-                        let newProgress = self.status.progress + progressMultiplier * Double(readBytes)
-                        DDLogDebug("Progress \(newProgress)")
-                        self._status = Status(state: .Sending, progress: newProgress)
-                        totalBytes += readBytes
-                    }.wait()
-                    
                 }
-                
-                let calculatedCrc = crcCalculator.finalize()
-                guard expectedCrc == nil || calculatedCrc == UInt32(expectedCrc!) else {
-                    throw PutBytesError.checksumException("Sending fail: Crc mismatch (\(String(describing: calculatedCrc)) != \(String(describing: expectedCrc)))")
-                }
-                
-                DDLogDebug("Sending commit")
-                return self.putBytesService.sendPromise(packet: PutBytesCommit(cookie: cookie, objectCrc: calculatedCrc)).asVoid()
             }.then {_ in
                 self.awaitAck().asVoid()
             }.done {
@@ -237,7 +239,7 @@ class PutBytesController {
         }
     }
     
-    private func launchNewPutBytesSession(block: @escaping (Resolver<()>) throws -> ()) -> Promise<Void> {
+    private func launchNewPutBytesSession(block: @escaping () throws -> ()) -> Promise<Void> {
         return Promise { seal in
             do {
                 try syncQueue.sync {
@@ -250,24 +252,22 @@ class PutBytesController {
                 seal.reject(error)
             }
             
-            dataQueue.async {
-                firstly {
-                    return Promise<()>(resolver: block)
-                }.done{
-                    seal.fulfill(())
-                }.catch { error in
-                    DDLogError("PutBytes error")
-                    seal.reject(error)
-                    
-                    if let cookie = self.lastCookie {
-                        self.putBytesService.sendPromise(packet: PutBytesAbort(cookie: cookie)).catch { error in
-                            DDLogError("Error sending PutBytes abort: \(error.localizedDescription)")
-                        }
+            dataUtilQueue.async(.promise) {
+                try block()
+            }.done{
+                seal.fulfill(())
+            }.catch { error in
+                DDLogError("PutBytes error")
+                seal.reject(error)
+                
+                if let cookie = self.lastCookie {
+                    self.putBytesService.sendPromise(packet: PutBytesAbort(cookie: cookie)).catch { error in
+                        DDLogError("Error sending PutBytes abort: \(error.localizedDescription)")
                     }
-                }.finally {
-                    self.lastCookie = nil
-                    self._status = Status(state: .Idle)
                 }
+            }.finally {
+                self.lastCookie = nil
+                self._status = Status(state: .Idle)
             }
         }
     }

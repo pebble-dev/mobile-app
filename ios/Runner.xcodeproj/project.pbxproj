@@ -47,6 +47,7 @@
 		67B33CFB27C464B1007FBA39 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 67B33CE327C464B0007FBA39 /* GeneratedPluginRegistrant.m */; };
 		67C33E1E27CBBC2A005C14F2 /* PromiseKit in Frameworks */ = {isa = PBXBuildFile; productRef = 67C33E1D27CBBC2A005C14F2 /* PromiseKit */; };
 		67D7CB5F27CC4D9B00F69E7F /* 5838ac91ca309491ab000283.pbw in Resources */ = {isa = PBXBuildFile; fileRef = 67D7CB5E27CC4D9A00F69E7F /* 5838ac91ca309491ab000283.pbw */; };
+		67E38C1927CEF07B0001B208 /* CobbleError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67E38C1827CEF07B0001B208 /* CobbleError.swift */; };
 		84544F477929DB68C98B9C52 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 620666896E8FA2E5FECAB423 /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
 
@@ -115,6 +116,7 @@
 		67B33CE327C464B0007FBA39 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		67B33CE427C464B0007FBA39 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		67D7CB5E27CC4D9A00F69E7F /* 5838ac91ca309491ab000283.pbw */ = {isa = PBXFileReference; lastKnownFileType = file; name = 5838ac91ca309491ab000283.pbw; path = ../../../../../Downloads/5838ac91ca309491ab000283.pbw; sourceTree = "<group>"; };
+		67E38C1827CEF07B0001B208 /* CobbleError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CobbleError.swift; sourceTree = "<group>"; };
 		703F0CECA9F9B877FA874376 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
@@ -292,6 +294,7 @@
 			children = (
 				675F0EA227CAF82E0018C0F7 /* AppInstallUtils.swift */,
 				678C213D27CBBE3C0042B895 /* extensions.swift */,
+				67E38C1827CEF07B0001B208 /* CobbleError.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -542,6 +545,7 @@
 				675F0EB627CB32ED0018C0F7 /* WatchMetadataStore.swift in Sources */,
 				67B33CF227C464B1007FBA39 /* ProtocolComms.swift in Sources */,
 				67B33CF527C464B1007FBA39 /* PPoGATTService.swift in Sources */,
+				67E38C1927CEF07B0001B208 /* CobbleError.swift in Sources */,
 				67B33CFA27C464B1007FBA39 /* AppDelegate.swift in Sources */,
 				67B33CF827C464B1007FBA39 /* TransportErrors.swift in Sources */,
 				675F0EAE27CB0A970018C0F7 /* PutBytesController.swift in Sources */,
