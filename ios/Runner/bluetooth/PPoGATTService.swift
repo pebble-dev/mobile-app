@@ -10,6 +10,7 @@ import CoreBluetooth
 import CobbleLE
 import libpebblecommon
 import CocoaLumberjackSwift
+import PromiseKit
 
 /// Handles hosting a PPoGATT service on the device (peripheral mode) for paired Pebbles to connect to
 public class PPoGATTService {
@@ -49,9 +50,7 @@ public class PPoGATTService {
     
     private let rxQueue = DispatchQueue(label: Bundle.main.bundleIdentifier!+".PPoGATTServiceRXQueue", qos: .utility)
     private let txQueue = DispatchQueue(label: Bundle.main.bundleIdentifier!+".PPoGATTServiceTXQueue", qos: .utility)
-    private let packetWriteSemaphore = DispatchSemaphore(value: 1)
-    private let packetReadSemaphore = DispatchSemaphore(value: 1)
-    private let dataUpdateSemaphore = DispatchSemaphore(value: 1)
+    private let chunkWriteQueue = DispatchQueue(label: Bundle.main.bundleIdentifier!+".PPoGATTServicePPChunkQueue", qos: .utility)
     
     private let packetHandler: ([UInt8]) -> ()
     private var pendingLength = 0
@@ -127,11 +126,11 @@ public class PPoGATTService {
     /// - Parameter requests: The ATT write request(s) holding written data
     private func onWrite(requests: [CBATTRequest]) {
         rxQueue.async { [self] in
-            let timeout = packetReadSemaphore.wait(timeout: .now() + 5)
+            /*let timeout = packetReadSemaphore.wait(timeout: .now() + 5)
             assert(timeout == .success, "Timed out waiting for packetRead unlock")
             defer {
                 packetReadSemaphore.signal()
-            }
+            }*/
             for request in requests {
                 if request.central.identifier != targetWatchIdentifier {
                     break
@@ -142,7 +141,7 @@ public class PPoGATTService {
                     case .data:
                         DDLogDebug("-> DATA \(packet.sequence)")
                         if packet.sequence == remoteSeq {
-                            sendAck(sequence: UInt8(packet.sequence))
+                            sendAck(sequence: UInt8(packet.sequence)).cauterize()
                             remoteSeq = getNextSeq(current: remoteSeq)
                             let nData = packet.toByteArray().toNative().advanced(by: 1)
                             if receiveBuf.isEmpty {
@@ -163,8 +162,7 @@ public class PPoGATTService {
                             DDLogWarn("Unexpected sequence \(packet.sequence), expected \(remoteSeq)")
                             if let lastAck = lastAck {
                                 DDLogInfo("Sending clarifying ACK (\(lastAck.sequence))")
-                                sendAck(sequence: UInt8(lastAck.sequence))
-                                writePacket(type: .ack, data: nil, sequence: UInt8(lastAck.sequence))
+                                writePacket(type: .ack, data: nil, sequence: UInt8(lastAck.sequence)).cauterize()
                             }else {
                                 DDLogWarn("No previous ACK to send on sequence mismatch")
                             }
@@ -217,66 +215,68 @@ public class PPoGATTService {
     
     /// Sends a reset request GATT packet to the pebble
     func requestReset() {
-        writePacket(type: .reset, data: [UInt8(bitPattern: connectionVersion.value)], sequence: 0)
+        writePacket(type: .reset, data: [UInt8(bitPattern: connectionVersion.value)], sequence: 0).cauterize()
     }
     
     /// Sends an ACK GATT packet to the pebble
     /// - Parameter sequence: The sequence of the packet to acknowledge
-    private func sendAck(sequence: UInt8) {
-        if !connectionVersion.supportsCoalescedAcking {
-            currentRXPend = 0
-            writePacket(type: .ack, data: nil, sequence: sequence)
-        }else {
-            currentRXPend += 1
-            delayedAckJob?.cancel()
-            if currentRXPend >= maxRXWindow / 2 {
+    private func sendAck(sequence: UInt8) -> Promise<Void> {
+        return Promise {seal in
+            if !connectionVersion.supportsCoalescedAcking {
                 currentRXPend = 0
-                writePacket(type: .ack, data: nil, sequence: sequence)
-            }else {
-                delayedAckJob = DispatchWorkItem(qos: .userInteractive) { [self] in
-                    currentRXPend = 0
-                    writePacket(type: .ack, data: nil, sequence: sequence)
+                writePacket(type: .ack, data: nil, sequence: sequence).done {
+                    seal.fulfill(())
+                }.catch { error in
+                    seal.reject(error)
                 }
-                txQueue.asyncAfter(deadline: .now() + 0.5, execute: delayedAckJob!)
+            }else {
+                currentRXPend += 1
+                delayedAckJob?.cancel()
+                if currentRXPend >= maxRXWindow / 2 {
+                    currentRXPend = 0
+                    writePacket(type: .ack, data: nil, sequence: sequence).done {
+                        seal.fulfill(())
+                    }.catch { error in
+                        seal.reject(error)
+                    }
+                }else {
+                    delayedAckJob = DispatchWorkItem(qos: .userInteractive) { [self] in
+                        currentRXPend = 0
+                        writePacket(type: .ack, data: nil, sequence: sequence).cauterize()
+                    }
+                    seal.fulfill(())
+                    txQueue.asyncAfter(deadline: .now() + 0.5, execute: delayedAckJob!)
+                }
             }
         }
     }
     
     /// Sends a reset ACK GATT packet to the pebble and resets the PPoGATT service
     private func sendResetAck() {
-        writePacket(type: .resetAck, data: connectionVersion.supportsWindowNegotiation ? [maxRXWindow, maxTXWindow] : nil, sequence: 0)
+        writePacket(type: .resetAck, data: connectionVersion.supportsWindowNegotiation ? [maxRXWindow, maxTXWindow] : nil, sequence: 0).catch { error in
+            assertionFailure(error.localizedDescription)
+        }
         reset()
     }
     
     /// Non-blocking function to update the PPoGATT device characteristic's value with new data that was pending (TX to pebble)
     private func updateData() {
-        txQueue.async(qos: .userInitiated) { [self] in
-            let timeout = dataUpdateSemaphore.wait(timeout: .now() + 5)
-            assert(timeout == .success, "Timed out waiting for dataUpdate unlock")
-            
+        txQueue.async { [self] in
             if !pendingPackets.isEmpty {
-                if ackPending.count-1 < maxTXWindow {
-                    let packet = pendingPackets.removeFirst()
-                    serverController.updateValue(value: packet.toByteArray().toNative(), forChar: deviceCharacteristic) {
-                        dataUpdateSemaphore.signal()
-                    }
-                }else {
-                    dataUpdateSemaphore.signal()
+                let packet = pendingPackets.removeFirst()
+                serverController.updateValue(value: packet.toByteArray().toNative(), forChar: deviceCharacteristic) {
+                    
                 }
-            }else {
-                dataUpdateSemaphore.signal()
             }
         }
     }
     
     /// Non-blocking function to update the PPoGATT device characteristic's value with new meta packet (ACK etc.) that was pending (TX to pebble)
-    private func updateMeta(packet: GATTPacket) {
-        assert(packet.type != .data)
-        let timeout = dataUpdateSemaphore.wait(timeout: .now() + 5)
-        assert(timeout == .success, "Timed out waiting for dataUpdate unlock")
-        serverController.updateValue(value: packet.data.toNative(), forChar: deviceCharacteristic) {
-            self.dataUpdateSemaphore.signal()
-            self.packetWriteSemaphore.signal()
+    private func updateMeta(packet: GATTPacket) -> Promise<Void> {
+        return Promise {seal in
+            serverController.updateValue(value: packet.data.toNative(), forChar: deviceCharacteristic) {
+                seal.fulfill(())
+            }
         }
     }
     
@@ -309,47 +309,51 @@ public class PPoGATTService {
     ///   - type: The packet type
     ///   - data: The packet body
     ///   - sequence: The sequence of the packet
-    private func writePacket(type: GATTPacket.PacketType, data: [UInt8]?, sequence: UInt8? = nil) {
-        txQueue.async { [self] in
-            let timeout = packetWriteSemaphore.wait(timeout: .now() + 5)
-            assert(timeout == .success, "Timed out waiting for packetWrite unlock")
+    private func writePacket(type: GATTPacket.PacketType, data: [UInt8]?, sequence: UInt8? = nil) -> Promise<Void> {
+        return Promise { seal in
             let kData = KUtil.shared.byteArrayFromNative(arr: Data(data ?? []))
             let packet = GATTPacket(type: type, sequence: Int32(sequence ?? UInt8(seq)), data: kData.size > 0 ? kData : nil)
             switch (type) {
             case .data:
                 DDLogDebug("<- DATA \(packet.sequence)")
-                let timeout = dataUpdateSemaphore.wait(timeout: .now() + 5)
-                assert(timeout == .success, "Timed out waiting for dataUpdate unlock")
+                let ackPendingSemaphore = DispatchSemaphore(value: 0)
+                ackPending[packet.sequence] = ackPendingSemaphore
                 
-                let sem = DispatchSemaphore(value: 0)
-                ackPending[packet.sequence] = sem
+                if ackPending.count >= maxTXWindow {
+                    DispatchQueue(label: "AckWaiter", qos: .background).async {
+                        let timeout = ackPendingSemaphore.wait(timeout: .now()+5)
+                        if (timeout == .timedOut) {
+                            seal.reject(GATTIOException.timeout("Timed out waiting for ack"))
+                        }else {
+                            seal.fulfill(())
+                        }
+                    }
+                }else {
+                    seal.fulfill(())
+                }
+                
                 pendingPackets.append(packet)
                 if sequence == nil {
                     self.seq = self.getNextSeq(current: self.seq)
                 }
-                dataUpdateSemaphore.signal()
+                
                 updateData()
-                if ackPending.count >= maxTXWindow {
-                    let timeout = sem.wait(timeout: .now() + 5)
-                    assert(timeout == .success, "Timed out waiting for packet notify")
-                }
-                packetWriteSemaphore.signal()
                 break
                 
             case .reset:
                 DDLogDebug("<- RESET \(packet.sequence)")
-                updateMeta(packet: packet)
+                updateMeta(packet: packet).pipe(to: seal.resolve)
                 break
             
             case .resetAck:
                 DDLogDebug("<- RESETACK \(packet.sequence)")
-                updateMeta(packet: packet)
+                updateMeta(packet: packet).pipe(to: seal.resolve)
                 break
             
             case .ack:
                 DDLogDebug("<- ACK \(packet.sequence)")
                 lastAck = packet
-                updateMeta(packet: packet)
+                updateMeta(packet: packet).pipe(to: seal.resolve)
                 break
             
             default:
@@ -360,13 +364,23 @@ public class PPoGATTService {
     
     /// Sends Pebble protocol packets to the Pebble
     /// - Parameter rawProtocolPacket: The raw serialized bytes of the packet
-    public func write(rawProtocolPacket: [UInt8]) {
-        let maxPacketSize = maxPayload-1
-        var chunked = rawProtocolPacket.chunked(into: maxPacketSize)
-        DDLogDebug("Writing packet of length \(rawProtocolPacket.count) in \(chunked.count) chunks")
-        while !chunked.isEmpty {
-            writePacket(type: .data, data: chunked.removeFirst())
+    public func write(rawProtocolPacket: [UInt8]) -> Promise<Void> {
+        return Promise { seal in
+            let maxPacketSize = maxPayload-1
+            var chunked = rawProtocolPacket.chunked(into: maxPacketSize)
+            DDLogDebug("Writing packet of length \(rawProtocolPacket.count) in \(chunked.count) chunks")
+            chunkWriteQueue.async {
+                while !chunked.isEmpty {
+                    do {
+                        try self.writePacket(type: .data, data: chunked.removeFirst()).wait()
+                    }catch {
+                        seal.reject(error)
+                    }
+                }
+                seal.fulfill(())
+            }
         }
+        
     }
     
     /// Resets the PPoGATT service
