@@ -17,6 +17,17 @@ public class PPoGATTService {
     
     private var deviceCharacteristic: CBMutableCharacteristic!
     
+    enum GATTIOException : CobbleError {
+        case timeout(String)
+        
+        var message: String {
+            switch self {
+            case .timeout(let message):
+                return message
+            }
+        }
+    }
+    
     // ?, connection version, ? ...
     private let metaResponse: [UInt8] = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     //private let metaResponse: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]

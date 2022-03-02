@@ -17,8 +17,8 @@ class PutBytesController {
         case Idle
         case Sending
     }
-    enum PutBytesError: LocalizedError {
-        var errorDescription: String? {
+    enum PutBytesError: CobbleError {
+        var message: String {
             switch self {
             case .putBytesBusy(let string):
                 return string
