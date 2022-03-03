@@ -30,6 +30,8 @@ class PutBytesController {
                 return string
             case .checksumException(let string):
                 return string
+            case .noWatchMetadata(let string):
+                return string
             }
         }
         case putBytesBusy(String)
@@ -37,6 +39,7 @@ class PutBytesController {
         case ioException(String)
         case timeout(String)
         case checksumException(String)
+        case noWatchMetadata(String)
     }
     
     class Status {
@@ -68,48 +71,69 @@ class PutBytesController {
         self.putBytesService = putBytesService
     }
     
+    private func readBlob(pbwFile: URL, manifestEntry: PbwBlob, watchType: WatchType) throws -> Data {
+        let blob = try requirePbwBinaryBlob(pbwFile: pbwFile, watchType: watchType, blobName: manifestEntry.name)
+        return blob
+    }
+    
     func startAppInstall(appId: UInt, pbwFile: URL, watchType: WatchType) throws -> Promise<Void> {
         return launchNewPutBytesSession {
-            let manifest = try requirePbwManifest(pbwFile: pbwFile, watchType: watchType)
-            let totalSize = manifest.application.size + (manifest.resources?.size ?? 0) + (manifest.worker?.size ?? 0)
-            let progressMultiplier = 1 / Double(totalSize)
             
-            try firstly {
-                self.sendAppPart(appID: appId,
-                                 pbwFile: pbwFile,
-                                 watchType: watchType,
-                                 manifestEntry: manifest.application,
-                                 type: ObjectType.appExecutable,
-                                 progressMultiplier: progressMultiplier)
-            }.then(on: self.dataUtilQueue) { () -> Promise<Void> in
-                if let resources = manifest.resources {
-                    return self.sendAppPart(appID: appId,
-                                     pbwFile: pbwFile,
-                                     watchType: watchType,
-                                     manifestEntry: resources,
-                                     type: ObjectType.appResource,
-                                     progressMultiplier: progressMultiplier)
-                }else {
-                    return Promise<Void> {$0.fulfill(())}
+            let manifest = try requirePbwManifest(pbwFile: pbwFile, watchType: watchType)
+            
+            
+            //let totalSize = manifest.application.size + (manifest.resources?.size ?? 0) + (manifest.worker?.size ?? 0)
+            //let progressMultiplier = 1 / Double(totalSize)
+            
+            guard let watchVersion = WatchMetadataStore.shared.lastConnectedWatchMetadata else {
+                throw PutBytesError.noWatchMetadata("WatchMetadataStore empty")
+            }
+            
+            
+            DDLogDebug("Binary")
+            let appBlob = try self.readBlob(pbwFile: pbwFile, manifestEntry: manifest.application, watchType: watchType)
+            try self.dataQueue.sync {
+                self.putBytesService.sendAppPartPromise(appId: UInt32(appId),
+                                                            blob: appBlob,
+                                                            watchType: watchType,
+                                                            watchVersion: watchVersion,
+                                                            manifestEntry: manifest.application,
+                                                            type: ObjectType.appExecutable)
+                .then(on: self.dataQueue) {_ -> Promise<Void> in
+                    if let resources = manifest.resources {
+                        DDLogDebug("Resources")
+                        let resourcesBlob = try self.readBlob(pbwFile: pbwFile, manifestEntry: resources, watchType: watchType)
+                        return self.putBytesService.sendAppPartPromise(appId: UInt32(appId),
+                                                                        blob: resourcesBlob,
+                                                                        watchType: watchType,
+                                                                        watchVersion: watchVersion,
+                                                                        manifestEntry: resources,
+                                                                        type: ObjectType.appResource)
+                    }else {
+                        return Promise<Void> {$0.fulfill(())}
+                    }
+                }.then(on: self.dataQueue) { () -> Promise<Void> in
+                    if let worker = manifest.worker {
+                        DDLogDebug("Worker")
+                        let workerBlob = try self.readBlob(pbwFile: pbwFile, manifestEntry: worker, watchType: watchType)
+                        return self.putBytesService.sendAppPartPromise(appId: UInt32(appId),
+                                                                        blob: workerBlob,
+                                                                        watchType: watchType,
+                                                                        watchVersion: watchVersion,
+                                                                        manifestEntry: worker,
+                                                                        type: ObjectType.worker)
+                    }else {
+                        return Promise<Void> {$0.fulfill(())}
+                    }
+                }.done {
+                    DDLogDebug("All done")
+                    self._status = Status(state: .Idle)
                 }
-            }.then(on: self.dataUtilQueue) { () -> Promise<Void> in
-                if let worker = manifest.worker {
-                    return self.sendAppPart(appID: appId,
-                                     pbwFile: pbwFile,
-                                     watchType: watchType,
-                                     manifestEntry: worker,
-                                     type: ObjectType.worker,
-                                     progressMultiplier: progressMultiplier)
-                }else {
-                    return Promise<Void> {$0.fulfill(())}
-                }
-            }.done {
-                self._status = Status(state: .Idle)
             }.wait()
         }
     }
     
-    private func sendAppPart(appID: UInt, pbwFile: URL, watchType: WatchType, manifestEntry: PbwBlob, type: ObjectType, progressMultiplier: Double) -> Promise<Void> {
+    /*private func sendAppPart(appID: UInt, pbwFile: URL, watchType: WatchType, manifestEntry: PbwBlob, type: ObjectType, progressMultiplier: Double) -> Promise<Void> {
         return Promise { seal in
             let reader = try requirePbwBinaryBlob(pbwFile: pbwFile, watchType: watchType, blobName: manifestEntry.name)
             
@@ -224,20 +248,19 @@ class PutBytesController {
                     seal.reject(PutBytesError.ioException("Received messages channel is closed"))
                     return
                 }
-                
-                self.putBytesService.receivedMessages.receive {resp, e in
+                self.putBytesService.onReceivedMessage {resp, e in
                     guard let resp = resp else {
                         seal.reject(PutBytesError.ioException("Error receiving packet: \(String(describing: e?.localizedDescription))"))
                         return
                     }
                     //FIXME: check if this actually works
-                    seal.fulfill(resp as! PutBytesResponse)
+                    seal.fulfill(resp)
                 }
             }.catch { error in
                 seal.reject(PutBytesError.ioException("Error receiving packet: \(error)"))
             }
         }
-    }
+    }*/
     
     private func launchNewPutBytesSession(block: @escaping () throws -> ()) -> Promise<Void> {
         return Promise { seal in
@@ -258,13 +281,19 @@ class PutBytesController {
                 seal.fulfill(())
             }.catch { error in
                 DDLogError("PutBytes error")
-                seal.reject(error)
-                
-                if let cookie = self.lastCookie {
-                    self.putBytesService.sendPromise(packet: PutBytesAbort(cookie: cookie)).catch { error in
-                        DDLogError("Error sending PutBytes abort: \(error.localizedDescription)")
+                //FIXME: doesnt ever succeed
+                if let error = error as? KotlinException {
+                    if let error = error.cause as? PutBytesService.PutBytesException {
+                        if let cookie = error.cookie?.uint32Value {
+                            self.putBytesService.sendPromise(packet: PutBytesAbort(cookie: cookie)).cauterize()
+                        }
+                        
+                        if let reason = error.cause {
+                            seal.reject(reason.asError())
+                        }
                     }
                 }
+                seal.reject(error)
             }.finally {
                 self.lastCookie = nil
                 self._status = Status(state: .Idle)

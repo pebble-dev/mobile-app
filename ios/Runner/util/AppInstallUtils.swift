@@ -9,14 +9,23 @@ import Foundation
 import libpebblecommon
 import SwiftZip
 
-class PbwSpecError: Error {
-    private let description: String
-    init(description: String) {
-        self.description = description
-    }
+enum PbwSpecError: CobbleError {
     
-    public var localizedDescription: String {
-        return description
+    case manifestMissing(platform: WatchType, app: String)
+    case blobMissing(blob: String, app: String)
+    case appInfoMissing(app: String)
+    
+    var message: String {
+        switch self {
+        case .manifestMissing(let platform, let app):
+            return "Manifest \(platform) missing from app \(app)"
+            
+        case .blobMissing(let blob, let app):
+            return "Blob \(blob) missing from app \(app)"
+            
+        case .appInfoMissing(let app):
+            return "AppInfo missing from app \(app)"
+        }
     }
 }
 
@@ -49,20 +58,19 @@ func requirePbwManifest(pbwFile: URL, watchType: WatchType) throws -> PbwManifes
     if let manifest = getPbwManifest(pbwFile: pbwFile, watchType: watchType) {
         return manifest
     }else {
-        throw PbwSpecError(description: "Manifest \(watchType) missing from app \(pbwFile.lastPathComponent)")
+        throw PbwSpecError.manifestMissing(platform: watchType, app: pbwFile.lastPathComponent)
     }
 }
 
-func requirePbwBinaryBlob(pbwFile: URL, watchType: WatchType, blobName: String) throws -> ZipEntryReader {
+func requirePbwBinaryBlob(pbwFile: URL, watchType: WatchType, blobName: String) throws -> Data {
     let path = platformPath(watchType: watchType, fileName: blobName)
     let zip = try ZipArchive(url: pbwFile)
     do {
         let entry = try zip.locate(filename: path)
-        let entryReader = try entry.open()
-        return entryReader
+        return try entry.data()
     } catch {
         zip.discard()
-        throw PbwSpecError(description: "Blob \(blobName) missing from app \(pbwFile.lastPathComponent)")
+        throw PbwSpecError.blobMissing(blob: blobName, app: pbwFile.lastPathComponent)
     }
 }
 
@@ -77,7 +85,7 @@ func requirePbwAppInfo(pbwFile: URL) throws -> libpebblecommon.PbwAppInfo {
         let appInfoString = String(data: appInfoData, encoding: .utf8)!
         return SerializationUtil.shared.deserializeAppInfo(jsonString: appInfoString)
     } catch {
-        throw PbwSpecError(description: "AppInfo missing from app \(pbwFile.lastPathComponent)")
+        throw PbwSpecError.appInfoMissing(app: pbwFile.lastPathComponent)
     }
 }
 

@@ -43,6 +43,22 @@ extension PutBytesService {
             }
         }
     }
+    
+    func sendAppPartPromise(appId: UInt32, blob: Data,
+                            watchType: WatchType, watchVersion: WatchVersion.WatchVersionResponse,
+                            manifestEntry: PbwBlob, type: ObjectType) -> Promise<Void> {
+        return Promise {seal in
+            DispatchQueue.main.async {
+                self.sendAppPart(appId: appId,
+                                 blob: KUtil.shared.byteArrayFromNative(arr: blob),
+                                 watchType: watchType,
+                                 watchVersion: watchVersion,
+                                 manifestEntry: manifestEntry,
+                                 type: type,
+                                 completionHandler: kotlinSuspendResolver(seal: seal))
+            }
+        }.asVoid()
+    }
 }
 
 extension SystemService {
