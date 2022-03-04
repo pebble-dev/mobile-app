@@ -232,7 +232,7 @@ public class PPoGATTService {
             }else {
                 currentRXPend += 1
                 delayedAckJob?.cancel()
-                if currentRXPend >= maxRXWindow / 2 {
+                if currentRXPend >= maxRXWindow {
                     currentRXPend = 0
                     writePacket(type: .ack, data: nil, sequence: sequence).done {
                         seal.fulfill(())
