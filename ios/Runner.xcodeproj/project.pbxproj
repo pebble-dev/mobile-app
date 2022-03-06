@@ -17,6 +17,8 @@
 		6756E20727D3FFBF00ECA2DF /* WatchConnectionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6756E20627D3FFBF00ECA2DF /* WatchConnectionState.swift */; };
 		6756E20927D42BCA00ECA2DF /* WorkaroundsFlutterBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6756E20827D42BCA00ECA2DF /* WorkaroundsFlutterBridge.swift */; };
 		6756E20B27D43F2D00ECA2DF /* LoggingFlutterBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6756E20A27D43F2D00ECA2DF /* LoggingFlutterBridge.swift */; };
+		6756E20D27D44F2100ECA2DF /* libpebblecommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6756E20C27D44F2100ECA2DF /* libpebblecommon.swift */; };
+		6756E20F27D45DEF00ECA2DF /* PromiseTimeout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6756E20E27D45DEF00ECA2DF /* PromiseTimeout.swift */; };
 		675F0EA327CAF82E0018C0F7 /* AppInstallUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 675F0EA227CAF82E0018C0F7 /* AppInstallUtils.swift */; };
 		675F0EA827CB050E0018C0F7 /* CocoaLumberjack in Frameworks */ = {isa = PBXBuildFile; productRef = 675F0EA727CB050E0018C0F7 /* CocoaLumberjack */; };
 		675F0EAA27CB050E0018C0F7 /* CocoaLumberjackSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 675F0EA927CB050E0018C0F7 /* CocoaLumberjackSwift */; };
@@ -26,7 +28,6 @@
 		675F0EB627CB32ED0018C0F7 /* WatchMetadataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 675F0EB527CB32ED0018C0F7 /* WatchMetadataStore.swift */; };
 		676CAE5927C479E8001B9211 /* CobbleLE in Frameworks */ = {isa = PBXBuildFile; productRef = 676CAE5827C479E8001B9211 /* CobbleLE */; };
 		678C213E27CBBE3C0042B895 /* extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 678C213D27CBBE3C0042B895 /* extensions.swift */; };
-		67945BA927C8140500DE13E8 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67945BA827C8140500DE13E8 /* Connection.swift */; };
 		67945BB227C81A4D00DE13E8 /* Pigeons.m in Sources */ = {isa = PBXBuildFile; fileRef = 67945BB027C81A4D00DE13E8 /* Pigeons.m */; };
 		67B33CE527C464B1007FBA39 /* PersistentStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67B33CC127C464B0007FBA39 /* PersistentStorage.swift */; };
 		67B33CE727C464B1007FBA39 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 67B33CC627C464B0007FBA39 /* Assets.xcassets */; };
@@ -52,7 +53,6 @@
 		67B33CFB27C464B1007FBA39 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 67B33CE327C464B0007FBA39 /* GeneratedPluginRegistrant.m */; };
 		67C33E1E27CBBC2A005C14F2 /* PromiseKit in Frameworks */ = {isa = PBXBuildFile; productRef = 67C33E1D27CBBC2A005C14F2 /* PromiseKit */; };
 		67DE9ACF27D02F0100034816 /* 55b6528b5e07169e81000069.pbw in Resources */ = {isa = PBXBuildFile; fileRef = 67DE9ACD27D02EF000034816 /* 55b6528b5e07169e81000069.pbw */; };
-		67E38C1927CEF07B0001B208 /* CobbleError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67E38C1827CEF07B0001B208 /* CobbleError.swift */; };
 		67EB5FA327D2CE3C0072CE9D /* BackgroundAppInstallFlutterBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67EB5FA227D2CE3C0072CE9D /* BackgroundAppInstallFlutterBridge.swift */; };
 		84544F477929DB68C98B9C52 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 620666896E8FA2E5FECAB423 /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
@@ -93,13 +93,14 @@
 		6756E20627D3FFBF00ECA2DF /* WatchConnectionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectionState.swift; sourceTree = "<group>"; };
 		6756E20827D42BCA00ECA2DF /* WorkaroundsFlutterBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkaroundsFlutterBridge.swift; sourceTree = "<group>"; };
 		6756E20A27D43F2D00ECA2DF /* LoggingFlutterBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingFlutterBridge.swift; sourceTree = "<group>"; };
+		6756E20C27D44F2100ECA2DF /* libpebblecommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = libpebblecommon.swift; sourceTree = "<group>"; };
+		6756E20E27D45DEF00ECA2DF /* PromiseTimeout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromiseTimeout.swift; sourceTree = "<group>"; };
 		675F0EA227CAF82E0018C0F7 /* AppInstallUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInstallUtils.swift; sourceTree = "<group>"; };
 		675F0EAD27CB0A970018C0F7 /* PutBytesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PutBytesController.swift; sourceTree = "<group>"; };
 		675F0EB227CB17EE0018C0F7 /* libpebblecommon.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libpebblecommon.xcframework; path = ../../../libpebblecommon/build/XCFrameworks/debug/libpebblecommon.xcframework; sourceTree = "<group>"; };
 		675F0EB527CB32ED0018C0F7 /* WatchMetadataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchMetadataStore.swift; sourceTree = "<group>"; };
 		678C213D27CBBE3C0042B895 /* extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = extensions.swift; sourceTree = "<group>"; };
 		67945BA627C8140500DE13E8 /* cobbleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = cobbleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		67945BA827C8140500DE13E8 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
 		67945BB027C81A4D00DE13E8 /* Pigeons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Pigeons.m; sourceTree = "<group>"; };
 		67945BB127C81A4D00DE13E8 /* Pigeons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Pigeons.h; sourceTree = "<group>"; };
 		67945BB327C81A7F00DE13E8 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -128,7 +129,6 @@
 		67B33CE327C464B0007FBA39 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		67B33CE427C464B0007FBA39 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		67DE9ACD27D02EF000034816 /* 55b6528b5e07169e81000069.pbw */ = {isa = PBXFileReference; lastKnownFileType = file; name = 55b6528b5e07169e81000069.pbw; path = ../../../../Downloads/55b6528b5e07169e81000069.pbw; sourceTree = "<group>"; };
-		67E38C1827CEF07B0001B208 /* CobbleError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CobbleError.swift; sourceTree = "<group>"; };
 		67EB5FA227D2CE3C0072CE9D /* BackgroundAppInstallFlutterBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundAppInstallFlutterBridge.swift; sourceTree = "<group>"; };
 		703F0CECA9F9B877FA874376 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
@@ -187,7 +187,6 @@
 		6764D7FF27C9746B00E2BB86 /* bluetooth */ = {
 			isa = PBXGroup;
 			children = (
-				67945BA827C8140500DE13E8 /* Connection.swift */,
 			);
 			path = bluetooth;
 			sourceTree = "<group>";
@@ -196,6 +195,7 @@
 			isa = PBXGroup;
 			children = (
 				6764D7FF27C9746B00E2BB86 /* bluetooth */,
+				6756E20C27D44F2100ECA2DF /* libpebblecommon.swift */,
 			);
 			path = cobbleTests;
 			sourceTree = "<group>";
@@ -305,7 +305,7 @@
 			children = (
 				675F0EA227CAF82E0018C0F7 /* AppInstallUtils.swift */,
 				678C213D27CBBE3C0042B895 /* extensions.swift */,
-				67E38C1827CEF07B0001B208 /* CobbleError.swift */,
+				6756E20E27D45DEF00ECA2DF /* PromiseTimeout.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -545,7 +545,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				67945BA927C8140500DE13E8 /* Connection.swift in Sources */,
+				6756E20D27D44F2100ECA2DF /* libpebblecommon.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -556,7 +556,6 @@
 				675F0EB627CB32ED0018C0F7 /* WatchMetadataStore.swift in Sources */,
 				67B33CF227C464B1007FBA39 /* ProtocolComms.swift in Sources */,
 				67B33CF527C464B1007FBA39 /* PPoGATTService.swift in Sources */,
-				67E38C1927CEF07B0001B208 /* CobbleError.swift in Sources */,
 				67B33CFA27C464B1007FBA39 /* AppDelegate.swift in Sources */,
 				67EB5FA327D2CE3C0072CE9D /* BackgroundAppInstallFlutterBridge.swift in Sources */,
 				6701505427D1AC4200797B97 /* IntentControlFlutterBridge.swift in Sources */,
@@ -576,6 +575,7 @@
 				678C213E27CBBE3C0042B895 /* extensions.swift in Sources */,
 				67B33CEF27C464B1007FBA39 /* PermissionCheckFlutterBridge.swift in Sources */,
 				67B33CED27C464B1007FBA39 /* PermissionControlFlutterBridge.swift in Sources */,
+				6756E20F27D45DEF00ECA2DF /* PromiseTimeout.swift in Sources */,
 				67B33CF727C464B1007FBA39 /* LEPeripheral.swift in Sources */,
 				67B33CF127C464B1007FBA39 /* FlutterBridgeSetup.swift in Sources */,
 				67B33CEB27C464B1007FBA39 /* FlutterBackgroundController.swift in Sources */,
