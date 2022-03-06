@@ -13,6 +13,7 @@ class FlutterBridgeSetup {
         ScanControlSetup(binaryMessenger, ScanFlutterBridge(callbackMessenger: binaryMessenger))
         AppInstallControlSetup(binaryMessenger, AppInstallControlFlutterBridge(callbackMessenger: binaryMessenger))
         ConnectionControlSetup(binaryMessenger, ConnectionFlutterBridge(callbackMessenger: binaryMessenger))
+        PigeonLoggerSetup(binaryMessenger, LoggingFlutterBridge())
     }
     
     static func createBackgroundBridges(binaryMessenger: FlutterBinaryMessenger) {
