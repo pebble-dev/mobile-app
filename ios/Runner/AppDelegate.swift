@@ -34,4 +34,9 @@ import Logging
     private func setupLogging() {
         DDLog.add(DDOSLogger.sharedInstance)
     }
+    
+    override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        OpenWith.shared.openUrl(url: url)
+        return true
+    }
 }
