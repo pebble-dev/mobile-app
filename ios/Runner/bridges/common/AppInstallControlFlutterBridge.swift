@@ -177,12 +177,24 @@ class AppInstallControlFlutterBridge: NSObject, AppInstallControl {
                 completionHandler: seal.resolve
             )
         }.done { result in
-            completion(NumberWrapper.make(withValue: NSNumber(value: Int(result.responseValue.value))), nil)
+            completion(NumberWrapper.make(withValue: NSNumber(value: Int(result.response.get()!.uint8Value))), nil)
+        }.catch { error in
+            completion(nil, FlutterError(code: "ERROR", message: String(describing: error), details: nil))
         }
     }
     
     func removeAllApps(completion: @escaping (NumberWrapper?, FlutterError?) -> Void) {
-        assertionFailure()
+        ProtocolComms.shared.blobDBService.sendPromise(
+            packet: BlobCommand.ClearCommand(
+                token: UInt16.random(in: UInt16.min...UInt16.max),
+                database: .app
+            ),
+            priority: .normal
+        ).done { result in
+            completion(NumberWrapper.make(withValue: NSNumber(value: Int(result.response.get()!.uint8Value))), nil)
+        }.catch { error in
+            completion(nil, FlutterError(code: "ERROR", message: String(describing: error), details: nil))
+        }
     }
     
     func beginAppOrderChange(_ appReorderRequest: Pigeon_AppReorderRequest?, completion: @escaping (NumberWrapper?, FlutterError?) -> Void) {
