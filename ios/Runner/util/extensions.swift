@@ -113,6 +113,16 @@ extension AppReorderService {
     }
 }
 
+extension AppRunStateService {
+    func sendPromise(packet: AppRunStateMessage) -> Promise<Void> {
+        return Promise { seal in
+            DispatchQueue.main.async {
+                self.send(packet: packet, completionHandler: kotlinSuspendResolver(seal: seal))
+            }
+        }.map {_ in}
+    }
+}
+
 //MARK: - Pigeon serializers
 
 extension libpebblecommon.PbwAppInfo {

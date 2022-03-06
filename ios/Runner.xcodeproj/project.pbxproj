@@ -11,6 +11,7 @@
 		6701505427D1AC4200797B97 /* IntentControlFlutterBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6701505327D1AC4200797B97 /* IntentControlFlutterBridge.swift */; };
 		6701505627D1B48800797B97 /* OpenWith.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6701505527D1B48800797B97 /* OpenWith.swift */; };
 		6701505827D1B96400797B97 /* AppInstallControlFlutterBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6701505727D1B96400797B97 /* AppInstallControlFlutterBridge.swift */; };
+		672D972C27D51B0700F499F4 /* AppLifecycleFlutterBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672D972B27D51B0700F499F4 /* AppLifecycleFlutterBridge.swift */; };
 		67442F7127C9B0D900ACED5B /* AppInstallHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67442F7027C9B0D900ACED5B /* AppInstallHandler.swift */; };
 		6746228D27CC0FCC0056EB6B /* libpebblecommon.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 675F0EB227CB17EE0018C0F7 /* libpebblecommon.xcframework */; };
 		6746228E27CC0FCC0056EB6B /* libpebblecommon.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 675F0EB227CB17EE0018C0F7 /* libpebblecommon.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -89,6 +90,7 @@
 		6701505527D1B48800797B97 /* OpenWith.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenWith.swift; sourceTree = "<group>"; };
 		6701505727D1B96400797B97 /* AppInstallControlFlutterBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInstallControlFlutterBridge.swift; sourceTree = "<group>"; };
 		6701505927D1BCB200797B97 /* PigeonsAlias.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PigeonsAlias.h; sourceTree = "<group>"; };
+		672D972B27D51B0700F499F4 /* AppLifecycleFlutterBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLifecycleFlutterBridge.swift; sourceTree = "<group>"; };
 		67442F7027C9B0D900ACED5B /* AppInstallHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInstallHandler.swift; sourceTree = "<group>"; };
 		6756E20627D3FFBF00ECA2DF /* WatchConnectionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectionState.swift; sourceTree = "<group>"; };
 		6756E20827D42BCA00ECA2DF /* WorkaroundsFlutterBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkaroundsFlutterBridge.swift; sourceTree = "<group>"; };
@@ -273,6 +275,7 @@
 				67B33CD627C464B0007FBA39 /* ScanFlutterBridge.swift */,
 				6701505727D1B96400797B97 /* AppInstallControlFlutterBridge.swift */,
 				6756E20A27D43F2D00ECA2DF /* LoggingFlutterBridge.swift */,
+				672D972B27D51B0700F499F4 /* AppLifecycleFlutterBridge.swift */,
 			);
 			path = common;
 			sourceTree = "<group>";
@@ -577,6 +580,7 @@
 				67B33CED27C464B1007FBA39 /* PermissionControlFlutterBridge.swift in Sources */,
 				6756E20F27D45DEF00ECA2DF /* PromiseTimeout.swift in Sources */,
 				67B33CF727C464B1007FBA39 /* LEPeripheral.swift in Sources */,
+				672D972C27D51B0700F499F4 /* AppLifecycleFlutterBridge.swift in Sources */,
 				67B33CF127C464B1007FBA39 /* FlutterBridgeSetup.swift in Sources */,
 				67B33CEB27C464B1007FBA39 /* FlutterBackgroundController.swift in Sources */,
 				67B33CEC27C464B1007FBA39 /* ConnectionControlBridge.swift in Sources */,

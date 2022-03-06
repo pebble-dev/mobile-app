@@ -14,6 +14,7 @@ class FlutterBridgeSetup {
         AppInstallControlSetup(binaryMessenger, AppInstallControlFlutterBridge(callbackMessenger: binaryMessenger))
         ConnectionControlSetup(binaryMessenger, ConnectionFlutterBridge(callbackMessenger: binaryMessenger))
         PigeonLoggerSetup(binaryMessenger, LoggingFlutterBridge())
+        AppLifecycleControlSetup(binaryMessenger, AppLifecycleFlutterBridge())
     }
     
     static func createBackgroundBridges(binaryMessenger: FlutterBinaryMessenger) {
