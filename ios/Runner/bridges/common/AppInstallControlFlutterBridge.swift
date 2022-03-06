@@ -133,24 +133,23 @@ class AppInstallControlFlutterBridge: NSObject, AppInstallControl {
                     let parsedHeader = PbwBinHeader.companion.parseFileHeader(data: KUtil.shared.byteArrayAsUByteArray(
                         arr: KUtil.shared.byteArrayFromNative(arr: appBlobHeader)
                     ))
-                    
-                    Promise { seal in
-                        ProtocolComms.shared.blobDBService.send(
-                            packet: BlobCommand.InsertCommand(
-                                token: UInt16.random(in: UInt16.min...UInt16.max),
-                                database: .app,
-                                key: parsedHeader.uuid.toBytes(),
-                                value: parsedHeader.toBlobDbApp().toBytes()
-                            ),
-                            priority: .normal,
-                            completionHandler: seal.resolve
-                        )
-                    }.done { result in
+                    ProtocolComms.shared.blobDBService.sendPromise(
+                        packet: BlobCommand.InsertCommand(
+                            token: UInt16.random(in: UInt16.min...UInt16.max),
+                            database: .app,
+                            key: parsedHeader.uuid.toBytes(),
+                            value: parsedHeader.toBlobDbApp().toBytes()
+                        ),
+                        priority: .normal
+                    ).done {result in
                         completion(NumberWrapper.make(withValue: NSNumber(value: Int(result.responseValue.value))), nil)
+                    }.catch { error in
+                        DDLogError("Error during insertAppIntoBlobDb InsertCommand: \(error)")
+                        completion(NumberWrapper.make(withValue: NSNumber(value: Int(BlobResponse.BlobStatus.generalfailure.value))), nil)
                     }
                 }
             }catch {
-                DDLogError("Error during insertAppIntoBlobDb: \(error.localizedDescription)")
+                DDLogError("Error during insertAppIntoBlobDb: \(error)")
                 completion(NumberWrapper.make(withValue: NSNumber(value: Int(BlobResponse.BlobStatus.generalfailure.value))), nil)
             }
         }
