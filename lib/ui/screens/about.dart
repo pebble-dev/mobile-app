@@ -33,6 +33,7 @@ class About extends HookWidget implements CobbleScreen {
 
     return CobbleScaffold.tab(
       title: " ", // We want an empty appbar
+      expandedAppBar: true,
       bottomAppBar: PreferredSize(
         preferredSize: const Size.fromHeight(156.0),
         child: Container(
