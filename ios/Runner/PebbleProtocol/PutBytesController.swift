@@ -13,6 +13,8 @@ import SwiftZip
 import PromiseKit
 
 class PutBytesController {
+    private let notifCenter = NotificationCenter.default
+    
     enum State {
         case Idle
         case Sending
@@ -51,12 +53,14 @@ class PutBytesController {
         }
     }
     
-    private var _status: Status = Status(state: .Idle)
-    
-    public var status: Status {
-        get {
-            return _status
+    private var _status: Status = Status(state: .Idle) {
+        didSet {
+            notifCenter.post(name: NSNotification.Name(rawValue: "PutBytesController.Status"), object: _status)
         }
+    }
+    
+    var status: Status {
+        return _status
     }
     
     private let syncQueue = DispatchQueue(label: "PutBytesSyncQueue")
