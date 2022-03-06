@@ -21,8 +21,8 @@ class Preferences {
     await _sharedPrefs.reload();
   }
 
-  int? getLastConnectedWatchAddress() {
-    return _sharedPrefs.getInt("LAST_CONNECTED_WATCH");
+  String? getLastConnectedWatchAddress() {
+    return _sharedPrefs.getString("LAST_CONNECTED_WATCH");
   }
 
   Future<void> setLastConnectedWatchAddress(String value) async {
