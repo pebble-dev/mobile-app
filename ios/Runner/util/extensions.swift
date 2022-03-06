@@ -87,6 +87,28 @@ extension SystemService {
     }
 }
 
+extension BlobDBService {
+    func sendPromise(packet: BlobCommand, priority: PacketPriority) -> Promise<BlobResponse> {
+        return Promise<BlobResponse> { seal in
+            DispatchQueue.main.async {
+                self.send(packet: packet, priority: priority, completionHandler: kotlinSuspendResolver(seal: seal))
+            }
+        }
+    }
+}
+
+extension AppReorderService {
+    func sendPromise(packet: AppReorderOutgoingPacket) -> Promise<AppReorderResult> {
+        return Promise<KotlinUnit> { seal in
+            DispatchQueue.main.async {
+                self.send(packet: packet, completionHandler: kotlinSuspendResolver(seal: seal))
+            }
+        }.then {_ in
+            return self.receivedMessages.receivePromise()
+        }.map {res in res as! AppReorderResult}
+    }
+}
+
 //MARK: - Pigeon serializers
 
 extension libpebblecommon.PbwAppInfo {
