@@ -20,6 +20,7 @@ class ProtocolComms {
     public let systemService: SystemService
     public let appFetchService: AppFetchService
     public let putBytesService: PutBytesService
+    public let blobDBService: BlobDBService
     
     public let systemHandler: SystemHandler
     public let appInstallHandler: AppInstallHandler
@@ -32,6 +33,7 @@ class ProtocolComms {
         systemService = SystemService(protocolHandler: protocolHandler)
         appFetchService = AppFetchService(protocolHandler: protocolHandler)
         putBytesService = PutBytesService(protocolHandler: protocolHandler)
+        blobDBService = BlobDBService(protocolHandler: protocolHandler)
         
         systemHandler = SystemHandler(systemService: systemService)
         self.appInstallHandler = AppInstallHandler(appFetchService: appFetchService)
