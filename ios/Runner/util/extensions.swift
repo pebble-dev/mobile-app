@@ -186,3 +186,17 @@ extension ProtocolHandlerImpl {
         }
     }
 }
+
+extension UuidUuid {
+    static func fromString(_ string: String) -> UuidUuid? {
+        guard let uuid = UUID.init(uuidString: string) else {
+            return nil
+        }
+        var bTup = uuid.uuid
+        let size = MemoryLayout.size(ofValue: bTup)
+        let bArr: [UInt8] = withUnsafePointer(to: &bTup.0) { point in
+            return [UInt8](UnsafeBufferPointer(start: point, count: size))
+        }
+        return UuidUuid.init(uuidBytes: KUtil.shared.byteArrayFromNative(arr: Data(bArr)))
+    }
+}
