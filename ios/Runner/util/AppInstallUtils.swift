@@ -48,7 +48,7 @@ func getPbwManifest(pbwFile: URL, watchType: WatchType) -> PbwManifest? {
         let manifestEntry = try zip.locate(filename: platformPath(watchType: watchType, fileName: "manifest.json"))
         let manifestData = try manifestEntry.data()
         let manifestString = String(data: manifestData, encoding: .utf8)!
-        return SerializationUtil.shared.deserializeManifest(jsonString: manifestString)
+        return try SerializationUtil.shared.deserializeManifest(jsonString: manifestString)
     } catch {
         return nil
     }
@@ -83,7 +83,7 @@ func requirePbwAppInfo(pbwFile: URL) throws -> libpebblecommon.PbwAppInfo {
         let appInfoEntry = try zip.locate(filename: "appinfo.json")
         let appInfoData = try appInfoEntry.data()
         let appInfoString = String(data: appInfoData, encoding: .utf8)!
-        return SerializationUtil.shared.deserializeAppInfo(jsonString: appInfoString)
+        return try SerializationUtil.shared.deserializeAppInfo(jsonString: appInfoString)
     } catch {
         throw PbwSpecError.appInfoMissing(app: pbwFile.lastPathComponent)
     }
