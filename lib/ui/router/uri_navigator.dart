@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/screens/install_prompt.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,7 +27,7 @@ class UriNavigator implements IntentCallbacks {
   void openUri(StringWrapper arg) async {
     String uri = arg.value!;
 
-    if (!uri.startsWith("content://")) {
+    if (Platform.isAndroid && !uri.startsWith("content://")) {
       // Only content URIs are supported
       return;
     }
