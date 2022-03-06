@@ -1,2 +1,2 @@
 #import "GeneratedPluginRegistrant.h"
-#import "Pigeon/Pigeons.h"
+#import "Pigeon/PigeonsAlias.h"
