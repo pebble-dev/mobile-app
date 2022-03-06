@@ -22,25 +22,12 @@ class LECentral {
     private let queue = DispatchQueue(label: "io.rebble.cobble.bluetooth.LECentral", qos: .utility)
     
     private var peripheralClient: LEClientController?
-    private var connStateCallback: ((Bool) -> ())?
     private var targetDevice: BluePebbleDevice?
-    
-    private var connected = false
     
     init() {
         readyGroup.enter()
         centralController = LECentralController()
         centralController.stateUpdateCallback = stateUpdate
-    }
-    
-    public var currentDevice: BluePebbleDevice? {
-        get {
-            if (connected) {
-                return targetDevice
-            } else {
-                return nil
-            }
-        }
     }
     
     private func stateUpdate(manager: CBCentralManager) {
@@ -51,11 +38,6 @@ class LECentral {
             break
         }
     }
-    
-    func isConnected() -> Bool {
-        return connected
-    }
-    
     
     func waitForReady(onReady: @escaping () -> ()) {
         readyGroup.notify(queue: queue) {
@@ -114,28 +96,30 @@ class LECentral {
         return device
     }
     
-    func connectToWatchHash(watchIdentifier: UUID, onConnectState: @escaping (Bool) -> ()) {
-        let device = getAssociatedWatchFromIdentifier(identifier: watchIdentifier)
-        ProtocolComms.shared.systemHandler.waitNegotiationComplete { [self] in
-            connected = true
-            connStateCallback?(true)
-        }
-        if let device = device {
-            targetDevice = device
-            if let serv = LEPeripheral.shared.gattService {
-                serv.targetWatchIdentifier = watchIdentifier
+    func connectToWatchHash(watchIdentifier: UUID) {
+        WatchConnectionState.current = .waitingForBluetoothToEnable(watch: nil)
+        waitForReady { [self] in
+            let device = getAssociatedWatchFromIdentifier(identifier: watchIdentifier)
+            ProtocolComms.shared.systemHandler.waitNegotiationComplete { [self] in
+                WatchConnectionState.current = WatchConnectionState.connected(watch: self.targetDevice!)
             }
-            centralController.stopScan()
-            connStateCallback = onConnectState
-            centralController.centralManager.cancelPeripheralConnection(device.peripheral)
-            peripheralClient = LEClientController(peripheral: device.peripheral, centralManager: centralController.centralManager, stateCallback: connStatusChange)
-            peripheralClient!.connect()
-            ProtocolComms.shared.startPacketSendingLoop()
-        }else {
-            onConnectState(false)
-            connected = false
-            DDLogError("LECentral: Couldn't find peripheral from scanned devices or iOS side")
+            if let device = device {
+                WatchConnectionState.current = WatchConnectionState.connecting(watch: device)
+                targetDevice = device
+                if let serv = LEPeripheral.shared.gattService {
+                    serv.targetWatchIdentifier = watchIdentifier
+                }
+                centralController.stopScan()
+                centralController.centralManager.cancelPeripheralConnection(device.peripheral)
+                peripheralClient = LEClientController(peripheral: device.peripheral, centralManager: centralController.centralManager, stateCallback: connStatusChange)
+                peripheralClient!.connect()
+                ProtocolComms.shared.startPacketSendingLoop()
+            }else {
+                WatchConnectionState.current = WatchConnectionState.disconnected
+                DDLogError("LECentral: Couldn't find peripheral from scanned devices or iOS side")
+            }
         }
+       
     }
     
     func disconnect() {
@@ -144,9 +128,7 @@ class LECentral {
     
     private func connStatusChange(connStatus: ConnectivityStatus) {
         if connStatus.pairingErrorCode != .noError {
-            peripheralClient?.disconnect()
-            connStateCallback?(false)
-            connected = false
+            WatchConnectionState.current = WatchConnectionState.waitingForReconnect(watch: targetDevice)
             DDLogError("LECentral: Error \(connStatus.pairingErrorCode)")
         } else if connStatus.connected == true && connStatus.paired == true {
             DDLogInfo("LECentral: Connected")
