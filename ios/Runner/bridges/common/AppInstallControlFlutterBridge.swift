@@ -226,7 +226,22 @@ class AppInstallControlFlutterBridge: NSObject, AppInstallControl {
     }
     
     func sendAppOrder(toWatchUuidStringList uuidStringList: ListWrapper?, completion: @escaping (NumberWrapper?, FlutterError?) -> Void) {
-        
+        let uuids = uuidStringList!.value!.map { UuidUuid.fromString($0 as! String)! }
+        withTimeoutOrNull(timeoutMs: 10000,
+                          promise: ProtocolComms.shared.reorderService.sendPromise(packet: AppReorderRequest(appList: uuids)))
+            .done { result in
+                if let result = result {
+                    if result.status.get()?.uint8Value == AppOrderResultCode.success.value {
+                        completion(NumberWrapper.make(withValue: NSNumber(value: Int(BlobResponse.BlobStatus.success.value))), nil)
+                    }
+                }else {
+                    completion(NumberWrapper.make(withValue: NSNumber(value: Int(BlobResponse.BlobStatus.watchdisconnected.value))), nil)
+                }
+            }
+            .catch { error in
+                DDLogDebug("Error during sendAppOrderToWatch: \(error)")
+                completion(NumberWrapper.make(withValue: NSNumber(value: Int(BlobResponse.BlobStatus.generalfailure.value))), nil)
+            }
     }
     
 }
