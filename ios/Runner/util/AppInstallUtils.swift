@@ -10,12 +10,11 @@ import libpebblecommon
 import SwiftZip
 
 enum PbwSpecError: LocalizedError {
-    
     case manifestMissing(platform: WatchType, app: String)
     case blobMissing(blob: String, app: String)
     case appInfoMissing(app: String)
     
-    var localizedDescription: String? {
+    var errorDescription: String? {
         switch self {
         case .manifestMissing(let platform, let app):
             return "Manifest \(platform) missing from app \(app)"
@@ -91,7 +90,7 @@ func requirePbwAppInfo(pbwFile: URL) throws -> libpebblecommon.PbwAppInfo {
 
 private func platformPath(watchType: WatchType, fileName: String) -> String {
     if (watchType == WatchType.aplite) {
-        return "aplite/\(fileName)"
+        return fileName
     }else {
         return "\(watchType.codename)/\(fileName)"
     }

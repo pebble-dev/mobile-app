@@ -20,7 +20,9 @@ private func kotlinSuspendResolver<T>(seal: Resolver<T>) -> ((T?, Error?) -> Voi
 extension Kotlinx_coroutines_coreChannel {
     func receivePromise() -> Promise<Any> {
         return Promise { seal in
-            self.receive(completionHandler: kotlinSuspendResolver(seal: seal))
+            DispatchQueue.main.async {
+                self.receive(completionHandler: kotlinSuspendResolver(seal: seal))
+            }
         }
     }
 }
@@ -28,7 +30,9 @@ extension Kotlinx_coroutines_coreChannel {
 extension Kotlinx_coroutines_coreChannelIterator {
     func hasNextPromise() -> Promise<KotlinBoolean> {
         return Promise { seal in
-            self.hasNext(completionHandler: kotlinSuspendResolver(seal: seal))
+            DispatchQueue.main.async {
+                self.hasNext(completionHandler: kotlinSuspendResolver(seal: seal))
+            }
         }
     }
 }
