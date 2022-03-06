@@ -11,7 +11,8 @@ class FlutterBridgeSetup {
     static func createCommonBridges(binaryMessenger: FlutterBinaryMessenger) {
         PermissionCheckSetup(binaryMessenger, PermissionCheckFlutterBridge())
         ScanControlSetup(binaryMessenger, ScanFlutterBridge(callbackMessenger: binaryMessenger))
-        ConnectionControlSetup(binaryMessenger, ConnectionFlutterBridge())
+        AppInstallControlSetup(binaryMessenger, AppInstallControlFlutterBridge(callbackMessenger: binaryMessenger))
+        ConnectionControlSetup(binaryMessenger, ConnectionFlutterBridge(callbackMessenger: binaryMessenger))
     }
     
     static func createBackgroundBridges(binaryMessenger: FlutterBinaryMessenger) {
@@ -22,5 +23,7 @@ class FlutterBridgeSetup {
         BackgroundSetupControlSetup(binaryMessenger, BackgroundSetupFlutterBridge())
         PermissionControlSetup(binaryMessenger, PermissionControlFlutterBridge())
         UiConnectionControlSetup(binaryMessenger, ConnectionControlBridge(callbackMessenger: binaryMessenger))
+        IntentControlSetup(binaryMessenger, IntentControlFlutterBridge(callbackMessenger: binaryMessenger))
+        WorkaroundsControlSetup(binaryMessenger, WorkaroundsFlutterBridge())
     }
 }
