@@ -87,6 +87,78 @@ extension SystemService {
     }
 }
 
+//MARK: - Pigeon serializers
+
+extension libpebblecommon.PbwAppInfo {
+    func toPigeon() -> Pigeon_PbwAppInfo {
+        return Pigeon_PbwAppInfo.make(withIsValid: true,
+                                      uuid: uuid,
+                                      shortName: shortName,
+                                      longName: longName,
+                                      companyName: companyName,
+                                      versionCode: NSNumber(value: versionCode),
+                                      versionLabel: versionLabel,
+                                      appKeys: appKeys,
+                                      capabilities: capabilities,
+                                      resources: resources.media.map { $0.toPigeon() },
+                                      sdkVersion: sdkVersion,
+                                      targetPlatforms: targetPlatforms,
+                                      watchapp: watchapp.toPigeon())
+    }
+}
+
+extension libpebblecommon.Media {
+    func toPigeon() -> WatchResource {
+        return WatchResource.make(withFile: resourceFile,
+                                  menuIcon: NSNumber(value: menuIcon.value),
+                                  name: name,
+                                  type: type)
+    }
+}
+
+extension libpebblecommon.Watchapp {
+    func toPigeon() -> WatchappInfo {
+        return WatchappInfo.make(withWatchface: NSNumber(value: watchface),
+                                 hiddenApp: NSNumber(value: hiddenApp),
+                                 onlyShownOnCommunication: NSNumber(value: onlyShownOnCommunication))
+    }
+}
+
+extension WatchVersion.WatchVersionResponse {
+    func toPigeon(device: BluePebbleDevice?, model: Int?) -> PebbleDevicePigeon {
+        return PebbleDevicePigeon.make(withName: device?.peripheral.name ?? "",
+                                       address: device?.peripheral.identifier.uuidString ?? "",
+                                       runningFirmware: running.toPigeon(),
+                                       recoveryFirmware: recovery.toPigeon(),
+                                       model: NSNumber(value: model ?? 0),
+                                       bootloaderTimestamp: NSNumber(value: bootloaderTimestamp.get()?.uintValue ?? 0),
+                                       board: board.get()! as String,
+                                       serial: serial.get()! as String,
+                                       language: language.get()! as String,
+                                       languageVersion: NSNumber(value: languageVersion.get()?.uint16Value ?? 0),
+                                       isUnfaithful: NSNumber(value: isUnfaithful.get()?.boolValue ?? false))
+    }
+}
+private func blankWatchFirwmareVersion() -> PebbleFirmwarePigeon {
+    return PebbleFirmwarePigeon.make(withTimestamp: 0,
+                                     version: "",
+                                     gitHash: "",
+                                     isRecovery: NSNumber(value: false),
+                                     hardwarePlatform: 0,
+                                     metadataVersion: 0)
+}
+
+extension WatchFirmwareVersion {
+    func toPigeon() -> PebbleFirmwarePigeon {
+        return PebbleFirmwarePigeon.make(withTimestamp: NSNumber(value: timestamp.get()!.uintValue),
+                                         version: versionTag.get()! as String,
+                                         gitHash: gitHash.get()! as String,
+                                         isRecovery: NSNumber(value: isRecovery.get()!.boolValue),
+                                         hardwarePlatform: NSNumber(value: hardwarePlatform.get()!.uint8Value),
+                                         metadataVersion: NSNumber(value: metadataVersion.get()!.uint8Value))
+    }
+}
+
 //MARK: - Misc. extensions
 
 extension ProtocolHandlerImpl {
