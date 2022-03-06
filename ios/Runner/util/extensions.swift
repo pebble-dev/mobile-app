@@ -188,7 +188,7 @@ extension ProtocolHandlerImpl {
 }
 
 extension UuidUuid {
-    static func fromString(_ string: String) -> UuidUuid? {
+    public static func fromString(_ string: String) -> UuidUuid? {
         guard let uuid = UUID.init(uuidString: string) else {
             return nil
         }

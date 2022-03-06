@@ -172,7 +172,7 @@ class AppInstallControlFlutterBridge: NSObject, AppInstallControl {
                 packet: BlobCommand.DeleteCommand(
                     token: UInt16.random(in: UInt16.min...UInt16.max),
                     database: .app,
-                    key: SUUID(mapper: StructMapper(), default: appUuid)
+                    key: SUUID(mapper: StructMapper(), default: appUuid).toBytes()
                 ),
                 priority: .normal,
                 completionHandler: seal.resolve
@@ -215,7 +215,7 @@ class AppInstallControlFlutterBridge: NSObject, AppInstallControl {
     }
     
     func sendAppOrder(toWatchUuidStringList uuidStringList: ListWrapper?, completion: @escaping (NumberWrapper?, FlutterError?) -> Void) {
-        assertionFailure()
+        
     }
     
 }
