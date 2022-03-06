@@ -29,7 +29,7 @@ class AppInstallControlFlutterBridge: NSObject, AppInstallControl {
             let appInfo = try requirePbwAppInfo(pbwFile: url)
             completion(appInfo.toPigeon(), nil)
         } catch let error as PbwSpecError {
-            DDLogError("Failed to parse PBW when handling getAppInfo: \(error.message), replying with invalid obj")
+            DDLogError("Failed to parse PBW when handling getAppInfo: \(error), replying with invalid obj")
             let invalidPbw = Pigeon_PbwAppInfo()
             invalidPbw.isValid = false
             invalidPbw.watchapp = WatchappInfo()

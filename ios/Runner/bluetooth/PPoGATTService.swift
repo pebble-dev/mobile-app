@@ -18,10 +18,10 @@ public class PPoGATTService {
     
     private var deviceCharacteristic: CBMutableCharacteristic!
     
-    enum GATTIOException : CobbleError {
+    enum GATTIOException : LocalizedError {
         case timeout(String)
         
-        var message: String {
+        var localizedError: String? {
             switch self {
             case .timeout(let message):
                 return message

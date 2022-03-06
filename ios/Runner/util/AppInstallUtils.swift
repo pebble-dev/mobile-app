@@ -9,13 +9,13 @@ import Foundation
 import libpebblecommon
 import SwiftZip
 
-enum PbwSpecError: CobbleError {
+enum PbwSpecError: LocalizedError {
     
     case manifestMissing(platform: WatchType, app: String)
     case blobMissing(blob: String, app: String)
     case appInfoMissing(app: String)
     
-    var message: String {
+    var localizedDescription: String? {
         switch self {
         case .manifestMissing(let platform, let app):
             return "Manifest \(platform) missing from app \(app)"
