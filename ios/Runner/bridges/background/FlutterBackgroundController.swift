@@ -6,57 +6,80 @@
 //
 
 import Foundation
+import PromiseKit
+import CocoaLumberjackSwift
+import shared_preferences_ios
 class FlutterBackgroundController: NSObject, BackgroundControl {
+    static var shared: FlutterBackgroundController!
     private var engine: FlutterEngine?
     
     private let flutterSideReady = DispatchSemaphore(value: 0)
     private let iOSSideReady = DispatchSemaphore(value: 0)
     
+    private let queue = DispatchQueue(label: Bundle.main.bundleIdentifier!+".FlutterBackgroundControllerQueue", qos: .utility)
+    
+    override init() {
+        super.init()
+        initEngine().done { initedEngine in
+            self.engine = initedEngine
+        }.cauterize()
+    }
+    
     func notifyFlutterBackgroundStarted(completion: @escaping (NumberWrapper?, FlutterError?) -> Void) {
-        DispatchQueue.main.async { [self] in
-            flutterSideReady.signal()
+        DDLogDebug("Flutter bg started")
+        flutterSideReady.signal()
+        queue.async { [self] in
             iOSSideReady.wait()
-            let nwrapper = NumberWrapper()
-            nwrapper.value = 0
+            let nwrapper = NumberWrapper.make(withValue: 0)
             completion(nwrapper, nil)
         }
     }
     
-    func getBackgroundFlutterEngine(result: @escaping (FlutterEngine?) -> ()) {
-        if engine != nil {
-            result(engine)
-        }
-        
-        initEngine() { [self] in
-            engine = $0
-            result(engine)
-        }
-    }
-    
-    private func initEngine(result: @escaping (FlutterEngine?) -> ()) {
-        DispatchQueue.main.async { [self] in
-            let persistentState = UserDefaults.standard
-            let backgroundEndpointMethodHandle = persistentState.value(forKey: "FlutterBackgroundHandle") as! Int64
-            let callbackInfo = FlutterCallbackCache.lookupCallbackInformation(backgroundEndpointMethodHandle)!
-            
-            let flutterEngine = FlutterEngine(name: "CobbleBG", project: nil, allowHeadlessExecution: true)
-            createFlutterBridges(flutterEngine: flutterEngine, callbackToStart: callbackInfo) { [self] in
-                result(engine)
+    func getBackgroundFlutterEngine() -> Promise<FlutterEngine?> {
+        return Promise { seal in
+            if let engine = engine {
+                seal.fulfill(engine)
+            }else {
+                initEngine().done { initedEngine in
+                    self.engine = initedEngine
+                    seal.fulfill(self.engine)
+                }.catch { error in
+                    DDLogError("Error initializing background engine: \(error.localizedDescription)")
+                    seal.reject(error)
+                }
             }
         }
     }
     
-    private func createFlutterBridges(flutterEngine: FlutterEngine, callbackToStart: FlutterCallbackInformation?, complete: () -> ()) {
-        DispatchQueue.main.async { [self] in
-            BackgroundControlSetup(flutterEngine.binaryMessenger, self)
-            if callbackToStart != nil {
-                flutterEngine.run(withEntrypoint: callbackToStart!.callbackName, libraryURI: callbackToStart!.callbackLibraryPath)
+    private func initEngine() -> Promise<FlutterEngine?> {
+        return Promise { seal in
+            DispatchQueue.main.async { [self] in
+                let persistentState = UserDefaults.standard
+                let backgroundEndpointMethodHandle = persistentState.value(forKey: "FlutterBackgroundHandle") as! Int64
+                let callbackInfo = FlutterCallbackCache.lookupCallbackInformation(backgroundEndpointMethodHandle)!
+                
+                let flutterEngine = FlutterEngine(name: "CobbleBG", project: nil, allowHeadlessExecution: true)
+                flutterEngine.run(withEntrypoint: callbackInfo.callbackName, libraryURI: callbackInfo.callbackLibraryPath)
                 GeneratedPluginRegistrant.register(with: flutterEngine)
+                
+                createFlutterBridges(flutterEngine: flutterEngine)
+                    .done {
+                        seal.fulfill(flutterEngine)
+                    }
+                    .catch { error in
+                        seal.reject(error)
+                    }
             }
-            flutterSideReady.wait()
+        }
+    }
+    
+    private func createFlutterBridges(flutterEngine: FlutterEngine) -> Promise<()> {
+        return queue.async(.promise) {
+            BackgroundControlSetup(flutterEngine.binaryMessenger, self)
+            self.flutterSideReady.wait()
             FlutterBridgeSetup.createCommonBridges(binaryMessenger: flutterEngine.binaryMessenger)
             FlutterBridgeSetup.createBackgroundBridges(binaryMessenger: flutterEngine.binaryMessenger)
-            iOSSideReady.signal()
+            self.iOSSideReady.signal()
         }
     }
 }
