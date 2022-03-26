@@ -1,7 +1,6 @@
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
-import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:rxdart/rxdart.dart';
 
 class Workaround {

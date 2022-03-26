@@ -34,7 +34,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
     BackgroundAppInstallCallbacks.setup(this);
 
     connectionSubscription = container.listen(
-      connectionStateProvider.state,
+      connectionStateProvider,
     );
   }
 

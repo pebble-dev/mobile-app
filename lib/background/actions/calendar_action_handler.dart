@@ -21,7 +21,7 @@ import 'package:cobble/util/state_provider_extension.dart';
 import 'package:cobble/util/stream_extensions.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:device_calendar/device_calendar.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class CalendarActionHandler implements ActionHandler {
   final TimelinePinDao _dao;
@@ -217,6 +217,6 @@ final calendarActionHandlerProvider = Provider((ref) =>
       ref.read(timelinePinDaoProvider),
       ref.read(calendarSyncerProvider),
       ref.read(watchTimelineSyncerProvider),
-      ref.read(calendarListProvider),
+      ref.read(calendarListProvider.notifier),
       ref.read(deviceCalendarPluginProvider),
     ));

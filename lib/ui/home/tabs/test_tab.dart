@@ -1,5 +1,4 @@
 import 'package:cobble/domain/connection/connection_state_provider.dart';
-import 'package:cobble/domain/entities/hardware_platform.dart';
 import 'package:cobble/domain/permissions.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
@@ -27,7 +26,7 @@ class TestTab extends HookWidget implements CobbleScreen {
 
   @override
   Widget build(BuildContext context) {
-    final connectionState = useProvider(connectionStateProvider.state);
+    final connectionState = useProvider(connectionStateProvider);
     final defaultWatch = useProvider(defaultWatchProvider);
 
     final permissionControl = useProvider(permissionControlProvider);

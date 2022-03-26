@@ -23,9 +23,9 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
     final userInitiatedInstall = useState(false);
     final watchUploadHasStarted = useState(false);
 
-    final installStatus = useProvider(appInstallStatusProvider.state);
-    final appManager = useProvider(appManagerProvider);
-    final connectionStatus = useProvider(connectionStateProvider.state);
+    final installStatus = useProvider(appInstallStatusProvider);
+    final appManager = useProvider(appManagerProvider.notifier);
+    final connectionStatus = useProvider(connectionStateProvider);
 
     final connectedWatch = connectionStatus.currentConnectedWatch;
 

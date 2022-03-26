@@ -9,8 +9,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class DevOptionsPage extends HookWidget implements CobbleScreen {
   @override
   Widget build(BuildContext context) {
-    final devConControl = useProvider(devConnectionProvider);
-    final devConnState = useProvider(devConnectionProvider.state);
+    final devConControl = useProvider(devConnectionProvider.notifier);
+    final devConnState = useProvider(devConnectionProvider);
 
     final preferences = useProvider(preferencesProvider);
     final bootUrl = useProvider(bootUrlProvider).data?.value ?? "";

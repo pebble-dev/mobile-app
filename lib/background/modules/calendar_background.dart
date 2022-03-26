@@ -28,7 +28,7 @@ class CalendarBackground implements CalendarCallbacks {
     CalendarCallbacks.setup(this);
 
     connectionSubscription = container.listen(
-      connectionStateProvider.state,
+      connectionStateProvider,
     );
   }
 
