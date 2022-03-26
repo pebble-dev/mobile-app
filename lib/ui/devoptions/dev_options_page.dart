@@ -72,15 +72,13 @@ class DevOptionsPage extends HookWidget implements CobbleScreen {
             title: Text("URL"),
             subtitle: TextField(
               controller: bootUrlController,
-              onChanged: (value) {
-                preferences.whenData((prefs) => prefs.setBoot(value));
-              },
+              readOnly: true,
             ),
           ),
           SwitchListTile(
               value: shouldOverrideBoot,
-              title: Text("Override stage2 config"),
-              subtitle: Text("If enabled, will ignore boot URL"),
+              title: Text("Override boot URL"),
+              subtitle: Text("If enabled, will use the override boot URL instead of the main boot URL"),
               onChanged: (value) {
                 preferences
                     .whenData((prefs) => prefs.setShouldOverrideBoot(value));
