@@ -48,10 +48,9 @@ class BackgroundReceiver implements TimelineCallbacks {
 
     masterActionHandler = container.read(masterActionHandlerProvider);
 
-    connectionSubscription = container.listen(
-      connectionStateProvider,
-      mayHaveChanged: (sub) {
-        final currentConnectedWatch = sub.read().currentConnectedWatch;
+    connectionSubscription = container.listen<WatchConnectionState>(
+      connectionStateProvider, (previous, value) {
+        final currentConnectedWatch = value.currentConnectedWatch;
         if (isConnectedToWatch()! && currentConnectedWatch!.name!.isNotEmpty) {
           onWatchConnected(currentConnectedWatch);
         }
@@ -62,7 +61,7 @@ class BackgroundReceiver implements TimelineCallbacks {
       final asyncValue =
           await container.readUntilFirstSuccessOrError(preferencesProvider);
 
-      return asyncValue.data!.value;
+      return asyncValue.asData!.value;
     });
 
     TimelineCallbacks.setup(this);

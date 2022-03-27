@@ -29,7 +29,7 @@ class AppManager extends StateNotifier<List<App>> {
     await refresh();
   }
 
-  void beginAppInstall(String uri, PbwAppInfo appInfo) async {
+  void beginAppInstall(WidgetRef ref, String uri, PbwAppInfo appInfo) async {
     final wrapper = InstallData();
     wrapper.uri = uri;
     wrapper.appInfo = appInfo;

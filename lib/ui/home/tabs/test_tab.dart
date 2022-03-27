@@ -19,22 +19,22 @@ import 'package:share/share.dart';
 
 import '../../common/icons/fonts/rebble_icons.dart';
 
-class TestTab extends HookWidget implements CobbleScreen {
+class TestTab extends HookConsumerWidget implements CobbleScreen {
   final NotificationsControl notifications = NotificationsControl();
 
   final ConnectionControl connectionControl = ConnectionControl();
   final DebugControl debug = DebugControl();
 
   @override
-  Widget build(BuildContext context) {
-    final connectionState = useProvider(connectionStateProvider);
-    final defaultWatch = useProvider(defaultWatchProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final connectionState = ref.watch(connectionStateProvider);
+    final defaultWatch = ref.watch(defaultWatchProvider);
 
-    final permissionControl = useProvider(permissionControlProvider);
-    final permissionCheck = useProvider(permissionCheckProvider);
+    final permissionControl = ref.watch(permissionControlProvider);
+    final permissionCheck = ref.watch(permissionCheckProvider);
 
-    final preferences = useProvider(preferencesProvider);
-    final neededWorkarounds = useProvider(neededWorkaroundsProvider).when(
+    final preferences = ref.watch(preferencesProvider);
+    final neededWorkarounds = ref.watch(neededWorkaroundsProvider).when(
       data: (data) => data,
       loading: () => List<Workaround>.empty(),
       error: (e, s) => List<Workaround>.empty(),

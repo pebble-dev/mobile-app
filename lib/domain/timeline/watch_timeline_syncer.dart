@@ -167,4 +167,4 @@ final AutoDisposeProvider<WatchTimelineSyncer> watchTimelineSyncerProvider =
   );
 });
 
-final timelineSyncControlProvider = Provider((ref) => TimelineSyncControl());
+final timelineSyncControlProvider = Provider<TimelineSyncControl>((ref) => TimelineSyncControl());

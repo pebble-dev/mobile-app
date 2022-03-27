@@ -157,4 +157,4 @@ Provider.autoDispose<WatchAppsSyncer>((ref) {
   );
 });
 
-final appInstallControlProvider = Provider((ref) => AppInstallControl());
+final appInstallControlProvider = Provider<AppInstallControl>((ref) => AppInstallControl());

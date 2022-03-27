@@ -27,7 +27,7 @@ class AppLogReceiver extends StateNotifier<List<AppLogEntry>>
   }
 }
 
-final recievedLogsProvider = StateNotifierProvider.autoDispose((ref) {
+final recievedLogsProvider = StateNotifierProvider.autoDispose<AppLogReceiver, dynamic>((ref) {
   final receiver = AppLogReceiver();
 
   ref.onDispose(() {

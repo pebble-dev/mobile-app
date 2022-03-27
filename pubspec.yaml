@@ -35,7 +35,7 @@ dependencies:
   sqflite: ^2.0.0+3
   package_info: ^2.0.2
   state_notifier: ^0.7.0
-  hooks_riverpod: ^0.14.0
+  hooks_riverpod: ^1.0.1
   flutter_hooks: ^0.17.0
   # We are using custom build of device_calendar with enhancements needed for Cobble app
   # pending PRs:

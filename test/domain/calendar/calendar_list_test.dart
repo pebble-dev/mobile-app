@@ -88,7 +88,7 @@ void main() {
     ];
 
     await container
-        .listen(calendarListProvider.notifier)
+        .listen<CalendarList>(calendarListProvider.notifier, (previous, value) {})
         .read()
         .setCalendarEnabled("22", false);
 
@@ -123,11 +123,11 @@ void main() {
     ];
 
     await container
-        .listen(calendarListProvider.notifier)
+        .listen<CalendarList>(calendarListProvider.notifier, (previous, value) {})
         .read()
         .setCalendarEnabled("22", false);
     await container
-        .listen(calendarListProvider.notifier)
+        .listen<CalendarList>(calendarListProvider.notifier, (previous, value) {})
         .read()
         .setCalendarEnabled("22", true);
 

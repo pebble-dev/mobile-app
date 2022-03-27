@@ -33,12 +33,12 @@ void initBackground() {
   BackgroundSetupControl().setupBackground(wrapper);
 }
 
-class MyApp extends HookWidget {
+class MyApp extends HookConsumerWidget {
   @override
-  Widget build(BuildContext context) {
-    final permissionControl = useProvider(permissionControlProvider);
-    final permissionCheck = useProvider(permissionCheckProvider);
-    final defaultWatch = useProvider(defaultWatchProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final permissionControl = ref.watch(permissionControlProvider);
+    final permissionCheck = ref.watch(permissionCheckProvider);
+    final defaultWatch = ref.watch(defaultWatchProvider);
 
     useEffect(() {
       Future.microtask(() async {

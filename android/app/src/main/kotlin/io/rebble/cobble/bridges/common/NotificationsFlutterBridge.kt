@@ -19,6 +19,7 @@ class NotificationsFlutterBridge @Inject constructor(
     }
 
     override fun sendTestNotification() {
+        android.util.Log.d("Noah", "sendTestNotification()");
         coroutineScope.launch {
             notificationService.send(PushNotification(
                     "Test Notification"

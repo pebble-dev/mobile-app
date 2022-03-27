@@ -24,17 +24,16 @@ class _App {
   _App(this.name, this.enabled, this.packageId);
 }
 
-class AlertingApps extends HookWidget implements CobbleScreen {
-  final packageDetails = useProvider(packageDetailsProvider).getPackageList();
-
+class AlertingApps extends HookConsumerWidget implements CobbleScreen {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final random = Random();
     final filter = useState(SheetOnChanged.initial);
 
     final sheet = CobbleSheet.useInline();
-    final mutedPackages = useProvider(notificationsMutedPackagesProvider);
-    final preferences = useProvider(preferencesProvider);
+    final mutedPackages = ref.watch(notificationsMutedPackagesProvider);
+    final preferences = ref.watch(preferencesProvider);
+    final packageDetails = ref.watch(packageDetailsProvider).getPackageList();
 
     return CobbleScaffold.tab(
         title: tr.alertingApps.title,
@@ -78,7 +77,7 @@ class AlertingApps extends HookWidget implements CobbleScreen {
               if (snapshot.hasData) {
                 List<_App> apps = [];
                 for (int i = 0; i < snapshot.data!.packageId!.length; i++) {
-                  final enabled = (mutedPackages.data?.value ?? []).firstWhere(
+                  final enabled = (mutedPackages.asData?.value ?? []).firstWhere(
                           (element) => element == snapshot.data!.packageId![i],
                           orElse: () => null) ==
                       null;
@@ -110,7 +109,7 @@ class AlertingApps extends HookWidget implements CobbleScreen {
                             value: app.enabled,
                             onChanged: (value) async {
                               var mutedPkgList =
-                                  mutedPackages.data?.value ?? [];
+                                  mutedPackages.asData?.value ?? [];
                               if (value) {
                                 mutedPkgList.removeWhere(
                                     (element) => element == app.packageId);
@@ -118,7 +117,7 @@ class AlertingApps extends HookWidget implements CobbleScreen {
                                 print(app.packageId);
                                 mutedPkgList.add(app.packageId);
                               }
-                              await preferences.data?.value
+                              await preferences.asData?.value
                                   .setNotificationsMutedPackages(mutedPkgList);
                             },
                           ),

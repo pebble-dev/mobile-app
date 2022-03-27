@@ -21,15 +21,15 @@ import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:share/share.dart';
 
-class LockerTab extends HookWidget implements CobbleScreen {
+class LockerTab extends HookConsumerWidget implements CobbleScreen {
   @override
-  Widget build(BuildContext context) {
-    final connectionState = useProvider(connectionStateProvider.state);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final connectionState = ref.watch(connectionStateProvider);
 
     final currentWatch = connectionState.currentConnectedWatch;
 
-    final appManager = useProvider(appManagerProvider);
-    List allPackages = useProvider(appManagerProvider.state);
+    final appManager = ref.watch(appManagerProvider.notifier);
+    List<App> allPackages = ref.watch(appManagerProvider);
     List incompatibleApps =
         allPackages.where((element) => !element.isWatchface).toList();
     List incompatibleFaces =

@@ -18,7 +18,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../common/icons/fonts/rebble_icons.dart';
 
-class MyWatchesTab extends HookWidget implements CobbleScreen {
+class MyWatchesTab extends HookConsumerWidget implements CobbleScreen {
   final Color _disconnectedColor = Color.fromRGBO(255, 255, 255, 0.5);
   final Color _connectedColor = Color.fromARGB(255, 0, 255, 170);
   final Color _connectedBrColor = Color.fromARGB(255, 0, 169, 130);
@@ -28,12 +28,12 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
   final ConnectionControl connectionControl = ConnectionControl();
 
   @override
-  Widget build(BuildContext context) {
-    final connectionState = useProvider(connectionStateProvider);
-    final defaultWatch = useProvider(defaultWatchProvider);
-    final pairedStorage = useProvider(pairedStorageProvider.notifier);
-    final allWatches = useProvider(pairedStorageProvider);
-    final preferencesFuture = useProvider(preferencesProvider.future);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final connectionState = ref.watch(connectionStateProvider);
+    final defaultWatch = ref.watch(defaultWatchProvider);
+    final pairedStorage = ref.watch(pairedStorageProvider.notifier);
+    final allWatches = ref.watch(pairedStorageProvider);
+    final preferencesFuture = ref.watch(preferencesProvider.future);
 
     List<PebbleScanDevice> allWatchesList =
         List<PebbleScanDevice>.from(allWatches.map((e) => e.device));
