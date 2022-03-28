@@ -6,20 +6,14 @@ import 'package:cobble/domain/entities/hardware_platform.dart';
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/home/tabs/locker_tab/apps_item.dart';
 import 'package:cobble/ui/home/tabs/locker_tab/faces_card.dart';
-import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/components/cobble_divider.dart';
 import 'package:cobble/ui/common/components/cobble_fab.dart';
-import 'package:cobble/ui/common/components/cobble_sheet.dart';
-import 'package:cobble/ui/common/components/cobble_tile.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
-import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:share/share.dart';
 
 class LockerTab extends HookConsumerWidget implements CobbleScreen {
   @override

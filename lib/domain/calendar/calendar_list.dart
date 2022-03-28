@@ -46,9 +46,9 @@ class CalendarList extends StateNotifier<AsyncValue<List<SelectableCalendar>>> {
       return AsyncValue.error(calendars.errors);
     } else {
       return AsyncValue.data(calendars.data
-          .map((c) => SelectableCalendar(
-              c.name, c.id, !_blacklistedCalendars!.contains(c.id), c.color))
-          .toList());
+          ?.map((c) => SelectableCalendar(
+              c.name ?? 'Unknown', c.id ?? 'unknown', !_blacklistedCalendars!.contains(c.id), c.color ?? 0))
+          .toList() ?? []);
     }
   }
 

@@ -58,8 +58,10 @@ class CalendarSyncer {
         return false;
       }
 
-      for (final event in result.data) {
-        allCalendarEvents.add(_EventInCalendar(calendar, event));
+      if (result.data != null) {
+        for (final event in result.data!) {
+          allCalendarEvents.add(_EventInCalendar(calendar, event));
+        }
       }
     }
 

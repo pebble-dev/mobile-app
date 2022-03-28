@@ -19,16 +19,16 @@ extension CalendarEventConverter on Event {
 
     if (description != null) {
       headings.add("");
-      paragraphs.add(_transformDescription(description));
+      paragraphs.add(_transformDescription(description ?? ''));
     }
 
-    if (attendees != null && attendees.isNotEmpty) {
-      final attendeesString = attendees
+    if (attendees != null && attendees!.isNotEmpty) {
+      final attendeesString = attendees!
           .map((e) {
-            if (e.name?.trim().isNotEmpty == true) {
-              return e.name;
+            if (e?.name?.trim().isNotEmpty == true) {
+              return e!.name;
             } else {
-              return e.emailAddress;
+              return e!.emailAddress;
             }
           })
           .where((label) => label != null && label.trim().isNotEmpty)
@@ -39,8 +39,8 @@ extension CalendarEventConverter on Event {
         paragraphs.add(attendeesString);
       }
 
-      final selfAttendee = attendees.firstWhereOrNull(
-        (element) => element.isCurrentUser == true,
+      final selfAttendee = attendees!.firstWhereOrNull(
+        (element) => element?.isCurrentUser == true,
       );
 
       if (selfAttendee != null) {
@@ -67,8 +67,8 @@ extension CalendarEventConverter on Event {
     }
 
     if (recurrenceRule != null) {
-      String recurrenceText = tr.recurrence.unknown;
-      switch (recurrenceRule.recurrenceFrequency) {
+      String recurrenceText;
+      switch (recurrenceRule?.recurrenceFrequency) {
         case RecurrenceFrequency.Daily:
           recurrenceText = tr.recurrence.daily;
           break;
@@ -81,6 +81,8 @@ extension CalendarEventConverter on Event {
         case RecurrenceFrequency.Yearly:
           recurrenceText = tr.recurrence.yearly;
           break;
+        default:
+          recurrenceText = tr.recurrence.unknown;
       }
 
       headings.add(tr.timelineAttribute.heading.recurrence);
@@ -93,7 +95,7 @@ extension CalendarEventConverter on Event {
     return [
       TimelineAttribute.tinyIcon(TimelineIcon.timelineCalendar),
       TimelineAttribute.title(title),
-      if (location != null) TimelineAttribute.locationName(location),
+      if (location != null) TimelineAttribute.locationName(location!),
       if (recurrenceRule != null) TimelineAttribute.displayRecurring(true),
       TimelineAttribute.headings(headings),
       TimelineAttribute.paragraphs(paragraphs)
@@ -104,7 +106,7 @@ extension CalendarEventConverter on Event {
     final List<TimelineAction> actions = [];
 
     final selfAtteendee = attendees?.firstWhereOrNull(
-      (element) => element.isCurrentUser == true,
+      (element) => element?.isCurrentUser == true,
     );
 
     if (selfAtteendee != null) {
@@ -164,11 +166,11 @@ extension CalendarEventConverter on Event {
         parentId: calendarWatchappId,
         backingId: createCompositeBackingId(),
         timestamp: start,
-        duration: end.difference(start).inMinutes,
+        duration: start == null ? end?.difference(start!).inMinutes : null,
         type: TimelinePinType.pin,
         isVisible: true,
         isFloating: false,
-        isAllDay: allDay,
+        isAllDay: allDay ?? false,
         persistQuickView: false,
         layout: TimelinePinLayout.calendarPin,
         attributesJson: attributesJson,
@@ -183,7 +185,7 @@ extension CalendarEventConverter on Event {
   /// To ease processing, we insert composite ID into database that contains
   /// both
   String createCompositeBackingId() {
-    return "${calendarId}T${eventId}T${start.millisecondsSinceEpoch}";
+    return "${calendarId}T${eventId}T${start?.millisecondsSinceEpoch ?? 0}";
   }
 
   String _transformDescription(String rawDescription) {
