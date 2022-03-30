@@ -22,29 +22,32 @@ class Preferences {
   }
 
   String? getBoot() {
+    if (shouldOverrideBoot() == true) {
+      return getOverrideBootValue();
+    }
     return _sharedPrefs.getString("boot");
   }
 
   Future<void> setBoot(String value) async {
-    await _sharedPrefs.setString("overrideBoot", value);
+    await _sharedPrefs.setString("boot", value);
     _preferencesUpdateStream.add(this);
   }
 
   bool? shouldOverrideBoot() {
-    return _sharedPrefs.getBool("overrideBoot");
+    return _sharedPrefs.getBool("shouldOverrideBoot");
   }
 
   Future<void> setShouldOverrideBoot(bool value) async {
-    await _sharedPrefs.setBool("overrideBoot", value);
+    await _sharedPrefs.setBool("shouldOverrideBoot", value);
     _preferencesUpdateStream.add(this);
   }
 
   String? getOverrideBootValue() {
-    return _sharedPrefs.getString("overrideBoot");
+    return _sharedPrefs.getString("bootOverrideUrl");
   }
 
   Future<void> setOverrideBootValue(String value) async {
-    await _sharedPrefs.setString("boot", value);
+    await _sharedPrefs.setString("bootOverrideUrl", value);
     _preferencesUpdateStream.add(this);
   }
 
