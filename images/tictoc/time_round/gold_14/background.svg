@@ -1,0 +1,21 @@
+<svg version="1.1" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <rect width="180" height="180" ry="0" fill="#f55" fill-rule="evenodd" stroke-width="3"/>
+    <g fill-rule="evenodd" stroke="#ffa" stroke-width="2">
+      <path d="m80 11 8 16"/>
+      <path d="m88 11-8 16"/>
+      <path d="m93 11v16"/>
+      <path d="m99 11v16"/>
+    </g>
+    <g fill="none" stroke="#ffa" stroke-width="2">
+      <path d="m97 169-4-16-4 16"/>
+      <path d="m84 153v16"/>
+      <path d="m153 84h16"/>
+      <path d="m153 90h16"/>
+      <path d="m153 96h16"/>
+      <path d="m11 96h16"/>
+      <path d="m11 83 16 8"/>
+      <path d="m11 91 16-8"/>
+    </g>
+  </g>
+</svg>
