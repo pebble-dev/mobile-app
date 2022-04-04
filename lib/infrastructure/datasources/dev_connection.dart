@@ -99,7 +99,7 @@ class DevConnection extends StateNotifier<DevConnState> {
     connectedSocket.add(bytes);
   }
 
-  void _beginAppInstall(Uint8List pbwData, WebSocket socket) async {
+   void _beginAppInstall(Uint8List pbwData, WebSocket socket) async {
     final dir = await getTemporaryDirectory();
     final tempPbwFile = File("${dir.path}/tmp.pbw");
 
@@ -158,9 +158,9 @@ class DevConnState {
   DevConnState(this.running, this.connected, this.localIp);
 }
 
-final devConnectionProvider = StateNotifierProvider<DevConnection>((ref) {
+final devConnectionProvider = StateNotifierProvider<DevConnection, DevConnState>((ref) {
   final incomingPacketsStream = ref.read(rawPacketStreamProvider);
-  final appManager = ref.read(appManagerProvider);
+  final appManager = ref.read(appManagerProvider.notifier);
   return DevConnection(incomingPacketsStream, appManager);
 });
 

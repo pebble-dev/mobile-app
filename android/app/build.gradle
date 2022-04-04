@@ -30,7 +30,7 @@ android {
     if (System.getenv("ANDROID_NDK_HOME") != null) {
         ndkPath "$System.env.ANDROID_NDK_HOME"
     }
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -92,7 +92,7 @@ flutter {
     source '../..'
 }
 
-def libpebblecommon_version = '0.0.26'
+def libpebblecommon_version = '0.1.3'
 def coroutinesVersion = "1.5.2"
 def lifecycleVersion = "2.3.1"
 def timberVersion = "4.7.1"

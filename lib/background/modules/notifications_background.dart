@@ -11,7 +11,7 @@ class NotificationsBackground implements NotificationListening {
   NotificationsBackground(this.container);
 
   void init() async {
-    notificationManager = container.listen(notificationManagerProvider).read();
+    notificationManager = container.listen<NotificationManager>(notificationManagerProvider, (previous, value) {}).read();
 
     NotificationListening.setup(this);
   }
@@ -23,6 +23,6 @@ class NotificationsBackground implements NotificationListening {
 
   @override
   void dismissNotification(StringWrapper arg) {
-    notificationManager.dismissNotification(Uuid(arg.value!));
+    notificationManager.dismissNotification(Uuid.parse(arg.value!));
   }
 }

@@ -46,9 +46,9 @@ class CalendarList extends StateNotifier<AsyncValue<List<SelectableCalendar>>> {
       return AsyncValue.error(calendars.errors);
     } else {
       return AsyncValue.data(calendars.data
-          .map((c) => SelectableCalendar(
-              c.name, c.id, !_blacklistedCalendars!.contains(c.id), c.color))
-          .toList());
+          ?.map((c) => SelectableCalendar(
+              c.name ?? 'Unknown', c.id ?? 'unknown', !_blacklistedCalendars!.contains(c.id), c.color ?? 0))
+          .toList() ?? []);
     }
   }
 
@@ -72,8 +72,8 @@ class CalendarList extends StateNotifier<AsyncValue<List<SelectableCalendar>>> {
   }
 }
 
-final AutoDisposeStateNotifierProvider<CalendarList> calendarListProvider =
-    StateNotifierProvider.autoDispose<CalendarList>((ref) {
+final AutoDisposeStateNotifierProvider<CalendarList, AsyncValue<List<SelectableCalendar>>> calendarListProvider =
+    StateNotifierProvider.autoDispose<CalendarList, AsyncValue<List<SelectableCalendar>>>((ref) {
   // Use auto-dispose to ensure calendar list is reloaded every time user
   // re-opens the screen since we cannot propagate change notifications
   // between background and UI isolate

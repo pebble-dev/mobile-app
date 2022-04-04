@@ -34,7 +34,7 @@ class UuidConverter implements JsonConverter<Uuid?, String?> {
     if (json == null) {
       return null;
     }
-    return Uuid(json);
+    return Uuid.parse(json);
   }
 
   @override
@@ -51,7 +51,7 @@ class NonNullUuidConverter implements JsonConverter<Uuid, String> {
 
   @override
   Uuid fromJson(String json) {
-    return Uuid(json);
+    return Uuid.parse(json);
   }
 
   @override

@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.callbackFlow
 fun IntentFilter.asFlow(context: Context): Flow<Intent> = callbackFlow {
     val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            offer(intent)
+            trySend(intent).getOrThrow()
         }
     }
 

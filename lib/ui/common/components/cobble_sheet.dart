@@ -130,13 +130,11 @@ class InlineCobbleSheet {
 
   set _ctr(PersistentBottomSheetController<void> controller) {
     _controller.value = controller;
-    if (controller != null) {
-      _shown = true;
-      controller.closed.then((value) {
-        _shown = false;
-        _controller.value = null;
-      });
-    }
+    _shown = true;
+    controller.closed.then((value) {
+      _shown = false;
+      _controller.value = null;
+    });
   }
 
   bool _shown = false;

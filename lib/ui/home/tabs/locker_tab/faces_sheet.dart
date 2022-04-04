@@ -8,9 +8,10 @@ import 'package:cobble/ui/common/components/cobble_tile.dart';
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/components/cobble_sheet.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class FacesPreview extends StatelessWidget {
   FacesPreview({
@@ -68,7 +69,7 @@ class FacesPreview extends StatelessWidget {
 
 class FacesSheet {
   static void showModal({
-    required BuildContext context,
+    required WidgetRef ref, required BuildContext context,
     required App face,
     bool compatible = false,
     required AppManager appManager,

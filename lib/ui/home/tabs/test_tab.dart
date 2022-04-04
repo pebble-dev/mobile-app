@@ -15,26 +15,26 @@ import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../common/icons/fonts/rebble_icons.dart';
 
-class TestTab extends HookWidget implements CobbleScreen {
+class TestTab extends HookConsumerWidget implements CobbleScreen {
   final NotificationsControl notifications = NotificationsControl();
 
   final ConnectionControl connectionControl = ConnectionControl();
   final DebugControl debug = DebugControl();
 
   @override
-  Widget build(BuildContext context) {
-    final connectionState = useProvider(connectionStateProvider.state);
-    final defaultWatch = useProvider(defaultWatchProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final connectionState = ref.watch(connectionStateProvider);
+    final defaultWatch = ref.watch(defaultWatchProvider);
 
-    final permissionControl = useProvider(permissionControlProvider);
-    final permissionCheck = useProvider(permissionCheckProvider);
+    final permissionControl = ref.watch(permissionControlProvider);
+    final permissionCheck = ref.watch(permissionCheckProvider);
 
-    final preferences = useProvider(preferencesProvider);
-    final neededWorkarounds = useProvider(neededWorkaroundsProvider).when(
+    final preferences = ref.watch(preferencesProvider);
+    final neededWorkarounds = ref.watch(neededWorkaroundsProvider).when(
       data: (data) => data,
       loading: () => List<Workaround>.empty(),
       error: (e, s) => List<Workaround>.empty(),
@@ -85,13 +85,13 @@ class TestTab extends HookWidget implements CobbleScreen {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () {
                   notifications.sendTestNotification();
                 },
                 child: Text("Test Notification"),
               ),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () {
                   ListWrapper l = ListWrapper();
                   l.value = [
@@ -109,7 +109,7 @@ class TestTab extends HookWidget implements CobbleScreen {
                 },
                 child: Text("Ping"),
               ),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () {
                   debug.collectLogs();
                 },

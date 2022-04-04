@@ -10,7 +10,7 @@ import 'package:cobble/domain/timeline/timeline_icon.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-final TEST_CALENDAR =
+final testCalendar =
     SelectableCalendar("Test@Calendar", "10", true, 0xFFFFFFFF);
 
 void main() {
@@ -128,7 +128,7 @@ void main() {
       ]),
     ].toSet();
 
-    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+    expect(event.getAttributes(testCalendar).toSet(), expectedAttributes);
   });
 
   test("Generate attributes from event with description", () {
@@ -165,7 +165,7 @@ void main() {
       ]),
     ].toSet();
 
-    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+    expect(event.getAttributes(testCalendar).toSet(), expectedAttributes);
   });
 
   test("Generate attributes from event with location", () {
@@ -200,7 +200,7 @@ void main() {
       ]),
     ].toSet();
 
-    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+    expect(event.getAttributes(testCalendar).toSet(), expectedAttributes);
   });
 
   test("Generate attributes from event with attendees", () {
@@ -239,7 +239,7 @@ void main() {
       ]),
     ].toSet();
 
-    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+    expect(event.getAttributes(testCalendar).toSet(), expectedAttributes);
   });
 
   test("Generate attributes from recurring event", () {
@@ -275,7 +275,7 @@ void main() {
       ]),
     ].toSet();
 
-    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+    expect(event.getAttributes(testCalendar).toSet(), expectedAttributes);
   });
 
   test("Remove html tags from calendar description", () {
@@ -312,7 +312,7 @@ void main() {
       ]),
     ].toSet();
 
-    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+    expect(event.getAttributes(testCalendar).toSet(), expectedAttributes);
   });
 
   test("Trim long calendar descriptions", () {
@@ -352,7 +352,7 @@ void main() {
       ]),
     ].toSet();
 
-    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+    expect(event.getAttributes(testCalendar).toSet(), expectedAttributes);
   });
 
   test("Generate actions from basic event", () {
@@ -481,7 +481,7 @@ void main() {
       )
     ];
 
-    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+    expect(event.getAttributes(testCalendar).toSet(), expectedAttributes);
     expect(event.getActions().toSet(), expectedActions.toSet());
   });
 
@@ -546,7 +546,7 @@ void main() {
       )
     ];
 
-    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+    expect(event.getAttributes(testCalendar).toSet(), expectedAttributes);
     expect(event.getActions().toSet(), expectedActions.toSet());
   });
 
@@ -612,7 +612,7 @@ void main() {
       )
     ];
 
-    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+    expect(event.getAttributes(testCalendar).toSet(), expectedAttributes);
     expect(event.getActions().toSet(), expectedActions.toSet());
   });
 
@@ -677,7 +677,7 @@ void main() {
       )
     ];
 
-    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+    expect(event.getAttributes(testCalendar).toSet(), expectedAttributes);
     expect(event.getActions().toSet(), expectedActions.toSet());
   });
 
@@ -743,7 +743,7 @@ void main() {
       )
     ];
 
-    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+    expect(event.getAttributes(testCalendar).toSet(), expectedAttributes);
     expect(event.getActions().toSet(), expectedActions.toSet());
   });
 
@@ -808,7 +808,7 @@ void main() {
       )
     ];
 
-    expect(event.getAttributes(TEST_CALENDAR).toSet(), expectedAttributes);
+    expect(event.getAttributes(testCalendar).toSet(), expectedAttributes);
     expect(event.getActions().toSet(), expectedActions.toSet());
   });
 }

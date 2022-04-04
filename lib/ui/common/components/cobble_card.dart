@@ -52,10 +52,8 @@ class CobbleCard extends StatelessWidget {
           leading is IconData || leading is ImageProvider,
           'Leading can be only IconData and ImageProvider',
         ),
-        assert(title != null && title.length > 0),
+        assert(title.length > 0),
         assert(subtitle == null || subtitle.length > 0),
-        assert(actions != null),
-        assert(padding != null),
         super(key: key);
 
   factory CobbleCard.inList({

@@ -12,20 +12,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class InstallPrompt extends HookWidget implements CobbleScreen {
+class InstallPrompt extends HookConsumerWidget implements CobbleScreen {
   final String _appUri;
   final PbwAppInfo _appInfo;
 
   InstallPrompt(this._appUri, this._appInfo);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final userInitiatedInstall = useState(false);
     final watchUploadHasStarted = useState(false);
 
-    final installStatus = useProvider(appInstallStatusProvider.state);
-    final appManager = useProvider(appManagerProvider);
-    final connectionStatus = useProvider(connectionStateProvider.state);
+    final installStatus = ref.watch(appInstallStatusProvider);
+    final appManager = ref.watch(appManagerProvider.notifier);
+    final connectionStatus = ref.watch(connectionStateProvider);
 
     final connectedWatch = connectionStatus.currentConnectedWatch;
 
@@ -53,7 +53,7 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
       body = Column(
         children: [
           Text("Sorry, this is not a valid PBW file"),
-          RaisedButton(
+          ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -64,7 +64,7 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
       body = Column(
         children: [
           Text("Watch not connected"),
-          RaisedButton(
+          ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -75,7 +75,7 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
       body = Column(
         children: [
           Text("Watch not compatible"),
-          RaisedButton(
+          ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -87,13 +87,13 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
         children: [
           Text(
               "Do you want to install ${_appInfo.longName} by ${_appInfo.companyName}?"),
-          RaisedButton(
+          ElevatedButton(
               onPressed: () {
-                appManager.beginAppInstall(_appUri, _appInfo);
+                appManager.beginAppInstall(ref, _appUri, _appInfo);
                 userInitiatedInstall.value = true;
               },
               child: Text("Yes")),
-          RaisedButton(
+          ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },

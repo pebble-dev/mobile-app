@@ -22,7 +22,7 @@ class CalendarSyncer {
   final DateTimeProvider _dateTimeProvider;
   final TimelinePinDao _timelinePinDao;
 
-  final _uuidGenerator = RandomBasedUuidGenerator();
+  final _uuidGenerator = RandomUuidGenerator();
 
   /// Sync all calendar changes from device calendar to DB.
   ///
@@ -58,8 +58,10 @@ class CalendarSyncer {
         return false;
       }
 
-      for (final event in result.data) {
-        allCalendarEvents.add(_EventInCalendar(calendar, event));
+      if (result.data != null) {
+        for (final event in result.data!) {
+          allCalendarEvents.add(_EventInCalendar(calendar, event));
+        }
       }
     }
 
@@ -139,7 +141,7 @@ class _EventInCalendar {
 
 final AutoDisposeProvider<CalendarSyncer> calendarSyncerProvider =
     Provider.autoDispose<CalendarSyncer>((ref) {
-  final calendarList = ref.watch(calendarListProvider);
+  final calendarList = ref.watch(calendarListProvider.notifier);
   final deviceCalendar = ref.watch(deviceCalendarPluginProvider);
   final dateTimeProvider = ref.watch(currentDateTimeProvider);
   final timelinePinDao = ref.watch(timelinePinDaoProvider);

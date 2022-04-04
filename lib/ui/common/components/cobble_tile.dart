@@ -34,7 +34,7 @@ class CobbleTile extends StatelessWidget {
     this.onTap,
     this.navigateTo,
     this.intent,
-  })  : assert(title != null && title.length > 0),
+  })  : assert(title.length > 0),
         assert(
           onTap == null || navigateTo == null,
           'You can use only one of onTap and navigateTo, not both',
@@ -319,8 +319,6 @@ class CobbleTile extends StatelessWidget {
     required Color color,
     required Widget child,
   }) {
-    assert(color != null);
-    assert(child != null);
     return Builder(
       builder: (context) => Theme(
         data: context.theme.copyWith(

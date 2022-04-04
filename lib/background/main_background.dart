@@ -16,7 +16,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'actions/master_action_handler.dart';
 import 'modules/calendar_background.dart';
 
-void main_background() {
+void mainBackground() {
   WidgetsFlutterBinding.ensureInitialized();
 
   BackgroundReceiver();
@@ -48,10 +48,9 @@ class BackgroundReceiver implements TimelineCallbacks {
 
     masterActionHandler = container.read(masterActionHandlerProvider);
 
-    connectionSubscription = container.listen(
-      connectionStateProvider.state,
-      mayHaveChanged: (sub) {
-        final currentConnectedWatch = sub.read().currentConnectedWatch;
+    connectionSubscription = container.listen<WatchConnectionState>(
+      connectionStateProvider, (previous, value) {
+        final currentConnectedWatch = value.currentConnectedWatch;
         if (isConnectedToWatch()! && currentConnectedWatch!.name!.isNotEmpty) {
           onWatchConnected(currentConnectedWatch);
         }
@@ -62,7 +61,7 @@ class BackgroundReceiver implements TimelineCallbacks {
       final asyncValue =
           await container.readUntilFirstSuccessOrError(preferencesProvider);
 
-      return asyncValue.data!.value;
+      return asyncValue.asData!.value;
     });
 
     TimelineCallbacks.setup(this);

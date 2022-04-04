@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart' as pigeon;
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class PairCallbacks implements pigeon.PairCallbacks {
   final StreamController<int?> streamController;

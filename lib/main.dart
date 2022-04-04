@@ -12,7 +12,7 @@ import 'package:cobble/ui/theme/use_platform_brightness.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'domain/permissions.dart';
 import 'infrastructure/datasources/paired_storage.dart';
@@ -27,18 +27,18 @@ void main() {
 
 void initBackground() {
   final CallbackHandle backgroundCallbackHandle =
-      PluginUtilities.getCallbackHandle(main_background);
+      PluginUtilities.getCallbackHandle(mainBackground);
   final wrapper = NumberWrapper();
   wrapper.value = backgroundCallbackHandle.toRawHandle();
   BackgroundSetupControl().setupBackground(wrapper);
 }
 
-class MyApp extends HookWidget {
+class MyApp extends HookConsumerWidget {
   @override
-  Widget build(BuildContext context) {
-    final permissionControl = useProvider(permissionControlProvider);
-    final permissionCheck = useProvider(permissionCheckProvider);
-    final defaultWatch = useProvider(defaultWatchProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final permissionControl = ref.watch(permissionControlProvider);
+    final permissionCheck = ref.watch(permissionCheckProvider);
+    final defaultWatch = ref.watch(defaultWatchProvider);
 
     useEffect(() {
       Future.microtask(() async {

@@ -64,7 +64,7 @@ class AppDao {
         .map((e) => App.fromMap(e))
         .toList();
 
-    if (!list.isEmpty) {
+    if (list.isNotEmpty) {
       return list.first;
     } else {
       return null;
@@ -213,7 +213,7 @@ class AppDao {
   }
 }
 
-final AutoDisposeProvider<AppDao> appDaoProvider = Provider.autoDispose((ref) {
+final AutoDisposeProvider<AppDao> appDaoProvider = Provider.autoDispose<AppDao>((ref) {
   final dbFuture = ref.watch(databaseProvider.future);
   return AppDao(dbFuture);
 });

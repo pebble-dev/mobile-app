@@ -7,9 +7,7 @@ class CobbleScheme extends InheritedWidget {
     Key? key,
     required this.schemeData,
     required Widget child,
-  })  : assert(schemeData != null),
-        assert(child != null),
-        super(key: key, child: child);
+  })  : super(key: key, child: child);
 
   @override
   bool updateShouldNotify(covariant CobbleScheme oldWidget) =>

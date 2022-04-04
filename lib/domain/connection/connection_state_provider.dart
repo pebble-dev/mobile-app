@@ -32,14 +32,15 @@ class ConnectionCallbacksStateNotifier
   }
 
   void dispose() {
+    super.dispose();
     ConnectionCallbacks.setup(null);
     _connectionControl.cancelObservingConnectionChanges();
   }
 }
 
-final AutoDisposeStateNotifierProvider<ConnectionCallbacksStateNotifier>
+final AutoDisposeStateNotifierProvider<ConnectionCallbacksStateNotifier, WatchConnectionState>
     connectionStateProvider =
-    StateNotifierProvider.autoDispose<ConnectionCallbacksStateNotifier>((ref) {
+    StateNotifierProvider.autoDispose<ConnectionCallbacksStateNotifier, WatchConnectionState>((ref) {
   final notifier = ConnectionCallbacksStateNotifier();
   ref.onDispose(notifier.dispose);
   return notifier;

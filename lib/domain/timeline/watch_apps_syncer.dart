@@ -146,7 +146,7 @@ final AutoDisposeProvider<WatchAppsSyncer> watchAppSyncerProvider =
 Provider.autoDispose<WatchAppsSyncer>((ref) {
   final appDao = ref.watch(appDaoProvider);
   final appInstallControl = ref.watch(appInstallControlProvider);
-  final connectionState = ref.watch(connectionStateProvider);
+  final connectionState = ref.watch(connectionStateProvider.notifier);
   final preferences = ref.read(preferencesProvider.future);
 
   return WatchAppsSyncer(
@@ -157,4 +157,4 @@ Provider.autoDispose<WatchAppsSyncer>((ref) {
   );
 });
 
-final appInstallControlProvider = Provider((ref) => AppInstallControl());
+final appInstallControlProvider = Provider<AppInstallControl>((ref) => AppInstallControl());

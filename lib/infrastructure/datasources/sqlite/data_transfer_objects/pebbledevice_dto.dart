@@ -9,7 +9,6 @@ extension PebbleDeviceSqlExtensions on PebbleScanDevice {
   }
 
   Map<String, dynamic> get _sqlSelf {
-    if (this == null) return {};
     return {
       "id": this.address,
       "name": this.name,

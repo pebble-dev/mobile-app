@@ -21,7 +21,7 @@ import 'package:cobble/util/state_provider_extension.dart';
 import 'package:cobble/util/stream_extensions.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:device_calendar/device_calendar.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class CalendarActionHandler implements ActionHandler {
   final TimelinePinDao _dao;
@@ -58,7 +58,6 @@ class CalendarActionHandler implements ActionHandler {
     }
   }
 
-  @override
   Future<TimelineActionResponse> _handleRemoveEventAction(
     TimelinePin pin,
   ) async {
@@ -73,14 +72,13 @@ class CalendarActionHandler implements ActionHandler {
     ]);
   }
 
-  @override
   Future<TimelineActionResponse> _handleMuteCalendarAction(
     TimelinePin pin,
   ) async {
     final calendarList =
     await (_calendarList.streamWithExistingValue.firstSuccessOrError() as FutureOr<AsyncValue<List<SelectableCalendar>>>);
 
-    final calendars = calendarList.data!.value;
+    final calendars = calendarList.asData?.value;
     if (calendars == null) {
       return TimelineActionResponse(false);
     }
@@ -102,7 +100,6 @@ class CalendarActionHandler implements ActionHandler {
     ]);
   }
 
-  @override
   Future<TimelineActionResponse> _handleAttendanceAction(TimelinePin pin,
       int? actionId,) async {
     final eventId = CalendarEventId.fromTimelinePin(pin);
@@ -115,14 +112,14 @@ class CalendarActionHandler implements ActionHandler {
       eventId.calendarId,
       RetrieveEventsParams(eventIds: [eventId.eventId]),
     );
-    if (!events.isSuccess || events.data.isEmpty) {
+    if (!events.isSuccess || events.data == null || events.data!.isEmpty) {
       Log.e("Unknown event ${eventId.eventId}");
       return TimelineActionResponse(false);
     }
 
-    final event = events.data.first;
-    final selfAttendee = event.attendees.firstWhereOrNull(
-          (element) => element.isCurrentUser == true,
+    final event = events.data!.first;
+    final selfAttendee = event.attendees?.firstWhereOrNull(
+          (element) => element?.isCurrentUser == true,
     );
 
     if (selfAttendee == null) {
@@ -148,7 +145,6 @@ class CalendarActionHandler implements ActionHandler {
       }
 
       selfAttendee.androidAttendeeDetails = AndroidAttendeeDetails(
-        role: selfAttendee.androidAttendeeDetails.role,
         attendanceStatus: targetAttendanceStatus,
       );
     } else if (Platform.isIOS) {
@@ -169,7 +165,6 @@ class CalendarActionHandler implements ActionHandler {
       }
 
       selfAttendee.iosAttendeeDetails = IosAttendeeDetails(
-        role: selfAttendee.iosAttendeeDetails.role,
         attendanceStatus: targetAttendanceStatus,
       );
     } else {
@@ -212,11 +207,11 @@ class CalendarActionHandler implements ActionHandler {
   }
 }
 
-final calendarActionHandlerProvider = Provider((ref) =>
+final calendarActionHandlerProvider = Provider<CalendarActionHandler>((ref) =>
     CalendarActionHandler(
       ref.read(timelinePinDaoProvider),
       ref.read(calendarSyncerProvider),
       ref.read(watchTimelineSyncerProvider),
-      ref.read(calendarListProvider),
+      ref.read(calendarListProvider.notifier),
       ref.read(deviceCalendarPluginProvider),
     ));

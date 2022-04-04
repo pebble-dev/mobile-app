@@ -82,7 +82,7 @@ class BlueGATTServer(
                         } else {
                             delayedAckJob = serverScope.launch {
                                 delay(200)
-                                this@actor.channel.offer(SendActorMessage.ForceSendAck(message.sequence))
+                                this@actor.channel.trySend(SendActorMessage.ForceSendAck(message.sequence))
                             }
                         }
                     }
@@ -95,7 +95,7 @@ class BlueGATTServer(
                         val maxPacketSize = mtu - 4
 
                         while (phoneToWatchBuffer.size < maxPacketSize) {
-                            val nextPacket = pendingPackets.poll()
+                            val nextPacket = pendingPackets.tryReceive().getOrNull()
                                     ?: break
                             nextPacket.notifyPacketStatus(true)
                             phoneToWatchBuffer.write(nextPacket.data.toByteArray())
@@ -125,7 +125,7 @@ class BlueGATTServer(
 
     suspend fun onNewPacketToSend(packet: ProtocolHandler.PendingPacket) {
         pendingPackets.send(packet)
-        sendActor.offer(SendActorMessage.UpdateData)
+        sendActor.trySend(SendActorMessage.UpdateData)
     }
 
     override fun onServiceAdded(status: Int, service: BluetoothGattService?) {
@@ -271,7 +271,7 @@ class BlueGATTServer(
     override fun onNotificationSent(device: BluetoothDevice?, status: Int) {
         if (targetDevice.address == device!!.address) {
             Timber.d("onNotificationSent")
-            sendActor.offer(SendActorMessage.UpdateData)
+            sendActor.trySend(SendActorMessage.UpdateData)
         }
     }
 
@@ -434,7 +434,7 @@ class BlueGATTServer(
      */
     private fun requestReset() {
         Timber.w("Requesting reset")
-        sendActor.offer(SendActorMessage.SendReset)
+        sendActor.trySend(SendActorMessage.SendReset)
     }
 
     /**
@@ -455,7 +455,7 @@ class BlueGATTServer(
             connectionStatusChannel.send(true)
         }
         initialReset = true
-        sendActor.offer(SendActorMessage.UpdateData)
+        sendActor.trySend(SendActorMessage.UpdateData)
     }
 
     /**
@@ -463,7 +463,7 @@ class BlueGATTServer(
      */
     private fun sendAck(sequence: Int) {
         Timber.d("Sending ACK for $sequence")
-        sendActor.offer(SendActorMessage.SendAck(sequence))
+        sendActor.trySend(SendActorMessage.SendAck(sequence))
     }
 
     /**
@@ -471,7 +471,7 @@ class BlueGATTServer(
      */
     private fun sendResetAck(sequence: Int) {
         Timber.d("Sending reset ACK for $sequence")
-        sendActor.offer(SendActorMessage.SendResetAck)
+        sendActor.trySend(SendActorMessage.SendResetAck)
     }
 
     /**
@@ -484,7 +484,7 @@ class BlueGATTServer(
     fun closePebble() {
         Timber.d("Server closing connection")
         sendActor.close()
-        connectionStatusChannel.offer(false)
+        connectionStatusChannel.trySend(false)
         bluetoothGattServer.cancelConnection(targetDevice)
         bluetoothGattServer.clearServices()
         bluetoothGattServer.close()

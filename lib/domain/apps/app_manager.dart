@@ -29,7 +29,7 @@ class AppManager extends StateNotifier<List<App>> {
     await refresh();
   }
 
-  void beginAppInstall(String uri, PbwAppInfo appInfo) async {
+  void beginAppInstall(WidgetRef ref, String uri, PbwAppInfo appInfo) async {
     final wrapper = InstallData();
     wrapper.uri = uri;
     wrapper.appInfo = appInfo;
@@ -64,7 +64,7 @@ class AppManager extends StateNotifier<List<App>> {
   }
 }
 
-final appManagerProvider = AutoDisposeStateNotifierProvider<AppManager>((ref) {
+final appManagerProvider = AutoDisposeStateNotifierProvider<AppManager, List<App>>((ref) {
   final dao = ref.watch(appDaoProvider);
   final rpc = ref.read(backgroundRpcProvider);
   return AppManager(dao, rpc);

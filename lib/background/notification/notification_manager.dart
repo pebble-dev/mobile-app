@@ -1,16 +1,11 @@
-
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:cobble/background/actions/master_action_handler.dart';
 import 'package:cobble/domain/db/dao/active_notification_dao.dart';
 import 'package:cobble/domain/db/models/active_notification.dart';
 import 'package:cobble/domain/db/models/timeline_pin.dart';
 import 'package:cobble/domain/db/models/timeline_pin_layout.dart';
 import 'package:cobble/domain/db/models/timeline_pin_type.dart';
-import 'package:cobble/domain/logging.dart';
 import 'package:cobble/domain/notification/notification_action.dart';
 import 'package:cobble/domain/notification/notification_category_android.dart';
 import 'package:cobble/domain/notification/notification_message.dart';
@@ -22,13 +17,12 @@ import 'package:cobble/domain/timeline/timeline_icon.dart';
 import 'package:cobble/domain/timeline/timeline_serializer.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid_type/uuid_type.dart';
 
-final Uuid notificationsWatchappId = Uuid("B2CAE818-10F8-46DF-AD2B-98AD2254A3C1");
+final Uuid notificationsWatchappId = Uuid.parse("B2CAE818-10F8-46DF-AD2B-98AD2254A3C1");
 
 class NotificationManager {
   final NotificationUtils _notificationUtils = NotificationUtils();
@@ -86,7 +80,7 @@ class NotificationManager {
       id.value = old.pinId.toString();
       _notificationUtils.dismissNotificationWatch(id);
     }
-    Uuid itemId = RandomBasedUuidGenerator().generate();
+    Uuid itemId = RandomUuidGenerator().generate();
     List<TimelineAttribute> attributes = [
       TimelineAttribute.tinyIcon(await _determineIcon(notif.packageId, CategoryAndroid.fromId(notif.category))),
       TimelineAttribute.title(notif.appName!.trim()),
@@ -114,13 +108,11 @@ class NotificationManager {
     List<String>? disabledActionPkgs = (await _preferencesFuture).getStringList(disabledActionPackagesKey);
     if (disabledActionPkgs == null || !disabledActionPkgs.contains(notif.packageId)) {
       List<Map<String, dynamic>> notifActions = new List<Map<String, dynamic>>.from(jsonDecode(notif.actionsJson!));
-      if (notifActions != null) {
-        for (int i=0; i<notifActions.length; i++) {
-          NotificationAction action = NotificationAction.fromJson(notifActions[i]);
-          actions.add(TimelineAction((MetaAction.values.length)+i, action.isResponse! ? actionTypeResponse : actionTypeGeneric, [
-            TimelineAttribute.title(action.title)
-          ]));
-        }
+      for (int i=0; i<notifActions.length; i++) {
+        NotificationAction action = NotificationAction.fromJson(notifActions[i]);
+        actions.add(TimelineAction((MetaAction.values.length)+i, action.isResponse! ? actionTypeResponse : actionTypeGeneric, [
+          TimelineAttribute.title(action.title)
+        ]));
       }
     }
     attributes.add(content);
@@ -227,7 +219,7 @@ class NotificationManager {
   }
 }
 
-final notificationManagerProvider = Provider((ref) => NotificationManager(ref.read(activeNotifDaoProvider!), ref.read(sharedPreferencesProvider)));
+final notificationManagerProvider = Provider<NotificationManager>((ref) => NotificationManager(ref.read(activeNotifDaoProvider!), ref.read(sharedPreferencesProvider)));
 
 final disabledActionPackagesKey = "disabledActionPackages";
 

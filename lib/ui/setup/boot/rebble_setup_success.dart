@@ -10,10 +10,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class RebbleSetupSuccess extends HookWidget implements CobbleScreen {
+class RebbleSetupSuccess extends HookConsumerWidget implements CobbleScreen {
   @override
-  Widget build(BuildContext context) {
-    final preferences = useProvider(preferencesProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final preferences = ref.watch(preferencesProvider);
     return CobbleScaffold.page(
       title: tr.setup.success.title,
       child: Column(

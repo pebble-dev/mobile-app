@@ -5,7 +5,6 @@ import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/datasources/sqlite/data_transfer_objects/baseobj_dto.dart';
 import 'package:cobble/infrastructure/datasources/sqlite/filters.dart';
 import 'package:cobble/infrastructure/datasources/sqlite/sqlite_tables.dart';
-import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as pathlib;
 import 'package:sqflite/sqflite.dart';
 
@@ -24,7 +23,7 @@ class SQLiteDataSource {
 
   Future<Database> initializeDatabase() async {
     // Get the directory path for both Android and iOS to store database.
-    var databasesPath = await (getDatabasesPath() as FutureOr<String>);
+    var databasesPath = await getDatabasesPath();
     String path = pathlib.join(databasesPath, 'demo.db');
 
     // Open/close the database at a given path
@@ -73,7 +72,6 @@ class SQLiteDataSource {
         print("SQL ERROR: Object Type Not Supported!!");
         return [[]];
     }
-    return [];
   }
 
   //////////////////////////////////
@@ -225,12 +223,8 @@ class SQLiteDataSource {
   String _parseRelFilters(String sql, List<RelationalFilter>? relFilters) {
     if (relFilters == null) return sql;
     for (RelationalFilter filter in relFilters) {
-      if (filter.value != null &&
-          filter.attributeName != null &&
-          filter.attributeOperator != null) {
-        sql +=
-            "${filter.attributeName} ${ops[filter.attributeOperator]} ${filter.value}, ";
-      }
+      sql +=
+          "${filter.attributeName} ${ops[filter.attributeOperator]} ${filter.value}, ";
     }
     return (sql.length > 1) ? sql.substring(0, sql.length - 2) : sql;
   }
@@ -245,12 +239,10 @@ class SQLiteDataSource {
       // Loop thru each obj within a relation
       for (Map<String, dynamic> singleMap in map[tableName]) {
         if (tableName == "name_here_for_only_insert") {
-          try {
-            await _singleInsert(tableName, singleMap);
-          } on DatabaseException catch (exception) {}
+          await _singleInsert(tableName, singleMap);
         } else if (tableName == "name_here_for_no_id_column")
           await _singleInsertOrUpdate(tableName, singleMap);
-        else if (singleMap != null)
+        else
           await _singleUpdateOrInsert(tableName, singleMap);
       }
     }
@@ -259,15 +251,9 @@ class SQLiteDataSource {
   Future _singleUpdateOrInsert(
       String tableName, Map<String, dynamic> obj) async {
     int updateResult = 0;
-    try {
-      updateResult = await _singleUpdate(tableName, obj);
-    } on DatabaseException catch (exception) {
-      //if (exception.isUniqueConstraintError()) {}
-    }
+    updateResult = await _singleUpdate(tableName, obj);
     if (updateResult == 0) {
-      try {
-        await _singleInsert(tableName, obj);
-      } on DatabaseException catch (exception) {}
+      await _singleInsert(tableName, obj);
     }
   }
 
@@ -277,20 +263,18 @@ class SQLiteDataSource {
       await _singleInsert(tableName, obj);
     } on DatabaseException catch (exception) {
       if (exception.isUniqueConstraintError()) {
-        try {
-          await _singleUpdate(tableName, obj);
-        } on DatabaseException catch (exception) {}
+        await _singleUpdate(tableName, obj);
       }
     }
   }
 
   Future _singleInsert(String tableName, Map<String, dynamic> map) async {
-    if (map == null || map.length < 1) return false;
+    if (map.length < 1) return false;
     return await (await this.database)!.insert(tableName, map);
   }
 
   Future<int> _singleUpdate(String tableName, Map map) async {
-    if (map == null || map.length < 1 || map["id"] == null) return -1;
+    if (map.length < 1 || map["id"] == null) return -1;
     return await (await this.database)!
         .update(tableName, map as Map<String, Object?>, where: "id = ?", whereArgs: [map["id"]]);
   }

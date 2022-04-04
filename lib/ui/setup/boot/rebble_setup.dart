@@ -21,7 +21,7 @@ class RebbleSetup extends StatelessWidget implements CobbleScreen {
         children: <Widget>[
           Text(
               "Rebble Web Services provides the app store, timeline integration, timeline weather, and voice dictation"),
-          RaisedButton(
+          ElevatedButton(
             child: Text("SIGN IN TO REBBLE SERVICES"),
             onPressed: () => canLaunch(_getBootUrl).then((value) {
               if (value) {

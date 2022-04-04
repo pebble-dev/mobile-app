@@ -11,14 +11,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class Notifications extends HookWidget implements CobbleScreen {
+class Notifications extends HookConsumerWidget implements CobbleScreen {
   @override
-  Widget build(BuildContext context) {
-    final preferences = useProvider(preferencesProvider);
-    final notifcationsEnabled = useProvider(notificationToggleProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final preferences = ref.watch(preferencesProvider);
+    final notifcationsEnabled = ref.watch(notificationToggleProvider);
     final phoneNotificationsMuteEnabled =
-        useProvider(phoneNotificationsMuteProvider);
-    final phoneCallsMuteEnabled = useProvider(phoneCallsMuteProvider);
+        ref.watch(phoneNotificationsMuteProvider);
+    final phoneCallsMuteEnabled = ref.watch(phoneCallsMuteProvider);
 
     return CobbleScaffold.tab(
       title: tr.notifications.title,
