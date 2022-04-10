@@ -87,82 +87,20 @@ class PutBytesController @Inject constructor(
     ) {
         Timber.d("Send app part %s %s %s %s %s %f",
                 watchType, appId, manifestEntry, type, type.value, progressMultiplier)
-        putBytesService.send(
-                PutBytesAppInit(manifestEntry.size.toUInt(), type, appId)
-        )
-
         val source = requirePbwBinaryBlob(pbwFile, watchType, manifestEntry.name)
-        val cookie = source.buffer().use {
-            awaitCookieAndPutSource(
-                    it,
-                    manifestEntry.crc,
-                    progressMultiplier
+        source.buffer().use {
+            putBytesService.sendAppPart(
+                    appId,
+                    it.readByteArray(),
+                    watchType,
+                    metadataStore.lastConnectedWatchMetadata.value!!,
+                    manifestEntry,
+                    type
             )
         }
-
-        Timber.d("Sending install")
-
-        putBytesService.send(
-                PutBytesInstall(cookie)
-        )
         awaitAck()
 
         Timber.d("Install complete")
-    }
-
-    private suspend fun awaitCookieAndPutSource(
-            source: BufferedSource,
-            expectedCrc: Long?,
-            progressMultiplier: Double
-    ): UInt {
-        val cookie = awaitAck().cookie.get()
-        lastCookie = cookie
-
-        val maxDataSize = getPutBytesMaximumDataSize(
-                metadataStore.lastConnectedWatchMetadata.value
-        )
-
-        val buffer = ByteArray(maxDataSize)
-        val crcCalculator = Crc32Calculator()
-
-        var totalBytes = 0
-        while (true) {
-            val readBytes = withContext(Dispatchers.IO) {
-                source.read(buffer)
-            }
-
-            if (readBytes <= 0) {
-                break
-            }
-
-            val payload = buffer.copyOf(readBytes).toUByteArray()
-            crcCalculator.addBytes(payload)
-
-            putBytesService.send(
-                    PutBytesPut(cookie, payload)
-            )
-            awaitAck()
-
-            val newProgress = status.value.progress + progressMultiplier * readBytes
-            Timber.d("Progress %f", newProgress)
-            _status.value = Status(State.SENDING, newProgress)
-            totalBytes += readBytes
-        }
-
-        val calculatedCrc = crcCalculator.finalize()
-        if (expectedCrc != null && calculatedCrc != expectedCrc.toUInt()) {
-            throw IllegalStateException(
-                    "Sending fail: Crc mismatch ($calculatedCrc != $expectedCrc)"
-            )
-        }
-
-        Timber.d("Sending commit")
-        putBytesService.send(
-                PutBytesCommit(cookie, calculatedCrc)
-        )
-        awaitAck()
-
-        return cookie
     }
 
     private fun launchNewPutBytesSession(block: suspend () -> Unit) {

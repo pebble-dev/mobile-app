@@ -36,7 +36,7 @@ class PairedStorage @Inject constructor(private val context: Context) {
             val dev = devices.first {
                 it.getBoolean("isDefault")
             }
-            return dev.getJSONObject("device").getLong("address").macAddressToString()
+            return dev.getJSONObject("device").getString("address")
         } catch (e: NoSuchElementException) {
             return null
         }
