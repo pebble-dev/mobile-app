@@ -3,6 +3,7 @@ package io.rebble.cobble.service
 import android.app.PendingIntent
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
+import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
@@ -121,7 +122,7 @@ class WatchService : LifecycleService() {
                 this,
                 0,
                 Intent(this, MainActivity::class.java),
-                0
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
         )
 
         return NotificationCompat
