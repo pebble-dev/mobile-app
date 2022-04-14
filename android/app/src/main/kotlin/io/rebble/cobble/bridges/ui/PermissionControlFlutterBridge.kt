@@ -34,9 +34,11 @@ class PermissionControlFlutterBridge @Inject constructor(
         private val activity: MainActivity,
         private val activityLifecycle: Lifecycle,
         private val coroutineScope: CoroutineScope,
-        binaryMessenger: BinaryMessenger
+        bridgeLifecycleController: BridgeLifecycleController
 ) : FlutterBridge, Pigeons.PermissionControl {
-
+    init {
+        bridgeLifecycleController.setupControl(Pigeons.PermissionControl::setup, this)
+    }
     private suspend fun requestNotificationAccess() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val companionDeviceManager: CompanionDeviceManager = activity.getSystemService()!!
