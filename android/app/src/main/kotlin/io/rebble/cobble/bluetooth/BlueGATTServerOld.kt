@@ -3,6 +3,7 @@ package io.rebble.cobble.bluetooth
 import android.bluetooth.*
 import android.content.Context
 import io.rebble.libpebblecommon.ProtocolHandler
+import io.rebble.libpebblecommon.ble.GATTPacket
 import io.rebble.libpebblecommon.ble.LEConstants
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel

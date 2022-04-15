@@ -1,7 +1,9 @@
 package io.rebble.cobble.bluetooth
 
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
+import android.bluetooth.BluetoothManager
 import android.content.Context
 import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.receivers.BluetoothBondReceiver
@@ -22,7 +24,7 @@ class BlueLEDriver(
 ) : BlueIO {
     private var connectivityWatcher: ConnectivityWatcher? = null
     private var connectionParamManager: ConnectionParamManager? = null
-    private var gattDriver: BlueGATTServer? = null
+    private var gattDriver: PPoGATTServer? = null
     lateinit var targetPebble: BluetoothDevice
 
     private val connectionStatusFlow = MutableStateFlow<Boolean?>(null)
@@ -116,7 +118,7 @@ class BlueLEDriver(
                     }
                 }
             }
-        } else if (gattDriver?.connected == true) {
+        } else if (gattDriver?.connectionStateFlow?.firstOrNull()?.newState == BluetoothGatt.STATE_CONNECTED) {
             Timber.d("Connectivity: device already connected")
             connect()
         } else {
@@ -145,7 +147,7 @@ class BlueLEDriver(
 
                     this@BlueLEDriver.targetPebble = device
 
-                    val server = BlueGATTServer(device, context, this, protocolHandler)
+                    val server =  PPoGATTServer(device, context, this, protocolHandler, context.applicationContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager)
                     gattDriver = server
 
                     connectionState = LEConnectionState.CONNECTING
@@ -185,7 +187,7 @@ class BlueLEDriver(
                         if (servicesRes != null && servicesRes.isSuccess()) {
                             if (gatt?.getService(UUID.fromString(LEConstants.UUIDs.PAIRING_SERVICE_UUID))?.getCharacteristic(UUID.fromString(LEConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC)) != null) {
                                 Timber.d("Subscribing to connparams")
-                                if (connectionParamManager!!.subscribe() || gattDriver?.connected == true) {
+                                if (connectionParamManager!!.subscribe() || connectionStatusFlow.value == true) {
                                     Timber.d("Starting connectivity after connparams")
                                     deviceConnectivity()
                                 }
@@ -232,10 +234,16 @@ class BlueLEDriver(
     private suspend fun connect() {
         Timber.d("Connect called")
 
-        if (!gattDriver?.connectPebble()!!) {
-            closePebble()
-        } else {
-            connectionStatusFlow.value = true
+        gattDriver?.connectionStateFlow?.collect {
+            when (it.newState) {
+                BluetoothGatt.STATE_CONNECTED -> {
+                    connectionStatusFlow.value = true
+                }
+
+                BluetoothGatt.STATE_DISCONNECTED -> {
+                    closePebble()
+                }
+            }
         }
     }
 }

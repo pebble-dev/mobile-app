@@ -21,6 +21,7 @@ class BleScanner @Inject constructor() {
     private var stopTrigger: CompletableDeferred<Unit>? = null
 
     fun getScanFlow(): Flow<List<BluePebbleDevice>> = flow {
+        //noinspection MissingPermission
         coroutineScope {
             val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
                     ?: throw BluetoothNotSupportedException("Device does not have a bluetooth adapter")
