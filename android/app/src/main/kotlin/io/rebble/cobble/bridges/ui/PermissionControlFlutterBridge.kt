@@ -151,7 +151,7 @@ class PermissionControlFlutterBridge @Inject constructor(
         coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
             requestPermission(
                     REQUEST_CODE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) Manifest.permission.ACCESS_COARSE_LOCATION else Manifest.permission.ACCESS_FINE_LOCATION
             )
         }
     }
