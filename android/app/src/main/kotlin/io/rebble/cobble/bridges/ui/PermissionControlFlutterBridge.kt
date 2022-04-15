@@ -182,6 +182,21 @@ class PermissionControlFlutterBridge @Inject constructor(
         }
     }
 
+    override fun requestBluetoothPermissions(result: Pigeons.Result<Pigeons.NumberWrapper>?) {
+        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                requestPermission(
+                        REQUEST_CODE_BT,
+                        Manifest.permission.BLUETOOTH_ADVERTISE,
+                        Manifest.permission.BLUETOOTH_SCAN,
+                        Manifest.permission.BLUETOOTH_CONNECT
+                )
+            } else {
+                return@launchPigeonResult NumberWrapper(0)
+            }
+        }
+    }
+
     override fun openPermissionSettings(result: Pigeons.Result<Void?>?) {
         coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
             openPermissionSettings()
@@ -196,3 +211,4 @@ private const val REQUEST_CODE_CALENDAR = 124
 private const val REQUEST_CODE_NOTIFICATIONS = 125
 private const val REQUEST_CODE_BATTERY = 126
 private const val REQUEST_CODE_SETTINGS = 127
+private const val REQUEST_CODE_BT = 128

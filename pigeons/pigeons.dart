@@ -371,6 +371,9 @@ abstract class PermissionControl {
   void requestBatteryExclusion();
 
   @async
+  NumberWrapper requestBluetoothPermissions();
+
+  @async
   void openPermissionSettings();
 }
 

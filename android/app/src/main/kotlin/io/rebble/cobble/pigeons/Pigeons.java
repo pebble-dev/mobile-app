@@ -3600,6 +3600,7 @@ public class Pigeons {
     void requestCalendarPermission(Result<NumberWrapper> result);
     void requestNotificationAccess(Result<Void> result);
     void requestBatteryExclusion(Result<Void> result);
+    void requestBluetoothPermissions(Result<NumberWrapper> result);
     void openPermissionSettings(Result<Void> result);
 
     /** The codec used by PermissionControl. */
@@ -3715,6 +3716,35 @@ public class Pigeons {
               };
 
               api.requestBatteryExclusion(resultCallback);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+              reply.reply(wrapped);
+            }
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestBluetoothPermissions", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              Result<NumberWrapper> resultCallback = new Result<NumberWrapper>() {
+                public void success(NumberWrapper result) {
+                  wrapped.put("result", result);
+                  reply.reply(wrapped);
+                }
+                public void error(Throwable error) {
+                  wrapped.put("error", wrapError(error));
+                  reply.reply(wrapped);
+                }
+              };
+
+              api.requestBluetoothPermissions(resultCallback);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));

@@ -34,7 +34,7 @@ android {
     if (System.getenv("ANDROID_NDK_HOME") != null) {
         ndkPath "$System.env.ANDROID_NDK_HOME"
     }
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'

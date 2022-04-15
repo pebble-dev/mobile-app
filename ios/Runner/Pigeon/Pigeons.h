@@ -506,6 +506,7 @@ NSObject<FlutterMessageCodec> *PermissionControlGetCodec(void);
 - (void)requestCalendarPermissionWithCompletion:(void(^)(NumberWrapper *_Nullable, FlutterError *_Nullable))completion;
 - (void)requestNotificationAccessWithCompletion:(void(^)(FlutterError *_Nullable))completion;
 - (void)requestBatteryExclusionWithCompletion:(void(^)(FlutterError *_Nullable))completion;
+- (void)requestBluetoothPermissionsWithCompletion:(void(^)(NumberWrapper *_Nullable, FlutterError *_Nullable))completion;
 - (void)openPermissionSettingsWithCompletion:(void(^)(FlutterError *_Nullable))completion;
 @end
 

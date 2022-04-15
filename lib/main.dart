@@ -48,6 +48,7 @@ class MyApp extends HookWidget {
         if (!(await permissionCheck.hasLocationPermission()).value) {
           await permissionControl.requestLocationPermission();
         }
+        await permissionControl.requestBluetoothPermissions();
 
         if (defaultWatch != null) {
           if (!(await permissionCheck.hasNotificationAccess()).value) {

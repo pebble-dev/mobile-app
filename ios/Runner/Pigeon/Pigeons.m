@@ -2815,6 +2815,24 @@ void PermissionControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.PermissionControl.requestBluetoothPermissions"
+        binaryMessenger:binaryMessenger
+        codec:PermissionControlGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(requestBluetoothPermissionsWithCompletion:)], @"PermissionControl api (%@) doesn't respond to @selector(requestBluetoothPermissionsWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api requestBluetoothPermissionsWithCompletion:^(NumberWrapper *_Nullable output, FlutterError *_Nullable error) {
+          callback(wrapResult(output, error));
+        }];
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
         messageChannelWithName:@"dev.flutter.pigeon.PermissionControl.openPermissionSettings"
         binaryMessenger:binaryMessenger
         codec:PermissionControlGetCodec()];
