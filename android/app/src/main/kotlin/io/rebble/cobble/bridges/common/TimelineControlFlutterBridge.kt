@@ -2,6 +2,7 @@ package io.rebble.cobble.bridges.common
 
 import io.flutter.plugin.common.BinaryMessenger
 import io.rebble.cobble.bridges.FlutterBridge
+import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.data.TimelineAction
 import io.rebble.cobble.data.TimelineAttribute
 import io.rebble.cobble.pigeons.*
@@ -23,10 +24,14 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 class TimelineControlFlutterBridge @Inject constructor(
-        binaryMessenger: BinaryMessenger,
+        bridgeLifecycleController: BridgeLifecycleController,
         private val coroutineScope: CoroutineScope,
         private val blobDBService: BlobDBService
 ) : FlutterBridge, Pigeons.TimelineControl {
+
+    init {
+        bridgeLifecycleController.setupControl(Pigeons.TimelineControl::setup, this)
+    }
 
     @OptIn(ExperimentalStdlibApi::class)
     @Suppress("BlockingMethodInNonBlockingContext")
