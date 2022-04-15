@@ -5,17 +5,18 @@ import android.bluetooth.*
 import android.content.Context
 import io.rebble.cobble.bluetooth.gatt.GATTServerMessage
 import io.rebble.libpebblecommon.ble.LEConstants
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import java.util.*
 
 @SuppressLint("MissingPermission")
-open class GATTServer(bluetoothManager: BluetoothManager, context: Context) {
+open class GATTServer(bluetoothManager: BluetoothManager, context: Context, scope: CoroutineScope) {
     private lateinit var gattServer: BluetoothGattServer
     private val characteristics: MutableMap<UUID, BluetoothGattCharacteristic> = mutableMapOf()
 
-    protected val serverMessages: Flow<GATTServerMessage> = callbackFlow {
+    protected val serverMessages: Flow<GATTServerMessage> = callbackFlow<GATTServerMessage> {
         val callbacks = object : BluetoothGattServerCallback() {
             override fun onCharacteristicWriteRequest(device: BluetoothDevice?, requestId: Int, characteristic: BluetoothGattCharacteristic?, preparedWrite: Boolean, responseNeeded: Boolean, offset: Int, value: ByteArray?) {
                 trySend(GATTServerMessage.CharacteristicWriteRequest(device, requestId, characteristic, preparedWrite, responseNeeded, offset, value))
@@ -54,7 +55,7 @@ open class GATTServer(bluetoothManager: BluetoothManager, context: Context) {
             Timber.d("serverMessages closing")
             gattServer.close()
         }
-    }
+    }.shareIn(scope, SharingStarted.Eagerly).buffer()
 
     protected fun sendResponse(device: BluetoothDevice, requestId: Int, status: Int, offset: Int, value: ByteArray): Boolean {
         return gattServer.sendResponse(device, requestId, status, offset, value)
@@ -76,8 +77,7 @@ open class GATTServer(bluetoothManager: BluetoothManager, context: Context) {
 
         res = serverMessages
                 .filterIsInstance<GATTServerMessage.ServiceAdded>()
-                .filter { it.service?.uuid == service.uuid }
-                .first()
+                .first { it.service?.uuid == service.uuid }
                 .status == BluetoothGatt.GATT_SUCCESS
         return res
     }

@@ -22,7 +22,7 @@ class PPoGATTServer(
         private val serverScope: CoroutineScope,
         private val protocolHandler: ProtocolHandler,
         bluetoothManager: BluetoothManager
-): GATTServer(bluetoothManager, context) {
+): GATTServer(bluetoothManager, context, serverScope) {
     private val gattDeviceCharUUID = UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER)
     private val gattMetaCharUUID = UUID.fromString(LEConstants.UUIDs.META_CHARACTERISTIC_SERVER)
 
@@ -262,18 +262,21 @@ class PPoGATTServer(
     }
 
     private suspend fun setupMeta() {
-        serverMessages
-                .filterIsInstance<GATTServerMessage.CharacteristicReadRequest>()
-                .filter {
-                    it.device == targetDevice && it.characteristic?.uuid == gattMetaCharUUID
-                }
-                .collect {
-                    Timber.d("Meta characteristic read")
-                    sendResponse(it.device!!, it.requestId, 0, 0, LEConstants.SERVER_META_RESPONSE)
-                }
+        serverScope.launch {
+            serverMessages
+                    .filterIsInstance<GATTServerMessage.CharacteristicReadRequest>()
+                    .filter {
+                        it.device == targetDevice && it.characteristic?.uuid == gattMetaCharUUID
+                    }
+                    .collect {
+                        Timber.d("Meta characteristic read")
+                        sendResponse(it.device!!, it.requestId, 0, 0, LEConstants.SERVER_META_RESPONSE)
+                    }
+        }
     }
 
     suspend fun initServer(): Boolean {
+        Timber.d("initServer()")
         setupMeta()
         rxJob = serverScope.launch(Dispatchers.IO) {
             gattPacketsRX.collect {
@@ -293,13 +296,13 @@ class PPoGATTServer(
             Timber.w("Service already registered, clearing services and then re-registering")
             this.bluetoothGattServer.clearServices()
         }*/
-        if (addService(gattService) && addService(padService)) {
+        return if (addService(gattService) && addService(padService)) {
             Timber.d("Server set up and ready for connection")
+            true
         } else {
             Timber.e("Failed to add service")
-            return false
+            false
         }
-        return true
     }
 
     fun setMTU(newMTU: Int) {
