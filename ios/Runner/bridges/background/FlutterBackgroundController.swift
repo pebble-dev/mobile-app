@@ -54,14 +54,18 @@ class FlutterBackgroundController: NSObject, BackgroundControl {
     private func initEngine() -> Promise<FlutterEngine?> {
         return Promise { seal in
             DispatchQueue.main.async { [self] in
-                let persistentState = UserDefaults.standard
-                let backgroundEndpointMethodHandle = persistentState.value(forKey: "FlutterBackgroundHandle") as! Int64
-                let callbackInfo = FlutterCallbackCache.lookupCallbackInformation(backgroundEndpointMethodHandle)!
-                
                 let flutterEngine = FlutterEngine(name: "CobbleBG", project: nil, allowHeadlessExecution: true)
-                flutterEngine.run(withEntrypoint: callbackInfo.callbackName, libraryURI: callbackInfo.callbackLibraryPath)
+
+                let persistentState = UserDefaults.standard
+                let backgroundEndpointMethodHandle = (persistentState.value(forKey: "FlutterBackgroundHandle") as? Int64) ?? 0
+                if let callbackInfo = FlutterCallbackCache.lookupCallbackInformation(backgroundEndpointMethodHandle) {
+                    flutterEngine.run(withEntrypoint: callbackInfo.callbackName, libraryURI: callbackInfo.callbackLibraryPath)
+                } else {
+                    flutterEngine.run()
+                }
+
                 GeneratedPluginRegistrant.register(with: flutterEngine)
-                
+
                 createFlutterBridges(flutterEngine: flutterEngine)
                     .done {
                         seal.fulfill(flutterEngine)
