@@ -20,9 +20,11 @@ class FlutterBackgroundController: NSObject, BackgroundControl {
     
     override init() {
         super.init()
-        initEngine().done { initedEngine in
-            self.engine = initedEngine
-        }.cauterize()
+        NotificationCenter.default.addObserver(forName: .abc, object: nil, queue: nil) { _ in
+            self.initEngine().done { initedEngine in
+                self.engine = initedEngine
+            }.cauterize()
+        }
     }
     
     func notifyFlutterBackgroundStarted(completion: @escaping (NumberWrapper?, FlutterError?) -> Void) {
@@ -61,7 +63,7 @@ class FlutterBackgroundController: NSObject, BackgroundControl {
                 if let callbackInfo = FlutterCallbackCache.lookupCallbackInformation(backgroundEndpointMethodHandle) {
                     flutterEngine.run(withEntrypoint: callbackInfo.callbackName, libraryURI: callbackInfo.callbackLibraryPath)
                 } else {
-                    flutterEngine.run()
+                    assertionFailure("Failed to initialize Flutter engine")
                 }
 
                 GeneratedPluginRegistrant.register(with: flutterEngine)
