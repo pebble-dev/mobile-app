@@ -12,20 +12,12 @@ import shared_preferences_ios
 class FlutterBackgroundController: NSObject, BackgroundControl {
     static var shared: FlutterBackgroundController!
     private var engine: FlutterEngine?
+    private var backgroundEngineGetters = [Resolver<FlutterEngine>]()
     
     private let flutterSideReady = DispatchSemaphore(value: 0)
     private let iOSSideReady = DispatchSemaphore(value: 0)
     
     private let queue = DispatchQueue(label: Bundle.main.bundleIdentifier!+".FlutterBackgroundControllerQueue", qos: .utility)
-    
-    override init() {
-        super.init()
-        NotificationCenter.default.addObserver(forName: .abc, object: nil, queue: nil) { _ in
-            self.initEngine().done { initedEngine in
-                self.engine = initedEngine
-            }.cauterize()
-        }
-    }
     
     func notifyFlutterBackgroundStarted(completion: @escaping (NumberWrapper?, FlutterError?) -> Void) {
         DDLogDebug("Flutter bg started")
@@ -37,29 +29,27 @@ class FlutterBackgroundController: NSObject, BackgroundControl {
         }
     }
     
-    func getBackgroundFlutterEngine() -> Promise<FlutterEngine?> {
-        return Promise { seal in
-            if let engine = engine {
-                seal.fulfill(engine)
-            }else {
-                initEngine().done { initedEngine in
-                    self.engine = initedEngine
-                    seal.fulfill(self.engine)
-                }.catch { error in
-                    DDLogError("Error initializing background engine: \(error.localizedDescription)")
-                    seal.reject(error)
-                }
+    func getBackgroundFlutterEngine() -> Promise<FlutterEngine> {
+        Promise { backgroundEngineGetters.append($0) }
+    }
+
+    func setupEngine(_ handle: Int64) {
+        initEngine(backgroundEndpointMethodHandle: handle)
+            .done { initedEngine in
+                DDLogDebug("Done initializing background engine")
+                self.engine = initedEngine
+                self.backgroundEngineGetters.forEach({ $0.fulfill(initedEngine) })
+            }.catch { error in
+                DDLogError("Error initializing background engine: \(error.localizedDescription)")
+                self.backgroundEngineGetters.forEach({ $0.reject(error) })
             }
-        }
     }
     
-    private func initEngine() -> Promise<FlutterEngine?> {
+    private func initEngine(backgroundEndpointMethodHandle: Int64) -> Promise<FlutterEngine> {
         return Promise { seal in
             DispatchQueue.main.async { [self] in
                 let flutterEngine = FlutterEngine(name: "CobbleBG", project: nil, allowHeadlessExecution: true)
 
-                let persistentState = UserDefaults.standard
-                let backgroundEndpointMethodHandle = (persistentState.value(forKey: "FlutterBackgroundHandle") as? Int64) ?? 0
                 if let callbackInfo = FlutterCallbackCache.lookupCallbackInformation(backgroundEndpointMethodHandle) {
                     flutterEngine.run(withEntrypoint: callbackInfo.callbackName, libraryURI: callbackInfo.callbackLibraryPath)
                 } else {

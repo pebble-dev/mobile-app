@@ -7,6 +7,8 @@
 
 import Foundation
 import Flutter
+import PromiseKit
+
 class FlutterBridgeSetup {
     static func createCommonBridges(binaryMessenger: FlutterBinaryMessenger) {
         PermissionCheckSetup(binaryMessenger, PermissionCheckFlutterBridge())
@@ -18,11 +20,17 @@ class FlutterBridgeSetup {
     }
     
     static func createBackgroundBridges(binaryMessenger: FlutterBinaryMessenger) {
-        
+        let backgroundSetupBridge = BackgroundSetupFlutterBridge()
+
+        // I am not super familiar with PromiseKit, I didn't know how to get rid of the unused return value of `.done`
+        _ = backgroundSetupBridge.waitForBackgroundHandle().done { handle in
+            FlutterBackgroundController.shared.setupEngine(handle)
+        }
+
+        BackgroundSetupControlSetup(binaryMessenger, backgroundSetupBridge)
     }
     
     static func createUIBridges(binaryMessenger: FlutterBinaryMessenger) {
-        BackgroundSetupControlSetup(binaryMessenger, BackgroundSetupFlutterBridge())
         PermissionControlSetup(binaryMessenger, PermissionControlFlutterBridge())
         UiConnectionControlSetup(binaryMessenger, ConnectionControlBridge(callbackMessenger: binaryMessenger))
         IntentControlSetup(binaryMessenger, IntentControlFlutterBridge(callbackMessenger: binaryMessenger))

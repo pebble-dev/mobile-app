@@ -6,16 +6,23 @@
 //
 
 import Foundation
+import PromiseKit
 
-extension NSNotification.Name {
-    static let abc = NSNotification.Name("abc")
-}
+typealias CallbackHandle = Int64
 
 class BackgroundSetupFlutterBridge: NSObject, BackgroundSetupControl {
-    func setupBackgroundCallbackHandle(_ callbackHandle: NumberWrapper, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
-        let persistentState = UserDefaults.standard
-        persistentState.set(callbackHandle.value! as! Int64, forKey: "FlutterBackgroundHandle")
 
-        NotificationCenter.default.post(name: .abc, object: nil)
+    private var resolver: Resolver<Int64>?
+
+    func waitForBackgroundHandle() -> Promise<Int64> {
+        Promise { self.resolver = $0 }
+    }
+
+    func setupBackgroundCallbackHandle(_ callbackHandle: NumberWrapper, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
+        if let value = callbackHandle.value as? Int64 {
+            resolver?.fulfill(value)
+        } else {
+            error.pointee = .init(code: "code 123", message: "setupBackgroundCallbackHandle called without a handle", details: nil)
+        }
     }
 }

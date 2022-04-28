@@ -26,6 +26,7 @@ import Logging
         if #available(iOS 10.0, *) {
           UNUserNotificationCenter.current().delegate = self as UNUserNotificationCenterDelegate
         }
+        FlutterBridgeSetup.createBackgroundBridges(binaryMessenger: binaryMessenger)
         FlutterBridgeSetup.createUIBridges(binaryMessenger: binaryMessenger)
         FlutterBridgeSetup.createCommonBridges(binaryMessenger: binaryMessenger)
         FlutterBackgroundController.shared = FlutterBackgroundController()
