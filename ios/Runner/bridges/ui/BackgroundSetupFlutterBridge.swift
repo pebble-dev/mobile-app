@@ -22,7 +22,7 @@ class BackgroundSetupFlutterBridge: NSObject, BackgroundSetupControl {
         if let value = callbackHandle.value as? Int64 {
             resolver?.fulfill(value)
         } else {
-            error.pointee = .init(code: "code 123", message: "setupBackgroundCallbackHandle called without a handle", details: nil)
+            error.pointee = .init(code: "INVALID_HANDLE", message: "setupBackgroundCallbackHandle called without a callback handle", details: nil)
         }
     }
 }

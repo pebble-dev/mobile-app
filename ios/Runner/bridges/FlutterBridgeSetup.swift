@@ -22,10 +22,9 @@ class FlutterBridgeSetup {
     static func createBackgroundBridges(binaryMessenger: FlutterBinaryMessenger) {
         let backgroundSetupBridge = BackgroundSetupFlutterBridge()
 
-        // I am not super familiar with PromiseKit, I didn't know how to get rid of the unused return value of `.done`
-        _ = backgroundSetupBridge.waitForBackgroundHandle().done { handle in
-            FlutterBackgroundController.shared.setupEngine(handle)
-        }
+        backgroundSetupBridge.waitForBackgroundHandle().done {
+            FlutterBackgroundController.shared.setupEngine($0)
+        }.cauterize()
 
         BackgroundSetupControlSetup(binaryMessenger, backgroundSetupBridge)
     }
