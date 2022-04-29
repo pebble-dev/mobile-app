@@ -20,7 +20,7 @@ class FlutterBackgroundController: NSObject, BackgroundControl {
     private let queue = DispatchQueue(label: Bundle.main.bundleIdentifier!+".FlutterBackgroundControllerQueue", qos: .utility)
     
     func notifyFlutterBackgroundStarted(completion: @escaping (NumberWrapper?, FlutterError?) -> Void) {
-        DDLogDebug("Flutter bg started")
+        DDLogDebug("Flutter background started")
         flutterSideReady.signal()
         queue.async { [self] in
             iOSSideReady.wait()
@@ -30,11 +30,15 @@ class FlutterBackgroundController: NSObject, BackgroundControl {
     }
     
     func getBackgroundFlutterEngine() -> Promise<FlutterEngine> {
-        Promise { backgroundEngineGetters.append($0) }
+        if let engine = engine {
+            return Promise { $0.fulfill(engine) }
+        } else {
+            return Promise { backgroundEngineGetters.append($0) }
+        }
     }
 
     func setupEngine(_ handle: Int64) {
-        initEngine(backgroundEndpointMethodHandle: handle)
+        initEngine(callbackHandle: handle)
             .done { initedEngine in
                 DDLogDebug("Done initializing background engine")
                 self.engine = initedEngine
@@ -45,12 +49,12 @@ class FlutterBackgroundController: NSObject, BackgroundControl {
             }
     }
     
-    private func initEngine(backgroundEndpointMethodHandle: Int64) -> Promise<FlutterEngine> {
+    private func initEngine(callbackHandle: Int64) -> Promise<FlutterEngine> {
         return Promise { seal in
             DispatchQueue.main.async { [self] in
                 let flutterEngine = FlutterEngine(name: "CobbleBG", project: nil, allowHeadlessExecution: true)
 
-                if let callbackInfo = FlutterCallbackCache.lookupCallbackInformation(backgroundEndpointMethodHandle) {
+                if let callbackInfo = FlutterCallbackCache.lookupCallbackInformation(callbackHandle) {
                     flutterEngine.run(withEntrypoint: callbackInfo.callbackName, libraryURI: callbackInfo.callbackLibraryPath)
                 } else {
                     assertionFailure("Failed to initialize Flutter engine")
