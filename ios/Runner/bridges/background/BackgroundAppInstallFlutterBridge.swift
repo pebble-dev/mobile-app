@@ -53,11 +53,6 @@ class BackgroundAppInstallFlutterBridge {
                 seal.fulfill(cachedAppInstallCallbacks)
             }else {
                 FlutterBackgroundController.shared.getBackgroundFlutterEngine().done { flutterEngine in
-                    guard let flutterEngine = flutterEngine else {
-                        seal.fulfill(nil)
-                        return
-                    }
-                    
                     seal.fulfill(BackgroundAppInstallCallbacks(binaryMessenger: flutterEngine.binaryMessenger))
                 }.catch { error in
                     seal.reject(error)
