@@ -37,7 +37,7 @@ class FlutterBackgroundController: NSObject, BackgroundControl {
         }
     }
 
-    func setupEngine(_ handle: Int64) {
+    func setupEngine(_ handle: CallbackHandle) {
         initEngine(callbackHandle: handle)
             .done { initedEngine in
                 DDLogDebug("Done initializing background engine")
@@ -49,7 +49,7 @@ class FlutterBackgroundController: NSObject, BackgroundControl {
             }
     }
     
-    private func initEngine(callbackHandle: Int64) -> Promise<FlutterEngine> {
+    private func initEngine(callbackHandle: CallbackHandle) -> Promise<FlutterEngine> {
         return Promise { seal in
             DispatchQueue.main.async { [self] in
                 let flutterEngine = FlutterEngine(name: "CobbleBG", project: nil, allowHeadlessExecution: true)
