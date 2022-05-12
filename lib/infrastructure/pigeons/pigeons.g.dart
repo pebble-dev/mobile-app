@@ -665,9 +665,7 @@ class InstallData {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return InstallData(
       uri: pigeonMap['uri']! as String,
-      appInfo: pigeonMap['appInfo'] != null
-          ? PbwAppInfo.decode(pigeonMap['appInfo']!)
-          : null,
+      appInfo: PbwAppInfo.decode(pigeonMap['appInfo']!),
     );
   }
 }

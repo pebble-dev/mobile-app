@@ -25,9 +25,9 @@ class RawIncomingPacketsProvider implements RawIncomingPacketsCallbacks {
 
   @override
   void onPacketReceived(ListWrapper arg) {
-    final bytes = Uint8List(arg.value.length);
-    for (int i = 0; i < arg.value.length; i++) {
-      bytes[i] = arg.value[i] as int;
+    final bytes = Uint8List(arg.value!.length);
+    for (int i = 0; i < arg.value!.length; i++) {
+      bytes[i] = arg.value![i] as int;
     }
 
     _streamController.add(bytes);

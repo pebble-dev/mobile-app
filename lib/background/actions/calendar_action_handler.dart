@@ -21,7 +21,7 @@ import 'package:cobble/util/state_provider_extension.dart';
 import 'package:cobble/util/stream_extensions.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:device_calendar/device_calendar.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class CalendarActionHandler implements ActionHandler {
   final TimelinePinDao _dao;
@@ -80,7 +80,7 @@ class CalendarActionHandler implements ActionHandler {
     final calendarList =
     await (_calendarList.streamWithExistingValue.firstSuccessOrError() as FutureOr<AsyncValue<List<SelectableCalendar>>>);
 
-    final calendars = calendarList.data!.value;
+    final calendars = calendarList.data?.value;
     if (calendars == null) {
       return TimelineActionResponse(false);
     }
