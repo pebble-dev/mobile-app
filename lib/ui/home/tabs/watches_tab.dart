@@ -70,7 +70,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
       isConnected = false;
     }
 
-    String _getStatusText(int? address) {
+    String _getStatusText(String? address) {
       if (connectionState.isConnected! &&
           connectionState.currentWatchAddress == address)
         return tr.watchesPage.status.connected;
@@ -102,10 +102,10 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
     }
 
     void _onConnectPressed(PebbleScanDevice device, inSettings) {
-      NumberWrapper addressWrapper = NumberWrapper();
+      StringWrapper addressWrapper = StringWrapper();
       addressWrapper.value = device.address;
 
-      pairedStorage.setDefault(device.address);
+      pairedStorage.setDefault(device.address!);
       uiConnectionControl.connectToWatch(addressWrapper);
       if (inSettings) Navigator.pop(context);
     }
@@ -115,14 +115,14 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
         connectionControl.disconnect();
       }
 
-      final deviceAddressWrapper = NumberWrapper();
-      deviceAddressWrapper.value = device.address;
+      final deviceAddressWrapper = StringWrapper();
+      deviceAddressWrapper.value = device.address!;
       uiConnectionControl.unpairWatch(deviceAddressWrapper);
 
       final preferences = await preferencesFuture;
       preferences.reload();
       if (preferences.getLastConnectedWatchAddress() == device.address) {
-        preferences.setLastConnectedWatchAddress(0);
+        preferences.setLastConnectedWatchAddress("");
       }
 
       pairedStorage.unregister(device.address);
@@ -134,7 +134,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
       //TODO
     }
 
-    void _onSettingsPressed(bool isConnected, int? address) {
+    void _onSettingsPressed(bool isConnected, String? address) {
       PebbleScanDevice device =
           allWatchesList.firstWhere((e) => e.address == address);
 
@@ -337,7 +337,7 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
                         ]),
                         margin: EdgeInsets.fromLTRB(16, 10, 16, 16),
                       ),
-                      onTap: () => _onSettingsPressed(false, e.address),
+                      onTap: () => _onSettingsPressed(false, e.address!),
                     ))
                 .toList()),
       ]),

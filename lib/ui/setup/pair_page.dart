@@ -66,7 +66,7 @@ class PairPage extends HookWidget implements CobbleScreen {
 
       WidgetsBinding.instance!.scheduleFrameCallback((timeStamp) {
         pairedStorage.register(dev);
-        pairedStorage.setDefault(dev.address);
+        pairedStorage.setDefault(dev.address!);
         if (fromLanding) {
           context.pushReplacement(MoreSetup());
         } else {
@@ -97,7 +97,7 @@ class PairPage extends HookWidget implements CobbleScreen {
     };
 
     final _targetPebble = (PebbleScanDevice dev) {
-      NumberWrapper addressWrapper = NumberWrapper();
+      StringWrapper addressWrapper = StringWrapper();
       addressWrapper.value = dev.address;
       uiConnectionControl.connectToWatch(addressWrapper);
       preferences.data?.value.setHasBeenConnected();
@@ -132,10 +132,7 @@ class PairPage extends HookWidget implements CobbleScreen {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            e.address
-                                .toRadixString(16)
-                                .padLeft(6, '0')
-                                .toUpperCase(),
+                            e.version ?? "",
                           ),
                           Wrap(
                             spacing: 4,

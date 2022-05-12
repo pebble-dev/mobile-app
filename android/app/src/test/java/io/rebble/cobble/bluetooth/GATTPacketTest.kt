@@ -15,7 +15,7 @@ internal class GATTPacketTest {
     @Test
     fun generateValidPacket() {
 
-        val gattPacket = GATTPacket(GATTPacket.PacketType.DATA, 16U, payload.serialize().toByteArray())
+        val gattPacket = GATTPacket(GATTPacket.PacketType.DATA, 16, payload.serialize().toByteArray())
 
         val expected = byteArrayOf(0b10000000.toByte()) + payload.serialize().toByteArray()
         val actual = gattPacket.toByteArray()

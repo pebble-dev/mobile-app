@@ -1,6 +1,6 @@
 package io.rebble.cobble.data
 
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class NotificationAction(val title: String, val isResponse: Boolean)

@@ -87,16 +87,16 @@ private inline fun <T> SharedPreferences.flow(
         crossinline mapper: (preferences: SharedPreferences, key: String) -> T): Flow<T> {
 
     return callbackFlow {
-        offer(mapper(this@flow, key))
+        trySend(mapper(this@flow, key)).isSuccess
 
         val listener = SharedPreferences
-                .OnSharedPreferenceChangeListener { sharedPreferences: SharedPreferences,
-                                                    changedKey: String ->
+            .OnSharedPreferenceChangeListener { sharedPreferences: SharedPreferences,
+                                                changedKey: String ->
 
-                    if (changedKey == key) {
-                        offer(mapper(sharedPreferences, key))
-                    }
+                if (changedKey == key) {
+                    trySend(mapper(sharedPreferences, key)).isSuccess
                 }
+            }
 
         registerOnSharedPreferenceChangeListener(listener)
 

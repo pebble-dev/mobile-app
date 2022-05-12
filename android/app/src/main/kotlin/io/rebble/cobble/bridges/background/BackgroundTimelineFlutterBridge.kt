@@ -5,9 +5,8 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.core.content.getSystemService
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.ConnectionState
@@ -21,6 +20,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -32,8 +34,7 @@ import kotlin.coroutines.suspendCoroutine
 class BackgroundTimelineFlutterBridge @Inject constructor(
         private val context: Context,
         private val flutterBackgroundController: FlutterBackgroundController,
-        private val connectionLooper: ConnectionLooper,
-        private val moshi: Moshi
+        private val connectionLooper: ConnectionLooper
 ) : FlutterBridge {
     private val alarmManager: AlarmManager = context.getSystemService()!!
     private var cachedTimelineSyncCallbacks: Pigeons.TimelineCallbacks? = null
@@ -93,27 +94,15 @@ class BackgroundTimelineFlutterBridge @Inject constructor(
             val pigeonActionTrigger = Pigeons.ActionTrigger().apply {
                 itemId = actionRequest.itemID.get().toString()
                 actionId = actionRequest.actionID.get().toLong()
-                attributesJson = moshi.adapter<List<TimelineAttribute>>(
-                        Types.newParameterizedType(
-                                List::class.java,
-                                TimelineAttribute::class.java
-                        )
-                ).toJson(attrs)
+                attributesJson = Json.encodeToString(attrs)
             }
 
             callbacks.handleTimelineAction(pigeonActionTrigger) { pigeonResponse ->
-                val parsedAttributes = moshi
-                        .adapter<List<io.rebble.cobble.data.TimelineAttribute>>(
-                                Types.newParameterizedType(
-                                        List::class.java,
-                                        io.rebble.cobble.data.TimelineAttribute::class.java
-                                )
-                        )
-                        .fromJson(pigeonResponse.attributesJson) ?: emptyList()
+                val parsedAttributes: List<TimelineAttribute> = Json.decodeFromString(pigeonResponse.attributesJson!!) ?: emptyList()
 
                 continuation.resume(
                         TimelineService.ActionResponse(
-                                pigeonResponse.success,
+                                pigeonResponse.success!!,
                                 parsedAttributes.map { it.toProtocolAttribute() }
                         )
                 )
@@ -137,7 +126,7 @@ class BackgroundTimelineFlutterBridge @Inject constructor(
                 context,
                 998,
                 Intent(context, Receiver::class.java),
-                0
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
         )
     }
 

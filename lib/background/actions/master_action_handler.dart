@@ -22,9 +22,9 @@ class MasterActionHandler {
   Future<TimelineActionResponse?> handleTimelineAction(
     ActionTrigger trigger,
   ) async {
-    final pin = await _dao.getPinById(Uuid(trigger.itemId!));
+    final pin = await _dao.getPinById(Uuid.parse(trigger.itemId!));
     if (pin == null) {
-      final notif = _notifDao.getActiveNotifByPinId(Uuid(trigger.itemId!));
+      final notif = _notifDao.getActiveNotifByPinId(Uuid.parse(trigger.itemId!));
       if (notif != null) {
         return notificationManager.handleNotifAction(trigger);
       }

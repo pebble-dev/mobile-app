@@ -7,11 +7,10 @@ import android.os.Bundle
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.data.NotificationAction
 import io.rebble.cobble.data.NotificationMessage
+import io.rebble.cobble.data.TimelineAction
 import io.rebble.cobble.data.TimelineAttribute
 import io.rebble.cobble.pigeons.BooleanWrapper
 import io.rebble.cobble.pigeons.Pigeons
@@ -21,6 +20,10 @@ import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import io.rebble.libpebblecommon.structmapper.SUUID
 import io.rebble.libpebblecommon.structmapper.StructMapper
+import kotlinx.coroutines.*
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -34,7 +37,6 @@ import kotlin.random.Random
 class NotificationsFlutterBridge @Inject constructor(
         private val context: Context,
         private val flutterBackgroundController: FlutterBackgroundController,
-        private val moshi: Moshi,
         private val blobDBService: BlobDBService,
 ) : FlutterBridge {
     val activeNotifs: MutableMap<UUID, StatusBarNotification> = mutableMapOf()
@@ -48,10 +50,7 @@ class NotificationsFlutterBridge @Inject constructor(
         override fun executeAction(arg: Pigeons.NotifActionExecuteReq?) {
             if (arg != null) {
                 val id = UUID.fromString(arg.itemId)
-                val notification = activeNotifs[id]?.notification ?: return
-                val action = NotificationCompat.getAction(notification, arg.actionId.toInt())
-                        ?: return
-
+                val action = activeNotifs[id]?.notification?.let { NotificationCompat.getAction(it, arg.actionId!!.toInt()) }
                 if (arg.responseText?.isEmpty() == false) {
                     val key = action.remoteInputs?.first()?.resultKey
                     if (key != null) {
@@ -64,7 +63,7 @@ class NotificationsFlutterBridge @Inject constructor(
                         return
                     }
                 }
-                action.actionIntent.send()
+                action?.actionIntent?.send()
             }
         }
 
@@ -133,41 +132,27 @@ class NotificationsFlutterBridge @Inject constructor(
         notif.text = text
         notif.category = category
         notif.color = color.toLong()
-        notif.actionsJson = moshi
-                .adapter<List<NotificationAction>>(
-                        Types.newParameterizedType(List::class.java, NotificationAction::class.java)
-                ).toJson(actions)
-        notif.messagesJson = moshi
-                .adapter<List<NotificationMessage>>(
-                        Types.newParameterizedType(List::class.java, NotificationMessage::class.java)
-                ).toJson(messages)
+        notif.actionsJson = Json.encodeToString(actions)
+        notif.messagesJson = Json.encodeToString(messages)
 
         val result = CompletableDeferred<Pair<TimelineItem, BlobResponse.BlobStatus>>()
         if (notifListening == null) {
             Timber.w("Notification listening pigeon null")
         }
         notifListening?.handleNotification(notif) { notifToSend ->
-            val parsedAttributes = moshi
-                    .adapter<List<TimelineAttribute>>(
-                            Types.newParameterizedType(List::class.java, TimelineAttribute::class.java)
-                    )
-                    .fromJson(notifToSend.attributesJson) ?: emptyList()
+            val parsedAttributes: List<TimelineAttribute> = Json.decodeFromString(notifToSend.attributesJson!!) ?: emptyList()
 
-            val parsedActions = moshi
-                    .adapter<List<io.rebble.cobble.data.TimelineAction>>(
-                            Types.newParameterizedType(List::class.java, io.rebble.cobble.data.TimelineAction::class.java)
-                    )
-                    .fromJson(notifToSend.actionsJson) ?: emptyList()
+            val parsedActions: List<TimelineAction> = Json.decodeFromString(notifToSend.actionsJson!!) ?: emptyList()
 
             val itemId = UUID.fromString(notifToSend.itemId)
             val timelineItem = TimelineItem(
                     itemId,
                     UUID.fromString(notifToSend.parentId),
-                    notifToSend.timestamp.toUInt(),
-                    notifToSend.duration.toUShort(),
+                    notifToSend.timestamp!!.toUInt(),
+                    notifToSend.duration!!.toUShort(),
                     TimelineItem.Type.Notification,
                     TimelineItem.Flag.makeFlags(listOf()),
-                    notifToSend.layout.toUByte(),
+                    notifToSend.layout!!.toUByte(),
                     parsedAttributes.map { it.toProtocolAttribute() },
                     parsedActions.map { it.toProtocolAction() }
             )

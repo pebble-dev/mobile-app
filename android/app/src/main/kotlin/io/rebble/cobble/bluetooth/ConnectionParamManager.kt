@@ -1,7 +1,9 @@
 package io.rebble.cobble.bluetooth
 
+import io.rebble.libpebblecommon.ble.LEConstants
 import timber.log.Timber
 import java.nio.ByteBuffer
+import java.util.*
 
 /**
  * Handles negotiating and reading changes to connection parameters, currently this feature is unused by us so it just tells the pebble to disable it
@@ -13,19 +15,19 @@ class ConnectionParamManager(val gatt: BlueGATTConnection) {
         if (subscribed) {
             Timber.e("Tried subscribing when already subscribed")
         } else {
-            val service = gatt.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)
+            val service = gatt.getService(UUID.fromString(LEConstants.UUIDs.PAIRING_SERVICE_UUID))
             if (service == null) {
                 Timber.e("Pairing service null")
             } else {
-                val characteristic = service.getCharacteristic(BlueGATTConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC)
+                val characteristic = service.getCharacteristic(UUID.fromString(LEConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC))
                 if (characteristic == null) {
                     Timber.e("Conn params characteristic null")
                 } else {
-                    val configDescriptor = characteristic.getDescriptor(BlueGATTConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR)
-                    if (gatt.readDescriptor(configDescriptor)?.descriptor?.value.contentEquals(BlueGATTConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)) {
+                    val configDescriptor = characteristic.getDescriptor(UUID.fromString(LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR))
+                    if (gatt.readDescriptor(configDescriptor)?.descriptor?.value.contentEquals(LEConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)) {
                         Timber.w("Already subscribed to conn params")
                     }else {
-                        if (gatt.writeDescriptor(configDescriptor, BlueGATTConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)?.isSuccess() == true) {
+                        if (gatt.writeDescriptor(configDescriptor, LEConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)?.isSuccess() == true) {
                             if (gatt.setCharacteristicNotification(characteristic, true)) {
                                 val mgmtData = ByteBuffer.allocate(2)
                                 mgmtData.put(0)

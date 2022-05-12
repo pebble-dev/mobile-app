@@ -4,6 +4,7 @@ import android.bluetooth.*
 import android.content.Context
 import io.rebble.cobble.datasources.IncomingPacketsListener
 import io.rebble.libpebblecommon.ProtocolHandler
+import io.rebble.libpebblecommon.ble.LEConstants
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
@@ -13,6 +14,7 @@ import okio.buffer
 import timber.log.Timber
 import java.io.IOException
 import java.io.InterruptedIOException
+import java.util.*
 import kotlin.experimental.and
 
 class BlueGATTServer(
@@ -27,15 +29,15 @@ class BlueGATTServer(
 
     private val ackPending: MutableMap<Int, CompletableDeferred<GATTPacket>> = mutableMapOf()
 
-    private var mtu = BlueGATTConstants.DEFAULT_MTU
+    private var mtu = LEConstants.DEFAULT_MTU
     private var seq: Int = 0
     private var remoteSeq: Int = 0
     private var lastAck: GATTPacket? = null
     private var packetsInFlight = 0
     private var gattConnectionVersion = GATTPacket.PPoGConnectionVersion.ZERO
-    private var maxRxWindow: Byte = BlueGATTConstants.MAX_RX_WINDOW
+    private var maxRxWindow: Byte = LEConstants.MAX_RX_WINDOW
     private var currentRxPend = 0
-    private var maxTxWindow: Byte = BlueGATTConstants.MAX_TX_WINDOW
+    private var maxTxWindow: Byte = LEConstants.MAX_TX_WINDOW
     private var delayedAckJob: Job? = null
 
     private lateinit var bluetoothGattServer: BluetoothGattServer
@@ -56,6 +58,7 @@ class BlueGATTServer(
         data class ForceSendAck(val sequence: Int) : SendActorMessage()
         object UpdateData : SendActorMessage()
     }
+
     @OptIn(ObsoleteCoroutinesApi::class)
     @Suppress("BlockingMethodInNonBlockingContext")
     private val sendActor = serverScope.actor<SendActorMessage>(capacity = Channel.UNLIMITED) {
@@ -82,7 +85,7 @@ class BlueGATTServer(
                         } else {
                             delayedAckJob = serverScope.launch {
                                 delay(200)
-                                this@actor.channel.offer(SendActorMessage.ForceSendAck(message.sequence))
+                                this@actor.channel.trySend(SendActorMessage.ForceSendAck(message.sequence))
                             }
                         }
                     }
@@ -95,7 +98,7 @@ class BlueGATTServer(
                         val maxPacketSize = mtu - 4
 
                         while (phoneToWatchBuffer.size < maxPacketSize) {
-                            val nextPacket = pendingPackets.poll()
+                            val nextPacket = pendingPackets.tryReceive().getOrNull()
                                     ?: break
                             nextPacket.notifyPacketStatus(true)
                             phoneToWatchBuffer.write(nextPacket.data.toByteArray())
@@ -125,17 +128,17 @@ class BlueGATTServer(
 
     suspend fun onNewPacketToSend(packet: ProtocolHandler.PendingPacket) {
         pendingPackets.send(packet)
-        sendActor.offer(SendActorMessage.UpdateData)
+        sendActor.trySend(SendActorMessage.UpdateData).isSuccess
     }
 
     override fun onServiceAdded(status: Int, service: BluetoothGattService?) {
         val gattStatus = GattStatus(status)
         when (service?.uuid) {
-            BlueGATTConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID_SERVER -> {
+            UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID_SERVER) -> {
                 if (gattStatus.isSuccess()) {
                     // No idea why this is needed, but stock app does this
-                    val padService = BluetoothGattService(BlueGATTConstants.UUIDs.FAKE_SERVICE_UUID, BluetoothGattService.SERVICE_TYPE_PRIMARY)
-                    padService.addCharacteristic(BluetoothGattCharacteristic(BlueGATTConstants.UUIDs.FAKE_SERVICE_UUID, BluetoothGattCharacteristic.PROPERTY_READ, BluetoothGattCharacteristic.PERMISSION_READ))
+                    val padService = BluetoothGattService(UUID.fromString(LEConstants.UUIDs.FAKE_SERVICE_UUID), BluetoothGattService.SERVICE_TYPE_PRIMARY)
+                    padService.addCharacteristic(BluetoothGattCharacteristic(UUID.fromString(LEConstants.UUIDs.FAKE_SERVICE_UUID), BluetoothGattCharacteristic.PROPERTY_READ, BluetoothGattCharacteristic.PERMISSION_READ))
                     bluetoothGattServer.addService(padService)
                 } else {
                     Timber.e("Failed to add service! Status: ${gattStatus}")
@@ -143,7 +146,7 @@ class BlueGATTServer(
                 }
             }
 
-            BlueGATTConstants.UUIDs.FAKE_SERVICE_UUID -> {
+            UUID.fromString(LEConstants.UUIDs.FAKE_SERVICE_UUID) -> {
                 // Server is init'd
                 serverReady.complete(true)
             }
@@ -163,8 +166,8 @@ class BlueGATTServer(
                                 gattConnectionVersion = GATTPacket.PPoGConnectionVersion.ZERO
                             }
                             if (gattConnectionVersion.supportsWindowNegotiation) {
-                                maxRxWindow = packet.getMaxRXWindow().coerceAtMost(BlueGATTConstants.MAX_RX_WINDOW)
-                                maxTxWindow = packet.getMaxTXWindow().coerceAtMost(BlueGATTConstants.MAX_TX_WINDOW)
+                                maxRxWindow = packet.getMaxRXWindow().coerceAtMost(LEConstants.MAX_RX_WINDOW)
+                                maxTxWindow = packet.getMaxTXWindow().coerceAtMost(LEConstants.MAX_TX_WINDOW)
                                 Timber.d("Windows negotiated: maxRxWindow = $maxRxWindow, maxTxWindow = $maxTxWindow")
                             }
                             sendResetAck(packet.sequence)
@@ -225,10 +228,10 @@ class BlueGATTServer(
 
     override fun onCharacteristicReadRequest(device: BluetoothDevice?, requestId: Int, offset: Int, characteristic: BluetoothGattCharacteristic?) {
         if (targetDevice.address == device!!.address) {
-            if (characteristic?.uuid == BlueGATTConstants.UUIDs.META_CHARACTERISTIC_SERVER) {
+            if (characteristic?.uuid == UUID.fromString(LEConstants.UUIDs.META_CHARACTERISTIC_SERVER)) {
                 Timber.d("Meta queried")
                 connected = true
-                if (!bluetoothGattServer.sendResponse(device, requestId, 0, offset, BlueGATTConstants.SERVER_META_RESPONSE)) {
+                if (!bluetoothGattServer.sendResponse(device, requestId, 0, offset, LEConstants.SERVER_META_RESPONSE)) {
                     Timber.e("Error sending meta response to device")
                     closePebble()
                 } else {
@@ -247,7 +250,7 @@ class BlueGATTServer(
 
     override fun onDescriptorWriteRequest(device: BluetoothDevice?, requestId: Int, descriptor: BluetoothGattDescriptor?, preparedWrite: Boolean, responseNeeded: Boolean, offset: Int, value: ByteArray?) {
         if (targetDevice.address == device!!.address) {
-            if (descriptor?.characteristic?.uuid == BlueGATTConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER) {
+            if (descriptor?.characteristic?.uuid == UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER)) {
                 if (value != null) {
                     serverScope.launch(Dispatchers.IO) {
                         if (!bluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, value)) {
@@ -271,7 +274,7 @@ class BlueGATTServer(
     override fun onNotificationSent(device: BluetoothDevice?, status: Int) {
         if (targetDevice.address == device!!.address) {
             Timber.d("onNotificationSent")
-            sendActor.offer(SendActorMessage.UpdateData)
+            sendActor.trySend(SendActorMessage.UpdateData).isSuccess
         }
     }
 
@@ -308,12 +311,12 @@ class BlueGATTServer(
         val bluetoothManager = context.applicationContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothGattServer = bluetoothManager.openGattServer(context, this)!!
 
-        val gattService = BluetoothGattService(BlueGATTConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID_SERVER, BluetoothGattService.SERVICE_TYPE_PRIMARY)
-        gattService.addCharacteristic(BluetoothGattCharacteristic(BlueGATTConstants.UUIDs.META_CHARACTERISTIC_SERVER, BluetoothGattCharacteristic.PROPERTY_READ, BluetoothGattCharacteristic.PERMISSION_READ_ENCRYPTED))
-        dataCharacteristic = BluetoothGattCharacteristic(BlueGATTConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER, BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE or BluetoothGattCharacteristic.PROPERTY_NOTIFY, BluetoothGattCharacteristic.PERMISSION_WRITE_ENCRYPTED)
-        dataCharacteristic.addDescriptor(BluetoothGattDescriptor(BlueGATTConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR, BluetoothGattDescriptor.PERMISSION_WRITE))
+        val gattService = BluetoothGattService(UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID_SERVER), BluetoothGattService.SERVICE_TYPE_PRIMARY)
+        gattService.addCharacteristic(BluetoothGattCharacteristic(UUID.fromString(LEConstants.UUIDs.META_CHARACTERISTIC_SERVER), BluetoothGattCharacteristic.PROPERTY_READ, BluetoothGattCharacteristic.PERMISSION_READ_ENCRYPTED))
+        dataCharacteristic = BluetoothGattCharacteristic(UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER), BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE or BluetoothGattCharacteristic.PROPERTY_NOTIFY, BluetoothGattCharacteristic.PERMISSION_WRITE_ENCRYPTED)
+        dataCharacteristic.addDescriptor(BluetoothGattDescriptor(UUID.fromString(LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR), BluetoothGattDescriptor.PERMISSION_WRITE))
         gattService.addCharacteristic(dataCharacteristic)
-        if (bluetoothGattServer.getService(BlueGATTConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID_SERVER) != null) {
+        if (bluetoothGattServer.getService(UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID_SERVER)) != null) {
             Timber.w("Service already registered, clearing services and then re-registering")
             this.bluetoothGattServer.clearServices()
         }
@@ -434,7 +437,7 @@ class BlueGATTServer(
      */
     private fun requestReset() {
         Timber.w("Requesting reset")
-        sendActor.offer(SendActorMessage.SendReset)
+        sendActor.trySend(SendActorMessage.SendReset).isSuccess
     }
 
     /**
@@ -455,7 +458,7 @@ class BlueGATTServer(
             connectionStatusChannel.send(true)
         }
         initialReset = true
-        sendActor.offer(SendActorMessage.UpdateData)
+        sendActor.trySend(SendActorMessage.UpdateData).isSuccess
     }
 
     /**
@@ -463,7 +466,7 @@ class BlueGATTServer(
      */
     private fun sendAck(sequence: Int) {
         Timber.d("Sending ACK for $sequence")
-        sendActor.offer(SendActorMessage.SendAck(sequence))
+        sendActor.trySend(SendActorMessage.SendAck(sequence)).isSuccess
     }
 
     /**
@@ -471,7 +474,7 @@ class BlueGATTServer(
      */
     private fun sendResetAck(sequence: Int) {
         Timber.d("Sending reset ACK for $sequence")
-        sendActor.offer(SendActorMessage.SendResetAck)
+        sendActor.trySend(SendActorMessage.SendResetAck).isSuccess
     }
 
     /**
@@ -484,7 +487,7 @@ class BlueGATTServer(
     fun closePebble() {
         Timber.d("Server closing connection")
         sendActor.close()
-        connectionStatusChannel.offer(false)
+        connectionStatusChannel.trySend(false).isSuccess
         bluetoothGattServer.cancelConnection(targetDevice)
         bluetoothGattServer.clearServices()
         bluetoothGattServer.close()

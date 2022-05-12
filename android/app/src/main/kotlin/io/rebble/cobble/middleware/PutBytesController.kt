@@ -1,12 +1,11 @@
 package io.rebble.cobble.middleware
 
-import com.squareup.moshi.Moshi
 import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.data.pbw.manifest.PbwBlob
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.util.requirePbwBinaryBlob
 import io.rebble.cobble.util.requirePbwManifest
 import io.rebble.libpebblecommon.metadata.WatchType
+import io.rebble.libpebblecommon.metadata.pbw.manifest.PbwBlob
 import io.rebble.libpebblecommon.packets.*
 import io.rebble.libpebblecommon.services.PutBytesService
 import io.rebble.libpebblecommon.util.Crc32Calculator
@@ -29,8 +28,7 @@ import javax.inject.Singleton
 class PutBytesController @Inject constructor(
         private val connectionLooper: ConnectionLooper,
         private val putBytesService: PutBytesService,
-        private val metadataStore: WatchMetadataStore,
-        private val moshi: Moshi
+        private val metadataStore: WatchMetadataStore
 ) {
     private val _status: MutableStateFlow<Status> = MutableStateFlow(Status(State.IDLE))
     val status: StateFlow<Status> get() = _status
@@ -38,7 +36,7 @@ class PutBytesController @Inject constructor(
     private var lastCookie: UInt? = null
 
     fun startAppInstall(appId: UInt, pbwFile: File, watchType: WatchType) = launchNewPutBytesSession {
-        val manifest = requirePbwManifest(moshi, pbwFile, watchType)
+        val manifest = requirePbwManifest(pbwFile, watchType)
 
         val totalSize = manifest.application.size +
                 (manifest.resources?.size ?: 0) +
@@ -60,7 +58,7 @@ class PutBytesController @Inject constructor(
                     appId,
                     pbwFile,
                     watchType,
-                    manifest.resources,
+                    manifest.resources!!,
                     ObjectType.APP_RESOURCE,
                     progressMultiplier
             )
@@ -70,7 +68,7 @@ class PutBytesController @Inject constructor(
                     appId,
                     pbwFile,
                     watchType,
-                    manifest.worker,
+                    manifest.worker!!,
                     ObjectType.WORKER,
                     progressMultiplier
             )
@@ -89,82 +87,20 @@ class PutBytesController @Inject constructor(
     ) {
         Timber.d("Send app part %s %s %s %s %s %f",
                 watchType, appId, manifestEntry, type, type.value, progressMultiplier)
-        putBytesService.send(
-                PutBytesAppInit(manifestEntry.size.toUInt(), type, appId)
-        )
-
         val source = requirePbwBinaryBlob(pbwFile, watchType, manifestEntry.name)
-        val cookie = source.buffer().use {
-            awaitCookieAndPutSource(
-                    it,
-                    manifestEntry.crc,
-                    progressMultiplier
+        source.buffer().use {
+            putBytesService.sendAppPart(
+                    appId,
+                    it.readByteArray(),
+                    watchType,
+                    metadataStore.lastConnectedWatchMetadata.value!!,
+                    manifestEntry,
+                    type
             )
         }
-
-        Timber.d("Sending install")
-
-        putBytesService.send(
-                PutBytesInstall(cookie)
-        )
         awaitAck()
 
         Timber.d("Install complete")
-    }
-
-    private suspend fun awaitCookieAndPutSource(
-            source: BufferedSource,
-            expectedCrc: Long?,
-            progressMultiplier: Double
-    ): UInt {
-        val cookie = awaitAck().cookie.get()
-        lastCookie = cookie
-
-        val maxDataSize = getPutBytesMaximumDataSize(
-                metadataStore.lastConnectedWatchMetadata.value
-        )
-
-        val buffer = ByteArray(maxDataSize)
-        val crcCalculator = Crc32Calculator()
-
-        var totalBytes = 0
-        while (true) {
-            val readBytes = withContext(Dispatchers.IO) {
-                source.read(buffer)
-            }
-
-            if (readBytes <= 0) {
-                break
-            }
-
-            val payload = buffer.copyOf(readBytes).toUByteArray()
-            crcCalculator.addBytes(payload)
-
-            putBytesService.send(
-                    PutBytesPut(cookie, payload)
-            )
-            awaitAck()
-
-            val newProgress = status.value.progress + progressMultiplier * readBytes
-            Timber.d("Progress %f", newProgress)
-            _status.value = Status(State.SENDING, newProgress)
-            totalBytes += readBytes
-        }
-
-        val calculatedCrc = crcCalculator.finalize()
-        if (expectedCrc != null && calculatedCrc != expectedCrc.toUInt()) {
-            throw IllegalStateException(
-                    "Sending fail: Crc mismatch ($calculatedCrc != $expectedCrc)"
-            )
-        }
-
-        Timber.d("Sending commit")
-        putBytesService.send(
-                PutBytesCommit(cookie, calculatedCrc)
-        )
-        awaitAck()
-
-        return cookie
     }
 
     private fun launchNewPutBytesSession(block: suspend () -> Unit) {

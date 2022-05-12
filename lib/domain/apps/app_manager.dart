@@ -30,9 +30,7 @@ class AppManager extends StateNotifier<List<App>> {
   }
 
   void beginAppInstall(String uri, PbwAppInfo appInfo) async {
-    final wrapper = InstallData();
-    wrapper.uri = uri;
-    wrapper.appInfo = appInfo;
+    final wrapper = InstallData(uri: uri, appInfo: appInfo);
     await appInstallControl.beginAppInstall(wrapper);
 
     await refresh();
@@ -55,7 +53,7 @@ class AppManager extends StateNotifier<List<App>> {
   }
 
   Future<void> reorderApp(Uuid uuid, int newPosition) async {
-    final request = AppReorderRequest(uuid, newPosition);
+    final request = AppReorderRequest(uuid: uuid.toString(), newPosition: newPosition);
 
     final result = await backgroundRpc.triggerMethod(request);
     result.resultOrThrow();

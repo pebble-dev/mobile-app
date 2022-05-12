@@ -21,9 +21,7 @@ class AppInstallStatusStateNotifier extends StateNotifier<AppInstallStatus>
 }
 
 AppInstallStatus _getDefault() {
-  AppInstallStatus status = AppInstallStatus();
-  status.isInstalling = false;
-  status.progress = 0.0;
+  AppInstallStatus status = AppInstallStatus(isInstalling: false, progress: 0.0);
 
   return status;
 }

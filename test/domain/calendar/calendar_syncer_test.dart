@@ -22,6 +22,7 @@ import '../../fakes/fake_database.dart';
 import '../../fakes/fake_device_calendar_plugin.dart';
 import '../../fakes/fake_permissions_check.dart';
 import '../../fakes/memory_shared_preferences.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 void main() async {
   // test current time = 2020-11-10 T 11:30 Z
@@ -57,37 +58,49 @@ void main() async {
       Event(
         "22",
         eventId: "1337",
-        start: DateTime.utc(
-          2020, //year
-          11, //month
-          10, //day
-          10, //hour
-          30, //minute
-        ),
-        end: DateTime.utc(
-          2020, //year
-          11, //month
-          10, //day
-          11, //hour
-          30, //minute
-        ),
+        start: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            10, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
+      end: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            11, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
       ),
       Event(
         "22",
         eventId: "1338",
-        start: DateTime.utc(
-          2020, //year
-          11, //month
-          11, //day
-          11, //hour
-          30, //minute
+        start: tz.TZDateTime.from(
+            DateTime.utc(
+              2020, // Year
+              11, // Month
+              11, // Day
+              11, //Hour
+              30, // Minute
+            ),
+            tz.local
         ),
-        end: DateTime.utc(
-          2020, //year
-          11, //month
-          11, //day
-          13, //hour
-          30, //minute
+        end: tz.TZDateTime.from(
+            DateTime.utc(
+              2020, // Year
+              11, // Month
+              11, // Day
+              13, //Hour
+              30, // Minute
+            ),
+            tz.local
         ),
       )
     ];
@@ -168,44 +181,56 @@ void main() async {
       Event(
         "22",
         eventId: "1337",
-        start: DateTime.utc(
-          2020, //year
-          11, //month
-          10, //day
-          10, //hour
-          30, //minute
-        ),
-        end: DateTime.utc(
-          2020, //year
-          11, //month
-          10, //day
-          11, //hour
-          30, //minute
-        ),
+        start: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            10, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
+      end: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            11, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
       ),
       Event(
         "22",
         eventId: "1338",
-        start: DateTime.utc(
-          2020, //year
-          11, //month
-          11, //day
-          11, //hour
-          30, //minute
+        start: tz.TZDateTime.from(
+            DateTime.utc(
+              2020, // Year
+              11, // Month
+              11, // Day
+              11, //Hour
+              30, // Minute
+            ),
+            tz.local
         ),
-        end: DateTime.utc(
-          2020, //year
-          11, //month
-          11, //day
-          13, //hour
-          30, //minute
+        end: tz.TZDateTime.from(
+            DateTime.utc(
+              2020, // Year
+              11, // Month
+              11, // Day
+              13, //Hour
+              30, // Minute
+            ),
+            tz.local
         ),
       )
     ];
 
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
-        itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
+        itemId: Uuid.parse("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
         backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
@@ -303,26 +328,32 @@ void main() async {
       Event(
         "22",
         eventId: "1338",
-        start: DateTime.utc(
-          2020, //year
-          11, //month
-          11, //day
-          11, //hour
-          30, //minute
+        start: tz.TZDateTime.from(
+            DateTime.utc(
+              2020, // Year
+              11, // Month
+              11, // Day
+              11, //Hour
+              30, // Minute
+            ),
+            tz.local
         ),
-        end: DateTime.utc(
-          2020, //year
-          11, //month
-          11, //day
-          13, //hour
-          30, //minute
+        end: tz.TZDateTime.from(
+            DateTime.utc(
+              2020, // Year
+              11, // Month
+              11, // Day
+              13, //Hour
+              30, // Minute
+            ),
+            tz.local
         ),
       )
     ];
 
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
-        itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
+        itemId: Uuid.parse("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
         backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
@@ -376,20 +407,26 @@ void main() async {
       Event(
         "22",
         eventId: "1337",
-        start: DateTime.utc(
-          2020, //year
-          11, //month
-          10, //day
-          10, //hour
-          30, //minute
-        ),
-        end: DateTime.utc(
-          2020, //year
-          11, //month
-          10, //day
-          11, //hour
-          30, //minute
-        ),
+        start: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            10, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
+      end: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            11, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
         title: "Test Event",
         description: "Test Description",
       )
@@ -426,19 +463,25 @@ void main() async {
       Event(
         "22",
         eventId: "1338",
-        start: DateTime.utc(
-          2020, //year
-          11, //month
-          11, //day
-          11, //hour
-          30, //minute
+        start: tz.TZDateTime.from(
+            DateTime.utc(
+              2020, // Year
+              11, // Month
+              11, // Day
+              11, //Hour
+              30, // Minute
+            ),
+            tz.local
         ),
-        end: DateTime.utc(
-          2020, //year
-          11, //month
-          11, //day
-          13, //hour
-          30, //minute
+        end: tz.TZDateTime.from(
+            DateTime.utc(
+              2020, // Year
+              11, // Month
+              11, // Day
+              13, //Hour
+              30, // Minute
+            ),
+            tz.local
         ),
         title: "Test Event X",
         description: "Test Description X",
@@ -447,7 +490,7 @@ void main() async {
 
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
-        itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
+        itemId: Uuid.parse("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
         backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
@@ -529,19 +572,25 @@ void main() async {
       Event(
         "22",
         eventId: "1338",
-        start: DateTime.utc(
-          2020, //year
-          11, //month
-          11, //day
-          11, //hour
-          30, //minute
+        start: tz.TZDateTime.from(
+            DateTime.utc(
+              2020, // Year
+              11, // Month
+              11, // Day
+              11, //Hour
+              30, // Minute
+            ),
+            tz.local
         ),
-        end: DateTime.utc(
-          2020, //year
-          11, //month
-          11, //day
-          13, //hour
-          30, //minute
+        end: tz.TZDateTime.from(
+            DateTime.utc(
+              2020, // Year
+              11, // Month
+              11, // Day
+              13, //Hour
+              30, // Minute
+            ),
+            tz.local
         ),
         title: "Test Event X",
         description: "Test Description X",
@@ -550,7 +599,7 @@ void main() async {
 
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
-        itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
+        itemId: Uuid.parse("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
         backingId: "22T1338T1605094200000",
         timestamp: DateTime.utc(
@@ -633,26 +682,32 @@ void main() async {
       Event(
         "22",
         eventId: "1337",
-        start: DateTime.utc(
-          2020, //year
-          11, //month
-          10, //day
-          10, //hour
-          30, //minute
-        ),
-        end: DateTime.utc(
-          2020, //year
-          11, //month
-          10, //day
-          11, //hour
-          30, //minute
-        ),
+        start: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            10, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
+      end: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            11, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
       )
     ];
 
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
-        itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
+        itemId: Uuid.parse("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
         backingId: "22T1338T1607599800000",
         timestamp: DateTime.utc(
@@ -754,44 +809,44 @@ void main() async {
       Event(
         "22",
         eventId: "1337",
-        start: DateTime.utc(
+        start: tz.TZDateTime.from(DateTime.utc(
           2020, //year
           11, //month
           7, //day
           10, //hour
           30, //minute
-        ),
-        end: DateTime.utc(
+        ), tz.local),
+        end: tz.TZDateTime.from(DateTime.utc(
           2020, //year
           11, //month
           7, //day
           11, //hour
           30, //minute
-        ),
+        ), tz.local),
       ),
       Event(
         "22",
         eventId: "1338",
-        start: DateTime.utc(
+        start: tz.TZDateTime.from(DateTime.utc(
           2020, //year
           11, //month
           10, //day
           11, //hour
           00, //minute
-        ),
-        end: DateTime.utc(
+        ), tz.local),
+        end: tz.TZDateTime.from(DateTime.utc(
           2020, //year
           11, //month
           10, //day
           12, //hour
           00, //minute
-        ),
+        ), tz.local),
       )
     ];
 
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
-        itemId: Uuid("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
+        itemId: Uuid.parse("e440b58d-7f8e-4137-85ae-2210daf9fc51"),
         parentId: calendarWatchappId,
         backingId: "22T1337T1604745000000",
         timestamp: DateTime.utc(
@@ -815,7 +870,7 @@ void main() async {
 
     await pinDao.insertOrUpdateTimelinePin(
       TimelinePin(
-        itemId: Uuid("24b88efe-6b43-41cd-a1f6-06b0e5940f94"),
+        itemId: Uuid.parse("24b88efe-6b43-41cd-a1f6-06b0e5940f94"),
         parentId: calendarWatchappId,
         backingId: "22T1338T1605006000000",
         timestamp: DateTime.utc(
@@ -844,7 +899,7 @@ void main() async {
 
     final List<TimelinePin> expectedEvents = [
       TimelinePin(
-        itemId: Uuid("24b88efe-6b43-41cd-a1f6-06b0e5940f94"),
+        itemId: Uuid.parse("24b88efe-6b43-41cd-a1f6-06b0e5940f94"),
         parentId: calendarWatchappId,
         backingId: "22T1338T1605006000000",
         timestamp: DateTime.utc(
@@ -899,20 +954,20 @@ void main() async {
       Event(
         "22",
         eventId: "1337",
-        start: DateTime.utc(
+        start: tz.TZDateTime.from(DateTime.utc(
           2020, //year
           11, //month
           10, //day
           10, //hour
           00, //minute
-        ),
-        end: DateTime.utc(
+        ), tz.local),
+        end: tz.TZDateTime.from(DateTime.utc(
           2020, //year
           11, //month
           10, //day
           10, //hour
           10, //minute
-        ),
+        ), tz.local),
       ),
 
       // Event that starts in the past but ends in the present
@@ -920,20 +975,20 @@ void main() async {
       Event(
         "22",
         eventId: "1338",
-        start: DateTime.utc(
+        start: tz.TZDateTime.from(DateTime.utc(
           2020, //year
           11, //month
           10, //day
           10, //hour
           30, //minute
-        ),
-        end: DateTime.utc(
+        ), tz.local),
+        end: tz.TZDateTime.from(DateTime.utc(
           2020, //year
           11, //month
           10, //day
           11, //hour
           45, //minute
-        ),
+        ), tz.local),
       ),
 
       // Event that starts and ends today
@@ -941,20 +996,20 @@ void main() async {
       Event(
         "22",
         eventId: "1339",
-        start: DateTime.utc(
+        start: tz.TZDateTime.from(DateTime.utc(
           2020, //year
           11, //month
           10, //day
           12, //hour
           00, //minute
-        ),
-        end: DateTime.utc(
+        ), tz.local),
+        end: tz.TZDateTime.from(DateTime.utc(
           2020, //year
           11, //month
           10, //day
           15, //hour
           00, //minute
-        ),
+        ), tz.local),
       ),
 
       // Event that starts and ends in 3 days
@@ -962,20 +1017,20 @@ void main() async {
       Event(
         "22",
         eventId: "1340",
-        start: DateTime.utc(
+        start: tz.TZDateTime.from(DateTime.utc(
           2020, //year
           11, //month
           13, //day
           12, //hour
           00, //minute
-        ),
-        end: DateTime.utc(
+        ), tz.local),
+        end: tz.TZDateTime.from(DateTime.utc(
           2020, //year
           11, //month
           13, //day
           15, //hour
           00, //minute
-        ),
+        ), tz.local),
       ),
 
       // Event that starts on day 6 but ends on day 7
@@ -983,20 +1038,20 @@ void main() async {
       Event(
         "22",
         eventId: "1341",
-        start: DateTime.utc(
+        start: tz.TZDateTime.from(DateTime.utc(
           2020, //year
           11, //month
           16, //day
           23, //hour
           30, //minute
-        ),
-        end: DateTime.utc(
+        ), tz.local),
+        end: tz.TZDateTime.from(DateTime.utc(
           2020, //year
           11, //month
           17, //day
           00, //hour
           30, //minute
-        ),
+        ), tz.local),
       ),
 
       // Event that starts on day 7
@@ -1004,20 +1059,20 @@ void main() async {
       Event(
         "22",
         eventId: "1342",
-        start: DateTime.utc(
+        start: tz.TZDateTime.from(DateTime.utc(
           2020, //year
           11, //month
           17, //day
           10, //hour
           00, //minute
-        ),
-        end: DateTime.utc(
+        ), tz.local),
+        end: tz.TZDateTime.from(DateTime.utc(
           2020, //year
           11, //month
           17, //day
           12, //hour
           00, //minute
-        ),
+        ), tz.local),
       ),
     ];
 
@@ -1141,37 +1196,49 @@ void main() async {
       Event(
         "22",
         eventId: "1337",
-        start: DateTime.utc(
-          2020, //year
-          11, //month
-          10, //day
-          10, //hour
-          30, //minute
-        ),
-        end: DateTime.utc(
-          2020, //year
-          11, //month
-          10, //day
-          11, //hour
-          30, //minute
-        ),
+        start: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            10, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
+      end: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            11, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
       ),
       Event(
         "23",
         eventId: "1338",
-        start: DateTime.utc(
-          2020, //year
-          11, //month
-          11, //day
-          11, //hour
-          30, //minute
+        start: tz.TZDateTime.from(
+            DateTime.utc(
+              2020, // Year
+              11, // Month
+              11, // Day
+              11, //Hour
+              30, // Minute
+            ),
+            tz.local
         ),
-        end: DateTime.utc(
-          2020, //year
-          11, //month
-          11, //day
-          13, //hour
-          30, //minute
+        end: tz.TZDateTime.from(
+            DateTime.utc(
+              2020, // Year
+              11, // Month
+              11, // Day
+              13, //Hour
+              30, // Minute
+            ),
+            tz.local
         ),
       )
     ];
@@ -1226,13 +1293,13 @@ void expectEventsWithoutItemIdAndJsonsIgnoringOrder(
   List<TimelinePin> expected,
 ) {
   final expectedWithoutJsons = expected.map((e) => e.copyWith(
-        itemId: Uuid("00000000-0000-0000-0000-000000000000"),
+        itemId: Uuid.parse("00000000-0000-0000-0000-000000000000"),
         actionsJson: "[IGNORED]",
         attributesJson: "[IGNORED]",
       ));
 
   final actualWithoutJsons = actual.map((e) => e.copyWith(
-        itemId: Uuid("00000000-0000-0000-0000-000000000000"),
+        itemId: Uuid.parse("00000000-0000-0000-0000-000000000000"),
         actionsJson: "[IGNORED]",
         attributesJson: "[IGNORED]",
       ));

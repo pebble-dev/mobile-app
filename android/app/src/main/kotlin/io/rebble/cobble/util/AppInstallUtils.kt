@@ -2,10 +2,12 @@ package io.rebble.cobble.util
 
 import android.content.Context
 import androidx.annotation.WorkerThread
-import com.squareup.moshi.Moshi
-import io.rebble.cobble.data.pbw.appinfo.PbwAppInfo
-import io.rebble.cobble.data.pbw.manifest.PbwManifest
 import io.rebble.libpebblecommon.metadata.WatchType
+import io.rebble.libpebblecommon.metadata.pbw.appinfo.PbwAppInfo
+import io.rebble.libpebblecommon.metadata.pbw.manifest.PbwManifest
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
 import okio.Source
 import okio.buffer
 import java.io.File
@@ -18,34 +20,34 @@ fun getAppPbwFile(context: Context, appUuid: String): File {
 }
 
 @WorkerThread
-fun getPbwManifest(moshi: Moshi, pbwFile: File, watchType: WatchType): PbwManifest? {
+fun getPbwManifest(pbwFile: File, watchType: WatchType): PbwManifest? {
     val manifestFile = pbwFile.zippedPlatformSource(watchType, "manifest.json")
             ?.buffer()
             ?: return null
 
     return manifestFile.use {
-        moshi.adapter(PbwManifest::class.java).nonNull().fromJson(it)!!
+        Json.decodeFromStream(it.inputStream())
     }
 }
 
 /**
  * @throws IllegalStateException if pbw does not contain manifest with that watch type
  */
-fun requirePbwManifest(moshi: Moshi, pbwFile: File, watchType: WatchType): PbwManifest {
-    return getPbwManifest(moshi, pbwFile, watchType)
+fun requirePbwManifest(pbwFile: File, watchType: WatchType): PbwManifest {
+    return getPbwManifest(pbwFile, watchType)
             ?: error("Manifest $watchType missing from app $pbwFile")
 }
 
 /**
  * @throws IllegalStateException if pbw does not contain manifest with that watch type
  */
-fun requirePbwAppInfo(moshi: Moshi, pbwFile: File): PbwAppInfo {
+fun requirePbwAppInfo(pbwFile: File): PbwAppInfo {
     val appInfoFile = pbwFile.zippedSource("appinfo.json")
             ?.buffer()
             ?: error("appinfo.json missing from app $pbwFile")
 
     return appInfoFile.use {
-        moshi.adapter(PbwAppInfo::class.java).nonNull().fromJson(it)!!
+        Json.decodeFromStream(it.inputStream())
     }
 }
 

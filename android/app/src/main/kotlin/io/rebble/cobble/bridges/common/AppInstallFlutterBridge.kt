@@ -3,11 +3,10 @@ package io.rebble.cobble.bridges.common
 import android.content.Context
 import android.net.Uri
 import androidx.core.net.toFile
-import com.squareup.moshi.Moshi
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.background.BackgroundAppInstallBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
-import io.rebble.cobble.data.pbw.appinfo.PbwAppInfo
+
 import io.rebble.cobble.data.pbw.appinfo.toPigeon
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.middleware.PutBytesController
@@ -18,6 +17,7 @@ import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.*
 import io.rebble.libpebblecommon.disk.PbwBinHeader
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
+import io.rebble.libpebblecommon.metadata.pbw.appinfo.PbwAppInfo
 import io.rebble.libpebblecommon.packets.AppOrderResultCode
 import io.rebble.libpebblecommon.packets.AppReorderRequest
 import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
@@ -29,6 +29,8 @@ import io.rebble.libpebblecommon.structmapper.StructMapper
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
 import okio.buffer
 import okio.sink
 import okio.source
@@ -42,7 +44,6 @@ import kotlin.random.Random
 @Suppress("BlockingMethodInNonBlockingContext")
 class AppInstallFlutterBridge @Inject constructor(
         private val context: Context,
-        private val moshi: Moshi,
         private val coroutineScope: CoroutineScope,
         private val backgroundAppInstallBridge: BackgroundAppInstallBridge,
         private val watchMetadataStore: WatchMetadataStore,
@@ -66,7 +67,7 @@ class AppInstallFlutterBridge @Inject constructor(
             arg: Pigeons.StringWrapper,
             result: Pigeons.Result<Pigeons.PbwAppInfo>) {
         coroutineScope.launchPigeonResult(result) {
-            val uri: String = arg.value
+            val uri: String = arg.value!!
 
 
             val parsingResult = parsePbwFileMetadata(uri)
@@ -102,7 +103,7 @@ class AppInstallFlutterBridge @Inject constructor(
     ) {
         coroutineScope.launchPigeonResult(result) {
             // Copy pbw file to the app's folder
-            val appUuid = installData.appInfo.uuid
+            val appUuid = installData.appInfo.uuid!!
             val targetFileName = getAppPbwFile(context, appUuid)
 
             val success = withContext(Dispatchers.IO) {
@@ -139,7 +140,7 @@ class AppInstallFlutterBridge @Inject constructor(
     override fun insertAppIntoBlobDb(arg: Pigeons.StringWrapper, result: Pigeons.Result<Pigeons.NumberWrapper>) {
         coroutineScope.launchPigeonResult(result, Dispatchers.IO) {
             NumberWrapper(try {
-                val appUuid = arg.value
+                val appUuid = arg.value!!
 
                 val appFile = getAppPbwFile(context, appUuid)
                 if (!appFile.exists()) {
@@ -162,14 +163,14 @@ class AppInstallFlutterBridge @Inject constructor(
                         ?.watchType
                         ?: error("Unknown hardware platform $hardwarePlatformNumber")
 
-                val appInfo = requirePbwAppInfo(moshi, appFile)
+                val appInfo = requirePbwAppInfo(appFile)
 
                 val targetWatchType = getBestVariant(connectedWatchType, appInfo.targetPlatforms)
                         ?: error("Watch $connectedWatchType is not compatible with app $appUuid. " +
                                 "Compatible apps: ${appInfo.targetPlatforms}")
 
 
-                val manifest = requirePbwManifest(moshi, appFile, targetWatchType)
+                val manifest = requirePbwManifest(appFile, targetWatchType)
 
                 Timber.d("Manifest %s", manifest)
 
@@ -200,7 +201,7 @@ class AppInstallFlutterBridge @Inject constructor(
     override fun beginAppDeletion(arg: Pigeons.StringWrapper,
                                   result: Pigeons.Result<Pigeons.BooleanWrapper>) {
         coroutineScope.launchPigeonResult(result) {
-            getAppPbwFile(context, arg.value).delete()
+            getAppPbwFile(context, arg.value!!).delete()
 
             BooleanWrapper(backgroundAppInstallBridge.deleteApp(arg))
         }
@@ -228,7 +229,7 @@ class AppInstallFlutterBridge @Inject constructor(
             result: Pigeons.Result<Pigeons.NumberWrapper>
     ) {
         coroutineScope.launchPigeonResult(result) {
-            val uuids = arg.value.map { UUID.fromString(it as String) }
+            val uuids = arg.value!!.map { UUID.fromString(it!! as String) }
             reorderService.send(
                     AppReorderRequest(uuids)
             )
@@ -260,10 +261,10 @@ class AppInstallFlutterBridge @Inject constructor(
     override fun subscribeToAppStatus() {
         statusObservingJob = coroutineScope.launch {
             putBytesController.status.collect {
-                val statusPigeon = Pigeons.AppInstallStatus().apply {
-                    isInstalling = it.state == PutBytesController.State.SENDING
-                    progress = it.progress
-                }
+                val statusPigeon = Pigeons.AppInstallStatus.Builder()
+                        .setIsInstalling(it.state == PutBytesController.State.SENDING)
+                        .setProgress(it.progress)
+                        .build()
 
                 statusCallbacks.onStatusUpdated(statusPigeon) {}
             }
@@ -288,6 +289,6 @@ class AppInstallFlutterBridge @Inject constructor(
     }
 
     private fun parseAppInfoJson(stream: InputStream): PbwAppInfo? {
-        return moshi.adapter(PbwAppInfo::class.java).fromJson(stream.source().buffer())
+        return Json.decodeFromStream(stream)
     }
 }

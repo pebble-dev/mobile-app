@@ -23,7 +23,7 @@ final neededWorkaroundsProvider = StreamProvider<List<Workaround>>((ref) {
     final workaroundControl = WorkaroundsControl();
     final workarounds = await workaroundControl.getNeededWorkarounds();
 
-    return (workarounds.value.cast<String>());
+    return (workarounds.value!.cast<String>());
   }
 
   return Stream.fromFuture(fetchControls()).switchMap((workarounds) {

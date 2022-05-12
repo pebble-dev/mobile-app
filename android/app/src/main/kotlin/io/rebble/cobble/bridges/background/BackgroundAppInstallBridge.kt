@@ -15,10 +15,9 @@ class BackgroundAppInstallBridge @Inject constructor(
     suspend fun installAppNow(uri: String, appInfo: Pigeons.PbwAppInfo): Boolean {
         val appInstallCallbacks = getAppInstallCallbacks() ?: return false
 
-        val appInstallData = Pigeons.InstallData().also {
-            it.uri = uri
-            it.appInfo = appInfo
-        }
+        val appInstallData = Pigeons.InstallData.Builder()
+                .setUri(uri)
+                .setAppInfo(appInfo).build()
 
         awaitPigeonMethod<Void> { reply ->
             appInstallCallbacks.beginAppInstall(appInstallData, reply)

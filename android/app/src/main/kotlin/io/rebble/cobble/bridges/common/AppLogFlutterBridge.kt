@@ -31,14 +31,15 @@ class AppLogFlutterBridge @Inject constructor(
             appLogController.logs.collect {
                 Timber.d("Received in pigeon '%s'", it.message.get())
                 callbacks.onLogReceived(
-                        Pigeons.AppLogEntry().apply {
-                            uuid = it.uuid.get().toString()
-                            timestamp = it.timestamp.get().toLong()
-                            level = it.level.get().toLong()
-                            lineNumber = it.lineNumber.get().toLong()
-                            filename = it.filename.get()
-                            message = it.message.get()
-                        }
+                        Pigeons.AppLogEntry.Builder()
+                                .setUuid(it.uuid.get().toString())
+                                .setTimestamp(it.timestamp.get().toLong())
+                                .setLevel(it.level.get().toLong())
+                                .setLineNumber(it.lineNumber.get().toLong())
+                                .setFilename(it.filename.get())
+                                .setMessage(it.message.get())
+                                .build()
+
                 ) {}
             }
         }

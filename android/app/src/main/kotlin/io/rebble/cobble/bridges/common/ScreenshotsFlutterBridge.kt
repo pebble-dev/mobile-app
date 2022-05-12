@@ -7,7 +7,7 @@ import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.launchPigeonResult
-import io.rebble.cobble.util.ushr
+import io.rebble.libpebblecommon.util.ushr
 import io.rebble.libpebblecommon.packets.*
 import io.rebble.libpebblecommon.services.ScreenshotService
 import io.rebble.libpebblecommon.util.DataBuffer
@@ -49,9 +49,7 @@ class ScreenshotsFlutterBridge @Inject constructor(
                             ScreenshotResponseCode.fromRawCode(header.responseCode.get())
                     )
 
-                    return@launchPigeonResult Pigeons.ScreenshotResult().apply {
-                        success = false
-                    }
+                    return@launchPigeonResult Pigeons.ScreenshotResult.Builder().setSuccess(false).build()
                 }
 
                 val width = header.width.get().toInt()
@@ -98,17 +96,14 @@ class ScreenshotsFlutterBridge @Inject constructor(
                     }
                 }
 
-
-                Pigeons.ScreenshotResult().apply {
-                    success = true
-                    imagePath = targetFile.absolutePath
-                }
+                Pigeons.ScreenshotResult.Builder()
+                        .setSuccess(true)
+                        .setImagePath(targetFile.absolutePath)
+                        .build()
             } catch (e: Exception) {
                 Timber.e(e, "Screenshot fetch failed")
 
-                Pigeons.ScreenshotResult().apply {
-                    success = false
-                }
+                Pigeons.ScreenshotResult.Builder().setSuccess(false).build()
             }
         }
     }

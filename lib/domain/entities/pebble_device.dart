@@ -27,7 +27,7 @@ class PebbleFirmware {
 
 class PebbleDevice {
   final String? name;
-  final int? address;
+  final String? address;
   final PebbleFirmware runningFirmware;
   final PebbleFirmware recoveryFirmware;
   final PebbleWatchModel model;

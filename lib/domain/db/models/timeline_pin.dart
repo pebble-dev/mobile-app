@@ -14,7 +14,7 @@ part 'timeline_pin.g.dart';
 @UuidConverter()
 @BooleanNumberConverter()
 @NumberDateTimeConverter()
-@CopyWith(generateCopyWithNull: true)
+@CopyWith(copyWithNull: true)
 class TimelinePin {
   /// Unique UUID of the item
   final Uuid? itemId;

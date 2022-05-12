@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cobble/background/modules/apps_background.dart';
 import 'package:cobble/background/modules/notifications_background.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
@@ -12,11 +14,16 @@ import 'package:cobble/util/container_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shared_preferences_android/shared_preferences_android.dart';
+import 'package:shared_preferences_ios/shared_preferences_ios.dart';
 
 import 'actions/master_action_handler.dart';
 import 'modules/calendar_background.dart';
 
 void main_background() {
+  // https://github.com/flutter/flutter/issues/98473#issuecomment-1041895729
+  if (Platform.isAndroid) SharedPreferencesAndroid.registerWith();
+  if (Platform.isIOS) SharedPreferencesIOS.registerWith();
   WidgetsFlutterBinding.ensureInitialized();
 
   BackgroundReceiver();
@@ -95,7 +102,7 @@ class BackgroundReceiver implements TimelineCallbacks {
 
     if (unfaithful) {
       // Ensure we will stay in unfaithful mode until sync succeeds
-      await prefs.setLastConnectedWatchAddress(0);
+      await prefs.setLastConnectedWatchAddress("");
     }
 
     bool success = true;

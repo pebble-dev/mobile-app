@@ -64,13 +64,13 @@ class PairedStorage extends StateNotifier<List<StoredDevice>> {
     await _storeState();
   }
 
-  Future<void> unregister(int? address) async {
+  Future<void> unregister(String? address) async {
     state =
         state.where((element) => element.device.address != address).toList();
     await _storeState();
   }
 
-  Future<void> setDefault(int address) async {
+  Future<void> setDefault(String address) async {
     state = state
         .map((element) =>
             StoredDevice(element.device, element.device.address == address))

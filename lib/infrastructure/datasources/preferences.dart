@@ -51,12 +51,12 @@ class Preferences {
     _preferencesUpdateStream.add(this);
   }
 
-  int? getLastConnectedWatchAddress() {
-    return _sharedPrefs.getInt("LAST_CONNECTED_WATCH");
+  String? getLastConnectedWatchAddress() {
+    return _sharedPrefs.getString("LAST_CONNECTED_WATCH");
   }
 
-  Future<void> setLastConnectedWatchAddress(int value) async {
-    await _sharedPrefs.setInt("LAST_CONNECTED_WATCH", value);
+  Future<void> setLastConnectedWatchAddress(String value) async {
+    await _sharedPrefs.setString("LAST_CONNECTED_WATCH", value);
     _preferencesUpdateStream.add(this);
   }
 

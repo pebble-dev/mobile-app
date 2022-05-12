@@ -1,7 +1,6 @@
 package io.rebble.cobble.bluetooth
 
-import io.rebble.cobble.util.shl
-import io.rebble.cobble.util.shr
+import io.rebble.libpebblecommon.util.shr
 import java.nio.ByteBuffer
 import kotlin.experimental.and
 import kotlin.experimental.or

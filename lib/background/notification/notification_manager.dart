@@ -28,7 +28,7 @@ import 'package:hooks_riverpod/all.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid_type/uuid_type.dart';
 
-final Uuid notificationsWatchappId = Uuid("B2CAE818-10F8-46DF-AD2B-98AD2254A3C1");
+final Uuid notificationsWatchappId = Uuid.parse("B2CAE818-10F8-46DF-AD2B-98AD2254A3C1");
 
 class NotificationManager {
   final NotificationUtils _notificationUtils = NotificationUtils();
@@ -86,7 +86,7 @@ class NotificationManager {
       id.value = old.pinId.toString();
       _notificationUtils.dismissNotificationWatch(id);
     }
-    Uuid itemId = RandomBasedUuidGenerator().generate();
+    Uuid itemId = RandomUuidGenerator().generate();
     List<TimelineAttribute> attributes = [
       TimelineAttribute.tinyIcon(await _determineIcon(notif.packageId, CategoryAndroid.fromId(notif.category))),
       TimelineAttribute.title(notif.appName!.trim()),

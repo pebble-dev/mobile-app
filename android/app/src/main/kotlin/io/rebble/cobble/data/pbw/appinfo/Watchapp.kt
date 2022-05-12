@@ -1,15 +1,8 @@
 package io.rebble.cobble.data.pbw.appinfo
 
 
-import com.squareup.moshi.JsonClass
 import io.rebble.cobble.pigeons.Pigeons
-
-@JsonClass(generateAdapter = true)
-data class Watchapp(
-        val watchface: Boolean = false,
-        val hiddenApp: Boolean = false,
-        val onlyShownOnCommunication: Boolean = false
-)
+import io.rebble.libpebblecommon.metadata.pbw.appinfo.Watchapp
 
 fun Watchapp.toPigeon(): Pigeons.WatchappInfo {
     return Pigeons.WatchappInfo().also {
