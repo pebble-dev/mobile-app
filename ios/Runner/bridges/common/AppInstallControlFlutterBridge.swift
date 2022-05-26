@@ -196,11 +196,7 @@ class AppInstallControlFlutterBridge: NSObject, AppInstallControl {
             completion(nil, FlutterError(code: "ERROR", message: String(describing: error), details: nil))
         }
     }
-    
-    func beginAppOrderChange(_ appReorderRequest: Pigeon_AppReorderRequest?, completion: @escaping (NumberWrapper?, FlutterError?) -> Void) {
-        assertionFailure()
-    }
-    
+
     func subscribeToAppStatusWithError(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) {
         if (appStatusObserver != nil) {
             NotificationCenter.default.removeObserver(appStatusObserver!, name: NSNotification.Name(rawValue: "PutBytesController.Status"), object: nil)
