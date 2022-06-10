@@ -9,5 +9,4 @@
 #define PigeonsAlias_h
 #include "Pigeons.h"
 typedef PbwAppInfo * Pigeon_PbwAppInfo;
-typedef AppReorderRequest * Pigeon_AppReorderRequest;
 #endif /* PigeonsAlias_h */

@@ -657,7 +657,7 @@ class InstallData {
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
     pigeonMap['uri'] = uri;
-    pigeonMap['appInfo'] = appInfo == null ? null : appInfo!.encode();
+    pigeonMap['appInfo'] = appInfo.encode();
     return pigeonMap;
   }
 

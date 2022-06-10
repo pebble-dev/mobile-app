@@ -25,7 +25,7 @@ class ScanFlutterBridge: NSObject, ScanControl {
                 let _ = LECentral.shared.scan(foundDevices: { foundDevices in
                     let list = ListWrapper()
                     list.value = foundDevices.map {
-                        $0.toPigeon().toMap()
+                        $0.toPigeon()
                     }
                     scanCallbacks.onScanUpdatePebbles(list) {_ in }
                 }, scanEnded: {
