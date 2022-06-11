@@ -6,11 +6,10 @@ part of 'notification_action.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-NotificationAction _$NotificationActionFromJson(Map<String, dynamic> json) {
-  return NotificationAction()
-    ..title = json['title'] as String?
-    ..isResponse = json['isResponse'] as bool?;
-}
+NotificationAction _$NotificationActionFromJson(Map<String, dynamic> json) =>
+    NotificationAction()
+      ..title = json['title'] as String?
+      ..isResponse = json['isResponse'] as bool?;
 
 Map<String, dynamic> _$NotificationActionToJson(NotificationAction instance) {
   final val = <String, dynamic>{};
