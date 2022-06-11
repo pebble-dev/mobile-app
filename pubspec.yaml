@@ -70,7 +70,7 @@ dev_dependencies:
   sqflite_common_ffi: ^2.0.0
   mockito: ^5.1.0
   source_gen: ^1.2.1
-  recase: ^3.0.1
+  recase: ^4.0.0
   flutter_lints: ^1.0.4
 
 flutter_icons:
