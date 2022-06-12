@@ -1,12 +1,17 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'base_url_entry.dart';
+
+import 'auth_config.dart';
 
 part 'boot_config.g.dart';
 
 @JsonSerializable()
 class BootConfig {
-  final BaseURLEntry auth;
+  final AuthConfig auth;
 
   BootConfig({required this.auth});
   factory BootConfig.fromJson(Map<String, dynamic> json) => _$BootConfigFromJson(json);
+  Map<String, dynamic> toJson() => _$BootConfigToJson(this);
+
+  @override
+  String toString() => toJson().toString();
 }
