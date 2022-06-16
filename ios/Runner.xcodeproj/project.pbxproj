@@ -13,8 +13,6 @@
 		6701505827D1B96400797B97 /* AppInstallControlFlutterBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6701505727D1B96400797B97 /* AppInstallControlFlutterBridge.swift */; };
 		672D972C27D51B0700F499F4 /* AppLifecycleFlutterBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672D972B27D51B0700F499F4 /* AppLifecycleFlutterBridge.swift */; };
 		67442F7127C9B0D900ACED5B /* AppInstallHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67442F7027C9B0D900ACED5B /* AppInstallHandler.swift */; };
-		6746228D27CC0FCC0056EB6B /* libpebblecommon.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 675F0EB227CB17EE0018C0F7 /* libpebblecommon.xcframework */; };
-		6746228E27CC0FCC0056EB6B /* libpebblecommon.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 675F0EB227CB17EE0018C0F7 /* libpebblecommon.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6756E20727D3FFBF00ECA2DF /* WatchConnectionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6756E20627D3FFBF00ECA2DF /* WatchConnectionState.swift */; };
 		6756E20927D42BCA00ECA2DF /* WorkaroundsFlutterBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6756E20827D42BCA00ECA2DF /* WorkaroundsFlutterBridge.swift */; };
 		6756E20B27D43F2D00ECA2DF /* LoggingFlutterBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6756E20A27D43F2D00ECA2DF /* LoggingFlutterBridge.swift */; };
@@ -27,6 +25,7 @@
 		675F0EAE27CB0A970018C0F7 /* PutBytesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 675F0EAD27CB0A970018C0F7 /* PutBytesController.swift */; };
 		675F0EB127CB12EC0018C0F7 /* SwiftZip in Frameworks */ = {isa = PBXBuildFile; productRef = 675F0EB027CB12EC0018C0F7 /* SwiftZip */; };
 		675F0EB627CB32ED0018C0F7 /* WatchMetadataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 675F0EB527CB32ED0018C0F7 /* WatchMetadataStore.swift */; };
+		67699565285B6DA70013038F /* libpebblecommon in Frameworks */ = {isa = PBXBuildFile; productRef = 67699564285B6DA70013038F /* libpebblecommon */; };
 		676CAE5927C479E8001B9211 /* CobbleLE in Frameworks */ = {isa = PBXBuildFile; productRef = 676CAE5827C479E8001B9211 /* CobbleLE */; };
 		678C213E27CBBE3C0042B895 /* extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 678C213D27CBBE3C0042B895 /* extensions.swift */; };
 		67945BB227C81A4D00DE13E8 /* Pigeons.m in Sources */ = {isa = PBXBuildFile; fileRef = 67945BB027C81A4D00DE13E8 /* Pigeons.m */; };
@@ -74,7 +73,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				6746228E27CC0FCC0056EB6B /* libpebblecommon.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -151,10 +149,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				67C33E1E27CBBC2A005C14F2 /* PromiseKit in Frameworks */,
+				67699565285B6DA70013038F /* libpebblecommon in Frameworks */,
 				675F0EA827CB050E0018C0F7 /* CocoaLumberjack in Frameworks */,
 				676CAE5927C479E8001B9211 /* CobbleLE in Frameworks */,
 				84544F477929DB68C98B9C52 /* Pods_Runner.framework in Frameworks */,
-				6746228D27CC0FCC0056EB6B /* libpebblecommon.xcframework in Frameworks */,
 				675F0EAC27CB06440018C0F7 /* CocoaLumberjackSwiftLogBackend in Frameworks */,
 				675F0EB127CB12EC0018C0F7 /* SwiftZip in Frameworks */,
 				675F0EAA27CB050E0018C0F7 /* CocoaLumberjackSwift in Frameworks */,
@@ -398,6 +396,7 @@
 				675F0EAB27CB06440018C0F7 /* CocoaLumberjackSwiftLogBackend */,
 				675F0EB027CB12EC0018C0F7 /* SwiftZip */,
 				67C33E1D27CBBC2A005C14F2 /* PromiseKit */,
+				67699564285B6DA70013038F /* libpebblecommon */,
 			);
 			productName = Runner;
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
@@ -437,6 +436,7 @@
 				675F0EA627CB050E0018C0F7 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */,
 				675F0EAF27CB12EC0018C0F7 /* XCRemoteSwiftPackageReference "SwiftZip" */,
 				67C33E1C27CBBC2A005C14F2 /* XCRemoteSwiftPackageReference "PromiseKit" */,
+				67699563285B6DA70013038F /* XCRemoteSwiftPackageReference "libpebblecommon" */,
 			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
@@ -1033,6 +1033,14 @@
 				kind = branch;
 			};
 		};
+		67699563285B6DA70013038F /* XCRemoteSwiftPackageReference "libpebblecommon" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pebble-dev/libpebblecommon";
+			requirement = {
+				branch = "swiftpm-0.1.6";
+				kind = branch;
+			};
+		};
 		676CAE5727C479E8001B9211 /* XCRemoteSwiftPackageReference "CobbleLEKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/crc-32/CobbleLEKit";
@@ -1071,6 +1079,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 675F0EAF27CB12EC0018C0F7 /* XCRemoteSwiftPackageReference "SwiftZip" */;
 			productName = SwiftZip;
+		};
+		67699564285B6DA70013038F /* libpebblecommon */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 67699563285B6DA70013038F /* XCRemoteSwiftPackageReference "libpebblecommon" */;
+			productName = libpebblecommon;
 		};
 		676CAE5827C479E8001B9211 /* CobbleLE */ = {
 			isa = XCSwiftPackageProductDependency;
