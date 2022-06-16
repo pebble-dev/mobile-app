@@ -8,4 +8,9 @@ class BaseURLEntry {
 
   BaseURLEntry(this.base);
   factory BaseURLEntry.fromJson(Map<String, dynamic> json) => _$BaseURLEntryFromJson(json);
+
+  Map<String, dynamic> toJson() => _$BaseURLEntryToJson(this);
+
+  @override
+  String toString() => toJson().toString();
 }

@@ -1,20 +1,9 @@
 import 'dart:async';
 
-import 'package:cobble/domain/api/boot/auth_config.dart';
-import 'package:cobble/domain/api/boot/base_url_entry.dart';
 import 'package:cobble/domain/api/boot/boot_config.dart';
 import 'package:cobble/infrastructure/datasources/web_services/service.dart';
-import 'package:flutter/foundation.dart';
 
 const _confLifetime = Duration(hours: 1);
-
-final _offlineBootConfig = BootConfig(
-    auth: AuthConfig(
-      base: BaseURLEntry("http://auth.test/api"),
-      authoriseUrl: "http://auth.test:8086/oauth/authorise",
-      refreshUrl: "http://auth.test:8086/oauth/token",
-    ),
-);
 
 class BootService extends Service {
   BootConfig? _conf;
@@ -27,16 +16,9 @@ class BootService extends Service {
     if (_conf == null || _confAge == null ||
         DateTime.now().difference(_confAge!) >= _confLifetime) {
       _confAge = DateTime.now();
-      try {
-        BootConfig bootConfig = await reqBootConfig();
-        _conf = bootConfig;
-        return bootConfig;
-      } catch (e) {
-        if (kDebugMode) {
-          print("Error getting boot config: $e");
-        }
-        return _offlineBootConfig;
-      }
+      BootConfig bootConfig = await reqBootConfig();
+      _conf = bootConfig;
+      return bootConfig;
     } else {
       return _conf!;
     }

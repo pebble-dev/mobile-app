@@ -4,7 +4,7 @@ import 'auth_config.dart';
 
 part 'boot_config.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(fieldRename: FieldRename.snake)
 class BootConfig {
   final AuthConfig auth;
 
