@@ -1896,6 +1896,69 @@ public class Pigeons {
     }
   }
 
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class OAuthResult {
+    private @Nullable String code;
+    public @Nullable String getCode() { return code; }
+    public void setCode(@Nullable String setterArg) {
+      this.code = setterArg;
+    }
+
+    private @Nullable String state;
+    public @Nullable String getState() { return state; }
+    public void setState(@Nullable String setterArg) {
+      this.state = setterArg;
+    }
+
+    private @Nullable String error;
+    public @Nullable String getError() { return error; }
+    public void setError(@Nullable String setterArg) {
+      this.error = setterArg;
+    }
+
+    public static class Builder {
+      private @Nullable String code;
+      public @NonNull Builder setCode(@Nullable String setterArg) {
+        this.code = setterArg;
+        return this;
+      }
+      private @Nullable String state;
+      public @NonNull Builder setState(@Nullable String setterArg) {
+        this.state = setterArg;
+        return this;
+      }
+      private @Nullable String error;
+      public @NonNull Builder setError(@Nullable String setterArg) {
+        this.error = setterArg;
+        return this;
+      }
+      public @NonNull OAuthResult build() {
+        OAuthResult pigeonReturn = new OAuthResult();
+        pigeonReturn.setCode(code);
+        pigeonReturn.setState(state);
+        pigeonReturn.setError(error);
+        return pigeonReturn;
+      }
+    }
+    @NonNull Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("code", code);
+      toMapResult.put("state", state);
+      toMapResult.put("error", error);
+      return toMapResult;
+    }
+    static @NonNull OAuthResult fromMap(@NonNull Map<String, Object> map) {
+      OAuthResult pigeonResult = new OAuthResult();
+      Object code = map.get("code");
+      pigeonResult.setCode((String)code);
+      Object state = map.get("state");
+      pigeonResult.setState((String)state);
+      Object error = map.get("error");
+      pigeonResult.setError((String)error);
+      return pigeonResult;
+    }
+  }
+
   public interface Result<T> {
     void success(T result);
     void error(Throwable error);
@@ -3056,7 +3119,7 @@ public class Pigeons {
     protected Object readValueOfType(byte type, ByteBuffer buffer) {
       switch (type) {
         case (byte)128:         
-          return BooleanWrapper.fromMap((Map<String, Object>) readValue(buffer));
+          return OAuthResult.fromMap((Map<String, Object>) readValue(buffer));
         
         default:        
           return super.readValueOfType(type, buffer);
@@ -3065,9 +3128,9 @@ public class Pigeons {
     }
     @Override
     protected void writeValue(ByteArrayOutputStream stream, Object value)     {
-      if (value instanceof BooleanWrapper) {
+      if (value instanceof OAuthResult) {
         stream.write(128);
-        writeValue(stream, ((BooleanWrapper) value).toMap());
+        writeValue(stream, ((OAuthResult) value).toMap());
       } else 
 {
         super.writeValue(stream, value);
@@ -3079,7 +3142,7 @@ public class Pigeons {
   public interface IntentControl {
     @NonNull void notifyFlutterReadyForIntents();
     @NonNull void notifyFlutterNotReadyForIntents();
-    void waitForBoot(Result<BooleanWrapper> result);
+    void waitForOAuth(Result<OAuthResult> result);
 
     /** The codec used by IntentControl. */
     static MessageCodec<Object> getCodec() {
@@ -3128,13 +3191,13 @@ public class Pigeons {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.IntentControl.waitForBoot", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.IntentControl.waitForOAuth", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
             try {
-              Result<BooleanWrapper> resultCallback = new Result<BooleanWrapper>() {
-                public void success(BooleanWrapper result) {
+              Result<OAuthResult> resultCallback = new Result<OAuthResult>() {
+                public void success(OAuthResult result) {
                   wrapped.put("result", result);
                   reply.reply(wrapped);
                 }
@@ -3144,7 +3207,7 @@ public class Pigeons {
                 }
               };
 
-              api.waitForBoot(resultCallback);
+              api.waitForOAuth(resultCallback);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));

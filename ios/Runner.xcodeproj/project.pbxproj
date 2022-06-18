@@ -53,6 +53,7 @@
 		67B33CFB27C464B1007FBA39 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 67B33CE327C464B0007FBA39 /* GeneratedPluginRegistrant.m */; };
 		67C33E1E27CBBC2A005C14F2 /* PromiseKit in Frameworks */ = {isa = PBXBuildFile; productRef = 67C33E1D27CBBC2A005C14F2 /* PromiseKit */; };
 		67EB5FA327D2CE3C0072CE9D /* BackgroundAppInstallFlutterBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67EB5FA227D2CE3C0072CE9D /* BackgroundAppInstallFlutterBridge.swift */; };
+		67F42F6D285BB8EB00F5FE70 /* OAuthEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67F42F6C285BB8EB00F5FE70 /* OAuthEvent.swift */; };
 		84544F477929DB68C98B9C52 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 620666896E8FA2E5FECAB423 /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
 
@@ -128,6 +129,7 @@
 		67B33CE327C464B0007FBA39 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		67B33CE427C464B0007FBA39 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		67EB5FA227D2CE3C0072CE9D /* BackgroundAppInstallFlutterBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundAppInstallFlutterBridge.swift; sourceTree = "<group>"; };
+		67F42F6C285BB8EB00F5FE70 /* OAuthEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthEvent.swift; sourceTree = "<group>"; };
 		703F0CECA9F9B877FA874376 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
@@ -238,6 +240,7 @@
 				67B33CD427C464B0007FBA39 /* common */,
 				67B33CD727C464B0007FBA39 /* FlutterBridgeSetup.swift */,
 				6756E20627D3FFBF00ECA2DF /* WatchConnectionState.swift */,
+				67F42F6C285BB8EB00F5FE70 /* OAuthEvent.swift */,
 			);
 			path = bridges;
 			sourceTree = "<group>";
@@ -575,6 +578,7 @@
 				67B33CEF27C464B1007FBA39 /* PermissionCheckFlutterBridge.swift in Sources */,
 				67B33CED27C464B1007FBA39 /* PermissionControlFlutterBridge.swift in Sources */,
 				6756E20F27D45DEF00ECA2DF /* PromiseTimeout.swift in Sources */,
+				67F42F6D285BB8EB00F5FE70 /* OAuthEvent.swift in Sources */,
 				67B33CF727C464B1007FBA39 /* LEPeripheral.swift in Sources */,
 				672D972C27D51B0700F499F4 /* AppLifecycleFlutterBridge.swift in Sources */,
 				67B33CF127C464B1007FBA39 /* FlutterBridgeSetup.swift in Sources */,

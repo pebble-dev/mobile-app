@@ -111,6 +111,10 @@ static id GetNullableObject(NSDictionary* dict, id key) {
 + (AppLogEntry *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
+@interface OAuthResult ()
++ (OAuthResult *)fromMap:(NSDictionary *)dict;
+- (NSDictionary *)toMap;
+@end
 
 @implementation BooleanWrapper
 + (instancetype)makeWithValue:(nullable NSNumber *)value {
@@ -684,6 +688,28 @@ static id GetNullableObject(NSDictionary* dict, id key) {
 }
 - (NSDictionary *)toMap {
   return [NSDictionary dictionaryWithObjectsAndKeys:(self.uuid ? self.uuid : [NSNull null]), @"uuid", (self.timestamp ? self.timestamp : [NSNull null]), @"timestamp", (self.level ? self.level : [NSNull null]), @"level", (self.lineNumber ? self.lineNumber : [NSNull null]), @"lineNumber", (self.filename ? self.filename : [NSNull null]), @"filename", (self.message ? self.message : [NSNull null]), @"message", nil];
+}
+@end
+
+@implementation OAuthResult
++ (instancetype)makeWithCode:(nullable NSString *)code
+    state:(nullable NSString *)state
+    error:(nullable NSString *)error {
+  OAuthResult* pigeonResult = [[OAuthResult alloc] init];
+  pigeonResult.code = code;
+  pigeonResult.state = state;
+  pigeonResult.error = error;
+  return pigeonResult;
+}
++ (OAuthResult *)fromMap:(NSDictionary *)dict {
+  OAuthResult *pigeonResult = [[OAuthResult alloc] init];
+  pigeonResult.code = GetNullableObject(dict, @"code");
+  pigeonResult.state = GetNullableObject(dict, @"state");
+  pigeonResult.error = GetNullableObject(dict, @"error");
+  return pigeonResult;
+}
+- (NSDictionary *)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.code ? self.code : [NSNull null]), @"code", (self.state ? self.state : [NSNull null]), @"state", (self.error ? self.error : [NSNull null]), @"error", nil];
 }
 @end
 
@@ -2225,7 +2251,7 @@ void NotificationsControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObj
 {
   switch (type) {
     case 128:     
-      return [BooleanWrapper fromMap:[self readValue]];
+      return [OAuthResult fromMap:[self readValue]];
     
     default:    
       return [super readValueOfType:type];
@@ -2239,7 +2265,7 @@ void NotificationsControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObj
 @implementation IntentControlCodecWriter
 - (void)writeValue:(id)value 
 {
-  if ([value isKindOfClass:[BooleanWrapper class]]) {
+  if ([value isKindOfClass:[OAuthResult class]]) {
     [self writeByte:128];
     [self writeValue:[value toMap]];
   } else 
@@ -2311,13 +2337,13 @@ void IntentControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Int
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.IntentControl.waitForBoot"
+        messageChannelWithName:@"dev.flutter.pigeon.IntentControl.waitForOAuth"
         binaryMessenger:binaryMessenger
         codec:IntentControlGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(waitForBootWithCompletion:)], @"IntentControl api (%@) doesn't respond to @selector(waitForBootWithCompletion:)", api);
+      NSCAssert([api respondsToSelector:@selector(waitForOAuthWithCompletion:)], @"IntentControl api (%@) doesn't respond to @selector(waitForOAuthWithCompletion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        [api waitForBootWithCompletion:^(BooleanWrapper *_Nullable output, FlutterError *_Nullable error) {
+        [api waitForOAuthWithCompletion:^(OAuthResult *_Nullable output, FlutterError *_Nullable error) {
           callback(wrapResult(output, error));
         }];
       }];

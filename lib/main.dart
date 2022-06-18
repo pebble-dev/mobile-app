@@ -2,6 +2,7 @@
 import 'dart:ui';
 
 import 'package:cobble/background/main_background.dart';
+import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/localization/localization_delegate.dart';
 import 'package:cobble/localization/model/model_generator.model.dart';
@@ -18,7 +19,7 @@ import 'domain/permissions.dart';
 import 'infrastructure/datasources/paired_storage.dart';
 import 'infrastructure/pigeons/pigeons.g.dart';
 
-String getBootUrl = "https://boot.rebble.io/";
+const String bootUrl = "http://boot.test:8086/api";
 
 void main() {
   runApp(ProviderScope(child: MyApp()));
@@ -39,9 +40,14 @@ class MyApp extends HookWidget {
     final permissionControl = useProvider(permissionControlProvider);
     final permissionCheck = useProvider(permissionCheckProvider);
     final defaultWatch = useProvider(defaultWatchProvider);
+    final preferences = useProvider(preferencesProvider.future);
 
     useEffect(() {
       Future.microtask(() async {
+        if ((await preferences).getBoot()?.isNotEmpty != true) {
+          (await preferences).setBoot(bootUrl);
+        }
+
         if (!(await permissionCheck.hasCalendarPermission()).value) {
           await permissionControl.requestCalendarPermission();
         }

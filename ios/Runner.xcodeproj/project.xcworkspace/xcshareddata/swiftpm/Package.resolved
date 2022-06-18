@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pebble-dev/libpebblecommon",
       "state" : {
-        "branch" : "swiftpm-0.1.4",
-        "revision" : "cccb394fe04b2908393a7b2b74908615cf989bf9"
+        "branch" : "swiftpm-0.1.6",
+        "revision" : "180583139b0f873018a9f438f2f83da76c55595f"
       }
     },
     {

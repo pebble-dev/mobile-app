@@ -29,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class AppInstallStatus;
 @class ScreenshotResult;
 @class AppLogEntry;
+@class OAuthResult;
 
 @interface BooleanWrapper : NSObject
 + (instancetype)makeWithValue:(nullable NSNumber *)value;
@@ -295,6 +296,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy) NSString * message;
 @end
 
+@interface OAuthResult : NSObject
++ (instancetype)makeWithCode:(nullable NSString *)code
+    state:(nullable NSString *)state
+    error:(nullable NSString *)error;
+@property(nonatomic, copy, nullable) NSString * code;
+@property(nonatomic, copy, nullable) NSString * state;
+@property(nonatomic, copy, nullable) NSString * error;
+@end
+
 /// The codec used by ScanCallbacks.
 NSObject<FlutterMessageCodec> *ScanCallbacksGetCodec(void);
 
@@ -466,7 +476,7 @@ NSObject<FlutterMessageCodec> *IntentControlGetCodec(void);
 /// @return `nil` only when `error != nil`.
 - (void)notifyFlutterNotReadyForIntentsWithError:(FlutterError *_Nullable *_Nonnull)error;
 /// @return `nil` only when `error != nil`.
-- (void)waitForBootWithCompletion:(void(^)(BooleanWrapper *_Nullable, FlutterError *_Nullable))completion;
+- (void)waitForOAuthWithCompletion:(void(^)(OAuthResult *_Nullable, FlutterError *_Nullable))completion;
 @end
 
 extern void IntentControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<IntentControl> *_Nullable api);

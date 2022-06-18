@@ -761,6 +761,35 @@ class AppLogEntry {
   }
 }
 
+class OAuthResult {
+  OAuthResult({
+    this.code,
+    this.state,
+    this.error,
+  });
+
+  String? code;
+  String? state;
+  String? error;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['code'] = code;
+    pigeonMap['state'] = state;
+    pigeonMap['error'] = error;
+    return pigeonMap;
+  }
+
+  static OAuthResult decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return OAuthResult(
+      code: pigeonMap['code'] as String?,
+      state: pigeonMap['state'] as String?,
+      error: pigeonMap['error'] as String?,
+    );
+  }
+}
+
 class _ScanCallbacksCodec extends StandardMessageCodec {
   const _ScanCallbacksCodec();
   @override
@@ -1944,7 +1973,7 @@ class _IntentControlCodec extends StandardMessageCodec {
   const _IntentControlCodec();
   @override
   void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is BooleanWrapper) {
+    if (value is OAuthResult) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
     } else 
@@ -1956,7 +1985,7 @@ class _IntentControlCodec extends StandardMessageCodec {
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case 128:       
-        return BooleanWrapper.decode(readValue(buffer)!);
+        return OAuthResult.decode(readValue(buffer)!);
       
       default:      
         return super.readValueOfType(type, buffer);
@@ -2019,9 +2048,9 @@ class IntentControl {
     }
   }
 
-  Future<BooleanWrapper> waitForBoot() async {
+  Future<OAuthResult> waitForOAuth() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.IntentControl.waitForBoot', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.IntentControl.waitForOAuth', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(null) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -2042,7 +2071,7 @@ class IntentControl {
         message: 'Host platform returned null value for non-null return value.',
       );
     } else {
-      return (replyMap['result'] as BooleanWrapper?)!;
+      return (replyMap['result'] as OAuthResult?)!;
     }
   }
 }

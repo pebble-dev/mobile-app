@@ -172,6 +172,13 @@ class AppLogEntry {
       this.filename, this.message);
 }
 
+class OAuthResult {
+  String? code;
+  String? state;
+  String? error;
+  OAuthResult(this.code, this.state, this.error);
+}
+
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
@@ -303,7 +310,7 @@ abstract class IntentControl {
   void notifyFlutterNotReadyForIntents();
 
   @async
-  BooleanWrapper waitForBoot();
+  OAuthResult waitForOAuth();
 }
 
 @HostApi()
