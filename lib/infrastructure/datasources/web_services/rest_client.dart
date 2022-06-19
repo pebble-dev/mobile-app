@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cobble/domain/api/status_exception.dart';
+
 class RESTClient {
   final HttpClient _client = HttpClient();
   final Uri _baseUrl;
@@ -37,19 +39,4 @@ class RESTClient {
 
     return _completer.future;
   }
-}
-
-class StatusException implements HttpException {
-  final int statusCode;
-  final String reason;
-  final Uri _uri;
-  StatusException(this.statusCode, this.reason, this._uri);
-  @override
-  String get message => "$statusCode $reason";
-
-  @override
-  Uri? get uri => _uri;
-
-  @override
-  String toString() => "StatusException: $message";
 }
