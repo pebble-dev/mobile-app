@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:cobble/domain/connection/pair_provider.dart';
 import 'package:cobble/domain/connection/scan_provider.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
@@ -14,6 +12,7 @@ import 'package:cobble/ui/home/home_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
+import 'package:cobble/ui/setup/boot/rebble_setup.dart';
 import 'package:cobble/ui/setup/more_setup.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
@@ -193,9 +192,7 @@ class PairPage extends HookWidget implements CobbleScreen {
             child: CobbleButton(
               outlined: false,
               label: tr.common.skip,
-              onPressed: () => context.pushAndRemoveAllBelow(
-                HomePage(),
-              ),
+              onPressed: () => context.pushReplacement(RebbleSetup()),
             ),
           )
       ],
