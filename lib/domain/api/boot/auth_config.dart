@@ -7,11 +7,13 @@ part 'auth_config.g.dart';
 class AuthConfig extends BaseURLEntry {
   final String authoriseUrl;
   final String refreshUrl;
+  final String clientId;
 
   AuthConfig({
     required base,
     required this.authoriseUrl,
-    required this.refreshUrl
+    required this.refreshUrl,
+    required this.clientId
   }) : super(base);
   factory AuthConfig.fromJson(Map<String, dynamic> json) => _$AuthConfigFromJson(json);
   @override
