@@ -142,6 +142,19 @@ class Preferences {
     await _sharedPrefs.setBool("bootSetup", value);
     _preferencesUpdateStream.add(this);
   }
+
+  DateTime? getOAuthTokenCreationDate() {
+    final timestamp = _sharedPrefs.getInt("oauthTokenCreationDate");
+    return timestamp != null
+        ? DateTime.fromMillisecondsSinceEpoch(timestamp)
+        : null;
+  }
+
+  Future<void> setOAuthTokenCreationDate(DateTime value) async {
+    await _sharedPrefs.setInt(
+        "oauthTokenCreationDate", value.millisecondsSinceEpoch);
+    _preferencesUpdateStream.add(this);
+  }
 }
 
 final preferencesProvider = FutureProvider<Preferences>((ref) async {
@@ -200,6 +213,10 @@ final shouldOverrideBootProvider = _createPreferenceProvider(
   (preferences) => preferences.shouldOverrideBoot(),
 );
 
+final oauthTokenCreationDateProvider = _createPreferenceProvider(
+  (preferences) => preferences.getOAuthTokenCreationDate(),
+);
+
 StreamProvider<T> _createPreferenceProvider<T>(
   T Function(Preferences preferences) mapper,
 ) {
@@ -211,7 +228,7 @@ StreamProvider<T> _createPreferenceProvider<T>(
             .startWith(preferences.value)
             .map(mapper)
             .distinct(),
-        loading: (loading) => Stream.empty(),
-        error: (error) => Stream.empty());
+        loading: (loading) => const Stream.empty(),
+        error: (error) => const Stream.empty());
   });
 }
