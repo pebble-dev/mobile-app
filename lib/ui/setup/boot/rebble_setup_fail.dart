@@ -8,6 +8,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class RebbleSetupFail extends HookWidget implements CobbleScreen {
+  const RebbleSetupFail({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final preferences = useProvider(preferencesProvider);
