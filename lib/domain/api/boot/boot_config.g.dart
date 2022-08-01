@@ -8,9 +8,11 @@ part of 'boot_config.dart';
 
 BootConfig _$BootConfigFromJson(Map<String, dynamic> json) => BootConfig(
       auth: AuthConfig.fromJson(json['auth'] as Map<String, dynamic>),
+      appstore: BaseURLEntry.fromJson(json['appstore'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$BootConfigToJson(BootConfig instance) =>
     <String, dynamic>{
       'auth': instance.auth,
+      'appstore': instance.appstore,
     };
