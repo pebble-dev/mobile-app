@@ -4,10 +4,12 @@ import 'dart:io';
 
 import 'package:cobble/domain/api/status_exception.dart';
 import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart';
 
 class RESTClient {
   final HttpClient _client = HttpClient();
   final Uri _baseUrl;
+  final Logger _logger = Logger("REST");
   RESTClient(this._baseUrl);
 
   Future<T> getSerialized<T>(Function modelJsonFactory, String path, {Map<String, String>? params, String? token}) async {
@@ -24,7 +26,7 @@ class RESTClient {
     }
     if (kDebugMode) {
       req.followRedirects = false;
-      print("[REST] ${req.method} ${req.uri} ${token != null ? "Authenticated" : "Anonymous"}");
+      _logger.finer("${req.method} ${req.uri} ${token != null ? "Authenticated" : "Anonymous"}");
     }
     HttpClientResponse res = await req.close();
     if (kDebugMode && res.isRedirect) { // handle redirects in debug keeping token
@@ -42,7 +44,6 @@ class RESTClient {
         data.addAll(event);
       }, onDone: () {
         Map<String, dynamic> body = jsonDecode(String.fromCharCodes(data));
-        print(body);
         _completer.complete(modelJsonFactory(body));
       }, onError: (error, stackTrace) {
         _completer.completeError(error, stackTrace);

@@ -10,6 +10,7 @@ import 'package:cobble/ui/splash/splash_page.dart';
 import 'package:cobble/ui/theme/cobble_scheme.dart';
 import 'package:cobble/ui/theme/cobble_theme.dart';
 import 'package:cobble/ui/theme/use_platform_brightness.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -18,10 +19,22 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'domain/permissions.dart';
 import 'infrastructure/datasources/paired_storage.dart';
 import 'infrastructure/pigeons/pigeons.g.dart';
+import 'package:logging/logging.dart';
 
 const String bootUrl = "https://boot.rws-dev.crc32.dev/api";
 
 void main() {
+  if (kDebugMode) {
+    Logger.root.level = Level.FINER;
+  }
+
+  Logger.root.onRecord.listen((record) {
+    debugPrint('${record.time} [${record.loggerName}] ${record.message}');
+    if (record.error != null) {
+      debugPrint(record.error);
+    }
+  });
+
   runApp(ProviderScope(child: MyApp()));
   initBackground();
 }
