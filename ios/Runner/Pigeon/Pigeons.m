@@ -594,10 +594,12 @@ static id GetNullableObject(NSDictionary* dict, id key) {
 
 @implementation InstallData
 + (instancetype)makeWithUri:(NSString *)uri
-    appInfo:(PbwAppInfo *)appInfo {
+    appInfo:(PbwAppInfo *)appInfo
+    stayOffloaded:(NSNumber *)stayOffloaded {
   InstallData* pigeonResult = [[InstallData alloc] init];
   pigeonResult.uri = uri;
   pigeonResult.appInfo = appInfo;
+  pigeonResult.stayOffloaded = stayOffloaded;
   return pigeonResult;
 }
 + (InstallData *)fromMap:(NSDictionary *)dict {
@@ -606,10 +608,12 @@ static id GetNullableObject(NSDictionary* dict, id key) {
   NSAssert(pigeonResult.uri != nil, @"");
   pigeonResult.appInfo = [PbwAppInfo fromMap:GetNullableObject(dict, @"appInfo")];
   NSAssert(pigeonResult.appInfo != nil, @"");
+  pigeonResult.stayOffloaded = GetNullableObject(dict, @"stayOffloaded");
+  NSAssert(pigeonResult.stayOffloaded != nil, @"");
   return pigeonResult;
 }
 - (NSDictionary *)toMap {
-  return [NSDictionary dictionaryWithObjectsAndKeys:(self.uri ? self.uri : [NSNull null]), @"uri", (self.appInfo ? [self.appInfo toMap] : [NSNull null]), @"appInfo", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.uri ? self.uri : [NSNull null]), @"uri", (self.appInfo ? [self.appInfo toMap] : [NSNull null]), @"appInfo", (self.stayOffloaded ? self.stayOffloaded : [NSNull null]), @"stayOffloaded", nil];
 }
 @end
 

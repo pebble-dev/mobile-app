@@ -4,7 +4,7 @@ part 'locker_entry.g.dart';
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class LockerEntry {
-  final int id;
+  final String id;
   final String uuid;
   final String userToken;
   final String title;
@@ -18,7 +18,7 @@ class LockerEntry {
   final LockerEntryDeveloper developer;
   final List<LockerEntryPlatform> hardwarePlatforms;
   final LockerEntryCompatibility compatibility;
-  final Map<String, LockerEntryCompanionApp> companions;
+  final Map<String, LockerEntryCompanionApp?> companions;
   final LockerEntryPBW? pbw;
 
   LockerEntry({

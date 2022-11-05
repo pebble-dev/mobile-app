@@ -13,13 +13,13 @@ import 'package:cobble/ui/theme/use_platform_brightness.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'domain/permissions.dart';
 import 'infrastructure/datasources/paired_storage.dart';
 import 'infrastructure/pigeons/pigeons.g.dart';
 
-const String bootUrl = "http://boot.test:8086/api";
+const String bootUrl = "https://boot.rws-dev.crc32.dev/api";
 
 void main() {
   runApp(ProviderScope(child: MyApp()));

@@ -37,7 +37,7 @@ class RebbleSetup extends HookWidget implements CobbleScreen {
                 child: Text("SIGN IN TO REBBLE SERVICES"),
                 onPressed: () => canLaunchUrl(authoriseUri).then((value) async {
                   if (value) {
-                    if (await launchUrl(authoriseUri)) {
+                    if (await launchUrl(authoriseUri, mode: LaunchMode.externalApplication)) {
                         final result = await lifecycleControl.waitForOAuth();
                         await closeInAppWebView();
                         if (result.code != null && result.state != null) {
@@ -63,6 +63,7 @@ class RebbleSetup extends HookWidget implements CobbleScreen {
               );
             },
             error: (e, stack) {
+              print(e);
               return Row(
               children: [
                 const Icon(RebbleIcons.warning),

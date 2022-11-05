@@ -141,8 +141,9 @@ class WatchResource {
 class InstallData {
   String uri;
   PbwAppInfo appInfo;
+  bool stayOffloaded;
 
-  InstallData(this.uri, this.appInfo);
+  InstallData(this.uri, this.appInfo, this.stayOffloaded);
 }
 
 class AppInstallStatus {

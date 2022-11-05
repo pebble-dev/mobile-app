@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cobble/domain/api/status_exception.dart';
+import 'package:flutter/foundation.dart';
 
 class RESTClient {
   final HttpClient _client = HttpClient();
@@ -21,8 +22,18 @@ class RESTClient {
     if (token != null) {
       req.headers.add("Authorization", "Bearer $token");
     }
+    if (kDebugMode) {
+      req.followRedirects = false;
+      print("[REST] ${req.method} ${req.uri} ${token != null ? "Authenticated" : "Anonymous"}");
+    }
     HttpClientResponse res = await req.close();
-
+    if (kDebugMode && res.isRedirect) { // handle redirects in debug keeping token
+      req = await _client.getUrl(Uri.parse(res.headers.value("Location") ?? ""));
+      if (token != null) {
+        req.headers.add("Authorization", "Bearer $token");
+      }
+      res = await req.close();
+    }
     if (res.statusCode != 200) {
       _completer.completeError(StatusException(res.statusCode, res.reasonPhrase, requestUri));
     }else {
@@ -31,6 +42,7 @@ class RESTClient {
         data.addAll(event);
       }, onDone: () {
         Map<String, dynamic> body = jsonDecode(String.fromCharCodes(data));
+        print(body);
         _completer.complete(modelJsonFactory(body));
       }, onError: (error, stackTrace) {
         _completer.completeError(error, stackTrace);

@@ -129,7 +129,7 @@ class AppInstallFlutterBridge @Inject constructor(
                 true
             }
 
-            if (success) {
+            if (success && !installData.stayOffloaded) {
                 backgroundAppInstallBridge.installAppNow(installData.uri, installData.appInfo)
             }
 

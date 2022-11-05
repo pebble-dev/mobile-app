@@ -7,7 +7,7 @@ part of 'locker_entry.dart';
 // **************************************************************************
 
 LockerEntry _$LockerEntryFromJson(Map<String, dynamic> json) => LockerEntry(
-      id: json['id'] as int,
+      id: json['id'] as String,
       uuid: json['uuid'] as String,
       userToken: json['user_token'] as String,
       title: json['title'] as String,
@@ -27,7 +27,10 @@ LockerEntry _$LockerEntryFromJson(Map<String, dynamic> json) => LockerEntry(
           json['compatibility'] as Map<String, dynamic>),
       companions: (json['companions'] as Map<String, dynamic>).map(
         (k, e) => MapEntry(
-            k, LockerEntryCompanionApp.fromJson(e as Map<String, dynamic>)),
+            k,
+            e == null
+                ? null
+                : LockerEntryCompanionApp.fromJson(e as Map<String, dynamic>)),
       ),
       pbw: json['pbw'] == null
           ? null

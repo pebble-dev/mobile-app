@@ -19,8 +19,10 @@ class AppstoreService extends Service {
     }
     final token = await _oauth.ensureNotStale(_token, tokenCreationDate);
     List<LockerEntry> entries = await client.getSerialized(
-      (body) => (body["applications"] as List<Map<String, dynamic>>)
-          .map(LockerEntry.fromJson),
+      (body) => (body["applications"] as List<dynamic>)
+        .map((e) => e as Map<String, dynamic>)
+        .map(LockerEntry.fromJson)
+        .toList(),
       "locker",
       token: token.accessToken,
     );

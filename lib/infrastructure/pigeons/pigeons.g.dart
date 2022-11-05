@@ -649,15 +649,18 @@ class InstallData {
   InstallData({
     required this.uri,
     required this.appInfo,
+    required this.stayOffloaded,
   });
 
   String uri;
   PbwAppInfo appInfo;
+  bool stayOffloaded;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
     pigeonMap['uri'] = uri;
-    pigeonMap['appInfo'] = appInfo.encode();
+    pigeonMap['appInfo'] = appInfo == null ? null : appInfo.encode();
+    pigeonMap['stayOffloaded'] = stayOffloaded;
     return pigeonMap;
   }
 
@@ -666,6 +669,7 @@ class InstallData {
     return InstallData(
       uri: pigeonMap['uri']! as String,
       appInfo: PbwAppInfo.decode(pigeonMap['appInfo']!),
+      stayOffloaded: pigeonMap['stayOffloaded']! as bool,
     );
   }
 }

@@ -256,9 +256,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithUri:(NSString *)uri
-    appInfo:(PbwAppInfo *)appInfo;
+    appInfo:(PbwAppInfo *)appInfo
+    stayOffloaded:(NSNumber *)stayOffloaded;
 @property(nonatomic, copy) NSString * uri;
 @property(nonatomic, strong) PbwAppInfo * appInfo;
+@property(nonatomic, strong) NSNumber * stayOffloaded;
 @end
 
 @interface AppInstallStatus : NSObject

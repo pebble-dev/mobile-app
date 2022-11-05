@@ -1623,6 +1623,15 @@ public class Pigeons {
       this.appInfo = setterArg;
     }
 
+    private @NonNull Boolean stayOffloaded;
+    public @NonNull Boolean getStayOffloaded() { return stayOffloaded; }
+    public void setStayOffloaded(@NonNull Boolean setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"stayOffloaded\" is null.");
+      }
+      this.stayOffloaded = setterArg;
+    }
+
     /** Constructor is private to enforce null safety; use Builder. */
     private InstallData() {}
     public static class Builder {
@@ -1636,10 +1645,16 @@ public class Pigeons {
         this.appInfo = setterArg;
         return this;
       }
+      private @Nullable Boolean stayOffloaded;
+      public @NonNull Builder setStayOffloaded(@NonNull Boolean setterArg) {
+        this.stayOffloaded = setterArg;
+        return this;
+      }
       public @NonNull InstallData build() {
         InstallData pigeonReturn = new InstallData();
         pigeonReturn.setUri(uri);
         pigeonReturn.setAppInfo(appInfo);
+        pigeonReturn.setStayOffloaded(stayOffloaded);
         return pigeonReturn;
       }
     }
@@ -1647,6 +1662,7 @@ public class Pigeons {
       Map<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("uri", uri);
       toMapResult.put("appInfo", (appInfo == null) ? null : appInfo.toMap());
+      toMapResult.put("stayOffloaded", stayOffloaded);
       return toMapResult;
     }
     static @NonNull InstallData fromMap(@NonNull Map<String, Object> map) {
@@ -1655,6 +1671,8 @@ public class Pigeons {
       pigeonResult.setUri((String)uri);
       Object appInfo = map.get("appInfo");
       pigeonResult.setAppInfo(PbwAppInfo.fromMap((Map)appInfo));
+      Object stayOffloaded = map.get("stayOffloaded");
+      pigeonResult.setStayOffloaded((Boolean)stayOffloaded);
       return pigeonResult;
     }
   }
