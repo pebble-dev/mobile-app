@@ -187,13 +187,17 @@
   "settings": {
     "title": "Settings",
     "account": "Rebble account",
+    "account_error": "Error getting details, check connection",
+    "sign_in_title": "Sign in to Rebble",
     "subscription": {
       "title": "Voice and weather subscription",
-      "subtitle": "Not subscribed"
+      "subtitle_subscribed": "Subscribed!",
+      "subtitle_not_subscribed": "Not subscribed"
     },
     "timeline": {
       "title": "Timeline sync",
-      "subtitle": "Every 2 hours"
+      "subtitle_every_hours": "Every $$hours$$ hours",
+      "subtitle_every_minutes": "Every $$minutes$$ minutes"
     },
     "sign_out": "Sign out",
     "manage_account": "Manage account",

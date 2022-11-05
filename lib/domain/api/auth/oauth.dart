@@ -171,6 +171,11 @@ class OAuthClient {
       return currentToken;
     }
   }
+
+  Future<void> signOut() async {
+    _prefs.setOAuthTokenCreationDate(null);
+    _secureStorage.setToken(null);
+  }
 }
 
 class OAuthException implements Exception {

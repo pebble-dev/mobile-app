@@ -1376,6 +1376,20 @@ class LanguageSettings {
   final String account;
 
   @JsonKey(
+    name: 'account_error',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String accountError;
+
+  @JsonKey(
+    name: 'sign_in_title',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String signInTitle;
+
+  @JsonKey(
     name: 'subscription',
     required: true,
     disallowNullValue: true,
@@ -1469,6 +1483,8 @@ class LanguageSettings {
   LanguageSettings(
     this.title,
     this.account,
+    this.accountError,
+    this.signInTitle,
     this.subscription,
     this.timeline,
     this.signOut,
@@ -1501,13 +1517,24 @@ class LanguageSettingsSubscription {
   final String title;
 
   @JsonKey(
-    name: 'subtitle',
+    name: 'subtitle_subscribed',
     required: true,
     disallowNullValue: true,
   )
-  final String subtitle;
+  final String subtitleSubscribed;
 
-  LanguageSettingsSubscription(this.title, this.subtitle);
+  @JsonKey(
+    name: 'subtitle_not_subscribed',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String subtitleNotSubscribed;
+
+  LanguageSettingsSubscription(
+    this.title,
+    this.subtitleSubscribed,
+    this.subtitleNotSubscribed,
+  );
 
   factory LanguageSettingsSubscription.fromJson(Map<String, dynamic> json) =>
       _$LanguageSettingsSubscriptionFromJson(json);
@@ -1526,13 +1553,24 @@ class LanguageSettingsTimeline {
   final String title;
 
   @JsonKey(
-    name: 'subtitle',
+    name: 'subtitle_every_hours',
     required: true,
     disallowNullValue: true,
   )
-  final String subtitle;
+  final String subtitleEveryHours;
 
-  LanguageSettingsTimeline(this.title, this.subtitle);
+  @JsonKey(
+    name: 'subtitle_every_minutes',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String subtitleEveryMinutes;
+
+  LanguageSettingsTimeline(
+    this.title,
+    this.subtitleEveryHours,
+    this.subtitleEveryMinutes,
+  );
 
   factory LanguageSettingsTimeline.fromJson(Map<String, dynamic> json) =>
       _$LanguageSettingsTimelineFromJson(json);

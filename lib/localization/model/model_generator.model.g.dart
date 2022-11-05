@@ -673,6 +673,8 @@ LanguageSettings _$LanguageSettingsFromJson(Map<String, dynamic> json) {
     allowedKeys: const [
       'title',
       'account',
+      'account_error',
+      'sign_in_title',
       'subscription',
       'timeline',
       'sign_out',
@@ -690,6 +692,8 @@ LanguageSettings _$LanguageSettingsFromJson(Map<String, dynamic> json) {
     requiredKeys: const [
       'title',
       'account',
+      'account_error',
+      'sign_in_title',
       'subscription',
       'timeline',
       'sign_out',
@@ -707,6 +711,8 @@ LanguageSettings _$LanguageSettingsFromJson(Map<String, dynamic> json) {
     disallowNullValues: const [
       'title',
       'account',
+      'account_error',
+      'sign_in_title',
       'subscription',
       'timeline',
       'sign_out',
@@ -725,6 +731,8 @@ LanguageSettings _$LanguageSettingsFromJson(Map<String, dynamic> json) {
   return LanguageSettings(
     json['title'] as String,
     json['account'] as String,
+    json['account_error'] as String,
+    json['sign_in_title'] as String,
     LanguageSettingsSubscription.fromJson(
         json['subscription'] as Map<String, dynamic>),
     LanguageSettingsTimeline.fromJson(json['timeline'] as Map<String, dynamic>),
@@ -746,13 +754,26 @@ LanguageSettingsSubscription _$LanguageSettingsSubscriptionFromJson(
     Map<String, dynamic> json) {
   $checkKeys(
     json,
-    allowedKeys: const ['title', 'subtitle'],
-    requiredKeys: const ['title', 'subtitle'],
-    disallowNullValues: const ['title', 'subtitle'],
+    allowedKeys: const [
+      'title',
+      'subtitle_subscribed',
+      'subtitle_not_subscribed'
+    ],
+    requiredKeys: const [
+      'title',
+      'subtitle_subscribed',
+      'subtitle_not_subscribed'
+    ],
+    disallowNullValues: const [
+      'title',
+      'subtitle_subscribed',
+      'subtitle_not_subscribed'
+    ],
   );
   return LanguageSettingsSubscription(
     json['title'] as String,
-    json['subtitle'] as String,
+    json['subtitle_subscribed'] as String,
+    json['subtitle_not_subscribed'] as String,
   );
 }
 
@@ -760,13 +781,26 @@ LanguageSettingsTimeline _$LanguageSettingsTimelineFromJson(
     Map<String, dynamic> json) {
   $checkKeys(
     json,
-    allowedKeys: const ['title', 'subtitle'],
-    requiredKeys: const ['title', 'subtitle'],
-    disallowNullValues: const ['title', 'subtitle'],
+    allowedKeys: const [
+      'title',
+      'subtitle_every_hours',
+      'subtitle_every_minutes'
+    ],
+    requiredKeys: const [
+      'title',
+      'subtitle_every_hours',
+      'subtitle_every_minutes'
+    ],
+    disallowNullValues: const [
+      'title',
+      'subtitle_every_hours',
+      'subtitle_every_minutes'
+    ],
   );
   return LanguageSettingsTimeline(
     json['title'] as String,
-    json['subtitle'] as String,
+    json['subtitle_every_hours'] as String,
+    json['subtitle_every_minutes'] as String,
   );
 }
 

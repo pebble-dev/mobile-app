@@ -150,9 +150,13 @@ class Preferences {
         : null;
   }
 
-  Future<void> setOAuthTokenCreationDate(DateTime value) async {
-    await _sharedPrefs.setInt(
-        "oauthTokenCreationDate", value.millisecondsSinceEpoch);
+  Future<void> setOAuthTokenCreationDate(DateTime? value) async {
+    if (value == null) {
+      await _sharedPrefs.remove("oauthTokenCreationDate");
+    } else {
+      await _sharedPrefs.setInt(
+          "oauthTokenCreationDate", value.millisecondsSinceEpoch);
+    }
     _preferencesUpdateStream.add(this);
   }
 }

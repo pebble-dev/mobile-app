@@ -1,5 +1,4 @@
 import 'package:cobble/domain/api/auth/oauth.dart';
-import 'package:cobble/infrastructure/datasources/secure_storage.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
@@ -13,16 +12,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:logging/logging.dart';
 
 class RebbleSetup extends HookWidget implements CobbleScreen {
   static final IntentControl lifecycleControl = IntentControl();
+  static final Logger _logger = Logger('RebbleSetup');
 
   const RebbleSetup({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final oauthClient = useProvider(oauthClientProvider);
-    final secureStorage = useProvider(secureStorageProvider);
 
     return CobbleScaffold.page(
       title: "Activate Rebble services",
@@ -41,8 +41,13 @@ class RebbleSetup extends HookWidget implements CobbleScreen {
                         final result = await lifecycleControl.waitForOAuth();
                         await closeInAppWebView();
                         if (result.code != null && result.state != null) {
+                          try {
                             await oauth.requestTokenFromCode(result.code!, result.state!);
                             context.pushReplacement(RebbleSetupSuccess());
+                          } catch (e) {
+                            _logger.warning("OAuth error: ${e.toString()}");
+                            context.pushReplacement(RebbleSetupFail());
+                          }
                         }else {
                             if (kDebugMode) {
                               print("oauth error: ${result.error ?? "null"}");
