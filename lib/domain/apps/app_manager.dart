@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cobble/domain/api/appstore/locker_entry.dart';
 import 'package:cobble/domain/api/appstore/locker_sync.dart';
+import 'package:cobble/domain/api/status_exception.dart';
 import 'package:cobble/domain/db/dao/app_dao.dart';
 import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/entities/pbw_app_info_extension.dart';
@@ -12,6 +13,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid_type/uuid_type.dart';
+import 'package:logging/logging.dart';
 
 import '../db/models/app.dart';
 import 'requests/app_reorder_request.dart';
@@ -20,14 +22,13 @@ class AppManager extends StateNotifier<List<App>> {
   final appInstallControl = AppInstallControl();
   final AppDao appDao;
   final BackgroundRpc backgroundRpc;
-  late LockerSync? lockerSync;
+  final LockerSync lockerSync;
+  final _logger = Logger("AppManager");
 
-  AppManager(this.appDao, this.backgroundRpc, Future<LockerSync?> lockerSync) : super(List.empty()) {
-    lockerSync.then((value) {
+  AppManager(this.appDao, this.backgroundRpc, this.lockerSync) : super(List.empty()) {
+    lockerSync.addListener(_onLockerUpdate, fireImmediately: false);
+    lockerSync.refresh().then((_) {
       if (mounted) {
-        this.lockerSync = value;
-        this.lockerSync?.addListener(_onLockerUpdate);
-        this.lockerSync?.refresh();
         refresh();
       }
     });
@@ -37,22 +38,29 @@ class AppManager extends StateNotifier<List<App>> {
     if (locker == null) {
       return;
     }
-
-    print("LOCKER ENTRIES: ${locker.length}");
     final apps = state;
     //remove sideloaded entries
     locker = locker.where((lockerApp) => apps.indexWhere((localApp) => Uuid.parse(lockerApp.uuid) == localApp.uuid && localApp.appstoreId == null) == -1).toList();
 
+    //TODO: updated apps
     final updatedApps = locker.where((lockerApp) => apps.indexWhere((localApp) => lockerApp.id == localApp.appstoreId && lockerApp.version != localApp.version) != -1);
     final newApps = locker.where((lockerApp) => apps.indexWhere((localApp) => lockerApp.id == localApp.appstoreId) == -1);
     final goneApps = apps.where((localApp) => localApp.appstoreId != null && locker!.indexWhere((lockerApp) => lockerApp.id == localApp.appstoreId) == -1);
 
     for (var app in newApps) {
       if (app.pbw?.file != null) {
-        print("New app ${app.title}");
-        final uri = await downloadPbw(app.pbw!.file, app.uuid);
-        await addOrUpdateLockerAppOffloaded(app, uri);
-        await File.fromUri(uri).delete();
+        _logger.fine("New app ${app.title}");
+        try {
+          final uri = await downloadPbw(app.pbw!.file, app.uuid);
+          await addOrUpdateLockerAppOffloaded(app, uri);
+          await File.fromUri(uri).delete();
+        } on StatusException catch(e) {
+          if (e.statusCode == 404) {
+            _logger.warning("Failed to download ${app.title}, skipping", e);
+          } else {
+            rethrow;
+          }
+        }
       }
     }
 
@@ -74,7 +82,7 @@ class AppManager extends StateNotifier<List<App>> {
       var bytes = await consolidateHttpClientResponseBytes(response);
       await file.writeAsBytes(bytes);
     } else {
-      throw HttpException(response.reasonPhrase, uri: uri);
+      throw StatusException(response.statusCode, response.reasonPhrase, uri);
     }
     return file.uri;
   }
@@ -149,6 +157,6 @@ class AppManager extends StateNotifier<List<App>> {
 final appManagerProvider = AutoDisposeStateNotifierProvider<AppManager>((ref) {
   final dao = ref.watch(appDaoProvider);
   final rpc = ref.read(backgroundRpcProvider);
-  final lockerSync = ref.watch(lockerSyncProvider.future);
+  final lockerSync = ref.watch(lockerSyncProvider);
   return AppManager(dao, rpc, lockerSync);
 });

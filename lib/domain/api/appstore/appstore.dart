@@ -1,5 +1,6 @@
 import 'package:cobble/domain/api/auth/oauth.dart';
 import 'package:cobble/domain/api/boot/boot.dart';
+import 'package:cobble/domain/api/no_token_exception.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/datasources/secure_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -11,7 +12,7 @@ final appstoreServiceProvider = FutureProvider((ref) async {
   final oauth = await ref.watch(oauthClientProvider.future);
   final prefs = await ref.watch(preferencesProvider.future);
   if (token == null) {
-    throw StateError("Service requires a token but none was found in storage");
+    throw NoTokenException("Service requires a token but none was found in storage");
   }
   return AppstoreService(boot.appstore.base, prefs, oauth, token);
 });
