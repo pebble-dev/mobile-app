@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cobble/domain/api/boot/boot_config.dart';
 import 'package:cobble/infrastructure/datasources/web_services/service.dart';
@@ -25,6 +26,6 @@ class BootService extends Service {
   }
 
   Future<BootConfig> reqBootConfig() async {
-    return client.getSerialized(BootConfig.fromJson, "cobble");
+    return client.getSerialized(BootConfig.fromJson, "cobble", params: {"locale": Platform.localeName});
   }
 }

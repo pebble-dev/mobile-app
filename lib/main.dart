@@ -31,7 +31,7 @@ void main() {
   Logger.root.onRecord.listen((record) {
     debugPrint('${record.time} [${record.loggerName}] ${record.message}');
     if (record.error != null) {
-      debugPrint(record.error);
+      debugPrint(record.error.toString());
     }
   });
 
