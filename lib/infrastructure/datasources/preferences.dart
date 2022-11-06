@@ -206,7 +206,9 @@ final wasSetupSuccessfulProvider = _createPreferenceProvider(
 );
 
 final bootUrlProvider = _createPreferenceProvider(
-  (preferences) => preferences.getBoot(),
+  (preferences) {
+    return preferences.getBoot();
+  },
 );
 
 final overrideBootValueProvider = _createPreferenceProvider(

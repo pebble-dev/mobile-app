@@ -5,7 +5,6 @@ import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/home/tabs/locker_tab/faces_sheet.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 
 class FacesCard extends StatelessWidget {
   final App face;
@@ -13,6 +12,7 @@ class FacesCard extends StatelessWidget {
   final AppManager appManager;
   final PebbleWatchLine? lineConnected;
   final bool? circleConnected;
+  final String? listUrl;
 
   const FacesCard({
     required this.face,
@@ -20,6 +20,7 @@ class FacesCard extends StatelessWidget {
     required this.appManager,
     this.lineConnected,
     this.circleConnected,
+    this.listUrl,
     Key? key,
   }) : super(key: key);
 
@@ -33,6 +34,7 @@ class FacesCard extends StatelessWidget {
           children: <Widget>[
             Expanded(
               child: FacesPreview(
+                  listUrl: listUrl,
                   face: face,
                   compatible: compatible,
                   circleConnected: circleConnected),

@@ -14,6 +14,10 @@ LockerApp _$LockerAppFromJson(Map<String, dynamic> json) => LockerApp(
       basaltIcon: json['basaltIcon'] as String?,
       chalkIcon: json['chalkIcon'] as String?,
       dioriteIcon: json['dioriteIcon'] as String?,
+      apliteList: json['apliteList'] as String?,
+      basaltList: json['basaltList'] as String?,
+      chalkList: json['chalkList'] as String?,
+      dioriteList: json['dioriteList'] as String?,
     );
 
 Map<String, dynamic> _$LockerAppToJson(LockerApp instance) => <String, dynamic>{
@@ -24,4 +28,8 @@ Map<String, dynamic> _$LockerAppToJson(LockerApp instance) => <String, dynamic>{
       'basaltIcon': instance.basaltIcon,
       'chalkIcon': instance.chalkIcon,
       'dioriteIcon': instance.dioriteIcon,
+      'apliteList': instance.apliteList,
+      'basaltList': instance.basaltList,
+      'chalkList': instance.chalkList,
+      'dioriteList': instance.dioriteList,
     };

@@ -16,6 +16,10 @@ class LockerApp {
   final String? basaltIcon;
   final String? chalkIcon;
   final String? dioriteIcon;
+  final String? apliteList;
+  final String? basaltList;
+  final String? chalkList;
+  final String? dioriteList;
 
   LockerApp({required this.id,
     required this.uuid,
@@ -23,7 +27,11 @@ class LockerApp {
     this.apliteIcon,
     this.basaltIcon,
     this.chalkIcon,
-    this.dioriteIcon});
+    this.dioriteIcon,
+    this.apliteList,
+    this.basaltList,
+    this.chalkList,
+    this.dioriteList});
 
   Map<String, dynamic> toMap() {
     return _$LockerAppToJson(this);
@@ -42,6 +50,41 @@ class LockerApp {
       basaltIcon: entry.hardwarePlatforms.firstWhereOrNull((element) => element.name == "basalt")?.images.icon,
       chalkIcon: entry.hardwarePlatforms.firstWhereOrNull((element) => element.name == "chalk")?.images.icon,
       dioriteIcon: entry.hardwarePlatforms.firstWhereOrNull((element) => element.name == "diorite")?.images.icon,
+      apliteList: entry.hardwarePlatforms.firstWhereOrNull((element) => element.name == "aplite")?.images.list,
+      basaltList: entry.hardwarePlatforms.firstWhereOrNull((element) => element.name == "basalt")?.images.list,
+      chalkList: entry.hardwarePlatforms.firstWhereOrNull((element) => element.name == "chalk")?.images.list,
+      dioriteList: entry.hardwarePlatforms.firstWhereOrNull((element) => element.name == "diorite")?.images.list,
     );
   }
+
+  String? getPlatformListImage(String platform) {
+    switch (platform) {
+      case "aplite":
+        return apliteList;
+      case "basalt":
+        return basaltList;
+      case "chalk":
+        return chalkList;
+      case "diorite":
+        return dioriteList;
+      default:
+        return null;
+    }
+  }
+
+  String? getPlatformIconImage(String platform) {
+    switch (platform) {
+      case "aplite":
+        return apliteIcon;
+      case "basalt":
+        return basaltIcon;
+      case "chalk":
+        return chalkIcon;
+      case "diorite":
+        return dioriteIcon;
+      default:
+        return null;
+    }
+  }
+
 }

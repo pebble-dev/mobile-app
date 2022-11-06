@@ -73,7 +73,11 @@ Future<void> createLockerCacheTable(Database db) async {
       apliteIcon TEXT,
       basaltIcon TEXT,
       chalkIcon TEXT,
-      dioriteIcon TEXT
+      dioriteIcon TEXT,
+      apliteList TEXT,
+      basaltList TEXT,
+      chalkList TEXT,
+      dioriteList TEXT
     )
   """);
 }

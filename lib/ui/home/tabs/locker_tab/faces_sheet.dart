@@ -18,12 +18,14 @@ class FacesPreview extends StatelessWidget {
     this.compatible = false,
     this.extended = false,
     this.circleConnected,
+    this.listUrl
   });
 
   final App face;
   final bool compatible;
   final bool extended;
   final bool? circleConnected;
+  final String? listUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +40,7 @@ class FacesPreview extends StatelessWidget {
         children: <Widget>[
           ClipRRect(
             child: Image(
-              image: Svg('images/temp_watch_face.svg'),
+              image: (listUrl != null ? NetworkImage(listUrl!) : Svg('images/temp_watch_face.svg')) as ImageProvider,
               width: 92,
               height: circleWatchface ? 92 : 108,
               alignment: AlignmentDirectional.center,
