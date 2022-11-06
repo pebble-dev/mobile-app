@@ -58,6 +58,10 @@ class AppInstallFlutterBridge @Inject constructor(
 
     private var statusObservingJob: Job? = null
 
+    companion object {
+        private val json = Json { ignoreUnknownKeys = true};
+    }
+
     init {
         bridgeLifecycleController.setupControl(Pigeons.AppInstallControl::setup, this)
     }
@@ -289,6 +293,6 @@ class AppInstallFlutterBridge @Inject constructor(
     }
 
     private fun parseAppInfoJson(stream: InputStream): PbwAppInfo? {
-        return Json.decodeFromStream(stream)
+        return json.decodeFromStream(stream)
     }
 }
