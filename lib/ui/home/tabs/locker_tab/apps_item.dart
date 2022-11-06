@@ -50,10 +50,11 @@ class AppsItem extends StatelessWidget {
             SizedBox(width: 57),
           Expanded(
             child: CobbleTile.app(
-                leading: (iconUrl != null ? NetworkImage(iconUrl!) : Svg('images/temp_watch_app.svg')) as ImageProvider,
-                title: app.longName,
-                subtitle: app.company,
-                onTap: () => AppsSheet.showModal(
+              leading: (iconUrl != null ? NetworkImage(iconUrl!) : Svg('images/temp_watch_app.svg')) as ImageProvider,
+              title: app.longName,
+              subtitle: app.company,
+              onTap: () => AppsSheet.showModal(
+                iconUrl: iconUrl,
                 context: context,
                 app: app,
                 compatible: compatible,

@@ -76,6 +76,7 @@ class FacesSheet {
     required AppManager appManager,
     PebbleWatchLine? lineConnected,
     bool? circleConnected,
+    String? listUrl,
   }) {
     CobbleSheet.showModal(
       context: context,
@@ -83,6 +84,7 @@ class FacesSheet {
         children: [
           SizedBox(height: 8),
           FacesPreview(
+            listUrl: listUrl,
             face: face,
             compatible: compatible,
             extended: true,

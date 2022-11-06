@@ -18,13 +18,14 @@ class AppsSheet {
     bool compatible = false,
     required AppManager appManager,
     PebbleWatchLine? lineConnected,
+    String? iconUrl,
   }) {
     CobbleSheet.showModal(
       context: context,
       builder: (context) => Column(
         children: [
           CobbleTile.app(
-            leading: Svg('images/temp_watch_app.svg'),
+            leading: (iconUrl != null ? NetworkImage(iconUrl) : Svg('images/temp_watch_app.svg')) as ImageProvider,
             title: "${app.longName} ${app.version}",
             subtitle: app.company,
           ),

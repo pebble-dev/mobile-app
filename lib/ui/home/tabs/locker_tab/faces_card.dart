@@ -64,6 +64,7 @@ class FacesCard extends StatelessWidget {
                     outlined: false,
                     icon: RebbleIcons.menu_vertical,
                     onPressed: () => FacesSheet.showModal(
+                      listUrl: listUrl,
                       context: context,
                       face: face,
                       compatible: compatible,
