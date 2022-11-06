@@ -27,11 +27,7 @@ class AppManager extends StateNotifier<List<App>> {
 
   AppManager(this.appDao, this.backgroundRpc, this.lockerSync) : super(List.empty()) {
     lockerSync.addListener(_onLockerUpdate, fireImmediately: false);
-    lockerSync.refresh().then((_) {
-      if (mounted) {
-        refresh();
-      }
-    });
+    refresh();
   }
 
   void _onLockerUpdate(List<LockerEntry>? locker) async {

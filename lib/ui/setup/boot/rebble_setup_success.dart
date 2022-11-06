@@ -16,8 +16,7 @@ class RebbleSetupSuccess extends HookWidget implements CobbleScreen {
   @override
   Widget build(BuildContext context) {
     final preferences = useProvider(preferencesProvider);
-    final auth = useProvider(authServiceProvider);
-    final userFuture = auth.then((service) => service.user);
+    final userFuture = useProvider(authUserProvider.future);
 
     return CobbleScaffold.page(
       title: tr.setup.success.title,
@@ -27,9 +26,9 @@ class RebbleSetupSuccess extends HookWidget implements CobbleScreen {
             tr.setup.success.subtitle,
             style: Theme.of(context).textTheme.headline3,
           ),
-          FutureBuilder<User>(
+          FutureBuilder<User?>(
             future: userFuture,
-            builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
+            builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
               if (snapshot.hasData) {
                 return Text(
                     tr.setup.success.welcome(name: snapshot.data!.name));

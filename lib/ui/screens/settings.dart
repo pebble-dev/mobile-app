@@ -27,7 +27,7 @@ class Settings extends HookWidget implements CobbleScreen {
 
   @override
   Widget build(BuildContext context) {
-    final auth = useProvider(authServiceProvider);
+    final auth = useProvider(authServiceProvider.future);
     final webviews = useProvider(bootServiceProvider.future).then((value) async => (await value.config).webviews);
     return CobbleScaffold.tab(
       title: tr.settings.title,

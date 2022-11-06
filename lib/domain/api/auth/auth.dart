@@ -6,7 +6,7 @@ import 'package:cobble/infrastructure/datasources/secure_storage.dart';
 import 'package:cobble/infrastructure/datasources/web_services/auth.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-final authServiceProvider = Provider((ref) async {
+final authServiceProvider = FutureProvider((ref) async {
   final boot = await (await ref.watch(bootServiceProvider.future)).config;
   final token = await (await ref.watch(tokenProvider.last));
   final oauth = await ref.watch(oauthClientProvider.future);
@@ -15,4 +15,13 @@ final authServiceProvider = Provider((ref) async {
     throw NoTokenException("Service requires a token but none was found in storage");
   }
   return AuthService(boot.auth.base, prefs, oauth, token);
+});
+
+final authUserProvider = FutureProvider((ref) async {
+  try {
+    final auth = await ref.watch(authServiceProvider.future);
+    return await auth.user;
+  } on NoTokenException {
+    return null;
+  }
 });
