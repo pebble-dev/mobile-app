@@ -112,6 +112,9 @@ class AppManager extends StateNotifier<List<App>> {
   }
 
   Future<void> deleteApp(Uuid uuid) async {
+    if ((await appDao.getPackage(uuid))?.appstoreId != null) {
+      await lockerSync.removeFromLocker(uuid);
+    }
     final uuidWrapper = StringWrapper();
     uuidWrapper.value = uuid.toString();
 

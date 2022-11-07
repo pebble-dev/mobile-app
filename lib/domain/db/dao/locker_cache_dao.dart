@@ -2,6 +2,7 @@ import 'package:cobble/domain/db/models/locker_app.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common/sqlite_api.dart';
+import 'package:uuid_type/uuid_type.dart';
 
 import '../cobble_database.dart';
 
@@ -40,6 +41,16 @@ class LockerCacheDao {
     final db = await _dbFuture;
 
     await db.delete(tableLocker);
+  }
+
+  Future<void> markForDeletion(String appstoreId) async {
+    final db = await _dbFuture;
+    await db.update(tableLocker, {"markedForDeletion": 1}, where: "id = ?", whereArgs: [appstoreId]);
+  }
+
+  Future<void> markForDeletionByUuid(Uuid uuid) async {
+    final db = await _dbFuture;
+    await db.update(tableLocker, {"markedForDeletion": 1}, where: "uuid = ?", whereArgs: [uuid.toString()]);
   }
 }
 

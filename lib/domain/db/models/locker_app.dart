@@ -8,6 +8,7 @@ part 'locker_app.g.dart';
 
 @NonNullUuidConverter()
 @JsonSerializable()
+@BooleanNumberConverter()
 class LockerApp {
   final String id;
   final Uuid uuid;
@@ -20,6 +21,7 @@ class LockerApp {
   final String? basaltList;
   final String? chalkList;
   final String? dioriteList;
+  final bool markedForDeletion;
 
   LockerApp({required this.id,
     required this.uuid,
@@ -31,7 +33,8 @@ class LockerApp {
     this.apliteList,
     this.basaltList,
     this.chalkList,
-    this.dioriteList});
+    this.dioriteList,
+    this.markedForDeletion = false});
 
   Map<String, dynamic> toMap() {
     return _$LockerAppToJson(this);

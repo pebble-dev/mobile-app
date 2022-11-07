@@ -14,10 +14,7 @@ class AppstoreService extends Service {
 
   Future<List<LockerEntry>> get locker async {
     final tokenCreationDate = _prefs.getOAuthTokenCreationDate();
-    if (tokenCreationDate == null) {
-      throw StateError("token creation date null when token exists");
-    }
-    final token = await _oauth.ensureNotStale(_token, tokenCreationDate);
+    final token = await _oauth.ensureNotStale(_token, tokenCreationDate?? DateTime.utc(0));
     List<LockerEntry> entries = await client.getSerialized(
       (body) => (body["applications"] as List<dynamic>)
         .map((e) => e as Map<String, dynamic>)
@@ -27,5 +24,25 @@ class AppstoreService extends Service {
       token: token.accessToken,
     );
     return entries;
+  }
+
+  Future<void> addToLocker(String uuid) async {
+    final tokenCreationDate = _prefs.getOAuthTokenCreationDate();
+    final token = await _oauth.ensureNotStale(_token, tokenCreationDate ?? DateTime.utc(0));
+    await client.request(
+      path: "locker/$uuid",
+      method: "PUT",
+      token: token.accessToken,
+    );
+  }
+
+  Future<void> removeFromLocker(String uuid) async {
+    final tokenCreationDate = _prefs.getOAuthTokenCreationDate();
+    final token = await _oauth.ensureNotStale(_token, tokenCreationDate ?? DateTime.utc(0));
+    await client.request(
+      path: "locker/$uuid",
+      method: "DELETE",
+      token: token.accessToken,
+    );
   }
 }

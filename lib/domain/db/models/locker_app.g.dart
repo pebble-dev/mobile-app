@@ -18,6 +18,10 @@ LockerApp _$LockerAppFromJson(Map<String, dynamic> json) => LockerApp(
       basaltList: json['basaltList'] as String?,
       chalkList: json['chalkList'] as String?,
       dioriteList: json['dioriteList'] as String?,
+      markedForDeletion: json['markedForDeletion'] == null
+          ? false
+          : const BooleanNumberConverter()
+              .fromJson(json['markedForDeletion'] as int),
     );
 
 Map<String, dynamic> _$LockerAppToJson(LockerApp instance) => <String, dynamic>{
@@ -32,4 +36,6 @@ Map<String, dynamic> _$LockerAppToJson(LockerApp instance) => <String, dynamic>{
       'basaltList': instance.basaltList,
       'chalkList': instance.chalkList,
       'dioriteList': instance.dioriteList,
+      'markedForDeletion':
+          const BooleanNumberConverter().toJson(instance.markedForDeletion),
     };

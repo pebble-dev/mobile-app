@@ -77,7 +77,8 @@ Future<void> createLockerCacheTable(Database db) async {
       apliteList TEXT,
       basaltList TEXT,
       chalkList TEXT,
-      dioriteList TEXT
+      dioriteList TEXT,
+      markedForDeletion INTEGER NOT NULL
     )
   """);
 }
