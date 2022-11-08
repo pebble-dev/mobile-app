@@ -78,13 +78,13 @@ class NotificationManager {
   }
 
   Future<TimelinePin> handleNotification(NotificationPigeon notif) async {
-    NotificationChannel? channel = await _notificationChannelDao.getNotifChannelByIds(notif.tagId, notif.packageId);
+    NotificationChannel? channel = await _notificationChannelDao.getNotifChannelByIds(notif.tagId!, notif.packageId!);
     if (channel == null) {
-      _notificationChannelDao.insertOrUpdateNotificationChannel(NotificationChannel(notif.packageId, notif.tagId, true));
+      _notificationChannelDao.insertOrUpdateNotificationChannel(NotificationChannel(notif.packageId!, notif.tagId!, true));
     }
 
     ActiveNotification? old = await _activeNotificationDao.getActiveNotifByNotifMeta(notif.notifId, notif.packageId, notif.tagId);
-    if (old != null && old.pinId != null && notif.messagesJson.isEmpty) {
+    if (old != null && old.pinId != null && notif.messagesJson?.isEmpty != false) {
       StringWrapper id = StringWrapper();
       id.value = old.pinId.toString();
       _notificationUtils.dismissNotificationWatch(id);
@@ -98,7 +98,7 @@ class NotificationManager {
     TimelineAttribute content = TimelineAttribute.body(notif.text!.trim());
 
     if (notif.messagesJson?.isNotEmpty ?? false) {
-      List<Map<String, dynamic>> messages = new List<Map<String, dynamic>>.from(jsonDecode(notif.messagesJson!));
+      List<Map<String, dynamic>> messages = List<Map<String, dynamic>>.from(jsonDecode(notif.messagesJson!));
       content = TimelineAttribute.body(NotificationMessage.fromJson(messages.last).text!.trim());
     }
 
@@ -110,7 +110,7 @@ class NotificationManager {
     //TODO: change to use preferences datasource
     List<String>? disabledActionPkgs = (await _preferencesFuture).getStringList(disabledActionPackagesKey);
     if (disabledActionPkgs == null || !disabledActionPkgs.contains(notif.packageId)) {
-      List<Map<String, dynamic>> notifActions = new List<Map<String, dynamic>>.from(jsonDecode(notif.actionsJson!));
+      List<Map<String, dynamic>> notifActions = List<Map<String, dynamic>>.from(jsonDecode(notif.actionsJson!));
       if (notifActions != null) {
         for (int i=0; i<notifActions.length; i++) {
           NotificationAction action = NotificationAction.fromJson(notifActions[i]);
@@ -134,7 +134,7 @@ class NotificationManager {
       TimelineAttribute.title("Mute app")
     ]));
     if (notif.tagId != null) {
-      final channel = await _notificationChannelDao.getNotifChannelByIds(notif.tagId, notif.packageId);
+      final channel = await _notificationChannelDao.getNotifChannelByIds(notif.tagId!, notif.packageId!);
       actions.add(TimelineAction(META_ACTION_MUTE_TAG, actionTypeGeneric, [
         TimelineAttribute.title("Mute tag\n'${channel?.name ?? notif.tagId}'")
       ]));

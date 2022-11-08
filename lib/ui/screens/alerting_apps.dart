@@ -13,7 +13,7 @@ import 'package:cobble/ui/screens/alerting_app_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import './alerting_apps/sheet.dart';
 
@@ -35,7 +35,6 @@ class AlertingApps extends HookWidget implements CobbleScreen {
 
     final sheet = CobbleSheet.useInline();
     final mutedPackages = useProvider(notificationsMutedPackagesProvider);
-    final preferences = useProvider(preferencesProvider);
 
     return CobbleScaffold.tab(
         title: tr.alertingApps.title,
@@ -78,13 +77,13 @@ class AlertingApps extends HookWidget implements CobbleScreen {
                 AsyncSnapshot<AppEntriesPigeon> snapshot) {
               if (snapshot.hasData && snapshot.data != null) {
                 List<AlertingApp> apps = [];
-                for (int i = 0; i < snapshot.data!.packageId.length; i++) {
+                for (int i = 0; i < snapshot.data!.packageId!.length; i++) {
                   final enabled = (mutedPackages.data?.value ?? []).firstWhere(
-                          (element) => element == snapshot.data!.packageId[i],
+                          (element) => element == snapshot.data!.packageId![i],
                           orElse: () => null) ==
                       null;
-                  apps.add(AlertingApp(snapshot.data!.appName[i] as String, enabled,
-                      snapshot.data!.packageId[i] as String));
+                  apps.add(AlertingApp(snapshot.data!.appName![i] as String, enabled,
+                      snapshot.data!.packageId![i] as String));
                 }
 
                 List filteredApps = apps.where(

@@ -3,10 +3,6 @@ import 'dart:io';
 import 'package:cobble/background/modules/apps_background.dart';
 import 'package:cobble/background/modules/notifications_background.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
-import 'package:cobble/domain/db/dao/notification_channel_dao.dart';
-import 'package:cobble/domain/db/dao/timeline_pin_dao.dart';
-import 'package:cobble/domain/db/models/notification_channel.dart';
-import 'package:cobble/domain/db/models/timeline_pin.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/logging.dart';
 import 'package:cobble/infrastructure/backgroundcomm/BackgroundReceiver.dart';
@@ -42,9 +38,6 @@ class BackgroundReceiver implements TimelineCallbacks {
 
   late Future<Preferences> preferences;
   late MasterActionHandler masterActionHandler;
-  //TODO: check where this goes post merge
-  late NotificationManager notificationManager;
-  late NotificationChannelDao _notificationChannelDao;
 
   late ProviderSubscription<WatchConnectionState> connectionSubscription;
 
@@ -61,7 +54,6 @@ class BackgroundReceiver implements TimelineCallbacks {
     await BackgroundControl().notifyFlutterBackgroundStarted();
 
     masterActionHandler = container.read(masterActionHandlerProvider);
-    _notificationChannelDao = container.listen(notifChannelDaoProvider).read();
 
     connectionSubscription = container.listen(
       connectionStateProvider.state,
@@ -152,37 +144,5 @@ class BackgroundReceiver implements TimelineCallbacks {
   @override
   Future<ActionResponsePigeon> handleTimelineAction(ActionTrigger arg) async {
     return (await masterActionHandler.handleTimelineAction(arg))!.toPigeon();
-  }
-
-  //TODO: check where this goes post-merge
-  @override
-  Future<TimelinePinPigeon?> handleNotification(NotificationPigeon arg) async {
-    TimelinePin notif = await notificationManager.handleNotification(arg);
-
-    return notif.toPigeon();
-  }
-
-  @override
-  void dismissNotification(StringWrapper arg) {
-    notificationManager.dismissNotification(Uuid(arg.value!));
-  }
-
-  @override
-  Future<BooleanWrapper> shouldNotify(NotifChannelPigeon arg) async {
-    NotificationChannel? channel = await _notificationChannelDao.getNotifChannelByIds(arg.channelId, arg.packageId);
-    return BooleanWrapper()..value=channel?.shouldNotify ?? true;
-  }
-
-  @override
-  void updateChannel(NotifChannelPigeon arg) {
-    if (arg.delete) {
-      _notificationChannelDao.deleteNotifChannelByIds(arg.channelId, arg.packageId);
-    }else {
-      _notificationChannelDao.getNotifChannelByIds(arg.channelId, arg.packageId).then((existing) {
-        final shouldNotify = existing?.shouldNotify ?? true;
-        final channel = NotificationChannel(arg.packageId, arg.channelId, shouldNotify, name: arg.channelName, description: arg.channelDesc);
-        _notificationChannelDao.insertOrUpdateNotificationChannel(channel);
-      });
-    }
   }
 }

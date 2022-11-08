@@ -134,7 +134,7 @@ class NotificationsFlutterBridge @Inject constructor(
         val result = CompletableDeferred<Pair<TimelineItem, BlobResponse.BlobStatus>?>()
 
         notifListening!!.shouldNotify(channel) { shouldNotify ->
-            if (!shouldNotify.value) {
+            if (!shouldNotify.value!!) {
                 result.complete(null)
                 return@shouldNotify
             }

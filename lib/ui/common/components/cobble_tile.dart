@@ -193,7 +193,7 @@ class CobbleTile extends StatelessWidget {
         ),
       );
 
-  factory CobbleTile.appSetting({
+  factory CobbleTile.app({
     Key? key,
     ImageProvider? leading,
     required String title,
