@@ -29,7 +29,7 @@ class PebbleFirmwarePigeon {
 
 class PebbleDevicePigeon {
   String? name;
-  int? address;
+  String? address;
   PebbleFirmwarePigeon? runningFirmware;
   PebbleFirmwarePigeon? recoveryFirmware;
   int? model;
@@ -43,7 +43,7 @@ class PebbleDevicePigeon {
 
 class PebbleScanDevicePigeon {
   String? name;
-  int? address;
+  String? address;
   String? version;
   String? serialNumber;
   int? color;
@@ -54,7 +54,7 @@ class PebbleScanDevicePigeon {
 class WatchConnectionStatePigeon {
   bool? isConnected;
   bool? isConnecting;
-  int? currentWatchAddress;
+  String? currentWatchAddress;
   PebbleDevicePigeon? currentConnectedWatch;
 }
 
@@ -104,8 +104,71 @@ class NotificationPigeon {
 }
 
 class AppEntriesPigeon {
-  List<String>? appName;
-  List<String>? packageId;
+  List<String?>? appName;
+  List<String?>? packageId;
+}
+
+class PbwAppInfo {
+  bool? isValid;
+  String? uuid;
+  String? shortName;
+  String? longName;
+  String? companyName;
+  int? versionCode;
+  String? versionLabel;
+  Map<String?, int?>? appKeys;
+  List<String?>? capabilities;
+  List<WatchResource?>? resources;
+  String? sdkVersion;
+  List<String?>? targetPlatforms;
+  WatchappInfo? watchapp;
+}
+
+class WatchappInfo {
+  bool? watchface;
+  bool? hiddenApp;
+  bool? onlyShownOnCommunication;
+}
+
+class WatchResource {
+  String? file;
+  bool? menuIcon;
+  String? name;
+  String? type;
+}
+
+class InstallData {
+  String uri;
+  PbwAppInfo appInfo;
+
+  InstallData(this.uri, this.appInfo);
+}
+
+class AppInstallStatus {
+  /// Progress in range [0-1]
+  double progress;
+  bool isInstalling;
+
+  AppInstallStatus(this.progress, this.isInstalling);
+}
+
+class ScreenshotResult {
+  bool success;
+  String? imagePath;
+
+  ScreenshotResult(this.success, this.imagePath);
+}
+
+class AppLogEntry {
+  String uuid;
+  int timestamp;
+  int level;
+  int lineNumber;
+  String filename;
+  String message;
+
+  AppLogEntry(this.uuid, this.timestamp, this.level, this.lineNumber,
+      this.filename, this.message);
 }
 
 class NotifChannelPigeon {
@@ -132,17 +195,19 @@ abstract class ConnectionCallbacks {
 }
 
 @FlutterApi()
+abstract class RawIncomingPacketsCallbacks {
+  void onPacketReceived(ListWrapper listOfBytes);
+}
+
+@FlutterApi()
 abstract class PairCallbacks {
-  void onWatchPairComplete(NumberWrapper address);
+  void onWatchPairComplete(StringWrapper address);
 }
 
 @FlutterApi()
 abstract class CalendarCallbacks {
   @async
   void doFullCalendarSync();
-
-  @async
-  void deleteCalendarPinsFromWatch();
 }
 
 @FlutterApi()
@@ -154,21 +219,49 @@ abstract class TimelineCallbacks {
 }
 
 @FlutterApi()
+abstract class IntentCallbacks {
+  void openUri(StringWrapper uri);
+}
+
+@FlutterApi()
+abstract class BackgroundAppInstallCallbacks {
+  @async
+  void beginAppInstall(InstallData installData);
+
+  @async
+  void deleteApp(StringWrapper uuid);
+}
+
+@FlutterApi()
+abstract class AppInstallStatusCallbacks {
+  void onStatusUpdated(AppInstallStatus status);
+}
+
+@FlutterApi()
 abstract class NotificationListening {
   @async
   TimelinePinPigeon handleNotification(NotificationPigeon notification);
+
   void dismissNotification(StringWrapper itemId);
   @async
   BooleanWrapper shouldNotify(NotifChannelPigeon channel);
   void updateChannel(NotifChannelPigeon channel);
 }
 
+@FlutterApi()
+abstract class AppLogCallbacks {
+  void onLogReceived(AppLogEntry entry);
+}
+
 @HostApi()
 abstract class NotificationUtils {
   @async
   BooleanWrapper dismissNotification(StringWrapper itemId);
+
   void dismissNotificationWatch(StringWrapper itemId);
+
   void openNotification(StringWrapper itemId);
+
   void executeAction(NotifActionExecuteReq action);
 }
 
@@ -192,11 +285,20 @@ abstract class ConnectionControl {
   void cancelObservingConnectionChanges();
 }
 
+@HostApi()
+abstract class RawIncomingPacketsControl {
+  void observeIncomingPackets();
+
+  void cancelObservingIncomingPackets();
+}
+
 /// Connection methods that require UI reside in separate pigeon class.
 /// This allows easier separation between background and UI methods.
 @HostApi()
 abstract class UiConnectionControl {
-  void connectToWatch(NumberWrapper macAddress);
+  void connectToWatch(StringWrapper macAddress);
+
+  void unpairWatch(StringWrapper macAddress);
 }
 
 @HostApi()
@@ -205,7 +307,12 @@ abstract class NotificationsControl {
 }
 
 @HostApi()
-abstract class AppLifecycleControl {
+abstract class IntentControl {
+  void notifyFlutterReadyForIntents();
+
+  void notifyFlutterNotReadyForIntents();
+
+  @async
   BooleanWrapper waitForBoot();
 }
 
@@ -216,10 +323,13 @@ abstract class DebugControl {
 
 @HostApi()
 abstract class TimelineControl {
+  @async
   NumberWrapper addPin(TimelinePinPigeon pin);
 
+  @async
   NumberWrapper removePin(StringWrapper pinUuid);
 
+  @async
   NumberWrapper removeAllPins();
 }
 
@@ -230,7 +340,8 @@ abstract class BackgroundSetupControl {
 
 @HostApi()
 abstract class BackgroundControl {
-  void notifyFlutterBackgroundStarted();
+  @async
+  NumberWrapper notifyFlutterBackgroundStarted();
 }
 
 @HostApi()
@@ -254,24 +365,30 @@ abstract class PermissionControl {
   //     we must direct user to the settings (use openPermissionSettings())
   //     This might be Android-specific behavior.
 
+  @async
   NumberWrapper requestLocationPermission();
 
+  @async
   NumberWrapper requestCalendarPermission();
 
   /// This can only be performed when at least one watch is paired
+  @async
   void requestNotificationAccess();
 
   /// This can only be performed when at least one watch is paired
+  @async
   void requestBatteryExclusion();
 
+  @async
+  NumberWrapper requestBluetoothPermissions();
+
+  @async
   void openPermissionSettings();
 }
 
 @HostApi()
 abstract class CalendarControl {
   void requestCalendarSync();
-
-  void deleteCalendarPinsFromWatch();
 }
 
 @HostApi()
@@ -288,13 +405,74 @@ abstract class PigeonLogger {
 }
 
 @HostApi()
-abstract class TimelineSyncControl{
+abstract class TimelineSyncControl {
   void syncTimelineToWatchLater();
+}
+
+@HostApi()
+abstract class WorkaroundsControl {
+  // List of workaround ID strings that apply to this device
+  ListWrapper getNeededWorkarounds();
+}
+
+@HostApi()
+abstract class AppInstallControl {
+  @async
+  PbwAppInfo getAppInfo(StringWrapper localPbwUri);
+
+  // Just relay method that triggers copies the app into local storage and
+  // begins install on the background flutter side
+  @async
+  BooleanWrapper beginAppInstall(InstallData installData);
+
+  // Just relay method that deletes app from the local store and triggers
+  // deleteApp on background flutter side
+  // Return BooleanWrapper as a
+  // workaround for https://github.com/flutter/flutter/issues/78536
+  @async
+  BooleanWrapper beginAppDeletion(StringWrapper uuid);
+
+  /// Read header from pbw file already in Cobble's storage and send it to
+  /// BlobDB on the watch
+  @async
+  NumberWrapper insertAppIntoBlobDb(StringWrapper uuidString);
+
+  @async
+  NumberWrapper removeAppFromBlobDb(StringWrapper appUuidString);
+
+  @async
+  NumberWrapper removeAllApps();
+
+  void subscribeToAppStatus();
+
+  void unsubscribeFromAppStatus();
+
+  @async
+  NumberWrapper sendAppOrderToWatch(ListWrapper uuidStringList);
+}
+
+@HostApi()
+abstract class AppLifecycleControl {
+  @async
+  BooleanWrapper openAppOnTheWatch(StringWrapper uuidString);
 }
 
 @HostApi()
 abstract class PackageDetails {
   AppEntriesPigeon getPackageList();
+}
+
+@HostApi()
+abstract class ScreenshotsControl {
+  @async
+  ScreenshotResult takeWatchScreenshot();
+}
+
+@HostApi()
+abstract class AppLogControl {
+  void startSendingLogs();
+
+  void stopSendingLogs();
 }
 
 /// This class will keep all classes that appear in lists from being deleted
@@ -303,4 +481,6 @@ abstract class PackageDetails {
 @HostApi()
 abstract class KeepUnusedHack {
   void keepPebbleScanDevicePigeon(PebbleScanDevicePigeon cls);
+
+  void keepWatchResource(WatchResource cls);
 }

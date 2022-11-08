@@ -15,7 +15,7 @@ abstract class ServiceModule {
     companion object {
         @Provides
         fun provideCoroutineScope(watchService: WatchService): CoroutineScope {
-            return watchService.coroutineScope
+            return watchService.watchConnectionScope
         }
     }
 
@@ -53,5 +53,17 @@ abstract class ServiceModule {
     @IntoSet
     abstract fun bindFlutterBackgroundStart(
             flutterStartHandler: FlutterStartHandler
+    ): CobbleHandler
+
+    @Binds
+    @IntoSet
+    abstract fun bindAppInstallHandlerIntoSet(
+            appInstallHandler: AppInstallHandler
+    ): CobbleHandler
+
+    @Binds
+    @IntoSet
+    abstract fun bindAppRunStateHandler(
+            appRunStateHandler: AppRunStateHandler
     ): CobbleHandler
 }

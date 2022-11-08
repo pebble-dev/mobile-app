@@ -3,10 +3,12 @@ package io.rebble.cobble.util
 import io.flutter.plugin.common.BasicMessageChannel
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.StandardMessageCodec
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import io.rebble.cobble.pigeons.Pigeons
+import kotlinx.coroutines.*
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 fun BasicMessageChannel<Any>.setCoroutineMessageHandler(
         coroutineScope: CoroutineScope,
@@ -27,6 +29,7 @@ fun BasicMessageChannel<Any>.setCoroutineMessageHandler(
  *
  * @param callName Name of the pigeon call. Copy from *Pigeons.java*.
  */
+@Deprecated("Use native pigeon's support for @async and wrap it with launchPigeonResult")
 fun BinaryMessenger.registerAsyncPigeonCallback(
         coroutineScope: CoroutineScope,
         callName: String,
@@ -38,6 +41,7 @@ fun BinaryMessenger.registerAsyncPigeonCallback(
             StandardMessageCodec()
     )
     channel.setCoroutineMessageHandler(coroutineScope) { rawMessage ->
+        @Suppress("UNCHECKED_CAST")
         val result = callback(rawMessage as HashMap<*, *>?)
 
         hashMapOf("result" to result)
@@ -49,3 +53,20 @@ fun BinaryMessenger.registerAsyncPigeonCallback(
 }
 
 val voidResult: Map<*, *> = mapOf("result" to null)
+
+fun <T> CoroutineScope.launchPigeonResult(result: Pigeons.Result<T>,
+                                          coroutineContext: CoroutineContext = EmptyCoroutineContext,
+                                          callback: suspend () -> T) {
+    launch(coroutineContext) {
+        val callbackResult = callback()
+        withContext(Dispatchers.Main.immediate) {
+            result.success(callbackResult)
+        }
+    }
+}
+
+suspend fun <T> awaitPigeonMethod(block: (reply: (T) -> Unit) -> Unit): T {
+    return suspendCoroutine { continuation ->
+        block(continuation::resume)
+    }
+}

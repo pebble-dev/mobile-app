@@ -1,0 +1,27 @@
+targets:
+  $default:
+    sources:
+      - lib/**
+      - $package$
+      # Other sources are included by default but we also wish to include /lang dir
+      - lang/**
+builders:
+  generate_lang_models:
+    import: 'package:cobble/localization/model/model_generator.dart'
+    builder_factories:
+      - 'modelGenerator'
+    build_extensions:
+      .dart:
+        - '.model.dart'
+    auto_apply: root_package
+    build_to: source
+    # we are generating json_serializable compatible models, running our builder before
+    # json_serializable is mandatory
+    runs_before:
+      - 'json_serializable|json_serializable'
+    defaults:
+      # run generator for this file only, otherwise generator will visit every .dart file in project
+      # and run for each .dart file
+      generate_for:
+        - '**/localization/model/model_generator.dart'
+

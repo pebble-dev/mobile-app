@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Base64
 import dagger.Reusable
+import io.rebble.cobble.bluetooth.workarounds.WorkaroundDescriptor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +19,7 @@ import javax.inject.Inject
  * Read only provider for all shared preferences from flutter
  */
 @Reusable
-class FlutterPreferences @Inject constructor(context: Context) {
+class FlutterPreferences @Inject constructor(private val context: Context) {
     private val preferences = context.getSharedPreferences(
             "FlutterSharedPreferences",
             Context.MODE_PRIVATE
@@ -41,6 +42,14 @@ class FlutterPreferences @Inject constructor(context: Context) {
     ) { prefs: SharedPreferences,
         key: String ->
         prefs.getBoolean(key, false)
+    }
+
+    fun shouldActivateWorkaround(workaround: WorkaroundDescriptor): Boolean {
+        if (!workaround.isNeeded(context)) {
+            return false
+        }
+
+        return !preferences.getBoolean(KEY_PREFIX_DISABLE_WORKAROUND + workaround.name, false)
     }
 
     val masterNotificationsToggle = preferences.flow(
@@ -78,16 +87,16 @@ private inline fun <T> SharedPreferences.flow(
         crossinline mapper: (preferences: SharedPreferences, key: String) -> T): Flow<T> {
 
     return callbackFlow {
-        offer(mapper(this@flow, key))
+        trySend(mapper(this@flow, key)).isSuccess
 
         val listener = SharedPreferences
-                .OnSharedPreferenceChangeListener { sharedPreferences: SharedPreferences,
-                                                    changedKey: String ->
+            .OnSharedPreferenceChangeListener { sharedPreferences: SharedPreferences,
+                                                changedKey: String ->
 
-                    if (changedKey == key) {
-                        offer(mapper(sharedPreferences, key))
-                    }
+                if (changedKey == key) {
+                    trySend(mapper(sharedPreferences, key)).isSuccess
                 }
+            }
 
         registerOnSharedPreferenceChangeListener(listener)
 
@@ -101,6 +110,7 @@ private const val KEY_CALENDAR_SYNC_ENABLED = "flutter.ENABLE_CALENDAR_SYNC"
 private const val KEY_MUTE_PHONE_NOTIFICATION_SOUNDS = "flutter.MUTE_PHONE_NOTIFICATIONS"
 private const val KEY_MUTE_PHONE_CALL_SOUNDS = "flutter.MUTE_PHONE_CALLS"
 private const val KEY_MASTER_NOTIFICATION_TOGGLE = "flutter.MASTER_NOTIFICATION_TOGGLE"
+private const val KEY_PREFIX_DISABLE_WORKAROUND = "flutter.DISABLE_WORKAROUND_"
 private const val KEY_MUTED_NOTIF_PACKAGES = "flutter.MUTED_NOTIF_PACKAGES"
 
 private const val LIST_IDENTIFIER = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu";

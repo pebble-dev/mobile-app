@@ -9,31 +9,35 @@ import 'package:cobble/domain/timeline/timeline_attribute.dart';
 import 'package:cobble/domain/timeline/timeline_icon.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:timezone/timezone.dart' as tz;
 
-final TEST_CALENDAR = SelectableCalendar(
-  "Test@Calendar",
-  "10",
-  true,
-);
+final TEST_CALENDAR =
+    SelectableCalendar("Test@Calendar", "10", true, 0xFFFFFFFF);
 
 void main() {
   test("Generate pin from basic event", () {
     final event = Event("10",
         eventId: "33",
         title: "The Event",
-        start: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          10, //Hour
-          30, // Minute
+        start: tz.TZDateTime.from(
+            DateTime.utc(
+              2020, // Year
+              11, // Month
+              21, // Day
+              10, //Hour
+              30, // Minute
+            ),
+            tz.local
         ),
-        end: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          11, //Hour
-          30, // Minute
+        end: tz.TZDateTime.from(
+            DateTime.utc(
+              2020, // Year
+              11, // Month
+              21, // Day
+              11, //Hour
+              30, // Minute
+            ),
+            tz.local
         ));
 
     final expectedPin = TimelinePin(
@@ -63,19 +67,25 @@ void main() {
       "10",
       eventId: "33",
       title: "The Event",
-      start: DateTime.utc(
-        2020, // Year
-        11, // Month
-        21, // Day
-        10, //Hour
-        30, // Minute
+      start: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            10, //Hour
+            30, // Minute
+          ),
+          tz.local
       ),
-      end: DateTime.utc(
-        2020, // Year
-        11, // Month
-        21, // Day
-        11, //Hour
-        30, // Minute
+      end: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            11, //Hour
+            30, // Minute
+          ),
+          tz.local
       ),
       allDay: true,
     );
@@ -105,20 +115,26 @@ void main() {
   test("Generate attributes from basic event", () {
     final event = Event("10",
         title: "The Event",
-        start: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          10, //Hour
-          30, // Minute
+        start: tz.TZDateTime.from(
+            DateTime.utc(
+              2020, // Year
+              11, // Month
+              21, // Day
+              10, //Hour
+              30, // Minute
+            ),
+            tz.local
         ),
-        end: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          11, //Hour
-          30, // Minute
-        ));
+        end: tz.TZDateTime.from(
+            DateTime.utc(
+              2020, // Year
+              11, // Month
+              21, // Day
+              11, //Hour
+              30, // Minute
+            ),
+            tz.local
+        ),);
 
     final expectedAttributes = [
       TimelineAttribute.title("The Event"),
@@ -138,19 +154,25 @@ void main() {
     final event = Event(
       "10",
       title: "The Event",
-      start: DateTime.utc(
-        2020, // Year
-        11, // Month
-        21, // Day
-        10, //Hour
-        30, // Minute
+      start: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            10, //Hour
+            30, // Minute
+          ),
+          tz.local
       ),
-      end: DateTime.utc(
-        2020, // Year
-        11, // Month
-        21, // Day
-        11, //Hour
-        30, // Minute
+      end: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            11, //Hour
+            30, // Minute
+          ),
+          tz.local
       ),
       description: "Going out with some friends",
     );
@@ -174,20 +196,26 @@ void main() {
   test("Generate attributes from event with location", () {
     final event = Event("10",
         title: "The Event",
-        start: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          10, //Hour
-          30, // Minute
-        ),
-        end: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          11, //Hour
-          30, // Minute
-        ));
+        start: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            10, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
+      end: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            11, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ));
 
     event.location = "Rebble headquarters";
 
@@ -209,20 +237,26 @@ void main() {
   test("Generate attributes from event with attendees", () {
     final event = Event("10",
         title: "The Event",
-        start: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          10, //Hour
-          30, // Minute
-        ),
-        end: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          11, //Hour
-          30, // Minute
-        ),
+        start: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            10, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
+      end: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            11, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
         attendees: [
           Attendee(name: "John"),
           Attendee(emailAddress: "Jane@gmail.com"),
@@ -248,20 +282,26 @@ void main() {
   test("Generate attributes from recurring event", () {
     final event = Event("10",
         title: "The Event",
-        start: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          10, //Hour
-          30, // Minute
-        ),
-        end: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          11, //Hour
-          30, // Minute
-        ),
+        start: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            10, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
+      end: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            11, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
         recurrenceRule: RecurrenceRule(RecurrenceFrequency.Weekly));
 
     final expectedAttributes = [
@@ -285,19 +325,25 @@ void main() {
     final event = Event(
       "10",
       title: "The Event",
-      start: DateTime.utc(
-        2020, // Year
-        11, // Month
-        21, // Day
-        10, //Hour
-        30, // Minute
+      start: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            10, //Hour
+            30, // Minute
+          ),
+          tz.local
       ),
-      end: DateTime.utc(
-        2020, // Year
-        11, // Month
-        21, // Day
-        11, //Hour
-        30, // Minute
+      end: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            11, //Hour
+            30, // Minute
+          ),
+          tz.local
       ),
       description: "<html><body>A<b> B</b></body></html>",
     );
@@ -324,19 +370,25 @@ void main() {
     final event = Event(
       "10",
       title: "The Event",
-      start: DateTime.utc(
-        2020, // Year
-        11, // Month
-        21, // Day
-        10, //Hour
-        30, // Minute
+      start: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            10, //Hour
+            30, // Minute
+          ),
+          tz.local
       ),
-      end: DateTime.utc(
-        2020, // Year
-        11, // Month
-        21, // Day
-        11, //Hour
-        30, // Minute
+      end: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            11, //Hour
+            30, // Minute
+          ),
+          tz.local
       ),
       description:
           "ABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABC",
@@ -362,20 +414,26 @@ void main() {
     final event = Event("10",
         eventId: "33",
         title: "The Event",
-        start: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          10, //Hour
-          30, // Minute
-        ),
-        end: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          11, //Hour
-          30, // Minute
-        ));
+        start: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            10, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
+      end: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            11, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ));
 
     final expectedActions = [
       TimelineAction(
@@ -425,25 +483,30 @@ void main() {
   test("Generate event accepted attribute when event is Android accepted", () {
     final event = Event("10",
         title: "The Event",
-        start: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          10, //Hour
-          30, // Minute
-        ),
-        end: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          11, //Hour
-          30, // Minute
-        ),
+        start: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            10, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
+      end: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            11, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
         attendees: [
           Attendee(
             isCurrentUser: true,
             androidAttendeeDetails: AndroidAttendeeDetails(
-                role: AttendeeRole.None,
                 attendanceStatus: AndroidAttendanceStatus.Accepted),
           )
         ]);
@@ -491,20 +554,26 @@ void main() {
   test("Generate event accepted attribute when event is iOS accepted", () {
     final event = Event("10",
         title: "The Event",
-        start: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          10, //Hour
-          30, // Minute
-        ),
-        end: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          11, //Hour
-          30, // Minute
-        ),
+        start: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            10, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
+      end: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            11, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
         attendees: [
           Attendee(
             isCurrentUser: true,
@@ -556,25 +625,30 @@ void main() {
   test("Generate event declined attribute when event is Android declined", () {
     final event = Event("10",
         title: "The Event",
-        start: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          10, //Hour
-          30, // Minute
-        ),
-        end: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          11, //Hour
-          30, // Minute
-        ),
+        start: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            10, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
+      end: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            11, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
         attendees: [
           Attendee(
             isCurrentUser: true,
             androidAttendeeDetails: AndroidAttendeeDetails(
-                role: AttendeeRole.None,
                 attendanceStatus: AndroidAttendanceStatus.Declined),
           )
         ]);
@@ -622,20 +696,26 @@ void main() {
   test("Generate event declined attribute when event is iOS declined", () {
     final event = Event("10",
         title: "The Event",
-        start: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          10, //Hour
-          30, // Minute
-        ),
-        end: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          11, //Hour
-          30, // Minute
-        ),
+        start: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            10, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
+      end: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            11, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
         attendees: [
           Attendee(
             isCurrentUser: true,
@@ -687,25 +767,30 @@ void main() {
   test("Generate event maybe attribute when event is Android tentative", () {
     final event = Event("10",
         title: "The Event",
-        start: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          10, //Hour
-          30, // Minute
-        ),
-        end: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          11, //Hour
-          30, // Minute
-        ),
+        start: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            10, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
+      end: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            11, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
         attendees: [
           Attendee(
             isCurrentUser: true,
             androidAttendeeDetails: AndroidAttendeeDetails(
-                role: AttendeeRole.None,
                 attendanceStatus: AndroidAttendanceStatus.Tentative),
           )
         ]);
@@ -753,20 +838,26 @@ void main() {
   test("Generate event maybe attribute when event is iOS tentative", () {
     final event = Event("10",
         title: "The Event",
-        start: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          10, //Hour
-          30, // Minute
-        ),
-        end: DateTime.utc(
-          2020, // Year
-          11, // Month
-          21, // Day
-          11, //Hour
-          30, // Minute
-        ),
+        start: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            10, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
+      end: tz.TZDateTime.from(
+          DateTime.utc(
+            2020, // Year
+            11, // Month
+            21, // Day
+            11, //Hour
+            30, // Minute
+          ),
+          tz.local
+      ),
         attendees: [
           Attendee(
             isCurrentUser: true,

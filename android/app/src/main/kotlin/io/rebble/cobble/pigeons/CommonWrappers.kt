@@ -18,8 +18,4 @@ fun ListWrapper(value: List<*>) = Pigeons.ListWrapper().also {
 
 // Provide public proxy to some package-only methods
 
-fun Pigeons.BooleanWrapper.toMapExt() = toMap()
-fun Pigeons.NumberWrapper.toMapExt() = toMap()
 fun Pigeons.PebbleScanDevicePigeon.toMapExt() = toMap()
-fun timelinePinPigeonFromMap(map: HashMap<*, *>) = Pigeons.TimelinePinPigeon.fromMap(map)
-fun stringWrapperFromMap(map: HashMap<*, *>) = Pigeons.StringWrapper.fromMap(map)

@@ -1,13 +1,16 @@
+import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/ui/home/home_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class RebbleSetupFail extends StatelessWidget implements CobbleScreen {
+class RebbleSetupFail extends HookWidget implements CobbleScreen {
   @override
   Widget build(BuildContext context) {
+    final preferences = useProvider(preferencesProvider);
     return CobbleScaffold.page(
       title: "Activate Rebble services",
       child: Column(
@@ -21,15 +24,9 @@ class RebbleSetupFail extends StatelessWidget implements CobbleScreen {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            SharedPreferences.getInstance()
-                .then((value) => {
-                      value.setBool("firstRun", false),
-                      value.setBool("bootSetup", false)
-                    })
-                .then(
-                  (value) => context.pushAndRemoveAllBelow(HomePage()),
-                );
+          onPressed: () async {
+            await preferences.data?.value.setWasSetupSuccessful(false);
+            context.pushAndRemoveAllBelow(HomePage());
           },
           label: Text("OKAY")),
     );

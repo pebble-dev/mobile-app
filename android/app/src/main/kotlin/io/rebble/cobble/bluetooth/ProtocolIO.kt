@@ -1,5 +1,6 @@
 package io.rebble.cobble.bluetooth
 
+import io.rebble.cobble.datasources.IncomingPacketsListener
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.protocolhelpers.PebblePacket
 import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
@@ -18,7 +19,12 @@ import kotlin.coroutines.coroutineContext
  * Common I/O for sending packets over LE or classic bluetooth
  */
 @Suppress("BlockingMethodInNonBlockingContext")
-class ProtocolIO(private val inputStream: InputStream, private val outputStream: OutputStream, private val protocolHandler: ProtocolHandler) {
+class ProtocolIO(
+        private val inputStream: InputStream,
+        private val outputStream: OutputStream,
+        private val protocolHandler: ProtocolHandler,
+        private val incomingPacketsListener: IncomingPacketsListener
+) {
     suspend fun readLoop() {
         try {
             val buf: ByteBuffer = ByteBuffer.allocate(8192)
@@ -43,6 +49,7 @@ class ProtocolIO(private val inputStream: InputStream, private val outputStream:
                 buf.rewind()
                 val packet = ByteArray(length.toInt() + 2 * (Short.SIZE_BYTES))
                 buf.get(packet, 0, packet.size)
+                incomingPacketsListener.receivedPackets.emit(packet)
                 protocolHandler.receivePacket(packet.toUByteArray())
             }
         } finally {

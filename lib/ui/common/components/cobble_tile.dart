@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:cobble/ui/common/components/cobble_accordion.dart';
+import 'package:cobble/ui/common/icons/back_comp_icon.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
@@ -197,7 +198,8 @@ class CobbleTile extends StatelessWidget {
     ImageProvider? leading,
     required String title,
     String? subtitle,
-    required Widget child,
+    Widget? child,
+    void Function()? onTap,
   }) =>
       CobbleTile._(
         key: key,
@@ -206,6 +208,7 @@ class CobbleTile extends StatelessWidget {
         title: title,
         subtitle: subtitle,
         trailing: child,
+        onTap: onTap,
       );
 
   factory CobbleTile.appNavigation({
@@ -239,7 +242,7 @@ class CobbleTile extends StatelessWidget {
           children: [
             if (leading != null) ...[
               leading!,
-              SizedBox(width: 10),
+              SizedBox(width: 16),
             ],
             Expanded(
               child: Column(
@@ -349,7 +352,7 @@ class CobbleTile extends StatelessWidget {
 
   /// Will change IconData or ImageProvider to Widget
   static Widget _leadingToWidget(Object? leading, {double size = 25}) {
-    assert(leading == null || leading is IconData || leading is ImageProvider);
+    assert(leading == null || leading is IconData || leading is ImageProvider || leading is BackCompIcon || leading is Decoration);
     if (leading is IconData && leading == reservedIconSpace)
       return SizedBox(width: size + 16.0);
     if (leading is IconData && leading != reservedIconSpace)
@@ -357,11 +360,19 @@ class CobbleTile extends StatelessWidget {
         leading,
         size: size,
       );
+    if (leading is BackCompIcon)
+      return leading;
     if (leading is ImageProvider)
       return SizedBox(
         width: size,
         height: size,
         child: Image(image: leading),
+      );
+    if (leading is Decoration)
+      return Container(
+        width: 32.0,
+        height: 32.0,
+        decoration: leading,
       );
     return Container();
   }

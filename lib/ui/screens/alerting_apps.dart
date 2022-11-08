@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:cobble/domain/package_details.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
+import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/components/cobble_sheet.dart';
 import 'package:cobble/ui/common/components/cobble_tile.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
@@ -12,7 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:hooks_riverpod/all.dart';
-import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 
 import './alerting_apps/sheet.dart';
 
@@ -37,8 +38,11 @@ class AlertingApps extends HookWidget implements CobbleScreen {
     final preferences = useProvider(preferencesProvider);
 
     return CobbleScaffold.tab(
-        title: 'Choose which apps can alert',
-        subtitle: '8 alerted, 5 muted today',
+        title: tr.alertingApps.title,
+        subtitle: tr.alertingApps.subtitle(
+          alerted: 5.toString(),
+          muted: 3.toString(),
+        ),
         actions: [
           Builder(
             builder: (context) => IconButton(
@@ -83,23 +87,29 @@ class AlertingApps extends HookWidget implements CobbleScreen {
                       snapshot.data!.packageId[i] as String));
                 }
 
-                return ListView(
-                  children: apps
-                      .where(
-                        (app) => app.name.toLowerCase().contains(
-                              filter.value.query?.toLowerCase() ?? '',
-                            ),
+                List filteredApps = apps.where(
+                  (app) => app.name.toLowerCase().contains(
+                    filter.value.query?.toLowerCase() ?? '',
+                  ),
+                ).toList();
+
+                return ListView.builder(
+                  itemCount: filteredApps.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    AlertingApp app = filteredApps[index];
+                    return CobbleTile.appNavigation(
+                      leading: Svg('images/temp_alerting_app.svg'),
+                      title: app.name,
+                      subtitle: app.enabled
+                          ? tr.alertingApps.alertedToday(
+                        alerted: random.nextInt(8).toString(),
                       )
-                      .map(
-                        (app) => CobbleTile.appNavigation(
-                          leading: Svg('images/temp_alerting_app.svg'),
-                          title: app.name,
-                          subtitle:
-                              '${random.nextInt(8)} ${app.enabled ? 'alerted' : 'muted'} today',
-                          navigateTo: AlertingAppDetails(app),
-                        ),
-                      )
-                      .toList(),
+                          : tr.alertingApps.mutedToday(
+                        muted: random.nextInt(8).toString(),
+                      ),
+                      navigateTo: AlertingAppDetails(app),
+                    );
+                  },
                 );
               } else {
                 return CircularProgressIndicator();

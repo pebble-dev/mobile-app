@@ -4,22 +4,18 @@ import dagger.BindsInstance
 import dagger.Subcomponent
 import io.rebble.cobble.handlers.CobbleHandler
 import io.rebble.cobble.service.WatchService
-import javax.inject.Scope
+import javax.inject.Provider
 
-@PerService
 @Subcomponent(
         modules = [
             ServiceModule::class
         ]
 )
 interface ServiceSubcomponent {
-    fun initAllMessageHandlers(): Set<CobbleHandler>
+    fun getMessageHandlersProvider(): Provider<Set<CobbleHandler>>
 
     @Subcomponent.Factory
     interface Factory {
         fun create(@BindsInstance watchService: WatchService): ServiceSubcomponent
     }
 }
-
-@Scope
-annotation class PerService

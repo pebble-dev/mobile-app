@@ -20,7 +20,7 @@ object PermissionChangeBus {
     }
 
     fun trigger() {
-        permissionChangeChannel.offer(Unit)
+        permissionChangeChannel.trySend(Unit).isSuccess
     }
 }
 

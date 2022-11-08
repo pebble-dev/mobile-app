@@ -8,9 +8,12 @@ final localNotificationsPluginProvider =
 
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@drawable/ic_notification_warning');
+    const IOSInitializationSettings initializationSettingsIOS =
+        IOSInitializationSettings(requestBadgePermission: false, defaultPresentBadge: false);
 
-    await plugin.initialize(InitializationSettings(
+    await plugin.initialize(const InitializationSettings(
       android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS
     ));
 
     return plugin;

@@ -9,6 +9,7 @@ import com.getpebble.android.kit.Constants
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.ConnectionState
+import io.rebble.cobble.datasources.WatchMetadataStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -20,6 +21,7 @@ class PebbleKitProvider : ContentProvider() {
     private var initialized = false
 
     private lateinit var connectionLooper: ConnectionLooper
+    private lateinit var watchMetadataStore: WatchMetadataStore
 
     override fun onCreate(): Boolean {
         // Do not initialize anything here as this gets called before Application.onCreate
@@ -27,6 +29,7 @@ class PebbleKitProvider : ContentProvider() {
         return true
     }
 
+    @Synchronized
     private fun initializeIfNeeded() {
         if (initialized) {
             return
@@ -41,6 +44,7 @@ class PebbleKitProvider : ContentProvider() {
                 .component
 
         connectionLooper = injectionComponent.createConnectionLooper()
+        watchMetadataStore = injectionComponent.createWatchMetadataStore()
 
         GlobalScope.launch(Dispatchers.Main.immediate) {
             connectionLooper.connectionState.collect {
@@ -49,7 +53,13 @@ class PebbleKitProvider : ContentProvider() {
         }
     }
 
-    override fun query(uri: Uri, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor? {
+    override fun query(
+            uri: Uri,
+            projection: Array<out String>?,
+            selection: String?,
+            selectionArgs: Array<out String>?,
+            sortOrder: String?
+    ): Cursor? {
         if (uri != Constants.URI_CONTENT_BASALT) {
             return null
         }
@@ -58,19 +68,26 @@ class PebbleKitProvider : ContentProvider() {
 
         val cursor = MatrixCursor(CURSOR_COLUMN_NAMES)
 
-        if (connectionLooper.connectionState.value is ConnectionState.Connected) {
-            // Hardcode latest 4.4.0 firmware for now until watch status packets are
-            // implemented
+        val metadata = watchMetadataStore.lastConnectedWatchMetadata.value
+
+        if (connectionLooper.connectionState.value is ConnectionState.Connected &&
+                metadata != null) {
+            val parsedVersion = FIRMWARE_VERSION_REGEX.find(metadata.running.versionTag.get())
+            val groupValues = parsedVersion?.groupValues
+            val majorVersion = groupValues?.elementAtOrNull(1)?.toIntOrNull() ?: 0
+            val minorVersion = groupValues?.elementAtOrNull(2)?.toIntOrNull() ?: 0
+            val pointVersion = groupValues?.elementAtOrNull(3)?.toIntOrNull() ?: 0
+            val tag = groupValues?.elementAtOrNull(4) ?: ""
 
             cursor.addRow(
                     listOf(
                             1, // Connected
                             1, // App Message support
                             0, // Data Logging support
-                            4, // Major version support
-                            4, // Minor version support
-                            0, // Point version support
-                            "", // Version Tag
+                            majorVersion, // Major version support
+                            minorVersion, // Minor version support
+                            pointVersion, // Point version support
+                            tag, // Version Tag
                     )
             )
         } else {
@@ -119,3 +136,5 @@ private val CURSOR_COLUMN_NAMES = arrayOf(
         Constants.KIT_STATE_COLUMN_VERSION_POINT.toString(),
         Constants.KIT_STATE_COLUMN_VERSION_TAG.toString()
 )
+
+private val FIRMWARE_VERSION_REGEX = Regex("([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-(.*))?")

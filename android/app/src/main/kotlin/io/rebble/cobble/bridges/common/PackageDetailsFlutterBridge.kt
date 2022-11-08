@@ -2,16 +2,9 @@ package io.rebble.cobble.bridges.common
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.util.Base64
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.pigeons.Pigeons
-import java.io.ByteArrayOutputStream
-import java.io.OutputStream
-import java.io.PipedOutputStream
-import java.nio.ByteBuffer
 import javax.inject.Inject
 
 class PackageDetailsFlutterBridge @Inject constructor(

@@ -14,7 +14,7 @@ fun WatchVersion.WatchVersionResponse?.toPigeon(
 
     return Pigeons.PebbleDevicePigeon().also {
         it.name = btDevice?.name.orEmpty()
-        it.address = btDevice?.address?.macAddressToLong() ?: 0
+        it.address = btDevice?.address ?: ""
         it.runningFirmware = this?.running?.toPigeon() ?: blankWatchFirwmareVersion()
         it.recoveryFirmware = this?.recovery?.toPigeon() ?: blankWatchFirwmareVersion()
         it.model = model?.toLong() ?: 0L

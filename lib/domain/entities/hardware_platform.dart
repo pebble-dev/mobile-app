@@ -215,3 +215,112 @@ PebbleWatchModel watchModelFromNumber(int? number) {
       return PebbleWatchModel.rebble_logo;
   }
 }
+
+enum PebbleWatchLine {
+  classic,
+  steel,
+  time,
+  time_steel,
+  time_round,
+  pebble_2,
+  time_2,
+  unknown,
+}
+
+PebbleWatchLine watchLineFromNumber(int? number) {
+  switch (number) {
+    case 1:
+      return PebbleWatchLine.classic;
+    case 2:
+      return PebbleWatchLine.classic;
+    case 3:
+      return PebbleWatchLine.classic;
+    case 4:
+      return PebbleWatchLine.classic;
+    case 5:
+      return PebbleWatchLine.classic;
+    case 6:
+      return PebbleWatchLine.steel;
+    case 7:
+      return PebbleWatchLine.steel;
+    case 8:
+      return PebbleWatchLine.classic;
+    case 9:
+      return PebbleWatchLine.classic;
+    case 10:
+      return PebbleWatchLine.classic;
+    case 11:
+      return PebbleWatchLine.time;
+    case 12:
+      return PebbleWatchLine.time;
+    case 13:
+      return PebbleWatchLine.time;
+    case 14:
+      return PebbleWatchLine.time_steel;
+    case 15:
+      return PebbleWatchLine.time_steel;
+    case 16:
+      return PebbleWatchLine.time_steel;
+    case 17:
+      return PebbleWatchLine.time_round;
+    case 18:
+      return PebbleWatchLine.time_round;
+    case 19:
+      return PebbleWatchLine.time_round;
+    case 20:
+      return PebbleWatchLine.time_round;
+    case 21:
+      return PebbleWatchLine.time_round;
+    case 22:
+      return PebbleWatchLine.time_round;
+    case 23:
+      return PebbleWatchLine.time_round;
+    case 24:
+      return PebbleWatchLine.pebble_2;
+    case 25:
+      return PebbleWatchLine.pebble_2;
+    case 26:
+      return PebbleWatchLine.pebble_2;
+    case 27:
+      return PebbleWatchLine.pebble_2;
+    case 28:
+      return PebbleWatchLine.pebble_2;
+    case 29:
+      return PebbleWatchLine.pebble_2;
+    case 30:
+      return PebbleWatchLine.pebble_2;
+    case 31:
+      return PebbleWatchLine.time_2;
+    case 32:
+      return PebbleWatchLine.time_2;
+    case 33:
+      return PebbleWatchLine.time_2;
+    case 34:
+      return PebbleWatchLine.time_round;
+    case 35:
+      return PebbleWatchLine.time_round;
+    default:
+      return PebbleWatchLine.unknown;
+  }
+}
+
+String stringFromWatchLine(PebbleWatchLine line) {
+  switch (line) {
+    case PebbleWatchLine.classic:
+      return "Pebble Classic";
+    case PebbleWatchLine.steel:
+      return "Pebble Steel";
+    case PebbleWatchLine.time:
+      return "Pebble Time";
+    case PebbleWatchLine.time_steel:
+      return "Pebble Time Steel";
+    case PebbleWatchLine.time_round:
+      return "Pebble Time Round";
+    case PebbleWatchLine.pebble_2:
+      return "Pebble 2";
+    case PebbleWatchLine.time_2:
+      return "Pebble Time 2";
+    default:
+      return "Unknown";
+  }
+}

@@ -16,11 +16,12 @@ import 'package:cobble/domain/timeline/timeline_attribute.dart';
 import 'package:cobble/domain/timeline/timeline_icon.dart';
 import 'package:cobble/domain/timeline/watch_timeline_syncer.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/util/state_provider_extension.dart';
 import 'package:cobble/util/stream_extensions.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:device_calendar/device_calendar.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class CalendarActionHandler implements ActionHandler {
   final TimelinePinDao _dao;
@@ -59,24 +60,27 @@ class CalendarActionHandler implements ActionHandler {
 
   @override
   Future<TimelineActionResponse> _handleRemoveEventAction(
-      TimelinePin pin,) async {
+    TimelinePin pin,
+  ) async {
     Future.microtask(() async {
       await _dao.setSyncAction(pin.itemId, NextSyncAction.Delete);
       await _watchSyncer.syncPinDatabaseWithWatch();
     });
 
     return TimelineActionResponse(true, attributes: [
-      TimelineAttribute.subtitle("Removed"),
+      TimelineAttribute.subtitle(tr.timelineAttribute.subtitle.removed),
       TimelineAttribute.largeIcon(TimelineIcon.resultDismissed)
     ]);
   }
 
   @override
-  Future<TimelineActionResponse> _handleMuteCalendarAction(TimelinePin pin,) async {
+  Future<TimelineActionResponse> _handleMuteCalendarAction(
+    TimelinePin pin,
+  ) async {
     final calendarList =
     await (_calendarList.streamWithExistingValue.firstSuccessOrError() as FutureOr<AsyncValue<List<SelectableCalendar>>>);
 
-    final calendars = calendarList.data!.value;
+    final calendars = calendarList.data?.value;
     if (calendars == null) {
       return TimelineActionResponse(false);
     }
@@ -93,7 +97,7 @@ class CalendarActionHandler implements ActionHandler {
     });
 
     return TimelineActionResponse(true, attributes: [
-      TimelineAttribute.subtitle("Calendar muted"),
+      TimelineAttribute.subtitle(tr.timelineAttribute.subtitle.calendarMuted),
       TimelineAttribute.largeIcon(TimelineIcon.resultMute)
     ]);
   }
@@ -111,14 +115,14 @@ class CalendarActionHandler implements ActionHandler {
       eventId.calendarId,
       RetrieveEventsParams(eventIds: [eventId.eventId]),
     );
-    if (!events.isSuccess || events.data.isEmpty) {
+    if (!events.isSuccess || events.data?.isEmpty == false) {
       Log.e("Unknown event ${eventId.eventId}");
       return TimelineActionResponse(false);
     }
 
-    final event = events.data.first;
-    final selfAttendee = event.attendees.firstWhereOrNull(
-          (element) => element.isCurrentUser == true,
+    final event = events.data!.first;
+    final selfAttendee = event.attendees?.firstWhereOrNull(
+          (element) => element?.isCurrentUser == true,
     );
 
     if (selfAttendee == null) {
@@ -144,11 +148,9 @@ class CalendarActionHandler implements ActionHandler {
       }
 
       selfAttendee.androidAttendeeDetails = AndroidAttendeeDetails(
-        role: selfAttendee.androidAttendeeDetails.role,
         attendanceStatus: targetAttendanceStatus,
       );
-    }
-    else if (Platform.isIOS) {
+    } else if (Platform.isIOS) {
       IosAttendanceStatus targetAttendanceStatus;
       switch (actionId) {
         case calendarActionAccept:
@@ -166,7 +168,6 @@ class CalendarActionHandler implements ActionHandler {
       }
 
       selfAttendee.iosAttendeeDetails = IosAttendeeDetails(
-        role: selfAttendee.iosAttendeeDetails.role,
         attendanceStatus: targetAttendanceStatus,
       );
     } else {
@@ -184,19 +185,19 @@ class CalendarActionHandler implements ActionHandler {
     switch (actionId) {
       case calendarActionAccept:
         attributes = [
-          TimelineAttribute.subtitle("Accepted"),
+          TimelineAttribute.subtitle(tr.timelineAttribute.subtitle.accepted),
           TimelineAttribute.largeIcon(TimelineIcon.resultSent)
         ];
         break;
       case calendarActionMaybe:
         attributes = [
-          TimelineAttribute.subtitle("Maybe"),
+          TimelineAttribute.subtitle(tr.timelineAttribute.subtitle.maybe),
           TimelineAttribute.largeIcon(TimelineIcon.resultSent)
         ];
         break;
       case calendarActionDecline:
         attributes = [
-          TimelineAttribute.subtitle("Declined"),
+          TimelineAttribute.subtitle(tr.timelineAttribute.subtitle.declined),
           TimelineAttribute.largeIcon(TimelineIcon.resultSent)
         ];
         break;
@@ -205,16 +206,15 @@ class CalendarActionHandler implements ActionHandler {
         return TimelineActionResponse(false);
     }
 
-
     return TimelineActionResponse(true, attributes: attributes);
   }
 }
 
 final calendarActionHandlerProvider = Provider((ref) =>
     CalendarActionHandler(
-      ref.read(timelinePinDaoProvider!),
-      ref.read(calendarSyncerProvider!),
-      ref.read(watchTimelineSyncerProvider!),
-      ref.read(calendarListProvider!),
+      ref.read(timelinePinDaoProvider),
+      ref.read(calendarSyncerProvider),
+      ref.read(watchTimelineSyncerProvider),
+      ref.read(calendarListProvider),
       ref.read(deviceCalendarPluginProvider),
     ));

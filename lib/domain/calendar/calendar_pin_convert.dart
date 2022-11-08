@@ -6,6 +6,7 @@ import 'package:cobble/domain/db/models/timeline_pin_type.dart';
 import 'package:cobble/domain/timeline/timeline_action.dart';
 import 'package:cobble/domain/timeline/timeline_attribute.dart';
 import 'package:cobble/domain/timeline/timeline_icon.dart';
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/util/string_extensions.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:device_calendar/device_calendar.dart';
@@ -18,28 +19,30 @@ extension CalendarEventConverter on Event {
 
     if (description != null) {
       headings.add("");
-      paragraphs.add(_transformDescription(description));
+      paragraphs.add(_transformDescription(description!));
     }
 
-    if (attendees != null && attendees.isNotEmpty) {
+    if (attendees?.isNotEmpty == true) {
       final attendeesString = attendees
-          .map((e) {
-            if (e.name?.trim()?.isNotEmpty == true) {
-              return e.name;
-            } else {
-              return e.emailAddress;
+          !.map((e) {
+            if (e != null) {
+              if (e.name?.trim().isNotEmpty == true) {
+                return e.name;
+              } else {
+                return e.emailAddress;
+              }
             }
           })
           .where((label) => label != null && label.trim().isNotEmpty)
           .join(", ");
 
       if (attendeesString.isNotEmpty) {
-        headings.add("Attendees");
+        headings.add(tr.timelineAttribute.heading.attendees);
         paragraphs.add(attendeesString);
       }
 
-      final selfAttendee = attendees.firstWhereOrNull(
-        (element) => element.isCurrentUser == true,
+      final selfAttendee = attendees?.firstWhereOrNull(
+        (element) => element?.isCurrentUser == true,
       );
 
       if (selfAttendee != null) {
@@ -47,52 +50,55 @@ extension CalendarEventConverter on Event {
                 AndroidAttendanceStatus.Accepted ||
             selfAttendee.iosAttendeeDetails?.attendanceStatus ==
                 IosAttendanceStatus.Accepted) {
-          headings.add("Status");
-          paragraphs.add("Accepted");
+          headings.add(tr.timelineAttribute.heading.status);
+          paragraphs.add(tr.timelineAttribute.paragraph.accepted);
         } else if (selfAttendee.androidAttendeeDetails?.attendanceStatus ==
                 AndroidAttendanceStatus.Tentative ||
             selfAttendee.iosAttendeeDetails?.attendanceStatus ==
                 IosAttendanceStatus.Tentative) {
-          headings.add("Status");
-          paragraphs.add("Maybe");
+          headings.add(tr.timelineAttribute.heading.status);
+          paragraphs.add(tr.timelineAttribute.paragraph.maybe);
         } else if (selfAttendee.androidAttendeeDetails?.attendanceStatus ==
                 AndroidAttendanceStatus.Declined ||
             selfAttendee.iosAttendeeDetails?.attendanceStatus ==
                 IosAttendanceStatus.Declined) {
-          headings.add("Status");
-          paragraphs.add("Declined");
+          headings.add(tr.timelineAttribute.heading.status);
+          paragraphs.add(tr.timelineAttribute.paragraph.declined);
         }
       }
     }
 
     if (recurrenceRule != null) {
-      String recurrenceText = "Unknown";
-      switch (recurrenceRule.recurrenceFrequency) {
+      String recurrenceText;
+      switch (recurrenceRule?.recurrenceFrequency) {
         case RecurrenceFrequency.Daily:
-          recurrenceText = "Repeats daily.";
+          recurrenceText = tr.recurrence.daily;
           break;
         case RecurrenceFrequency.Weekly:
-          recurrenceText = "Repeats weekly.";
+          recurrenceText = tr.recurrence.weekly;
           break;
         case RecurrenceFrequency.Monthly:
-          recurrenceText = "Repeats monthly.";
+          recurrenceText = tr.recurrence.monthly;
           break;
         case RecurrenceFrequency.Yearly:
-          recurrenceText = "Repeats yearly.";
+          recurrenceText = tr.recurrence.yearly;
+          break;
+        default:
+          recurrenceText = tr.recurrence.unknown;
           break;
       }
 
-      headings.add("Recurrence");
+      headings.add(tr.timelineAttribute.heading.recurrence);
       paragraphs.add(recurrenceText);
     }
 
-    headings.add("Calendar");
+    headings.add(tr.timelineAttribute.heading.calendar);
     paragraphs.add(calendar.name);
 
     return [
       TimelineAttribute.tinyIcon(TimelineIcon.timelineCalendar),
       TimelineAttribute.title(title),
-      if (location != null) TimelineAttribute.locationName(location),
+      if (location != null) TimelineAttribute.locationName(location!),
       if (recurrenceRule != null) TimelineAttribute.displayRecurring(true),
       TimelineAttribute.headings(headings),
       TimelineAttribute.paragraphs(paragraphs)
@@ -103,39 +109,39 @@ extension CalendarEventConverter on Event {
     final List<TimelineAction> actions = [];
 
     final selfAtteendee = attendees?.firstWhereOrNull(
-          (element) => element.isCurrentUser == true,
+      (element) => element?.isCurrentUser == true,
     );
 
     if (selfAtteendee != null) {
       if (selfAtteendee.androidAttendeeDetails?.attendanceStatus !=
-          AndroidAttendanceStatus.Accepted &&
+              AndroidAttendanceStatus.Accepted &&
           selfAtteendee.iosAttendeeDetails?.attendanceStatus !=
               IosAttendanceStatus.Accepted) {
         actions.add(
           TimelineAction(calendarActionAccept, actionTypeGeneric, [
-            TimelineAttribute.title("Accept"),
+            TimelineAttribute.title(tr.timelineAttribute.title.accept),
           ]),
         );
       }
 
       if (selfAtteendee.androidAttendeeDetails?.attendanceStatus !=
-          AndroidAttendanceStatus.Tentative &&
+              AndroidAttendanceStatus.Tentative &&
           selfAtteendee.iosAttendeeDetails?.attendanceStatus !=
               IosAttendanceStatus.Tentative) {
         actions.add(
           TimelineAction(calendarActionMaybe, actionTypeGeneric, [
-            TimelineAttribute.title("Maybe"),
+            TimelineAttribute.title(tr.timelineAttribute.title.maybe),
           ]),
         );
       }
 
       if (selfAtteendee.androidAttendeeDetails?.attendanceStatus !=
-          AndroidAttendanceStatus.Declined &&
+              AndroidAttendanceStatus.Declined &&
           selfAtteendee.iosAttendeeDetails?.attendanceStatus !=
               IosAttendanceStatus.Declined) {
         actions.add(
           TimelineAction(calendarActionDecline, actionTypeGeneric, [
-            TimelineAttribute.title("Decline"),
+            TimelineAttribute.title(tr.timelineAttribute.title.decline),
           ]),
         );
       }
@@ -143,13 +149,13 @@ extension CalendarEventConverter on Event {
 
     actions.add(
       TimelineAction(calendarActionRemove, actionTypeGeneric, [
-        TimelineAttribute.title("Remove"),
+        TimelineAttribute.title(tr.timelineAttribute.title.remove),
       ]),
     );
 
     actions.add(
       TimelineAction(calendarActionMuteCalendar, actionTypeGeneric, [
-        TimelineAttribute.title("Mute calendar"),
+        TimelineAttribute.title(tr.timelineAttribute.title.muteCalendar),
       ]),
     );
 
@@ -163,11 +169,11 @@ extension CalendarEventConverter on Event {
         parentId: calendarWatchappId,
         backingId: createCompositeBackingId(),
         timestamp: start,
-        duration: end.difference(start).inMinutes,
+        duration: (end != null && start != null) ? end!.difference(start!).inMinutes : null,
         type: TimelinePinType.pin,
         isVisible: true,
         isFloating: false,
-        isAllDay: allDay,
+        isAllDay: allDay ?? false,
         persistQuickView: false,
         layout: TimelinePinLayout.calendarPin,
         attributesJson: attributesJson,
@@ -182,7 +188,7 @@ extension CalendarEventConverter on Event {
   /// To ease processing, we insert composite ID into database that contains
   /// both
   String createCompositeBackingId() {
-    return "${calendarId}T${eventId}T${start.millisecondsSinceEpoch}";
+    return "${calendarId}T${eventId}T${start!.millisecondsSinceEpoch}";
   }
 
   String _transformDescription(String rawDescription) {
@@ -232,7 +238,7 @@ class CalendarEventId {
   }
 }
 
-final calendarWatchappId = Uuid("6c6c6fc2-1912-4d25-8396-3547d1dfac5b");
+final calendarWatchappId = Uuid.parse("6c6c6fc2-1912-4d25-8396-3547d1dfac5b");
 
 const calendarActionRemove = 0;
 const calendarActionMuteCalendar = 1;

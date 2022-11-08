@@ -3,29 +3,33 @@ package io.rebble.cobble.bluetooth
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGattCharacteristic
 import android.content.Context
+import io.rebble.cobble.datasources.FlutterPreferences
+import io.rebble.cobble.datasources.IncomingPacketsListener
 import io.rebble.cobble.receivers.BluetoothBondReceiver
 import io.rebble.cobble.util.toBytes
 import io.rebble.cobble.util.toHexString
 import io.rebble.libpebblecommon.ProtocolHandler
+import io.rebble.libpebblecommon.ble.LEConstants
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
+import java.util.*
 
 
 class BlueLEDriver(
         private val context: Context,
-        private val protocolHandler: ProtocolHandler
+        private val protocolHandler: ProtocolHandler,
+        private val flutterPreferences: FlutterPreferences,
+        private val incomingPacketsListener: IncomingPacketsListener
 ) : BlueIO {
     private var connectivityWatcher: ConnectivityWatcher? = null
     private var connectionParamManager: ConnectionParamManager? = null
     private var gattDriver: BlueGATTServer? = null
     lateinit var targetPebble: BluetoothDevice
-    private var protocolIO: ProtocolIO? = null
 
-    private val connectionStatusChannel = Channel<Boolean>(0)
+    private val connectionStatusFlow = MutableStateFlow<Boolean?>(null)
+
+    private var readLoopJob: Job? = null
 
     enum class LEConnectionState {
         IDLE,
@@ -37,13 +41,6 @@ class BlueLEDriver(
     var connectionState = LEConnectionState.IDLE
     private var gatt: BlueGATTConnection? = null
 
-    private suspend fun sendPacket(bytes: UByteArray): Boolean {
-        val protocolIO = protocolIO ?: return false
-        @Suppress("BlockingMethodInNonBlockingContext")
-        protocolIO.write(bytes.toByteArray())
-        return true
-    }
-
     private suspend fun closePebble() {
         Timber.d("Driver shutting down")
         gattDriver?.closePebble()
@@ -51,7 +48,9 @@ class BlueLEDriver(
         gatt?.close()
         gatt = null
         connectionState = LEConnectionState.CLOSED
-        connectionStatusChannel.offer(false)
+        connectionStatusFlow.value = false
+        readLoopJob?.cancel()
+        protocolHandler.closeProtocol()
     }
 
     /**
@@ -83,14 +82,14 @@ class BlueLEDriver(
                         Timber.d("Phone already paired but watch not paired, removing bond and re-pairing")
                         targetPebble::class.java.getMethod("removeBond").invoke(targetPebble)
                     }
-                    val pairService = gatt!!.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)
+                    val pairService = gatt!!.getService(UUID.fromString(LEConstants.UUIDs.PAIRING_SERVICE_UUID))
                     if (pairService != null) {
-                        val pairTrigger = pairService.getCharacteristic(BlueGATTConstants.UUIDs.PAIRING_TRIGGER_CHARACTERISTIC)
+                        val pairTrigger = pairService.getCharacteristic(UUID.fromString(LEConstants.UUIDs.PAIRING_TRIGGER_CHARACTERISTIC))
                         if (pairTrigger != null) {
                             val bondReceiver = BluetoothBondReceiver.registerBondReceiver(context, targetPebble.address)
                             if (pairTrigger.properties and BluetoothGattCharacteristic.PROPERTY_WRITE > 0) {
                                 GlobalScope.launch(Dispatchers.Main.immediate) { gatt!!.writeCharacteristic(pairTrigger, pairTriggerFlagsToBytes(status.supportsPinningWithoutSlaveSecurity, belowLollipop = false, clientMode = false)) }
-                            }else {
+                            } else {
                                 Timber.d("Pair characteristic can't be written, won't use")
                             }
                             targetPebble.createBond()
@@ -129,7 +128,6 @@ class BlueLEDriver(
 
     @FlowPreview
     override fun startSingleWatchConnection(device: BluetoothDevice): Flow<SingleConnectionStatus> = flow {
-        var connectJob: Job? = null
         try {
             coroutineScope {
                 if (device.type == BluetoothDevice.DEVICE_TYPE_CLASSIC || device.type == BluetoothDevice.DEVICE_TYPE_UNKNOWN) {
@@ -145,26 +143,34 @@ class BlueLEDriver(
                 } else {
                     emit(SingleConnectionStatus.Connecting(device))
 
+                    protocolHandler.openProtocol()
+
                     this@BlueLEDriver.targetPebble = device
 
-                    val server = BlueGATTServer(device, context, this)
+                    val server = BlueGATTServer(
+                            device,
+                            context,
+                            this,
+                            protocolHandler,
+                            incomingPacketsListener
+                    )
                     gattDriver = server
 
                     connectionState = LEConnectionState.CONNECTING
-                    connectJob = launch {
+                    launch {
                         if (!server.initServer()) {
                             Timber.e("initServer failed")
-                            connectionStatusChannel.offer(false)
+                            connectionStatusFlow.value = false
                             return@launch
                         }
-                        gatt = targetPebble.connectGatt(context)
+                        gatt = targetPebble.connectGatt(context, flutterPreferences)
                         if (gatt == null) {
                             Timber.e("connectGatt null")
-                            connectionStatusChannel.offer(false)
+                            connectionStatusFlow.value = false
                             return@launch
                         }
 
-                        val mtu = gatt?.requestMtu(BlueGATTConstants.TARGET_MTU)
+                        val mtu = gatt?.requestMtu(LEConstants.TARGET_MTU)
                         if (mtu?.isSuccess() == true) {
                             Timber.d("MTU Changed, new mtu ${mtu.mtu}")
                             gattDriver!!.setMTU(mtu.mtu)
@@ -185,7 +191,7 @@ class BlueLEDriver(
                         connectivityWatcher = ConnectivityWatcher(gatt!!)
                         val servicesRes = gatt!!.discoverServices()
                         if (servicesRes != null && servicesRes.isSuccess()) {
-                            if (gatt?.getService(BlueGATTConstants.UUIDs.PAIRING_SERVICE_UUID)?.getCharacteristic(BlueGATTConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC) != null) {
+                            if (gatt?.getService(UUID.fromString(LEConstants.UUIDs.PAIRING_SERVICE_UUID))?.getCharacteristic(UUID.fromString(LEConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC)) != null) {
                                 Timber.d("Subscribing to connparams")
                                 if (connectionParamManager!!.subscribe() || gattDriver?.connected == true) {
                                     Timber.d("Starting connectivity after connparams")
@@ -202,41 +208,42 @@ class BlueLEDriver(
                     }
                 }
 
-                if (connectionStatusChannel.receive()) {
-                    protocolIO = ProtocolIO(gattDriver!!.inputStream, gattDriver!!.outputStream, protocolHandler)
-                    val sendLoop = launch(Dispatchers.IO) {
-                        try {
-                            protocolHandler.startPacketSendingLoop(::sendPacket)
-                        } finally {
-                            Timber.d("Packet sending loop exited")
-                            closePebble()
-                            connectJob?.cancelAndJoin()
-                        }
-                    }
-
-                    try {
-                        connectionState = LEConnectionState.CONNECTED
-                        emit(SingleConnectionStatus.Connected(device))
-
-                        protocolIO!!.readLoop()
-                    } finally {
-                        sendLoop.cancel()
-                    }
+                if (connectionStatusFlow.first { it != null } == true) {
+                    connectionState = LEConnectionState.CONNECTED
+                    emit(SingleConnectionStatus.Connected(device))
+                    packetReadLoop()
                 } else {
                     Timber.e("connectionStatus was false")
                 }
+
+                cancel()
             }
-        }finally {
+        } finally {
             closePebble()
         }
     }
 
+    @OptIn(FlowPreview::class)
+    private suspend fun packetReadLoop() = coroutineScope {
+        val job = launch {
+            while (connectionStatusFlow.value == true) {
+                val nextPacket = protocolHandler.waitForNextPacket()
+                val driver = gattDriver ?: break
+
+                driver.onNewPacketToSend(nextPacket)
+            }
+        }
+
+        readLoopJob = job
+    }
+
     private suspend fun connect() {
         Timber.d("Connect called")
+
         if (!gattDriver?.connectPebble()!!) {
             closePebble()
         } else {
-            connectionStatusChannel.send(true)
+            connectionStatusFlow.value = true
         }
     }
 }

@@ -67,8 +67,8 @@ class ConnectionUiFlutterBridge @Inject constructor(
         }
     }
 
-    override fun connectToWatch(arg: Pigeons.NumberWrapper) {
-        val address = arg.value.macAddressToString()
+    override fun connectToWatch(arg: Pigeons.StringWrapper) {
+        val address = arg.value!!
         lastSelectedDeviceAddress = address
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -160,8 +160,25 @@ class ConnectionUiFlutterBridge @Inject constructor(
         openConnectionToWatch(address)
     }
 
+    override fun unpairWatch(arg: Pigeons.StringWrapper) {
+        val bluetoothDevice = BluetoothAdapter.getDefaultAdapter()
+                ?.getRemoteDevice(arg.value!!)
+                ?: return
+
+
+        // This is not officially supported. We use reflection and hope if it works.
+        // If it doesn't, well, we tried.
+        try {
+            if (bluetoothDevice.bondState == BluetoothDevice.BOND_BONDED) {
+                BluetoothDevice::class.java.getMethod("removeBond").invoke(bluetoothDevice)
+            }
+        } catch (e: ReflectiveOperationException) {
+            Timber.e(e, "Unpair error")
+        }
+    }
+
     private fun openConnectionToWatch(macAddress: String) {
-        pairCallbacks.onWatchPairComplete(NumberWrapper(macAddress.macAddressToLong())) {}
+        pairCallbacks.onWatchPairComplete(Pigeons.StringWrapper.Builder().setValue(macAddress).build()) {}
         connectionLooper.connectToWatch(macAddress)
     }
 }

@@ -31,7 +31,7 @@ class BluePebbleDevice {
     fun toPigeon(): Pigeons.PebbleScanDevicePigeon {
         return Pigeons.PebbleScanDevicePigeon().also {
             it.name = bluetoothDevice.name
-            it.address = bluetoothDevice.address.macAddressToLong()
+            it.address = bluetoothDevice.address
 
             if (leMeta?.major != null) {
                 it.version = "${leMeta.major}.${leMeta.minor}.${leMeta.patch}"

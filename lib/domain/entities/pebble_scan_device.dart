@@ -1,14 +1,10 @@
 import 'dart:core';
 
 import 'package:cobble/domain/entities/base_obj.dart';
-import 'package:json_annotation/json_annotation.dart';
 
-part 'pebble_scan_device.g.dart';
-
-@JsonSerializable()
 class PebbleScanDevice extends BaseObj {
   String? name;
-  int? address;
+  String? address;
   String? version;
   String? serialNumber;
   int? color;

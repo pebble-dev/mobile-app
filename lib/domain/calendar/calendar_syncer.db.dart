@@ -7,7 +7,7 @@ import 'package:cobble/domain/db/models/timeline_pin.dart';
 import 'package:cobble/domain/timeline/timeline_serializer.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:device_calendar/device_calendar.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid_type/uuid_type.dart';
 
 import '../logging.dart';
@@ -22,7 +22,7 @@ class CalendarSyncer {
   final DateTimeProvider _dateTimeProvider;
   final TimelinePinDao _timelinePinDao;
 
-  final _uuidGenerator = RandomBasedUuidGenerator();
+  final _uuidGenerator = RandomUuidGenerator();
 
   /// Sync all calendar changes from device calendar to DB.
   ///
@@ -58,7 +58,7 @@ class CalendarSyncer {
         return false;
       }
 
-      for (final event in result.data) {
+      for (final event in result.data ?? []) {
         allCalendarEvents.add(_EventInCalendar(calendar, event));
       }
     }
@@ -137,11 +137,12 @@ class _EventInCalendar {
   _EventInCalendar(this.calendar, this.event);
 }
 
-final AutoDisposeProvider<CalendarSyncer>? calendarSyncerProvider = Provider.autoDispose<CalendarSyncer>((ref) {
-  final calendarList = ref.watch(calendarListProvider!);
+final AutoDisposeProvider<CalendarSyncer> calendarSyncerProvider =
+    Provider.autoDispose<CalendarSyncer>((ref) {
+  final calendarList = ref.watch(calendarListProvider);
   final deviceCalendar = ref.watch(deviceCalendarPluginProvider);
   final dateTimeProvider = ref.watch(currentDateTimeProvider);
-  final timelinePinDao = ref.watch(timelinePinDaoProvider!);
+  final timelinePinDao = ref.watch(timelinePinDaoProvider);
 
   return CalendarSyncer(
       calendarList, deviceCalendar, dateTimeProvider, timelinePinDao);

@@ -8,11 +8,13 @@
          FlutterApplication and put your custom class here. -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
-    <!-- Required to scan for BT devices -->
+    <!-- Required to scan for BT devices on API <31, includes coarse regardless of version for future weather stuff -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:maxSdkVersion="30"/>
 
     <!-- Required to connect to the watch on startup -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -30,7 +32,8 @@
         android:maxSdkVersion="26" />
 
     <!-- Required to get app name for notifications in Android 11 -->
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+    <uses-permission
+        android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
 
     <uses-feature android:name="android.software.companion_device_setup" />
@@ -43,9 +46,10 @@
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:theme="@style/LaunchTheme"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:exported="true">
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues
@@ -66,6 +70,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -75,6 +80,24 @@
                 <data
                     android:host="custom-boot-config-url"
                     android:scheme="pebble" />
+            </intent-filter>
+
+            <!-- PBW Install -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:mimeType="application/octet-stream"
+                    android:scheme="content" />
+                <data
+                    android:mimeType="application/zip"
+                    android:scheme="content" />
+                <data
+                    android:mimeType="binary/octet-stream"
+                    android:scheme="content" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

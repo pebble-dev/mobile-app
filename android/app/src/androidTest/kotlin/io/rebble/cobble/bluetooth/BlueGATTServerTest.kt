@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice
 import android.util.Log
 import androidx.test.filters.RequiresDevice
 import androidx.test.platform.app.InstrumentationRegistry
+import io.rebble.cobble.datasources.IncomingPacketsListener
 import io.rebble.libpebblecommon.ProtocolHandlerImpl
 import io.rebble.libpebblecommon.packets.PhoneAppVersion
 import io.rebble.libpebblecommon.packets.PingPong
@@ -20,17 +21,18 @@ import org.junit.Test
 class BlueGATTServerTest {
     lateinit var blueLEDriver: BlueLEDriver
     val protocolHandler = ProtocolHandlerImpl()
+    val incomingPacketsListener = IncomingPacketsListener()
     lateinit var remoteDevice: BluetoothDevice
 
     @Before
     fun setUp() {
-        blueLEDriver = BlueLEDriver(InstrumentationRegistry.getInstrumentation().targetContext, protocolHandler)
+        blueLEDriver = BlueLEDriver(InstrumentationRegistry.getInstrumentation().targetContext, protocolHandler, incomingPacketsListener = incomingPacketsListener)
         remoteDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice("48:91:52:CC:D1:D5")
         if (remoteDevice.bondState != BluetoothDevice.BOND_NONE) remoteDevice::class.java.getMethod("removeBond").invoke(remoteDevice)
     }
 
     @Test
-   fun testConnectPebble() {
+    fun testConnectPebble() {
         protocolHandler.registerReceiveCallback(ProtocolEndpoint.PHONE_VERSION) {
             protocolHandler.send(PhoneAppVersion.AppVersionResponse(
                     0U,

@@ -1,9 +1,9 @@
 package io.rebble.cobble.data
 
-import com.squareup.moshi.JsonClass
 import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class TimelineAction(
         val actionId: Int,
         val actionType: Int,

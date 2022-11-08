@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// Simple wrapper around Material FAB. Prefer to use this widget instead of
 /// [FloatingActionButton.extended]
-class CobbleFab extends StatelessWidget {
+class CobbleFab extends FloatingActionButton {
   final VoidCallback onPressed;
   final String label;
   final IconData? icon;
@@ -21,13 +21,13 @@ class CobbleFab extends StatelessWidget {
           label is String && label.length > 0,
           "CobbleFab needs label",
         ),
-        super(key: key);
+        super(key: key, onPressed: onPressed);
 
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
       onPressed: null,
-      icon: icon is IconData ? Icon(icon, size: 21) : null,
+      icon: icon is IconData ? Icon(icon) : null,
       label: Text(label.toUpperCase()),
       heroTag: heroTag,
     );

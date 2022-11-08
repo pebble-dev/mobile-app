@@ -85,7 +85,7 @@ class BleScanner @Inject constructor() {
         val resultChannel = Channel<ScanResult>(Channel.BUFFERED)
 
         override fun onScanResult(callbackType: Int, result: ScanResult) {
-            resultChannel.offer(result)
+            resultChannel.trySend(result).isSuccess
         }
 
         override fun onScanFailed(errorCode: Int) {

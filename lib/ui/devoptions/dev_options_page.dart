@@ -1,53 +1,35 @@
 import 'package:cobble/infrastructure/datasources/dev_connection.dart';
+import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class DevOptionsPage extends StatefulWidget implements CobbleScreen {
-  @override
-  State<StatefulWidget> createState() => new _DevOptionsPageState();
-}
-
-class _DevOptionsPageState extends State<DevOptionsPage> {
-  TextEditingController _bootUrlC = TextEditingController();
-  bool _overrideS2Config = false;
-  bool _devConnection = false;
-
-  bool _isDevConnected = false;
-  bool _isDevRunning = false;
-  TextEditingController _bootOverrideC = TextEditingController();
-  final DevConnection _devConControl = new DevConnection();
-
-  @override
-  void initState() {
-    super.initState();
-    SharedPreferences.getInstance().then((prefs) => {
-          if (prefs.containsKey("boot"))
-            {_bootUrlC.text = prefs.getString("boot")!},
-          if (prefs.containsKey("bootOverride"))
-            {_bootOverrideC.text = prefs.getString("bootOverride")!}
-        });
-    _devConControl.setCB((bool isConnected) {
-      setState(() {
-        _isDevConnected = isConnected;
-      });
-    }, (bool isRunning) {
-      setState(() {
-        _isDevRunning = true;
-      });
-    });
-  }
-
+class DevOptionsPage extends HookWidget implements CobbleScreen {
   @override
   Widget build(BuildContext context) {
-    if (_devConnection) {
-      _devConControl.start();
-    } else {
-      if (_devConControl.isConnected) {
-        _devConControl.close();
-      }
-    }
+    final devConControl = useProvider(devConnectionProvider);
+    final devConnState = useProvider(devConnectionProvider.state);
+
+    final preferences = useProvider(preferencesProvider);
+    final bootUrl = useProvider(bootUrlProvider).data?.value ?? "";
+    final shouldOverrideBoot =
+        useProvider(shouldOverrideBootProvider).data?.value ?? false;
+    final overrideBootUrl =
+        useProvider(overrideBootValueProvider).data?.value ?? "";
+
+    final bootUrlController = useTextEditingController();
+    final bootOverrideUrlController = useTextEditingController();
+
+    useEffect(() {
+      bootUrlController.text = bootUrl;
+    }, [bootUrl]);
+
+    useEffect(() {
+      bootOverrideUrlController.text = overrideBootUrl;
+    }, [overrideBootUrl]);
+
     return CobbleScaffold.tab(
       title: "Developer Options",
       child: ListView(
@@ -62,15 +44,20 @@ class _DevOptionsPageState extends State<DevOptionsPage> {
                 style: TextStyle(fontSize: 25),
               )),
           SwitchListTile(
-            value: _devConnection,
+            value: devConnState.running,
             title: Text("Developer Connection"),
             subtitle: Text("Extremely insecure, resets outside of page" +
-                (_isDevRunning
-                    ? "\nRunning..." + (_isDevConnected ? " **CONNECTED**" : "")
+                (devConnState.running
+                    ? "\nRunning... ${devConnState.localIp}" +
+                        (devConnState.connected ? " **CONNECTED**" : "")
                     : "")),
-            isThreeLine: _isDevConnected,
+            isThreeLine: devConnState.connected,
             onChanged: (checked) {
-              setState(() => _devConnection = checked);
+              if (checked) {
+                devConControl.start();
+              } else {
+                devConControl.close();
+              }
             },
           ),
           ListTile(
@@ -81,23 +68,20 @@ class _DevOptionsPageState extends State<DevOptionsPage> {
                 style: TextStyle(fontSize: 25),
               )),
           ListTile(
-              contentPadding:
-                  EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-              title: Text("URL"),
-              subtitle: TextField(
-                  controller: _bootUrlC,
-                  onChanged: (value) => setState(() {
-                        SharedPreferences.getInstance()
-                            .then((_) => _.setString("boot", value));
-                      }))),
+            contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            title: Text("URL"),
+            subtitle: TextField(
+              controller: bootUrlController,
+              readOnly: true,
+            ),
+          ),
           SwitchListTile(
-              value: _overrideS2Config,
-              title: Text("Override stage2 config"),
-              subtitle: Text("If enabled, will ignore boot URL"),
-              onChanged: (checked) {
-                setState(() => _overrideS2Config = checked);
-                SharedPreferences.getInstance()
-                    .then((_) => _.setBool("overrideBoot", checked));
+              value: shouldOverrideBoot,
+              title: Text("Override boot URL"),
+              subtitle: Text("If enabled, will use the override boot URL instead of the main boot URL"),
+              onChanged: (value) {
+                preferences
+                    .whenData((prefs) => prefs.setShouldOverrideBoot(value));
               }),
           ListTile(
             contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -105,17 +89,20 @@ class _DevOptionsPageState extends State<DevOptionsPage> {
             subtitle: Column(
               children: <Widget>[
                 TextField(
-                  controller: _bootOverrideC,
+                  controller: bootOverrideUrlController,
                   maxLines: 8,
                   minLines: 4,
                 ),
                 Container(
                     alignment: Alignment.centerRight,
-                    child: RaisedButton(
-                        child: Text("Save"),
-                        onPressed: () => SharedPreferences.getInstance().then(
-                            (_) => _.setString(
-                                "overrideBootValue", _bootOverrideC.text))))
+                    child: ElevatedButton(
+                      child: Text("Save"),
+                      onPressed: () {
+                        preferences.whenData((prefs) =>
+                            prefs.setOverrideBootValue(
+                                bootOverrideUrlController.text));
+                      },
+                    ))
               ],
             ),
           )

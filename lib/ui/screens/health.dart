@@ -1,3 +1,4 @@
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/components/cobble_card.dart';
 import 'package:cobble/ui/common/components/cobble_dialog.dart';
 import 'package:cobble/ui/common/components/cobble_divider.dart';
@@ -13,17 +14,16 @@ class Health extends StatelessWidget implements CobbleScreen {
   @override
   Widget build(BuildContext context) {
     return CobbleScaffold.tab(
-      title: 'Health',
+      title: tr.health.title,
       child: ListView(
         children: [
           CobbleTile.title(
-            title: 'Rebble Health',
-            body: 'Supported watches can keep track of your fitness data for '
-                'you, including steps, sleep, and heart rate',
+            title: tr.health.subtitle,
+            body: tr.health.description,
           ),
           CobbleTile.setting(
             leading: RebbleIcons.health_heart,
-            title: 'Track my health data',
+            title: tr.health.trackMe,
             child: Switch(
               value: true,
               onChanged: (bool value) {},
@@ -32,9 +32,8 @@ class Health extends StatelessWidget implements CobbleScreen {
           CobbleDivider(),
           CobbleTile.setting(
             leading: RebbleIcons.health_steps,
-            title: 'Activity summary',
-            subtitle: 'Your watch will notify you at the end of the day '
-                'with a summary of how active you were',
+            title: tr.health.activity.title,
+            subtitle: tr.health.activity.subtitle,
             child: Switch(
               value: true,
               onChanged: (bool value) {},
@@ -42,42 +41,41 @@ class Health extends StatelessWidget implements CobbleScreen {
           ),
           CobbleTile.setting(
             leading: RebbleIcons.health_sleep,
-            title: 'Sleep summary',
-            subtitle: 'Your watch will notify you when you wake up with a '
-                'summary of how well you slept',
+            title: tr.health.sleep.title,
+            subtitle: tr.health.sleep.subtitle,
             child: Switch(
               value: true,
               onChanged: (bool value) {},
             ),
           ),
-          CobbleTile.title(title: 'Sync'),
+          CobbleTile.title(title: tr.health.sync.title),
           CobbleCard.inList(
             leading: AssetImage('images/health_icon.png'),
-            title: 'Signed in as',
+            title: tr.health.sync.subtitle,
             subtitle: 'support@rebble.io',
             actions: [
               CobbleCardAction(
-                label: 'Sign out',
+                label: tr.health.sync.signOut,
                 onPressed: () {},
               ),
               CobbleCardAction(
-                label: 'Switch account',
+                label: tr.health.sync.switchAccount,
                 onPressed: () {},
               ),
             ],
           ),
           CobbleTile.accordion(
-            title: 'More options',
+            title: tr.health.database.title,
             children: [
               CobbleTile.action(
                 leading: RebbleIcons.floppy_disk_health_database,
                 trailing: RebbleIcons.caret_right,
-                title: 'Manage health database',
+                title: tr.health.database.manage,
                 onTap: manageHealthDatabase(context),
               ),
               CobbleTile.action(
                 leading: RebbleIcons.delete_trash,
-                title: 'Delete all health data',
+                title: tr.health.database.delete,
                 intent: context.scheme!.destructive,
                 onTap: deleteHealthDatabase(context),
               ),
@@ -92,10 +90,10 @@ class Health extends StatelessWidget implements CobbleScreen {
       () async {
         await showCobbleDialog(
           context: context,
-          title: 'Permanently delete ALL health data?',
-          content: 'This cannot be undone!',
-          positive: 'Delete',
-          negative: 'Cancel',
+          title: tr.health.database.permanentlyDelete.title,
+          content: tr.health.database.permanentlyDelete.description,
+          positive: tr.health.database.permanentlyDelete.positive,
+          negative: tr.health.database.permanentlyDelete.negative,
           intent: context.scheme!.destructive,
         );
       };
@@ -108,20 +106,20 @@ class Health extends StatelessWidget implements CobbleScreen {
               CobbleTile.action(
                 leading: RebbleIcons.floppy_disk,
                 trailing: RebbleIcons.caret_right,
-                title: 'Create backup of health data',
+                title: tr.health.database.backup,
                 onTap: () {},
               ),
               CobbleTile.action(
                 leading: RebbleIcons.floppy_disk,
                 trailing: RebbleIcons.caret_right,
-                title: 'Restore health data from backup',
+                title: tr.health.database.restore,
                 onTap: () {},
               ),
               CobbleDivider(),
               CobbleTile.action(
                 leading: RebbleIcons.delete_trash,
                 trailing: RebbleIcons.caret_right,
-                title: 'Permanently delete all health data',
+                title: tr.health.database.permDelete,
                 intent: context.scheme!.destructive,
                 onTap: deleteHealthDatabase(context),
               ),

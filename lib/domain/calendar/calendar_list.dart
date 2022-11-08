@@ -2,7 +2,7 @@ import 'package:cobble/domain/permissions.dart';
 import 'package:cobble/domain/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:device_calendar/device_calendar.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'device_calendar_plugin_provider.dart';
@@ -46,9 +46,9 @@ class CalendarList extends StateNotifier<AsyncValue<List<SelectableCalendar>>> {
       return AsyncValue.error(calendars.errors);
     } else {
       return AsyncValue.data(calendars.data
-          .map((c) => SelectableCalendar(
-              c.name, c.id, !_blacklistedCalendars!.contains(c.id)))
-          .toList());
+          ?.map((c) => SelectableCalendar(
+              c.name ?? "<untitled>", c.id!, !_blacklistedCalendars!.contains(c.id), c.color ?? 0xFFFFFF))
+          .toList() ?? []);
     }
   }
 
@@ -72,7 +72,7 @@ class CalendarList extends StateNotifier<AsyncValue<List<SelectableCalendar>>> {
   }
 }
 
-final AutoDisposeStateNotifierProvider<CalendarList>? calendarListProvider =
+final AutoDisposeStateNotifierProvider<CalendarList> calendarListProvider =
     StateNotifierProvider.autoDispose<CalendarList>((ref) {
   // Use auto-dispose to ensure calendar list is reloaded every time user
   // re-opens the screen since we cannot propagate change notifications

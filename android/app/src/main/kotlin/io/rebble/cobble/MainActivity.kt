@@ -24,8 +24,8 @@ class MainActivity : FlutterActivity() {
     lateinit var coroutineScope: CoroutineScope
     private lateinit var flutterBridges: Set<FlutterBridge>
 
-    var isBound = false
     var bootIntentCallback: ((Boolean) -> Unit)? = null
+    var intentCallback: ((Intent) -> Unit)? = null
 
     val activityResultCallbacks = ArrayMap<Int, (resultCode: Int, data: Intent?) -> Unit>()
     val activityPermissionCallbacks = ArrayMap<
@@ -41,6 +41,8 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun handleIntent(intent: Intent) {
+        intentCallback?.invoke(intent)
+
         if (intent.action == Intent.ACTION_VIEW) {
             val data = intent.data
             if (data?.scheme == "pebble") {

@@ -14,7 +14,7 @@ part 'timeline_pin.g.dart';
 @UuidConverter()
 @BooleanNumberConverter()
 @NumberDateTimeConverter()
-@CopyWith(generateCopyWithNull: true)
+@CopyWith(copyWithNull: true)
 class TimelinePin {
   /// Unique UUID of the item
   final Uuid? itemId;
@@ -39,18 +39,18 @@ class TimelinePin {
   /// ???
   /// (Name suggests that setting this to false would hide the pin on the watch
   /// but it does not seem to do anything)
-  final bool? isVisible;
+  final bool isVisible;
 
   /// When set to true, pin is always displayed in UTC timezone
   /// on the watch
-  final bool? isFloating;
+  final bool isFloating;
 
   /// Whether pin spans throughout the whole day (duration field is ignored)
-  final bool? isAllDay;
+  final bool isAllDay;
 
   /// Whether quick view should be displayed on the watchface when event is
   /// in progress.
-  final bool? persistQuickView;
+  final bool persistQuickView;
 
   /// UI Layout of the pin
   final TimelinePinLayout? layout;
@@ -73,10 +73,10 @@ class TimelinePin {
       this.timestamp,
       this.duration,
       this.type,
-      this.isVisible,
-      this.isFloating,
-      this.isAllDay,
-      this.persistQuickView,
+      this.isVisible = true,
+      this.isFloating = false,
+      this.isAllDay = false,
+      this.persistQuickView = false,
       this.layout,
       this.attributesJson,
       this.actionsJson,

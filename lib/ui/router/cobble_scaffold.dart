@@ -12,6 +12,8 @@ class CobbleScaffold extends StatelessWidget {
   final FloatingActionButton? floatingActionButton;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
   final Widget? bottomNavigationBar;
+  final PreferredSizeWidget? bottomAppBar;
+  final bool? expandedAppBar;
 
   const CobbleScaffold._({
     Key? key,
@@ -22,11 +24,11 @@ class CobbleScaffold extends StatelessWidget {
     this.floatingActionButton,
     this.floatingActionButtonLocation,
     this.bottomNavigationBar,
-  })  : assert(child != null),
-        assert(title == null || title.length > 0),
+    this.bottomAppBar,
+    this.expandedAppBar,
+  })  : assert(title == null || title.length > 0),
         assert(subtitle == null ||
             (subtitle.length > 0 && title != null && title.length > 0)),
-        assert(actions != null),
         super(key: key);
 
   @override
@@ -41,7 +43,7 @@ class CobbleScaffold extends StatelessWidget {
     Widget? leading;
     final route = ModalRoute.of(context);
     final bool canPop = route?.canPop ?? false;
-    final bool useCloseButton = route is PageRoute && route!.fullscreenDialog;
+    final bool useCloseButton = route is PageRoute && route.fullscreenDialog;
     if (canPop)
       leading = useCloseButton
           ? IconButton(
@@ -55,7 +57,8 @@ class CobbleScaffold extends StatelessWidget {
               tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             );
 
-    final height = 25.0 + 16 * 2;
+    final bottomHeight = (expandedAppBar ?? false) ? bottomAppBar?.preferredSize.height ?? 0 : 0;
+    final height = 25.0 + 16 * 2 + bottomHeight;
 
     return Scaffold(
       appBar: navBarTitle == null
@@ -66,6 +69,7 @@ class CobbleScaffold extends StatelessWidget {
                 leading: leading,
                 title: navBarTitle,
                 actions: actions,
+                bottom: bottomAppBar,
               ),
             ),
       floatingActionButton: floatingActionButton,
@@ -145,6 +149,8 @@ class CobbleScaffold extends StatelessWidget {
     List<Widget> actions = const [],
     FloatingActionButton? floatingActionButton,
     FloatingActionButtonLocation? floatingActionButtonLocation,
+    PreferredSizeWidget? bottomAppBar,
+    bool? expandedAppBar,
   }) =>
       EnsureTabScaffold(
         child: CobbleScaffold._(
@@ -155,6 +161,8 @@ class CobbleScaffold extends StatelessWidget {
           floatingActionButton: floatingActionButton,
           floatingActionButtonLocation: floatingActionButtonLocation,
           actions: actions,
+          bottomAppBar: bottomAppBar,
+          expandedAppBar: expandedAppBar,
         ),
       );
 }
@@ -165,9 +173,10 @@ class EnsureTabScaffold extends InheritedWidget {
   const EnsureTabScaffold({
     Key? key,
     required Widget child,
-  })  : assert(child != null),
+  })   : assert(child != null),
         super(key: key, child: child);
 
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) => false;
 }
+

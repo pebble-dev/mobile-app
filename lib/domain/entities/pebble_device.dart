@@ -27,10 +27,11 @@ class PebbleFirmware {
 
 class PebbleDevice {
   final String? name;
-  final int? address;
+  final String? address;
   final PebbleFirmware runningFirmware;
   final PebbleFirmware recoveryFirmware;
   final PebbleWatchModel model;
+  final PebbleWatchLine line;
   final int? bootloaderTimestamp;
   final String? board;
   final String? serial;
@@ -44,6 +45,7 @@ class PebbleDevice {
       this.runningFirmware,
       this.recoveryFirmware,
       this.model,
+      this.line,
       this.bootloaderTimestamp,
       this.board,
       this.serial,
@@ -62,6 +64,7 @@ class PebbleDevice {
       PebbleFirmware.fromPigeon(pigeon.runningFirmware!),
       PebbleFirmware.fromPigeon(pigeon.recoveryFirmware!),
       watchModelFromNumber(pigeon.model),
+      watchLineFromNumber(pigeon.model),
       pigeon.bootloaderTimestamp,
       pigeon.board,
       pigeon.serial,
