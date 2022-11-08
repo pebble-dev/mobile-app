@@ -4,6 +4,7 @@ import 'package:cobble/domain/apps/default_apps.dart';
 import 'package:cobble/domain/db/dao/active_notification_dao.dart';
 import 'package:cobble/domain/db/dao/app_dao.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:cobble/domain/db/dao/notification_channel_dao.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -37,6 +38,16 @@ Future<void> createActiveNotificationsTable(Database db) async {
       notifId INT NOT NULL,
       packageId TEXT NOT NULL,
       tagId TEXT NOT NULL
+    )
+  """);
+  await db.execute("""
+    CREATE TABLE $tableChannels(
+      channelId TEXT NOT NULL,
+      packageId TEXT NOT NULL,
+      name TEXT,
+      description TEXT,
+      shouldNotify INTEGER NOT NULL,
+      UNIQUE(channelId, packageId)
     )
   """);
 }

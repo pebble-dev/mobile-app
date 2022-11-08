@@ -67,7 +67,7 @@ class ActiveNotificationDao {
   }
 }
 
-final AutoDisposeProvider<ActiveNotificationDao>? activeNotifDaoProvider = Provider.autoDispose((ref) {
+final AutoDisposeProvider<ActiveNotificationDao> activeNotifDaoProvider = Provider.autoDispose((ref) {
   final dbFuture = ref.watch(databaseProvider.future);
   return ActiveNotificationDao(dbFuture);
 });

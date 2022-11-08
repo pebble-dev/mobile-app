@@ -95,7 +95,6 @@ class NotificationPigeon {
   int? notifId;
   String? appName;
   String? tagId;
-  String? tagName;
   String? title;
   String? text;
   String? category;
@@ -172,6 +171,14 @@ class AppLogEntry {
       this.filename, this.message);
 }
 
+class NotifChannelPigeon {
+  String? packageId;
+  String? channelId;
+  String? channelName;
+  String? channelDesc;
+  bool? delete;
+}
+
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
@@ -236,6 +243,9 @@ abstract class NotificationListening {
   TimelinePinPigeon handleNotification(NotificationPigeon notification);
 
   void dismissNotification(StringWrapper itemId);
+  @async
+  BooleanWrapper shouldNotify(NotifChannelPigeon channel);
+  void updateChannel(NotifChannelPigeon channel);
 }
 
 @FlutterApi()

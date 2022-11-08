@@ -211,6 +211,23 @@ class CobbleTile extends StatelessWidget {
         onTap: onTap,
       );
 
+  factory CobbleTile.appNavigation({
+    Key? key,
+    ImageProvider? leading,
+    required String title,
+    String? subtitle,
+    required CobbleScreen navigateTo
+  }) =>
+      CobbleTile._(
+        key: key,
+        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        leading: _leadingToWidget(leading, size: 48),
+        trailing: Icon(RebbleIcons.caret_right),
+        title: title,
+        subtitle: subtitle,
+        navigateTo: navigateTo,
+      );
+
   @override
   Widget build(BuildContext context) {
     final minHeight = 64.0;
