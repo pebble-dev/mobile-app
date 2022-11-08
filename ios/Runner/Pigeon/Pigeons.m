@@ -111,6 +111,10 @@ static id GetNullableObject(NSDictionary* dict, id key) {
 + (AppLogEntry *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
+@interface NotifChannelPigeon ()
++ (NotifChannelPigeon *)fromMap:(NSDictionary *)dict;
+- (NSDictionary *)toMap;
+@end
 
 @implementation BooleanWrapper
 + (instancetype)makeWithValue:(nullable NSNumber *)value {
@@ -429,7 +433,6 @@ static id GetNullableObject(NSDictionary* dict, id key) {
     notifId:(nullable NSNumber *)notifId
     appName:(nullable NSString *)appName
     tagId:(nullable NSString *)tagId
-    tagName:(nullable NSString *)tagName
     title:(nullable NSString *)title
     text:(nullable NSString *)text
     category:(nullable NSString *)category
@@ -441,7 +444,6 @@ static id GetNullableObject(NSDictionary* dict, id key) {
   pigeonResult.notifId = notifId;
   pigeonResult.appName = appName;
   pigeonResult.tagId = tagId;
-  pigeonResult.tagName = tagName;
   pigeonResult.title = title;
   pigeonResult.text = text;
   pigeonResult.category = category;
@@ -456,7 +458,6 @@ static id GetNullableObject(NSDictionary* dict, id key) {
   pigeonResult.notifId = GetNullableObject(dict, @"notifId");
   pigeonResult.appName = GetNullableObject(dict, @"appName");
   pigeonResult.tagId = GetNullableObject(dict, @"tagId");
-  pigeonResult.tagName = GetNullableObject(dict, @"tagName");
   pigeonResult.title = GetNullableObject(dict, @"title");
   pigeonResult.text = GetNullableObject(dict, @"text");
   pigeonResult.category = GetNullableObject(dict, @"category");
@@ -466,7 +467,7 @@ static id GetNullableObject(NSDictionary* dict, id key) {
   return pigeonResult;
 }
 - (NSDictionary *)toMap {
-  return [NSDictionary dictionaryWithObjectsAndKeys:(self.packageId ? self.packageId : [NSNull null]), @"packageId", (self.notifId ? self.notifId : [NSNull null]), @"notifId", (self.appName ? self.appName : [NSNull null]), @"appName", (self.tagId ? self.tagId : [NSNull null]), @"tagId", (self.tagName ? self.tagName : [NSNull null]), @"tagName", (self.title ? self.title : [NSNull null]), @"title", (self.text ? self.text : [NSNull null]), @"text", (self.category ? self.category : [NSNull null]), @"category", (self.color ? self.color : [NSNull null]), @"color", (self.messagesJson ? self.messagesJson : [NSNull null]), @"messagesJson", (self.actionsJson ? self.actionsJson : [NSNull null]), @"actionsJson", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.packageId ? self.packageId : [NSNull null]), @"packageId", (self.notifId ? self.notifId : [NSNull null]), @"notifId", (self.appName ? self.appName : [NSNull null]), @"appName", (self.tagId ? self.tagId : [NSNull null]), @"tagId", (self.title ? self.title : [NSNull null]), @"title", (self.text ? self.text : [NSNull null]), @"text", (self.category ? self.category : [NSNull null]), @"category", (self.color ? self.color : [NSNull null]), @"color", (self.messagesJson ? self.messagesJson : [NSNull null]), @"messagesJson", (self.actionsJson ? self.actionsJson : [NSNull null]), @"actionsJson", nil];
 }
 @end
 
@@ -684,6 +685,34 @@ static id GetNullableObject(NSDictionary* dict, id key) {
 }
 - (NSDictionary *)toMap {
   return [NSDictionary dictionaryWithObjectsAndKeys:(self.uuid ? self.uuid : [NSNull null]), @"uuid", (self.timestamp ? self.timestamp : [NSNull null]), @"timestamp", (self.level ? self.level : [NSNull null]), @"level", (self.lineNumber ? self.lineNumber : [NSNull null]), @"lineNumber", (self.filename ? self.filename : [NSNull null]), @"filename", (self.message ? self.message : [NSNull null]), @"message", nil];
+}
+@end
+
+@implementation NotifChannelPigeon
++ (instancetype)makeWithPackageId:(nullable NSString *)packageId
+    channelId:(nullable NSString *)channelId
+    channelName:(nullable NSString *)channelName
+    channelDesc:(nullable NSString *)channelDesc
+    delete:(nullable NSNumber *)delete {
+  NotifChannelPigeon* pigeonResult = [[NotifChannelPigeon alloc] init];
+  pigeonResult.packageId = packageId;
+  pigeonResult.channelId = channelId;
+  pigeonResult.channelName = channelName;
+  pigeonResult.channelDesc = channelDesc;
+  pigeonResult.delete = delete;
+  return pigeonResult;
+}
++ (NotifChannelPigeon *)fromMap:(NSDictionary *)dict {
+  NotifChannelPigeon *pigeonResult = [[NotifChannelPigeon alloc] init];
+  pigeonResult.packageId = GetNullableObject(dict, @"packageId");
+  pigeonResult.channelId = GetNullableObject(dict, @"channelId");
+  pigeonResult.channelName = GetNullableObject(dict, @"channelName");
+  pigeonResult.channelDesc = GetNullableObject(dict, @"channelDesc");
+  pigeonResult.delete = GetNullableObject(dict, @"delete");
+  return pigeonResult;
+}
+- (NSDictionary *)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.packageId ? self.packageId : [NSNull null]), @"packageId", (self.channelId ? self.channelId : [NSNull null]), @"channelId", (self.channelName ? self.channelName : [NSNull null]), @"channelName", (self.channelDesc ? self.channelDesc : [NSNull null]), @"channelDesc", (self.delete ? self.delete : [NSNull null]), @"delete", nil];
 }
 @end
 
@@ -1456,12 +1485,18 @@ NSObject<FlutterMessageCodec> *AppInstallStatusCallbacksGetCodec() {
 {
   switch (type) {
     case 128:     
-      return [NotificationPigeon fromMap:[self readValue]];
+      return [BooleanWrapper fromMap:[self readValue]];
     
     case 129:     
-      return [StringWrapper fromMap:[self readValue]];
+      return [NotifChannelPigeon fromMap:[self readValue]];
     
     case 130:     
+      return [NotificationPigeon fromMap:[self readValue]];
+    
+    case 131:     
+      return [StringWrapper fromMap:[self readValue]];
+    
+    case 132:     
       return [TimelinePinPigeon fromMap:[self readValue]];
     
     default:    
@@ -1476,16 +1511,24 @@ NSObject<FlutterMessageCodec> *AppInstallStatusCallbacksGetCodec() {
 @implementation NotificationListeningCodecWriter
 - (void)writeValue:(id)value 
 {
-  if ([value isKindOfClass:[NotificationPigeon class]]) {
+  if ([value isKindOfClass:[BooleanWrapper class]]) {
     [self writeByte:128];
     [self writeValue:[value toMap]];
   } else 
-  if ([value isKindOfClass:[StringWrapper class]]) {
+  if ([value isKindOfClass:[NotifChannelPigeon class]]) {
     [self writeByte:129];
     [self writeValue:[value toMap]];
   } else 
-  if ([value isKindOfClass:[TimelinePinPigeon class]]) {
+  if ([value isKindOfClass:[NotificationPigeon class]]) {
     [self writeByte:130];
+    [self writeValue:[value toMap]];
+  } else 
+  if ([value isKindOfClass:[StringWrapper class]]) {
+    [self writeByte:131];
+    [self writeValue:[value toMap]];
+  } else 
+  if ([value isKindOfClass:[TimelinePinPigeon class]]) {
+    [self writeByte:132];
     [self writeValue:[value toMap]];
   } else 
 {
@@ -1547,6 +1590,27 @@ NSObject<FlutterMessageCodec> *NotificationListeningGetCodec() {
       binaryMessenger:self.binaryMessenger
       codec:NotificationListeningGetCodec()];
   [channel sendMessage:@[arg_itemId] reply:^(id reply) {
+    completion(nil);
+  }];
+}
+- (void)shouldNotifyChannel:(nullable NotifChannelPigeon *)arg_channel completion:(void(^)(BooleanWrapper *_Nullable, NSError *_Nullable))completion {
+  FlutterBasicMessageChannel *channel =
+    [FlutterBasicMessageChannel
+      messageChannelWithName:@"dev.flutter.pigeon.NotificationListening.shouldNotify"
+      binaryMessenger:self.binaryMessenger
+      codec:NotificationListeningGetCodec()];
+  [channel sendMessage:@[arg_channel] reply:^(id reply) {
+    BooleanWrapper *output = reply;
+    completion(output, nil);
+  }];
+}
+- (void)updateChannelChannel:(NotifChannelPigeon *)arg_channel completion:(void(^)(NSError *_Nullable))completion {
+  FlutterBasicMessageChannel *channel =
+    [FlutterBasicMessageChannel
+      messageChannelWithName:@"dev.flutter.pigeon.NotificationListening.updateChannel"
+      binaryMessenger:self.binaryMessenger
+      codec:NotificationListeningGetCodec()];
+  [channel sendMessage:@[arg_channel] reply:^(id reply) {
     completion(nil);
   }];
 }
