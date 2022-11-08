@@ -105,8 +105,8 @@ class Preferences {
     _preferencesUpdateStream.add(this);
   }
 
-  List<String?>? getNotificationsMutedPackages() {
-    return _sharedPrefs.getStringList("MUTED_NOTIF_PACKAGES");
+  List<String?> getNotificationsMutedPackages() {
+    return _sharedPrefs.getStringList("MUTED_NOTIF_PACKAGES") ?? [];
   }
 
   Future<void> setNotificationsMutedPackages(List<String?> packages) async {
