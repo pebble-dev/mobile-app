@@ -3,6 +3,7 @@ package io.rebble.cobble.bluetooth
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGattCharacteristic
 import android.content.Context
+import io.rebble.cobble.bluetooth.gatt.PPoGATTServer
 import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.datasources.IncomingPacketsListener
 import io.rebble.cobble.receivers.BluetoothBondReceiver
@@ -18,13 +19,13 @@ import java.util.*
 
 class BlueLEDriver(
         private val context: Context,
+        private val gattDriver: PPoGATTServer,
         private val protocolHandler: ProtocolHandler,
         private val flutterPreferences: FlutterPreferences,
-        private val incomingPacketsListener: IncomingPacketsListener
 ) : BlueIO {
     private var connectivityWatcher: ConnectivityWatcher? = null
     private var connectionParamManager: ConnectionParamManager? = null
-    private var gattDriver: BlueGATTServer? = null
+
     lateinit var targetPebble: BluetoothDevice
 
     private val connectionStatusFlow = MutableStateFlow<Boolean?>(null)
@@ -43,7 +44,7 @@ class BlueLEDriver(
 
     private suspend fun closePebble() {
         Timber.d("Driver shutting down")
-        gattDriver?.closePebble()
+        gattDriver.closePebble()
         gatt?.disconnect()
         gatt?.close()
         gatt = null
@@ -147,22 +148,14 @@ class BlueLEDriver(
 
                     this@BlueLEDriver.targetPebble = device
 
-                    val server = BlueGATTServer(
-                            device,
-                            context,
-                            this,
-                            protocolHandler,
-                            incomingPacketsListener
-                    )
-                    gattDriver = server
-
                     connectionState = LEConnectionState.CONNECTING
                     launch {
-                        if (!server.initServer()) {
+                        if (!gattDriver.init()) {
                             Timber.e("initServer failed")
                             connectionStatusFlow.value = false
                             return@launch
                         }
+                        gattDriver.setTarget(device)
                         gatt = targetPebble.connectGatt(context, flutterPreferences)
                         if (gatt == null) {
                             Timber.e("connectGatt null")
@@ -224,13 +217,12 @@ class BlueLEDriver(
     }
 
     @OptIn(FlowPreview::class)
-    private suspend fun packetReadLoop() = coroutineScope {
+    private suspend fun packetReadLoop() = coroutineScope { //TODO replace with startPacketSendingLoop?
         val job = launch {
             while (connectionStatusFlow.value == true) {
                 val nextPacket = protocolHandler.waitForNextPacket()
-                val driver = gattDriver ?: break
-
-                driver.onNewPacketToSend(nextPacket)
+                gattDriver.write(nextPacket.data.asByteArray())
+                nextPacket.notifyPacketStatus(true)
             }
         }
 
@@ -239,8 +231,8 @@ class BlueLEDriver(
 
     private suspend fun connect() {
         Timber.d("Connect called")
-
-        if (!gattDriver?.connectPebble()!!) {
+        if (!gattDriver?.waitForPebble()!!) {
+            Timber.d("waitForPebble was false")
             closePebble()
         } else {
             connectionStatusFlow.value = true
