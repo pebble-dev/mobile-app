@@ -48,9 +48,9 @@ class BlueCommon @Inject constructor(
         return when {
             device.type == BluetoothDevice.DEVICE_TYPE_LE -> { // LE only device
                 if (leServer == null) {
-                    leServer = PPoGATTServer(context, protocolHandler, incomingPacketsListener)
+                    leServer = PPoGATTServer(context)
                 }
-                BlueLEDriver(context, this.leServer!!, protocolHandler, flutterPreferences)
+                BlueLEDriver(context, this.leServer!!, protocolHandler, flutterPreferences, incomingPacketsListener)
             }
             device.type != BluetoothDevice.DEVICE_TYPE_UNKNOWN -> { // Serial only device or serial/LE
                 BlueSerialDriver(

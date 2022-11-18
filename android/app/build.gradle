@@ -96,8 +96,8 @@ flutter {
     source '../..'
 }
 
-def libpebblecommon_version = '0.1.4'
-def coroutinesVersion = "1.6.0"
+def libpebblecommon_version = '0.1.7'
+def coroutinesVersion = "1.6.4"
 def lifecycleVersion = "2.2.0"
 def timberVersion = "4.7.1"
 def androidxCoreVersion = '1.3.2'
@@ -108,6 +108,7 @@ def serializationJsonVersion = '1.3.2'
 
 def junitVersion = '4.13.2'
 def androidxTestVersion = "1.4.0"
+def mockitoVersion = "3.11.1"
 
 dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
@@ -129,6 +130,10 @@ dependencies {
 
     androidTestImplementation "androidx.test:runner:$androidxTestVersion"
     androidTestImplementation "androidx.test:rules:$androidxTestVersion"
+    androidTestImplementation "androidx.test:monitor:$androidxTestVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
+    testImplementation "org.mockito:mockito-inline:$mockitoVersion"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 }
 
 android.buildTypes.release.ndk.debugSymbolLevel = 'FULL'
