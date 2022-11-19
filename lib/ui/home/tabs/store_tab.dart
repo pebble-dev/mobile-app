@@ -81,7 +81,9 @@ class StoreTab extends HookWidget implements CobbleScreen {
       backButton.value = canGoBack && rootUrl.value != current;
     }
     
-    void Function(String, Map) _handleMethod = useCallback<void Function()>((method, data) async {
+    // TODO: When we use up to date hooks riverpod, use callback like so:
+    // void Function(String, Map) _handleMethod = useCallback<void Function()>((method, data) async {
+    void handleMethod(String method, Map data) async {
       switch (method) {
         case "setNavBarTitle":
           // the title is set once per page load, and at the start of every page load, so we attach a hook for that here
@@ -112,7 +114,7 @@ class StoreTab extends HookWidget implements CobbleScreen {
           // I don't see the use for this, unless we decide to fetch metadata for pbws installed from the outside (we can easily match with uuid)
           break;
       }
-    }, []);
+    }
 
     void _goBack() async {
       WebViewController controller = await _controller.future;
@@ -265,7 +267,7 @@ class StoreTab extends HookWidget implements CobbleScreen {
           Uri uri = Uri.parse(url);
           if (uri.isScheme("pebble-method-call-js-frame")) {
             Map args = json.decode(uri.queryParameters["args"]!);
-            _handleMethod(args["methodName"], args["data"]);
+            handleMethod(args["methodName"], args["data"]);
           }
           // We don't actually want to open any other website
           return NavigationDecision.prevent;
