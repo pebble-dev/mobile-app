@@ -3,6 +3,7 @@ import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/components/cobble_tile.dart';
+import 'package:cobble/ui/common/icons/system_app_icon.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/home/tabs/locker_tab/apps_sheet.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
@@ -29,7 +30,6 @@ class AppsItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       key: key,
-      height: 72.0,
       child: Row(
         children: [
           if (compatible)
@@ -48,7 +48,7 @@ class AppsItem extends StatelessWidget {
             SizedBox(width: 57),
           Expanded(
             child: CobbleTile.app(
-              leading: Svg('images/temp_watch_app.svg'),
+              leading: SystemAppIcon(app.uuid),
               title: app.longName,
               subtitle: app.company,
               onTap: () => AppsSheet.showModal(
