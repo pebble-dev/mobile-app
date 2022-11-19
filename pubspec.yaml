@@ -41,7 +41,7 @@ dependencies:
   uuid_type: ^2.0.0
   path: ^1.7.0
   json_annotation: ^4.0.0
-  copy_with_extension: ^4.0.0
+  copy_with_extension: ^4.0.4
   flutter_local_notifications: ^9.3.2
   stream_transform: ^2.0.0
   flutter_svg: ^1.0.3
