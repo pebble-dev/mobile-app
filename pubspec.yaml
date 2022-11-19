@@ -64,7 +64,7 @@ dev_dependencies:
   # Otherwise we will have lots of work to convert things to nullable,
   # only to convert them back when non-null support will be added
   pigeon: ^1.0.18
-  build_runner: ^2.1.7
+  build_runner: ^2.2.0
   json_serializable: ^6.1.4
   copy_with_extension_gen: ^4.0.1
   sqflite_common_ffi: ^2.0.0
