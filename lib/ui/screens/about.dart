@@ -86,17 +86,11 @@ class About extends HookWidget implements CobbleScreen {
                     Expanded(
                       child: SizedBox(
                         height: 40.0,
-                        child: RaisedButton(
-                          child: Row(
-                            children: <Widget>[
-                              Icon(RebbleIcons.rocket, size: 25),
-                              SizedBox(width: 8),
-                              Text(
-                                tr.aboutPage.sourceCode.toUpperCase(),
-                              ),
-                            ],
-                          ),
-                          onPressed: () => launchURL(_sourceURL),
+                        child: CobbleButton(
+                          outlined: false,
+                          icon: RebbleIcons.rocket,
+                          label: tr.aboutPage.sourceCode.toUpperCase(),
+                          onPressed: () => showLicensePage(context: context),
                         ),
                       ),
                     ),
