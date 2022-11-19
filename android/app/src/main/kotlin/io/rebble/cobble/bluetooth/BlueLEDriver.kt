@@ -226,7 +226,7 @@ class BlueLEDriver(
 
                     }
                     protocolHandler.startPacketSendingLoop {
-                        val res = gattProtocolHandler.txPebblePacketFlow.tryEmit(it.asByteArray())
+                        val res = gattProtocolHandler.sendPebblePacket(it.asByteArray())
                         if (!res) {
                             Timber.d("Emit failed in send loop")
                         }

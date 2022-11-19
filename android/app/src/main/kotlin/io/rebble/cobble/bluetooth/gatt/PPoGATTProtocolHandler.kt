@@ -12,7 +12,6 @@ import kotlin.math.min
 class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoGATTServer) {
     private val _rxPebblePacketFlow = MutableSharedFlow<ByteArray>()
     val rxPebblePacketFlow: SharedFlow<ByteArray> = _rxPebblePacketFlow
-    val txPebblePacketFlow = MutableSharedFlow<ByteArray>(extraBufferCapacity = 4)
 
     inner class PendingACK(val sequence: Int, val success: Boolean)
     private val ackFlow = MutableSharedFlow<PendingACK>()
@@ -33,12 +32,6 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
     public var maxPacketSize = 25-4
 
     init {
-        scope.launch {
-            txPebblePacketFlow.collect {
-                sendPebblePacket(it)
-            }
-        }
-
         scope.launch {
             gattDriver.packetRxFlow.collect {
                 onPacket(it)
@@ -62,8 +55,8 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
                     GATTPacket.PacketType.RESET_ACK -> onResetAck(packet)
                 }
             }
-        } catch (e: TimeoutCancellationException) {
-            Timber.e(e, "Timed out processing packet")
+        } catch (e: Exception) {
+            Timber.e(e, "Exception while processing packet")
         }
     }
 
@@ -82,7 +75,6 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
         }
         val cRemoteSeq = remoteSeq.next
         if (packet.sequence == cRemoteSeq) {
-            sendAck(packet.sequence)
             var protoData = packet.toByteArray().drop(1)
             while (protoData.isNotEmpty()) {
                 if (pendingPacket == null) {
@@ -95,6 +87,7 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
                     pendingPacket = null
                 }
             }
+            sendAck(packet.sequence)
         } else {
             Timber.w("Unexpected sequence ${packet.sequence}, expected $cRemoteSeq")
             //TODO: recover by sending ACK rewind
@@ -152,8 +145,8 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
         } else {
             null
         }
-        writePacket(GATTPacket.PacketType.RESET_ACK, data, 0)
         reset()
+        writePacket(GATTPacket.PacketType.RESET_ACK, data, 0)
     }
 
     private suspend fun sendAck(sequence: Int) {
@@ -164,19 +157,28 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
         writePacket(GATTPacket.PacketType.RESET, null, 0)
     }
 
-    private suspend fun sendPebblePacket(data: ByteArray) {
+    suspend fun sendPebblePacket(data: ByteArray): Boolean {
         var i = 0
         var done = 0
         while (done < data.size) {
             val chunk = data.slice(i*maxPacketSize until min((i*maxPacketSize)+maxPacketSize, done)).toByteArray()
             val txSequence = writePacket(GATTPacket.PacketType.DATA, chunk).sequence
-            withTimeout(5000) {
-                val ack = ackFlow.first { it.sequence == txSequence }
-                check(ack.success)
+            try {
+                val success = withTimeout(5000) {
+                    val ack = ackFlow.first { it.sequence == txSequence }
+                    return@withTimeout ack.success
+                }
+                if (!success) {
+                    return false
+                }
+            } catch (e: TimeoutCancellationException) {
+                Timber.e("Timed out waiting for ACK sending protocol packet")
+                return false
             }
             i++
             done += chunk.size
         }
+        return true
     }
 
     private suspend fun writePacket(type: GATTPacket.PacketType, data: ByteArray?, sequence: Int? = null): GATTPacket {
