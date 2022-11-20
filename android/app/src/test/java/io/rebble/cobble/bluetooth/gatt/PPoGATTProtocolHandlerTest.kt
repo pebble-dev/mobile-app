@@ -30,26 +30,24 @@ import java.util.*
 @RunWith(MockitoJUnitRunner::class)
 class PPoGATTProtocolHandlerTest {
     @Mock
-    lateinit var context: Context
+    private lateinit var context: Context
     @Mock
-    lateinit var bluetoothManager: BluetoothManager
+    private lateinit var bluetoothManager: BluetoothManager
     @Mock
-    lateinit var bluetoothGattServer: BluetoothGattServer
-    lateinit var callbacks: BluetoothGattServerCallback
+    private lateinit var bluetoothGattServer: BluetoothGattServer
+    private lateinit var callbacks: BluetoothGattServerCallback
     @Mock
-    lateinit var device: BluetoothDevice
-    @Mock
-    lateinit var gatt: BluetoothGatt
+    private lateinit var device: BluetoothDevice
 
-    lateinit var gattServiceMock: MockedConstruction<BluetoothGattService>
-    lateinit var gattCharMock: MockedConstruction<BluetoothGattCharacteristic>
-    lateinit var activityCompatMock: MockedStatic<ContextCompat>
+    private lateinit var gattServiceMock: MockedConstruction<BluetoothGattService>
+    private lateinit var gattCharMock: MockedConstruction<BluetoothGattCharacteristic>
+    private lateinit var activityCompatMock: MockedStatic<ContextCompat>
 
     private val charValues = mutableMapOf<UUID, ByteArray?>()
 
     private val dataUpdates = Channel<ByteArray>(Channel.UNLIMITED)
 
-    var seq = 0
+    private var seq = 0
 
     companion object {
         @BeforeClass
@@ -68,14 +66,14 @@ class PPoGATTProtocolHandlerTest {
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
-        gattServiceMock = mockConstruction(BluetoothGattService::class.java, MockedConstruction.MockInitializer() {mock, context ->
+        gattServiceMock = mockConstruction(BluetoothGattService::class.java) { mock, _ ->
             `when`(mock.addCharacteristic(any(BluetoothGattCharacteristic::class.java))).thenReturn(true)
-        })
-        gattCharMock = mockConstruction(BluetoothGattCharacteristic::class.java, MockedConstruction.MockInitializer() {mock, context ->
+        }
+        gattCharMock = mockConstruction(BluetoothGattCharacteristic::class.java) { mock, context ->
             val uuid = context.arguments().first { it is UUID } as UUID
             `when`(mock.addDescriptor(any(BluetoothGattDescriptor::class.java))).thenReturn(true)
             `when`(mock.uuid).thenReturn(uuid)
-            `when`(mock.getValue()).thenReturn(charValues[uuid])
+            `when`(mock.value).thenReturn(charValues[uuid])
             `when`(mock.setValue(any(ByteArray::class.java))).then {
                 charValues[uuid] = it.getArgument<ByteArray>(0)
                 if (UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER) == uuid) {
@@ -83,7 +81,7 @@ class PPoGATTProtocolHandlerTest {
                 }
                 return@then true
             }
-        })
+        }
 
         activityCompatMock = mockStatic(ContextCompat::class.java, Answers.CALLS_REAL_METHODS)
         activityCompatMock.`when`<Int>{
@@ -91,7 +89,7 @@ class PPoGATTProtocolHandlerTest {
         }.thenReturn(PackageManager.PERMISSION_GRANTED)
 
         `when`(bluetoothManager.openGattServer(any(Context::class.java), any(BluetoothGattServerCallback::class.java))).then {
-            callbacks = it.getArgument<BluetoothGattServerCallback>(1)
+            callbacks = it.getArgument(1)
             return@then bluetoothGattServer
         }
         `when`(bluetoothGattServer.addService(any(BluetoothGattService::class.java))).then {
