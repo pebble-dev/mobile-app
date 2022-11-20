@@ -21,6 +21,7 @@ class PendingPacket() {
 
     fun addData(data: List<Byte>): Int {
         if (pendingLength == null) {
+            require(data.size >= 4) {"First packet must have a size greater than 4 (header)"}
             pendingLength = getPacketLength(data)+4
         }
         val toAdd = data.subList(0, min(pendingLength!!, data.size))

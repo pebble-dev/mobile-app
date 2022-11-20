@@ -70,6 +70,7 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
 
     private suspend fun onData(packet: GATTPacket) {
         Timber.d("-> DATA ${packet.sequence}")
+        require(packet.data.size-1 > 0) {"Data packet with empty content invalid"}
         if (!initialReset) {
             Timber.w("Data before initial reset") //TODO: someday handle quick reconnection recovery?
             sendReset()
@@ -166,8 +167,7 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
     suspend fun sendPebblePacket(data: ByteArray): Boolean {
         val chunks = data.toList().chunked(maxPacketSize)
         for (chunk in chunks) {
-            val chunk = chunk.toByteArray()
-            val txSequence = writePacket(GATTPacket.PacketType.DATA, chunk).sequence
+            val txSequence = writePacket(GATTPacket.PacketType.DATA, chunk.toByteArray()).sequence
             try {
                 val success = withTimeout(5000) {
                     val ack = ackFlow.first { it.sequence == txSequence }
