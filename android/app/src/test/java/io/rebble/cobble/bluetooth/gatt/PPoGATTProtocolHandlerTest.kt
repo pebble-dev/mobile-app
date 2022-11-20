@@ -51,16 +51,23 @@ class PPoGATTProtocolHandlerTest {
 
     var seq = 0
 
+    companion object {
+        @BeforeClass
+        @JvmStatic
+        fun init() {
+            Timber.plant(object : Timber.Tree() {
+                override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+                    val stackTrace = Throwable().stackTrace
+                    val classTag = stackTrace[5].className.split(".").last()
+                    println("[$classTag] $message")
+                }
+            })
+        }
+    }
+
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
-        Timber.plant(object : Timber.Tree() {
-            override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-                println("[Test] $message")
-            }
-
-        })
-
         gattServiceMock = mockConstruction(BluetoothGattService::class.java, MockedConstruction.MockInitializer() {mock, context ->
             `when`(mock.addCharacteristic(any(BluetoothGattCharacteristic::class.java))).thenReturn(true)
         })
@@ -102,9 +109,9 @@ class PPoGATTProtocolHandlerTest {
         `when`(context.applicationContext).thenReturn(context)
         `when`(context.getSystemService(Context.BLUETOOTH_SERVICE)).thenReturn(bluetoothManager)
 
-        `when`(gatt.device).thenReturn(device)
+        //`when`(gatt.device).thenReturn(device)
         `when`(device.address).thenReturn("12:23:34:98:76:54")
-        `when`(device.connectGatt(any(Context::class.java), anyBoolean(), any(BluetoothGattCallback::class.java), anyInt())).thenReturn(gatt)
+        //`when`(device.connectGatt(any(Context::class.java), anyBoolean(), any(BluetoothGattCallback::class.java), anyInt())).thenReturn(gatt)
         seq = 0
     }
 
@@ -189,6 +196,104 @@ class PPoGATTProtocolHandlerTest {
         val pblPacket = PebblePacket.deserialize(readPacketIn(respData))
         assert(pblPacket is PhoneAppVersion.AppVersionResponse)
         assertArrayEquals(resp.serialize().asByteArray(), pblPacket.serialize().asByteArray())
+    }
+
+    @Test
+    fun `Test connection version 0 correctly found`() = runTest {
+        val scope = CoroutineScope(testScheduler)
+        val leServer = PPoGATTServer(context, scope)
+        val protocolHandler = PPoGATTProtocolHandler(scope, leServer)
+        leServer.init()
+        advanceUntilIdle()
+        leServer.setTarget(device)
+
+        callbacks.onCharacteristicReadRequest(device, 0, 0, BluetoothGattCharacteristic(UUID.fromString(LEConstants.UUIDs.META_CHARACTERISTIC_SERVER), 0, 0))
+        callbacks.onCharacteristicWriteRequest(
+                device,
+                1,
+                BluetoothGattCharacteristic(UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER), 0, 0),
+                false,
+                false,
+                0,
+                GATTPacket(GATTPacket.PacketType.RESET, 0, byteArrayOf(0)).data
+        )
+        val ack = GATTPacket(dataUpdates.receive())
+        assert(ack.type == GATTPacket.PacketType.RESET_ACK)
+        assertEquals(0, ack.sequence)
+        assertFalse(ack.hasWindowSizes())
+        assertEquals(GATTPacket.PPoGConnectionVersion.ZERO, protocolHandler.connectionVersion)
+    }
+
+    @Test
+    fun `Test connection version 1 correctly found`() = runTest {
+        val scope = CoroutineScope(testScheduler)
+        val leServer = PPoGATTServer(context, scope)
+        val protocolHandler = PPoGATTProtocolHandler(scope, leServer)
+        leServer.init()
+        advanceUntilIdle()
+        leServer.setTarget(device)
+
+        callbacks.onCharacteristicReadRequest(device, 0, 0, BluetoothGattCharacteristic(UUID.fromString(LEConstants.UUIDs.META_CHARACTERISTIC_SERVER), 0, 0))
+        callbacks.onCharacteristicWriteRequest(
+                device,
+                1,
+                BluetoothGattCharacteristic(UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER), 0, 0),
+                false,
+                false,
+                0,
+                GATTPacket(GATTPacket.PacketType.RESET, 0, byteArrayOf(1, 1)).data
+        )
+        val ack = GATTPacket(dataUpdates.receive())
+        assert(ack.type == GATTPacket.PacketType.RESET_ACK)
+        assertEquals(0, ack.sequence)
+        assert(ack.hasWindowSizes())
+        assertEquals(GATTPacket.PPoGConnectionVersion.ONE, protocolHandler.connectionVersion)
+        assertEquals(protocolHandler.maxTXWindow, ack.getMaxTXWindow())
+        assertEquals(protocolHandler.maxRXWindow, ack.getMaxRXWindow())
+    }
+
+    @Test
+    fun `Test connection version downgrades if no windows in reset ACK`() = runTest {
+        val scope = CoroutineScope(testScheduler)
+        val leServer = PPoGATTServer(context, scope)
+        val protocolHandler = PPoGATTProtocolHandler(scope, leServer)
+        leServer.init()
+        advanceUntilIdle()
+        leServer.setTarget(device)
+
+        callbacks.onCharacteristicReadRequest(device, 0, 0, BluetoothGattCharacteristic(UUID.fromString(LEConstants.UUIDs.META_CHARACTERISTIC_SERVER), 0, 0))
+        callbacks.onCharacteristicWriteRequest(
+                device,
+                1,
+                BluetoothGattCharacteristic(UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER), 0, 0),
+                false,
+                false,
+                0,
+                GATTPacket(GATTPacket.PacketType.RESET, 0, byteArrayOf(1, 1)).data
+        )
+        val ack = GATTPacket(dataUpdates.receive())
+        advanceUntilIdle()
+        assert(ack.type == GATTPacket.PacketType.RESET_ACK)
+        assertEquals(0, ack.sequence)
+        assert(ack.hasWindowSizes())
+        assertEquals(GATTPacket.PPoGConnectionVersion.ONE, protocolHandler.connectionVersion)
+        assertEquals(protocolHandler.maxTXWindow, ack.getMaxTXWindow())
+        assertEquals(protocolHandler.maxRXWindow, ack.getMaxRXWindow())
+
+        callbacks.onCharacteristicWriteRequest(
+                device,
+                1,
+                BluetoothGattCharacteristic(UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER), 0, 0),
+                false,
+                false,
+                0,
+                GATTPacket(GATTPacket.PacketType.RESET_ACK, 0, null).data
+        )
+        advanceUntilIdle()
+        withContext(Dispatchers.Default) {
+            delay(100) //XXX
+        }
+        assertEquals(GATTPacket.PPoGConnectionVersion.ZERO, protocolHandler.connectionVersion)
     }
 
     private suspend fun watchConnection() {
