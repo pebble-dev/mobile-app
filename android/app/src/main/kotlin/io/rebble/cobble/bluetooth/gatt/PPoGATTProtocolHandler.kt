@@ -158,10 +158,9 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
     }
 
     suspend fun sendPebblePacket(data: ByteArray): Boolean {
-        var i = 0
-        var done = 0
-        while (done < data.size) {
-            val chunk = data.slice(i*maxPacketSize until min((i*maxPacketSize)+maxPacketSize, done)).toByteArray()
+        val chunks = data.toList().chunked(maxPacketSize)
+        for (chunk in chunks) {
+            val chunk = chunk.toByteArray()
             val txSequence = writePacket(GATTPacket.PacketType.DATA, chunk).sequence
             try {
                 val success = withTimeout(5000) {
@@ -172,11 +171,9 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
                     return false
                 }
             } catch (e: TimeoutCancellationException) {
-                Timber.e("Timed out waiting for ACK sending protocol packet")
+                Timber.e("Timed out waiting for ACK $txSequence sending protocol packet")
                 return false
             }
-            i++
-            done += chunk.size
         }
         return true
     }
