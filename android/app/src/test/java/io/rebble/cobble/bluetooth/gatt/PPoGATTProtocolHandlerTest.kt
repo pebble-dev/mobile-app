@@ -8,6 +8,7 @@ import io.rebble.libpebblecommon.ProtocolHandlerImpl
 import io.rebble.libpebblecommon.ble.GATTPacket
 import io.rebble.libpebblecommon.ble.LEConstants
 import io.rebble.libpebblecommon.packets.PhoneAppVersion
+import io.rebble.libpebblecommon.packets.PingPong
 import io.rebble.libpebblecommon.protocolhelpers.PebblePacket
 import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import io.rebble.libpebblecommon.util.DataBuffer
@@ -135,7 +136,7 @@ class PPoGATTProtocolHandlerTest {
             protocolHandler.connectionStateChannel.receive()
         }
         watchConnection()
-        watchSendPacket(byteArrayOf(0), 139)
+        watchSendPacket(PingPong.Ping(1u).serialize().asByteArray(), 139)
         advanceUntilIdle()
 
         assert(defer.await())
