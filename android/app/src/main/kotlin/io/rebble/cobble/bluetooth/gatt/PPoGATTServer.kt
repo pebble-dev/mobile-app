@@ -122,15 +122,17 @@ class PPoGATTServer (
         }
     }
 
-    public suspend fun write(data: ByteArray): Boolean {
+    public suspend fun write(data: ByteArray) {
         try {
             Timber.d("WRITE")
-            return withTimeout(2000) {
+            val res = withTimeout(2000) {
                 return@withTimeout gattServer.notifyCharacteristic(targetDevice!!, dataCharacteristic, data, false)
             }
+            if (!res) {
+                throw IOException("Failed to notify characteristic")
+            }
         } catch (e: TimeoutCancellationException) {
-            Timber.e("Timed out writing to characteristic")
-            return false
+            throw IOException("Timed out notifying characteristic", e)
         }
     }
 
