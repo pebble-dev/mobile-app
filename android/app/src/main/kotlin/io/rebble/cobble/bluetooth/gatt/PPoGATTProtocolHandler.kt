@@ -1,11 +1,14 @@
 package io.rebble.cobble.bluetooth.gatt
 
-import androidx.annotation.RequiresPermission
 import io.rebble.libpebblecommon.ble.GATTPacket
-import io.rebble.libpebblecommon.util.DataBuffer
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 import kotlin.math.min
 
@@ -21,15 +24,18 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
     private var initialReset = false
     private var initialData = false
 
-    private var connectionVersion = GATTPacket.PPoGConnectionVersion.ZERO
-    private var maxRXWindow: Byte = /*LEConstants.MAX_RX_WINDOW*/ 1
-    private var maxTXWindow: Byte = /*LEConstants.MAX_TX_WINDOW*/ 1
+    var connectionVersion = GATTPacket.PPoGConnectionVersion.ZERO
+        private set
+    var maxRXWindow: Byte = /*LEConstants.MAX_RX_WINDOW*/ 1
+        private set
+    var maxTXWindow: Byte = /*LEConstants.MAX_TX_WINDOW*/ 1
+        private set
     private val seq = GATTSequence()
     private val remoteSeq = GATTSequence()
 
     private var pendingPacket: PendingPacket? = null
 
-    public var maxPacketSize = 25-4
+    var maxPacketSize = 25-4
 
     init {
         scope.launch {
