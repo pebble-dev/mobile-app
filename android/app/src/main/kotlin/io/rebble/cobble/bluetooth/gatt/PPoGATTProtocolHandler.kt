@@ -12,7 +12,7 @@ import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 import kotlin.math.min
 
-class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoGATTServer) {
+class PPoGATTProtocolHandler(private val scope: CoroutineScope, private val gattDriver: PPoGATTServer): AutoCloseable {
     private val _rxPebblePacketFlow = MutableSharedFlow<ByteArray>()
     val rxPebblePacketFlow: SharedFlow<ByteArray> = _rxPebblePacketFlow
 
@@ -51,7 +51,7 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
 
     private suspend fun onPacket(packet: GATTPacket) {
         try {
-            withTimeout(1000) {
+            withTimeout(10000) {
                 when (packet.type) {
                     GATTPacket.PacketType.DATA -> onData(packet)
                     GATTPacket.PacketType.ACK -> onACK(packet)
@@ -60,7 +60,7 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
                 }
             }
         } catch (e: Exception) {
-            Timber.e(e, "Exception while processing packet")
+            Timber.e(e, "Exception while processing ${packet.type.name} ${packet.sequence}")
         }
     }
 
@@ -81,6 +81,7 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
         val cRemoteSeq = remoteSeq.next
         if (packet.sequence == cRemoteSeq) {
             var protoData = packet.toByteArray().drop(1)
+            sendAck(packet.sequence)
             while (protoData.isNotEmpty()) {
                 if (pendingPacket == null) {
                     pendingPacket = PendingPacket()
@@ -88,11 +89,13 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
                 val added = pendingPacket!!.addData(protoData)
                 protoData = protoData.drop(added)
                 if (pendingPacket!!.isComplete) {
-                    _rxPebblePacketFlow.emit(pendingPacket!!.data.toByteArray())
+                    val emitPacket = pendingPacket!!.data.toByteArray()
+                    scope.launch {
+                        _rxPebblePacketFlow.emit(emitPacket)
+                    }
                     pendingPacket = null
                 }
             }
-            sendAck(packet.sequence)
         } else {
             Timber.w("Unexpected sequence ${packet.sequence}, expected $cRemoteSeq")
             //TODO: recover by sending ACK rewind
