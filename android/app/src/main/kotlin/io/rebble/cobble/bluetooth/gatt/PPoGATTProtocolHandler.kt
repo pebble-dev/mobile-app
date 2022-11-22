@@ -39,13 +39,13 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
 
     init {
         scope.launch {
-            gattDriver.packetRxFlow.collect {
+            gattDriver.packetsFromWatch.collect {
                 onPacket(it)
             }
         }
 
         scope.launch {
-            gattDriver.mtuFlow.collect {
+            gattDriver.currentMtu.collect {
                 maxPacketSize = it-4
             }
         }
@@ -53,7 +53,7 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
 
     private suspend fun onPacket(packet: GATTPacket) {
         try {
-            withTimeout(1000) {
+            withTimeout(5000) {
                 when (packet.type) {
                     GATTPacket.PacketType.DATA -> onData(packet)
                     GATTPacket.PacketType.ACK -> onACK(packet)
@@ -209,7 +209,7 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
             }
             else -> throw IllegalArgumentException()
         }
-        gattDriver.write(packet.data)
+        gattDriver.sendToWatch(packet)
         return packet
     }
 

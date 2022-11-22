@@ -124,7 +124,7 @@ class PPoGATTProtocolHandlerTest {
     @Test
     fun `Connection after initial reset`() = runTest {
         val scope = CoroutineScope(testScheduler)
-        val leServer = PPoGATTServer(context, scope)
+        val leServer = PPoGATTServerImpl(context, scope)
         val protocolHandler = PPoGATTProtocolHandler(scope, leServer)
 
         leServer.init()
@@ -145,7 +145,7 @@ class PPoGATTProtocolHandlerTest {
     @Test
     fun `Watch handshake with libpebblecommon`() = runTest {
         val scope = CoroutineScope(testScheduler)
-        val leServer = PPoGATTServer(context, scope)
+        val leServer = PPoGATTServerImpl(context, scope)
         val protocolHandler = PPoGATTProtocolHandler(scope, leServer)
         val pebbleProtocol = ProtocolHandlerImpl()
         val resp = PhoneAppVersion.AppVersionResponse(
@@ -200,7 +200,7 @@ class PPoGATTProtocolHandlerTest {
     @Test
     fun `Test connection version 0 correctly found`() = runTest {
         val scope = CoroutineScope(testScheduler)
-        val leServer = PPoGATTServer(context, scope)
+        val leServer = PPoGATTServerImpl(context, scope)
         val protocolHandler = PPoGATTProtocolHandler(scope, leServer)
         leServer.init()
         advanceUntilIdle()
@@ -226,7 +226,7 @@ class PPoGATTProtocolHandlerTest {
     @Test
     fun `Test connection version 1 correctly found`() = runTest {
         val scope = CoroutineScope(testScheduler)
-        val leServer = PPoGATTServer(context, scope)
+        val leServer = PPoGATTServerImpl(context, scope)
         val protocolHandler = PPoGATTProtocolHandler(scope, leServer)
         leServer.init()
         advanceUntilIdle()
@@ -254,7 +254,7 @@ class PPoGATTProtocolHandlerTest {
     @Test
     fun `Test connection version downgrades if no windows in reset ACK`() = runTest {
         val scope = CoroutineScope(testScheduler)
-        val leServer = PPoGATTServer(context, scope)
+        val leServer = PPoGATTServerImpl(context, scope)
         val protocolHandler = PPoGATTProtocolHandler(scope, leServer)
         leServer.init()
         advanceUntilIdle()

@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothProfile
 import android.content.Context
 import io.rebble.cobble.bluetooth.gatt.PPoGATTProtocolHandler
 import io.rebble.cobble.bluetooth.gatt.PPoGATTServer
+import io.rebble.cobble.bluetooth.gatt.PPoGATTServerImpl
 import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.datasources.IncomingPacketsListener
 import io.rebble.cobble.receivers.BluetoothBondReceiver
@@ -21,7 +22,7 @@ import java.util.*
 
 class BlueLEDriver(
         private val context: Context,
-        private val gattDriver: PPoGATTServer,
+        private val gattDriver: PPoGATTServerImpl,
         private val protocolHandler: ProtocolHandler,
         private val flutterPreferences: FlutterPreferences,
         private val incomingPacketsListener: IncomingPacketsListener

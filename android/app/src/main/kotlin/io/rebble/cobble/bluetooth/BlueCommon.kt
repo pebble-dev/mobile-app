@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice
 import android.content.Context
 import io.rebble.cobble.bluetooth.classic.BlueSerialDriver
 import io.rebble.cobble.bluetooth.gatt.PPoGATTServer
+import io.rebble.cobble.bluetooth.gatt.PPoGATTServerImpl
 import io.rebble.cobble.bluetooth.scan.BleScanner
 import io.rebble.cobble.bluetooth.scan.ClassicScanner
 import io.rebble.cobble.datasources.FlutterPreferences
@@ -27,7 +28,7 @@ class BlueCommon @Inject constructor(
     private var driver: BlueIO? = null
 
     private var externalIncomingPacketHandler: (suspend (ByteArray) -> Unit)? = null
-    private var leServer: PPoGATTServer? = null
+    private var leServer: PPoGATTServerImpl? = null
 
     fun startSingleWatchConnection(macAddress: String): Flow<SingleConnectionStatus> {
         bleScanner.stopScan()
@@ -48,7 +49,7 @@ class BlueCommon @Inject constructor(
         return when {
             device.type == BluetoothDevice.DEVICE_TYPE_LE -> { // LE only device
                 if (leServer == null) {
-                    leServer = PPoGATTServer(context)
+                    leServer = PPoGATTServerImpl(context)
                 }
                 BlueLEDriver(context, this.leServer!!, protocolHandler, flutterPreferences, incomingPacketsListener)
             }
