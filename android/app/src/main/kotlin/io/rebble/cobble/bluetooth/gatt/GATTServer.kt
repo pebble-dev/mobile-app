@@ -1,18 +1,15 @@
 package io.rebble.cobble.bluetooth.gatt
 
-import android.Manifest
 import android.bluetooth.*
 import android.content.Context
-import android.content.pm.PackageManager
-import android.os.Build
 import androidx.annotation.RequiresPermission
-import androidx.core.app.ActivityCompat
 import io.rebble.libpebblecommon.ble.LEConstants
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.first
 import timber.log.Timber
-import java.util.UUID
+import java.util.*
 import kotlin.experimental.and
 
 class GATTServer(private val context: Context, private val serverScope: CoroutineScope = CoroutineScope(Dispatchers.IO)) : BluetoothGattServerCallback() {
@@ -216,17 +213,23 @@ class GATTServer(private val context: Context, private val serverScope: Coroutin
 
     @RequiresPermission(value = "android.permission.BLUETOOTH_CONNECT")
     public suspend fun notifyCharacteristic(device: BluetoothDevice, characteristic: BluetoothGattCharacteristic, value: ByteArray?, confirm: Boolean): Boolean {
-        characteristic.value = value
-        if (!bluetoothGattServer.notifyCharacteristicChanged(device, characteristic, confirm)) {
+        val sent = withContext(Dispatchers.IO) {
+            characteristic.value = value
+            bluetoothGattServer.notifyCharacteristicChanged(device, characteristic, confirm)
+        }
+        if (!sent) {
             return false
         }
+
         val result = notificationSentFlow.first { it.device.address == device.address }
         return result.status == BluetoothGatt.GATT_SUCCESS
     }
 
     @RequiresPermission(value = "android.permission.BLUETOOTH_CONNECT")
     public suspend fun sendResponse(request: GATTEvent.CharacteristicReadRequest, responseData: ByteArray?): Boolean {
-        return bluetoothGattServer.sendResponse(request.device, request.requestId, BluetoothGatt.GATT_SUCCESS, request.offset, responseData)
+        return withContext(Dispatchers.IO) {
+            bluetoothGattServer.sendResponse(request.device, request.requestId, BluetoothGatt.GATT_SUCCESS, request.offset, responseData)
+        }
     }
 
     @RequiresPermission(value = "android.permission.BLUETOOTH_CONNECT")
@@ -236,12 +239,18 @@ class GATTServer(private val context: Context, private val serverScope: Coroutin
 
     @RequiresPermission(value = "android.permission.BLUETOOTH_CONNECT")
     public suspend fun addService(service: BluetoothGattService): Boolean {
-        bluetoothGattServer.addService(service)
+        val result = withContext(Dispatchers.IO) {
+            bluetoothGattServer.addService(service)
+        }
+        if (!result) {
+            return false
+        }
         try {
             return withTimeout(5000) {
                 return@withTimeout addedServiceFlow.first {it.service?.uuid == service.uuid }
             }.status == BluetoothGatt.GATT_SUCCESS
         } catch (e: TimeoutCancellationException) {
+            Timber.e("Adding service failed due to timeout")
             return false
         }
     }
