@@ -45,16 +45,7 @@ class BlueLEDriver(
     var connectionState = LEConnectionState.IDLE
     private var gatt: BlueGATTConnection? = null
     private val leDriverScope = CoroutineScope(Dispatchers.Default)
-    private val gattProtocolHandler = PPoGATTProtocolHandler(leDriverScope, gattDriver)
-
-    init {
-        leDriverScope.launch {
-            gattProtocolHandler.rxPebblePacketFlow.collect {
-                incomingPacketsListener.receivedPackets.emit(it)
-                protocolHandler.receivePacket(it.asUByteArray())
-            }
-        }
-    }
+    private lateinit var gattProtocolHandler: PPoGATTProtocolHandler
 
     private suspend fun closePebble() {
         Timber.d("Driver shutting down")
@@ -65,6 +56,7 @@ class BlueLEDriver(
         connectionState = LEConnectionState.CLOSED
         connectionStatusFlow.value = false
         readLoopJob?.cancel()
+        gattProtocolHandler.close()
     }
 
     /**
@@ -140,6 +132,26 @@ class BlueLEDriver(
         }
     }
 
+    private fun makeGATTProtocolHandler() {
+        gattProtocolHandler = PPoGATTProtocolHandler(leDriverScope, gattDriver)
+        gattProtocolHandler.rxPebblePacketFlow.onCompletion {
+            Timber.w("RX Packet closed")
+        }
+        leDriverScope.launch {
+            gattProtocolHandler.rxPebblePacketFlow.collect {
+                incomingPacketsListener.receivedPackets.tryEmit(it)
+                try {
+                    withTimeout(6500) {
+                        protocolHandler.receivePacket(it.asUByteArray())
+                    }
+                } catch (e: TimeoutCancellationException) {
+                    Timber.e("Timeout")
+                }
+
+            }
+        }
+    }
+
     @FlowPreview
     override fun startSingleWatchConnection(device: BluetoothDevice): Flow<SingleConnectionStatus> = flow {
         try {
@@ -156,6 +168,7 @@ class BlueLEDriver(
                     return@coroutineScope
                 } else {
                     emit(SingleConnectionStatus.Connecting(device))
+                    makeGATTProtocolHandler()
 
                     this@BlueLEDriver.targetPebble = device
 

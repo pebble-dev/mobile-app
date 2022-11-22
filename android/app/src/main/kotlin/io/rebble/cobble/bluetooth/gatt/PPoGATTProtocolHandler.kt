@@ -37,17 +37,15 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
 
     var maxPacketSize = 25-4
 
-    init {
-        scope.launch {
-            gattDriver.packetRxFlow.collect {
-                onPacket(it)
-            }
+    private val rxJob = scope.launch {
+        gattDriver.packetRxFlow.collect {
+            onPacket(it)
         }
+    }
 
-        scope.launch {
-            gattDriver.mtuFlow.collect {
-                maxPacketSize = it-4
-            }
+    private val mtuJob = scope.launch {
+        gattDriver.mtuFlow.collect {
+            maxPacketSize = it-4
         }
     }
 
@@ -218,5 +216,10 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
         remoteSeq.reset()
         seq.reset()
         pendingPacket = null
+    }
+
+    override fun close() {
+        rxJob.cancel()
+        mtuJob.cancel()
     }
 }
