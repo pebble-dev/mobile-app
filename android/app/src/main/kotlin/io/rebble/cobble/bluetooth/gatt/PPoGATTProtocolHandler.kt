@@ -17,7 +17,7 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
     val rxPebblePacketFlow: SharedFlow<ByteArray> = _rxPebblePacketFlow
 
     inner class PendingACK(val sequence: Int, val success: Boolean)
-    private val ackFlow = MutableSharedFlow<PendingACK>()
+    private val ackFlow = MutableSharedFlow<PendingACK>(replay = 10)
 
     val connectionStateChannel = Channel<Boolean>(Channel.UNLIMITED)
 
@@ -89,6 +89,7 @@ class PPoGATTProtocolHandler(scope: CoroutineScope, private val gattDriver: PPoG
                 }
                 val added = pendingPacket!!.addData(protoData)
                 protoData = protoData.drop(added)
+                Timber.d("PendingPacket %s", pendingPacket?.isComplete)
                 if (pendingPacket!!.isComplete) {
                     _rxPebblePacketFlow.emit(pendingPacket!!.data.toByteArray())
                     pendingPacket = null
