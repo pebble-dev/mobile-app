@@ -93,7 +93,7 @@ class NotificationManager {
       content = TimelineAttribute.body("");
     }else {
       String contentText = "";
-      messages.forEach((el) {
+      messages.reversed.forEach((el) {
         NotificationMessage message = NotificationMessage.fromJson(el);
         contentText += message.sender!.trim() + ": ";
         contentText += message.text!.trim() + "\n";
