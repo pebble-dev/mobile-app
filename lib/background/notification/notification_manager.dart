@@ -82,16 +82,16 @@ class NotificationManager {
       _notificationUtils.dismissNotificationWatch(id);
     }
     Uuid itemId = RandomUuidGenerator().generate();
+    List<Map<String, dynamic>> messages = List<Map<String, dynamic>>.from(jsonDecode(notif.messagesJson ?? "[]"));
     List<TimelineAttribute> attributes = [
       TimelineAttribute.tinyIcon(await _determineIcon(notif.packageId, CategoryAndroid.fromId(notif.category))),
-      TimelineAttribute.title(notif.appName!.trim()),
-      TimelineAttribute.subtitle(notif.title!.trim()),
+      TimelineAttribute.title(messages.isEmpty ? notif.title!.trim() : notif.appName!.trim()),
+      TimelineAttribute.subtitle(messages.isEmpty ? notif.text!.trim() : ""),
     ];
     TimelineAttribute content = TimelineAttribute.body(notif.text!.trim());
-    if (notif.messagesJson!.isEmpty) {
+    if (messages.isEmpty) {
       content = TimelineAttribute.body("");
     }else {
-      List<Map<String, dynamic>> messages = new List<Map<String, dynamic>>.from(jsonDecode(notif.messagesJson!));
       String contentText = "";
       messages.forEach((el) {
         NotificationMessage message = NotificationMessage.fromJson(el);

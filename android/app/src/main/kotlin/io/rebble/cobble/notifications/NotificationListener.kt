@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import timber.log.Timber
+import java.util.UUID
 
 class NotificationListener : NotificationListenerService() {
     private lateinit var coroutineScope: CoroutineScope
@@ -36,6 +37,8 @@ class NotificationListener : NotificationListenerService() {
 
     private lateinit var notificationService: NotificationService
     private lateinit var notificationBridge: NotificationsFlutterBridge
+
+    private val inflightIds = mutableMapOf<String, Pair<StatusBarNotification, UUID>>()
 
     override fun onCreate() {
         val injectionComponent = (applicationContext as CobbleApplication).component
@@ -87,7 +90,7 @@ class NotificationListener : NotificationListenerService() {
             }
             if (NotificationCompat.getLocalOnly(sbn.notification)) return // ignore local notifications TODO: respect user preference
             if (sbn.notification.flags and Notification.FLAG_ONGOING_EVENT != 0) return // ignore ongoing notifications
-            //if (sbn.notification.group != null && !NotificationCompat.isGroupSummary(sbn.notification)) return
+            if (NotificationCompat.isGroupSummary(sbn.notification)) return // ignore group summary
             if (mutedPackages.contains(sbn.packageName)) return // ignore muted packages
 
             var tagId: String? = null
@@ -99,15 +102,32 @@ class NotificationListener : NotificationListenerService() {
                 } catch (e: SecurityException) {}
                 if (tagName == null) tagName = tagId
             }
-            val title = sbn.notification.extras[Notification.EXTRA_TITLE] as? String
-                    ?: sbn.notification.extras[Notification.EXTRA_CONVERSATION_TITLE] as? String ?: ""
+            val title = sbn.notification.extras[Notification.EXTRA_TITLE]?.toString()
+                    ?: sbn.notification.extras[Notification.EXTRA_CONVERSATION_TITLE]?.toString() ?: ""
 
-            val text = sbn.notification.extras[Notification.EXTRA_TEXT] as? String
-                    ?: sbn.notification.extras[Notification.EXTRA_BIG_TEXT] as? String ?: ""
+            val text = sbn.notification.extras[Notification.EXTRA_BIG_TEXT]?.toString()
+                    ?: sbn.notification.extras[Notification.EXTRA_TEXT]?.toString() ?: ""
 
             val actions = sbn.notification.actions?.map {
                 NotificationAction(it.title.toString(), !it.remoteInputs.isNullOrEmpty())
             } ?: listOf()
+
+            if (inflightIds.containsKey("${sbn.packageName}-${sbn.id}")) {
+                val prev = inflightIds["${sbn.packageName}-${sbn.id}"]!!
+                val oldText = prev.first.notification.extras[Notification.EXTRA_TEXT] ?: prev.first.notification.extras[Notification.EXTRA_BIG_TEXT] ?: ""
+                if (oldText != text ||
+                        (prev.first.notification.actions?.size ?: 0) != (sbn.notification.actions?.size ?: 0) ||
+                        (prev.first.notification.extras.getParcelableArray(Notification.EXTRA_MESSAGES)?.size ?: 0) != (sbn.notification.extras.getParcelableArray(Notification.EXTRA_MESSAGES)?.size ?: 0)
+                ) {
+                    if (notificationBridge.activeNotifs.containsKey(prev.second)) {
+                        notificationBridge.activeNotifs.remove(prev.second)
+                        notificationBridge.dismiss(prev.second)
+                    }
+                    inflightIds["${sbn.packageName}-${sbn.id}"] = Pair(sbn, prev.second)
+                } else {
+                    return
+                }
+            }
 
             var messages: List<NotificationMessage>? = null
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -120,13 +140,15 @@ class NotificationListener : NotificationListenerService() {
             }
 
             GlobalScope.launch(Dispatchers.Main.immediate) {
-                var result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, tagName, title, text, sbn.notification.category?:"", sbn.notification.color, messages?: listOf(), actions)
+                var result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, tagName, title, if (messages.isNullOrEmpty()) text else "", sbn.notification.category?:"", sbn.notification.color, messages?: listOf(), actions)
                 while (result.second == BlobResponse.BlobStatus.TryLater) {
                     delay(1000)
-                    result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, tagName, title, text, sbn.notification.category?:"", sbn.notification.color, messages?: listOf(), actions)
+                    result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, tagName, title, if (messages.isNullOrEmpty()) text else "", sbn.notification.category?:"", sbn.notification.color, messages?: listOf(), actions)
                 }
                 Timber.d(result.second.toString())
-                notificationBridge.activeNotifs[result.first.itemId.get()] = sbn
+                val uuid = result.first.itemId.get()
+                notificationBridge.activeNotifs[uuid] = sbn
+                inflightIds["${sbn.packageName}-${sbn.id}"] = Pair(sbn, uuid)
             }
         }
     }
@@ -134,7 +156,7 @@ class NotificationListener : NotificationListenerService() {
     override fun onNotificationRemoved(sbn: StatusBarNotification) {
         if (isListening) {
             Timber.d("Notification removed: ${sbn.packageName}")
-
+            inflightIds.remove("${sbn.packageName}-${sbn.id}")
             val notif = notificationBridge.activeNotifs.toList().firstOrNull { it.second.id == sbn.id && it.second.packageName == sbn.packageName }?.first
             if (notif != null) {
                 notificationBridge.dismiss(notif)
