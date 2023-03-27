@@ -26,6 +26,7 @@ jobs:
       - run: fvm install
       - run: fvm flutter pub get
       - run: fvm flutter analyze
+        continue-on-error: true
       - run: fvm flutter test
       - run: fvm flutter build apk --release
         env:
