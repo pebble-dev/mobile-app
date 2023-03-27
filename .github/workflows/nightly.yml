@@ -11,6 +11,7 @@ on:
       - 'pigeons/**'
       - 'test/**'
       - '.github/workflows/nightly.yml'
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
