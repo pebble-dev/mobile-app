@@ -25,7 +25,7 @@ jobs:
           KEY_JKS: ${{ secrets.KEY_JKS }}
       - run: fvm install
       - run: fvm flutter pub get
-      - run: fvm flutter analyze --no-fatal-infos
+      - run: fvm flutter analyze
       - run: fvm flutter test
       - run: fvm flutter build apk --release
         env:

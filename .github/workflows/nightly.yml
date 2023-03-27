@@ -24,7 +24,7 @@ jobs:
       - run: dart pub global activate fvm
       - run: fvm install
       - run: fvm flutter pub get
-      - run: fvm flutter analyze --no-fatal-infos
+      - run: fvm flutter analyze
       - name: Flutter test
         continue-on-error: true
         run: fvm flutter test
