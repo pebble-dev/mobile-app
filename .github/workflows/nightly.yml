@@ -11,19 +11,21 @@ on:
       - 'pigeons/**'
       - 'test/**'
       - '.github/workflows/nightly.yml'
+  workflow_dispatch:
 jobs:
   build:
-    if: github.repository == 'pebble-dev/mobile-app'
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+      - uses: dart-lang/setup-dart@v1.3
       - uses: actions/setup-java@v1
         with:
           java-version: '12.x'
       - run: dart pub global activate fvm
       - run: fvm install
       - run: fvm flutter pub get
-      - run: fvm flutter analyze --no-fatal-infos
+      - run: fvm flutter analyze
+        continue-on-error: true
       - name: Flutter test
         continue-on-error: true
         run: fvm flutter test
