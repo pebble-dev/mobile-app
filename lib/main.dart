@@ -21,7 +21,7 @@ import 'infrastructure/datasources/paired_storage.dart';
 import 'infrastructure/pigeons/pigeons.g.dart';
 import 'package:logging/logging.dart';
 
-const String bootUrl = "https://boot.rws-dev.crc32.dev/api";
+const String bootUrl = "https://boot.rebble.io/api";
 
 void main() {
   if (kDebugMode) {
