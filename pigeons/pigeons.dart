@@ -107,6 +107,7 @@ class NotificationPigeon {
 class AppEntriesPigeon {
   List<String?>? appName;
   List<String?>? packageId;
+  List<List<String?>?>? tags;
 }
 
 class PbwAppInfo {

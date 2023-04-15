@@ -1215,6 +1215,12 @@ public class Pigeons {
       this.packageId = setterArg;
     }
 
+    private @Nullable List<List<String>> tags;
+    public @Nullable List<List<String>> getTags() { return tags; }
+    public void setTags(@Nullable List<List<String>> setterArg) {
+      this.tags = setterArg;
+    }
+
     public static class Builder {
       private @Nullable List<String> appName;
       public @NonNull Builder setAppName(@Nullable List<String> setterArg) {
@@ -1226,10 +1232,16 @@ public class Pigeons {
         this.packageId = setterArg;
         return this;
       }
+      private @Nullable List<List<String>> tags;
+      public @NonNull Builder setTags(@Nullable List<List<String>> setterArg) {
+        this.tags = setterArg;
+        return this;
+      }
       public @NonNull AppEntriesPigeon build() {
         AppEntriesPigeon pigeonReturn = new AppEntriesPigeon();
         pigeonReturn.setAppName(appName);
         pigeonReturn.setPackageId(packageId);
+        pigeonReturn.setTags(tags);
         return pigeonReturn;
       }
     }
@@ -1237,6 +1249,7 @@ public class Pigeons {
       Map<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("appName", appName);
       toMapResult.put("packageId", packageId);
+      toMapResult.put("tags", tags);
       return toMapResult;
     }
     static @NonNull AppEntriesPigeon fromMap(@NonNull Map<String, Object> map) {
@@ -1245,6 +1258,8 @@ public class Pigeons {
       pigeonResult.setAppName((List<String>)appName);
       Object packageId = map.get("packageId");
       pigeonResult.setPackageId((List<String>)packageId);
+      Object tags = map.get("tags");
+      pigeonResult.setTags((List<List<String>>)tags);
       return pigeonResult;
     }
   }

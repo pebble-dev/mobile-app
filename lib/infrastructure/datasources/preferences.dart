@@ -115,6 +115,16 @@ class Preferences {
     _preferencesUpdateStream.add(this);
   }
 
+  List<String?>? getNotificationsMutedTags() {
+    return _sharedPrefs.getStringList("MUTED_NOTIF_TAGS");
+  }
+
+  Future<void> setNotificationsMutedTags(List<String?> packages) async {
+    await _sharedPrefs.setStringList(
+        "MUTED_NOTIF_TAGS", packages as List<String>);
+    _preferencesUpdateStream.add(this);
+  }
+
   bool isAppReorderPending() {
     return _sharedPrefs.getBool("APP_REORDER_PENDING") ?? false;
   }
@@ -167,6 +177,10 @@ final notificationToggleProvider = _createPreferenceProvider(
 
 final notificationsMutedPackagesProvider = _createPreferenceProvider(
   (preferences) => preferences.getNotificationsMutedPackages(),
+);
+
+final notificationsMutedTagsProvider = _createPreferenceProvider(
+      (preferences) => preferences.getNotificationsMutedTags(),
 );
 
 /// ```dart

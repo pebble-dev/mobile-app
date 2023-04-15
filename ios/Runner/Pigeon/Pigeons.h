@@ -197,9 +197,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface AppEntriesPigeon : NSObject
 + (instancetype)makeWithAppName:(nullable NSArray<NSString *> *)appName
-    packageId:(nullable NSArray<NSString *> *)packageId;
+    packageId:(nullable NSArray<NSString *> *)packageId
+    tags:(nullable NSArray<NSArray<NSString *> *> *)tags;
 @property(nonatomic, strong, nullable) NSArray<NSString *> * appName;
 @property(nonatomic, strong, nullable) NSArray<NSString *> * packageId;
+@property(nonatomic, strong, nullable) NSArray<NSArray<NSString *> *> * tags;
 @end
 
 @interface PbwAppInfo : NSObject

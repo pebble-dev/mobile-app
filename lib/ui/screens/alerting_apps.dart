@@ -9,6 +9,7 @@ import 'package:cobble/ui/common/components/cobble_tile.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
+import 'package:cobble/ui/screens/alerting_apps/app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
@@ -20,8 +21,9 @@ class _App {
   final String name;
   final bool enabled;
   final String packageId;
+  final List<String?> tags;
 
-  _App(this.name, this.enabled, this.packageId);
+  _App(this.name, this.enabled, this.packageId, this.tags);
 }
 
 class AlertingApps extends HookWidget implements CobbleScreen {
@@ -83,7 +85,7 @@ class AlertingApps extends HookWidget implements CobbleScreen {
                           orElse: () => null) ==
                       null;
                   apps.add(_App(snapshot.data!.appName![i] as String, enabled,
-                      snapshot.data!.packageId![i] as String));
+                      snapshot.data!.packageId![i] as String, snapshot.data!.tags![i]!));
                 }
 
                 List filteredApps = apps.where(
@@ -96,7 +98,7 @@ class AlertingApps extends HookWidget implements CobbleScreen {
                   itemCount: filteredApps.length,
                   itemBuilder: (BuildContext context, int index) {
                       _App app = filteredApps[index];
-                      return CobbleTile.app(
+                      return CobbleTile.appNavigation(
                           leading: Svg('images/temp_alerting_app.svg'),
                           title: app.name,
                           subtitle: app.enabled
@@ -106,7 +108,8 @@ class AlertingApps extends HookWidget implements CobbleScreen {
                               : tr.alertingApps.mutedToday(
                                   muted: random.nextInt(8).toString(),
                                 ),
-                          child: Switch(
+                          navigateTo: const AlertingApp(),
+                          /*child: Switch(
                             value: app.enabled,
                             onChanged: (value) async {
                               var mutedPkgList =
@@ -121,7 +124,7 @@ class AlertingApps extends HookWidget implements CobbleScreen {
                               await preferences.data?.value
                                   .setNotificationsMutedPackages(mutedPkgList);
                             },
-                          ),
+                          ),*/
                         );
                       }
                 );

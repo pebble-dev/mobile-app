@@ -491,15 +491,18 @@ class AppEntriesPigeon {
   AppEntriesPigeon({
     this.appName,
     this.packageId,
+    this.tags,
   });
 
   List<String?>? appName;
   List<String?>? packageId;
+  List<List<String?>?>? tags;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
     pigeonMap['appName'] = appName;
     pigeonMap['packageId'] = packageId;
+    pigeonMap['tags'] = tags;
     return pigeonMap;
   }
 
@@ -508,6 +511,7 @@ class AppEntriesPigeon {
     return AppEntriesPigeon(
       appName: (pigeonMap['appName'] as List<Object?>?)?.cast<String?>(),
       packageId: (pigeonMap['packageId'] as List<Object?>?)?.cast<String?>(),
+      tags: (pigeonMap['tags'] as List<Object?>?)?.cast<List<String?>?>(),
     );
   }
 }

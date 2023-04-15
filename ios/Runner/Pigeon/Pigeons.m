@@ -472,20 +472,23 @@ static id GetNullableObject(NSDictionary* dict, id key) {
 
 @implementation AppEntriesPigeon
 + (instancetype)makeWithAppName:(nullable NSArray<NSString *> *)appName
-    packageId:(nullable NSArray<NSString *> *)packageId {
+    packageId:(nullable NSArray<NSString *> *)packageId
+    tags:(nullable NSArray<NSArray<NSString *> *> *)tags {
   AppEntriesPigeon* pigeonResult = [[AppEntriesPigeon alloc] init];
   pigeonResult.appName = appName;
   pigeonResult.packageId = packageId;
+  pigeonResult.tags = tags;
   return pigeonResult;
 }
 + (AppEntriesPigeon *)fromMap:(NSDictionary *)dict {
   AppEntriesPigeon *pigeonResult = [[AppEntriesPigeon alloc] init];
   pigeonResult.appName = GetNullableObject(dict, @"appName");
   pigeonResult.packageId = GetNullableObject(dict, @"packageId");
+  pigeonResult.tags = GetNullableObject(dict, @"tags");
   return pigeonResult;
 }
 - (NSDictionary *)toMap {
-  return [NSDictionary dictionaryWithObjectsAndKeys:(self.appName ? self.appName : [NSNull null]), @"appName", (self.packageId ? self.packageId : [NSNull null]), @"packageId", nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.appName ? self.appName : [NSNull null]), @"appName", (self.packageId ? self.packageId : [NSNull null]), @"packageId", (self.tags ? self.tags : [NSNull null]), @"tags", nil];
 }
 @end
 

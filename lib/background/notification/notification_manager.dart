@@ -178,17 +178,20 @@ class NotificationManager {
         break;
       case 2: // MUTE_PKG
         List<String?> muted = prefs.getNotificationsMutedPackages()!;
-        prefs.setNotificationsMutedPackages(muted + [(await _activeNotificationDao.getActiveNotifByPinId(Uuid.parse(trigger.itemId!)))!.packageId]);
+        final activeNotif = (await _activeNotificationDao.getActiveNotifByPinId(Uuid.parse(trigger.itemId!)))!;
+        prefs.setNotificationsMutedPackages(muted + [activeNotif.packageId]);
         ret = TimelineActionResponse(true, attributes: [
           TimelineAttribute.subtitle("Muted app"),
           TimelineAttribute.largeIcon(TimelineIcon.resultMute)
         ]);
         break;
       case 3: // MUTE_TAG
-        //TODO
+        List<String? > muted = prefs.getNotificationsMutedTags()!;
+        final activeNotif = (await _activeNotificationDao.getActiveNotifByPinId(Uuid.parse(trigger.itemId!)))!;
+        prefs.setNotificationsMutedTags(muted + [activeNotif.packageId! + activeNotif.tagId!]);
         ret = TimelineActionResponse(true, attributes: [
-          TimelineAttribute.subtitle("TODO"),
-          TimelineAttribute.largeIcon(TimelineIcon.resultFailed)
+          TimelineAttribute.subtitle("Muted tag"),
+          TimelineAttribute.largeIcon(TimelineIcon.resultMute)
         ]);
         break;
       default: // Custom
