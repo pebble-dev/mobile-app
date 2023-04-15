@@ -137,6 +137,12 @@
       "subtitle": "All set and ready to Rebble!",
       "welcome": "Welcome back, {name}!",
       "fab": "ON TO REBBLE!"
+    },
+    "failure": {
+      "title": "Activate Rebble services",
+      "subtitle": "Oops!",
+      "error": "An error occured setting up Rebble, we'll load in offline mode and you can try again from settings later!",
+      "fab": "OKAY"
     }
   },
   "health": {

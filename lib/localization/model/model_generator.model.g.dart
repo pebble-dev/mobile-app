@@ -807,12 +807,28 @@ LanguageSettingsTimeline _$LanguageSettingsTimelineFromJson(
 LanguageSetup _$LanguageSetupFromJson(Map<String, dynamic> json) {
   $checkKeys(
     json,
-    allowedKeys: const ['success'],
-    requiredKeys: const ['success'],
-    disallowNullValues: const ['success'],
+    allowedKeys: const ['success', 'failure'],
+    requiredKeys: const ['success', 'failure'],
+    disallowNullValues: const ['success', 'failure'],
   );
   return LanguageSetup(
     LanguageSetupSuccess.fromJson(json['success'] as Map<String, dynamic>),
+    LanguageSetupFailure.fromJson(json['failure'] as Map<String, dynamic>),
+  );
+}
+
+LanguageSetupFailure _$LanguageSetupFailureFromJson(Map<String, dynamic> json) {
+  $checkKeys(
+    json,
+    allowedKeys: const ['title', 'subtitle', 'error', 'fab'],
+    requiredKeys: const ['title', 'subtitle', 'error', 'fab'],
+    disallowNullValues: const ['title', 'subtitle', 'error', 'fab'],
+  );
+  return LanguageSetupFailure(
+    json['title'] as String,
+    json['subtitle'] as String,
+    json['error'] as String,
+    json['fab'] as String,
   );
 }
 

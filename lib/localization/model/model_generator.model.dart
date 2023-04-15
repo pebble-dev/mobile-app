@@ -1588,10 +1588,56 @@ class LanguageSetup {
   )
   final LanguageSetupSuccess success;
 
-  LanguageSetup(this.success);
+  @JsonKey(
+    name: 'failure',
+    required: true,
+    disallowNullValue: true,
+  )
+  final LanguageSetupFailure failure;
+
+  LanguageSetup(this.success, this.failure);
 
   factory LanguageSetup.fromJson(Map<String, dynamic> json) =>
       _$LanguageSetupFromJson(json);
+}
+
+@JsonSerializable(
+  createToJson: false,
+  disallowUnrecognizedKeys: true,
+)
+class LanguageSetupFailure {
+  @JsonKey(
+    name: 'title',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String title;
+
+  @JsonKey(
+    name: 'subtitle',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String subtitle;
+
+  @JsonKey(
+    name: 'error',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String error;
+
+  @JsonKey(
+    name: 'fab',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String fab;
+
+  LanguageSetupFailure(this.title, this.subtitle, this.error, this.fab);
+
+  factory LanguageSetupFailure.fromJson(Map<String, dynamic> json) =>
+      _$LanguageSetupFailureFromJson(json);
 }
 
 @JsonSerializable(
