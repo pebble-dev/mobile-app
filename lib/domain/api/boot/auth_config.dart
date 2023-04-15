@@ -5,13 +5,13 @@ part 'auth_config.g.dart';
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class AuthConfig extends BaseURLEntry {
-  final String authoriseUrl;
+  final String authorizeUrl;
   final String refreshUrl;
   final String clientId;
 
   AuthConfig({
     required base,
-    required this.authoriseUrl,
+    required this.authorizeUrl,
     required this.refreshUrl,
     required this.clientId
   }) : super(base);

@@ -190,6 +190,6 @@ final oauthClientProvider = FutureProvider((ref) async {
   final boot = await (await ref.watch(bootServiceProvider.future)).config;
   final prefs = await ref.watch(preferencesProvider.future);
   final secureStorage = ref.watch(secureStorageProvider);
-  return OAuthClient(prefs, secureStorage, boot.auth.authoriseUrl,
+  return OAuthClient(prefs, secureStorage, boot.auth.authorizeUrl,
       boot.auth.refreshUrl, boot.auth.clientId);
 });
