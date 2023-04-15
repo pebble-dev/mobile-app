@@ -13,9 +13,7 @@ class BootService extends Service {
 
   Future? _mutex;
 
-  BootService(String baseUrl) : super(baseUrl) {
-    print("THE URL IS CURRENTLY " + baseUrl);
-  }
+  BootService(String baseUrl) : super(baseUrl);
 
   Future<BootConfig> get config async {
     if (_mutex != null) await _mutex;
