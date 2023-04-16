@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cobble/domain/api/appstore/locker_entry.dart';
 import 'package:cobble/domain/api/appstore/locker_sync.dart';
 import 'package:cobble/domain/api/status_exception.dart';
+import 'package:cobble/domain/apps/requests/force_refresh_request.dart';
 import 'package:cobble/domain/db/dao/app_dao.dart';
 import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/entities/pbw_app_info_extension.dart';
@@ -47,9 +48,8 @@ class AppManager extends StateNotifier<List<App>> {
       if (app.pbw?.file != null) {
         _logger.fine("New app ${app.title}");
         try {
-          final uri = await downloadPbw(app.pbw!.file, app.uuid);
+          final uri = await downloadPbw(app.pbw!.file, app.uuid.toLowerCase());
           await addOrUpdateLockerAppOffloaded(app, uri);
-          await File.fromUri(uri).delete();
         } on StatusException catch(e) {
           if (e.statusCode == 404) {
             _logger.warning("Failed to download ${app.title}, skipping", e);
@@ -63,22 +63,36 @@ class AppManager extends StateNotifier<List<App>> {
     for (var app in goneApps) {
       await deleteApp(app.uuid);
     }
+    final request = ForceRefreshRequest(false);
+
+    final result = await backgroundRpc.triggerMethod(request);
+    result.resultOrThrow();
+
     await refresh();
   }
 
   Future<Uri> downloadPbw(String url, String uuid) async {
-    final tempDir = await getTemporaryDirectory();
+    final docsDir = (await getApplicationDocumentsDirectory()).parent; // .parent escapes from 'flutter specific' dir
+    final appDir = Directory(docsDir.path + "/files/apps");
+    if (!await appDir.exists()) {
+      await appDir.create(recursive: true);
+    }
+
     final uri = Uri.parse(url);
     HttpClient httpClient = HttpClient();
-    final file = File("${tempDir.path}/$uuid.pbw");
-
-    var request = await httpClient.getUrl(uri);
-    var response = await request.close();
-    if(response.statusCode == 200) {
-      var bytes = await consolidateHttpClientResponseBytes(response);
-      await file.writeAsBytes(bytes);
-    } else {
-      throw StatusException(response.statusCode, response.reasonPhrase, uri);
+    final file = File("${appDir.path}/$uuid.pbw");
+    final fd = file.openWrite();
+    try {
+      var request = await httpClient.getUrl(uri);
+      var response = await request.close();
+      if(response.statusCode == 200) {
+        await response.pipe(fd);
+      } else {
+        throw StatusException(response.statusCode, response.reasonPhrase, uri);
+      }
+      await fd.flush();
+    } finally {
+      await fd.close();
     }
     return file.uri;
   }

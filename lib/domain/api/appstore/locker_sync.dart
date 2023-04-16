@@ -26,12 +26,6 @@ class LockerSync extends StateNotifier<List<LockerEntry>?> {
   }
 
   Future<void> refresh() async {
-    final docsDir = (await getApplicationDocumentsDirectory()).parent; // .parent escapes from 'flutter specific' dir
-    final appDir = Directory(docsDir.path + "/files/apps");
-    if (!await appDir.exists()) {
-      appDir.create(recursive: true);
-    }
-
     try {
       final appstore = await appstoreFuture;
       final locker = await appstore.locker;
@@ -40,33 +34,6 @@ class LockerSync extends StateNotifier<List<LockerEntry>?> {
       for (var current in currentCache) {
         if (locker.indexWhere((updated) => current.id == updated.id) != -1 && current.markedForDeletion) {
           await appstore.removeFromLocker(current.uuid.toString());
-        }
-      }
-
-      for (var nw in locker) {
-        final uuid = nw.uuid.toLowerCase();
-        final appFile = File(appDir.path + "/" + uuid + ".pbw");
-        final currentI = currentCache.indexWhere((element) => element.id == nw.id);
-        if (!await appFile.exists() || (currentI != -1 && currentCache[currentI].version != nw.version)) {
-          Log.d("Downloading app $uuid as it doesn't exist/has update...");
-          final fd = appFile.openWrite();
-          try {
-            final uri = nw.pbw?.file.isNotEmpty == true ? Uri.parse(nw.pbw!.file) : null;
-            if (uri == null) {
-              Log.e("No PBW for $uuid, skipping");
-              continue;
-            }
-            final req = await _client.getUrl(uri);
-            final res = await req.close();
-            if (res.statusCode == 200) {
-              await res.pipe(fd);
-            } else {
-              Log.e("Error downloading PBW for $uuid: ${res.statusCode}, skipping");
-              continue;
-            }
-          } finally {
-            await fd.close();
-          }
         }
       }
 

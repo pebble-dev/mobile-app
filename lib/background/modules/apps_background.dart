@@ -1,5 +1,6 @@
 import 'package:cobble/domain/apps/app_lifecycle_manager.dart';
 import 'package:cobble/domain/apps/requests/app_reorder_request.dart';
+import 'package:cobble/domain/apps/requests/force_refresh_request.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/db/dao/app_dao.dart';
 import 'package:cobble/domain/db/models/app.dart';
@@ -39,7 +40,11 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
   }
 
   Future<bool> onWatchConnected(PebbleDevice watch, bool unfaithful) async {
-    if (unfaithful) {
+    return forceAppSync(unfaithful);
+  }
+
+  Future<bool> forceAppSync(bool clear) async {
+    if (clear) {
       Log.d('Clearing all apps and re-syncing');
       return watchAppsSyncer.clearAllAppsFromWatchAndResync();
     } else {
@@ -51,6 +56,8 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
   Future<Object>? onMessageFromUi(Object message) {
     if (message is AppReorderRequest) {
       return beginAppOrderChange(message);
+    } else if (message is ForceRefreshRequest) {
+      return forceAppSync(message.clear);
     }
 
     return null;

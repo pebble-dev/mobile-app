@@ -27,7 +27,6 @@ import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import io.rebble.libpebblecommon.structmapper.SUUID
 import io.rebble.libpebblecommon.structmapper.StructMapper
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -59,7 +58,7 @@ class AppInstallFlutterBridge @Inject constructor(
     private var statusObservingJob: Job? = null
 
     companion object {
-        private val json = Json { ignoreUnknownKeys = true};
+        private val json = Json { ignoreUnknownKeys = true}
     }
 
     init {
@@ -110,26 +109,30 @@ class AppInstallFlutterBridge @Inject constructor(
             val appUuid = installData.appInfo.uuid!!
             val targetFileName = getAppPbwFile(context, appUuid)
 
-            val success = withContext(Dispatchers.IO) {
-                val openInputStream = openUriStream(installData.uri)
+            val success = if (!installData.stayOffloaded) {
+                withContext(Dispatchers.IO) {
+                    val openInputStream = openUriStream(installData.uri)
 
-                if (openInputStream == null) {
-                    Timber.e("Unknown URI '%s'. This should have been filtered before it reached beginAppInstall. Aborting.", installData.uri)
-                    return@withContext false
-                }
-
-                val source = openInputStream
-                        .source()
-                        .buffer()
-
-                val sink = targetFileName.sink().buffer()
-
-                source.use {
-                    sink.use {
-                        sink.writeAll(source)
+                    if (openInputStream == null) {
+                        Timber.e("Unknown URI '%s'. This should have been filtered before it reached beginAppInstall. Aborting.", installData.uri)
+                        return@withContext false
                     }
-                }
 
+                    val source = openInputStream
+                            .source()
+                            .buffer()
+
+                    val sink = targetFileName.sink().buffer()
+
+                    source.use {
+                        sink.use {
+                            sink.writeAll(source)
+                        }
+                    }
+
+                    true
+                }
+            } else {
                 true
             }
 
@@ -148,8 +151,9 @@ class AppInstallFlutterBridge @Inject constructor(
 
                 val appFile = getAppPbwFile(context, appUuid)
                 if (!appFile.exists()) {
-                    error("PBW file $appUuid missing")
+                    error("PBW file ${appFile.absolutePath} missing")
                 }
+                Timber.d("Len: ${appFile.length()}")
 
 
                 // Wait some time for metadata to become available in case this has been called
