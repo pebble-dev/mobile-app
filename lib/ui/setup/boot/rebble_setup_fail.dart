@@ -22,7 +22,10 @@ class RebbleSetupFail extends HookConsumerWidget implements CobbleScreen {
       child: CobbleStep(
         icon: const CompIcon(RebbleIcons.dead_watch_ghost80, RebbleIcons.dead_watch_ghost80_background, size: 80.0),
         title: tr.setup.failure.subtitle,
-        subtitle: tr.setup.failure.error,
+        child: Text(
+          tr.setup.failure.error,
+          textAlign: TextAlign.center,
+        )
       ),
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () async {

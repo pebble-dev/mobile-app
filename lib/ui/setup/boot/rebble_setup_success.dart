@@ -28,7 +28,10 @@ class RebbleSetupSuccess extends HookConsumerWidget implements CobbleScreen {
         builder: (context, snap) => CobbleStep(
             icon: const CompIcon(RebbleIcons.rocket80, RebbleIcons.rocket80_background, size: 80,),
             title: tr.setup.success.subtitle,
-            subtitle: tr.setup.success.welcome(name: snap.hasData ? (snap.data! as User).name : "..."),
+            child: Text(
+              tr.setup.success.welcome(name: snap.hasData ? (snap.data! as User).name : "..."),
+              textAlign: TextAlign.center,
+            )
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(

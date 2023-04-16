@@ -14,10 +14,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 ///
 /// This class never returns AsyncValue.loading (only data or error).
 class BackgroundRpc {
-  Map<int, Completer<AsyncValue<Object>>> _pendingCompleters = Map();
+  final Map<int, Completer<AsyncValue<Object>>> _pendingCompleters = {};
   int _nextMessageId = 0;
+  final RpcDirection rpcDirection;
 
-  BackgroundRpc() {
+  BackgroundRpc(this.rpcDirection) {
     _startReceivingResults();
   }
 
@@ -25,7 +26,9 @@ class BackgroundRpc {
     I input,
   ) async {
     final port = IsolateNameServer.lookupPortByName(
-      isolatePortNameToBackground,
+      rpcDirection == RpcDirection.toBackground
+          ? isolatePortNameToBackground
+          : isolatePortNameToForeground,
     );
 
     if (port == null) {
@@ -39,7 +42,7 @@ class BackgroundRpc {
     final completer = Completer<AsyncValue<Object>>();
     _pendingCompleters[requestId] = completer;
 
-    port.send(request.toMap());
+    port.send(request);
 
     final result = await completer.future;
     return result as AsyncValue<O>;
@@ -48,24 +51,21 @@ class BackgroundRpc {
   void _startReceivingResults() {
     final returnPort = ReceivePort();
     IsolateNameServer.removePortNameMapping(
-        isolatePortNameReturnFromBackground);
+        rpcDirection == RpcDirection.toBackground
+            ? isolatePortNameReturnFromBackground
+            : isolatePortNameReturnFromForeground);
     IsolateNameServer.registerPortWithName(
-        returnPort.sendPort, isolatePortNameReturnFromBackground);
+        returnPort.sendPort, rpcDirection == RpcDirection.toBackground
+            ? isolatePortNameReturnFromBackground
+            : isolatePortNameReturnFromForeground);;
 
     returnPort.listen((message) {
-      RpcResult receivedMessage;
-
-      if (message is Map<String, dynamic>) {
-        try {
-          receivedMessage = RpcResult.fromMap(message);
-        } catch (e) {
-          throw Exception("Error creating RpcResult from Map: $e");
-        }
-      } else {
+      if (message is! RpcResult) {
         Log.e("Unknown message: $message");
         return;
       }
 
+      final RpcResult receivedMessage = message;
       final waitingCompleter = _pendingCompleters[receivedMessage.id];
       if (waitingCompleter == null) {
         return;
@@ -78,10 +78,10 @@ class BackgroundRpc {
       } else if (receivedMessage.errorResult != null) {
         result = AsyncValue.error(
           receivedMessage.errorResult!,
-          receivedMessage.errorStacktrace ?? StackTrace.current,
+          receivedMessage.errorStacktrace,
         );
       } else {
-        result = AsyncValue.error("Received result without any data.", StackTrace.current);
+        result = AsyncValue.error("Received result without any data.");
       }
 
       waitingCompleter.complete(result);
@@ -89,7 +89,14 @@ class BackgroundRpc {
   }
 }
 
-final String isolatePortNameToBackground = "toBackground";
-final String isolatePortNameReturnFromBackground = "returnFromBackground";
+const String isolatePortNameToBackground = "toBackground";
+const String isolatePortNameReturnFromBackground = "returnFromBackground";
+const String isolatePortNameToForeground = "toForeground";
+const String isolatePortNameReturnFromForeground = "returnFromForeground";
 
-final backgroundRpcProvider = Provider<BackgroundRpc>((ref) => BackgroundRpc());
+final backgroundRpcProvider = Provider<BackgroundRpc>((ref) => BackgroundRpc(RpcDirection.toBackground));
+
+enum RpcDirection {
+  toForeground,
+  toBackground,
+}

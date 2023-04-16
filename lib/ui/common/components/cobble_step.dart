@@ -5,10 +5,10 @@ import 'cobble_circle.dart';
 class CobbleStep extends StatelessWidget {
 
   final String title;
-  final String subtitle;
+  final Widget? child;
   final Widget icon;
 
-  const CobbleStep({Key? key, required this.icon, required this.title, this.subtitle = ""}) : super(key: key);
+  const CobbleStep({Key? key, required this.icon, required this.title, this.child}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class CobbleStep extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24.0), // spacer
-          Text(subtitle, textAlign: TextAlign.center),
+          if (child != null) child!,
         ],
       ),
     );

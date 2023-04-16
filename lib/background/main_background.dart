@@ -5,8 +5,10 @@ import 'package:cobble/background/modules/apps_background.dart';
 import 'package:cobble/background/modules/notifications_background.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
+import 'package:cobble/domain/firmware/requests/init_required_request.dart';
 import 'package:cobble/domain/logging.dart';
 import 'package:cobble/infrastructure/backgroundcomm/BackgroundReceiver.dart';
+import 'package:cobble/infrastructure/backgroundcomm/BackgroundRpc.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/localization/localization.dart';
@@ -37,6 +39,7 @@ class BackgroundReceiver implements TimelineCallbacks {
   late MasterActionHandler masterActionHandler;
 
   late ProviderSubscription<WatchConnectionState> connectionSubscription;
+  late BackgroundRpc foregroundRpc;
 
   BackgroundReceiver() {
     init();
@@ -76,8 +79,9 @@ class BackgroundReceiver implements TimelineCallbacks {
     notificationsBackground.init();
     appsBackground = AppsBackground(this.container);
     appsBackground.init();
+    foregroundRpc = BackgroundRpc(RpcDirection.toForeground);
 
-    startReceivingRpcRequests(onMessageFromUi);
+    startReceivingRpcRequests(RpcDirection.toBackground, onMessageFromUi);
   }
 
   void onWatchConnected(PebbleDevice watch) async {
@@ -99,6 +103,11 @@ class BackgroundReceiver implements TimelineCallbacks {
     if (unfaithful) {
       // Ensure we will stay in unfaithful mode until sync succeeds
       await prefs.setLastConnectedWatchAddress("");
+    }
+
+    if (watch.runningFirmware.isRecovery == true) {
+      await foregroundRpc.triggerMethod(InitRequiredRequest());
+      return;
     }
 
     bool success = true;
