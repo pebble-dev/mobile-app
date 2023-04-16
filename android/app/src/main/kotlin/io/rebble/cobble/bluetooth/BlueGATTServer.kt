@@ -177,11 +177,11 @@ class BlueGATTServer(
                                 ackPending.remove(i)?.complete(packet)
                                 packetsInFlight = (packetsInFlight - 1).coerceAtLeast(0)
                             }
-                            Timber.d("Got ACK for ${packet.sequence}")
+                            //Timber.d("Got ACK for ${packet.sequence}")
                             sendActor.send(SendActorMessage.UpdateData)
                         }
                         GATTPacket.PacketType.DATA -> {
-                            Timber.d("Packet ${packet.sequence}, Expected $remoteSeq")
+                            //Timber.d("Packet ${packet.sequence}, Expected $remoteSeq")
                             if (packet.sequence == remoteSeq) {
                                 try {
                                     remoteSeq = getNextSeq(remoteSeq)
@@ -273,7 +273,7 @@ class BlueGATTServer(
 
     override fun onNotificationSent(device: BluetoothDevice?, status: Int) {
         if (targetDevice.address == device!!.address) {
-            Timber.d("onNotificationSent")
+            //Timber.d("onNotificationSent")
             sendActor.trySend(SendActorMessage.UpdateData).isSuccess
         }
     }
@@ -351,7 +351,7 @@ class BlueGATTServer(
      */
     private suspend fun attemptWrite(packet: GATTPacket) {
         withContext(Dispatchers.IO) {
-            Timber.d("Sending ${packet.type}: ${packet.sequence}")
+            //Timber.d("Sending ${packet.type}: ${packet.sequence}")
             if (packet.type == GATTPacket.PacketType.DATA || packet.type == GATTPacket.PacketType.RESET) ackPending[packet.sequence] = CompletableDeferred(packet)
             var success = false
             var attempt = 0
@@ -465,7 +465,7 @@ class BlueGATTServer(
      * Send an ACK for a packet
      */
     private fun sendAck(sequence: Int) {
-        Timber.d("Sending ACK for $sequence")
+        //Timber.d("Sending ACK for $sequence")
         sendActor.trySend(SendActorMessage.SendAck(sequence)).isSuccess
     }
 
