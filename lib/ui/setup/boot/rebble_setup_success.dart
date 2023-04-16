@@ -2,6 +2,9 @@ import 'package:cobble/domain/api/auth/auth.dart';
 import 'package:cobble/domain/api/auth/user.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/localization/localization.dart';
+import 'package:cobble/ui/common/components/cobble_step.dart';
+import 'package:cobble/ui/common/icons/comp_icon.dart';
+import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/home/home_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
@@ -20,24 +23,13 @@ class RebbleSetupSuccess extends HookWidget implements CobbleScreen {
 
     return CobbleScaffold.page(
       title: tr.setup.success.title,
-      child: Column(
-        children: <Widget>[
-          Text(
-            tr.setup.success.subtitle,
-            style: Theme.of(context).textTheme.headline3,
-          ),
-          FutureBuilder<User?>(
-            future: userFuture,
-            builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
-              if (snapshot.hasData) {
-                return Text(
-                    tr.setup.success.welcome(name: snapshot.data!.name));
-              } else {
-                return Text(" ");
-              }
-            },
-          )
-        ],
+      child: FutureBuilder(
+        future: userFuture,
+        builder: (context, snap) => CobbleStep(
+            icon: const CompIcon(RebbleIcons.rocket80, RebbleIcons.rocket80_background, size: 80,),
+            title: tr.setup.success.subtitle,
+            subtitle: tr.setup.success.welcome(name: snap.hasData ? (snap.data! as User).name : "..."),
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
