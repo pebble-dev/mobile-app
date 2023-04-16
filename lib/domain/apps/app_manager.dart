@@ -10,7 +10,6 @@ import 'package:cobble/domain/entities/pbw_app_info_extension.dart';
 import 'package:cobble/infrastructure/backgroundcomm/BackgroundRpc.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/util/async_value_extensions.dart';
-import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid_type/uuid_type.dart';
@@ -71,16 +70,21 @@ class AppManager extends StateNotifier<List<App>> {
     await refresh();
   }
 
-  Future<Uri> downloadPbw(String url, String uuid) async {
+  Future<File> makePbwFile(String uuid) async {
     final docsDir = (await getApplicationDocumentsDirectory()).parent; // .parent escapes from 'flutter specific' dir
     final appDir = Directory(docsDir.path + "/files/apps");
     if (!await appDir.exists()) {
       await appDir.create(recursive: true);
     }
+    return File("${appDir.path}/${uuid.toLowerCase()}.pbw");
+  }
+
+  Future<Uri> downloadPbw(String url, String uuid) async {
+
 
     final uri = Uri.parse(url);
     HttpClient httpClient = HttpClient();
-    final file = File("${appDir.path}/$uuid.pbw");
+    final file = await makePbwFile(uuid);
     final fd = file.openWrite();
     try {
       var request = await httpClient.getUrl(uri);
@@ -128,12 +132,17 @@ class AppManager extends StateNotifier<List<App>> {
   Future<void> deleteApp(Uuid uuid) async {
     if ((await appDao.getPackage(uuid))?.appstoreId != null) {
       await lockerSync.removeFromLocker(uuid);
+      _logger.fine("Removed from locker");
     }
+    final file = await makePbwFile(uuid.toString());
     final uuidWrapper = StringWrapper();
     uuidWrapper.value = uuid.toString();
 
     await appInstallControl.beginAppDeletion(uuidWrapper);
     await refresh();
+    try {
+      await file.delete();
+    } on FileSystemException catch(_){}
   }
 
   void beginAppInstall(String uri, PbwAppInfo appInfo) async {

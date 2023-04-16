@@ -1,6 +1,7 @@
 import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/domain/db/models/app.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
+import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/home/tabs/locker_tab/faces_sheet.dart';
@@ -41,13 +42,15 @@ class FacesCard extends StatelessWidget {
             ),
             Column(
               children: <Widget>[
-                // TODO: Implement sending to the watch
+                // TODO: Implement sync for which face is currently on the watch (app launch events?)
                 Expanded(
                   child: compatible
                       ? CobbleButton(
                           outlined: false,
                           icon: RebbleIcons.send_to_watch_unchecked,
-                          onPressed: () {},
+                          onPressed: () {
+                            AppLifecycleControl().openAppOnTheWatch(StringWrapper(value: face.uuid.toString()));
+                          },
                         )
                       : Container(),
                 ),

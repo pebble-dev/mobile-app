@@ -7,12 +7,10 @@ import 'package:cobble/domain/db/models/locker_app.dart';
 import 'package:cobble/infrastructure/datasources/web_services/appstore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:state_notifier/state_notifier.dart';
 import 'package:uuid_type/uuid_type.dart';
 import 'package:logging/logging.dart';
 
-import '../../logging.dart';
 import 'appstore.dart';
 
 class LockerSync extends StateNotifier<List<LockerEntry>?> {
@@ -52,12 +50,12 @@ class LockerSync extends StateNotifier<List<LockerEntry>?> {
   Future<void> addToLocker(Uuid uuid) async {
     final appstore = await appstoreFuture;
     await appstore.addToLocker(uuid.toString());
-    refresh();
+    await refresh();
   }
 
   Future<void> removeFromLocker(Uuid uuid) async {
     await lockerCacheDao.markForDeletionByUuid(uuid); // done locally and actioned upon refresh for offline-first
-    refresh();
+    await refresh();
   }
 }
 

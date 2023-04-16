@@ -83,7 +83,10 @@ class AppsSheet {
           CobbleTile.action(
             leading: RebbleIcons.delete_trash,
             title: tr.lockerPage.delete,
-            onTap: () => appManager.deleteApp(app.uuid),
+            onTap: () {
+              appManager.deleteApp(app.uuid);
+              Navigator.pop(context);
+            },
           ),
         ],
       ),
