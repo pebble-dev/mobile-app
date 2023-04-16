@@ -33,8 +33,8 @@ class RebbleSetup extends HookWidget implements CobbleScreen {
           oauthClient.when(
             data: (oauth) {
               final authoriseUri = oauth.generateAuthoriseWebviewUrl();
-              return ElevatedButton(
-                child: Text("SIGN IN TO REBBLE SERVICES"),
+              return CobbleButton(
+                label: "SIGN IN TO REBBLE SERVICES",
                 onPressed: () => canLaunchUrl(authoriseUri).then((value) async {
                   if (value) {
                     if (await launchUrl(authoriseUri, mode: LaunchMode.externalApplication)) {

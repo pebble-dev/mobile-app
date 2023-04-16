@@ -85,13 +85,11 @@ class TestTab extends HookWidget implements CobbleScreen {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              RaisedButton(
-                onPressed: () {
-                  notifications.sendTestNotification();
-                },
-                child: Text("Test Notification"),
+              CobbleButton(
+                onPressed: () => notifications.sendTestNotification(),
+                label: "Test Notification",
               ),
-              RaisedButton(
+              CobbleButton(
                 onPressed: () {
                   ListWrapper l = ListWrapper();
                   l.value = [
@@ -107,13 +105,11 @@ class TestTab extends HookWidget implements CobbleScreen {
                   ];
                   connectionControl.sendRawPacket(l);
                 },
-                child: Text("Ping"),
+                label: "Ping",
               ),
-              RaisedButton(
-                onPressed: () {
-                  debug.collectLogs();
-                },
-                child: Text("Send logs"),
+              CobbleButton(
+                onPressed: () => debug.collectLogs(),
+                label: "Send logs",
               ),
               ElevatedButton(
                   onPressed: () async {

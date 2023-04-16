@@ -2,10 +2,12 @@ package io.rebble.cobble.notifications
 
 import android.annotation.TargetApi
 import android.app.Notification
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
 import android.os.Build
+import android.os.UserHandle
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
@@ -15,6 +17,8 @@ import io.rebble.cobble.bluetooth.ConnectionState
 import io.rebble.cobble.bridges.background.NotificationsFlutterBridge
 import io.rebble.cobble.data.NotificationAction
 import io.rebble.cobble.data.NotificationMessage
+import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.libpebblecommon.packets.blobdb.*
 import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
 import io.rebble.libpebblecommon.services.notification.NotificationService
@@ -85,19 +89,24 @@ class NotificationListener : NotificationListenerService() {
                 // Do not notify for media notifications
                 return
             }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                try {
+                    val channels = getNotificationChannels(sbn.packageName, sbn.user)
+                    channels?.forEach {
+                        notificationBridge.updateChannel(it.id, sbn.packageName, false, (it.name ?: it.id).toString(), it.description ?: "")
+                    }
+                } catch (e: Exception) {
+                    Timber.w(e, "Failed to get notif channels from ${sbn.packageName}")
+                }
+            }
             if (NotificationCompat.getLocalOnly(sbn.notification)) return // ignore local notifications TODO: respect user preference
             if (sbn.notification.flags and Notification.FLAG_ONGOING_EVENT != 0) return // ignore ongoing notifications
             //if (sbn.notification.group != null && !NotificationCompat.isGroupSummary(sbn.notification)) return
             if (mutedPackages.contains(sbn.packageName)) return // ignore muted packages
 
             var tagId: String? = null
-            var tagName: String? = null
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 tagId = sbn.notification.channelId
-                try {
-                    tagName = (applicationContext.createPackageContext(sbn.packageName, 0).getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).getNotificationChannel(sbn.notification.channelId).name.toString()
-                } catch (e: SecurityException) {}
-                if (tagName == null) tagName = tagId
             }
             val title = sbn.notification.extras[Notification.EXTRA_TITLE] as? String
                     ?: sbn.notification.extras[Notification.EXTRA_CONVERSATION_TITLE] as? String ?: ""
@@ -113,17 +122,20 @@ class NotificationListener : NotificationListenerService() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 val messagesArr = sbn.notification.extras.getParcelableArray(Notification.EXTRA_MESSAGES)
                 if (messagesArr != null) {
-                    messages = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(sbn.notification)?.messages?.map {
+                    val msgstyle = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(sbn.notification)
+                    messages = msgstyle?.messages?.map {
                         NotificationMessage(it.person?.name.toString(), it.text.toString(), it.timestamp)
                     }
                 }
             }
 
             GlobalScope.launch(Dispatchers.Main.immediate) {
-                var result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, tagName, title, text, sbn.notification.category?:"", sbn.notification.color, messages?: listOf(), actions)
-                while (result.second == BlobResponse.BlobStatus.TryLater) {
+                var result: Pair<TimelineItem, BlobResponse.BlobStatus>? = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, title, text, sbn.notification.category?:"", sbn.notification.color, messages?: listOf(), actions)
+                        ?: return@launch
+
+                while (result!!.second == BlobResponse.BlobStatus.TryLater) {
                     delay(1000)
-                    result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, tagName, title, text, sbn.notification.category?:"", sbn.notification.color, messages?: listOf(), actions)
+                    result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, title, text, sbn.notification.category?:"", sbn.notification.color, messages?: listOf(), actions) ?: return@launch
                 }
                 Timber.d(result.second.toString())
                 notificationBridge.activeNotifs[result.first.itemId.get()] = sbn
@@ -139,6 +151,34 @@ class NotificationListener : NotificationListenerService() {
             if (notif != null) {
                 notificationBridge.dismiss(notif)
             }
+        }
+    }
+
+    override fun onNotificationChannelModified(pkg: String?, user: UserHandle?, channel: NotificationChannel?, modificationType: Int) {
+        if (pkg != null && channel != null) {
+            val channelId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                channel.id
+            } else {
+                "miscellaneous"
+            }
+
+            val packageId = pkg
+            val delete = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                modificationType == NOTIFICATION_CHANNEL_OR_GROUP_DELETED
+            } else {
+                false
+            }
+            val channelDesc = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                channel.description ?: ""
+            }else {
+                ""
+            }
+            val channelName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                channel.name.toString()
+            }else {
+                "Miscellaneous"
+            }
+            notificationBridge.updateChannel(channelId, packageId, delete, channelName, channelDesc)
         }
     }
 

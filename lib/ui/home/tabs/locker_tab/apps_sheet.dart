@@ -2,6 +2,7 @@ import 'package:cobble/domain/db/models/app.dart';
 import 'package:flutter/material.dart';
 import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
+import 'package:cobble/ui/common/icons/system_app_icon.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/common/components/cobble_divider.dart';
 import 'package:cobble/ui/common/components/cobble_tile.dart';
@@ -25,7 +26,7 @@ class AppsSheet {
       builder: (context) => Column(
         children: [
           CobbleTile.app(
-            leading: (iconUrl != null ? NetworkImage(iconUrl) : Svg('images/temp_watch_app.svg')) as ImageProvider,
+            leading: (iconUrl != null ? NetworkImage(iconUrl) : SystemAppIcon(app.uuid)) as ImageProvider,
             title: "${app.longName} ${app.version}",
             subtitle: app.company,
           ),

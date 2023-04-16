@@ -5,6 +5,7 @@ import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
+import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:flutter/material.dart';
@@ -52,33 +53,33 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
       body = Column(
         children: [
           Text("Sorry, this is not a valid PBW file"),
-          RaisedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Go Back")),
+          CobbleButton(
+              outlined: false,
+              label: "Go Back",
+              onPressed: () => Navigator.of(context).pop(),
+          ),
         ],
       );
     } else if (connectedWatch == null) {
       body = Column(
         children: [
           Text("Watch not connected"),
-          RaisedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Go Back")),
+          CobbleButton(
+              outlined: false,
+              label: "Go Back",
+              onPressed: () => Navigator.of(context).pop(),
+          ),
         ],
       );
     } else if (!_isCompatible(_appInfo, connectedWatch)) {
       body = Column(
         children: [
           Text("Watch not compatible"),
-          RaisedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Go Back")),
+          CobbleButton(
+              outlined: false,
+              label: "Go Back",
+              onPressed: () => Navigator.of(context).pop(),
+          ),
         ],
       );
     } else {
@@ -86,17 +87,19 @@ class InstallPrompt extends HookWidget implements CobbleScreen {
         children: [
           Text(
               "Do you want to install ${_appInfo.longName} by ${_appInfo.companyName}?"),
-          RaisedButton(
-              onPressed: () {
-                appManager.beginAppInstall(_appUri, _appInfo);
-                userInitiatedInstall.value = true;
+          CobbleButton(
+              outlined: false,
+              label: "Yes",
+              onPressed: () { 
+                  appManager.beginAppInstall(_appUri, _appInfo);
+                  userInitiatedInstall.value = true;
               },
-              child: Text("Yes")),
-          RaisedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("No")),
+          ),
+          CobbleButton(
+              outlined: false,
+              label: "No",
+              onPressed: () => Navigator.of(context).pop(),
+          ),
         ],
       );
     }

@@ -1044,12 +1044,6 @@ public class Pigeons {
       this.tagId = setterArg;
     }
 
-    private @Nullable String tagName;
-    public @Nullable String getTagName() { return tagName; }
-    public void setTagName(@Nullable String setterArg) {
-      this.tagName = setterArg;
-    }
-
     private @Nullable String title;
     public @Nullable String getTitle() { return title; }
     public void setTitle(@Nullable String setterArg) {
@@ -1107,11 +1101,6 @@ public class Pigeons {
         this.tagId = setterArg;
         return this;
       }
-      private @Nullable String tagName;
-      public @NonNull Builder setTagName(@Nullable String setterArg) {
-        this.tagName = setterArg;
-        return this;
-      }
       private @Nullable String title;
       public @NonNull Builder setTitle(@Nullable String setterArg) {
         this.title = setterArg;
@@ -1148,7 +1137,6 @@ public class Pigeons {
         pigeonReturn.setNotifId(notifId);
         pigeonReturn.setAppName(appName);
         pigeonReturn.setTagId(tagId);
-        pigeonReturn.setTagName(tagName);
         pigeonReturn.setTitle(title);
         pigeonReturn.setText(text);
         pigeonReturn.setCategory(category);
@@ -1164,7 +1152,6 @@ public class Pigeons {
       toMapResult.put("notifId", notifId);
       toMapResult.put("appName", appName);
       toMapResult.put("tagId", tagId);
-      toMapResult.put("tagName", tagName);
       toMapResult.put("title", title);
       toMapResult.put("text", text);
       toMapResult.put("category", category);
@@ -1183,8 +1170,6 @@ public class Pigeons {
       pigeonResult.setAppName((String)appName);
       Object tagId = map.get("tagId");
       pigeonResult.setTagId((String)tagId);
-      Object tagName = map.get("tagName");
-      pigeonResult.setTagName((String)tagName);
       Object title = map.get("title");
       pigeonResult.setTitle((String)title);
       Object text = map.get("text");
@@ -1915,6 +1900,99 @@ public class Pigeons {
   }
 
   /** Generated class from Pigeon that represents data sent in messages. */
+  public static class NotifChannelPigeon {
+    private @Nullable String packageId;
+    public @Nullable String getPackageId() { return packageId; }
+    public void setPackageId(@Nullable String setterArg) {
+      this.packageId = setterArg;
+    }
+
+    private @Nullable String channelId;
+    public @Nullable String getChannelId() { return channelId; }
+    public void setChannelId(@Nullable String setterArg) {
+      this.channelId = setterArg;
+    }
+
+    private @Nullable String channelName;
+    public @Nullable String getChannelName() { return channelName; }
+    public void setChannelName(@Nullable String setterArg) {
+      this.channelName = setterArg;
+    }
+
+    private @Nullable String channelDesc;
+    public @Nullable String getChannelDesc() { return channelDesc; }
+    public void setChannelDesc(@Nullable String setterArg) {
+      this.channelDesc = setterArg;
+    }
+
+    private @Nullable Boolean delete;
+    public @Nullable Boolean getDelete() { return delete; }
+    public void setDelete(@Nullable Boolean setterArg) {
+      this.delete = setterArg;
+    }
+
+    public static class Builder {
+      private @Nullable String packageId;
+      public @NonNull Builder setPackageId(@Nullable String setterArg) {
+        this.packageId = setterArg;
+        return this;
+      }
+      private @Nullable String channelId;
+      public @NonNull Builder setChannelId(@Nullable String setterArg) {
+        this.channelId = setterArg;
+        return this;
+      }
+      private @Nullable String channelName;
+      public @NonNull Builder setChannelName(@Nullable String setterArg) {
+        this.channelName = setterArg;
+        return this;
+      }
+      private @Nullable String channelDesc;
+      public @NonNull Builder setChannelDesc(@Nullable String setterArg) {
+        this.channelDesc = setterArg;
+        return this;
+      }
+      private @Nullable Boolean delete;
+      public @NonNull Builder setDelete(@Nullable Boolean setterArg) {
+        this.delete = setterArg;
+        return this;
+      }
+      public @NonNull NotifChannelPigeon build() {
+        NotifChannelPigeon pigeonReturn = new NotifChannelPigeon();
+        pigeonReturn.setPackageId(packageId);
+        pigeonReturn.setChannelId(channelId);
+        pigeonReturn.setChannelName(channelName);
+        pigeonReturn.setChannelDesc(channelDesc);
+        pigeonReturn.setDelete(delete);
+        return pigeonReturn;
+      }
+    }
+    @NonNull Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("packageId", packageId);
+      toMapResult.put("channelId", channelId);
+      toMapResult.put("channelName", channelName);
+      toMapResult.put("channelDesc", channelDesc);
+      toMapResult.put("delete", delete);
+      return toMapResult;
+    }
+    static @NonNull NotifChannelPigeon fromMap(@NonNull Map<String, Object> map) {
+      NotifChannelPigeon pigeonResult = new NotifChannelPigeon();
+      Object packageId = map.get("packageId");
+      pigeonResult.setPackageId((String)packageId);
+      Object channelId = map.get("channelId");
+      pigeonResult.setChannelId((String)channelId);
+      Object channelName = map.get("channelName");
+      pigeonResult.setChannelName((String)channelName);
+      Object channelDesc = map.get("channelDesc");
+      pigeonResult.setChannelDesc((String)channelDesc);
+      Object delete = map.get("delete");
+      pigeonResult.setDelete((Boolean)delete);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
   public static class OAuthResult {
     private @Nullable String code;
     public @Nullable String getCode() { return code; }
@@ -2469,12 +2547,18 @@ public class Pigeons {
     protected Object readValueOfType(byte type, ByteBuffer buffer) {
       switch (type) {
         case (byte)128:         
-          return NotificationPigeon.fromMap((Map<String, Object>) readValue(buffer));
+          return BooleanWrapper.fromMap((Map<String, Object>) readValue(buffer));
         
         case (byte)129:         
-          return StringWrapper.fromMap((Map<String, Object>) readValue(buffer));
+          return NotifChannelPigeon.fromMap((Map<String, Object>) readValue(buffer));
         
         case (byte)130:         
+          return NotificationPigeon.fromMap((Map<String, Object>) readValue(buffer));
+
+        case (byte)131:
+          return StringWrapper.fromMap((Map<String, Object>) readValue(buffer));
+
+        case (byte)132:
           return TimelinePinPigeon.fromMap((Map<String, Object>) readValue(buffer));
         
         default:        
@@ -2484,16 +2568,24 @@ public class Pigeons {
     }
     @Override
     protected void writeValue(ByteArrayOutputStream stream, Object value)     {
-      if (value instanceof NotificationPigeon) {
+      if (value instanceof BooleanWrapper) {
         stream.write(128);
+        writeValue(stream, ((BooleanWrapper) value).toMap());
+      } else
+      if (value instanceof NotifChannelPigeon) {
+        stream.write(129);
+        writeValue(stream, ((NotifChannelPigeon) value).toMap());
+      } else
+      if (value instanceof NotificationPigeon) {
+        stream.write(130);
         writeValue(stream, ((NotificationPigeon) value).toMap());
       } else 
       if (value instanceof StringWrapper) {
-        stream.write(129);
+        stream.write(131);
         writeValue(stream, ((StringWrapper) value).toMap());
       } else 
       if (value instanceof TimelinePinPigeon) {
-        stream.write(130);
+        stream.write(132);
         writeValue(stream, ((TimelinePinPigeon) value).toMap());
       } else 
 {
@@ -2528,6 +2620,22 @@ public class Pigeons {
       BasicMessageChannel<Object> channel =
           new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.NotificationListening.dismissNotification", getCodec());
       channel.send(new ArrayList<Object>(Arrays.asList(itemIdArg)), channelReply -> {
+        callback.reply(null);
+      });
+    }
+    public void shouldNotify(NotifChannelPigeon channelArg, Reply<BooleanWrapper> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.NotificationListening.shouldNotify", getCodec());
+      channel.send(new ArrayList<Object>(Arrays.asList(channelArg)), channelReply -> {
+        @SuppressWarnings("ConstantConditions")
+        BooleanWrapper output = (BooleanWrapper)channelReply;
+        callback.reply(output);
+      });
+    }
+    public void updateChannel(NotifChannelPigeon channelArg, Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.NotificationListening.updateChannel", getCodec());
+      channel.send(new ArrayList<Object>(Arrays.asList(channelArg)), channelReply -> {
         callback.reply(null);
       });
     }

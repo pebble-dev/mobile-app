@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class ScreenshotResult;
 @class AppLogEntry;
 @class OAuthResult;
+@class NotifChannelPigeon;
 
 @interface BooleanWrapper : NSObject
 + (instancetype)makeWithValue:(nullable NSNumber *)value;
@@ -176,7 +177,6 @@ NS_ASSUME_NONNULL_BEGIN
     notifId:(nullable NSNumber *)notifId
     appName:(nullable NSString *)appName
     tagId:(nullable NSString *)tagId
-    tagName:(nullable NSString *)tagName
     title:(nullable NSString *)title
     text:(nullable NSString *)text
     category:(nullable NSString *)category
@@ -187,7 +187,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, nullable) NSNumber * notifId;
 @property(nonatomic, copy, nullable) NSString * appName;
 @property(nonatomic, copy, nullable) NSString * tagId;
-@property(nonatomic, copy, nullable) NSString * tagName;
 @property(nonatomic, copy, nullable) NSString * title;
 @property(nonatomic, copy, nullable) NSString * text;
 @property(nonatomic, copy, nullable) NSString * category;
@@ -307,6 +306,19 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy, nullable) NSString * error;
 @end
 
+@interface NotifChannelPigeon : NSObject
++ (instancetype)makeWithPackageId:(nullable NSString *)packageId
+    channelId:(nullable NSString *)channelId
+    channelName:(nullable NSString *)channelName
+    channelDesc:(nullable NSString *)channelDesc
+    delete:(nullable NSNumber *)delete;
+@property(nonatomic, copy, nullable) NSString * packageId;
+@property(nonatomic, copy, nullable) NSString * channelId;
+@property(nonatomic, copy, nullable) NSString * channelName;
+@property(nonatomic, copy, nullable) NSString * channelDesc;
+@property(nonatomic, strong, nullable) NSNumber * delete;
+@end
+
 /// The codec used by ScanCallbacks.
 NSObject<FlutterMessageCodec> *ScanCallbacksGetCodec(void);
 
@@ -381,6 +393,8 @@ NSObject<FlutterMessageCodec> *NotificationListeningGetCodec(void);
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
 - (void)handleNotificationNotification:(nullable NotificationPigeon *)notification completion:(void(^)(TimelinePinPigeon *_Nullable, NSError *_Nullable))completion;
 - (void)dismissNotificationItemId:(StringWrapper *)itemId completion:(void(^)(NSError *_Nullable))completion;
+- (void)shouldNotifyChannel:(nullable NotifChannelPigeon *)channel completion:(void(^)(BooleanWrapper *_Nullable, NSError *_Nullable))completion;
+- (void)updateChannelChannel:(NotifChannelPigeon *)channel completion:(void(^)(NSError *_Nullable))completion;
 @end
 /// The codec used by AppLogCallbacks.
 NSObject<FlutterMessageCodec> *AppLogCallbacksGetCodec(void);
