@@ -8,7 +8,6 @@ import 'package:cobble/ui/common/components/cobble_divider.dart';
 import 'package:cobble/ui/common/components/cobble_tile.dart';
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/components/cobble_sheet.dart';
-import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:share/share.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
 
@@ -26,7 +25,7 @@ class AppsSheet {
       builder: (context) => Column(
         children: [
           CobbleTile.app(
-            leading: (iconUrl != null ? NetworkImage(iconUrl) : SystemAppIcon(app.uuid)) as ImageProvider,
+            leading: iconUrl != null ? NetworkImage(iconUrl) : SystemAppIcon(app.uuid),
             title: "${app.longName} ${app.version}",
             subtitle: app.company,
           ),

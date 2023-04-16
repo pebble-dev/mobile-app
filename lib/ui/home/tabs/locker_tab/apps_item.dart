@@ -8,7 +8,6 @@ import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/home/tabs/locker_tab/apps_sheet.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 
 class AppsItem extends StatelessWidget {
   final App app;
@@ -50,7 +49,7 @@ class AppsItem extends StatelessWidget {
             SizedBox(width: 57),
           Expanded(
             child: CobbleTile.app(
-              leading: (iconUrl != null ? NetworkImage(iconUrl!) : SystemAppIcon(app.uuid)) as ImageProvider,
+              leading: iconUrl != null ? NetworkImage(iconUrl!) : SystemAppIcon(app.uuid),
               title: app.longName,
               subtitle: app.company,
               onTap: () => AppsSheet.showModal(
