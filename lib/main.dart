@@ -2,10 +2,15 @@
 import 'dart:ui';
 
 import 'package:cobble/background/main_background.dart';
+import 'package:cobble/domain/firmware/requests/init_required_request.dart';
+import 'package:cobble/infrastructure/backgroundcomm/BackgroundReceiver.dart';
+import 'package:cobble/infrastructure/backgroundcomm/BackgroundRpc.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/localization/localization_delegate.dart';
 import 'package:cobble/localization/model/model_generator.model.dart';
+import 'package:cobble/ui/router/cobble_navigator.dart';
+import 'package:cobble/ui/screens/update_prompt.dart';
 import 'package:cobble/ui/splash/splash_page.dart';
 import 'package:cobble/ui/theme/cobble_scheme.dart';
 import 'package:cobble/ui/theme/cobble_theme.dart';
@@ -23,6 +28,8 @@ import 'package:logging/logging.dart';
 
 const String bootUrl = "https://boot.rebble.io/api";
 
+BuildContext navContext;
+
 void main() {
   if (kDebugMode) {
     Logger.root.level = Level.FINER;
@@ -36,7 +43,16 @@ void main() {
   });
 
   runApp(ProviderScope(child: MyApp()));
+  startReceivingRpcRequests(RpcDirection.toForeground, onBgMessage);
   initBackground();
+}
+
+Future<Object> onBgMessage(Object message) async {
+  if (message is InitRequiredRequest) {
+    navContext.push(UpdatePrompt());
+  }
+
+  throw Exception("Unknown message $message");
 }
 
 void initBackground() {

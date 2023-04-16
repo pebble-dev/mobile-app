@@ -9,12 +9,18 @@ import 'BackgroundRpc.dart';
 
 typedef ReceivingFunction = Future<Object> Function(Object input);
 
-void startReceivingRpcRequests(ReceivingFunction receivingFunction) {
+void startReceivingRpcRequests(RpcDirection rpcDirection, ReceivingFunction receivingFunction) {
   final receivingPort = ReceivePort();
-  IsolateNameServer.removePortNameMapping(isolatePortNameToBackground);
+  IsolateNameServer.removePortNameMapping(
+    rpcDirection == RpcDirection.toBackground
+        ? isolatePortNameToBackground
+        : isolatePortNameToForeground,
+  );
   IsolateNameServer.registerPortWithName(
     receivingPort.sendPort,
-    isolatePortNameToBackground,
+    rpcDirection == RpcDirection.toBackground
+        ? isolatePortNameToBackground
+        : isolatePortNameToForeground,
   );
 
   receivingPort.listen((message) {
@@ -23,7 +29,7 @@ void startReceivingRpcRequests(ReceivingFunction receivingFunction) {
         throw Exception("Message is not RpcRequest: $message");
       }
 
-      final request = message as RpcRequest;
+      final RpcRequest request = message;
 
       RpcResult result;
       try {
@@ -35,7 +41,9 @@ void startReceivingRpcRequests(ReceivingFunction receivingFunction) {
       }
 
       final returnPort = IsolateNameServer.lookupPortByName(
-        isolatePortNameReturnFromBackground,
+        rpcDirection == RpcDirection.toBackground
+            ? isolatePortNameReturnFromBackground
+            : isolatePortNameReturnFromForeground,
       );
 
       if (returnPort != null) {
