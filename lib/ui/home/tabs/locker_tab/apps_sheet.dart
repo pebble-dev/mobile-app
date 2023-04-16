@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cobble/domain/db/models/app.dart';
 import 'package:flutter/material.dart';
 import 'package:cobble/domain/apps/app_manager.dart';
@@ -25,7 +26,7 @@ class AppsSheet {
       builder: (context) => Column(
         children: [
           CobbleTile.app(
-            leading: iconUrl != null ? NetworkImage(iconUrl) : SystemAppIcon(app.uuid),
+            leading: iconUrl != null ? CachedNetworkImageProvider(iconUrl) : SystemAppIcon(app.uuid),
             title: "${app.longName} ${app.version}",
             subtitle: app.company,
           ),

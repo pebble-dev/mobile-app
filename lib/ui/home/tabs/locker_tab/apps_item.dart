@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cobble/domain/db/models/app.dart';
 import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
@@ -49,7 +50,7 @@ class AppsItem extends StatelessWidget {
             SizedBox(width: 57),
           Expanded(
             child: CobbleTile.app(
-              leading: iconUrl != null ? NetworkImage(iconUrl!) : SystemAppIcon(app.uuid),
+              leading: iconUrl != null ? CachedNetworkImageProvider(iconUrl!) : SystemAppIcon(app.uuid),
               title: app.longName,
               subtitle: app.company,
               onTap: () => AppsSheet.showModal(

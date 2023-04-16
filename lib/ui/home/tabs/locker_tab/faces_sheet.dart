@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cobble/domain/db/models/app.dart';
 import 'package:flutter/material.dart';
 import 'package:cobble/domain/apps/app_manager.dart';
@@ -40,7 +41,7 @@ class FacesPreview extends StatelessWidget {
         children: <Widget>[
           ClipRRect(
             child: Image(
-              image: (listUrl != null ? NetworkImage(listUrl!) : Svg('images/temp_watch_face.svg')) as ImageProvider,
+              image: (listUrl != null ? CachedNetworkImageProvider(listUrl!) : Svg('images/temp_watch_face.svg')) as ImageProvider,
               width: 92,
               height: circleWatchface ? 92 : 108,
               alignment: AlignmentDirectional.center,
