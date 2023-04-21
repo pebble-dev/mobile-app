@@ -124,13 +124,14 @@
             android:permission="android.permission.FOREGROUND_SERVICE" />
         <service
             android:name=".notifications.NotificationListener"
-            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
 
-        <receiver android:name=".receivers.AppStartReceiver">
+        <receiver android:name=".receivers.AppStartReceiver" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
@@ -139,7 +140,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".receivers.BluetoothAclReceiver">
+        <receiver android:name=".receivers.BluetoothAclReceiver" android:exported="true">
             <intent-filter>
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
             </intent-filter>

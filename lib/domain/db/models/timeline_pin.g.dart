@@ -199,7 +199,8 @@ class _$TimelinePinCWProxyImpl implements _$TimelinePinCWProxy {
 }
 
 extension $TimelinePinCopyWith on TimelinePin {
-  /// Returns a callable class that can be used as follows: `instanceOfclass TimelinePin.name.copyWith(...)` or like so:`instanceOfclass TimelinePin.name.copyWith.fieldName(...)`.
+  /// Returns a callable class that can be used as follows: `instanceOfTimelinePin.copyWith(...)` or like so:`instanceOfTimelinePin.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
   _$TimelinePinCWProxy get copyWith => _$TimelinePinCWProxyImpl(this);
 
   /// Copies the object with the specific fields set to `null`. If you pass `false` as a parameter, nothing will be done and it will be ignored. Don't do it. Prefer `copyWith(field: null)` or `TimelinePin(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.

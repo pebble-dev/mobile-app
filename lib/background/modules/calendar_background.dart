@@ -42,8 +42,8 @@ class CalendarBackground implements CalendarCallbacks {
     }
   }
 
-  Future<Object>? onMessageFromUi(Object message) {
-    if (message is DeleteAllCalendarPinsRequest) {
+  Future<Object>? onMessageFromUi(String type, Object message) {
+    if (type == (DeleteAllCalendarPinsRequest).toString()) {
       return deleteCalendarPinsFromWatch();
     }
 

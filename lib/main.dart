@@ -2,7 +2,6 @@
 import 'dart:ui';
 
 import 'package:cobble/background/main_background.dart';
-import 'package:cobble/domain/firmware/requests/init_required_request.dart';
 import 'package:cobble/infrastructure/backgroundcomm/BackgroundReceiver.dart';
 import 'package:cobble/infrastructure/backgroundcomm/BackgroundRpc.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
@@ -27,8 +26,6 @@ import 'package:logging/logging.dart';
 
 const String bootUrl = "https://boot.rebble.io/api";
 
-BuildContext navContext;
-
 void main() {
   if (kDebugMode) {
     Logger.root.level = Level.FINER;
@@ -42,16 +39,7 @@ void main() {
   });
 
   runApp(ProviderScope(child: MyApp()));
-  startReceivingRpcRequests(RpcDirection.toForeground, onBgMessage);
   initBackground();
-}
-
-Future<Object> onBgMessage(Object message) async {
-  if (message is InitRequiredRequest) {
-    navContext.push(UpdatePrompt());
-  }
-
-  throw Exception("Unknown message $message");
 }
 
 void initBackground() {

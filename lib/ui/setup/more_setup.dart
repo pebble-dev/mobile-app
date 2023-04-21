@@ -1,4 +1,5 @@
 import 'package:cobble/localization/localization.dart';
+import 'package:cobble/ui/home/home_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
@@ -18,11 +19,11 @@ class _MoreSetupState extends State<MoreSetup> {
     return CobbleScaffold.page(
       title: tr.moreSetupPage.title,
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.pushReplacement(RebbleSetup()),
+        onPressed: () => context.pushAndRemoveAllBelow(HomePage()),
         label: Row(
           children: <Widget>[
             Text(tr.moreSetupPage.fab),
-            Icon(RebbleIcons.caret_right)
+            const Icon(RebbleIcons.caret_right)
           ],
           mainAxisAlignment: MainAxisAlignment.center,
         ),

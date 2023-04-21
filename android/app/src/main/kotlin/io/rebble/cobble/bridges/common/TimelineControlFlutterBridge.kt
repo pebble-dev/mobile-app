@@ -100,23 +100,23 @@ class TimelineControlFlutterBridge @Inject constructor(
         )).responseValue
     }
 
-    override fun addPin(pin: Pigeons.TimelinePinPigeon, result: Pigeons.Result<Pigeons.NumberWrapper>?) {
-        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
-            val res = addTimelinePin(pin!!)
+    override fun addPin(pin: Pigeons.TimelinePinPigeon, result: Pigeons.Result<Pigeons.NumberWrapper>) {
+        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
+            val res = addTimelinePin(pin)
             NumberWrapper(res.value.toInt())
         }
     }
 
-    override fun removePin(pinUuid: Pigeons.StringWrapper, result: Pigeons.Result<Pigeons.NumberWrapper>?) {
-        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
-            val res = removeTimelinePin(UUID.fromString(pinUuid?.value!!))
+    override fun removePin(pinUuid: Pigeons.StringWrapper, result: Pigeons.Result<Pigeons.NumberWrapper>) {
+        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
+            val res = removeTimelinePin(UUID.fromString(pinUuid.value!!))
             NumberWrapper(res.value.toInt())
         }
 
     }
 
-    override fun removeAllPins(result: Pigeons.Result<Pigeons.NumberWrapper>?) {
-        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
+    override fun removeAllPins(result: Pigeons.Result<Pigeons.NumberWrapper>) {
+        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
             val res = removeAllPins()
             NumberWrapper(res.value.toInt())
         }

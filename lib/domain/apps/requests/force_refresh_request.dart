@@ -1,13 +1,20 @@
-class ForceRefreshRequest {
+import 'package:cobble/infrastructure/backgroundcomm/RpcRequest.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'force_refresh_request.g.dart';
+
+@JsonSerializable()
+class ForceRefreshRequest extends SerializableRpcRequest {
   final bool clear;
 
   ForceRefreshRequest(this.clear);
 
-  Map<String, dynamic> toMap() {
-    return {'type': 'ForceRefreshRequest', 'clear': clear};
+  @override
+  String toString() {
+    return 'ForceRefreshRequest{clear: $clear}';
   }
 
-  factory ForceRefreshRequest.fromMap(Map<String, dynamic> map) {
-    return ForceRefreshRequest(map['clear'] as bool);
-  }
+  factory ForceRefreshRequest.fromJson(Map<String, dynamic> json) => _$ForceRefreshRequestFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => _$ForceRefreshRequestToJson(this);
 }

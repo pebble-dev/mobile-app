@@ -53,11 +53,13 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
     }
   }
 
-  Future<Object>? onMessageFromUi(Object message) {
-    if (message is AppReorderRequest) {
-      return beginAppOrderChange(message);
-    } else if (message is ForceRefreshRequest) {
-      return forceAppSync(message.clear);
+  Future<Object>? onMessageFromUi(String type, Object message) {
+    if (type == (AppReorderRequest).toString()) {
+      final req = AppReorderRequest.fromJson(message as Map<String, dynamic>);
+      return beginAppOrderChange(req);
+    } else if (type == (ForceRefreshRequest).toString()) {
+      final req = ForceRefreshRequest.fromJson(message as Map<String, dynamic>);
+      return forceAppSync(req.clear);
     }
 
     return null;
