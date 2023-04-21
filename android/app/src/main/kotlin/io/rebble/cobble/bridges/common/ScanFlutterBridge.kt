@@ -6,7 +6,6 @@ import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.pigeons.ListWrapper
 import io.rebble.cobble.pigeons.Pigeons
-import io.rebble.cobble.pigeons.toMapExt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -32,7 +31,7 @@ class ScanFlutterBridge @Inject constructor(
 
             bleScanner.getScanFlow().collect { foundDevices ->
                 scanCallbacks.onScanUpdate(
-                        ListWrapper(foundDevices.map { it.toPigeon().toMapExt() })
+                        foundDevices.map { it.toPigeon() }
                 ) {}
             }
 
@@ -46,7 +45,7 @@ class ScanFlutterBridge @Inject constructor(
 
             classicScanner.getScanFlow().collect { foundDevices ->
                 scanCallbacks.onScanUpdate(
-                        ListWrapper(foundDevices.map { it.toPigeon().toMapExt() })
+                        foundDevices.map { it.toPigeon() }
                 ) {}
             }
 

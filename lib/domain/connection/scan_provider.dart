@@ -32,9 +32,17 @@ class ScanCallbacks extends StateNotifier<ScanState>
   }
 
   @override
-  void onScanUpdate(pigeon.ListWrapper arg) {
-    final devices = (arg.value!.cast<Map>())
-        .map((element) => PebbleScanDevice.fromMap(element))
+  void onScanUpdate(List<pigeon.PebbleScanDevicePigeon?> arg) {
+    final devices = arg
+        .map((element) => PebbleScanDevice(
+              element!.name,
+              element.address,
+              element.version,
+              element.serialNumber,
+              element.color,
+              element.runningPRF,
+              element.firstUse,
+        ))
         .toList();
     state = ScanState(state.scanning, devices);
   }

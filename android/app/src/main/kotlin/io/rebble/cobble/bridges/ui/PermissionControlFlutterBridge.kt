@@ -18,7 +18,6 @@ import io.rebble.cobble.datasources.PermissionChangeBus
 import io.rebble.cobble.notifications.NotificationListener
 import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons
-import io.rebble.cobble.pigeons.toMapExt
 import io.rebble.cobble.util.asFlow
 import io.rebble.cobble.util.launchPigeonResult
 import io.rebble.cobble.util.registerAsyncPigeonCallback
@@ -147,7 +146,7 @@ class PermissionControlFlutterBridge @Inject constructor(
         return NumberWrapper(result)
     }
 
-    override fun requestLocationPermission(result: Pigeons.Result<Pigeons.NumberWrapper>?) {
+    override fun requestLocationPermission(result: Pigeons.Result<Pigeons.NumberWrapper>) {
         coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
             requestPermission(
                     REQUEST_CODE_LOCATION,
@@ -156,7 +155,7 @@ class PermissionControlFlutterBridge @Inject constructor(
         }
     }
 
-    override fun requestCalendarPermission(result: Pigeons.Result<Pigeons.NumberWrapper>?) {
+    override fun requestCalendarPermission(result: Pigeons.Result<Pigeons.NumberWrapper>) {
         coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
             requestPermission(
                     REQUEST_CODE_CALENDAR,
@@ -166,24 +165,24 @@ class PermissionControlFlutterBridge @Inject constructor(
         }
     }
 
-    override fun requestNotificationAccess(result: Pigeons.Result<Void?>?) {
-        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
+    override fun requestNotificationAccess(result: Pigeons.Result<Void?>) {
+        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
             requestNotificationAccess()
 
             null
         }
     }
 
-    override fun requestBatteryExclusion(result: Pigeons.Result<Void?>?) {
-        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
+    override fun requestBatteryExclusion(result: Pigeons.Result<Void?>) {
+        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
             requestBatteryExclusion()
 
             null
         }
     }
 
-    override fun requestBluetoothPermissions(result: Pigeons.Result<Pigeons.NumberWrapper>?) {
-        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
+    override fun requestBluetoothPermissions(result: Pigeons.Result<Pigeons.NumberWrapper>) {
+        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 requestPermission(
                         REQUEST_CODE_BT,
@@ -197,8 +196,8 @@ class PermissionControlFlutterBridge @Inject constructor(
         }
     }
 
-    override fun openPermissionSettings(result: Pigeons.Result<Void?>?) {
-        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
+    override fun openPermissionSettings(result: Pigeons.Result<Void?>) {
+        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
             openPermissionSettings()
 
             null

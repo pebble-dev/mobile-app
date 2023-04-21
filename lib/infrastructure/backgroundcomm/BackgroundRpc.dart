@@ -22,7 +22,7 @@ class BackgroundRpc {
     _startReceivingResults();
   }
 
-  Future<AsyncValue<O>> triggerMethod<I extends Object, O extends Object>(
+  Future<AsyncValue<O>> triggerMethod<I extends SerializableRpcRequest, O extends Object>(
     I input,
   ) async {
     final port = IsolateNameServer.lookupPortByName(
@@ -37,12 +37,12 @@ class BackgroundRpc {
 
     final requestId = _nextMessageId++;
 
-    final request = RpcRequest(requestId, input);
+    final request = RpcRequest(requestId, input.toJson(), input.runtimeType.toString());
 
     final completer = Completer<AsyncValue<Object>>();
     _pendingCompleters[requestId] = completer;
 
-    port.send(request);
+    port.send(request.toJson());
 
     final result = await completer.future;
     return result as AsyncValue<O>;
@@ -60,12 +60,7 @@ class BackgroundRpc {
             : isolatePortNameReturnFromForeground);;
 
     returnPort.listen((message) {
-      if (message is! RpcResult) {
-        Log.e("Unknown message: $message");
-        return;
-      }
-
-      final RpcResult receivedMessage = message;
+      final RpcResult receivedMessage = RpcResult.fromJson(message);
       final waitingCompleter = _pendingCompleters[receivedMessage.id];
       if (waitingCompleter == null) {
         return;
@@ -78,7 +73,6 @@ class BackgroundRpc {
       } else if (receivedMessage.errorResult != null) {
         result = AsyncValue.error(
           receivedMessage.errorResult!,
-          receivedMessage.errorStacktrace,
         );
       } else {
         result = AsyncValue.error("Received result without any data.");
@@ -95,6 +89,7 @@ const String isolatePortNameToForeground = "toForeground";
 const String isolatePortNameReturnFromForeground = "returnFromForeground";
 
 final backgroundRpcProvider = Provider<BackgroundRpc>((ref) => BackgroundRpc(RpcDirection.toBackground));
+final foregroundRpcProvider = Provider<BackgroundRpc>((ref) => BackgroundRpc(RpcDirection.toForeground));
 
 enum RpcDirection {
   toForeground,

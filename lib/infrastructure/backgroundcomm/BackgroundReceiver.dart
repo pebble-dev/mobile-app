@@ -7,7 +7,7 @@ import 'package:cobble/infrastructure/backgroundcomm/RpcResult.dart';
 
 import 'BackgroundRpc.dart';
 
-typedef ReceivingFunction = Future<Object> Function(Object input);
+typedef ReceivingFunction = Future<Object> Function(String type, Object input);
 
 void startReceivingRpcRequests(RpcDirection rpcDirection, ReceivingFunction receivingFunction) {
   final receivingPort = ReceivePort();
@@ -25,6 +25,7 @@ void startReceivingRpcRequests(RpcDirection rpcDirection, ReceivingFunction rece
 
   receivingPort.listen((message) {
     Future.microtask(() async {
+      message = RpcRequest.fromJson(message);
       if (message is! RpcRequest) {
         throw Exception("Message is not RpcRequest: $message");
       }
@@ -33,11 +34,11 @@ void startReceivingRpcRequests(RpcDirection rpcDirection, ReceivingFunction rece
 
       RpcResult result;
       try {
-        final resultObject = await receivingFunction(request.input);
+        final resultObject = await receivingFunction(request.type, request.input);
         result = RpcResult.success(request.requestId, resultObject);
       } catch (e, stackTrace) {
         print(e);
-        result = RpcResult.error(request.requestId, e, stackTrace);
+        result = RpcResult.error(request.requestId, e);
       }
 
       final returnPort = IsolateNameServer.lookupPortByName(
@@ -47,7 +48,7 @@ void startReceivingRpcRequests(RpcDirection rpcDirection, ReceivingFunction rece
       );
 
       if (returnPort != null) {
-        returnPort.send(result);
+        returnPort.send(result.toJson());
       }
 
       // If returnPort is null, then receiver died and

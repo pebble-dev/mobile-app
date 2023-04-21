@@ -54,8 +54,8 @@ class IntentsFlutterBridge @Inject constructor(
         flutterReadyToReceiveIntents = false
     }
 
-    override fun waitForOAuth(result: Pigeons.Result<Pigeons.OAuthResult>?) {
-        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
+    override fun waitForOAuth(result: Pigeons.Result<Pigeons.OAuthResult>) {
+        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
             val res = oauthTrigger.await()
             check(res.size == 3)
             if (res[0] != null && res[1] != null) {
