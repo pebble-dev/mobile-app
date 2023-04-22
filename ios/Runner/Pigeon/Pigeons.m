@@ -3841,6 +3841,25 @@ void FirmwareUpdateControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSOb
   {
     FlutterBasicMessageChannel *channel =
       [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.FirmwareUpdateControl.checkFirmwareCompatible"
+        binaryMessenger:binaryMessenger
+        codec:FirmwareUpdateControlGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(checkFirmwareCompatibleFwUri:completion:)], @"FirmwareUpdateControl api (%@) doesn't respond to @selector(checkFirmwareCompatibleFwUri:completion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        StringWrapper *arg_fwUri = GetNullableObjectAtIndex(args, 0);
+        [api checkFirmwareCompatibleFwUri:arg_fwUri completion:^(BooleanWrapper *_Nullable output, FlutterError *_Nullable error) {
+          callback(wrapResult(output, error));
+        }];
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
         initWithName:@"dev.flutter.pigeon.FirmwareUpdateControl.beginFirmwareUpdate"
         binaryMessenger:binaryMessenger
         codec:FirmwareUpdateControlGetCodec()];

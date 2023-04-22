@@ -24,6 +24,7 @@ class ConnectionCallbacksStateNotifier
 
   @override
   void onWatchConnectionStateChanged(WatchConnectionStatePigeon pigeon) {
+    print("!!!!!!!! RECOVERY:" + (pigeon.currentConnectedWatch?.runningFirmware?.isRecovery.toString() ?? "null")); //TODO: remove me
     state = WatchConnectionState(
         pigeon.isConnected,
         pigeon.isConnecting,

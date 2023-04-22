@@ -1638,7 +1638,7 @@ abstract class FirmwareUpdateCallbacks {
 
   void onFirmwareUpdateStarted();
 
-  void onFirmwareUpdateProgress(int progress);
+  void onFirmwareUpdateProgress(double progress);
 
   void onFirmwareUpdateFinished();
 
@@ -1668,9 +1668,9 @@ abstract class FirmwareUpdateCallbacks {
           assert(message != null,
           'Argument for dev.flutter.pigeon.FirmwareUpdateCallbacks.onFirmwareUpdateProgress was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_progress = (args[0] as int?);
+          final double? arg_progress = (args[0] as double?);
           assert(arg_progress != null,
-              'Argument for dev.flutter.pigeon.FirmwareUpdateCallbacks.onFirmwareUpdateProgress was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.FirmwareUpdateCallbacks.onFirmwareUpdateProgress was null, expected non-null double.');
           api.onFirmwareUpdateProgress(arg_progress!);
           return;
         });
@@ -3767,6 +3767,33 @@ class FirmwareUpdateControl {
   final BinaryMessenger? _binaryMessenger;
 
   static const MessageCodec<Object?> codec = _FirmwareUpdateControlCodec();
+
+  Future<BooleanWrapper> checkFirmwareCompatible(StringWrapper arg_fwUri) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.FirmwareUpdateControl.checkFirmwareCompatible', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(<Object?>[arg_fwUri]) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else if (replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyList[0] as BooleanWrapper?)!;
+    }
+  }
 
   Future<BooleanWrapper> beginFirmwareUpdate(StringWrapper arg_fwUri) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(

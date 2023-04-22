@@ -47,6 +47,8 @@ class HomePage extends HookWidget implements CobbleScreen {
     _TabConfig(Settings(), tr.homePage.settings, RebbleIcons.settings),
   ];
 
+  HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     useUriNavigator(context);
@@ -55,10 +57,12 @@ class HomePage extends HookWidget implements CobbleScreen {
     
     final connectionState = useProvider(connectionStateProvider.state);
     useEffect(() => () {
+      //FIXME
       if (connectionState.currentConnectedWatch?.runningFirmware.isRecovery == true) {
+        print("Recovery mode detected, showing update prompt"); //TODO: remove me
         context.push(UpdatePrompt());
       }
-    });
+    }, [connectionState]);
 
     return WillPopScope(
       onWillPop: () async {

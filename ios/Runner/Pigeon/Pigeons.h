@@ -680,6 +680,7 @@ extern void AppLogControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObj
 NSObject<FlutterMessageCodec> *FirmwareUpdateControlGetCodec(void);
 
 @protocol FirmwareUpdateControl
+- (void)checkFirmwareCompatibleFwUri:(StringWrapper *)fwUri completion:(void (^)(BooleanWrapper *_Nullable, FlutterError *_Nullable))completion;
 - (void)beginFirmwareUpdateFwUri:(StringWrapper *)fwUri completion:(void (^)(BooleanWrapper *_Nullable, FlutterError *_Nullable))completion;
 @end
 

@@ -55,6 +55,13 @@ abstract class UiBridgesModule {
     abstract fun bindWorkaroundsControl(
             bridge: WorkaroundsFlutterBridge
     ): FlutterBridge
+
+    @Binds
+    @IntoSet
+    @UiBridge
+    abstract fun bindFirmwareUpdateControl(
+            bridge: FirmwareUpdateControlFlutterBridge
+    ): FlutterBridge
 }
 
 @Qualifier

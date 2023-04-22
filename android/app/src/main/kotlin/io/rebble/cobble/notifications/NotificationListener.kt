@@ -192,7 +192,7 @@ class NotificationListener : NotificationListenerService() {
 
         coroutineScope.launch(Dispatchers.Main.immediate) {
             connectionLooper.connectionState.collect {
-                if (it is ConnectionState.Disconnected) {
+                if (it is ConnectionState.Disconnected || it is ConnectionState.RecoveryMode) {
                     requestUnbind()
                 }
             }

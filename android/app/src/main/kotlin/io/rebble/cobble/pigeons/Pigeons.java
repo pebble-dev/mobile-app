@@ -3533,7 +3533,7 @@ public class Pigeons {
           null,
           channelReply -> callback.reply(null));
     }
-    public void onFirmwareUpdateProgress(@NonNull Long progressArg, @NonNull Reply<Void> callback) {
+    public void onFirmwareUpdateProgress(@NonNull Double progressArg, @NonNull Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
           new BasicMessageChannel<>(
               binaryMessenger, "dev.flutter.pigeon.FirmwareUpdateCallbacks.onFirmwareUpdateProgress", getCodec());
@@ -5829,6 +5829,8 @@ public class Pigeons {
   /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
   public interface FirmwareUpdateControl {
 
+    void checkFirmwareCompatible(@NonNull StringWrapper fwUri, @NonNull Result<BooleanWrapper> result);
+
     void beginFirmwareUpdate(@NonNull StringWrapper fwUri, @NonNull Result<BooleanWrapper> result);
 
     /** The codec used by FirmwareUpdateControl. */
@@ -5837,6 +5839,35 @@ public class Pigeons {
     }
     /**Sets up an instance of `FirmwareUpdateControl` to handle messages through the `binaryMessenger`. */
     static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable FirmwareUpdateControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.FirmwareUpdateControl.checkFirmwareCompatible", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper fwUriArg = (StringWrapper) args.get(0);
+                Result<BooleanWrapper> resultCallback =
+                    new Result<BooleanWrapper>() {
+                      public void success(BooleanWrapper result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.checkFirmwareCompatible(fwUriArg, resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
       {
         BasicMessageChannel<Object> channel =
             new BasicMessageChannel<>(

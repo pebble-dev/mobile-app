@@ -265,7 +265,7 @@ abstract class AppLogCallbacks {
 abstract class FirmwareUpdateCallbacks {
   void onFirmwareUpdateStarted();
 
-  void onFirmwareUpdateProgress(int progress);
+  void onFirmwareUpdateProgress(double progress);
 
   void onFirmwareUpdateFinished();
 }
@@ -494,6 +494,8 @@ abstract class AppLogControl {
 
 @HostApi()
 abstract class FirmwareUpdateControl {
+  @async
+  BooleanWrapper checkFirmwareCompatible(StringWrapper fwUri);
   @async
   BooleanWrapper beginFirmwareUpdate(StringWrapper fwUri);
 }

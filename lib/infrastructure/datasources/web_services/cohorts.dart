@@ -29,7 +29,11 @@ class CohortsService extends Service {
       final token = await _oauth.ensureNotStale(_token, tokenCreationDate);
       CohortsResponse cohorts = await client.getSerialized(
         CohortsResponse.fromJson,
-        "cohorts?select=${select.map((e) => e.value).join(",")}",
+        "cohorts",
+        params: {
+          "select": select.map((e) => e.value).join(","),
+          "hardware": hardware,
+        },
         token: token.accessToken,
       );
       _cachedCohorts[hardware] = cohorts;
