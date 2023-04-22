@@ -153,9 +153,9 @@ class NotificationsFlutterBridge @Inject constructor(
                 Timber.w("Notification listening pigeon null")
             }
             notifListening?.handleNotification(notif) { notifToSend ->
-                val parsedAttributes : List<TimelineAttribute> = Json.decodeFromString(notifToSend.attributesJson!!) ?: emptyList()
+                val parsedAttributes : List<TimelineAttribute> = notifToSend.attributesJson?.let { Json.decodeFromString(it) } ?: emptyList()
 
-                val parsedActions : List<TimelineAction> = Json.decodeFromString(notifToSend.actionsJson!!) ?: emptyList()
+                val parsedActions : List<TimelineAction> = notifToSend.actionsJson?.let { Json.decodeFromString(it) } ?: emptyList()
 
                 val itemId = UUID.fromString(notifToSend.itemId)
                 val timelineItem = TimelineItem(

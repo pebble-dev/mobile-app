@@ -39,7 +39,7 @@ class ServiceLifecycleControl @Inject constructor(
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
                             shouldServiceBeRunning &&
-                            context.hasNotificationAccessPermission()) {
+                            context.hasNotificationAccessPermission() && it !is ConnectionState.RecoveryMode) {
                         NotificationListenerService.requestRebind(
                                 NotificationListener.getComponentName(context)
                         )

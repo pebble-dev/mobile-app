@@ -6,11 +6,14 @@ import io.rebble.cobble.util.requirePbwBinaryBlob
 import io.rebble.cobble.util.requirePbwManifest
 import io.rebble.libpebblecommon.metadata.WatchType
 import io.rebble.libpebblecommon.metadata.pbw.manifest.PbwBlob
+import io.rebble.libpebblecommon.metadata.pbz.manifest.PbzManifest
 import io.rebble.libpebblecommon.packets.*
 import io.rebble.libpebblecommon.services.PutBytesService
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.consume
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
+import okio.BufferedSource
 import okio.buffer
 import timber.log.Timber
 import java.io.File
@@ -70,6 +73,39 @@ class PutBytesController @Inject constructor(
         _status.value = Status(State.IDLE)
     }
 
+    fun startFirmwareInstall(firmware: BufferedSource, resources: BufferedSource, manifest: PbzManifest) = launchNewPutBytesSession {
+
+        val totalSize = manifest.firmware.size + manifest.resources.size
+
+        val progressMultiplier = 1 / totalSize.toDouble()
+        val progressJob = launch{
+            try {
+                for (progress: PutBytesService.PutBytesProgress in putBytesService.progressUpdates) {
+                    _status.value = Status(State.SENDING, progress.count * progressMultiplier)
+                }
+            } catch (_: CancellationException) {}
+        }
+        try {
+            firmware.use {
+                putBytesService.sendFirmwarePart(
+                        it.readByteArray(),
+                        metadataStore.lastConnectedWatchMetadata.value!!,
+                        manifest.firmware.crc,
+                        manifest.firmware.size.toUInt(),
+                        when (manifest.firmware.type) {
+                            "firmware" -> ObjectType.FIRMWARE
+                            "recovery" -> ObjectType.RECOVERY
+                            else -> throw IllegalArgumentException("Unknown firmware type")
+                        },
+                        manifest.firmware.name
+                )
+            }
+        } finally {
+            progressJob.cancel()
+            _status.value = Status(State.IDLE)
+        }
+    }
+
     private suspend fun sendAppPart(
             appId: UInt,
             pbwFile: File,
@@ -93,7 +129,7 @@ class PutBytesController @Inject constructor(
         }
     }
 
-    private fun launchNewPutBytesSession(block: suspend () -> Unit) {
+    private fun launchNewPutBytesSession(block: suspend CoroutineScope.() -> Unit) {
         synchronized(_status) {
             if (_status.value.state != State.IDLE) {
                 throw IllegalStateException("Put bytes operation already in progress")
