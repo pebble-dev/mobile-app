@@ -14,5 +14,5 @@ final cohortsServiceProvider = FutureProvider<CohortsService>((ref) async {
   if (token == null) {
     throw NoTokenException("Service requires a token but none was found in storage");
   }
-  return CohortsService("https://cohorts.rebble.io/cohort", prefs, oauth, token);
+  return CohortsService("https://cohorts.rebble.io", prefs, oauth, token);
 });

@@ -58,12 +58,12 @@ class HomePage extends HookWidget implements CobbleScreen {
     final index = useState(0);
     
     final connectionState = useProvider(connectionStateProvider.state);
-    useEffect(() => () {
-      //FIXME
-      if (connectionState.currentConnectedWatch?.runningFirmware.isRecovery == true) {
-        print("Recovery mode detected, showing update prompt"); //TODO: remove me
-        context.push(UpdatePrompt());
-      }
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        if (connectionState.currentConnectedWatch?.runningFirmware.isRecovery == true) {
+          context.push(UpdatePrompt());
+        }
+      });
     }, [connectionState]);
 
     return WillPopScope(

@@ -7,6 +7,11 @@ class FirmwareInstallStatus {
   final double? progress;
 
   FirmwareInstallStatus({required this.isInstalling, this.progress});
+
+  @override
+  String toString() {
+    return 'FirmwareInstallStatus{isInstalling: $isInstalling, progress: $progress}';
+  }
 }
 
 class FirmwareInstallStatusNotifier extends StateNotifier<FirmwareInstallStatus> implements FirmwareUpdateCallbacks {

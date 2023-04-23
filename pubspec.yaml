@@ -56,6 +56,7 @@ dependencies:
   flutter_secure_storage: ^8.0.0
   crypto: ^3.0.3
   cached_network_image: ^3.0.0
+  device_info_plus: ^8.2.0
 
 dev_dependencies:
   flutter_launcher_icons: ^0.11.0

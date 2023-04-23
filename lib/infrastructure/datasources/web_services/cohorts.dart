@@ -1,10 +1,12 @@
-import 'package:cobble/domain/api/appstore/locker_entry.dart';
+import 'dart:io';
+
 import 'package:cobble/domain/api/auth/oauth.dart';
 import 'package:cobble/domain/api/auth/oauth_token.dart';
 import 'package:cobble/domain/api/cohorts/cohorts_response.dart';
-import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/datasources/web_services/service.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 const _cacheLifetime = Duration(hours: 1);
 
@@ -26,13 +28,24 @@ class CohortsService extends Service {
       if (tokenCreationDate == null) {
         throw StateError("token creation date null when token exists");
       }
+
+      final packageInfo = await PackageInfo.fromPlatform();
+      final mobilePlatform = Platform.operatingSystem;
+      final mobileVersion = Platform.operatingSystemVersion;
+      final mobileHardware = (Platform.isAndroid ? (await DeviceInfoPlugin().androidInfo).model : (await DeviceInfoPlugin().iosInfo).model) ?? "unknown";
+      final mobileAppVersion = "Cobble-" + packageInfo.version + "+" + packageInfo.buildNumber;
+
       final token = await _oauth.ensureNotStale(_token, tokenCreationDate);
       CohortsResponse cohorts = await client.getSerialized(
         CohortsResponse.fromJson,
-        "cohorts",
+        "cohort",
         params: {
           "select": select.map((e) => e.value).join(","),
           "hardware": hardware,
+          "mobilePlatform": mobilePlatform,
+          "mobileVersion": mobileVersion,
+          "mobileHardware": mobileHardware,
+          "pebbleAppVersion": mobileAppVersion,
         },
         token: token.accessToken,
       );
@@ -55,11 +68,11 @@ enum CohortsSelection {
       case CohortsSelection.fw:
         return "fw";
       case CohortsSelection.pipelineApi:
-        return "pipeline_api";
+        return "pipeline-api";
       case CohortsSelection.linkedServices:
-        return "linked_services";
+        return "linked-services";
       case CohortsSelection.healthInsights:
-        return "health_insights";
+        return "health-insights";
     }
   }
 
@@ -70,11 +83,11 @@ enum CohortsSelection {
     switch (value) {
       case "fw":
         return CohortsSelection.fw;
-      case "pipeline_api":
+      case "pipeline-api":
         return CohortsSelection.pipelineApi;
-      case "linked_services":
+      case "linked-services":
         return CohortsSelection.linkedServices;
-      case "health_insights":
+      case "health-insights":
         return CohortsSelection.healthInsights;
       default:
         throw Exception("Unknown cohorts selection: $value");

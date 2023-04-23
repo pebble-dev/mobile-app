@@ -10,6 +10,7 @@ import io.rebble.cobble.pigeons.BooleanWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.pigeons.Pigeons.FirmwareUpdateCallbacks
 import io.rebble.cobble.util.launchPigeonResult
+import io.rebble.cobble.util.stm32Crc
 import io.rebble.cobble.util.zippedSource
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
 import io.rebble.libpebblecommon.metadata.pbz.manifest.PbzManifest
@@ -89,14 +90,15 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
                     ?.buffer()
                     ?: error("${manifest.resources.name} missing from app $pbzFile")
 
-            val crc = CRC32()
+            val calculatedFwCRC32 = firmwareBin.use { it.stm32Crc() }
+            val calculatedResourcesCRC32 = systemResources.use { it.stm32Crc() }
 
-            check(manifest.firmware.crc == firmwareBin.use { crc.update(it.readByteArray()); crc.value }) {
-                "Firmware CRC mismatch"
+            check(manifest.firmware.crc == calculatedFwCRC32) {
+                "Firmware CRC mismatch: ${manifest.firmware.crc} != $calculatedFwCRC32"
             }
 
-            check(manifest.resources.crc == systemResources.use { crc.update(it.readByteArray()); crc.value }) {
-                "System resources CRC mismatch"
+            check(manifest.resources.crc == calculatedResourcesCRC32) {
+                "System resources CRC mismatch: ${manifest.resources.crc} != $calculatedResourcesCRC32"
             }
 
             val hardwarePlatformNumber = withTimeoutOrNull(2_000) {
