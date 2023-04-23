@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:cobble/domain/connection/connection_state_provider.dart';
+import 'package:cobble/domain/entities/hardware_platform.dart';
 import 'package:cobble/domain/firmware/firmware_install_status.dart';
 import 'package:cobble/domain/firmwares.dart';
 import 'package:cobble/infrastructure/datasources/firmwares.dart';
@@ -11,6 +11,7 @@ import 'package:cobble/ui/common/icons/comp_icon.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -18,9 +19,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class UpdatePrompt extends HookWidget implements CobbleScreen {
   UpdatePrompt({Key? key}) : super(key: key);
 
-  String title = "Checking for update...";
-  String? error;
-  Future<void>? updater;
   final fwUpdateControl = FirmwareUpdateControl();
 
   @override
@@ -30,36 +28,51 @@ class UpdatePrompt extends HookWidget implements CobbleScreen {
     var installStatus = useProvider(firmwareInstallStatusProvider.state);
     double? progress;
 
+    final title = useState("Checking for update...");
+    final error = useState<String?>(null);
+    final updater = useState<Future<void>?>(null);
+
     useEffect(() {
       if (connectionState.currentConnectedWatch != null && connectionState.isConnected == true) {
         if (connectionState.currentConnectedWatch?.runningFirmware.isRecovery == true) {
-          title = "Restoring firmware...";
-          updater ??= () async {
-            final firmwareFile = await (await firmwares).getFirmwareFor(connectionState.currentConnectedWatch!.board!, FirmwareType.normal);
+          title.value = "Restoring firmware...";
+          updater.value ??= () async {
+            final String hwRev;
+            try {
+              hwRev = connectionState.currentConnectedWatch!.runningFirmware.hardwarePlatform.getHardwarePlatformName();
+            } catch (e) {
+              title.value = "Error";
+              error.value = "Unknown hardware platform";
+              return;
+            }
+            final firmwareFile = await (await firmwares).getFirmwareFor(hwRev, FirmwareType.normal);
             if ((await fwUpdateControl.checkFirmwareCompatible(StringWrapper(value: firmwareFile.path))).value!) {
               fwUpdateControl.beginFirmwareUpdate(StringWrapper(value: firmwareFile.path));
             } else {
-              title = "Error";
-              error = "Firmware incompatible";
+              title.value = "Error";
+              error.value = "Firmware incompatible";
             }
           }();
         }
       } else {
-        title = "Error";
-        error = "Watch not connected or lost connection";
+        title.value = "Error";
+        error.value = "Watch not connected or lost connection";
       }
       return null;
     }, [connectionState, firmwares]);
 
     useEffect(() {
       progress = installStatus.progress;
+      if (kDebugMode) {
+        print("Update status: $installStatus");
+      }
       if (installStatus.isInstalling) {
-        title = "Installing...";
+        title.value = "Installing...";
       } else if (installStatus.isInstalling && installStatus.progress == 1.0) {
-        title = "Done";
+        title.value = "Done";
       } else if (!installStatus.isInstalling && installStatus.progress != 1.0) {
-        title = "Error";
-        error = "Installation failed";
+        title.value = "Error";
+        error.value = "Installation failed";
       }
       return null;
     }, [installStatus]);
@@ -72,11 +85,11 @@ class UpdatePrompt extends HookWidget implements CobbleScreen {
             alignment: Alignment.topCenter,
             child: CobbleStep(
               icon: const CompIcon(RebbleIcons.check_for_updates, RebbleIcons.check_for_updates_background, size: 80.0),
-              title: title,
+              title: title.value,
               child: Column(
                 children: [
-                  if (error != null)
-                    Text(error!)
+                  if (error.value != null)
+                    Text(error.value!)
                   else
                     LinearProgressIndicator(value: progress),
                   const SizedBox(height: 16.0),
@@ -92,7 +105,7 @@ class UpdatePrompt extends HookWidget implements CobbleScreen {
               ),
             ),
           )),
-      onWillPop: () async => error != null,
+      onWillPop: () async => error.value != null,
     );
   }
 }

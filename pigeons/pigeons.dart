@@ -52,10 +52,12 @@ class PebbleScanDevicePigeon {
 }
 
 class WatchConnectionStatePigeon {
-  bool? isConnected;
-  bool? isConnecting;
+  bool isConnected;
+  bool isConnecting;
   String? currentWatchAddress;
   PebbleDevicePigeon? currentConnectedWatch;
+  WatchConnectionStatePigeon(this.isConnected, this.isConnecting,
+      this.currentWatchAddress, this.currentConnectedWatch);
 }
 
 class TimelinePinPigeon {

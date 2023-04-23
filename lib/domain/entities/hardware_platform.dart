@@ -135,6 +135,41 @@ extension PebbleHardwareData on PebbleHardwarePlatform {
         throw Exception("Unknown hardware platform $this");
     }
   }
+
+  String getHardwarePlatformName() {
+    switch (this) {
+      case PebbleHardwarePlatform.pebbleOneEv1:
+        return "ev1";
+      case PebbleHardwarePlatform.pebbleOneEv2:
+        return "ev2";
+      case PebbleHardwarePlatform.pebbleOneEv2_3:
+        return "ev2_3";
+      case PebbleHardwarePlatform.pebbleOneEv2_4:
+        return "ev2_4";
+      case PebbleHardwarePlatform.pebbleOnePointFive:
+        return "v1_5";
+      case PebbleHardwarePlatform.pebbleOnePointZero:
+        return "v1_0";
+      case PebbleHardwarePlatform.pebbleSnowyEvt2:
+        return "snowy_evt2";
+      case PebbleHardwarePlatform.pebbleSnowyDvt:
+        return "snowy_dvt";
+      case PebbleHardwarePlatform.pebbleBobbySmiles:
+        return "snowy_s3";
+      case PebbleHardwarePlatform.pebbleSpaldingEvt:
+        return "spalding_evt";
+      case PebbleHardwarePlatform.pebbleSpaldingPvt:
+        return "spalding";
+      case PebbleHardwarePlatform.pebbleSilkEvt:
+        return "silk_evt";
+      case PebbleHardwarePlatform.pebbleSilk:
+        return "silk";
+      case PebbleHardwarePlatform.pebbleRobertEvt:
+        return "robert_evt";
+      default:
+        throw Exception("Unknown hardware platform $this");
+    }
+  }
 }
 
 enum WatchType { aplite, basalt, chalk, diorite, emery }

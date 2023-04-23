@@ -24,7 +24,6 @@ class ConnectionCallbacksStateNotifier
 
   @override
   void onWatchConnectionStateChanged(WatchConnectionStatePigeon pigeon) {
-    print("!!!!!!!! RECOVERY:" + (pigeon.currentConnectedWatch?.runningFirmware?.isRecovery.toString() ?? "null")); //TODO: remove me
     state = WatchConnectionState(
         pigeon.isConnected,
         pigeon.isConnecting,
@@ -32,9 +31,11 @@ class ConnectionCallbacksStateNotifier
         PebbleDevice.fromPigeon(pigeon.currentConnectedWatch));
   }
 
+  @override
   void dispose() {
     ConnectionCallbacks.setup(null);
     _connectionControl.cancelObservingConnectionChanges();
+    super.dispose();
   }
 }
 
