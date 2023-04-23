@@ -142,7 +142,7 @@ class PairPage extends HookConsumerWidget implements CobbleScreen {
                   child: Row(
                     children: <Widget>[
                       PebbleWatchIcon(
-                        PebbleWatchModel.values[e.color!],
+                        PebbleWatchModel.values[e.color ?? 0],
                         size: 56,
                       ),
                       const SizedBox(width: 16),
@@ -160,12 +160,12 @@ class PairPage extends HookConsumerWidget implements CobbleScreen {
                           Wrap(
                             spacing: 4,
                             children: [
-                              if (e.runningPRF! && !e.firstUse!)
+                              if (e.runningPRF == true && e.firstUse == false)
                                 Chip(
                                   backgroundColor: Colors.deepOrange,
                                   label: Text(tr.pairPage.status.recovery),
                                 ),
-                              if (e.firstUse!)
+                              if (e.firstUse == true)
                                 Chip(
                                   backgroundColor: const Color(0xffd4af37),
                                   label: Text(tr.pairPage.status.newDevice),
