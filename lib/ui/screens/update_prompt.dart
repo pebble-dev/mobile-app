@@ -4,6 +4,7 @@ import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
 import 'package:cobble/domain/firmware/firmware_install_status.dart';
 import 'package:cobble/domain/firmwares.dart';
+import 'package:cobble/domain/logging.dart';
 import 'package:cobble/infrastructure/datasources/firmwares.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/ui/common/components/cobble_step.dart';
@@ -47,8 +48,14 @@ class UpdatePrompt extends HookWidget implements CobbleScreen {
             }
             final firmwareFile = await (await firmwares).getFirmwareFor(hwRev, FirmwareType.normal);
             if ((await fwUpdateControl.checkFirmwareCompatible(StringWrapper(value: firmwareFile.path))).value!) {
-              fwUpdateControl.beginFirmwareUpdate(StringWrapper(value: firmwareFile.path));
+              Log.d("Firmware compatible, starting update");
+              if (!(await fwUpdateControl.beginFirmwareUpdate(StringWrapper(value: firmwareFile.path))).value!) {
+                Log.d("Failed to start update");
+                title.value = "Error";
+                error.value = "Failed to start update";
+              }
             } else {
+              Log.d("Firmware incompatible");
               title.value = "Error";
               error.value = "Firmware incompatible";
             }
@@ -63,14 +70,11 @@ class UpdatePrompt extends HookWidget implements CobbleScreen {
 
     useEffect(() {
       progress = installStatus.progress;
-      if (kDebugMode) {
-        print("Update status: $installStatus");
-      }
       if (installStatus.isInstalling) {
         title.value = "Installing...";
       } else if (installStatus.isInstalling && installStatus.progress == 1.0) {
         title.value = "Done";
-      } else if (!installStatus.isInstalling && installStatus.progress != 1.0) {
+      } else if (!installStatus.isInstalling && installStatus.progress != null && installStatus.progress != 1.0) {
         title.value = "Error";
         error.value = "Installation failed";
       }
