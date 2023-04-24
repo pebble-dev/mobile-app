@@ -55,9 +55,15 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
 
   Future<Object>? onMessageFromUi(String type, Object message) {
     if (type == (AppReorderRequest).toString()) {
+      if (container.read(connectionStateProvider.state).currentConnectedWatch?.runningFirmware.isRecovery == true) {
+        return Future.value(true);
+      }
       final req = AppReorderRequest.fromJson(message as Map<String, dynamic>);
       return beginAppOrderChange(req);
     } else if (type == (ForceRefreshRequest).toString()) {
+      if (container.read(connectionStateProvider.state).currentConnectedWatch?.runningFirmware.isRecovery == true) {
+        return Future.value(true);
+      }
       final req = ForceRefreshRequest.fromJson(message as Map<String, dynamic>);
       return forceAppSync(req.clear);
     }

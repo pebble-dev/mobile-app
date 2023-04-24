@@ -73,34 +73,43 @@ class PutBytesController @Inject constructor(
         _status.value = Status(State.IDLE)
     }
 
-    fun startFirmwareInstall(firmware: BufferedSource, resources: BufferedSource, manifest: PbzManifest) = launchNewPutBytesSession {
-
-        val totalSize = manifest.firmware.size + manifest.resources.size
-
-        val progressMultiplier = 1 / totalSize.toDouble()
+    fun startFirmwareInstall(firmware: ByteArray, resources: ByteArray?, manifest: PbzManifest) = launchNewPutBytesSession {
+        val totalSize = manifest.firmware.size + (manifest.resources?.size ?: 0)
+        var count = 0
         val progressJob = launch{
             try {
-                for (progress: PutBytesService.PutBytesProgress in putBytesService.progressUpdates) {
-                    _status.value = Status(State.SENDING, progress.count * progressMultiplier)
+                while (isActive) {
+                    val progress = putBytesService.progressUpdates.receive()
+                    count += progress.delta
+                    _status.value = Status(State.SENDING, count/totalSize.toDouble())
                 }
             } catch (_: CancellationException) {}
         }
         try {
-            firmware.use {
+            resources?.let {
                 putBytesService.sendFirmwarePart(
-                        it.readByteArray(),
+                        it,
                         metadataStore.lastConnectedWatchMetadata.value!!,
-                        manifest.firmware.crc,
-                        manifest.firmware.size.toUInt(),
-                        when (manifest.firmware.type) {
-                            "firmware" -> ObjectType.FIRMWARE
-                            "recovery" -> ObjectType.RECOVERY
-                            else -> throw IllegalArgumentException("Unknown firmware type")
-                        },
-                        manifest.firmware.name
+                        manifest.resources!!.crc,
+                        manifest.resources!!.size.toUInt(),
+                        0u,
+                        ObjectType.SYSTEM_RESOURCE
                 )
             }
+            putBytesService.sendFirmwarePart(
+                    firmware,
+                    metadataStore.lastConnectedWatchMetadata.value!!,
+                    manifest.firmware.crc,
+                    manifest.firmware.size.toUInt(),
+                    if (manifest.resources != null) 2u else 1u,
+                    when (manifest.firmware.type) {
+                        "normal" -> ObjectType.FIRMWARE
+                        "recovery" -> ObjectType.RECOVERY
+                        else -> throw IllegalArgumentException("Unknown firmware type ${manifest.firmware.type}")
+                    }
+            )
         } finally {
+            Timber.d("startFirmwareInstall: finish")
             progressJob.cancel()
             _status.value = Status(State.IDLE)
         }
@@ -129,7 +138,7 @@ class PutBytesController @Inject constructor(
         }
     }
 
-    private fun launchNewPutBytesSession(block: suspend CoroutineScope.() -> Unit) {
+    private fun launchNewPutBytesSession(block: suspend CoroutineScope.() -> Unit): Job {
         synchronized(_status) {
             if (_status.value.state != State.IDLE) {
                 throw IllegalStateException("Put bytes operation already in progress")
@@ -138,7 +147,7 @@ class PutBytesController @Inject constructor(
             _status.value = Status(State.SENDING)
         }
 
-        connectionLooper.getWatchConnectedScope().launch {
+        return connectionLooper.getWatchConnectedScope().launch {
             try {
                 block()
             } catch (e: Exception) {

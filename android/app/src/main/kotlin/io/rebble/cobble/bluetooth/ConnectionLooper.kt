@@ -71,7 +71,7 @@ class ConnectionLooper @Inject constructor(
 
                     try {
                         blueCommon.startSingleWatchConnection(macAddress).collect {
-                            if (it is SingleConnectionStatus.Connected && connectionState.value !is ConnectionState.Connected) {
+                            if (it is SingleConnectionStatus.Connected && connectionState.value !is ConnectionState.Connected && connectionState.value !is ConnectionState.RecoveryMode) {
                                 // initial connection, wait on negotiation
                                 _connectionState.value = ConnectionState.Negotiating(it.watch)
                             } else {
