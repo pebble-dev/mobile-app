@@ -99,8 +99,8 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
 
             require(manifest.type == "firmware") { "PBZ is not a firmware update" }
 
-            var firmwareBin = openZippedFile(pbzFile, manifest.firmware.name).use { it.readByteArray() }
-            var systemResources = manifest.resources?.let {res -> openZippedFile(pbzFile, res.name).use { it.readByteArray() } }
+            val firmwareBin = openZippedFile(pbzFile, manifest.firmware.name).use { it.readByteArray() }
+            val systemResources = manifest.resources?.let {res -> openZippedFile(pbzFile, res.name).use { it.readByteArray() } }
 
             val calculatedFwCRC32 = Crc32Calculator().apply {
                 addBytes(firmwareBin.asUByteArray())
