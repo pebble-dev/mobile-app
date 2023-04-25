@@ -5,8 +5,9 @@ import 'package:state_notifier/state_notifier.dart';
 class FirmwareInstallStatus {
   final bool isInstalling;
   final double? progress;
+  final bool success;
 
-  FirmwareInstallStatus({required this.isInstalling, this.progress});
+  FirmwareInstallStatus({required this.isInstalling, this.progress, this.success = false});
 
   @override
   String toString() {
@@ -21,17 +22,21 @@ class FirmwareInstallStatusNotifier extends StateNotifier<FirmwareInstallStatus>
 
   @override
   void onFirmwareUpdateFinished() {
-    state = FirmwareInstallStatus(isInstalling: false, progress: 100.0);
+    state = FirmwareInstallStatus(isInstalling: false, progress: 100.0, success: true);
   }
 
   @override
   void onFirmwareUpdateProgress(double progress) {
-    state = FirmwareInstallStatus(isInstalling: true, progress: progress);
+    state = FirmwareInstallStatus(isInstalling: true, progress: progress == 0.0 ? null : progress);
   }
 
   @override
   void onFirmwareUpdateStarted() {
     state = FirmwareInstallStatus(isInstalling: true);
+  }
+
+  void reset() {
+    state = FirmwareInstallStatus(isInstalling: false);
   }
 }
 
