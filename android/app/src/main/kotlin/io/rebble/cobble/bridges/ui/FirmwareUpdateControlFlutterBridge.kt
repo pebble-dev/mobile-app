@@ -147,17 +147,20 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
                     putBytesController.status.collect {
                         firmwareUpdateCallbacks.onFirmwareUpdateProgress(it.progress) {}
                     }
-                } catch (_: CancellationException) {}
+                } catch (_: CancellationException) { }
             }
             try {
                 putBytesController.startFirmwareInstall(firmwareBin, systemResources, manifest).join()
-                systemService.send(SystemMessage.FirmwareUpdateComplete())
-            } catch (e: Exception) {
-                systemService.send(SystemMessage.FirmwareUpdateFailed())
-                throw e
+            } finally {
+                job.cancel()
+                if (putBytesController.lastProgress != 1.0) {
+                    systemService.send(SystemMessage.FirmwareUpdateFailed())
+                    error("Firmware update failed - Only reached ${putBytesController.status.value.progress}")
+                } else {
+                    systemService.send(SystemMessage.FirmwareUpdateComplete())
+                    firmwareUpdateCallbacks.onFirmwareUpdateFinished() {}
+                }
             }
-            job.cancel()
-            firmwareUpdateCallbacks.onFirmwareUpdateFinished() {}
             return@launchPigeonResult BooleanWrapper(true)
         }
     }

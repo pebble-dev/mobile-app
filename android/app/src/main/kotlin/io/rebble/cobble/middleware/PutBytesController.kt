@@ -31,6 +31,9 @@ class PutBytesController @Inject constructor(
 
     private var lastCookie: UInt? = null
 
+    var lastProgress = 0.0
+        private set
+
     fun startAppInstall(appId: UInt, pbwFile: File, watchType: WatchType) = launchNewPutBytesSession {
         val manifest = requirePbwManifest(pbwFile, watchType)
 
@@ -74,14 +77,20 @@ class PutBytesController @Inject constructor(
     }
 
     fun startFirmwareInstall(firmware: ByteArray, resources: ByteArray?, manifest: PbzManifest) = launchNewPutBytesSession {
+        lastProgress = 0.0
         val totalSize = manifest.firmware.size + (manifest.resources?.size ?: 0)
+        require(manifest.firmware.type == "normal" || resources == null) {
+            "Resources are only supported for normal firmware"
+        }
         var count = 0
         val progressJob = launch{
             try {
                 while (isActive) {
                     val progress = putBytesService.progressUpdates.receive()
                     count += progress.delta
-                    _status.value = Status(State.SENDING, count/totalSize.toDouble())
+                    val nwProgress = count/totalSize.toDouble()
+                    lastProgress = nwProgress
+                    _status.value = Status(State.SENDING, nwProgress)
                 }
             } catch (_: CancellationException) {}
         }
@@ -101,7 +110,10 @@ class PutBytesController @Inject constructor(
                     metadataStore.lastConnectedWatchMetadata.value!!,
                     manifest.firmware.crc,
                     manifest.firmware.size.toUInt(),
-                    if (manifest.resources != null) 2u else 1u,
+                    when {
+                        manifest.resources != null -> 2u
+                        else -> 1u
+                    },
                     when (manifest.firmware.type) {
                         "normal" -> ObjectType.FIRMWARE
                         "recovery" -> ObjectType.RECOVERY

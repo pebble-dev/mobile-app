@@ -11,7 +11,7 @@ class Firmwares {
   Firmwares(this.cohorts);
 
   Future<bool> doesFirmwareNeedUpdate(String hardware, FirmwareType type, DateTime timestamp) async {
-    final firmwares = (await cohorts.getCohorts({CohortsSelection.fw, CohortsSelection.linkedServices}, hardware)).fw;
+    final firmwares = (await cohorts.getCohorts({CohortsSelection.fw}, hardware)).fw;
     switch (type) {
       case FirmwareType.normal:
         return firmwares.normal?.timestamp.isAfter(timestamp) == true;
@@ -24,7 +24,7 @@ class Firmwares {
 
   Future<File> getFirmwareFor(String hardware, FirmwareType type) async {
     try {
-      final firmwares = (await cohorts.getCohorts({CohortsSelection.fw, CohortsSelection.linkedServices}, hardware)).fw;
+      final firmwares = (await cohorts.getCohorts({CohortsSelection.fw}, hardware)).fw;
       final firmware = type == FirmwareType.normal ? firmwares.normal : firmwares.recovery;
       if (firmware != null) {
         final url = firmware.url;
