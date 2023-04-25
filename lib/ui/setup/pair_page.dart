@@ -1,5 +1,4 @@
 import 'package:cobble/domain/connection/connection_state_provider.dart';
-import 'package:cobble/domain/connection/pair_provider.dart';
 import 'package:cobble/domain/connection/scan_provider.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
@@ -9,7 +8,6 @@ import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
-import 'package:cobble/ui/home/home_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
@@ -79,20 +77,11 @@ class PairPage extends HookConsumerWidget implements CobbleScreen {
       WidgetsBinding.instance.scheduleFrameCallback((timeStamp) {
         pairedStorage.register(dev);
         pairedStorage.setDefault(dev.address!);
-        final isRecovery = connectionState.currentConnectedWatch?.runningFirmware.isRecovery;
         if (fromLanding) {
-          if (isRecovery == true) {
-            context.pushAndRemoveAllBelow(UpdatePrompt())
-                .then((value) => context.pushReplacement(MoreSetup()));
-          } else {
-            context.pushReplacement(MoreSetup());
-          }
+          context.pushAndRemoveAllBelow(UpdatePrompt(popOnSuccess: true))
+              .then((value) => context.pushReplacement(MoreSetup()));
         } else {
-          if (isRecovery == true) {
-            context.pushAndRemoveAllBelow(UpdatePrompt());
-          } else {
-            context.pushReplacement(HomePage());
-          }
+          context.pushAndRemoveAllBelow(UpdatePrompt(popOnSuccess: false));
         }
       });
 
@@ -246,6 +235,5 @@ class PairPage extends HookConsumerWidget implements CobbleScreen {
         return true;
       }
     );
-    ;
   }
 }

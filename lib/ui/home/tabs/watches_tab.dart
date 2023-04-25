@@ -24,8 +24,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../common/icons/fonts/rebble_icons.dart';
-
 class MyWatchesTab extends HookConsumerWidget implements CobbleScreen {
   final Color _disconnectedColor = Color.fromRGBO(255, 255, 255, 0.5);
   final Color _connectedColor = Color.fromARGB(255, 0, 169, 130);
@@ -294,7 +292,7 @@ class MyWatchesTab extends HookConsumerWidget implements CobbleScreen {
                           Container(
                             child: Center(
                                 child: PebbleWatchIcon(
-                                    PebbleWatchModel.values[e.color!],
+                                    PebbleWatchModel.values[e.color ?? 0],
                                     backgroundColor: _getBrStatusColor(e))),
                           ),
                           SizedBox(width: 16),

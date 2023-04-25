@@ -8,7 +8,6 @@ import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/router/uri_navigator.dart';
-import 'package:cobble/ui/screens/placeholder_screen.dart';
 import 'package:cobble/ui/screens/settings.dart';
 import 'package:cobble/ui/screens/update_prompt.dart';
 import 'package:flutter/cupertino.dart';
@@ -61,7 +60,7 @@ class HomePage extends HookWidget implements CobbleScreen {
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
         if (connectionState.currentConnectedWatch?.runningFirmware.isRecovery == true) {
-          context.push(UpdatePrompt());
+          context.push(UpdatePrompt(popOnSuccess: false,));
         }
       });
     }, [connectionState]);
