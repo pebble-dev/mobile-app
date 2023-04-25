@@ -8,8 +8,9 @@ class CobbleStep extends StatelessWidget {
   final Widget? child;
   final Widget icon;
   final Color? iconBackgroundColor;
+  final EdgeInsets? iconPadding;
 
-  const CobbleStep({Key? key, required this.icon, required this.title, this.child, this.iconBackgroundColor}) : super(key: key);
+  const CobbleStep({Key? key, required this.icon, required this.title, this.child, this.iconBackgroundColor, this.iconPadding = const EdgeInsets.all(20)}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +22,14 @@ class CobbleStep extends StatelessWidget {
             child: icon,
             diameter: 120,
             color: iconBackgroundColor ?? Theme.of(context).primaryColor,
-            padding: const EdgeInsets.all(20),
+            padding: iconPadding,
           ),
           const SizedBox(height: 16.0), // spacer
           Container(
             margin: const EdgeInsets.symmetric(vertical: 16),
             child: Text(
               title,
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
               textAlign: TextAlign.center,
             ),
           ),

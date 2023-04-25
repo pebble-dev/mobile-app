@@ -29,7 +29,7 @@ class _UpdateIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (progress.success) {
-      return PebbleWatchIcon(model, size: 80.0,);
+      return PebbleWatchIcon(model, size: 80.0, backgroundColor: Colors.transparent,);
     } else if (hasError) {
       return const CompIcon(RebbleIcons.dead_watch_ghost80, RebbleIcons.dead_watch_ghost80_background, size: 80.0);
     } else {
@@ -105,7 +105,7 @@ class UpdatePrompt extends HookWidget implements CobbleScreen {
             } else {
               updateRequiredFor.value = FirmwareType.normal;
             }
-          } else if (recoveryOutOfDate || true) {
+          } else if (recoveryOutOfDate) {
             updateRequiredFor.value = FirmwareType.recovery;
           } else {
             if (installStatus.success) {
@@ -210,6 +210,7 @@ class UpdatePrompt extends HookWidget implements CobbleScreen {
             alignment: Alignment.topCenter,
             child: CobbleStep(
               icon: _UpdateIcon(progress: installStatus, hasError: error.value != null, model: connectionState.currentConnectedWatch?.model ?? PebbleWatchModel.rebble_logo),
+              iconPadding: installStatus.success ? null : const EdgeInsets.all(20),
               title: title.value,
               iconBackgroundColor: error.value != null ? context.scheme!.destructive : installStatus.success ? context.scheme!.positive : null,
               child: Column(
