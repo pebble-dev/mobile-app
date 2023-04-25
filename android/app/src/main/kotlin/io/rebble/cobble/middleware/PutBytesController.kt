@@ -109,7 +109,6 @@ class PutBytesController @Inject constructor(
                     }
             )
         } finally {
-            Timber.d("startFirmwareInstall: finish")
             progressJob.cancel()
             _status.value = Status(State.IDLE)
         }

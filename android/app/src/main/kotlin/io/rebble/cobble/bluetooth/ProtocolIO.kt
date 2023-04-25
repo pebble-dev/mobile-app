@@ -44,7 +44,7 @@ class ProtocolIO(
                 /* READ PACKET CONTENT */
                 inputStream.readFully(buf, 4, length.toInt())
 
-                Timber.d("Got packet: EP ${ProtocolEndpoint.getByValue(endpoint.toUShort())} | Length ${length.toUShort()}")
+                //Timber.d("Got packet: EP ${ProtocolEndpoint.getByValue(endpoint.toUShort())} | Length ${length.toUShort()}")
 
                 buf.rewind()
                 val packet = ByteArray(length.toInt() + 2 * (Short.SIZE_BYTES))
@@ -64,8 +64,7 @@ class ProtocolIO(
     }
 
     suspend fun write(bytes: ByteArray) = withContext(Dispatchers.IO) {
-        //TODO: remove msg
-        Timber.d("Sending packet of EP ${PebblePacket(bytes.toUByteArray()).endpoint}")
+        //Timber.d("Sending packet of EP ${PebblePacket(bytes.toUByteArray()).endpoint}")
         outputStream.write(bytes)
     }
 }
