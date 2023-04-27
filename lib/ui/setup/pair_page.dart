@@ -78,10 +78,19 @@ class PairPage extends HookConsumerWidget implements CobbleScreen {
         pairedStorage.register(dev);
         pairedStorage.setDefault(dev.address!);
         if (fromLanding) {
-          context.pushAndRemoveAllBelow(UpdatePrompt(popOnSuccess: true))
-              .then((value) => context.pushReplacement(MoreSetup()));
+          context.pushAndRemoveAllBelow(UpdatePrompt(
+            confirmOnSuccess: false,
+            onSuccess: (context) {
+              context.pushReplacement(MoreSetup());
+            },
+          ));
         } else {
-          context.pushAndRemoveAllBelow(UpdatePrompt(popOnSuccess: false));
+          context.pushAndRemoveAllBelow(UpdatePrompt(
+            confirmOnSuccess: true,
+            onSuccess: (context) {
+              context.pop();
+            },
+          ));
         }
       });
 

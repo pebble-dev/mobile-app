@@ -60,9 +60,15 @@ class HomePage extends HookWidget implements CobbleScreen {
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
         if (connectionState.currentConnectedWatch?.runningFirmware.isRecovery == true) {
-          context.push(UpdatePrompt(popOnSuccess: false,));
+          context.push(UpdatePrompt(
+            confirmOnSuccess: true,
+            onSuccess: (context) {
+              context.pop();
+            },
+          ));
         }
       });
+      return null;
     }, [connectionState]);
 
     return WillPopScope(

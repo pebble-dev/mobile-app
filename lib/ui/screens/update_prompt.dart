@@ -39,8 +39,9 @@ class _UpdateIcon extends StatelessWidget {
 }
 
 class UpdatePrompt extends HookWidget implements CobbleScreen {
-  final bool popOnSuccess;
-  UpdatePrompt({Key? key, required this.popOnSuccess}) : super(key: key);
+  final Function onSuccess;
+  final bool confirmOnSuccess;
+  UpdatePrompt({Key? key, required this.onSuccess, required this.confirmOnSuccess}) : super(key: key);
 
   final fwUpdateControl = FirmwareUpdateControl();
 
@@ -152,7 +153,7 @@ class UpdatePrompt extends HookWidget implements CobbleScreen {
           if (awaitingReconnect.value) {
             WidgetsBinding.instance.scheduleFrameCallback((timeStamp) {
               context.read(firmwareInstallStatusProvider).reset();
-              Navigator.of(context).pop();
+              onSuccess(context);
             });
           }
         }
@@ -176,12 +177,12 @@ class UpdatePrompt extends HookWidget implements CobbleScreen {
         },
       );
     } else if (installStatus.success) {
-      if (!popOnSuccess) {
+      if (confirmOnSuccess) {
         fab = CobbleFab(
           label: "OK",
           icon: RebbleIcons.check_done,
           onPressed: () {
-            Navigator.of(context).pop();
+            onSuccess(context);
           },
         );
       } else {
