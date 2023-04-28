@@ -5,10 +5,12 @@ import 'cobble_circle.dart';
 class CobbleStep extends StatelessWidget {
 
   final String title;
-  final String subtitle;
+  final Widget? child;
   final Widget icon;
+  final Color? iconBackgroundColor;
+  final EdgeInsets? iconPadding;
 
-  const CobbleStep({Key? key, required this.icon, required this.title, this.subtitle = ""}) : super(key: key);
+  const CobbleStep({Key? key, required this.icon, required this.title, this.child, this.iconBackgroundColor, this.iconPadding = const EdgeInsets.all(20)}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,20 +21,19 @@ class CobbleStep extends StatelessWidget {
           CobbleCircle(
             child: icon,
             diameter: 120,
-            color: Theme.of(context).primaryColor,
-            padding: const EdgeInsets.all(20),
+            color: iconBackgroundColor ?? Theme.of(context).primaryColor,
+            padding: iconPadding,
           ),
           const SizedBox(height: 16.0), // spacer
           Container(
-            margin: const EdgeInsets.symmetric(vertical: 8),
+            margin: const EdgeInsets.symmetric(vertical: 16),
             child: Text(
               title,
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
               textAlign: TextAlign.center,
             ),
           ),
-          const SizedBox(height: 24.0), // spacer
-          Text(subtitle, textAlign: TextAlign.center),
+          if (child != null) child!,
         ],
       ),
     );

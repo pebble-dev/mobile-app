@@ -58,9 +58,15 @@ fun <T> CoroutineScope.launchPigeonResult(result: Pigeons.Result<T>,
                                           coroutineContext: CoroutineContext = EmptyCoroutineContext,
                                           callback: suspend () -> T) {
     launch(coroutineContext) {
-        val callbackResult = callback()
-        withContext(Dispatchers.Main.immediate) {
-            result.success(callbackResult)
+        try {
+            val callbackResult = callback()
+            withContext(Dispatchers.Main.immediate) {
+                result.success(callbackResult)
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main.immediate) {
+                result.error(e)
+            }
         }
     }
 }

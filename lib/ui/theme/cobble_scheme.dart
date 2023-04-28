@@ -34,6 +34,9 @@ class CobbleSchemeData {
   /// Used for destructive actions, such as deleting a database or factory resetting a watch.
   final Color destructive;
 
+  /// Background color for indicators of success.
+  final Color positive;
+
   /// Page background.
   final Color background;
 
@@ -63,6 +66,7 @@ class CobbleSchemeData {
     required this.text,
     required this.muted,
     required this.divider,
+    required this.positive,
   });
 
   static final _darkScheme = CobbleSchemeData(
@@ -76,6 +80,7 @@ class CobbleSchemeData {
     text: Color(0xFFFFFFFF),
     muted: Color(0xFFFFFFFF).withOpacity(0.6),
     divider: Color(0xFFFFFFFF).withOpacity(0.35),
+    positive: Color(0xFF78F9CD),
   );
 
   static final _lightScheme = CobbleSchemeData(
@@ -89,6 +94,7 @@ class CobbleSchemeData {
     text: Color(0xFF000000).withOpacity(0.7),
     muted: Color(0xFF000000).withOpacity(0.4),
     divider: Color(0xFF000000).withOpacity(0.25),
+    positive: Color(0xFF78F9CD),
   );
 
   factory CobbleSchemeData.fromBrightness(Brightness? brightness) =>

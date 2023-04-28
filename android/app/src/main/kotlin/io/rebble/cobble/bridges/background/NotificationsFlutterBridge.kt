@@ -48,32 +48,30 @@ class NotificationsFlutterBridge @Inject constructor(
     val activeNotifs: MutableMap<UUID, StatusBarNotification> = mutableMapOf()
 
     private val notifUtils = object : Pigeons.NotificationUtils {
-        override fun openNotification(arg: Pigeons.StringWrapper?) {
+        override fun openNotification(arg: Pigeons.StringWrapper) {
             val id = UUID.fromString(arg?.value)
             activeNotifs[id]?.notification?.contentIntent?.send()
         }
 
-        override fun executeAction(arg: Pigeons.NotifActionExecuteReq?) {
-            if (arg != null) {
-                val id = UUID.fromString(arg.itemId)
-                val action = activeNotifs[id]?.notification?.let { NotificationCompat.getAction(it, arg.actionId!!.toInt()) }
-                if (arg.responseText?.isEmpty() == false) {
-                    val key = action?.remoteInputs?.first()?.resultKey
-                    if (key != null) {
-                        val intent = Intent()
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        val bundle = Bundle()
-                        bundle.putString(key, arg.responseText)
-                        RemoteInput.addResultsToIntent(action?.remoteInputs, intent, bundle)
-                        action?.actionIntent.send(context, 0, intent)
-                        return
-                    }
+        override fun executeAction(arg: Pigeons.NotifActionExecuteReq) {
+            val id = UUID.fromString(arg.itemId)
+            val action = activeNotifs[id]?.notification?.let { NotificationCompat.getAction(it, arg.actionId!!.toInt()) }
+            if (arg.responseText?.isEmpty() == false) {
+                val key = action?.remoteInputs?.first()?.resultKey
+                if (key != null) {
+                    val intent = Intent()
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    val bundle = Bundle()
+                    bundle.putString(key, arg.responseText)
+                    RemoteInput.addResultsToIntent(action.remoteInputs!!, intent, bundle)
+                    action.actionIntent?.send(context, 0, intent)
+                    return
                 }
-                action?.actionIntent?.send()
             }
+            action?.actionIntent?.send()
         }
 
-        override fun dismissNotificationWatch(arg: Pigeons.StringWrapper?) {
+        override fun dismissNotificationWatch(arg: Pigeons.StringWrapper) {
             val id = UUID.fromString(arg?.value)
             val command = BlobCommand.DeleteCommand(Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(), BlobCommand.BlobDatabase.Notification, SUUID(StructMapper(), id).toBytes())
             GlobalScope.launch {
@@ -86,7 +84,7 @@ class NotificationsFlutterBridge @Inject constructor(
             }
         }
 
-        override fun dismissNotification(arg: Pigeons.StringWrapper?, result: Pigeons.Result<Pigeons.BooleanWrapper>?) {
+        override fun dismissNotification(arg: Pigeons.StringWrapper, result: Pigeons.Result<Pigeons.BooleanWrapper>) {
             if (arg != null) {
                 val id = UUID.fromString(arg.value)
                 try {
@@ -155,9 +153,9 @@ class NotificationsFlutterBridge @Inject constructor(
                 Timber.w("Notification listening pigeon null")
             }
             notifListening?.handleNotification(notif) { notifToSend ->
-                val parsedAttributes : List<TimelineAttribute> = Json.decodeFromString(notifToSend.attributesJson!!) ?: emptyList()
+                val parsedAttributes : List<TimelineAttribute> = notifToSend.attributesJson?.let { Json.decodeFromString(it) } ?: emptyList()
 
-                val parsedActions : List<TimelineAction> = Json.decodeFromString(notifToSend.actionsJson!!) ?: emptyList()
+                val parsedActions : List<TimelineAction> = notifToSend.actionsJson?.let { Json.decodeFromString(it) } ?: emptyList()
 
                 val itemId = UUID.fromString(notifToSend.itemId)
                 val timelineItem = TimelineItem(

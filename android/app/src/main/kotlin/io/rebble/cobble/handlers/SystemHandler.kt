@@ -9,6 +9,7 @@ import android.location.LocationManager
 import androidx.core.content.ContextCompat.getSystemService
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.ConnectionState
+import io.rebble.cobble.bluetooth.watchOrNull
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.util.coroutines.asFlow
 import io.rebble.libpebblecommon.PacketPriority
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
@@ -48,6 +50,14 @@ class SystemHandler @Inject constructor(
         coroutineScope.launch {
             try {
                 refreshWatchMetadata()
+                watchMetadataStore.lastConnectedWatchMetadata.value?.let {
+                    if (it.running.isRecovery.get()) {
+                        Timber.i("Watch is in recovery mode, switching to recovery state")
+                        connectionLooper.connectionState.value.watchOrNull?.let { it1 -> connectionLooper.recoveryMode(it1) }
+                    } else {
+                        connectionLooper.connectionState.value.watchOrNull?.let { it1 -> connectionLooper.negotiationsComplete(it1) }
+                    }
+                }
                 awaitCancellation()
             } finally {
                 watchMetadataStore.lastConnectedWatchMetadata.value = null

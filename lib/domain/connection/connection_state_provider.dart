@@ -31,9 +31,11 @@ class ConnectionCallbacksStateNotifier
         PebbleDevice.fromPigeon(pigeon.currentConnectedWatch));
   }
 
+  @override
   void dispose() {
     ConnectionCallbacks.setup(null);
     _connectionControl.cancelObservingConnectionChanges();
+    super.dispose();
   }
 }
 

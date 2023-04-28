@@ -26,7 +26,7 @@ class CobbleFab extends FloatingActionButton {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
-      onPressed: null,
+      onPressed: onPressed,
       icon: icon is IconData ? Icon(icon) : null,
       label: Text(label.toUpperCase()),
       heroTag: heroTag,

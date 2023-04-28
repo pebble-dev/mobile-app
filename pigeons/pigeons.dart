@@ -52,10 +52,12 @@ class PebbleScanDevicePigeon {
 }
 
 class WatchConnectionStatePigeon {
-  bool? isConnected;
-  bool? isConnecting;
+  bool isConnected;
+  bool isConnecting;
   String? currentWatchAddress;
   PebbleDevicePigeon? currentConnectedWatch;
+  WatchConnectionStatePigeon(this.isConnected, this.isConnecting,
+      this.currentWatchAddress, this.currentConnectedWatch);
 }
 
 class TimelinePinPigeon {
@@ -190,7 +192,7 @@ class NotifChannelPigeon {
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
-  void onScanUpdate(ListWrapper pebbles);
+  void onScanUpdate(List<PebbleScanDevicePigeon> pebbles);
 
   void onScanStarted();
 
@@ -259,6 +261,15 @@ abstract class NotificationListening {
 @FlutterApi()
 abstract class AppLogCallbacks {
   void onLogReceived(AppLogEntry entry);
+}
+
+@FlutterApi()
+abstract class FirmwareUpdateCallbacks {
+  void onFirmwareUpdateStarted();
+
+  void onFirmwareUpdateProgress(double progress);
+
+  void onFirmwareUpdateFinished();
 }
 
 @HostApi()
@@ -481,6 +492,14 @@ abstract class AppLogControl {
   void startSendingLogs();
 
   void stopSendingLogs();
+}
+
+@HostApi()
+abstract class FirmwareUpdateControl {
+  @async
+  BooleanWrapper checkFirmwareCompatible(StringWrapper fwUri);
+  @async
+  BooleanWrapper beginFirmwareUpdate(StringWrapper fwUri);
 }
 
 /// This class will keep all classes that appear in lists from being deleted
