@@ -772,7 +772,7 @@ packages:
       sha256: d18e5f9cb089cbf535cf4b772c83ca967b77b62dd9570bcd14d762cfb7590586
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.1"
+    version: "4.1.0"
   riverpod:
     dependency: transitive
     description:
