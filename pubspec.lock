@@ -64,7 +64,7 @@ packages:
       sha256: ad77deb6e9c143a3f550fbb4c5c1e0c6aadabe24274898d06b9526c61b9cf4fb
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0"
+    version: "1.1.1"
   build_daemon:
     dependency: transitive
     description:
@@ -88,7 +88,7 @@ packages:
       sha256: d0baf2dbc486242b6fb0143830b98a4c739270d5496209e45a18882a45c8abd1
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.10"
+    version: "2.2.0"
   build_runner_core:
     dependency: transitive
     description:
