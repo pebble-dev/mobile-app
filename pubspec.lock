@@ -184,7 +184,7 @@ packages:
       sha256: "73aea7f92d460dcdeb3e37da15b3b237382cad816c939082ff37b42d9372369b"
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.0.0"
+    version: "4.0.4"
   copy_with_extension_gen:
     dependency: "direct dev"
     description:
