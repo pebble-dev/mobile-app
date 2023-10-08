@@ -49,7 +49,7 @@ dependencies:
   golden_toolkit: ^0.9.0
   rxdart: 0.25.0
   share: ^2.0.1
-  network_info_plus: ^1.0.2
+  network_info_plus: ^2.1.4+1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

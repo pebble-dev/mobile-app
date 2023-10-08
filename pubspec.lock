@@ -548,7 +548,7 @@ packages:
       sha256: ab1d0f3d56d3c43ac6401957f043b0ac2a3b3e795e2fc151cd73128f0258ef2e
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.3.0"
+    version: "2.1.4+1"
   network_info_plus_linux:
     dependency: transitive
     description:
