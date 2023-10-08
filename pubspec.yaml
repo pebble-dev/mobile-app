@@ -68,7 +68,7 @@ dev_dependencies:
   json_serializable: ^6.1.4
   copy_with_extension_gen: ^4.0.1
   sqflite_common_ffi: ^2.0.0
-  mockito: ^5.1.0
+  mockito: ^5.2.0
   source_gen: ^1.2.1
   recase: ^3.0.1
   flutter_lints: ^1.0.4

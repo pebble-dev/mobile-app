@@ -540,7 +540,7 @@ packages:
       sha256: ee6d78bf86138646a798b44c7c9e1602676015126d356a80e60af1e939bc2d4a
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.1.0"
+    version: "5.2.0"
   network_info_plus:
     dependency: "direct main"
     description:
