@@ -1,5 +1,4 @@
 import 'package:cobble/localization/localization.dart';
-import 'package:cobble/ui/home/tabs/about_tab.dart';
 import 'package:cobble/ui/home/tabs/locker_tab.dart';
 import 'package:cobble/ui/home/tabs/store_tab.dart';
 import 'package:cobble/ui/home/tabs/test_tab.dart';
@@ -10,6 +9,7 @@ import 'package:cobble/ui/router/uri_navigator.dart';
 import 'package:cobble/ui/screens/placeholder_screen.dart';
 import 'package:cobble/ui/screens/settings.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -27,16 +27,18 @@ class _TabConfig {
 
 class HomePage extends HookWidget implements CobbleScreen {
   final _config = [
-    _TabConfig(
+    // Only visible when in debug mode
+    ... kDebugMode ? [_TabConfig(
       TestTab(),
       tr.homePage.testing,
       RebbleIcons.send_to_watch_checked,
-    ),
-    _TabConfig(
-      AboutTab(),
-      tr.homePage.health,
-      RebbleIcons.health_journal,
-    ),
+    )] : [],
+    // // TODO: Health not yet implemented
+    // _TabConfig(
+    //   HealthTab(),
+    //   tr.homePage.health,
+    //   RebbleIcons.health_journal,
+    // ),
     _TabConfig(LockerTab(), tr.homePage.locker, RebbleIcons.locker),
     _TabConfig(StoreTab(), tr.homePage.store, RebbleIcons.rebble_store),
     _TabConfig(MyWatchesTab(), tr.homePage.watches, RebbleIcons.devices),

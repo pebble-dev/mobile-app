@@ -6,6 +6,7 @@ import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/components/cobble_card.dart';
 import 'package:cobble/ui/common/components/cobble_tile.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
+import 'package:cobble/ui/devoptions/dev_options_page.dart';
 import 'package:cobble/ui/home/tabs/widget_library.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
@@ -112,21 +113,22 @@ class Settings extends HookWidget implements CobbleScreen {
             title: tr.settings.calendar,
             navigateTo: Calendar(),
           ),
-          CobbleTile.navigation(
-            leading: RebbleIcons.sms_messages,
-            title: tr.settings.messagesAndCannedReplies,
-            navigateTo: PlaceholderScreen(),
-          ),
-          CobbleTile.navigation(
-            leading: RebbleIcons.system_language,
-            title: tr.settings.languageAndVoice,
-            navigateTo: PlaceholderScreen(),
-          ),
-          CobbleTile.navigation(
-            leading: RebbleIcons.analytics,
-            title: tr.settings.analytics,
-            navigateTo: PlaceholderScreen(),
-          ),
+          // // TODO: Not yet implemented
+          // CobbleTile.navigation(
+          //   leading: RebbleIcons.sms_messages,
+          //   title: tr.settings.messagesAndCannedReplies,
+          //   navigateTo: PlaceholderScreen(),
+          // ),
+          // CobbleTile.navigation(
+          //   leading: RebbleIcons.system_language,
+          //   title: tr.settings.languageAndVoice,
+          //   navigateTo: PlaceholderScreen(),
+          // ),
+          // CobbleTile.navigation(
+          //   leading: RebbleIcons.analytics,
+          //   title: tr.settings.analytics,
+          //   navigateTo: PlaceholderScreen(),
+          // ),
           CobbleTile.navigation(
             leading: RebbleIcons.about_app,
             title: tr.settings.aboutAndSupport,
@@ -135,7 +137,7 @@ class Settings extends HookWidget implements CobbleScreen {
           CobbleTile.navigation(
             leading: RebbleIcons.developer_settings,
             title: tr.settings.developerOptions,
-            navigateTo: PlaceholderScreen(),
+            navigateTo: DevOptionsPage(),
           ),
           if (kDebugMode)
             CobbleTile.navigation(
