@@ -3,7 +3,9 @@ package io.rebble.cobble.bluetooth
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Context
+import io.rebble.cobble.BuildConfig
 import io.rebble.cobble.bluetooth.classic.BlueSerialDriver
+import io.rebble.cobble.bluetooth.classic.SocketSerialDriver
 import io.rebble.cobble.bluetooth.scan.BleScanner
 import io.rebble.cobble.bluetooth.scan.ClassicScanner
 import io.rebble.cobble.datasources.FlutterPreferences
@@ -30,11 +32,12 @@ class BlueCommon @Inject constructor(
     fun startSingleWatchConnection(macAddress: String): Flow<SingleConnectionStatus> {
         bleScanner.stopScan()
         classicScanner.stopScan()
-
-        val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-        val bluetoothDevice = bluetoothAdapter.getRemoteDevice(macAddress)
-
-        Timber.d("Found Pebble device $bluetoothDevice'")
+        val bluetoothDevice = if (BuildConfig.DEBUG && !macAddress.contains(":")) {
+            PebbleBluetoothDevice(null, true, macAddress)
+        } else {
+            val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+            PebbleBluetoothDevice(bluetoothAdapter.getRemoteDevice(macAddress))
+        }
 
         val driver = getTargetTransport(bluetoothDevice)
         this@BlueCommon.driver = driver
@@ -42,18 +45,25 @@ class BlueCommon @Inject constructor(
         return driver.startSingleWatchConnection(bluetoothDevice)
     }
 
-    fun getTargetTransport(device: BluetoothDevice): BlueIO {
+    private fun getTargetTransport(pebbleDevice: PebbleBluetoothDevice): BlueIO {
+        val btDevice = pebbleDevice.bluetoothDevice
         return when {
-            device.type == BluetoothDevice.DEVICE_TYPE_LE -> { // LE only device
+            pebbleDevice.emulated -> {
+                SocketSerialDriver(
+                        protocolHandler,
+                        incomingPacketsListener
+                )
+            }
+            btDevice?.type == BluetoothDevice.DEVICE_TYPE_LE -> { // LE only device
                 BlueLEDriver(context, protocolHandler, flutterPreferences, incomingPacketsListener)
             }
-            device.type != BluetoothDevice.DEVICE_TYPE_UNKNOWN -> { // Serial only device or serial/LE
+            btDevice?.type != BluetoothDevice.DEVICE_TYPE_UNKNOWN -> { // Serial only device or serial/LE
                 BlueSerialDriver(
                         protocolHandler,
                         incomingPacketsListener
                 )
             }
-            else -> throw IllegalArgumentException("Unknown device type: ${device.type}") // Can't contact device
+            else -> throw IllegalArgumentException("Unknown device type: ${btDevice?.type}") // Can't contact device
         }
     }
 }
