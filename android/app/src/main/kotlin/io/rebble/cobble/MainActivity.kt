@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.os.StrictMode
 import android.provider.Settings
 import android.text.TextUtils
 import android.widget.Toast
@@ -21,6 +22,12 @@ import java.net.URI
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class MainActivity : FlutterActivity() {
+    init {
+        StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder()
+                .detectLeakedClosableObjects()
+                .penaltyLog()
+                .build())
+    }
     lateinit var coroutineScope: CoroutineScope
     private lateinit var flutterBridges: Set<FlutterBridge>
 
