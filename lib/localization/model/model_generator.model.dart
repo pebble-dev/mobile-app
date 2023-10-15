@@ -2104,4 +2104,5 @@ class LanguageWatchesPageStatus {
 
 final supportedLocales = [
   Locale('en'),
+  Locale('es'),
 ];
