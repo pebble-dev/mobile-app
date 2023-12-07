@@ -41,7 +41,7 @@ class StoreTab extends HookWidget implements CobbleScreen {
     final searchBar = useState<bool>(false);
 
     final Completer<WebViewController> _controller =
-      Completer<WebViewController>();
+      useMemoized(() => Completer<WebViewController>());
     final searchController = useTextEditingController();
 
     final appManager = useProvider(appManagerProvider);
@@ -145,7 +145,6 @@ class StoreTab extends HookWidget implements CobbleScreen {
     useEffect(() {
         // When the rootUrl changes, reset the webview to the default values
         _setWebviewUrl(rootUrl.value);
-        _setIndexTab(0);
       },
       [rootUrl.value],
     );
