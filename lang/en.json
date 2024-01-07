@@ -243,5 +243,10 @@
     "get_apps": "Get watch apps",
     "incompatible_faces": "Incompatible Watch Faces",
     "incompatible_apps": "Incompatible Watch Apps"
+  },
+  "store_page": {
+    "faces": "Watchfaces",
+    "apps": "Apps / Timeline",
+    "search_bar": "Search for something..."
   }
 }

@@ -1,8 +1,15 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
+import 'package:cobble/domain/api/appstore/appstore.dart';
+import 'package:cobble/domain/api/auth/auth.dart';
+import 'package:cobble/domain/api/auth/oauth_token.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
+import 'package:cobble/infrastructure/datasources/web_services/appstore.dart';
+import 'package:cobble/infrastructure/datasources/web_services/auth.dart';
+import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
@@ -17,20 +24,19 @@ import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
-import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:path/path.dart' as path;
 
 class _TabConfig {
   final String label;
-  final String url;
+  final Uri url;
 
   _TabConfig(this.label, this.url);
 }
 
 class StoreTab extends HookWidget implements CobbleScreen {
   final _config = [
-    _TabConfig("Watchfaces", "https://store-beta.rebble.io/faces/"),
-    _TabConfig("Apps", "https://store-beta.rebble.io/apps/"),
+    _TabConfig(tr.storePage.faces, Uri.parse("https://apps.rebble.io/en_US/watchfaces")),
+    _TabConfig(tr.storePage.apps, Uri.parse("https://apps.rebble.io/en_US/watchapps")),
   ];
 
   @override
@@ -39,51 +45,57 @@ class StoreTab extends HookWidget implements CobbleScreen {
     final pageTitle = useState<String>("Loading");
     final backButton = useState<bool>(false);
     final searchBar = useState<bool>(false);
+    final attrs = useState<Map<String, String>>(HashMap());
+    final baseUrl = useState<Uri>(_config[0].url);
 
     final Completer<WebViewController> _controller =
       useMemoized(() => Completer<WebViewController>());
     final searchController = useTextEditingController();
 
-    final appManager = useProvider(appManagerProvider);
-    AppInstallControl control = AppInstallControl();
+    final _appstore = useProvider(appstoreServiceProvider.future);
 
-    String baseAttrs = "native=true&inApp=true&jsv=0";
-
-    // Even if we aren't connected, local storage should remember the default preferences
     final connectionState = useProvider(connectionStateProvider.state);
-    final currentWatch = connectionState.currentConnectedWatch;
-    if (currentWatch != null) {
-      baseAttrs += "&pebble_color=${currentWatch.model.index}";
-      WatchType watchType =
-          currentWatch.runningFirmware.hardwarePlatform.getWatchType();
-      baseAttrs += "&hardware=${watchType.toString().split('.').last}";
-      baseAttrs += "&pid=${currentWatch.serial}";
-    }
 
-    // TODO: as part of rebble integration, add uid (user id) and mid (phone id) to baseAttrs
-
-    () async {
-      PackageInfo packageInfo = await PackageInfo.fromPlatform();
-      baseAttrs += "&app_version=${packageInfo.version}";
-      baseAttrs += "&release_id=${packageInfo.buildNumber}";
-    };
-
-    baseAttrs += "&platform=${Platform.operatingSystem}";
-
-    //rootUrl is used for the initial url and to block going back too far in history, since this is all done with a single WebView, where we don't get to remove history
-    //it also gives us some flexibility in terms of navigation
-    final rootUrl = useState<String>("${_config[0].url}?$baseAttrs");
+    final _auth = useProvider(authServiceProvider.future);
     
     void onEachPageLoad() async {
       WebViewController controller = await _controller.future;
-      String current = await controller.currentUrl() ?? rootUrl.value;
+      String current = await controller.currentUrl() ?? baseUrl.value.toString();
       bool canGoBack = await controller.canGoBack();
-      backButton.value = canGoBack && rootUrl.value != current;
+      backButton.value = canGoBack && baseUrl.value != Uri.parse(current);
     }
-    
+
+    void handleRequest(String methodName, Map data) async {
+      WebViewController controller = await _controller.future;
+      data['methodName'] = methodName;
+      controller.runJavascript("PebbleBridge.handleRequest(${json.encode(data)})");
+    }
+
+    void handleResponse(Map data, int? callback) async {
+      WebViewController controller = await _controller.future;
+      Map<String, dynamic> response = HashMap();
+      response['data'] = data;
+      response['callbackId'] = callback;
+      controller.runJavascript("PebbleBridge.handleResponse(${json.encode(response)})");
+    }
+
+    void installApp(String uuid, int? callback) async {
+      AppstoreService appstore = await _appstore;
+      Map<String, dynamic> data = HashMap();
+      data['added_to_locker'] = false;
+
+      try {
+        await appstore.addToLocker(uuid);
+        data['added_to_locker'] = true;
+        handleResponse(data, callback);
+      } on Exception {
+        handleResponse(data, callback);
+      }
+    }
+
     // TODO: When we use up to date hooks riverpod, use callback like so:
     // void Function(String, Map) _handleMethod = useCallback<void Function()>((method, data) async {
-    void handleMethod(String method, Map data) async {
+    void handleMethod(String method, Map data, int? callback) async {
       switch (method) {
         case "setNavBarTitle":
           // the title is set once per page load, and at the start of every page load, so we attach a hook for that here
@@ -94,59 +106,78 @@ class StoreTab extends HookWidget implements CobbleScreen {
           launchURL(data["url"]);
           break;
         case "loadAppToDeviceAndLocker":
-          // TODO: Implement this on kotlin side, so it works on iOS as well
-          // Uri? uri = Uri.tryParse(data["pbw_file"]);
-          // if (uri != null) {
-          //   String? filePath = await _downloadPbw(uri);
-          //   if (filePath != null) {
-          //     String fileUrl = "file://${filePath}";
-          //     final uriWrapper = StringWrapper();
-          //     uriWrapper.value = fileUrl;
-
-          //     final appInfo = await control.getAppInfo(uriWrapper);
-          //     appManager.beginAppInstall(fileUrl, appInfo);
-          //     // TODO: Fill out the rest of the metadata provided by the data map
-          //     // Needed for the locker: appstoreId (id in the json), list_image (faces), icon_image (apps), api endpoints for interacting with the store item from the locker
-          //   }
-          // }
+          installApp(data["id"], callback);
           break;
         case "setVisibleApp":
-          // I don't see the use for this, unless we decide to fetch metadata for pbws installed from the outside (we can easily match with uuid)
+          // In the original app, this was used for displaying sharing button on the app view
           break;
       }
     }
 
     void _goBack() async {
       WebViewController controller = await _controller.future;
-      String current = await controller.currentUrl() ?? rootUrl.value;
-      if (rootUrl.value != current) controller.goBack();
+      String current = await controller.currentUrl() ?? baseUrl.value.toString();
+      if (baseUrl.value != Uri.parse(current)) controller.goBack();
     }
 
-    void _setWebviewUrl(String url) async {
+    Future<void> _setBaseAttrs() async {
+      attrs.value.addAll({ 'native': 'true', 'inApp': 'true', 'jsv': '0', 'platform': Platform.operatingSystem });
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      attrs.value.addAll({ 'app_version': 'packageInfo.version', 'release_id': packageInfo.buildNumber });
+      final currentWatch = connectionState.currentConnectedWatch;
+      if (currentWatch != null) {
+        attrs.value['pebble_color'] = currentWatch.model.index.toString();
+        WatchType watchType =
+            currentWatch.runningFirmware.hardwarePlatform.getWatchType();
+        attrs.value['hardware'] = watchType.toString().split('.').last;
+        if (currentWatch.serial != null)
+          attrs.value['pid'] = currentWatch.serial!;
+      }
+    }
+
+    Future<void> _setAuthCookie() async {
+      AuthService auth = await _auth;
+      OAuthToken token = auth.token;
+      if (auth != null) {
+        WebViewCookie accessTokenCookie = new WebViewCookie(name: 'access_token', value: token.accessToken, domain: 'apps.rebble.io');
+        CookieManager cookieManager = new CookieManager();
+        cookieManager.setCookie(accessTokenCookie);
+      }
+    }
+
+    void _setWebviewUrl(Uri url) async {
       WebViewController controller = await _controller.future;
-      controller.loadUrl("$url?$baseAttrs");
+      controller.loadUrl(url.toString());
     }
 
     void _performSearch() {
-      _setWebviewUrl(
-          "${_config[indexTab.value].url}search?query=${searchController.text}&$baseAttrs");
+      Map<String, String> searchAttrs = HashMap();
+      searchAttrs['query'] = searchController.text;
+      searchAttrs['section'] = indexTab.value == 0 ? 'watchfaces' : 'watchapps';
+      handleRequest('search', searchAttrs);
       searchBar.value = false;
       searchController.clear();
     }
     
-    void _setIndexTab(int newValue)  {
+    void _setIndexTab(int newValue) {
       indexTab.value = newValue;
-      rootUrl.value = "${_config[newValue].url}?$baseAttrs";
-      _setWebviewUrl(rootUrl.value);
+      baseUrl.value = _config[newValue].url.replace(queryParameters: attrs.value);
+      _setWebviewUrl(baseUrl.value);
       // This would be changed anyway, but it looked ugly when it jumped from the previous title
       pageTitle.value = _config[newValue].label;
     }
 
+    Future<bool> initialSetup() async {
+      await _setBaseAttrs();
+      await _setAuthCookie();
+      return true;
+    }
+
     useEffect(() {
-        // When the rootUrl changes, reset the webview to the default values
-        _setWebviewUrl(rootUrl.value);
+        initialSetup()
+          .whenComplete(() => { _setIndexTab(indexTab.value) });
       },
-      [rootUrl.value],
+      [connectionState],
     );
 
     return CobbleScaffold.tab(
@@ -183,7 +214,7 @@ class StoreTab extends HookWidget implements CobbleScreen {
                     child: TextField(
                       controller: searchController,
                       decoration: InputDecoration(
-                        hintText: 'Search for something...',
+                        hintText: tr.storePage.searchBar,
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.all(19),
                       ),
@@ -253,20 +284,20 @@ class StoreTab extends HookWidget implements CobbleScreen {
         }).toList(),
       ),
       child: WebView(
-        initialUrl: rootUrl.value,
+        initialUrl: baseUrl.value.toString(),
         javascriptMode: JavascriptMode.unrestricted,
         onWebViewCreated: (WebViewController webViewController) {
           _controller.complete(webViewController);
         },
         navigationDelegate: (NavigationRequest request) {
+          // TODO: Most likely needs different handling on iOS device, I don't have one though so I can't test this
           String url = request.url;
-          // This is an annoying difference between the ios and android urls, so we normalize that to make parsing easier
           if (url[30] != "?")
             url = url.substring(0, 29) + "?" + url.substring(30, url.length);
           Uri uri = Uri.parse(url);
           if (uri.isScheme("pebble-method-call-js-frame")) {
             Map args = json.decode(uri.queryParameters["args"]!);
-            handleMethod(args["methodName"], args["data"]);
+            handleMethod(args["methodName"], args["data"], args["callbackId"]);
           }
           // We don't actually want to open any other website
           return NavigationDecision.prevent;
