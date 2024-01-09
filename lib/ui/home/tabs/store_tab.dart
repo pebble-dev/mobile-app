@@ -2,12 +2,11 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
-import 'package:cobble/domain/api/appstore/appstore.dart';
+import 'package:cobble/domain/api/appstore/locker_sync.dart';
 import 'package:cobble/domain/api/auth/auth.dart';
 import 'package:cobble/domain/api/auth/oauth_token.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
-import 'package:cobble/infrastructure/datasources/web_services/appstore.dart';
 import 'package:cobble/infrastructure/datasources/web_services/auth.dart';
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
@@ -25,6 +24,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:path/path.dart' as path;
+import 'package:uuid_type/uuid_type.dart';
 
 class _TabConfig {
   final String label;
@@ -35,12 +35,16 @@ class _TabConfig {
 
 class StoreTab extends HookWidget implements CobbleScreen {
   final _config = [
-    _TabConfig(tr.storePage.faces, Uri.parse("https://apps.rebble.io/en_US/watchfaces")),
-    _TabConfig(tr.storePage.apps, Uri.parse("https://apps.rebble.io/en_US/watchapps")),
+    _TabConfig(tr.storePage.faces, Uri.parse("https://store-beta.rebble.io/faces")),
+    _TabConfig(tr.storePage.apps, Uri.parse("https://store-beta.rebble.io/apps")),
   ];
 
   @override
   Widget build(BuildContext context) {
+    // Those are args from outside that tell us what application to display
+    final args = ModalRoute.of(context)!.settings.arguments as AppstoreArguments;
+    final appUrl = "https://store-beta.rebble.io/app/";
+
     final indexTab = useState<int>(0);
     final pageTitle = useState<String>("Loading");
     final backButton = useState<bool>(false);
@@ -52,23 +56,23 @@ class StoreTab extends HookWidget implements CobbleScreen {
       useMemoized(() => Completer<WebViewController>());
     final searchController = useTextEditingController();
 
-    final _appstore = useProvider(appstoreServiceProvider.future);
+    final locker_sync = useProvider(lockerSyncProvider);
 
     final connectionState = useProvider(connectionStateProvider.state);
 
     final _auth = useProvider(authServiceProvider.future);
-    
-    void onEachPageLoad() async {
-      WebViewController controller = await _controller.future;
-      String current = await controller.currentUrl() ?? baseUrl.value.toString();
-      bool canGoBack = await controller.canGoBack();
-      backButton.value = canGoBack && baseUrl.value != Uri.parse(current);
-    }
 
     void handleRequest(String methodName, Map data) async {
       WebViewController controller = await _controller.future;
       data['methodName'] = methodName;
       controller.runJavascript("PebbleBridge.handleRequest(${json.encode(data)})");
+    }
+
+    void onEachPageLoad() async {
+      WebViewController controller = await _controller.future;
+      String current = await controller.currentUrl() ?? baseUrl.value.toString();
+      bool canGoBack = await controller.canGoBack();
+      backButton.value = canGoBack && baseUrl.value != Uri.parse(current);
     }
 
     void handleResponse(Map data, int? callback) async {
@@ -79,13 +83,12 @@ class StoreTab extends HookWidget implements CobbleScreen {
       controller.runJavascript("PebbleBridge.handleResponse(${json.encode(response)})");
     }
 
-    void installApp(String uuid, int? callback) async {
-      AppstoreService appstore = await _appstore;
+    void installApp(Uuid uuid, int? callback) async {
       Map<String, dynamic> data = HashMap();
       data['added_to_locker'] = false;
 
       try {
-        await appstore.addToLocker(uuid);
+        await locker_sync.addToLocker(uuid);
         data['added_to_locker'] = true;
         handleResponse(data, callback);
       } on Exception {
@@ -106,7 +109,7 @@ class StoreTab extends HookWidget implements CobbleScreen {
           launchURL(data["url"]);
           break;
         case "loadAppToDeviceAndLocker":
-          installApp(data["id"], callback);
+          installApp(Uuid.parse(data["uuid"]), callback);
           break;
         case "setVisibleApp":
           // In the original app, this was used for displaying sharing button on the app view
@@ -139,7 +142,7 @@ class StoreTab extends HookWidget implements CobbleScreen {
       AuthService auth = await _auth;
       OAuthToken token = auth.token;
       if (auth != null) {
-        WebViewCookie accessTokenCookie = new WebViewCookie(name: 'access_token', value: token.accessToken, domain: 'apps.rebble.io');
+        WebViewCookie accessTokenCookie = new WebViewCookie(name: 'access_token', value: token.accessToken, domain: 'store-beta.rebble.io');
         CookieManager cookieManager = new CookieManager();
         cookieManager.setCookie(accessTokenCookie);
       }
@@ -164,7 +167,6 @@ class StoreTab extends HookWidget implements CobbleScreen {
       baseUrl.value = _config[newValue].url.replace(queryParameters: attrs.value);
       _setWebviewUrl(baseUrl.value);
       // This would be changed anyway, but it looked ugly when it jumped from the previous title
-      pageTitle.value = _config[newValue].label;
     }
 
     Future<bool> initialSetup() async {
@@ -175,7 +177,14 @@ class StoreTab extends HookWidget implements CobbleScreen {
 
     useEffect(() {
         initialSetup()
-          .whenComplete(() => { _setIndexTab(indexTab.value) });
+          .whenComplete(() {
+            if (args == null) {
+              _setIndexTab(indexTab.value);
+            } else {
+              Uri appUri = Uri.parse(appUrl + args.id).replace(queryParameters: attrs.value);
+              _setWebviewUrl(appUri);
+            }
+          });
       },
       [connectionState],
     );
@@ -188,15 +197,16 @@ class StoreTab extends HookWidget implements CobbleScreen {
               tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             )
           : null,
-      actions: [
+      actions: args == null
+        ? [
         IconButton(
-          icon: Icon(RebbleIcons.search),
-          onPressed: () {
-            searchBar.value = true;
-          },
-          tooltip: MaterialLocalizations.of(context).searchFieldLabel,
-        ),
-      ],
+            icon: Icon(RebbleIcons.search),
+            onPressed: () {
+              searchBar.value = true;
+            },
+            tooltip: MaterialLocalizations.of(context).searchFieldLabel,
+          ),
+      ] : [],
       bottomAppBar: searchBar.value
           ? PreferredSize(
               preferredSize: Size.fromHeight(57),
@@ -234,55 +244,60 @@ class StoreTab extends HookWidget implements CobbleScreen {
               ),
             )
           : null,
-      titleWidget: DropdownButton<int>(
-        value: indexTab.value,
-        icon: Icon(RebbleIcons.dropdown),
-        iconSize: 25,
-        underline: Container(
-          height: 0,
-        ),
-        onChanged: (int? newValue) => _setIndexTab(newValue!),
-        selectedItemBuilder: (BuildContext context) {
-          return [0, 1].map<Widget>((int value) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(width: 25.0), //Offset to appear centered
-                Container(
-                  width: 125,
-                  height: 57,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        pageTitle.value,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (pageTitle.value != _config[value].label) ...[
-                        SizedBox(height: 4),
+      titleWidget: args == null
+        ? DropdownButton<int>(
+          value: indexTab.value,
+          icon: Icon(RebbleIcons.dropdown),
+          iconSize: 25,
+          underline: Container(
+            height: 0,
+          ),
+          onChanged: (int? newValue) => _setIndexTab(newValue!),
+          selectedItemBuilder: (BuildContext context) {
+            return [0, 1].map<Widget>((int value) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(width: 25.0), //Offset to appear centered
+                  Container(
+                    width: 125,
+                    height: 57,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
                         Text(
-                          _config[value].label,
-                          style: context.theme.appBarTheme.textTheme!.headline6!
-                              .copyWith(
-                            fontSize: 14,
-                            color: context.scheme!.muted,
-                          ),
+                          pageTitle.value,
+                          overflow: TextOverflow.ellipsis,
                         ),
+                        if (pageTitle.value != _config[value].label) ...[
+                          SizedBox(height: 4),
+                          Text(
+                            _config[value].label,
+                            style: context.theme.appBarTheme.textTheme!.headline6!
+                                .copyWith(
+                              fontSize: 14,
+                              color: context.scheme!.muted,
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              );
+            }).toList();
+          },
+          items: <int>[0, 1].map<DropdownMenuItem<int>>((int value) {
+            return DropdownMenuItem<int>(
+              value: value,
+              child: Text(_config[value].label),
             );
-          }).toList();
-        },
-        items: <int>[0, 1].map<DropdownMenuItem<int>>((int value) {
-          return DropdownMenuItem<int>(
-            value: value,
-            child: Text(_config[value].label),
-          );
-        }).toList(),
-      ),
+          }).toList(),
+        )
+        : Text(
+          pageTitle.value,
+          overflow: TextOverflow.ellipsis,
+        ),
       child: WebView(
         initialUrl: baseUrl.value.toString(),
         javascriptMode: JavascriptMode.unrestricted,
@@ -313,4 +328,10 @@ class StoreTab extends HookWidget implements CobbleScreen {
       throw 'Could not launch $url';
     }
   }
+}
+
+class AppstoreArguments {
+  final String id;
+
+  AppstoreArguments(this.id);
 }

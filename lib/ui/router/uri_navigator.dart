@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cobble/ui/home/tabs/store_tab.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/screens/install_prompt.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,9 +26,16 @@ class UriNavigator implements IntentCallbacks {
 
   @override
   void openUri(StringWrapper arg) async {
-    String uri = arg.value!;
+    Uri uri = Uri.parse(arg.value!);
+    if (uri.isScheme("pebble") && uri.host == 'appstore') {
+      String id = uri.pathSegments[0];
+      // TODO: We currently set up a minified StoreTab() for this, but it would be
+      // better if we just used the StoreTab() that already exists and navigated
+      // directly to the app from it (ie. handleRequest('navigate', { 'url': '/application/$id' }))
+      Navigator.of(_context).pushNamed('/appstore', arguments: AppstoreArguments(id));
+    }
 
-    if (Platform.isAndroid && !uri.startsWith("content://")) {
+    if (Platform.isAndroid && !uri.isScheme("content")) {
       // Only content URIs are supported
       return;
     }
@@ -35,10 +43,10 @@ class UriNavigator implements IntentCallbacks {
     AppInstallControl control = AppInstallControl();
 
     final uriWrapper = StringWrapper();
-    uriWrapper.value = uri;
+    uriWrapper.value = uri.toString();
 
     final pbwResult = await control.getAppInfo(uriWrapper);
-    _context.push(InstallPrompt(uri, pbwResult));
+    _context.push(InstallPrompt(uri.toString(), pbwResult));
   }
 }
 
