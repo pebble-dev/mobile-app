@@ -9,7 +9,6 @@ import 'package:cobble/localization/model/model_generator.model.dart';
 import 'package:cobble/ui/splash/splash_page.dart';
 import 'package:cobble/ui/theme/cobble_scheme.dart';
 import 'package:cobble/ui/theme/cobble_theme.dart';
-import 'package:cobble/ui/theme/use_platform_brightness.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
