@@ -20,7 +20,7 @@ import '../logging.dart';
 class WatchAppsSyncer {
   final AppDao appDao;
   final AppInstallControl appInstallControl;
-  final WatchConnectionState connectionStateProvider;
+  final ConnectionCallbacksStateNotifier connectionStateProvider;
   final Future<Preferences> preferences;
 
   WatchAppsSyncer(this.appDao, this.appInstallControl,
@@ -56,7 +56,7 @@ class WatchAppsSyncer {
   }
 
   Future<int?> _performSync() async {
-    final connectedWatch = connectionStateProvider.currentConnectedWatch;
+    final connectedWatch = connectionStateProvider.state.currentConnectedWatch;
     if (connectedWatch == null) {
       return statusWatchDisconnected;
     }
@@ -149,7 +149,7 @@ final AutoDisposeProvider<WatchAppsSyncer> watchAppSyncerProvider =
 Provider.autoDispose<WatchAppsSyncer>((ref) {
   final appDao = ref.watch(appDaoProvider);
   final appInstallControl = ref.watch(appInstallControlProvider);
-  final connectionState = ref.watch(connectionStateProvider);
+  final connectionState = ref.watch(connectionStateProvider.notifier);
   final preferences = ref.read(preferencesProvider.future);
 
   return WatchAppsSyncer(
