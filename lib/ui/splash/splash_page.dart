@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class SplashPage extends HookWidget {
+class SplashPage extends HookConsumerWidget {
   const SplashPage({Key? key}) : super(key: key);
 
   void Function() _openHome(
@@ -23,8 +23,8 @@ class SplashPage extends HookWidget {
       };
 
   @override
-  Widget build(BuildContext context) {
-    final hasBeenConnected = useProvider(hasBeenConnectedProvider).data;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hasBeenConnected = ref.watch(hasBeenConnectedProvider).data;
     // Let's not do a timed splash screen here, it's a waste of
     // the user's time and there are better platform ways to do it
     useEffect(() {

@@ -18,15 +18,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class LockerTab extends HookWidget implements CobbleScreen {
+class LockerTab extends HookConsumerWidget implements CobbleScreen {
   @override
-  Widget build(BuildContext context) {
-    final connectionState = useProvider(connectionStateProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final connectionState = ref.watch(connectionStateProvider);
 
     final currentWatch = connectionState.currentConnectedWatch;
 
-    final appManager = useProvider(appManagerProvider.notifier);
-    List allPackages = useProvider(appManagerProvider);
+    final appManager = ref.watch(appManagerProvider.notifier);
+    List allPackages = ref.watch(appManagerProvider);
     List incompatibleApps =
         allPackages.where((element) => !element.isWatchface).toList();
     List incompatibleFaces =
@@ -36,7 +36,7 @@ class LockerTab extends HookWidget implements CobbleScreen {
     WatchType watchType;
     bool circleConnected = false;
     PebbleWatchLine lineConnected = PebbleWatchLine.unknown;
-    var lockerCache = useProvider(lockerCacheDaoProvider).getAll().then((value) => { for (var v in value) v.id : v });
+    var lockerCache = ref.watch(lockerCacheDaoProvider).getAll().then((value) => { for (var v in value) v.id : v });
 
     if (currentWatch != null) {
       watchType = currentWatch.runningFirmware.hardwarePlatform.getWatchType();

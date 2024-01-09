@@ -27,15 +27,15 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
   AppsBackground(this.container);
 
   void init() async {
-    watchAppsSyncer = container.listen(watchAppSyncerProvider).read();
-    appDao = container.listen(appDaoProvider).read();
-    appLifecycleManager = container.listen(appLifecycleManagerProvider).read();
-    preferences = container.listen(preferencesProvider.future).read();
+    watchAppsSyncer = container.listen<WatchAppsSyncer>(watchAppSyncerProvider, (previous, value) {}).read();
+    appDao = container.listen<AppDao>(appDaoProvider, (previous, value) {}).read();
+    appLifecycleManager = container.listen<AppLifecycleManager>(appLifecycleManagerProvider, (previous, value) {}).read();
+    preferences = container.listen<Future<Preferences>>(preferencesProvider.future, (previous, value) {}).read();
 
     BackgroundAppInstallCallbacks.setup(this);
 
-    connectionSubscription = container.listen(
-      connectionStateProvider,
+    connectionSubscription = container.listen<WatchConnectionState>(
+      connectionStateProvider, (previous, value) {},
     );
   }
 

@@ -38,10 +38,10 @@ class SecureStorage {
 }
 
 final secureStorageProvider =
-  Provider((ref) => SecureStorage(ref.watch(flutterSecureStorageProvider)));
+  Provider<SecureStorage>((ref) => SecureStorage(ref.watch(flutterSecureStorageProvider)));
 
 final tokenProvider =
-  _createSecureStorageItemProvider((secureStorage) => secureStorage.getToken());
+  _createSecureStorageItemProvider<Future<OAuthToken?>>((secureStorage) => secureStorage.getToken());
 
 StreamProvider<T> _createSecureStorageItemProvider<T>(
     T Function(SecureStorage secureStorage) mapper,

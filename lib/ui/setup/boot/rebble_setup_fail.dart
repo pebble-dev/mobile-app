@@ -11,12 +11,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class RebbleSetupFail extends HookWidget implements CobbleScreen {
+class RebbleSetupFail extends HookConsumerWidget implements CobbleScreen {
   const RebbleSetupFail({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final preferences = useProvider(preferencesProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final preferences = ref.watch(preferencesProvider);
     return CobbleScaffold.page(
       title: tr.setup.failure.title,
       child: CobbleStep(

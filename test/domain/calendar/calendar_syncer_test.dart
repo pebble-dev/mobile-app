@@ -105,7 +105,7 @@ void main() async {
       )
     ];
 
-    final calendarSyncer = container.listen(calendarSyncerProvider).read();
+    final calendarSyncer = container.listen<CalendarSyncer>(calendarSyncerProvider, (previous, value) {}).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final insertedEvents = await pinDao.getAllPins();
@@ -255,7 +255,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.listen(calendarSyncerProvider).read();
+    final calendarSyncer = container.listen<CalendarSyncer>(calendarSyncerProvider, (previous, value) {}).read();
     await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
@@ -378,7 +378,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.listen(calendarSyncerProvider).read();
+    final calendarSyncer = container.listen<CalendarSyncer>(calendarSyncerProvider, (previous, value) {}).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     expect(anyChanges, false);
@@ -432,7 +432,7 @@ void main() async {
       )
     ];
 
-    final calendarSyncer = container.listen(calendarSyncerProvider).read();
+    final calendarSyncer = container.listen<CalendarSyncer>(calendarSyncerProvider, (previous, value) {}).read();
     await calendarSyncer.syncDeviceCalendarsToDb();
 
     final insertedEvents = await pinDao.getAllPins();
@@ -512,7 +512,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.listen(calendarSyncerProvider).read();
+    final calendarSyncer = container.listen<CalendarSyncer>(calendarSyncerProvider, (previous, value) {}).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
@@ -621,7 +621,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.listen(calendarSyncerProvider).read();
+    final calendarSyncer = container.listen<CalendarSyncer>(calendarSyncerProvider, (previous, value) {}).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
@@ -729,7 +729,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.listen(calendarSyncerProvider).read();
+    final calendarSyncer = container.listen<CalendarSyncer>(calendarSyncerProvider, (previous, value) {}).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
@@ -892,7 +892,7 @@ void main() async {
       ),
     );
 
-    final calendarSyncer = container.listen(calendarSyncerProvider).read();
+    final calendarSyncer = container.listen<CalendarSyncer>(calendarSyncerProvider, (previous, value) {}).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final eventsInDao = await pinDao.getAllPins();
@@ -1076,7 +1076,7 @@ void main() async {
       ),
     ];
 
-    final calendarSyncer = container.listen(calendarSyncerProvider).read();
+    final calendarSyncer = container.listen<CalendarSyncer>(calendarSyncerProvider, (previous, value) {}).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final insertedEvents = await pinDao.getAllPins();
@@ -1245,7 +1245,7 @@ void main() async {
 
     calendarList.setCalendarEnabled("23", false);
 
-    final calendarSyncer = container.listen(calendarSyncerProvider).read();
+    final calendarSyncer = container.listen<CalendarSyncer>(calendarSyncerProvider, (previous, value) {}).read();
     final anyChanges = await calendarSyncer.syncDeviceCalendarsToDb();
 
     final insertedEvents = await pinDao.getAllPins();

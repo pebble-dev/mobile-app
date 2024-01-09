@@ -14,15 +14,15 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:logging/logging.dart';
 
-class RebbleSetup extends HookWidget implements CobbleScreen {
+class RebbleSetup extends HookConsumerWidget implements CobbleScreen {
   static final IntentControl lifecycleControl = IntentControl();
   static final Logger _logger = Logger('RebbleSetup');
 
   const RebbleSetup({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final oauthClient = useProvider(oauthClientProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final oauthClient = ref.watch(oauthClientProvider);
 
     return CobbleScaffold.page(
       title: "Activate Rebble services",

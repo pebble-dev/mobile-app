@@ -3,4 +3,4 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 const _androidOptions = AndroidOptions(encryptedSharedPreferences: true);
 final flutterSecureStorageProvider =
-  Provider((ref) => const FlutterSecureStorage(aOptions: _androidOptions));
+  Provider<FlutterSecureStorage>((ref) => const FlutterSecureStorage(aOptions: _androidOptions));

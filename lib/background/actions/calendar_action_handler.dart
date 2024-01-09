@@ -210,7 +210,7 @@ class CalendarActionHandler implements ActionHandler {
   }
 }
 
-final calendarActionHandlerProvider = Provider((ref) =>
+final calendarActionHandlerProvider = Provider<CalendarActionHandler>((ref) =>
     CalendarActionHandler(
       ref.read(timelinePinDaoProvider),
       ref.read(calendarSyncerProvider),
