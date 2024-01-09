@@ -215,6 +215,6 @@ final calendarActionHandlerProvider = Provider((ref) =>
       ref.read(timelinePinDaoProvider),
       ref.read(calendarSyncerProvider),
       ref.read(watchTimelineSyncerProvider),
-      ref.read(calendarListProvider),
+      ref.read(calendarListProvider.notifier),
       ref.read(deviceCalendarPluginProvider),
     ));

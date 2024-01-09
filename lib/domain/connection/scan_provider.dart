@@ -1,6 +1,6 @@
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart' as pigeon;
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Stores state of current scan operation. Devices can be empty array but
 /// will never be null.
@@ -40,7 +40,7 @@ class ScanCallbacks extends StateNotifier<ScanState>
   }
 }
 
-final scanProvider = StateNotifierProvider<ScanCallbacks>((ref) {
+final scanProvider = StateNotifierProvider<ScanCallbacks, ScanState>((ref) {
   final notifier = ScanCallbacks();
   pigeon.ScanCallbacks.setup(notifier);
   ref.onDispose(() {

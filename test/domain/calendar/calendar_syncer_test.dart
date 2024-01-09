@@ -15,7 +15,7 @@ import 'package:cobble/domain/permissions.dart';
 import 'package:cobble/domain/preferences.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid_type/uuid_type.dart';
 
 import '../../fakes/fake_database.dart';
@@ -1185,7 +1185,7 @@ void main() async {
     ]);
 
     final pinDao = container.read(timelinePinDaoProvider);
-    final calendarList = container.read(calendarListProvider);
+    final calendarList = container.read(calendarListProvider.notifier);
 
     calendarPlugin.reportedCalendars = [
       Calendar(id: "22", name: "Calendar A"),

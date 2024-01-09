@@ -21,12 +21,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class LockerTab extends HookWidget implements CobbleScreen {
   @override
   Widget build(BuildContext context) {
-    final connectionState = useProvider(connectionStateProvider.state);
+    final connectionState = useProvider(connectionStateProvider);
 
     final currentWatch = connectionState.currentConnectedWatch;
 
-    final appManager = useProvider(appManagerProvider);
-    List allPackages = useProvider(appManagerProvider.state);
+    final appManager = useProvider(appManagerProvider.notifier);
+    List allPackages = useProvider(appManagerProvider);
     List incompatibleApps =
         allPackages.where((element) => !element.isWatchface).toList();
     List incompatibleFaces =

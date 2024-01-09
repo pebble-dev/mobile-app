@@ -36,10 +36,10 @@ class MyWatchesTab extends HookWidget implements CobbleScreen {
 
   @override
   Widget build(BuildContext context) {
-    final connectionState = useProvider(connectionStateProvider.state);
+    final connectionState = useProvider(connectionStateProvider);
     final defaultWatch = useProvider(defaultWatchProvider);
-    final pairedStorage = useProvider(pairedStorageProvider);
-    final allWatches = useProvider(pairedStorageProvider.state);
+    final pairedStorage = useProvider(pairedStorageProvider.notifier);
+    final allWatches = useProvider(pairedStorageProvider);
     final preferencesFuture = useProvider(preferencesProvider.future);
 
     List<PebbleScanDevice> allWatchesList =

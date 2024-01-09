@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 extension StateProviderExtension<T> on StateNotifier<T> {
   /// Variant of StateNotifier.stream that also returns existing value

@@ -20,7 +20,7 @@ import '../logging.dart';
 class WatchAppsSyncer {
   final AppDao appDao;
   final AppInstallControl appInstallControl;
-  final ConnectionCallbacksStateNotifier connectionStateProvider;
+  final WatchConnectionState connectionStateProvider;
   final Future<Preferences> preferences;
 
   WatchAppsSyncer(this.appDao, this.appInstallControl,
@@ -56,7 +56,7 @@ class WatchAppsSyncer {
   }
 
   Future<int?> _performSync() async {
-    final connectedWatch = connectionStateProvider.state.currentConnectedWatch;
+    final connectedWatch = connectionStateProvider.currentConnectedWatch;
     if (connectedWatch == null) {
       return statusWatchDisconnected;
     }

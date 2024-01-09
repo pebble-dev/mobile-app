@@ -8,7 +8,7 @@ import 'package:cobble/ui/common/icons/watch_icon.dart';
 import 'package:cobble/ui/setup/pair_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mockito/mockito.dart';
 
 final device = PebbleScanDevice(
@@ -51,7 +51,7 @@ Widget wrapper(
         Observer navigatorObserver}) =>
     ProviderScope(
       overrides: [
-        scan_provider.scanProvider.overrideWithValue(
+        scan_provider.scanProvider.notifier.overrideWithValue(
           scanMock ?? ScanCallbacks(),
         ),
         pair_provider.pairProvider.overrideWithProvider(

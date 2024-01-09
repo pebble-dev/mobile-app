@@ -176,9 +176,9 @@ class AppManager extends StateNotifier<List<App>> {
   }
 }
 
-final appManagerProvider = AutoDisposeStateNotifierProvider<AppManager>((ref) {
+final appManagerProvider = AutoDisposeStateNotifierProvider<AppManager, List<App>>((ref) {
   final dao = ref.watch(appDaoProvider);
   final rpc = ref.read(backgroundRpcProvider);
-  final lockerSync = ref.watch(lockerSyncProvider);
+  final lockerSync = ref.watch(lockerSyncProvider.notifier);
   return AppManager(dao, rpc, lockerSync);
 });
