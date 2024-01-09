@@ -49,8 +49,8 @@ class PairPage extends HookWidget implements CobbleScreen {
 
   @override
   Widget build(BuildContext context) {
-    final pairedStorage = useProvider(pairedStorageProvider);
-    final scan = useProvider(scanProvider.state);
+    final pairedStorage = useProvider(pairedStorageProvider.notifier);
+    final scan = useProvider(scanProvider);
     final pair = useProvider(pairProvider).data?.value;
     final preferences = useProvider(preferencesProvider);
 
@@ -83,14 +83,14 @@ class PairPage extends HookWidget implements CobbleScreen {
 
     final _refreshDevicesBle = () {
       if (!scan.scanning) {
-        context.refresh(scanProvider).onScanStarted();
+        context.refresh(scanProvider.notifier).onScanStarted();
         scanControl.startBleScan();
       }
     };
 
     final _refreshDevicesClassic = () {
       if (!scan.scanning) {
-        context.refresh(scanProvider).onScanStarted();
+        context.refresh(scanProvider.notifier).onScanStarted();
         scanControl.startClassicScan();
       }
     };

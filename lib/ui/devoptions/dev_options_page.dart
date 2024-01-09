@@ -22,12 +22,12 @@ enum ActionItem { debugOptions }
 class DevOptionsPage extends HookWidget implements CobbleScreen {
   @override
   Widget build(BuildContext context) {
-    final devConControl = useProvider(devConnectionProvider);
-    final devConnState = useProvider(devConnectionProvider.state);
+    final devConControl = useProvider(devConnectionProvider.notifier);
+    final devConnState = useProvider(devConnectionProvider);
 
-    final connectionState = useProvider(connectionStateProvider.state);
+    final connectionState = useProvider(connectionStateProvider);
     final ConnectionControl connectionControl = ConnectionControl();
-    final pairedStorage = useProvider(pairedStorageProvider);
+    final pairedStorage = useProvider(pairedStorageProvider.notifier);
 
     void _onDisconnectPressed(bool inSettings) {
       connectionControl.disconnect();

@@ -35,7 +35,7 @@ dependencies:
   sqflite: ^2.0.0+2
   package_info: ^2.0.0
   state_notifier: ^0.7.0
-  hooks_riverpod: ^0.13.0
+  hooks_riverpod: ^0.14.0
   flutter_hooks: ^0.16.0
   device_calendar: ^4.2.0
   uuid_type: ^2.0.0

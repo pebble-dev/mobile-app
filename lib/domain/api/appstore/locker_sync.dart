@@ -59,7 +59,7 @@ class LockerSync extends StateNotifier<List<LockerEntry>?> {
   }
 }
 
-final lockerSyncProvider = AutoDisposeStateNotifierProvider((ref) {
+final lockerSyncProvider = AutoDisposeStateNotifierProvider<LockerSync, List<LockerEntry>?>((ref) {
   final appstoreFuture = ref.watch(appstoreServiceProvider.future);
   final lockerCacheDao = ref.watch(lockerCacheDaoProvider);
   return LockerSync(appstoreFuture, lockerCacheDao);
