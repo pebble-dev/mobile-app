@@ -19,11 +19,17 @@ void startReceivingRpcRequests(ReceivingFunction receivingFunction) {
 
   receivingPort.listen((message) {
     Future.microtask(() async {
-      if (message is! RpcRequest) {
-        throw Exception("Message is not RpcRequest: $message");
-      }
+      RpcRequest request;
 
-      final request = message as RpcRequest;
+      if (message is Map<String, dynamic>) {
+        try {
+          request = RpcRequest.fromMap(message);
+        } catch (e) {
+          throw Exception("Error creating RpcRequest from Map: $e");
+        }
+      } else {
+        throw Exception("Message is not a Map representing RpcRequest: $message");
+      }
 
       RpcResult result;
       try {
@@ -39,7 +45,7 @@ void startReceivingRpcRequests(ReceivingFunction receivingFunction) {
       );
 
       if (returnPort != null) {
-        returnPort.send(result);
+        returnPort.send(result.toMap());
       }
 
       // If returnPort is null, then receiver died and
