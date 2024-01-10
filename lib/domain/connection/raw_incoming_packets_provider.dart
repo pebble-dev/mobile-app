@@ -36,5 +36,5 @@ class RawIncomingPacketsProvider implements RawIncomingPacketsCallbacks {
   Stream<Uint8List> get stream => _streamController.stream;
 }
 
-final Provider<Stream<Uint8List>> rawPacketStreamProvider = Provider((ref) => RawIncomingPacketsProvider().stream);
+final Provider<Stream<Uint8List>> rawPacketStreamProvider = Provider<Stream<Uint8List>>((ref) => RawIncomingPacketsProvider().stream);
 

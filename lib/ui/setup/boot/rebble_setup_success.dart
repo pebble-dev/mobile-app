@@ -13,13 +13,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class RebbleSetupSuccess extends HookWidget implements CobbleScreen {
+class RebbleSetupSuccess extends HookConsumerWidget implements CobbleScreen {
   const RebbleSetupSuccess({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final preferences = useProvider(preferencesProvider);
-    final userFuture = useProvider(authUserProvider.future);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final preferences = ref.watch(preferencesProvider);
+    final userFuture = ref.watch(authUserProvider.future);
 
     return CobbleScaffold.page(
       title: tr.setup.success.title,

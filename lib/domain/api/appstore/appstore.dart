@@ -6,7 +6,7 @@ import 'package:cobble/infrastructure/datasources/secure_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:cobble/infrastructure/datasources/web_services/appstore.dart';
 
-final appstoreServiceProvider = FutureProvider((ref) async {
+final appstoreServiceProvider = FutureProvider<AppstoreService>((ref) async {
   final boot = await (await ref.watch(bootServiceProvider.future)).config;
   final token = await (await ref.watch(tokenProvider.last));
   final oauth = await ref.watch(oauthClientProvider.future);

@@ -54,7 +54,7 @@ class LockerCacheDao {
   }
 }
 
-final AutoDisposeProvider<LockerCacheDao> lockerCacheDaoProvider = Provider.autoDispose((ref) {
+final AutoDisposeProvider<LockerCacheDao> lockerCacheDaoProvider = Provider.autoDispose<LockerCacheDao>((ref) {
   final dbFuture = ref.watch(databaseProvider.future);
   return LockerCacheDao(dbFuture);
 });

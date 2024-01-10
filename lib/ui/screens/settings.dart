@@ -23,13 +23,13 @@ import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class Settings extends HookWidget implements CobbleScreen {
+class Settings extends HookConsumerWidget implements CobbleScreen {
   const Settings({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final auth = useProvider(authServiceProvider.future);
-    final webviews = useProvider(bootServiceProvider.future).then((value) async => (await value.config).webviews);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final auth = ref.watch(authServiceProvider.future);
+    final webviews = ref.watch(bootServiceProvider.future).then((value) async => (await value.config).webviews);
     return CobbleScaffold.tab(
       title: tr.settings.title,
       child: ListView(

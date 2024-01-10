@@ -6,8 +6,9 @@ import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/home/tabs/locker_tab/faces_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class FacesCard extends StatelessWidget {
+class FacesCard extends ConsumerWidget {
   final App face;
   final bool compatible;
   final AppManager appManager;
@@ -26,7 +27,7 @@ class FacesCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       key: key,
       child: Container(

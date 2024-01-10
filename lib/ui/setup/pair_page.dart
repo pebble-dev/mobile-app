@@ -23,7 +23,7 @@ final ConnectionControl connectionControl = ConnectionControl();
 final UiConnectionControl uiConnectionControl = UiConnectionControl();
 final ScanControl scanControl = ScanControl();
 
-class PairPage extends HookWidget implements CobbleScreen {
+class PairPage extends HookConsumerWidget implements CobbleScreen {
   final bool fromLanding;
 
   const PairPage._({
@@ -48,11 +48,11 @@ class PairPage extends HookWidget implements CobbleScreen {
       );
 
   @override
-  Widget build(BuildContext context) {
-    final pairedStorage = useProvider(pairedStorageProvider.notifier);
-    final scan = useProvider(scanProvider);
-    final pair = useProvider(pairProvider).data?.value;
-    final preferences = useProvider(preferencesProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pairedStorage = ref.watch(pairedStorageProvider.notifier);
+    final scan = ref.watch(scanProvider);
+    final pair = ref.watch(pairProvider).data?.value;
+    final preferences = ref.watch(preferencesProvider);
 
     useEffect(() {
       if (pair == null || scan.devices.isEmpty) return null;
@@ -83,14 +83,14 @@ class PairPage extends HookWidget implements CobbleScreen {
 
     final _refreshDevicesBle = () {
       if (!scan.scanning) {
-        context.refresh(scanProvider.notifier).onScanStarted();
+        ref.refresh(scanProvider.notifier).onScanStarted();
         scanControl.startBleScan();
       }
     };
 
     final _refreshDevicesClassic = () {
       if (!scan.scanning) {
-        context.refresh(scanProvider.notifier).onScanStarted();
+        ref.refresh(scanProvider.notifier).onScanStarted();
         scanControl.startClassicScan();
       }
     };

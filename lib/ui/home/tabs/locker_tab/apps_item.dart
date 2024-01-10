@@ -9,8 +9,9 @@ import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/home/tabs/locker_tab/apps_sheet.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class AppsItem extends StatelessWidget {
+class AppsItem extends ConsumerWidget {
   final App app;
   final bool compatible;
   final AppManager appManager;
@@ -29,7 +30,7 @@ class AppsItem extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       key: key,
       child: Row(

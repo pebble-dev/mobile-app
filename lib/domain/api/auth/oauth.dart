@@ -186,7 +186,7 @@ class OAuthException implements Exception {
   String toString() => "OAuthException: $errorCode";
 }
 
-final oauthClientProvider = FutureProvider((ref) async {
+final oauthClientProvider = FutureProvider<OAuthClient>((ref) async {
   final boot = await (await ref.watch(bootServiceProvider.future)).config;
   final prefs = await ref.watch(preferencesProvider.future);
   final secureStorage = ref.watch(secureStorageProvider);

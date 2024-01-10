@@ -52,10 +52,9 @@ class BackgroundReceiver implements TimelineCallbacks {
 
     masterActionHandler = container.read(masterActionHandlerProvider);
 
-    connectionSubscription = container.listen(
-      connectionStateProvider,
-      mayHaveChanged: (sub) {
-        final currentConnectedWatch = sub.read().currentConnectedWatch;
+    connectionSubscription = container.listen<WatchConnectionState>(
+      connectionStateProvider, (previous, sub) {
+        final currentConnectedWatch = sub.currentConnectedWatch;
         if (isConnectedToWatch()! && currentConnectedWatch!.name!.isNotEmpty) {
           onWatchConnected(currentConnectedWatch);
         }

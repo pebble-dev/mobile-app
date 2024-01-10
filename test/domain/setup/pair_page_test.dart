@@ -58,7 +58,7 @@ Widget wrapper(
           pairMock ??
               StreamProvider<String>((ref) async* {
                 yield null;
-              } as Stream<String> Function(ProviderReference)),
+              } as Stream<String> Function(StreamProviderRef<String*>)),
         )
       ],
       child: MaterialApp(

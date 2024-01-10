@@ -14,19 +14,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class Calendar extends HookWidget implements CobbleScreen {
+class Calendar extends HookConsumerWidget implements CobbleScreen {
 
   @override
-  Widget build(BuildContext context) {
-    final calendars = useProvider(calendarListProvider);
-    final calendarSelector = useProvider(calendarListProvider.notifier);
-    final calendarControl = useProvider(calendarControlProvider);
-    final backgroundRpc = useProvider(backgroundRpcProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final calendars = ref.watch(calendarListProvider);
+    final calendarSelector = ref.watch(calendarListProvider.notifier);
+    final calendarControl = ref.watch(calendarControlProvider);
+    final backgroundRpc = ref.watch(backgroundRpcProvider);
 
-    final preferences = useProvider(preferencesProvider);
-    final calendarSyncEnabled = useProvider(calendarSyncEnabledProvider);
-    final permissionControl = useProvider(permissionControlProvider);
-    final permissionCheck = useProvider(permissionCheckProvider);
+    final preferences = ref.watch(preferencesProvider);
+    final calendarSyncEnabled = ref.watch(calendarSyncEnabledProvider);
+    final permissionControl = ref.watch(permissionControlProvider);
+    final permissionCheck = ref.watch(permissionCheckProvider);
 
     useEffect(() {
       Future.microtask(() async {

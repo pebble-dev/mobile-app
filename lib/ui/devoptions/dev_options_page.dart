@@ -19,15 +19,15 @@ import 'package:share_plus/share_plus.dart';
 
 enum ActionItem { debugOptions }
 
-class DevOptionsPage extends HookWidget implements CobbleScreen {
+class DevOptionsPage extends HookConsumerWidget implements CobbleScreen {
   @override
-  Widget build(BuildContext context) {
-    final devConControl = useProvider(devConnectionProvider.notifier);
-    final devConnState = useProvider(devConnectionProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final devConControl = ref.watch(devConnectionProvider.notifier);
+    final devConnState = ref.watch(devConnectionProvider);
 
-    final connectionState = useProvider(connectionStateProvider);
+    final connectionState = ref.watch(connectionStateProvider);
     final ConnectionControl connectionControl = ConnectionControl();
-    final pairedStorage = useProvider(pairedStorageProvider.notifier);
+    final pairedStorage = ref.watch(pairedStorageProvider.notifier);
 
     void _onDisconnectPressed(bool inSettings) {
       connectionControl.disconnect();

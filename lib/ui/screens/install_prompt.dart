@@ -12,20 +12,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class InstallPrompt extends HookWidget implements CobbleScreen {
+class InstallPrompt extends HookConsumerWidget implements CobbleScreen {
   final String _appUri;
   final PbwAppInfo _appInfo;
 
   InstallPrompt(this._appUri, this._appInfo);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final userInitiatedInstall = useState(false);
     final watchUploadHasStarted = useState(false);
 
-    final installStatus = useProvider(appInstallStatusProvider);
-    final appManager = useProvider(appManagerProvider.notifier);
-    final connectionStatus = useProvider(connectionStateProvider);
+    final installStatus = ref.watch(appInstallStatusProvider);
+    final appManager = ref.watch(appManagerProvider.notifier);
+    final connectionStatus = ref.watch(connectionStateProvider);
 
     final connectedWatch = connectionStatus.currentConnectedWatch;
 
