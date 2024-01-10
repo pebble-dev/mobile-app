@@ -71,10 +71,10 @@ class BackgroundRpc {
       } else if (receivedMessage.errorResult != null) {
         result = AsyncValue.error(
           receivedMessage.errorResult!,
-          stackTrace: receivedMessage.errorStacktrace,
+          receivedMessage.errorStacktrace ?? StackTrace.current,
         );
       } else {
-        result = AsyncValue.error("Received result without any data.");
+        result = AsyncValue.error("Received result without any data.", StackTrace.current);
       }
 
       waitingCompleter.complete(result);
