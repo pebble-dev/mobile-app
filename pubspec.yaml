@@ -18,8 +18,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 0.0.1+1
 
 environment:
-  sdk: '>=2.15.0'
-  flutter: '2.10.3'
+  sdk: '>=2.19.0'
+  flutter: '3.7.12'
 
 dependencies:
   flutter:
@@ -27,54 +27,49 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   webview_flutter: ^2.0.1
-  shared_preferences: ^2.0.3
-  url_launcher: ^6.0.2
+  shared_preferences: ^2.2.0
+  url_launcher: ^6.1.0
   intl: ^0.17.0
-  states_rebuilder: ^3.2.0
-  path_provider: ^2.0.1
-  sqflite: ^2.0.0+2
-  package_info: ^2.0.0
+  states_rebuilder: ^6.2.0
+  path_provider: ^2.1.0
+  sqflite: ^2.2.0
+  package_info_plus: ^3.0.0
   state_notifier: ^0.7.0
   hooks_riverpod: ^0.14.0
-  flutter_hooks: ^0.16.0
-  device_calendar: ^4.2.0
+  flutter_hooks: ^0.18.0
+  device_calendar: ^4.3.0
   uuid_type: ^2.0.0
-  path: ^1.7.0
-  json_annotation: ^4.0.0
-  copy_with_extension: ^4.0.0
-  flutter_local_notifications: ^9.3.2
-  stream_transform: ^2.0.0
-  flutter_svg: ^1.0.3
-  flutter_svg_provider: ^1.0.3
-  golden_toolkit: ^0.9.0
-  rxdart: 0.25.0
-  share: ^2.0.1
-  network_info_plus: ^1.0.2
+  path: ^1.8.0
+  json_annotation: ^4.6.0
+  copy_with_extension: ^5.0.0
+  flutter_local_notifications: ^13.0.0
+  stream_transform: ^2.1.0
+  flutter_svg: ^2.0.0
+  flutter_svg_provider: ^1.0.4
+  golden_toolkit: ^0.13.0
+  rxdart: 0.27.7
+  share_plus: ^6.3.0
+  network_info_plus: ^3.0.0
+  file: ^6.1.4
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
-  collection: ^1.15.0-nullsafety.4
-  flutter_secure_storage: ^5.0.2
-  crypto: ^3.0.2
-  cached_network_image: ^2.5.1
+  collection: ^1.17.0
+  flutter_secure_storage: ^8.0.0
+  crypto: ^3.0.3
+  cached_network_image: ^3.0.0
 
 dev_dependencies:
-  flutter_launcher_icons: ^0.9.2
+  flutter_launcher_icons: ^0.11.0
   flutter_test:
     sdk: flutter
-  # Do NOT update pigeon until https://github.com/flutter/flutter/issues/59118 is resolved
-  # Otherwise we will have lots of work to convert things to nullable,
-  # only to convert them back when non-null support will be added
-  pigeon: ^1.0.18
-  build_runner: ^2.1.7
-  json_serializable: ^6.1.4
-  copy_with_extension_gen: ^4.0.1
-  sqflite_common_ffi: ^2.0.0
-  mockito: ^5.1.0
+  pigeon: ^3.2.7
+  build_runner: ^2.3.0
+  json_serializable: ^6.5.0
+  copy_with_extension_gen: ^5.0.0
+  sqflite_common_ffi: ^2.2.0
+  mockito: ^5.3.0
   source_gen: ^1.2.1
   recase: ^4.0.0
-  flutter_lints: ^1.0.4
+  flutter_lints: ^2.0.0
 
 flutter_icons:
   ios: true

@@ -48,12 +48,12 @@ class NotificationsFlutterBridge @Inject constructor(
     val activeNotifs: MutableMap<UUID, StatusBarNotification> = mutableMapOf()
 
     private val notifUtils = object : Pigeons.NotificationUtils {
-        override fun openNotification(arg: Pigeons.StringWrapper?) {
+        override fun openNotification(arg: Pigeons.StringWrapper) {
             val id = UUID.fromString(arg?.value)
             activeNotifs[id]?.notification?.contentIntent?.send()
         }
 
-        override fun executeAction(arg: Pigeons.NotifActionExecuteReq?) {
+        override fun executeAction(arg: Pigeons.NotifActionExecuteReq) {
             if (arg != null) {
                 val id = UUID.fromString(arg.itemId)
                 val action = activeNotifs[id]?.notification?.let { NotificationCompat.getAction(it, arg.actionId!!.toInt()) }
@@ -64,8 +64,8 @@ class NotificationsFlutterBridge @Inject constructor(
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         val bundle = Bundle()
                         bundle.putString(key, arg.responseText)
-                        RemoteInput.addResultsToIntent(action?.remoteInputs, intent, bundle)
-                        action?.actionIntent.send(context, 0, intent)
+                        RemoteInput.addResultsToIntent(action?.remoteInputs!!, intent, bundle)
+                        action?.actionIntent?.send(context, 0, intent)
                         return
                     }
                 }
@@ -73,7 +73,7 @@ class NotificationsFlutterBridge @Inject constructor(
             }
         }
 
-        override fun dismissNotificationWatch(arg: Pigeons.StringWrapper?) {
+        override fun dismissNotificationWatch(arg: Pigeons.StringWrapper) {
             val id = UUID.fromString(arg?.value)
             val command = BlobCommand.DeleteCommand(Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(), BlobCommand.BlobDatabase.Notification, SUUID(StructMapper(), id).toBytes())
             GlobalScope.launch {
@@ -86,7 +86,7 @@ class NotificationsFlutterBridge @Inject constructor(
             }
         }
 
-        override fun dismissNotification(arg: Pigeons.StringWrapper?, result: Pigeons.Result<Pigeons.BooleanWrapper>?) {
+        override fun dismissNotification(arg: Pigeons.StringWrapper, result: Pigeons.Result<Pigeons.BooleanWrapper>?) {
             if (arg != null) {
                 val id = UUID.fromString(arg.value)
                 try {

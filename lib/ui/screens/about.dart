@@ -10,7 +10,7 @@ import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'dart:io' show Platform;
 import 'package:intl/intl.dart';
