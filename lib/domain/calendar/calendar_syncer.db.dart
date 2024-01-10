@@ -33,7 +33,7 @@ class CalendarSyncer {
       return false;
     }
 
-    final allCalendars = allCalendarsResult.data!.value;
+    final allCalendars = allCalendarsResult.value!;
 
     final now = _dateTimeProvider();
     // 1 day is added since we need to get the start of the next day

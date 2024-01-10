@@ -24,12 +24,12 @@ class SplashPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final hasBeenConnected = ref.watch(hasBeenConnectedProvider).data;
+    final hasBeenConnected = ref.watch(hasBeenConnectedProvider).value;
     // Let's not do a timed splash screen here, it's a waste of
     // the user's time and there are better platform ways to do it
     useEffect(() {
       if (hasBeenConnected != null) {
-        Future.microtask(_openHome(hasBeenConnected.value, context: context));
+        Future.microtask(_openHome(hasBeenConnected, context: context));
       }
     }, [hasBeenConnected]);
     return CobbleScaffold.page(
