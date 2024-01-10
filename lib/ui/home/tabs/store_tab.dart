@@ -19,7 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
@@ -33,14 +33,14 @@ class _TabConfig {
   _TabConfig(this.label, this.url);
 }
 
-class StoreTab extends HookWidget implements CobbleScreen {
+class StoreTab extends HookConsumerWidget implements CobbleScreen {
   final _config = [
     _TabConfig(tr.storePage.faces, Uri.parse("https://store-beta.rebble.io/faces")),
     _TabConfig(tr.storePage.apps, Uri.parse("https://store-beta.rebble.io/apps")),
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // Those are args from outside that tell us what application to display
     final args = ModalRoute.of(context)!.settings.arguments as AppstoreArguments;
     final appUrl = "https://store-beta.rebble.io/app/";
@@ -56,11 +56,11 @@ class StoreTab extends HookWidget implements CobbleScreen {
       useMemoized(() => Completer<WebViewController>());
     final searchController = useTextEditingController();
 
-    final locker_sync = useProvider(lockerSyncProvider);
+    final locker_sync = ref.watch(lockerSyncProvider.notifier);
 
-    final connectionState = useProvider(connectionStateProvider.state);
+    final connectionState = ref.watch(connectionStateProvider);
 
-    final _auth = useProvider(authServiceProvider.future);
+    final _auth = ref.watch(authServiceProvider.future);
 
     void handleRequest(String methodName, Map data) async {
       WebViewController controller = await _controller.future;
