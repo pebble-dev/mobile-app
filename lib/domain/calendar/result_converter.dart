@@ -6,7 +6,7 @@ extension ResultConverter<T> on Result<T> {
     if (isSuccess && data != null) {
       return AsyncValue.data(data!);
     } else {
-      return AsyncValue.error(errors);
+      return AsyncValue.error(errors, StackTrace.current);
     }
   }
 }

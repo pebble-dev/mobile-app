@@ -1,4 +1,4 @@
-// @dart=2.9
+
 
 import 'package:cobble/ui/common/components/cobble_dialog.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
@@ -25,7 +25,7 @@ Widget dialogs() => Column(
             content: 'This cannot be undone!',
             negative: 'Cancel',
             positive: 'Delete',
-            intent: context.scheme.destructive,
+            intent: context.scheme!.destructive,
           ),
         ),
       ],

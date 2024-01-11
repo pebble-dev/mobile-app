@@ -17,6 +17,7 @@ import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid_type/uuid_type.dart';
+import 'package:sqflite/sqflite.dart';
 
 import '../../fakes/fake_database.dart';
 import '../../fakes/fake_device_calendar_plugin.dart';
@@ -45,7 +46,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) async* { yield AsyncValue.data(db); } as FutureOr<Database> Function(AutoDisposeFutureProviderRef<Database>))),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -168,7 +169,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) async* { yield AsyncValue.data(db); } as FutureOr<Database> Function(AutoDisposeFutureProviderRef<Database>))),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -315,7 +316,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) async* { yield AsyncValue.data(db); } as FutureOr<Database> Function(AutoDisposeFutureProviderRef<Database>))),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -393,7 +394,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) async* { yield AsyncValue.data(db); } as FutureOr<Database> Function(AutoDisposeFutureProviderRef<Database>))),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -450,7 +451,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) async* { yield AsyncValue.data(db); } as FutureOr<Database> Function(AutoDisposeFutureProviderRef<Database>))),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -559,7 +560,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) async* { yield AsyncValue.data(db); } as FutureOr<Database> Function(AutoDisposeFutureProviderRef<Database>))),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -668,7 +669,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) async* { yield AsyncValue.data(db); } as FutureOr<Database> Function(AutoDisposeFutureProviderRef<Database>))),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -796,7 +797,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) async* { yield AsyncValue.data(db); } as FutureOr<Database> Function(AutoDisposeFutureProviderRef<Database>))),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -939,7 +940,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) async* { yield AsyncValue.data(db); } as FutureOr<Database> Function(AutoDisposeFutureProviderRef<Database>))),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -1179,7 +1180,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) async* { yield AsyncValue.data(db); } as FutureOr<Database> Function(AutoDisposeFutureProviderRef<Database>))),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);

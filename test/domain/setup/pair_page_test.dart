@@ -1,4 +1,4 @@
-// @dart=2.9
+
 import 'dart:async';
 
 import 'package:cobble/domain/connection/pair_provider.dart' as pair_provider;
@@ -46,19 +46,21 @@ class Observer extends Mock implements NavigatorObserver {
 }
 
 Widget wrapper(
-        {ScanCallbacks scanMock,
-        StreamProvider<String> pairMock,
-        Observer navigatorObserver}) =>
+        {ScanCallbacks? scanMock,
+        StreamProvider<String?>? pairMock,
+        Observer? navigatorObserver}) =>
     ProviderScope(
       overrides: [
-        scan_provider.scanProvider.notifier.overrideWithValue(
-          scanMock ?? ScanCallbacks(),
+        scan_provider.scanProvider.overrideWithProvider(
+          StateNotifierProvider((ref) async* {
+            yield scanMock ?? ScanCallbacks();
+          } as ScanCallbacks Function(StateNotifierProviderRef)),
         ),
         pair_provider.pairProvider.overrideWithProvider(
           pairMock ??
               StreamProvider<String>((ref) async* {
                 yield null;
-              } as Stream<String> Function(StreamProviderRef<String*>)),
+              } as Stream<String> Function(StreamProviderRef)),
         )
       ],
       child: MaterialApp(
@@ -120,8 +122,8 @@ void main() {
     });
     testWidgets('should respond to paired device', (tester) async {
       final scan = ScanCallbacks();
-      final StreamController<String> pairStream = StreamController.broadcast();
-      final pair = StreamProvider<String>((ref) => pairStream.stream);
+      final StreamController<String?> pairStream = StreamController.broadcast();
+      final pair = StreamProvider<String?>((ref) => pairStream.stream);
       final observer = Observer();
       scan.updateDevices(1);
 
