@@ -14,15 +14,15 @@ import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
 
-class AlertingAppDetails extends HookWidget implements CobbleScreen {
+class AlertingAppDetails extends HookConsumerWidget implements CobbleScreen {
   AlertingApp app;
   AlertingAppDetails(this.app);
 
   @override
-  Widget build(BuildContext context) {
-    final channelDao = useProvider(notifChannelDaoProvider);
-    final mutedPackages = useProvider(notificationsMutedPackagesProvider);
-    final preferences = useProvider(preferencesProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final channelDao = ref.watch(notifChannelDaoProvider);
+    final mutedPackages = ref.watch(notificationsMutedPackagesProvider);
+    final preferences = ref.watch(preferencesProvider);
 
     final StreamController<List<NotificationChannel>> streamController = StreamController();
 

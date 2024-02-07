@@ -61,7 +61,7 @@ class NotificationChannelDao {
   }
 }
 
-final AutoDisposeProvider<NotificationChannelDao> notifChannelDaoProvider = Provider.autoDispose((ref) {
+final AutoDisposeProvider<NotificationChannelDao> notifChannelDaoProvider = Provider.autoDispose<NotificationChannelDao>((ref) {
   final dbFuture = ref.watch(databaseProvider!.future);
   return NotificationChannelDao(dbFuture);
 });

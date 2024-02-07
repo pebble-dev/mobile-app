@@ -61,8 +61,9 @@ class AppInstallControlFlutterBridge: NSObject, AppInstallControl {
                     try? FileManager.default.removeItem(at: targetUrl)
                 }
                 try FileManager.default.copyItem(at: originUrl, to: targetUrl)
-                
-                let _ = try BackgroundAppInstallFlutterBridge.shared.installAppNow(uri: installData.uri, appInfo: installData.appInfo).wait()
+                if (!installData.stayOffloaded.boolValue) {
+                    let _ = try BackgroundAppInstallFlutterBridge.shared.installAppNow(uri: installData.uri, appInfo: installData.appInfo).wait()
+                }
                 completion(BooleanWrapper.make(withValue: NSNumber(value: true)), nil)
             } catch {
                 DDLogError("Error during beginAppInstall: \(error.localizedDescription)")

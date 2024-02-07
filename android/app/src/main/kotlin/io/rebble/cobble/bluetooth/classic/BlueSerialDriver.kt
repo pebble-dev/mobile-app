@@ -2,16 +2,14 @@ package io.rebble.cobble.bluetooth.classic
 
 import android.bluetooth.BluetoothDevice
 import io.rebble.cobble.bluetooth.BlueIO
+import io.rebble.cobble.bluetooth.PebbleBluetoothDevice
 import io.rebble.cobble.bluetooth.ProtocolIO
 import io.rebble.cobble.bluetooth.SingleConnectionStatus
 import io.rebble.cobble.datasources.IncomingPacketsListener
 import io.rebble.libpebblecommon.ProtocolHandler
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.*
 
@@ -22,13 +20,16 @@ class BlueSerialDriver(
 ) : BlueIO {
     private var protocolIO: ProtocolIO? = null
 
-    override fun startSingleWatchConnection(device: BluetoothDevice): Flow<SingleConnectionStatus> = flow {
+    @FlowPreview
+    override fun startSingleWatchConnection(device: PebbleBluetoothDevice): Flow<SingleConnectionStatus> = flow {
+        require(!device.emulated)
+        require(device.bluetoothDevice != null)
         coroutineScope {
             emit(SingleConnectionStatus.Connecting(device))
 
             val btSerialUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")
             val serialSocket = withContext(Dispatchers.IO) {
-                device.createRfcommSocketToServiceRecord(btSerialUUID).also {
+                device.bluetoothDevice.createRfcommSocketToServiceRecord(btSerialUUID).also {
                     it.connect()
                 }
             }

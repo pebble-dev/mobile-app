@@ -8,19 +8,12 @@ import io.rebble.libpebblecommon.metadata.WatchType
 import io.rebble.libpebblecommon.metadata.pbw.manifest.PbwBlob
 import io.rebble.libpebblecommon.packets.*
 import io.rebble.libpebblecommon.services.PutBytesService
-import io.rebble.libpebblecommon.util.Crc32Calculator
-import io.rebble.libpebblecommon.util.getPutBytesMaximumDataSize
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
-import okio.BufferedSource
 import okio.buffer
 import timber.log.Timber
 import java.io.File
-import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -98,9 +91,6 @@ class PutBytesController @Inject constructor(
                     type
             )
         }
-        awaitAck()
-
-        Timber.d("Install complete")
     }
 
     private fun launchNewPutBytesSession(block: suspend () -> Unit) {
@@ -127,28 +117,6 @@ class PutBytesController @Inject constructor(
                 _status.value = Status(State.IDLE)
             }
         }
-    }
-
-    private suspend fun getResponse(): PutBytesResponse {
-        return withTimeout(20_000) {
-            val iterator = putBytesService.receivedMessages.iterator()
-            if (!iterator.hasNext()) {
-                throw IllegalStateException("Received messages channel is closed")
-            }
-
-            iterator.next()
-        }
-    }
-
-    private suspend fun awaitAck(): PutBytesResponse {
-        val response = getResponse()
-
-        val result = response.result.get()
-        if (result != PutBytesResult.ACK.value) {
-            throw IOException("Watch responded with NACK ($result). Aborting transfer")
-        }
-
-        return response
     }
 
     data class Status(

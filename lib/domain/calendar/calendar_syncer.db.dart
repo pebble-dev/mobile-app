@@ -139,7 +139,7 @@ class _EventInCalendar {
 
 final AutoDisposeProvider<CalendarSyncer> calendarSyncerProvider =
     Provider.autoDispose<CalendarSyncer>((ref) {
-  final calendarList = ref.watch(calendarListProvider);
+  final calendarList = ref.watch(calendarListProvider.notifier);
   final deviceCalendar = ref.watch(deviceCalendarPluginProvider);
   final dateTimeProvider = ref.watch(currentDateTimeProvider);
   final timelinePinDao = ref.watch(timelinePinDaoProvider);

@@ -8,13 +8,13 @@ import 'package:cobble/domain/preferences.dart';
 import 'package:cobble/util/container_extensions.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../fakes/fake_device_calendar_plugin.dart';
 import '../../fakes/fake_permissions_check.dart';
 import '../../fakes/memory_shared_preferences.dart';
 
-void main() {
+void main(WidgetRef ref) {
   test('CalendarList should report list of calendars', () async {
     final calendarPlugin = FakeDeviceCalendarPlugin();
     final permissionCheck = FakePermissionCheck();
@@ -38,7 +38,7 @@ void main() {
     ];
 
     final receivedCalendars = (await container
-            .readUntilFirstSuccessOrError(calendarListProvider.state))
+            .readUntilFirstSuccessOrError(calendarListProvider))
         .data
         ?.value;
 
@@ -66,7 +66,7 @@ void main() {
     permissionCheck.reportedCalendarPermission = false;
 
     final receivedCalendars = await container
-        .readUntilFirstSuccessOrError(calendarListProvider.state);
+        .readUntilFirstSuccessOrError(calendarListProvider);
 
     expect(receivedCalendars, isA<AsyncError>());
   });
@@ -88,9 +88,9 @@ void main() {
     ];
 
     await container
-        .listen(calendarListProvider)
+        .listen<dynamic>(calendarListProvider.notifier
         .read()
-        .setCalendarEnabled("22", false);
+        .setCalendarEnabled("22", false), (previous, value) {};
 
     final expectedReceivedCalendars = [
       SelectableCalendar("Calendar A", "22", false, 0xFFFFFFFF),
@@ -99,7 +99,7 @@ void main() {
     ];
 
     final receivedCalendars = (await container
-            .readUntilFirstSuccessOrError(calendarListProvider.state))
+            .readUntilFirstSuccessOrError(calendarListProvider))
         .data
         ?.value;
 
@@ -123,11 +123,11 @@ void main() {
     ];
 
     await container
-        .listen(calendarListProvider)
+        .listen<CalendarList>(calendarListProvider.notifier, (previous, value) {})
         .read()
         .setCalendarEnabled("22", false);
     await container
-        .listen(calendarListProvider)
+        .listen<CalendarList>(calendarListProvider.notifier, (previous, value) {})
         .read()
         .setCalendarEnabled("22", true);
 
@@ -138,7 +138,7 @@ void main() {
     ];
 
     final receivedCalendars = (await container
-            .readUntilFirstSuccessOrError(calendarListProvider.state))
+            .readUntilFirstSuccessOrError(calendarListProvider))
         .data
         ?.value;
 

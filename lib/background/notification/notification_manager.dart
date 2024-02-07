@@ -232,7 +232,7 @@ class NotificationManager {
   }
 }
 
-final notificationManagerProvider = Provider((ref) => NotificationManager(ref.read(activeNotifDaoProvider), ref.read(notifChannelDaoProvider), ref.read(sharedPreferencesProvider)));
+final notificationManagerProvider = Provider<NotificationManager>((ref) => NotificationManager(ref.read(activeNotifDaoProvider), ref.read(notifChannelDaoProvider), ref.read(sharedPreferencesProvider)));
 
 final disabledActionPackagesKey = "disabledActionPackages";
 

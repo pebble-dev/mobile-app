@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cobble/domain/apps/app_compatibility.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/db/dao/app_dao.dart';
@@ -7,6 +9,7 @@ import 'package:cobble/domain/timeline/blob_status.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../logging.dart';
 
@@ -146,7 +149,7 @@ final AutoDisposeProvider<WatchAppsSyncer> watchAppSyncerProvider =
 Provider.autoDispose<WatchAppsSyncer>((ref) {
   final appDao = ref.watch(appDaoProvider);
   final appInstallControl = ref.watch(appInstallControlProvider);
-  final connectionState = ref.watch(connectionStateProvider);
+  final connectionState = ref.watch(connectionStateProvider.notifier);
   final preferences = ref.read(preferencesProvider.future);
 
   return WatchAppsSyncer(
@@ -157,4 +160,4 @@ Provider.autoDispose<WatchAppsSyncer>((ref) {
   );
 });
 
-final appInstallControlProvider = Provider((ref) => AppInstallControl());
+final appInstallControlProvider = Provider<AppInstallControl>((ref) => AppInstallControl());

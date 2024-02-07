@@ -39,7 +39,7 @@ class BackgroundRpc {
     final completer = Completer<AsyncValue<Object>>();
     _pendingCompleters[requestId] = completer;
 
-    port.send(request);
+    port.send(request.toMap());
 
     final result = await completer.future;
     return result as AsyncValue<O>;
@@ -53,12 +53,19 @@ class BackgroundRpc {
         returnPort.sendPort, isolatePortNameReturnFromBackground);
 
     returnPort.listen((message) {
-      if (message is! RpcResult) {
+      RpcResult receivedMessage;
+
+      if (message is Map<String, dynamic>) {
+        try {
+          receivedMessage = RpcResult.fromMap(message);
+        } catch (e) {
+          throw Exception("Error creating RpcResult from Map: $e");
+        }
+      } else {
         Log.e("Unknown message: $message");
         return;
       }
 
-      final receivedMessage = message as RpcResult;
       final waitingCompleter = _pendingCompleters[receivedMessage.id];
       if (waitingCompleter == null) {
         return;
@@ -71,7 +78,7 @@ class BackgroundRpc {
       } else if (receivedMessage.errorResult != null) {
         result = AsyncValue.error(
           receivedMessage.errorResult!,
-          receivedMessage.errorStacktrace,
+          stackTrace: receivedMessage.errorStacktrace,
         );
       } else {
         result = AsyncValue.error("Received result without any data.");

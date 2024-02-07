@@ -140,8 +140,9 @@ class WatchResource {
 class InstallData {
   String uri;
   PbwAppInfo appInfo;
+  bool stayOffloaded;
 
-  InstallData(this.uri, this.appInfo);
+  InstallData(this.uri, this.appInfo, this.stayOffloaded);
 }
 
 class AppInstallStatus {
@@ -169,6 +170,13 @@ class AppLogEntry {
 
   AppLogEntry(this.uuid, this.timestamp, this.level, this.lineNumber,
       this.filename, this.message);
+}
+
+class OAuthResult {
+  String? code;
+  String? state;
+  String? error;
+  OAuthResult(this.code, this.state, this.error);
 }
 
 class NotifChannelPigeon {
@@ -313,7 +321,7 @@ abstract class IntentControl {
   void notifyFlutterNotReadyForIntents();
 
   @async
-  BooleanWrapper waitForBoot();
+  OAuthResult waitForOAuth();
 }
 
 @HostApi()

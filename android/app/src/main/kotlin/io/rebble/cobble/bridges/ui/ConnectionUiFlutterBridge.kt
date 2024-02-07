@@ -15,6 +15,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.IntentSender
 import android.os.Build
+import io.rebble.cobble.BuildConfig
 import io.rebble.cobble.MainActivity
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bridges.FlutterBridge
@@ -88,6 +89,11 @@ class ConnectionUiFlutterBridge @Inject constructor(
 
     @TargetApi(Build.VERSION_CODES.O)
     private fun associateWithCompanionDeviceManager(macAddress: String) {
+        if (BuildConfig.DEBUG && !macAddress.contains(":")) {
+            openConnectionToWatch(macAddress)
+            return
+        }
+
         val companionDeviceManager =
                 activity.getSystemService(Context.COMPANION_DEVICE_SERVICE) as CompanionDeviceManager
 
