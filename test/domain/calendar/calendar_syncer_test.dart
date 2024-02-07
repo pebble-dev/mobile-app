@@ -17,20 +17,23 @@ import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid_type/uuid_type.dart';
+import 'package:sqflite/sqflite.dart';
 
 import '../../fakes/fake_database.dart';
 import '../../fakes/fake_device_calendar_plugin.dart';
 import '../../fakes/fake_permissions_check.dart';
 import '../../fakes/memory_shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
+  tz.initializeTimeZones();
   // test current time = 2020-11-10 T 11:30 Z
   final now = DateTime.utc(
     2020, //year
     11, //month
     10, //day
-    11, //hour
+    10, //hour
     30, //minute
   );
 
@@ -45,7 +48,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) { return db; })),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -62,7 +65,7 @@ void main() async {
           DateTime.utc(
             2020, // Year
             11, // Month
-            21, // Day
+            10, // Day
             10, //Hour
             30, // Minute
           ),
@@ -72,7 +75,7 @@ void main() async {
           DateTime.utc(
             2020, // Year
             11, // Month
-            21, // Day
+            10, // Day
             11, //Hour
             30, // Minute
           ),
@@ -168,7 +171,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) { return db; })),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -185,7 +188,7 @@ void main() async {
           DateTime.utc(
             2020, // Year
             11, // Month
-            21, // Day
+            10, // Day
             10, //Hour
             30, // Minute
           ),
@@ -195,7 +198,7 @@ void main() async {
           DateTime.utc(
             2020, // Year
             11, // Month
-            21, // Day
+            10, // Day
             11, //Hour
             30, // Minute
           ),
@@ -315,7 +318,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) { return db; })),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -393,7 +396,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) { return db; })),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -411,7 +414,7 @@ void main() async {
           DateTime.utc(
             2020, // Year
             11, // Month
-            21, // Day
+            10, // Day
             10, //Hour
             30, // Minute
           ),
@@ -421,7 +424,7 @@ void main() async {
           DateTime.utc(
             2020, // Year
             11, // Month
-            21, // Day
+            10, // Day
             11, //Hour
             30, // Minute
           ),
@@ -450,7 +453,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) { return db; })),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -559,7 +562,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) { return db; })),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -668,7 +671,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) { return db; })),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -686,7 +689,7 @@ void main() async {
           DateTime.utc(
             2020, // Year
             11, // Month
-            21, // Day
+            10, // Day
             10, //Hour
             30, // Minute
           ),
@@ -696,7 +699,7 @@ void main() async {
           DateTime.utc(
             2020, // Year
             11, // Month
-            21, // Day
+            10, // Day
             11, //Hour
             30, // Minute
           ),
@@ -796,7 +799,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) { return db; })),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -939,7 +942,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) { return db; })),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -1179,7 +1182,7 @@ void main() async {
       sharedPreferencesProvider
           .overrideWithValue(Future.value(MemorySharedPreferences())),
       currentDateTimeProvider.overrideWithValue(nowProvider),
-      databaseProvider.overrideWithValue(AsyncValue.data(db)),
+      databaseProvider.overrideWithProvider(AutoDisposeFutureProvider((ref) { return db; })),
       currentDateTimeProvider.overrideWithValue(() => now),
       permissionCheckProvider.overrideWithValue(FakePermissionCheck())
     ]);
@@ -1200,7 +1203,7 @@ void main() async {
           DateTime.utc(
             2020, // Year
             11, // Month
-            21, // Day
+            10, // Day
             10, //Hour
             30, // Minute
           ),
@@ -1210,7 +1213,7 @@ void main() async {
           DateTime.utc(
             2020, // Year
             11, // Month
-            21, // Day
+            10, // Day
             11, //Hour
             30, // Minute
           ),

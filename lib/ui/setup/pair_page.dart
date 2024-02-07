@@ -51,7 +51,7 @@ class PairPage extends HookConsumerWidget implements CobbleScreen {
   Widget build(BuildContext context, WidgetRef ref) {
     final pairedStorage = ref.watch(pairedStorageProvider.notifier);
     final scan = ref.watch(scanProvider);
-    final pair = ref.watch(pairProvider).data?.value;
+    final pair = ref.watch(pairProvider).value;
     final preferences = ref.watch(preferencesProvider);
 
     useEffect(() {
@@ -99,7 +99,7 @@ class PairPage extends HookConsumerWidget implements CobbleScreen {
       StringWrapper addressWrapper = StringWrapper();
       addressWrapper.value = dev.address;
       uiConnectionControl.connectToWatch(addressWrapper);
-      preferences.data?.value.setHasBeenConnected();
+      preferences.value?.setHasBeenConnected();
     };
 
     final title = tr.pairPage.title;
