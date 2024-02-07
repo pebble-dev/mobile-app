@@ -46,9 +46,9 @@ class Calendar extends HookConsumerWidget implements CobbleScreen {
             title: tr.calendar.toggleTitle,
             subtitle: tr.calendar.toggleSubtitle,
             child: Switch(
-              value: calendarSyncEnabled.data?.value ?? false,
+              value: calendarSyncEnabled.value ?? false,
               onChanged: (value) async {
-                await preferences.data?.value.setCalendarSyncEnabled(value);
+                await preferences.value?.setCalendarSyncEnabled(value);
 
                 if (!value) {
                   backgroundRpc.triggerMethod(DeleteAllCalendarPinsRequest());
@@ -57,11 +57,11 @@ class Calendar extends HookConsumerWidget implements CobbleScreen {
             ),
           ),
           CobbleDivider(),
-          if (calendarSyncEnabled.data?.value ?? false) ...[
+          if (calendarSyncEnabled.value ?? false) ...[
             CobbleTile.title(
               title: tr.calendar.choose,
             ),
-            ...calendars.data?.value.map((e) {
+            ...calendars.value?.map((e) {
               return CobbleTile.setting(
                 leading: BoxDecoration(
                   color: Color(e.color).withOpacity(1),

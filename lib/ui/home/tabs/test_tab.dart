@@ -121,8 +121,8 @@ class TestTab extends HookConsumerWidget implements CobbleScreen {
                   Switch(
                     value: workaround.disabled,
                     onChanged: (value) async {
-                      await preferences.data?.value
-                          .setWorkaroundDisabled(workaround.name, value);
+                      await preferences.value
+                          ?.setWorkaroundDisabled(workaround.name, value);
                     },
                   ),
                   Text(workaround.name)

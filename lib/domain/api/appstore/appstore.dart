@@ -8,7 +8,7 @@ import 'package:cobble/infrastructure/datasources/web_services/appstore.dart';
 
 final appstoreServiceProvider = FutureProvider<AppstoreService>((ref) async {
   final boot = await (await ref.watch(bootServiceProvider.future)).config;
-  final token = await (await ref.watch(tokenProvider.last));
+  final token = await (await ref.watch(tokenProvider.future));
   final oauth = await ref.watch(oauthClientProvider.future);
   final prefs = await ref.watch(preferencesProvider.future);
   if (token == null) {

@@ -28,9 +28,9 @@ class Notifications extends HookConsumerWidget implements CobbleScreen {
             leading: RebbleIcons.notification,
             title: tr.notifications.enabled,
             child: Switch(
-              value: notifcationsEnabled.data?.value ?? true,
+              value: notifcationsEnabled.value ?? true,
               onChanged: (bool value) async {
-                await preferences.data?.value.setNotificationsEnabled(value);
+                await preferences.value?.setNotificationsEnabled(value);
               },
             ),
           ),
@@ -55,9 +55,9 @@ class Notifications extends HookConsumerWidget implements CobbleScreen {
             leading: CobbleTile.reservedIconSpace,
             title: tr.notifications.silence.notifications,
             child: Switch(
-              value: phoneNotificationsMuteEnabled.data?.value ?? false,
+              value: phoneNotificationsMuteEnabled.value ?? false,
               onChanged: (bool value) async {
-                await preferences.data?.value.setPhoneNotificationMute(value);
+                await preferences.value?.setPhoneNotificationMute(value);
               },
             ),
           ),
@@ -65,9 +65,9 @@ class Notifications extends HookConsumerWidget implements CobbleScreen {
             leading: CobbleTile.reservedIconSpace,
             title: tr.notifications.silence.calls,
             child: Switch(
-              value: phoneCallsMuteEnabled.data?.value ?? false,
+              value: phoneCallsMuteEnabled.value ?? false,
               onChanged: (bool value) async {
-                await preferences.data?.value.setPhoneCallsMute(value);
+                await preferences.value?.setPhoneCallsMute(value);
               },
             ),
           ),

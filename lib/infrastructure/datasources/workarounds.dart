@@ -17,7 +17,7 @@ final neededWorkaroundsProvider = StreamProvider<List<Workaround>>((ref) {
     return Stream<List<Workaround>>.empty();
   }
 
-  final preferences = preferencesData.data!.value;
+  final preferences = preferencesData.value!;
 
   fetchControls() async {
     final workaroundControl = WorkaroundsControl();

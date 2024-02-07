@@ -11,11 +11,11 @@ class DebugOptionsPage extends HookConsumerWidget implements CobbleScreen {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final preferences = ref.watch(preferencesProvider);
-    final bootUrl = ref.watch(bootUrlProvider).data?.value ?? "";
+    final bootUrl = ref.watch(bootUrlProvider).value ?? "";
     final shouldOverrideBoot =
-        ref.watch(shouldOverrideBootProvider).data?.value ?? false;
+        ref.watch(shouldOverrideBootProvider).value ?? false;
     final overrideBootUrl =
-        ref.watch(overrideBootValueProvider).data?.value ?? "";
+        ref.watch(overrideBootValueProvider).value ?? "";
 
     final bootUrlController = useTextEditingController();
     final bootOverrideUrlController = useTextEditingController();
