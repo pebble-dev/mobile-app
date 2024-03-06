@@ -79,7 +79,7 @@ class AlertingApps extends HookConsumerWidget implements CobbleScreen {
               if (snapshot.hasData && snapshot.data != null) {
                 List<AlertingApp> apps = [];
                 for (int i = 0; i < snapshot.data!.packageId!.length; i++) {
-                  final enabled = (mutedPackages.data?.value ?? []).firstWhere(
+                  final enabled = (mutedPackages.value ?? []).firstWhere(
                           (element) => element == snapshot.data!.packageId![i],
                           orElse: () => null) ==
                       null;

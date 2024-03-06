@@ -26,7 +26,7 @@ class RebbleSetupFail extends HookConsumerWidget implements CobbleScreen {
       ),
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () async {
-            await preferences.data?.value.setWasSetupSuccessful(false);
+            await preferences.value?.setWasSetupSuccessful(false);
             context.pushAndRemoveAllBelow(HomePage());
           },
           label: Text(tr.setup.failure.fab)),

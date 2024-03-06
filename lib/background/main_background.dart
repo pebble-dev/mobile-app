@@ -65,7 +65,7 @@ class BackgroundReceiver implements TimelineCallbacks {
       final asyncValue =
           await container.readUntilFirstSuccessOrError(preferencesProvider);
 
-      return asyncValue.data!.value;
+      return asyncValue.value!;
     });
 
     TimelineCallbacks.setup(this);

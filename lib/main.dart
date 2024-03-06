@@ -6,6 +6,7 @@ import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/localization/localization_delegate.dart';
 import 'package:cobble/localization/model/model_generator.model.dart';
+import 'package:cobble/ui/home/tabs/store_tab.dart';
 import 'package:cobble/ui/splash/splash_page.dart';
 import 'package:cobble/ui/theme/cobble_scheme.dart';
 import 'package:cobble/ui/theme/cobble_theme.dart';
@@ -88,6 +89,9 @@ class MyApp extends HookConsumerWidget {
       child: MaterialApp(
         onGenerateTitle: (context) => tr.common.title,
         theme: CobbleTheme.appTheme(brightness),
+        routes: {
+          '/appstore': (context) => StoreTab(),
+        },
         home: SplashPage(),
         // List all of the app's supported locales here
         supportedLocales: supportedLocales,

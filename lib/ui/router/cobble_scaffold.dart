@@ -7,26 +7,30 @@ import '../common/icons/fonts/rebble_icons.dart';
 class CobbleScaffold extends StatelessWidget {
   final Widget child;
   final String? title;
+  final Widget? titleWidget;
   final String? subtitle;
   final List<Widget> actions;
   final FloatingActionButton? floatingActionButton;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
   final Widget? bottomNavigationBar;
   final PreferredSizeWidget? bottomAppBar;
+  final Widget? leading;
   final bool? expandedAppBar;
 
   const CobbleScaffold._({
     Key? key,
     required this.child,
     this.title,
+    this.titleWidget,
     this.subtitle,
+    this.leading,
     this.actions = const [],
     this.floatingActionButton,
     this.floatingActionButtonLocation,
     this.bottomNavigationBar,
     this.bottomAppBar,
     this.expandedAppBar,
-  })  : assert(title == null || title.length > 0),
+  })  : assert(title == null || title.length > 0 || titleWidget != null),
         assert(subtitle == null ||
             (subtitle.length > 0 && title != null && title.length > 0)),
         super(key: key);
@@ -38,14 +42,16 @@ class CobbleScaffold extends StatelessWidget {
       navBarTitle = _withSubtitle(context);
     } else if (title != null) {
       navBarTitle = _titleOnly(context);
+    } else if (titleWidget != null) {
+      navBarTitle = titleWidget;
     }
 
-    Widget? leading;
+    Widget? leadingWidget = leading;
     final route = ModalRoute.of(context);
     final bool canPop = route?.canPop ?? false;
     final bool useCloseButton = route is PageRoute && route.fullscreenDialog;
     if (canPop)
-      leading = useCloseButton
+      leadingWidget = useCloseButton
           ? IconButton(
               icon: Icon(RebbleIcons.x_close),
               onPressed: () => Navigator.maybePop(context),
@@ -66,7 +72,7 @@ class CobbleScaffold extends StatelessWidget {
           : PreferredSize(
               preferredSize: Size.fromHeight(height),
               child: AppBar(
-                leading: leading,
+                leading: leadingWidget,
                 title: navBarTitle,
                 actions: actions,
                 bottom: bottomAppBar,
@@ -114,6 +120,7 @@ class CobbleScaffold extends StatelessWidget {
     Key? key,
     required Widget child,
     String? title,
+    Widget? titleWidget,
     String? subtitle,
     List<Widget> actions = const [],
     FloatingActionButton? floatingActionButton,
@@ -124,6 +131,7 @@ class CobbleScaffold extends StatelessWidget {
         key: key,
         child: child,
         title: title,
+        titleWidget: titleWidget,
         subtitle: subtitle,
         floatingActionButton: floatingActionButton,
         floatingActionButtonLocation: floatingActionButtonLocation,
@@ -145,7 +153,9 @@ class CobbleScaffold extends StatelessWidget {
     Key? key,
     required Widget child,
     String? title,
+    Widget? titleWidget,
     String? subtitle,
+    Widget? leading,
     List<Widget> actions = const [],
     FloatingActionButton? floatingActionButton,
     FloatingActionButtonLocation? floatingActionButtonLocation,
@@ -157,6 +167,8 @@ class CobbleScaffold extends StatelessWidget {
           key: key,
           child: child,
           title: title,
+          leading: leading,
+          titleWidget: titleWidget,
           subtitle: subtitle,
           floatingActionButton: floatingActionButton,
           floatingActionButtonLocation: floatingActionButtonLocation,
