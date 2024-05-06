@@ -37,6 +37,10 @@ class AuthService extends Service {
     }
   }
 
+  OAuthToken get token {
+    return _token;
+  }
+
   Future<void> signOut() async {
     await _oauth.signOut();
   }

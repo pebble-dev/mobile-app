@@ -28,7 +28,7 @@ class RESTClient {
         ..addAll(params ?? {}),
     );
 
-    HttpClientRequest req = await _client.getUrl(requestUri);
+    HttpClientRequest req = await _client.openUrl(method, requestUri);
     if (token != null) {
       req.headers.add("Authorization", "Bearer $token");
     }

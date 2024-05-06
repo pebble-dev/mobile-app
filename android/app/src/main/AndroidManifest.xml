@@ -81,7 +81,6 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="custom-boot-config-url"
                     android:scheme="pebble" />
             </intent-filter>
 

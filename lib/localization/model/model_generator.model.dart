@@ -166,6 +166,13 @@ class Language {
   )
   final LanguageLockerPage lockerPage;
 
+  @JsonKey(
+    name: 'store_page',
+    required: true,
+    disallowNullValue: true,
+  )
+  final LanguageStorePage storePage;
+
   Language(
     this.common,
     this.firstRun,
@@ -187,6 +194,7 @@ class Language {
     this.systemApps,
     this.calendar,
     this.lockerPage,
+    this.storePage,
   );
 
   factory Language.fromJson(Map<String, dynamic> json) =>
@@ -1714,6 +1722,38 @@ class LanguageSplashPage {
 
   factory LanguageSplashPage.fromJson(Map<String, dynamic> json) =>
       _$LanguageSplashPageFromJson(json);
+}
+
+@JsonSerializable(
+  createToJson: false,
+  disallowUnrecognizedKeys: true,
+)
+class LanguageStorePage {
+  @JsonKey(
+    name: 'faces',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String faces;
+
+  @JsonKey(
+    name: 'apps',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String apps;
+
+  @JsonKey(
+    name: 'search_bar',
+    required: true,
+    disallowNullValue: true,
+  )
+  final String searchBar;
+
+  LanguageStorePage(this.faces, this.apps, this.searchBar);
+
+  factory LanguageStorePage.fromJson(Map<String, dynamic> json) =>
+      _$LanguageStorePageFromJson(json);
 }
 
 @JsonSerializable(

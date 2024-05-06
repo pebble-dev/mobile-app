@@ -29,7 +29,8 @@ Language _$LanguageFromJson(Map<String, dynamic> json) {
       'settings',
       'system_apps',
       'calendar',
-      'locker_page'
+      'locker_page',
+      'store_page'
     ],
     requiredKeys: const [
       'common',
@@ -51,7 +52,8 @@ Language _$LanguageFromJson(Map<String, dynamic> json) {
       'settings',
       'system_apps',
       'calendar',
-      'locker_page'
+      'locker_page',
+      'store_page'
     ],
     disallowNullValues: const [
       'common',
@@ -73,7 +75,8 @@ Language _$LanguageFromJson(Map<String, dynamic> json) {
       'settings',
       'system_apps',
       'calendar',
-      'locker_page'
+      'locker_page',
+      'store_page'
     ],
   );
   return Language(
@@ -103,6 +106,7 @@ Language _$LanguageFromJson(Map<String, dynamic> json) {
     LanguageSystemApps.fromJson(json['system_apps'] as Map<String, dynamic>),
     LanguageCalendar.fromJson(json['calendar'] as Map<String, dynamic>),
     LanguageLockerPage.fromJson(json['locker_page'] as Map<String, dynamic>),
+    LanguageStorePage.fromJson(json['store_page'] as Map<String, dynamic>),
   );
 }
 
@@ -857,6 +861,20 @@ LanguageSplashPage _$LanguageSplashPageFromJson(Map<String, dynamic> json) {
   return LanguageSplashPage(
     json['title'] as String,
     json['body'] as String,
+  );
+}
+
+LanguageStorePage _$LanguageStorePageFromJson(Map<String, dynamic> json) {
+  $checkKeys(
+    json,
+    allowedKeys: const ['faces', 'apps', 'search_bar'],
+    requiredKeys: const ['faces', 'apps', 'search_bar'],
+    disallowNullValues: const ['faces', 'apps', 'search_bar'],
+  );
+  return LanguageStorePage(
+    json['faces'] as String,
+    json['apps'] as String,
+    json['search_bar'] as String,
   );
 }
 
