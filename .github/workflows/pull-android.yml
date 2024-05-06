@@ -26,7 +26,6 @@ jobs:
       - run: fvm flutter analyze
         continue-on-error: true
       - name: Flutter test
-        continue-on-error: true
         run: fvm flutter test
       - run: fvm flutter build apk --debug
         env:
@@ -36,3 +35,4 @@ jobs:
         with:
           name: goldens-failures
           path: test/components/failures/
+        continue-on-error: true

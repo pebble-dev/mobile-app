@@ -1,4 +1,4 @@
-// @dart=2.9
+
 import 'dart:ui';
 
 import 'package:cobble/background/main_background.dart';
@@ -40,7 +40,7 @@ void main() {
 
 void initBackground() {
   final CallbackHandle backgroundCallbackHandle =
-      PluginUtilities.getCallbackHandle(main_background);
+      PluginUtilities.getCallbackHandle(main_background)!;
   final wrapper = NumberWrapper();
   wrapper.value = backgroundCallbackHandle.toRawHandle();
   BackgroundSetupControl().setupBackground(wrapper);
@@ -60,20 +60,20 @@ class MyApp extends HookConsumerWidget {
           (await preferences).setBoot(bootUrl);
         }
 
-        if (!(await permissionCheck.hasCalendarPermission()).value) {
+        if (!(await permissionCheck.hasCalendarPermission()).value!) {
           await permissionControl.requestCalendarPermission();
         }
-        if (!(await permissionCheck.hasLocationPermission()).value) {
+        if (!(await permissionCheck.hasLocationPermission()).value!) {
           await permissionControl.requestLocationPermission();
         }
         await permissionControl.requestBluetoothPermissions();
 
         if (defaultWatch != null) {
-          if (!(await permissionCheck.hasNotificationAccess()).value) {
+          if (!(await permissionCheck.hasNotificationAccess()).value!) {
             permissionControl.requestNotificationAccess();
           }
 
-          if (!(await permissionCheck.hasBatteryExclusionEnabled()).value) {
+          if (!(await permissionCheck.hasBatteryExclusionEnabled()).value!) {
             permissionControl.requestBatteryExclusion();
           }
         }
@@ -101,7 +101,7 @@ class MyApp extends HookConsumerWidget {
           GlobalWidgetsLocalizations.delegate,
         ],
         localeListResolutionCallback:
-            (List<Locale> locales, Iterable<Locale> supportedLocales) =>
+            (List<Locale>? locales, Iterable<Locale> supportedLocales) =>
                 resolveLocale(locales, supportedLocales),
       ),
     );

@@ -1,4 +1,4 @@
-// @dart=2.9
+
 
 import 'package:cobble/ui/common/components/cobble_card.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
@@ -51,7 +51,7 @@ Widget cards() => Column(
           builder: (context) => CobbleCard(
             title: 'Untrusted boot URL',
             leading: RebbleIcons.notification,
-            intent: context.scheme.danger,
+            intent: context.scheme!.danger,
             actions: [
               CobbleCardAction(
                 onPressed: () {},

@@ -14,7 +14,7 @@ import '../../fakes/fake_device_calendar_plugin.dart';
 import '../../fakes/fake_permissions_check.dart';
 import '../../fakes/memory_shared_preferences.dart';
 
-void main(WidgetRef ref) {
+void main() {
   test('CalendarList should report list of calendars', () async {
     final calendarPlugin = FakeDeviceCalendarPlugin();
     final permissionCheck = FakePermissionCheck();
@@ -39,8 +39,7 @@ void main(WidgetRef ref) {
 
     final receivedCalendars = (await container
             .readUntilFirstSuccessOrError(calendarListProvider))
-        .data
-        ?.value;
+        .value;
 
     expect(receivedCalendars, expectedReceivedCalendars);
   });
@@ -88,9 +87,9 @@ void main(WidgetRef ref) {
     ];
 
     await container
-        .listen<dynamic>(calendarListProvider.notifier
+        .listen<dynamic>(calendarListProvider.notifier, (previous, value) {})
         .read()
-        .setCalendarEnabled("22", false), (previous, value) {};
+        .setCalendarEnabled("22", false);
 
     final expectedReceivedCalendars = [
       SelectableCalendar("Calendar A", "22", false, 0xFFFFFFFF),
@@ -100,8 +99,7 @@ void main(WidgetRef ref) {
 
     final receivedCalendars = (await container
             .readUntilFirstSuccessOrError(calendarListProvider))
-        .data
-        ?.value;
+        .value;
 
     expect(receivedCalendars, expectedReceivedCalendars);
   });
@@ -139,8 +137,7 @@ void main(WidgetRef ref) {
 
     final receivedCalendars = (await container
             .readUntilFirstSuccessOrError(calendarListProvider))
-        .data
-        ?.value;
+        .value;
 
     expect(receivedCalendars, expectedReceivedCalendars);
   });

@@ -1,5 +1,6 @@
 import 'package:cobble/domain/apps/requests/force_refresh_request.dart';
 import 'package:cobble/domain/apps/requests/app_reorder_request.dart';
+import 'package:cobble/domain/calendar/requests/delete_all_pins_request.dart';
 
 class RpcRequest {
   final int requestId;
@@ -31,6 +32,8 @@ class RpcRequest {
       return {'type': 'ForceRefreshRequest', 'data': (input as ForceRefreshRequest).toMap()};
     } else if (input is AppReorderRequest) {
       return {'type': 'AppReorderRequest', 'data': (input as AppReorderRequest).toMap()};
+    } else if (input is DeleteAllCalendarPinsRequest) {
+      return {'type': 'DeleteAllCalendarPinsRequest', 'data': { 'type': 'DeleteAllCalendarPinsRequest' } as Map<String, dynamic>};
     }
     throw ArgumentError('Unsupported input type: ${input.runtimeType}');
   }
@@ -44,6 +47,8 @@ class RpcRequest {
         return ForceRefreshRequest.fromMap(data);
       case 'AppReorderRequest':
         return AppReorderRequest.fromMap(data);
+      case 'DeleteAllCalendarPinsRequest':
+        return DeleteAllCalendarPinsRequest();
       default:
         throw ArgumentError('Invalid input type: $type');
     }
