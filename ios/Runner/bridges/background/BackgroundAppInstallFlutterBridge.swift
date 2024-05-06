@@ -14,7 +14,7 @@ class BackgroundAppInstallFlutterBridge {
     
     func installAppNow(uri: String, appInfo: Pigeon_PbwAppInfo) -> Promise<Bool> {
         return Promise { seal in
-            let appInstallData = InstallData.make(withUri: uri, appInfo: appInfo)
+            let appInstallData = InstallData.make(withUri: uri, appInfo: appInfo, stayOffloaded: false)
             getAppInstallCallbacks().done { appInstallCallbacks in
                 guard let appInstallCallbacks = appInstallCallbacks else {
                     seal.fulfill(false)

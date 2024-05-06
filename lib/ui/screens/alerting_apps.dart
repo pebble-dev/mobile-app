@@ -25,16 +25,17 @@ class AlertingApp {
   AlertingApp(this.name, this.enabled, this.packageId);
 }
 
-class AlertingApps extends HookWidget implements CobbleScreen {
-  final packageDetails = useProvider(packageDetailsProvider).getPackageList();
+class AlertingApps extends HookConsumerWidget implements CobbleScreen {
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final packageDetails = ref.watch(packageDetailsProvider).getPackageList();
+
     final random = Random();
     final filter = useState(SheetOnChanged.initial);
 
     final sheet = CobbleSheet.useInline();
-    final mutedPackages = useProvider(notificationsMutedPackagesProvider);
+    final mutedPackages = ref.watch(notificationsMutedPackagesProvider);
 
     return CobbleScaffold.tab(
         title: tr.alertingApps.title,
@@ -78,7 +79,7 @@ class AlertingApps extends HookWidget implements CobbleScreen {
               if (snapshot.hasData && snapshot.data != null) {
                 List<AlertingApp> apps = [];
                 for (int i = 0; i < snapshot.data!.packageId!.length; i++) {
-                  final enabled = (mutedPackages.data?.value ?? []).firstWhere(
+                  final enabled = (mutedPackages.value ?? []).firstWhere(
                           (element) => element == snapshot.data!.packageId![i],
                           orElse: () => null) ==
                       null;

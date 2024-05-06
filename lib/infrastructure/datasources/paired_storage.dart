@@ -85,13 +85,13 @@ class PairedStorage extends StateNotifier<List<StoredDevice>> {
   }
 }
 
-final pairedStorageProvider = StateNotifierProvider((ref) => PairedStorage());
-final defaultWatchProvider = Provider((ref) => ref
-    .watch(pairedStorageProvider.state)
+final pairedStorageProvider = StateNotifierProvider<PairedStorage, List<StoredDevice>>((ref) => PairedStorage());
+final defaultWatchProvider = Provider<PebbleScanDevice?>((ref) => ref
+    .watch(pairedStorageProvider)
     .firstWhereOrNull((element) => element.isDefault!)
     ?.device);
 final ProviderFamily<PebbleScanDevice, dynamic>? specificWatchProvider =
     Provider.family(((ref, dynamic address) => ref
-        .watch(pairedStorageProvider.state)
+        .watch(pairedStorageProvider)
         .firstWhereOrNull((element) => element.device.address == address)
-        ?.device) as PebbleScanDevice Function(ProviderReference, dynamic));
+        ?.device) as PebbleScanDevice Function(Ref, dynamic));

@@ -134,7 +134,7 @@ class WatchTimelineSyncer {
       return;
     }
 
-    final plugin = pluginValue.data!.value;
+    final plugin = pluginValue.value!;
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails("WARNINGS", "Warnings",
@@ -168,4 +168,4 @@ final AutoDisposeProvider<WatchTimelineSyncer> watchTimelineSyncerProvider =
   );
 });
 
-final timelineSyncControlProvider = Provider((ref) => TimelineSyncControl());
+final timelineSyncControlProvider = Provider<TimelineSyncControl>((ref) => TimelineSyncControl());

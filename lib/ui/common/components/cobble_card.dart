@@ -38,6 +38,7 @@ class CobbleCard extends StatelessWidget {
   final List<CobbleCardAction> actions;
   final Color? intent;
   final EdgeInsets padding;
+  final GestureTapCallback? onClick;
 
   const CobbleCard({
     Key? key,
@@ -48,6 +49,7 @@ class CobbleCard extends StatelessWidget {
     this.actions = const [],
     this.intent,
     this.padding = const EdgeInsets.all(0),
+    this.onClick,
   })  : assert(
           leading is IconData || leading is ImageProvider,
           'Leading can be only IconData and ImageProvider',
@@ -65,6 +67,7 @@ class CobbleCard extends StatelessWidget {
     Widget? child,
     List<CobbleCardAction> actions = const [],
     Color? intent,
+    GestureTapCallback? onClick,
   }) =>
       CobbleCard(
         leading: leading,
@@ -74,6 +77,7 @@ class CobbleCard extends StatelessWidget {
         actions: actions,
         intent: intent,
         padding: const EdgeInsets.all(16),
+        onClick: onClick,
       );
 
   @override
@@ -84,89 +88,97 @@ class CobbleCard extends StatelessWidget {
         : context.scheme!.brightness;
     final scheme = CobbleSchemeData.fromBrightness(brightness);
 
-    Widget card = Card(
-      color: intent,
-      margin: padding,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: leading is IconData
-                      ? Container(
-                          decoration: BoxDecoration(
-                            color: scheme.invert().surface,
-                          ),
-                          child: Icon(
-                            leading as IconData?,
-                            color: scheme.invert().text,
-                          ),
-                        )
-                      : Image(image: leading as ImageProvider<Object>),
+
+    final content = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
                 ),
-                SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                clipBehavior: Clip.antiAlias,
+                child: leading is IconData
+                    ? Container(
+                  decoration: BoxDecoration(
+                    color: scheme.invert().surface,
+                  ),
+                  child: Icon(
+                    leading as IconData?,
+                    color: scheme.invert().text,
+                  ),
+                )
+                    : Image(image: leading as ImageProvider<Object>),
+              ),
+              SizedBox(width: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: context.textTheme.headline6!.copyWith(
+                      color: scheme.text,
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    SizedBox(height: 4),
                     Text(
-                      title,
-                      style: context.textTheme.headline6!.copyWith(
+                      subtitle!,
+                      style: context.textTheme.bodyText2!.copyWith(
                         color: scheme.text,
                       ),
                     ),
-                    if (subtitle != null) ...[
-                      SizedBox(height: 4),
-                      Text(
-                        subtitle!,
-                        style: context.textTheme.bodyText2!.copyWith(
-                          color: scheme.text,
-                        ),
-                      ),
-                    ],
                   ],
-                ),
-              ],
+                ],
+              ),
+            ],
+          ),
+        ),
+        if (child != null)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: child,
+          ),
+        if (actions.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 8, 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: actions
+                  .expand(
+                    (action) => [
+                  SizedBox(width: 8),
+                  CobbleButton(
+                    onPressed: action.onPressed,
+                    label: action.label,
+                    icon: action.icon,
+                    outlined: isColored,
+                  ),
+                ],
+              )
+                  .toList()
+                  .sublist(1),
             ),
           ),
-          if (child != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: child,
-            ),
-          if (actions.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 8, 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: actions
-                    .expand(
-                      (action) => [
-                        SizedBox(width: 8),
-                        CobbleButton(
-                          onPressed: action.onPressed,
-                          label: action.label,
-                          icon: action.icon,
-                          outlined: isColored,
-                        ),
-                      ],
-                    )
-                    .toList()
-                    .sublist(1),
-              ),
-            ),
-        ],
-      ),
+      ],
+    );
+
+    Widget card = Card(
+      color: intent,
+      margin: padding,
+      child: onClick != null ?
+          InkWell(
+            child: content,
+            onTap: onClick,
+          ) :
+          content
     );
     if (isColored)
       card = CobbleButton.withColor(

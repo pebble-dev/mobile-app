@@ -6,8 +6,42 @@ part of 'timeline_pin.dart';
 // CopyWithGenerator
 // **************************************************************************
 
-extension TimelinePinCopyWith on TimelinePin {
-  TimelinePin copyWith({
+abstract class _$TimelinePinCWProxy {
+  TimelinePin actionsJson(String? actionsJson);
+
+  TimelinePin attributesJson(String? attributesJson);
+
+  TimelinePin backingId(String? backingId);
+
+  TimelinePin duration(int? duration);
+
+  TimelinePin isAllDay(bool isAllDay);
+
+  TimelinePin isFloating(bool isFloating);
+
+  TimelinePin isVisible(bool isVisible);
+
+  TimelinePin itemId(Uuid? itemId);
+
+  TimelinePin layout(TimelinePinLayout? layout);
+
+  TimelinePin nextSyncAction(NextSyncAction? nextSyncAction);
+
+  TimelinePin parentId(Uuid? parentId);
+
+  TimelinePin persistQuickView(bool persistQuickView);
+
+  TimelinePin timestamp(DateTime? timestamp);
+
+  TimelinePin type(TimelinePinType? type);
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `TimelinePin(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// TimelinePin(...).copyWith(id: 12, name: "My name")
+  /// ````
+  TimelinePin call({
     String? actionsJson,
     String? attributesJson,
     String? backingId,
@@ -22,25 +56,158 @@ extension TimelinePinCopyWith on TimelinePin {
     bool? persistQuickView,
     DateTime? timestamp,
     TimelinePinType? type,
+  });
+}
+
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfTimelinePin.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfTimelinePin.copyWith.fieldName(...)`
+class _$TimelinePinCWProxyImpl implements _$TimelinePinCWProxy {
+  final TimelinePin _value;
+
+  const _$TimelinePinCWProxyImpl(this._value);
+
+  @override
+  TimelinePin actionsJson(String? actionsJson) =>
+      this(actionsJson: actionsJson);
+
+  @override
+  TimelinePin attributesJson(String? attributesJson) =>
+      this(attributesJson: attributesJson);
+
+  @override
+  TimelinePin backingId(String? backingId) => this(backingId: backingId);
+
+  @override
+  TimelinePin duration(int? duration) => this(duration: duration);
+
+  @override
+  TimelinePin isAllDay(bool isAllDay) => this(isAllDay: isAllDay);
+
+  @override
+  TimelinePin isFloating(bool isFloating) => this(isFloating: isFloating);
+
+  @override
+  TimelinePin isVisible(bool isVisible) => this(isVisible: isVisible);
+
+  @override
+  TimelinePin itemId(Uuid? itemId) => this(itemId: itemId);
+
+  @override
+  TimelinePin layout(TimelinePinLayout? layout) => this(layout: layout);
+
+  @override
+  TimelinePin nextSyncAction(NextSyncAction? nextSyncAction) =>
+      this(nextSyncAction: nextSyncAction);
+
+  @override
+  TimelinePin parentId(Uuid? parentId) => this(parentId: parentId);
+
+  @override
+  TimelinePin persistQuickView(bool persistQuickView) =>
+      this(persistQuickView: persistQuickView);
+
+  @override
+  TimelinePin timestamp(DateTime? timestamp) => this(timestamp: timestamp);
+
+  @override
+  TimelinePin type(TimelinePinType? type) => this(type: type);
+
+  @override
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `TimelinePin(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// TimelinePin(...).copyWith(id: 12, name: "My name")
+  /// ````
+  TimelinePin call({
+    Object? actionsJson = const $CopyWithPlaceholder(),
+    Object? attributesJson = const $CopyWithPlaceholder(),
+    Object? backingId = const $CopyWithPlaceholder(),
+    Object? duration = const $CopyWithPlaceholder(),
+    Object? isAllDay = const $CopyWithPlaceholder(),
+    Object? isFloating = const $CopyWithPlaceholder(),
+    Object? isVisible = const $CopyWithPlaceholder(),
+    Object? itemId = const $CopyWithPlaceholder(),
+    Object? layout = const $CopyWithPlaceholder(),
+    Object? nextSyncAction = const $CopyWithPlaceholder(),
+    Object? parentId = const $CopyWithPlaceholder(),
+    Object? persistQuickView = const $CopyWithPlaceholder(),
+    Object? timestamp = const $CopyWithPlaceholder(),
+    Object? type = const $CopyWithPlaceholder(),
   }) {
     return TimelinePin(
-      actionsJson: actionsJson ?? this.actionsJson,
-      attributesJson: attributesJson ?? this.attributesJson,
-      backingId: backingId ?? this.backingId,
-      duration: duration ?? this.duration,
-      isAllDay: isAllDay ?? this.isAllDay,
-      isFloating: isFloating ?? this.isFloating,
-      isVisible: isVisible ?? this.isVisible,
-      itemId: itemId ?? this.itemId,
-      layout: layout ?? this.layout,
-      nextSyncAction: nextSyncAction ?? this.nextSyncAction,
-      parentId: parentId ?? this.parentId,
-      persistQuickView: persistQuickView ?? this.persistQuickView,
-      timestamp: timestamp ?? this.timestamp,
-      type: type ?? this.type,
+      actionsJson: actionsJson == const $CopyWithPlaceholder()
+          ? _value.actionsJson
+          // ignore: cast_nullable_to_non_nullable
+          : actionsJson as String?,
+      attributesJson: attributesJson == const $CopyWithPlaceholder()
+          ? _value.attributesJson
+          // ignore: cast_nullable_to_non_nullable
+          : attributesJson as String?,
+      backingId: backingId == const $CopyWithPlaceholder()
+          ? _value.backingId
+          // ignore: cast_nullable_to_non_nullable
+          : backingId as String?,
+      duration: duration == const $CopyWithPlaceholder()
+          ? _value.duration
+          // ignore: cast_nullable_to_non_nullable
+          : duration as int?,
+      isAllDay: isAllDay == const $CopyWithPlaceholder() || isAllDay == null
+          ? _value.isAllDay
+          // ignore: cast_nullable_to_non_nullable
+          : isAllDay as bool,
+      isFloating:
+          isFloating == const $CopyWithPlaceholder() || isFloating == null
+              ? _value.isFloating
+              // ignore: cast_nullable_to_non_nullable
+              : isFloating as bool,
+      isVisible: isVisible == const $CopyWithPlaceholder() || isVisible == null
+          ? _value.isVisible
+          // ignore: cast_nullable_to_non_nullable
+          : isVisible as bool,
+      itemId: itemId == const $CopyWithPlaceholder()
+          ? _value.itemId
+          // ignore: cast_nullable_to_non_nullable
+          : itemId as Uuid?,
+      layout: layout == const $CopyWithPlaceholder()
+          ? _value.layout
+          // ignore: cast_nullable_to_non_nullable
+          : layout as TimelinePinLayout?,
+      nextSyncAction: nextSyncAction == const $CopyWithPlaceholder()
+          ? _value.nextSyncAction
+          // ignore: cast_nullable_to_non_nullable
+          : nextSyncAction as NextSyncAction?,
+      parentId: parentId == const $CopyWithPlaceholder()
+          ? _value.parentId
+          // ignore: cast_nullable_to_non_nullable
+          : parentId as Uuid?,
+      persistQuickView: persistQuickView == const $CopyWithPlaceholder() ||
+              persistQuickView == null
+          ? _value.persistQuickView
+          // ignore: cast_nullable_to_non_nullable
+          : persistQuickView as bool,
+      timestamp: timestamp == const $CopyWithPlaceholder()
+          ? _value.timestamp
+          // ignore: cast_nullable_to_non_nullable
+          : timestamp as DateTime?,
+      type: type == const $CopyWithPlaceholder()
+          ? _value.type
+          // ignore: cast_nullable_to_non_nullable
+          : type as TimelinePinType?,
     );
   }
+}
 
+extension $TimelinePinCopyWith on TimelinePin {
+  /// Returns a callable class that can be used as follows: `instanceOfclass TimelinePin.name.copyWith(...)` or like so:`instanceOfclass TimelinePin.name.copyWith.fieldName(...)`.
+  _$TimelinePinCWProxy get copyWith => _$TimelinePinCWProxyImpl(this);
+
+  /// Copies the object with the specific fields set to `null`. If you pass `false` as a parameter, nothing will be done and it will be ignored. Don't do it. Prefer `copyWith(field: null)` or `TimelinePin(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// TimelinePin(...).copyWithNull(firstField: true, secondField: true)
+  /// ````
   TimelinePin copyWithNull({
     bool actionsJson = false,
     bool attributesJson = false,
@@ -76,29 +243,33 @@ extension TimelinePinCopyWith on TimelinePin {
 // JsonSerializableGenerator
 // **************************************************************************
 
-TimelinePin _$TimelinePinFromJson(Map<String, dynamic> json) {
-  return TimelinePin(
-    itemId: const UuidConverter().fromJson(json['itemId'] as String?),
-    parentId: const UuidConverter().fromJson(json['parentId'] as String?),
-    backingId: json['backingId'] as String?,
-    timestamp:
-        const NumberDateTimeConverter().fromJson(json['timestamp'] as int?),
-    duration: json['duration'] as int?,
-    type: _$enumDecodeNullable(_$TimelinePinTypeEnumMap, json['type']),
-    isVisible:
-        const BooleanNumberConverter().fromJson(json['isVisible'] as int),
-    isFloating:
-        const BooleanNumberConverter().fromJson(json['isFloating'] as int),
-    isAllDay: const BooleanNumberConverter().fromJson(json['isAllDay'] as int),
-    persistQuickView: const BooleanNumberConverter()
-        .fromJson(json['persistQuickView'] as int),
-    layout: _$enumDecodeNullable(_$TimelinePinLayoutEnumMap, json['layout']),
-    attributesJson: json['attributesJson'] as String?,
-    actionsJson: json['actionsJson'] as String?,
-    nextSyncAction:
-        _$enumDecodeNullable(_$NextSyncActionEnumMap, json['nextSyncAction']),
-  );
-}
+TimelinePin _$TimelinePinFromJson(Map<String, dynamic> json) => TimelinePin(
+      itemId: const UuidConverter().fromJson(json['itemId'] as String?),
+      parentId: const UuidConverter().fromJson(json['parentId'] as String?),
+      backingId: json['backingId'] as String?,
+      timestamp:
+          const NumberDateTimeConverter().fromJson(json['timestamp'] as int?),
+      duration: json['duration'] as int?,
+      type: $enumDecodeNullable(_$TimelinePinTypeEnumMap, json['type']),
+      isVisible: json['isVisible'] == null
+          ? true
+          : const BooleanNumberConverter().fromJson(json['isVisible'] as int),
+      isFloating: json['isFloating'] == null
+          ? false
+          : const BooleanNumberConverter().fromJson(json['isFloating'] as int),
+      isAllDay: json['isAllDay'] == null
+          ? false
+          : const BooleanNumberConverter().fromJson(json['isAllDay'] as int),
+      persistQuickView: json['persistQuickView'] == null
+          ? false
+          : const BooleanNumberConverter()
+              .fromJson(json['persistQuickView'] as int),
+      layout: $enumDecodeNullable(_$TimelinePinLayoutEnumMap, json['layout']),
+      attributesJson: json['attributesJson'] as String?,
+      actionsJson: json['actionsJson'] as String?,
+      nextSyncAction:
+          $enumDecodeNullable(_$NextSyncActionEnumMap, json['nextSyncAction']),
+    );
 
 Map<String, dynamic> _$TimelinePinToJson(TimelinePin instance) =>
     <String, dynamic>{
@@ -118,43 +289,6 @@ Map<String, dynamic> _$TimelinePinToJson(TimelinePin instance) =>
       'actionsJson': instance.actionsJson,
       'nextSyncAction': _$NextSyncActionEnumMap[instance.nextSyncAction],
     };
-
-K _$enumDecode<K, V>(
-  Map<K, V> enumValues,
-  Object? source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    throw ArgumentError(
-      'A value must be provided. Supported values: '
-      '${enumValues.values.join(', ')}',
-    );
-  }
-
-  return enumValues.entries.singleWhere(
-    (e) => e.value == source,
-    orElse: () {
-      if (unknownValue == null) {
-        throw ArgumentError(
-          '`$source` is not one of the supported values: '
-          '${enumValues.values.join(', ')}',
-        );
-      }
-      return MapEntry(unknownValue, enumValues.values.first);
-    },
-  ).key;
-}
-
-K? _$enumDecodeNullable<K, V>(
-  Map<K, V> enumValues,
-  dynamic source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    return null;
-  }
-  return _$enumDecode<K, V>(enumValues, source, unknownValue: unknownValue);
-}
 
 const _$TimelinePinTypeEnumMap = {
   TimelinePinType.notification: 'notification',

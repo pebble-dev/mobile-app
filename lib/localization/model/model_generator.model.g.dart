@@ -7,70 +7,75 @@ part of 'model_generator.model.dart';
 // **************************************************************************
 
 Language _$LanguageFromJson(Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'common',
-    'first_run',
-    'timeline_attribute',
-    'timeline_sync',
-    'recurrence',
-    'splash_page',
-    'home_page',
-    'about_page',
-    'watches_page',
-    'alerting_apps',
-    'alerting_apps_filter',
-    'more_setup_page',
-    'pair_page',
-    'setup',
-    'health',
-    'notifications',
-    'settings',
-    'system_apps',
-    'calendar',
-    'locker_page'
-  ], requiredKeys: const [
-    'common',
-    'first_run',
-    'timeline_attribute',
-    'timeline_sync',
-    'recurrence',
-    'splash_page',
-    'home_page',
-    'about_page',
-    'watches_page',
-    'alerting_apps',
-    'alerting_apps_filter',
-    'more_setup_page',
-    'pair_page',
-    'setup',
-    'health',
-    'notifications',
-    'settings',
-    'system_apps',
-    'calendar',
-    'locker_page'
-  ], disallowNullValues: const [
-    'common',
-    'first_run',
-    'timeline_attribute',
-    'timeline_sync',
-    'recurrence',
-    'splash_page',
-    'home_page',
-    'about_page',
-    'watches_page',
-    'alerting_apps',
-    'alerting_apps_filter',
-    'more_setup_page',
-    'pair_page',
-    'setup',
-    'health',
-    'notifications',
-    'settings',
-    'system_apps',
-    'calendar',
-    'locker_page'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const [
+      'common',
+      'first_run',
+      'timeline_attribute',
+      'timeline_sync',
+      'recurrence',
+      'splash_page',
+      'home_page',
+      'about_page',
+      'watches_page',
+      'alerting_apps',
+      'alerting_apps_filter',
+      'more_setup_page',
+      'pair_page',
+      'setup',
+      'health',
+      'notifications',
+      'settings',
+      'system_apps',
+      'calendar',
+      'locker_page'
+    ],
+    requiredKeys: const [
+      'common',
+      'first_run',
+      'timeline_attribute',
+      'timeline_sync',
+      'recurrence',
+      'splash_page',
+      'home_page',
+      'about_page',
+      'watches_page',
+      'alerting_apps',
+      'alerting_apps_filter',
+      'more_setup_page',
+      'pair_page',
+      'setup',
+      'health',
+      'notifications',
+      'settings',
+      'system_apps',
+      'calendar',
+      'locker_page'
+    ],
+    disallowNullValues: const [
+      'common',
+      'first_run',
+      'timeline_attribute',
+      'timeline_sync',
+      'recurrence',
+      'splash_page',
+      'home_page',
+      'about_page',
+      'watches_page',
+      'alerting_apps',
+      'alerting_apps_filter',
+      'more_setup_page',
+      'pair_page',
+      'setup',
+      'health',
+      'notifications',
+      'settings',
+      'system_apps',
+      'calendar',
+      'locker_page'
+    ],
+  );
   return Language(
     LanguageCommon.fromJson(json['common'] as Map<String, dynamic>),
     LanguageFirstRun.fromJson(json['first_run'] as Map<String, dynamic>),
@@ -102,67 +107,72 @@ Language _$LanguageFromJson(Map<String, dynamic> json) {
 }
 
 LanguageAboutPage _$LanguageAboutPageFromJson(Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'title',
-    'about',
-    'community',
-    'support',
-    'help_center',
-    'help_center_subtitle',
-    'email_us',
-    'email_us_subtitle',
-    'discord_server',
-    'discord_server_subtitle',
-    'reddit',
-    'reddit_subtitle',
-    'discord',
-    'discord_subtitle',
-    'twitter',
-    'twitter_subtitle',
-    'source_code',
-    'licenses',
-    'version_string'
-  ], requiredKeys: const [
-    'title',
-    'about',
-    'community',
-    'support',
-    'help_center',
-    'help_center_subtitle',
-    'email_us',
-    'email_us_subtitle',
-    'discord_server',
-    'discord_server_subtitle',
-    'reddit',
-    'reddit_subtitle',
-    'discord',
-    'discord_subtitle',
-    'twitter',
-    'twitter_subtitle',
-    'source_code',
-    'licenses',
-    'version_string'
-  ], disallowNullValues: const [
-    'title',
-    'about',
-    'community',
-    'support',
-    'help_center',
-    'help_center_subtitle',
-    'email_us',
-    'email_us_subtitle',
-    'discord_server',
-    'discord_server_subtitle',
-    'reddit',
-    'reddit_subtitle',
-    'discord',
-    'discord_subtitle',
-    'twitter',
-    'twitter_subtitle',
-    'source_code',
-    'licenses',
-    'version_string'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const [
+      'title',
+      'about',
+      'community',
+      'support',
+      'help_center',
+      'help_center_subtitle',
+      'email_us',
+      'email_us_subtitle',
+      'discord_server',
+      'discord_server_subtitle',
+      'reddit',
+      'reddit_subtitle',
+      'discord',
+      'discord_subtitle',
+      'twitter',
+      'twitter_subtitle',
+      'source_code',
+      'licenses',
+      'version_string'
+    ],
+    requiredKeys: const [
+      'title',
+      'about',
+      'community',
+      'support',
+      'help_center',
+      'help_center_subtitle',
+      'email_us',
+      'email_us_subtitle',
+      'discord_server',
+      'discord_server_subtitle',
+      'reddit',
+      'reddit_subtitle',
+      'discord',
+      'discord_subtitle',
+      'twitter',
+      'twitter_subtitle',
+      'source_code',
+      'licenses',
+      'version_string'
+    ],
+    disallowNullValues: const [
+      'title',
+      'about',
+      'community',
+      'support',
+      'help_center',
+      'help_center_subtitle',
+      'email_us',
+      'email_us_subtitle',
+      'discord_server',
+      'discord_server_subtitle',
+      'reddit',
+      'reddit_subtitle',
+      'discord',
+      'discord_subtitle',
+      'twitter',
+      'twitter_subtitle',
+      'source_code',
+      'licenses',
+      'version_string'
+    ],
+  );
   return LanguageAboutPage(
     json['title'] as String,
     json['about'] as String,
@@ -187,22 +197,17 @@ LanguageAboutPage _$LanguageAboutPageFromJson(Map<String, dynamic> json) {
 }
 
 LanguageAlertingApps _$LanguageAlertingAppsFromJson(Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'title',
-    'subtitle',
-    'muted_today',
-    'alerted_today'
-  ], requiredKeys: const [
-    'title',
-    'subtitle',
-    'muted_today',
-    'alerted_today'
-  ], disallowNullValues: const [
-    'title',
-    'subtitle',
-    'muted_today',
-    'alerted_today'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const ['title', 'subtitle', 'muted_today', 'alerted_today'],
+    requiredKeys: const ['title', 'subtitle', 'muted_today', 'alerted_today'],
+    disallowNullValues: const [
+      'title',
+      'subtitle',
+      'muted_today',
+      'alerted_today'
+    ],
+  );
   return LanguageAlertingApps(
     json['title'] as String,
     json['subtitle'] as String,
@@ -213,10 +218,12 @@ LanguageAlertingApps _$LanguageAlertingAppsFromJson(Map<String, dynamic> json) {
 
 LanguageAlertingAppsFilter _$LanguageAlertingAppsFilterFromJson(
     Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['title', 'app_name', 'app_source'],
-      requiredKeys: const ['title', 'app_name', 'app_source'],
-      disallowNullValues: const ['title', 'app_name', 'app_source']);
+  $checkKeys(
+    json,
+    allowedKeys: const ['title', 'app_name', 'app_source'],
+    requiredKeys: const ['title', 'app_name', 'app_source'],
+    disallowNullValues: const ['title', 'app_name', 'app_source'],
+  );
   return LanguageAlertingAppsFilter(
     json['title'] as String,
     json['app_name'] as String,
@@ -227,10 +234,12 @@ LanguageAlertingAppsFilter _$LanguageAlertingAppsFilterFromJson(
 
 LanguageAlertingAppsFilterAppSource
     _$LanguageAlertingAppsFilterAppSourceFromJson(Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['all', 'phone', 'watch'],
-      requiredKeys: const ['all', 'phone', 'watch'],
-      disallowNullValues: const ['all', 'phone', 'watch']);
+  $checkKeys(
+    json,
+    allowedKeys: const ['all', 'phone', 'watch'],
+    requiredKeys: const ['all', 'phone', 'watch'],
+    disallowNullValues: const ['all', 'phone', 'watch'],
+  );
   return LanguageAlertingAppsFilterAppSource(
     json['all'] as String,
     json['phone'] as String,
@@ -239,22 +248,17 @@ LanguageAlertingAppsFilterAppSource
 }
 
 LanguageCalendar _$LanguageCalendarFromJson(Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'title',
-    'toggle_title',
-    'toggle_subtitle',
-    'choose'
-  ], requiredKeys: const [
-    'title',
-    'toggle_title',
-    'toggle_subtitle',
-    'choose'
-  ], disallowNullValues: const [
-    'title',
-    'toggle_title',
-    'toggle_subtitle',
-    'choose'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const ['title', 'toggle_title', 'toggle_subtitle', 'choose'],
+    requiredKeys: const ['title', 'toggle_title', 'toggle_subtitle', 'choose'],
+    disallowNullValues: const [
+      'title',
+      'toggle_title',
+      'toggle_subtitle',
+      'choose'
+    ],
+  );
   return LanguageCalendar(
     json['title'] as String,
     json['toggle_title'] as String,
@@ -264,10 +268,12 @@ LanguageCalendar _$LanguageCalendarFromJson(Map<String, dynamic> json) {
 }
 
 LanguageCommon _$LanguageCommonFromJson(Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['skip', 'title', 'yes', 'no'],
-      requiredKeys: const ['skip', 'title', 'yes', 'no'],
-      disallowNullValues: const ['skip', 'title', 'yes', 'no']);
+  $checkKeys(
+    json,
+    allowedKeys: const ['skip', 'title', 'yes', 'no'],
+    requiredKeys: const ['skip', 'title', 'yes', 'no'],
+    disallowNullValues: const ['skip', 'title', 'yes', 'no'],
+  );
   return LanguageCommon(
     json['skip'] as String,
     json['title'] as String,
@@ -277,10 +283,12 @@ LanguageCommon _$LanguageCommonFromJson(Map<String, dynamic> json) {
 }
 
 LanguageFirstRun _$LanguageFirstRunFromJson(Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['title', 'fab'],
-      requiredKeys: const ['title', 'fab'],
-      disallowNullValues: const ['title', 'fab']);
+  $checkKeys(
+    json,
+    allowedKeys: const ['title', 'fab'],
+    requiredKeys: const ['title', 'fab'],
+    disallowNullValues: const ['title', 'fab'],
+  );
   return LanguageFirstRun(
     json['title'] as String,
     json['fab'] as String,
@@ -288,34 +296,39 @@ LanguageFirstRun _$LanguageFirstRunFromJson(Map<String, dynamic> json) {
 }
 
 LanguageHealth _$LanguageHealthFromJson(Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'title',
-    'subtitle',
-    'description',
-    'track_me',
-    'activity',
-    'sleep',
-    'sync',
-    'database'
-  ], requiredKeys: const [
-    'title',
-    'subtitle',
-    'description',
-    'track_me',
-    'activity',
-    'sleep',
-    'sync',
-    'database'
-  ], disallowNullValues: const [
-    'title',
-    'subtitle',
-    'description',
-    'track_me',
-    'activity',
-    'sleep',
-    'sync',
-    'database'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const [
+      'title',
+      'subtitle',
+      'description',
+      'track_me',
+      'activity',
+      'sleep',
+      'sync',
+      'database'
+    ],
+    requiredKeys: const [
+      'title',
+      'subtitle',
+      'description',
+      'track_me',
+      'activity',
+      'sleep',
+      'sync',
+      'database'
+    ],
+    disallowNullValues: const [
+      'title',
+      'subtitle',
+      'description',
+      'track_me',
+      'activity',
+      'sleep',
+      'sync',
+      'database'
+    ],
+  );
   return LanguageHealth(
     json['title'] as String,
     json['subtitle'] as String,
@@ -330,10 +343,12 @@ LanguageHealth _$LanguageHealthFromJson(Map<String, dynamic> json) {
 
 LanguageHealthActivity _$LanguageHealthActivityFromJson(
     Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['title', 'subtitle'],
-      requiredKeys: const ['title', 'subtitle'],
-      disallowNullValues: const ['title', 'subtitle']);
+  $checkKeys(
+    json,
+    allowedKeys: const ['title', 'subtitle'],
+    requiredKeys: const ['title', 'subtitle'],
+    disallowNullValues: const ['title', 'subtitle'],
+  );
   return LanguageHealthActivity(
     json['title'] as String,
     json['subtitle'] as String,
@@ -342,31 +357,36 @@ LanguageHealthActivity _$LanguageHealthActivityFromJson(
 
 LanguageHealthDatabase _$LanguageHealthDatabaseFromJson(
     Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'title',
-    'manage',
-    'delete',
-    'backup',
-    'restore',
-    'perm_delete',
-    'permanently_delete'
-  ], requiredKeys: const [
-    'title',
-    'manage',
-    'delete',
-    'backup',
-    'restore',
-    'perm_delete',
-    'permanently_delete'
-  ], disallowNullValues: const [
-    'title',
-    'manage',
-    'delete',
-    'backup',
-    'restore',
-    'perm_delete',
-    'permanently_delete'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const [
+      'title',
+      'manage',
+      'delete',
+      'backup',
+      'restore',
+      'perm_delete',
+      'permanently_delete'
+    ],
+    requiredKeys: const [
+      'title',
+      'manage',
+      'delete',
+      'backup',
+      'restore',
+      'perm_delete',
+      'permanently_delete'
+    ],
+    disallowNullValues: const [
+      'title',
+      'manage',
+      'delete',
+      'backup',
+      'restore',
+      'perm_delete',
+      'permanently_delete'
+    ],
+  );
   return LanguageHealthDatabase(
     json['title'] as String,
     json['manage'] as String,
@@ -382,22 +402,12 @@ LanguageHealthDatabase _$LanguageHealthDatabaseFromJson(
 LanguageHealthDatabasePermanentlyDelete
     _$LanguageHealthDatabasePermanentlyDeleteFromJson(
         Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'title',
-    'description',
-    'positive',
-    'negative'
-  ], requiredKeys: const [
-    'title',
-    'description',
-    'positive',
-    'negative'
-  ], disallowNullValues: const [
-    'title',
-    'description',
-    'positive',
-    'negative'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const ['title', 'description', 'positive', 'negative'],
+    requiredKeys: const ['title', 'description', 'positive', 'negative'],
+    disallowNullValues: const ['title', 'description', 'positive', 'negative'],
+  );
   return LanguageHealthDatabasePermanentlyDelete(
     json['title'] as String,
     json['description'] as String,
@@ -407,10 +417,12 @@ LanguageHealthDatabasePermanentlyDelete
 }
 
 LanguageHealthSleep _$LanguageHealthSleepFromJson(Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['title', 'subtitle'],
-      requiredKeys: const ['title', 'subtitle'],
-      disallowNullValues: const ['title', 'subtitle']);
+  $checkKeys(
+    json,
+    allowedKeys: const ['title', 'subtitle'],
+    requiredKeys: const ['title', 'subtitle'],
+    disallowNullValues: const ['title', 'subtitle'],
+  );
   return LanguageHealthSleep(
     json['title'] as String,
     json['subtitle'] as String,
@@ -418,22 +430,17 @@ LanguageHealthSleep _$LanguageHealthSleepFromJson(Map<String, dynamic> json) {
 }
 
 LanguageHealthSync _$LanguageHealthSyncFromJson(Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'title',
-    'subtitle',
-    'sign_out',
-    'switch_account'
-  ], requiredKeys: const [
-    'title',
-    'subtitle',
-    'sign_out',
-    'switch_account'
-  ], disallowNullValues: const [
-    'title',
-    'subtitle',
-    'sign_out',
-    'switch_account'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const ['title', 'subtitle', 'sign_out', 'switch_account'],
+    requiredKeys: const ['title', 'subtitle', 'sign_out', 'switch_account'],
+    disallowNullValues: const [
+      'title',
+      'subtitle',
+      'sign_out',
+      'switch_account'
+    ],
+  );
   return LanguageHealthSync(
     json['title'] as String,
     json['subtitle'] as String,
@@ -443,28 +450,33 @@ LanguageHealthSync _$LanguageHealthSyncFromJson(Map<String, dynamic> json) {
 }
 
 LanguageHomePage _$LanguageHomePageFromJson(Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'testing',
-    'health',
-    'locker',
-    'store',
-    'watches',
-    'settings'
-  ], requiredKeys: const [
-    'testing',
-    'health',
-    'locker',
-    'store',
-    'watches',
-    'settings'
-  ], disallowNullValues: const [
-    'testing',
-    'health',
-    'locker',
-    'store',
-    'watches',
-    'settings'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const [
+      'testing',
+      'health',
+      'locker',
+      'store',
+      'watches',
+      'settings'
+    ],
+    requiredKeys: const [
+      'testing',
+      'health',
+      'locker',
+      'store',
+      'watches',
+      'settings'
+    ],
+    disallowNullValues: const [
+      'testing',
+      'health',
+      'locker',
+      'store',
+      'watches',
+      'settings'
+    ],
+  );
   return LanguageHomePage(
     json['testing'] as String,
     json['health'] as String,
@@ -476,46 +488,51 @@ LanguageHomePage _$LanguageHomePageFromJson(Map<String, dynamic> json) {
 }
 
 LanguageLockerPage _$LanguageLockerPageFromJson(Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'apply',
-    'permissions',
-    'face_settings',
-    'app_settings',
-    'not_compatible',
-    'delete',
-    'my_faces',
-    'my_apps',
-    'get_faces',
-    'get_apps',
-    'incompatible_faces',
-    'incompatible_apps'
-  ], requiredKeys: const [
-    'apply',
-    'permissions',
-    'face_settings',
-    'app_settings',
-    'not_compatible',
-    'delete',
-    'my_faces',
-    'my_apps',
-    'get_faces',
-    'get_apps',
-    'incompatible_faces',
-    'incompatible_apps'
-  ], disallowNullValues: const [
-    'apply',
-    'permissions',
-    'face_settings',
-    'app_settings',
-    'not_compatible',
-    'delete',
-    'my_faces',
-    'my_apps',
-    'get_faces',
-    'get_apps',
-    'incompatible_faces',
-    'incompatible_apps'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const [
+      'apply',
+      'permissions',
+      'face_settings',
+      'app_settings',
+      'not_compatible',
+      'delete',
+      'my_faces',
+      'my_apps',
+      'get_faces',
+      'get_apps',
+      'incompatible_faces',
+      'incompatible_apps'
+    ],
+    requiredKeys: const [
+      'apply',
+      'permissions',
+      'face_settings',
+      'app_settings',
+      'not_compatible',
+      'delete',
+      'my_faces',
+      'my_apps',
+      'get_faces',
+      'get_apps',
+      'incompatible_faces',
+      'incompatible_apps'
+    ],
+    disallowNullValues: const [
+      'apply',
+      'permissions',
+      'face_settings',
+      'app_settings',
+      'not_compatible',
+      'delete',
+      'my_faces',
+      'my_apps',
+      'get_faces',
+      'get_apps',
+      'incompatible_faces',
+      'incompatible_apps'
+    ],
+  );
   return LanguageLockerPage(
     json['apply'] as String,
     json['permissions'] as String,
@@ -534,10 +551,12 @@ LanguageLockerPage _$LanguageLockerPageFromJson(Map<String, dynamic> json) {
 
 LanguageMoreSetupPage _$LanguageMoreSetupPageFromJson(
     Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['title', 'fab', 'content'],
-      requiredKeys: const ['title', 'fab', 'content'],
-      disallowNullValues: const ['title', 'fab', 'content']);
+  $checkKeys(
+    json,
+    allowedKeys: const ['title', 'fab', 'content'],
+    requiredKeys: const ['title', 'fab', 'content'],
+    disallowNullValues: const ['title', 'fab', 'content'],
+  );
   return LanguageMoreSetupPage(
     json['title'] as String,
     json['fab'] as String,
@@ -547,10 +566,12 @@ LanguageMoreSetupPage _$LanguageMoreSetupPageFromJson(
 
 LanguageNotifications _$LanguageNotificationsFromJson(
     Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['title', 'enabled', 'choose_apps', 'silence'],
-      requiredKeys: const ['title', 'enabled', 'choose_apps', 'silence'],
-      disallowNullValues: const ['title', 'enabled', 'choose_apps', 'silence']);
+  $checkKeys(
+    json,
+    allowedKeys: const ['title', 'enabled', 'choose_apps', 'silence'],
+    requiredKeys: const ['title', 'enabled', 'choose_apps', 'silence'],
+    disallowNullValues: const ['title', 'enabled', 'choose_apps', 'silence'],
+  );
   return LanguageNotifications(
     json['title'] as String,
     json['enabled'] as String,
@@ -562,22 +583,17 @@ LanguageNotifications _$LanguageNotificationsFromJson(
 
 LanguageNotificationsSilence _$LanguageNotificationsSilenceFromJson(
     Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'title',
-    'description',
-    'notifications',
-    'calls'
-  ], requiredKeys: const [
-    'title',
-    'description',
-    'notifications',
-    'calls'
-  ], disallowNullValues: const [
-    'title',
-    'description',
-    'notifications',
-    'calls'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const ['title', 'description', 'notifications', 'calls'],
+    requiredKeys: const ['title', 'description', 'notifications', 'calls'],
+    disallowNullValues: const [
+      'title',
+      'description',
+      'notifications',
+      'calls'
+    ],
+  );
   return LanguageNotificationsSilence(
     json['title'] as String,
     json['description'] as String,
@@ -587,10 +603,12 @@ LanguageNotificationsSilence _$LanguageNotificationsSilenceFromJson(
 }
 
 LanguagePairPage _$LanguagePairPageFromJson(Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['title', 'search_again', 'status'],
-      requiredKeys: const ['title', 'search_again', 'status'],
-      disallowNullValues: const ['title', 'search_again', 'status']);
+  $checkKeys(
+    json,
+    allowedKeys: const ['title', 'search_again', 'status'],
+    requiredKeys: const ['title', 'search_again', 'status'],
+    disallowNullValues: const ['title', 'search_again', 'status'],
+  );
   return LanguagePairPage(
     json['title'] as String,
     LanguagePairPageSearchAgain.fromJson(
@@ -601,10 +619,12 @@ LanguagePairPage _$LanguagePairPageFromJson(Map<String, dynamic> json) {
 
 LanguagePairPageSearchAgain _$LanguagePairPageSearchAgainFromJson(
     Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['ble', 'classic'],
-      requiredKeys: const ['ble', 'classic'],
-      disallowNullValues: const ['ble', 'classic']);
+  $checkKeys(
+    json,
+    allowedKeys: const ['ble', 'classic'],
+    requiredKeys: const ['ble', 'classic'],
+    disallowNullValues: const ['ble', 'classic'],
+  );
   return LanguagePairPageSearchAgain(
     json['ble'] as String,
     json['classic'] as String,
@@ -613,10 +633,12 @@ LanguagePairPageSearchAgain _$LanguagePairPageSearchAgainFromJson(
 
 LanguagePairPageStatus _$LanguagePairPageStatusFromJson(
     Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['recovery', 'new_device'],
-      requiredKeys: const ['recovery', 'new_device'],
-      disallowNullValues: const ['recovery', 'new_device']);
+  $checkKeys(
+    json,
+    allowedKeys: const ['recovery', 'new_device'],
+    requiredKeys: const ['recovery', 'new_device'],
+    disallowNullValues: const ['recovery', 'new_device'],
+  );
   return LanguagePairPageStatus(
     json['recovery'] as String,
     json['new_device'] as String,
@@ -624,25 +646,18 @@ LanguagePairPageStatus _$LanguagePairPageStatusFromJson(
 }
 
 LanguageRecurrence _$LanguageRecurrenceFromJson(Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'unknown',
-    'daily',
-    'weekly',
-    'monthly',
-    'yearly'
-  ], requiredKeys: const [
-    'unknown',
-    'daily',
-    'weekly',
-    'monthly',
-    'yearly'
-  ], disallowNullValues: const [
-    'unknown',
-    'daily',
-    'weekly',
-    'monthly',
-    'yearly'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const ['unknown', 'daily', 'weekly', 'monthly', 'yearly'],
+    requiredKeys: const ['unknown', 'daily', 'weekly', 'monthly', 'yearly'],
+    disallowNullValues: const [
+      'unknown',
+      'daily',
+      'weekly',
+      'monthly',
+      'yearly'
+    ],
+  );
   return LanguageRecurrence(
     json['unknown'] as String,
     json['daily'] as String,
@@ -653,58 +668,71 @@ LanguageRecurrence _$LanguageRecurrenceFromJson(Map<String, dynamic> json) {
 }
 
 LanguageSettings _$LanguageSettingsFromJson(Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'title',
-    'account',
-    'subscription',
-    'timeline',
-    'sign_out',
-    'manage_account',
-    'notifications_and_muting',
-    'health',
-    'calendar',
-    'messages_and_canned_replies',
-    'language_and_voice',
-    'analytics',
-    'about_and_support',
-    'developer_options',
-    'widget_library'
-  ], requiredKeys: const [
-    'title',
-    'account',
-    'subscription',
-    'timeline',
-    'sign_out',
-    'manage_account',
-    'notifications_and_muting',
-    'health',
-    'calendar',
-    'messages_and_canned_replies',
-    'language_and_voice',
-    'analytics',
-    'about_and_support',
-    'developer_options',
-    'widget_library'
-  ], disallowNullValues: const [
-    'title',
-    'account',
-    'subscription',
-    'timeline',
-    'sign_out',
-    'manage_account',
-    'notifications_and_muting',
-    'health',
-    'calendar',
-    'messages_and_canned_replies',
-    'language_and_voice',
-    'analytics',
-    'about_and_support',
-    'developer_options',
-    'widget_library'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const [
+      'title',
+      'account',
+      'account_error',
+      'sign_in_title',
+      'subscription',
+      'timeline',
+      'sign_out',
+      'manage_account',
+      'notifications_and_muting',
+      'health',
+      'calendar',
+      'messages_and_canned_replies',
+      'language_and_voice',
+      'analytics',
+      'about_and_support',
+      'developer_options',
+      'widget_library'
+    ],
+    requiredKeys: const [
+      'title',
+      'account',
+      'account_error',
+      'sign_in_title',
+      'subscription',
+      'timeline',
+      'sign_out',
+      'manage_account',
+      'notifications_and_muting',
+      'health',
+      'calendar',
+      'messages_and_canned_replies',
+      'language_and_voice',
+      'analytics',
+      'about_and_support',
+      'developer_options',
+      'widget_library'
+    ],
+    disallowNullValues: const [
+      'title',
+      'account',
+      'account_error',
+      'sign_in_title',
+      'subscription',
+      'timeline',
+      'sign_out',
+      'manage_account',
+      'notifications_and_muting',
+      'health',
+      'calendar',
+      'messages_and_canned_replies',
+      'language_and_voice',
+      'analytics',
+      'about_and_support',
+      'developer_options',
+      'widget_library'
+    ],
+  );
   return LanguageSettings(
     json['title'] as String,
     json['account'] as String,
+    json['account_error'] as String,
+    json['sign_in_title'] as String,
     LanguageSettingsSubscription.fromJson(
         json['subscription'] as Map<String, dynamic>),
     LanguageSettingsTimeline.fromJson(json['timeline'] as Map<String, dynamic>),
@@ -724,43 +752,93 @@ LanguageSettings _$LanguageSettingsFromJson(Map<String, dynamic> json) {
 
 LanguageSettingsSubscription _$LanguageSettingsSubscriptionFromJson(
     Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['title', 'subtitle'],
-      requiredKeys: const ['title', 'subtitle'],
-      disallowNullValues: const ['title', 'subtitle']);
+  $checkKeys(
+    json,
+    allowedKeys: const [
+      'title',
+      'subtitle_subscribed',
+      'subtitle_not_subscribed'
+    ],
+    requiredKeys: const [
+      'title',
+      'subtitle_subscribed',
+      'subtitle_not_subscribed'
+    ],
+    disallowNullValues: const [
+      'title',
+      'subtitle_subscribed',
+      'subtitle_not_subscribed'
+    ],
+  );
   return LanguageSettingsSubscription(
     json['title'] as String,
-    json['subtitle'] as String,
+    json['subtitle_subscribed'] as String,
+    json['subtitle_not_subscribed'] as String,
   );
 }
 
 LanguageSettingsTimeline _$LanguageSettingsTimelineFromJson(
     Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['title', 'subtitle'],
-      requiredKeys: const ['title', 'subtitle'],
-      disallowNullValues: const ['title', 'subtitle']);
+  $checkKeys(
+    json,
+    allowedKeys: const [
+      'title',
+      'subtitle_every_hours',
+      'subtitle_every_minutes'
+    ],
+    requiredKeys: const [
+      'title',
+      'subtitle_every_hours',
+      'subtitle_every_minutes'
+    ],
+    disallowNullValues: const [
+      'title',
+      'subtitle_every_hours',
+      'subtitle_every_minutes'
+    ],
+  );
   return LanguageSettingsTimeline(
     json['title'] as String,
-    json['subtitle'] as String,
+    json['subtitle_every_hours'] as String,
+    json['subtitle_every_minutes'] as String,
   );
 }
 
 LanguageSetup _$LanguageSetupFromJson(Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['success'],
-      requiredKeys: const ['success'],
-      disallowNullValues: const ['success']);
+  $checkKeys(
+    json,
+    allowedKeys: const ['success', 'failure'],
+    requiredKeys: const ['success', 'failure'],
+    disallowNullValues: const ['success', 'failure'],
+  );
   return LanguageSetup(
     LanguageSetupSuccess.fromJson(json['success'] as Map<String, dynamic>),
+    LanguageSetupFailure.fromJson(json['failure'] as Map<String, dynamic>),
+  );
+}
+
+LanguageSetupFailure _$LanguageSetupFailureFromJson(Map<String, dynamic> json) {
+  $checkKeys(
+    json,
+    allowedKeys: const ['title', 'subtitle', 'error', 'fab'],
+    requiredKeys: const ['title', 'subtitle', 'error', 'fab'],
+    disallowNullValues: const ['title', 'subtitle', 'error', 'fab'],
+  );
+  return LanguageSetupFailure(
+    json['title'] as String,
+    json['subtitle'] as String,
+    json['error'] as String,
+    json['fab'] as String,
   );
 }
 
 LanguageSetupSuccess _$LanguageSetupSuccessFromJson(Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['title', 'subtitle', 'welcome', 'fab'],
-      requiredKeys: const ['title', 'subtitle', 'welcome', 'fab'],
-      disallowNullValues: const ['title', 'subtitle', 'welcome', 'fab']);
+  $checkKeys(
+    json,
+    allowedKeys: const ['title', 'subtitle', 'welcome', 'fab'],
+    requiredKeys: const ['title', 'subtitle', 'welcome', 'fab'],
+    disallowNullValues: const ['title', 'subtitle', 'welcome', 'fab'],
+  );
   return LanguageSetupSuccess(
     json['title'] as String,
     json['subtitle'] as String,
@@ -770,10 +848,12 @@ LanguageSetupSuccess _$LanguageSetupSuccessFromJson(Map<String, dynamic> json) {
 }
 
 LanguageSplashPage _$LanguageSplashPageFromJson(Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['title', 'body'],
-      requiredKeys: const ['title', 'body'],
-      disallowNullValues: const ['title', 'body']);
+  $checkKeys(
+    json,
+    allowedKeys: const ['title', 'body'],
+    requiredKeys: const ['title', 'body'],
+    disallowNullValues: const ['title', 'body'],
+  );
   return LanguageSplashPage(
     json['title'] as String,
     json['body'] as String,
@@ -781,25 +861,30 @@ LanguageSplashPage _$LanguageSplashPageFromJson(Map<String, dynamic> json) {
 }
 
 LanguageSystemApps _$LanguageSystemAppsFromJson(Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'settings',
-    'music',
-    'notifications',
-    'alarms',
-    'watchfaces'
-  ], requiredKeys: const [
-    'settings',
-    'music',
-    'notifications',
-    'alarms',
-    'watchfaces'
-  ], disallowNullValues: const [
-    'settings',
-    'music',
-    'notifications',
-    'alarms',
-    'watchfaces'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const [
+      'settings',
+      'music',
+      'notifications',
+      'alarms',
+      'watchfaces'
+    ],
+    requiredKeys: const [
+      'settings',
+      'music',
+      'notifications',
+      'alarms',
+      'watchfaces'
+    ],
+    disallowNullValues: const [
+      'settings',
+      'music',
+      'notifications',
+      'alarms',
+      'watchfaces'
+    ],
+  );
   return LanguageSystemApps(
     json['settings'] as String,
     json['music'] as String,
@@ -811,10 +896,12 @@ LanguageSystemApps _$LanguageSystemAppsFromJson(Map<String, dynamic> json) {
 
 LanguageTimelineAttribute _$LanguageTimelineAttributeFromJson(
     Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['heading', 'subtitle', 'title', 'paragraph'],
-      requiredKeys: const ['heading', 'subtitle', 'title', 'paragraph'],
-      disallowNullValues: const ['heading', 'subtitle', 'title', 'paragraph']);
+  $checkKeys(
+    json,
+    allowedKeys: const ['heading', 'subtitle', 'title', 'paragraph'],
+    requiredKeys: const ['heading', 'subtitle', 'title', 'paragraph'],
+    disallowNullValues: const ['heading', 'subtitle', 'title', 'paragraph'],
+  );
   return LanguageTimelineAttribute(
     LanguageTimelineAttributeHeading.fromJson(
         json['heading'] as Map<String, dynamic>),
@@ -829,22 +916,12 @@ LanguageTimelineAttribute _$LanguageTimelineAttributeFromJson(
 
 LanguageTimelineAttributeHeading _$LanguageTimelineAttributeHeadingFromJson(
     Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'attendees',
-    'status',
-    'recurrence',
-    'calendar'
-  ], requiredKeys: const [
-    'attendees',
-    'status',
-    'recurrence',
-    'calendar'
-  ], disallowNullValues: const [
-    'attendees',
-    'status',
-    'recurrence',
-    'calendar'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const ['attendees', 'status', 'recurrence', 'calendar'],
+    requiredKeys: const ['attendees', 'status', 'recurrence', 'calendar'],
+    disallowNullValues: const ['attendees', 'status', 'recurrence', 'calendar'],
+  );
   return LanguageTimelineAttributeHeading(
     json['attendees'] as String,
     json['status'] as String,
@@ -855,10 +932,12 @@ LanguageTimelineAttributeHeading _$LanguageTimelineAttributeHeadingFromJson(
 
 LanguageTimelineAttributeParagraph _$LanguageTimelineAttributeParagraphFromJson(
     Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['accepted', 'maybe', 'declined'],
-      requiredKeys: const ['accepted', 'maybe', 'declined'],
-      disallowNullValues: const ['accepted', 'maybe', 'declined']);
+  $checkKeys(
+    json,
+    allowedKeys: const ['accepted', 'maybe', 'declined'],
+    requiredKeys: const ['accepted', 'maybe', 'declined'],
+    disallowNullValues: const ['accepted', 'maybe', 'declined'],
+  );
   return LanguageTimelineAttributeParagraph(
     json['accepted'] as String,
     json['maybe'] as String,
@@ -868,25 +947,30 @@ LanguageTimelineAttributeParagraph _$LanguageTimelineAttributeParagraphFromJson(
 
 LanguageTimelineAttributeSubtitle _$LanguageTimelineAttributeSubtitleFromJson(
     Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'removed',
-    'calendar_muted',
-    'accepted',
-    'maybe',
-    'declined'
-  ], requiredKeys: const [
-    'removed',
-    'calendar_muted',
-    'accepted',
-    'maybe',
-    'declined'
-  ], disallowNullValues: const [
-    'removed',
-    'calendar_muted',
-    'accepted',
-    'maybe',
-    'declined'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const [
+      'removed',
+      'calendar_muted',
+      'accepted',
+      'maybe',
+      'declined'
+    ],
+    requiredKeys: const [
+      'removed',
+      'calendar_muted',
+      'accepted',
+      'maybe',
+      'declined'
+    ],
+    disallowNullValues: const [
+      'removed',
+      'calendar_muted',
+      'accepted',
+      'maybe',
+      'declined'
+    ],
+  );
   return LanguageTimelineAttributeSubtitle(
     json['removed'] as String,
     json['calendar_muted'] as String,
@@ -898,25 +982,30 @@ LanguageTimelineAttributeSubtitle _$LanguageTimelineAttributeSubtitleFromJson(
 
 LanguageTimelineAttributeTitle _$LanguageTimelineAttributeTitleFromJson(
     Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'accept',
-    'maybe',
-    'decline',
-    'remove',
-    'mute_calendar'
-  ], requiredKeys: const [
-    'accept',
-    'maybe',
-    'decline',
-    'remove',
-    'mute_calendar'
-  ], disallowNullValues: const [
-    'accept',
-    'maybe',
-    'decline',
-    'remove',
-    'mute_calendar'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const [
+      'accept',
+      'maybe',
+      'decline',
+      'remove',
+      'mute_calendar'
+    ],
+    requiredKeys: const [
+      'accept',
+      'maybe',
+      'decline',
+      'remove',
+      'mute_calendar'
+    ],
+    disallowNullValues: const [
+      'accept',
+      'maybe',
+      'decline',
+      'remove',
+      'mute_calendar'
+    ],
+  );
   return LanguageTimelineAttributeTitle(
     json['accept'] as String,
     json['maybe'] as String,
@@ -927,10 +1016,12 @@ LanguageTimelineAttributeTitle _$LanguageTimelineAttributeTitleFromJson(
 }
 
 LanguageTimelineSync _$LanguageTimelineSyncFromJson(Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['watch_full'],
-      requiredKeys: const ['watch_full'],
-      disallowNullValues: const ['watch_full']);
+  $checkKeys(
+    json,
+    allowedKeys: const ['watch_full'],
+    requiredKeys: const ['watch_full'],
+    disallowNullValues: const ['watch_full'],
+  );
   return LanguageTimelineSync(
     LanguageTimelineSyncWatchFull.fromJson(
         json['watch_full'] as Map<String, dynamic>),
@@ -939,10 +1030,12 @@ LanguageTimelineSync _$LanguageTimelineSyncFromJson(Map<String, dynamic> json) {
 
 LanguageTimelineSyncWatchFull _$LanguageTimelineSyncWatchFullFromJson(
     Map<String, dynamic> json) {
-  $checkKeys(json,
-      allowedKeys: const ['p0', 'p1'],
-      requiredKeys: const ['p0', 'p1'],
-      disallowNullValues: const ['p0', 'p1']);
+  $checkKeys(
+    json,
+    allowedKeys: const ['p0', 'p1'],
+    requiredKeys: const ['p0', 'p1'],
+    disallowNullValues: const ['p0', 'p1'],
+  );
   return LanguageTimelineSyncWatchFull(
     json['p0'] as String,
     json['p1'] as String,
@@ -950,25 +1043,18 @@ LanguageTimelineSyncWatchFull _$LanguageTimelineSyncWatchFullFromJson(
 }
 
 LanguageWatchesPage _$LanguageWatchesPageFromJson(Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'title',
-    'status',
-    'action',
-    'all_watches',
-    'fab'
-  ], requiredKeys: const [
-    'title',
-    'status',
-    'action',
-    'all_watches',
-    'fab'
-  ], disallowNullValues: const [
-    'title',
-    'status',
-    'action',
-    'all_watches',
-    'fab'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const ['title', 'status', 'action', 'all_watches', 'fab'],
+    requiredKeys: const ['title', 'status', 'action', 'all_watches', 'fab'],
+    disallowNullValues: const [
+      'title',
+      'status',
+      'action',
+      'all_watches',
+      'fab'
+    ],
+  );
   return LanguageWatchesPage(
     json['title'] as String,
     LanguageWatchesPageStatus.fromJson(json['status'] as Map<String, dynamic>),
@@ -980,22 +1066,17 @@ LanguageWatchesPage _$LanguageWatchesPageFromJson(Map<String, dynamic> json) {
 
 LanguageWatchesPageAction _$LanguageWatchesPageActionFromJson(
     Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'connect',
-    'disconnect',
-    'check_updates',
-    'forget'
-  ], requiredKeys: const [
-    'connect',
-    'disconnect',
-    'check_updates',
-    'forget'
-  ], disallowNullValues: const [
-    'connect',
-    'disconnect',
-    'check_updates',
-    'forget'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const ['connect', 'disconnect', 'check_updates', 'forget'],
+    requiredKeys: const ['connect', 'disconnect', 'check_updates', 'forget'],
+    disallowNullValues: const [
+      'connect',
+      'disconnect',
+      'check_updates',
+      'forget'
+    ],
+  );
   return LanguageWatchesPageAction(
     json['connect'] as String,
     json['disconnect'] as String,
@@ -1006,25 +1087,30 @@ LanguageWatchesPageAction _$LanguageWatchesPageActionFromJson(
 
 LanguageWatchesPageStatus _$LanguageWatchesPageStatusFromJson(
     Map<String, dynamic> json) {
-  $checkKeys(json, allowedKeys: const [
-    'nothing_connected',
-    'connected',
-    'connecting',
-    'disconnected',
-    'background_service_stopped'
-  ], requiredKeys: const [
-    'nothing_connected',
-    'connected',
-    'connecting',
-    'disconnected',
-    'background_service_stopped'
-  ], disallowNullValues: const [
-    'nothing_connected',
-    'connected',
-    'connecting',
-    'disconnected',
-    'background_service_stopped'
-  ]);
+  $checkKeys(
+    json,
+    allowedKeys: const [
+      'nothing_connected',
+      'connected',
+      'connecting',
+      'disconnected',
+      'background_service_stopped'
+    ],
+    requiredKeys: const [
+      'nothing_connected',
+      'connected',
+      'connecting',
+      'disconnected',
+      'background_service_stopped'
+    ],
+    disallowNullValues: const [
+      'nothing_connected',
+      'connected',
+      'connecting',
+      'disconnected',
+      'background_service_stopped'
+    ],
+  );
   return LanguageWatchesPageStatus(
     json['nothing_connected'] as String,
     json['connected'] as String,

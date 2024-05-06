@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:cobble/domain/connection/pair_provider.dart';
 import 'package:cobble/domain/connection/scan_provider.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
@@ -14,6 +12,7 @@ import 'package:cobble/ui/home/home_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
+import 'package:cobble/ui/setup/boot/rebble_setup.dart';
 import 'package:cobble/ui/setup/more_setup.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
@@ -24,7 +23,7 @@ final ConnectionControl connectionControl = ConnectionControl();
 final UiConnectionControl uiConnectionControl = UiConnectionControl();
 final ScanControl scanControl = ScanControl();
 
-class PairPage extends HookWidget implements CobbleScreen {
+class PairPage extends HookConsumerWidget implements CobbleScreen {
   final bool fromLanding;
 
   const PairPage._({
@@ -49,11 +48,11 @@ class PairPage extends HookWidget implements CobbleScreen {
       );
 
   @override
-  Widget build(BuildContext context) {
-    final pairedStorage = useProvider(pairedStorageProvider);
-    final scan = useProvider(scanProvider.state);
-    final pair = useProvider(pairProvider).data?.value;
-    final preferences = useProvider(preferencesProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pairedStorage = ref.watch(pairedStorageProvider.notifier);
+    final scan = ref.watch(scanProvider);
+    final pair = ref.watch(pairProvider).value;
+    final preferences = ref.watch(preferencesProvider);
 
     useEffect(() {
       if (pair == null || scan.devices.isEmpty) return null;
@@ -84,14 +83,14 @@ class PairPage extends HookWidget implements CobbleScreen {
 
     final _refreshDevicesBle = () {
       if (!scan.scanning) {
-        context.refresh(scanProvider).onScanStarted();
+        ref.refresh(scanProvider.notifier).onScanStarted();
         scanControl.startBleScan();
       }
     };
 
     final _refreshDevicesClassic = () {
       if (!scan.scanning) {
-        context.refresh(scanProvider).onScanStarted();
+        ref.refresh(scanProvider.notifier).onScanStarted();
         scanControl.startClassicScan();
       }
     };
@@ -100,7 +99,7 @@ class PairPage extends HookWidget implements CobbleScreen {
       StringWrapper addressWrapper = StringWrapper();
       addressWrapper.value = dev.address;
       uiConnectionControl.connectToWatch(addressWrapper);
-      preferences.data?.value.setHasBeenConnected();
+      preferences.value?.setHasBeenConnected();
     };
 
     final title = tr.pairPage.title;
@@ -193,9 +192,7 @@ class PairPage extends HookWidget implements CobbleScreen {
             child: CobbleButton(
               outlined: false,
               label: tr.common.skip,
-              onPressed: () => context.pushAndRemoveAllBelow(
-                HomePage(),
-              ),
+              onPressed: () => context.pushReplacement(RebbleSetup()),
             ),
           )
       ],

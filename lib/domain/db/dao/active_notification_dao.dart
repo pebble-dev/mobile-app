@@ -1,5 +1,5 @@
 import 'package:cobble/domain/db/models/active_notification.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:uuid_type/uuid_type.dart';
 
@@ -67,7 +67,7 @@ class ActiveNotificationDao {
   }
 }
 
-final AutoDisposeProvider<ActiveNotificationDao> activeNotifDaoProvider = Provider.autoDispose((ref) {
+final AutoDisposeProvider<ActiveNotificationDao> activeNotifDaoProvider = Provider.autoDispose<ActiveNotificationDao>((ref) {
   final dbFuture = ref.watch(databaseProvider.future);
   return ActiveNotificationDao(dbFuture);
 });

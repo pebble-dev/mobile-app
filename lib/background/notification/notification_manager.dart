@@ -97,7 +97,7 @@ class NotificationManager {
     TimelineAttribute subtitle = TimelineAttribute.subtitle(notif.title!.trim());
     TimelineAttribute content = TimelineAttribute.body(notif.text!.trim());
 
-    if (notif.messagesJson?.isNotEmpty ?? false) {
+    if ((notif.messagesJson?.isNotEmpty ?? false) && jsonDecode(notif.messagesJson!).isNotEmpty) {
       List<Map<String, dynamic>> messages = List<Map<String, dynamic>>.from(jsonDecode(notif.messagesJson!));
       content = TimelineAttribute.body(NotificationMessage.fromJson(messages.last).text!.trim());
     }
@@ -232,7 +232,7 @@ class NotificationManager {
   }
 }
 
-final notificationManagerProvider = Provider((ref) => NotificationManager(ref.read(activeNotifDaoProvider), ref.read(notifChannelDaoProvider), ref.read(sharedPreferencesProvider)));
+final notificationManagerProvider = Provider<NotificationManager>((ref) => NotificationManager(ref.read(activeNotifDaoProvider), ref.read(notifChannelDaoProvider), ref.read(sharedPreferencesProvider)));
 
 final disabledActionPackagesKey = "disabledActionPackages";
 

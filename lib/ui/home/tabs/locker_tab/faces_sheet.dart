@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cobble/domain/db/models/app.dart';
 import 'package:flutter/material.dart';
 import 'package:cobble/domain/apps/app_manager.dart';
@@ -8,7 +9,7 @@ import 'package:cobble/ui/common/components/cobble_tile.dart';
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/components/cobble_sheet.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
 
@@ -18,12 +19,14 @@ class FacesPreview extends StatelessWidget {
     this.compatible = false,
     this.extended = false,
     this.circleConnected,
+    this.listUrl
   });
 
   final App face;
   final bool compatible;
   final bool extended;
   final bool? circleConnected;
+  final String? listUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +41,7 @@ class FacesPreview extends StatelessWidget {
         children: <Widget>[
           ClipRRect(
             child: Image(
-              image: Svg('images/temp_watch_face.svg'),
+              image: (listUrl != null ? CachedNetworkImageProvider(listUrl!) : Svg('images/temp_watch_face.svg')) as ImageProvider,
               width: 92,
               height: circleWatchface ? 92 : 108,
               alignment: AlignmentDirectional.center,
@@ -74,6 +77,7 @@ class FacesSheet {
     required AppManager appManager,
     PebbleWatchLine? lineConnected,
     bool? circleConnected,
+    String? listUrl,
   }) {
     CobbleSheet.showModal(
       context: context,
@@ -81,6 +85,7 @@ class FacesSheet {
         children: [
           SizedBox(height: 8),
           FacesPreview(
+            listUrl: listUrl,
             face: face,
             compatible: compatible,
             extended: true,

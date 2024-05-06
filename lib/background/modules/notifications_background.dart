@@ -14,8 +14,8 @@ class NotificationsBackground implements NotificationListening {
   NotificationsBackground(this.container);
 
   void init() async {
-    notificationManager = container.listen(notificationManagerProvider).read();
-    _notificationChannelDao = container.listen(notifChannelDaoProvider).read();
+    notificationManager = container.listen<NotificationManager>(notificationManagerProvider, (previous, value) {}).read();
+    _notificationChannelDao = container.listen<NotificationChannelDao>(notifChannelDaoProvider, (previous, value) {}).read();
 
     NotificationListening.setup(this);
   }

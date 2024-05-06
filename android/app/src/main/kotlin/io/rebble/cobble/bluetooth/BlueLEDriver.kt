@@ -127,14 +127,16 @@ class BlueLEDriver(
     }
 
     @FlowPreview
-    override fun startSingleWatchConnection(device: BluetoothDevice): Flow<SingleConnectionStatus> = flow {
+    override fun startSingleWatchConnection(device: PebbleBluetoothDevice): Flow<SingleConnectionStatus> = flow {
+        require(!device.emulated)
+        require(device.bluetoothDevice != null)
         try {
             coroutineScope {
-                if (device.type == BluetoothDevice.DEVICE_TYPE_CLASSIC || device.type == BluetoothDevice.DEVICE_TYPE_UNKNOWN) {
+                if (device.bluetoothDevice.type == BluetoothDevice.DEVICE_TYPE_CLASSIC || device.bluetoothDevice.type == BluetoothDevice.DEVICE_TYPE_UNKNOWN) {
                     throw IllegalArgumentException("Non-LE device should not use LE driver")
                 }
 
-                if (connectionState == LEConnectionState.CONNECTED && device.address == this@BlueLEDriver.targetPebble.address) {
+                if (connectionState == LEConnectionState.CONNECTED && device.bluetoothDevice.address == this@BlueLEDriver.targetPebble.address) {
                     Timber.w("startSingleWatchConnection called on already connected driver")
                     emit(SingleConnectionStatus.Connected(device))
                 } else if (connectionState != LEConnectionState.IDLE) { // If not in idle state this is a stale instance
@@ -145,10 +147,10 @@ class BlueLEDriver(
 
                     protocolHandler.openProtocol()
 
-                    this@BlueLEDriver.targetPebble = device
+                    this@BlueLEDriver.targetPebble = device.bluetoothDevice
 
                     val server = BlueGATTServer(
-                            device,
+                            device.bluetoothDevice,
                             context,
                             this,
                             protocolHandler,

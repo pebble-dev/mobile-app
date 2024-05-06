@@ -142,6 +142,23 @@ class Preferences {
     await _sharedPrefs.setBool("bootSetup", value);
     _preferencesUpdateStream.add(this);
   }
+
+  DateTime? getOAuthTokenCreationDate() {
+    final timestamp = _sharedPrefs.getInt("oauthTokenCreationDate");
+    return timestamp != null
+        ? DateTime.fromMillisecondsSinceEpoch(timestamp)
+        : null;
+  }
+
+  Future<void> setOAuthTokenCreationDate(DateTime? value) async {
+    if (value == null) {
+      await _sharedPrefs.remove("oauthTokenCreationDate");
+    } else {
+      await _sharedPrefs.setInt(
+          "oauthTokenCreationDate", value.millisecondsSinceEpoch);
+    }
+    _preferencesUpdateStream.add(this);
+  }
 }
 
 final preferencesProvider = FutureProvider<Preferences>((ref) async {
@@ -149,23 +166,23 @@ final preferencesProvider = FutureProvider<Preferences>((ref) async {
   return Preferences(sharedPreferences);
 });
 
-final calendarSyncEnabledProvider = _createPreferenceProvider(
+final calendarSyncEnabledProvider = _createPreferenceProvider<bool?>(
   (preferences) => preferences.isCalendarSyncEnabled(),
 );
 
-final phoneNotificationsMuteProvider = _createPreferenceProvider(
+final phoneNotificationsMuteProvider = _createPreferenceProvider<bool?>(
   (preferences) => preferences.isPhoneNotificationMuteEnabled(),
 );
 
-final phoneCallsMuteProvider = _createPreferenceProvider(
+final phoneCallsMuteProvider = _createPreferenceProvider<bool?>(
   (preferences) => preferences.isPhoneCallMuteEnabled(),
 );
 
-final notificationToggleProvider = _createPreferenceProvider(
+final notificationToggleProvider = _createPreferenceProvider<bool?>(
   (preferences) => preferences.areNotificationsEnabled(),
 );
 
-final notificationsMutedPackagesProvider = _createPreferenceProvider(
+final notificationsMutedPackagesProvider = _createPreferenceProvider<List<String?>>(
   (preferences) => preferences.getNotificationsMutedPackages(),
 );
 
@@ -180,24 +197,30 @@ final notificationsMutedPackagesProvider = _createPreferenceProvider(
 ///   hasBeenConnected.then((value) => /*...*/);
 /// }, []);
 /// ```
-final hasBeenConnectedProvider = _createPreferenceProvider(
+final hasBeenConnectedProvider = _createPreferenceProvider<bool>(
   (preferences) => preferences.hasBeenConnected(),
 );
 
-final wasSetupSuccessfulProvider = _createPreferenceProvider(
+final wasSetupSuccessfulProvider = _createPreferenceProvider<bool>(
   (preferences) => preferences.wasSetupSuccessful(),
 );
 
-final bootUrlProvider = _createPreferenceProvider(
-  (preferences) => preferences.getBoot(),
+final bootUrlProvider = _createPreferenceProvider<String?>(
+  (preferences) {
+    return preferences.getBoot();
+  },
 );
 
-final overrideBootValueProvider = _createPreferenceProvider(
+final overrideBootValueProvider = _createPreferenceProvider<String?>(
   (preferences) => preferences.getOverrideBootValue(),
 );
 
-final shouldOverrideBootProvider = _createPreferenceProvider(
+final shouldOverrideBootProvider = _createPreferenceProvider<bool?>(
   (preferences) => preferences.shouldOverrideBoot(),
+);
+
+final oauthTokenCreationDateProvider = _createPreferenceProvider<DateTime?>(
+  (preferences) => preferences.getOAuthTokenCreationDate(),
 );
 
 StreamProvider<T> _createPreferenceProvider<T>(
@@ -211,7 +234,7 @@ StreamProvider<T> _createPreferenceProvider<T>(
             .startWith(preferences.value)
             .map(mapper)
             .distinct(),
-        loading: (loading) => Stream.empty(),
-        error: (error) => Stream.empty());
+        loading: (loading) => const Stream.empty(),
+        error: (error) => const Stream.empty());
   });
 }
