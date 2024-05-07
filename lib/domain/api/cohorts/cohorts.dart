@@ -8,7 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final cohortsServiceProvider = FutureProvider<CohortsService>((ref) async {
   final boot = await (await ref.watch(bootServiceProvider.future)).config; //TODO: add cohorts to boot config
-  final token = await (await ref.watch(tokenProvider.last));
+  final token = await (await ref.watch(tokenProvider.future));
   final oauth = await ref.watch(oauthClientProvider.future);
   final prefs = await ref.watch(preferencesProvider.future);
   if (token == null) {

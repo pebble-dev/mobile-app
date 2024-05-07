@@ -40,4 +40,4 @@ class FirmwareInstallStatusNotifier extends StateNotifier<FirmwareInstallStatus>
   }
 }
 
-final firmwareInstallStatusProvider = StateNotifierProvider<FirmwareInstallStatusNotifier>((ref) => FirmwareInstallStatusNotifier());
+final firmwareInstallStatusProvider = StateNotifierProvider<FirmwareInstallStatusNotifier, FirmwareInstallStatus>((ref) => FirmwareInstallStatusNotifier());

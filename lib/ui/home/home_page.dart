@@ -28,7 +28,7 @@ class _TabConfig {
       : key = GlobalKey<NavigatorState>();
 }
 
-class HomePage extends HookWidget implements CobbleScreen {
+class HomePage extends HookConsumerWidget implements CobbleScreen {
   final _config = [
     // Only visible when in debug mode
     ... kDebugMode ? [_TabConfig(
@@ -51,12 +51,12 @@ class HomePage extends HookWidget implements CobbleScreen {
   HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     useUriNavigator(context);
 
     final index = useState(0);
     
-    final connectionState = useProvider(connectionStateProvider.state);
+    final connectionState = ref.watch(connectionStateProvider);
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
         if (connectionState.currentConnectedWatch?.runningFirmware.isRecovery == true) {

@@ -53,7 +53,7 @@ class PairPage extends HookConsumerWidget implements CobbleScreen {
     final scan = ref.watch(scanProvider);
     //final pair = ref.watch(pairProvider).value;
     final preferences = ref.watch(preferencesProvider);
-    final connectionState = useProvider(connectionStateProvider.state);
+    final connectionState = ref.watch(connectionStateProvider);
 
     useEffect(() {
       if (/*pair == null*/ connectionState.isConnected != true || connectionState.currentConnectedWatch?.address == null || scan.devices.isEmpty) return null;
@@ -71,8 +71,7 @@ class PairPage extends HookConsumerWidget implements CobbleScreen {
       if (connectionState.currentConnectedWatch?.address != dev.address) {
         return null;
       }
-
-      preferences.data?.value.setHasBeenConnected();
+      preferences.value?.setHasBeenConnected();
 
       WidgetsBinding.instance.scheduleFrameCallback((timeStamp) {
         pairedStorage.register(dev);

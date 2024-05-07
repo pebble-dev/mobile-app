@@ -38,7 +38,7 @@ class _UpdateIcon extends StatelessWidget {
   }
 }
 
-class UpdatePrompt extends HookWidget implements CobbleScreen {
+class UpdatePrompt extends HookConsumerWidget implements CobbleScreen {
   final Function onSuccess;
   final bool confirmOnSuccess;
   UpdatePrompt({Key? key, required this.onSuccess, required this.confirmOnSuccess}) : super(key: key);
@@ -47,10 +47,10 @@ class UpdatePrompt extends HookWidget implements CobbleScreen {
 
 
   @override
-  Widget build(BuildContext context) {
-    var connectionState = useProvider(connectionStateProvider.state);
-    var firmwares = useProvider(firmwaresProvider.future);
-    var installStatus = useProvider(firmwareInstallStatusProvider.state);
+  Widget build(BuildContext context, WidgetRef ref) {
+    var connectionState = ref.watch(connectionStateProvider);
+    var firmwares = ref.watch(firmwaresProvider.future);
+    var installStatus = ref.watch(firmwareInstallStatusProvider);
     double? progress;
 
     final title = useState("Checking for update...");
@@ -152,7 +152,7 @@ class UpdatePrompt extends HookWidget implements CobbleScreen {
         } else {
           if (awaitingReconnect.value) {
             WidgetsBinding.instance.scheduleFrameCallback((timeStamp) {
-              context.read(firmwareInstallStatusProvider).reset();
+              ref.read(firmwareInstallStatusProvider.notifier).reset();
               onSuccess(context);
             });
           }
