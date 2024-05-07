@@ -7,9 +7,9 @@ sealed class ConnectionState {
     class WaitingForBluetoothToEnable(val watch: PebbleBluetoothDevice?) : ConnectionState()
     class WaitingForReconnect(val watch: PebbleBluetoothDevice?) : ConnectionState()
     class Connecting(val watch: PebbleBluetoothDevice?) : ConnectionState()
-    class Negotiating(val watch: BluetoothDevice?) : ConnectionState()
+    class Negotiating(val watch: PebbleBluetoothDevice?) : ConnectionState()
     class Connected(val watch: PebbleBluetoothDevice) : ConnectionState()
-    class RecoveryMode(val watch: BluetoothDevice) : ConnectionState()
+    class RecoveryMode(val watch: PebbleBluetoothDevice) : ConnectionState()
 }
 
 val ConnectionState.watchOrNull: PebbleBluetoothDevice?

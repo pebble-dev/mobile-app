@@ -33,13 +33,13 @@ class ScanFlutterBridge @Inject constructor(
             scanCallbacks.onScanStarted { }
 
             if (BuildConfig.DEBUG) {
-                scanCallbacks.onScanUpdate(ListWrapper(listOf(PebbleScanDevicePigeon().also {
-                    it.address = "10.0.2.2" //TODO: make configurable
-                    it.name = "Emulator"
-                    it.firstUse = false
-                    it.runningPRF = false
-                    it.serialNumber = "EMULATOR"
-                }.toMapExt()))) {}
+                scanCallbacks.onScanUpdate(listOf(Pigeons.PebbleScanDevicePigeon.Builder()
+                        .setAddress("10.0.2.2")
+                        .setName("Emulator")
+                        .setFirstUse(false)
+                        .setRunningPRF(false)
+                        .setSerialNumber("EMULATOR")
+                        .build())) {}
             }
 
             bleScanner.getScanFlow().collect { foundDevices ->

@@ -31,7 +31,7 @@ class ConnectionLooper @Inject constructor(
     private var currentConnection: Job? = null
     private var lastConnectedWatch: String? = null
 
-    fun negotiationsComplete(watch: BluetoothDevice) {
+    fun negotiationsComplete(watch: PebbleBluetoothDevice) {
         if (connectionState.value is ConnectionState.Negotiating) {
             _connectionState.value = ConnectionState.Connected(watch)
         } else {
@@ -39,7 +39,7 @@ class ConnectionLooper @Inject constructor(
         }
     }
 
-    fun recoveryMode(watch: BluetoothDevice) {
+    fun recoveryMode(watch: PebbleBluetoothDevice) {
         if (connectionState.value is ConnectionState.Connected || connectionState.value is ConnectionState.Negotiating) {
             _connectionState.value = ConnectionState.RecoveryMode(watch)
         } else {

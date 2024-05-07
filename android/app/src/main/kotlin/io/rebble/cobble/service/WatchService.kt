@@ -102,13 +102,13 @@ class WatchService : LifecycleService() {
                     is ConnectionState.Connected -> {
                         icon = R.drawable.ic_notification_connected
                         titleText = "Connected to device"
-                        deviceName = if (it.watch.emulated) "[EMU] ${it.watch.address}" else it.watch.bluetoothDevice?.name
+                        deviceName = if (it.watch.emulated) "[EMU] ${it.watch.address}" else it.watch.bluetoothDevice?.name!!
                         channel = NOTIFICATION_CHANNEL_WATCH_CONNECTED
                     }
                     is ConnectionState.RecoveryMode -> {
                         icon = R.drawable.ic_notification_connected
                         titleText = "Connected to device (Recovery Mode)"
-                        deviceName = it.watch.name
+                        deviceName = if (it.watch.emulated) "[EMU] ${it.watch.address}" else it.watch.bluetoothDevice?.name!!
                         channel = NOTIFICATION_CHANNEL_WATCH_CONNECTED
                     }
                 }

@@ -7,7 +7,6 @@ import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.data.toPigeon
 import io.rebble.cobble.datasources.WatchMetadataStore
-import io.rebble.cobble.pigeons.BooleanWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.macAddressToLong
 import io.rebble.libpebblecommon.ProtocolHandler
@@ -34,7 +33,9 @@ class ConnectionFlutterBridge @Inject constructor(
     }
 
     override fun isConnected(): Pigeons.BooleanWrapper {
-        return BooleanWrapper(connectionLooper.connectionState.value is ConnectionState.Connected)
+        return Pigeons.BooleanWrapper().apply {
+            value = connectionLooper.connectionState.value is ConnectionState.Connected
+        }
     }
 
 
@@ -57,17 +58,17 @@ class ConnectionFlutterBridge @Inject constructor(
                     watchMetadataStore.lastConnectedWatchMetadata,
                     watchMetadataStore.lastConnectedWatchModel
             ) { connectionState, watchMetadata, model ->
-                Pigeons.WatchConnectionStatePigeon().apply {
-                    isConnected = connectionState is ConnectionState.Connected ||
-                            connectionState is ConnectionState.RecoveryMode
-                    isConnecting = connectionState is ConnectionState.Connecting ||
-                            connectionState is ConnectionState.WaitingForReconnect ||
-                            connectionState is ConnectionState.WaitingForBluetoothToEnable ||
-                            connectionState is ConnectionState.Negotiating
-                    val bluetoothDevice = connectionState.watchOrNull
-                    currentWatchAddress = bluetoothDevice?.address
-                    currentConnectedWatch = watchMetadata.toPigeon(bluetoothDevice, model)
-                }
+                val bluetoothDevice = connectionState.watchOrNull
+                Pigeons.WatchConnectionStatePigeon.Builder()
+                        .setIsConnected(connectionState is ConnectionState.Connected ||
+                                connectionState is ConnectionState.RecoveryMode)
+                        .setIsConnecting(connectionState is ConnectionState.Connecting ||
+                                connectionState is ConnectionState.WaitingForReconnect ||
+                                connectionState is ConnectionState.WaitingForBluetoothToEnable ||
+                                connectionState is ConnectionState.Negotiating)
+                        .setCurrentWatchAddress(bluetoothDevice?.address)
+                        .setCurrentConnectedWatch(watchMetadata.toPigeon(bluetoothDevice, model))
+                        .build()
             }.collect {
                 connectionCallbacks.onWatchConnectionStateChanged(
                         it
