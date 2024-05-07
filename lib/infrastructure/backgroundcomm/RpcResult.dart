@@ -8,9 +8,10 @@ class RpcResult {
   final int id;
   final String? successResult;
   final String? errorResult;
+  final String? errorStacktrace;
 
   RpcResult(
-      this.id, this.successResult, this.errorResult);
+      this.id, this.successResult, this.errorResult, [this.errorStacktrace]);
 
   Map<String, dynamic> toMap() {
     return {
@@ -26,9 +27,7 @@ class RpcResult {
       map['id'] as int,
       map['successResult'],
       map['errorResult'],
-      map['errorStacktrace'] != null
-          ? StackTrace.fromString(map['errorStacktrace'] as String)
-          : null,
+      map['errorStacktrace']
     );
   }
 
