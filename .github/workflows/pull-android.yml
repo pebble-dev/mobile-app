@@ -32,7 +32,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload golden failures
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: goldens-failures
           path: test/components/failures/
+          if-no-files-found: 'ignore'
