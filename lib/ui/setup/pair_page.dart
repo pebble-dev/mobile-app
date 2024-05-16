@@ -79,15 +79,15 @@ class PairPage extends HookConsumerWidget implements CobbleScreen {
         if (fromLanding) {
           context.pushAndRemoveAllBelow(UpdatePrompt(
             confirmOnSuccess: false,
-            onSuccess: (context) {
-              context.pushReplacement(MoreSetup());
+            onSuccess: (BuildContext screenContext) {
+              screenContext.pushReplacement(MoreSetup());
             },
           ));
         } else {
           context.pushAndRemoveAllBelow(UpdatePrompt(
             confirmOnSuccess: true,
-            onSuccess: (context) {
-              context.pop();
+            onSuccess: (BuildContext screenContext) {
+              screenContext.pop();
             },
           ));
         }

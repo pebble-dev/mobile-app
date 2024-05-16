@@ -62,8 +62,8 @@ class HomePage extends HookConsumerWidget implements CobbleScreen {
         if (connectionState.currentConnectedWatch?.runningFirmware.isRecovery == true) {
           context.push(UpdatePrompt(
             confirmOnSuccess: true,
-            onSuccess: (context) {
-              context.pop();
+            onSuccess: (screenContext) {
+              Navigator.pop(screenContext);
             },
           ));
         }
