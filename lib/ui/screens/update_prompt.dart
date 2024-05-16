@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
+import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/firmware/firmware_install_status.dart';
 import 'package:cobble/domain/firmwares.dart';
 import 'package:cobble/domain/logging.dart';
 import 'package:cobble/infrastructure/datasources/firmwares.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
+import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/components/cobble_fab.dart';
 import 'package:cobble/ui/common/components/cobble_step.dart';
 import 'package:cobble/ui/common/icons/comp_icon.dart';
@@ -21,20 +23,54 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 
 class _UpdateIcon extends StatelessWidget {
-  final FirmwareInstallStatus progress;
-  final bool hasError;
+  final UpdatePromptState state;
   final PebbleWatchModel model;
 
-  const _UpdateIcon ({Key? key, required this.progress, required this.hasError, required this.model}) : super(key: key);
+  const _UpdateIcon ({Key? key, required this.state, required this.model}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    if (progress.success) {
-      return PebbleWatchIcon(model, size: 80.0, backgroundColor: Colors.transparent,);
-    } else if (hasError) {
-      return const CompIcon(RebbleIcons.dead_watch_ghost80, RebbleIcons.dead_watch_ghost80_background, size: 80.0);
-    } else {
-      return const CompIcon(RebbleIcons.check_for_updates, RebbleIcons.check_for_updates_background, size: 80.0);
+    switch (state) {
+      case UpdatePromptState.success:
+        return PebbleWatchIcon(model, size: 80.0, backgroundColor: Colors.transparent,);
+      case UpdatePromptState.error:
+        return const CompIcon(RebbleIcons.dead_watch_ghost80, RebbleIcons.dead_watch_ghost80_background, size: 80.0);
+      default:
+        return const CompIcon(RebbleIcons.check_for_updates, RebbleIcons.check_for_updates_background, size: 80.0);
     }
+  }
+}
+
+enum UpdatePromptState {
+  checking,
+  updateAvailable,
+  restoreRequired,
+  updating,
+  reconnecting,
+  success,
+  error,
+  noUpdate,
+}
+
+class _RequiredUpdate {
+  final FirmwareType type;
+  final String hwRev;
+  final bool skippable;
+  _RequiredUpdate(this.type, this.skippable, this.hwRev);
+}
+
+Future<_RequiredUpdate?> _getRequiredUpdate(PebbleDevice device, Firmwares firmwares, String hwRev) async {
+  final isRecovery = device.runningFirmware.isRecovery!;
+  final recoveryTimestamp = DateTime.fromMillisecondsSinceEpoch(device.recoveryFirmware.timestamp!);
+  final normalTimestamp = DateTime.fromMillisecondsSinceEpoch(device.runningFirmware.timestamp!);
+  final recoveryOutOfDate = await firmwares.doesFirmwareNeedUpdate(hwRev, FirmwareType.recovery, recoveryTimestamp);
+  final normalOutOfDate = isRecovery ? null : await firmwares.doesFirmwareNeedUpdate(hwRev, FirmwareType.normal, normalTimestamp);
+
+  if (isRecovery || normalOutOfDate == true) {
+    return _RequiredUpdate(FirmwareType.normal, !isRecovery, hwRev);
+  } else if (recoveryOutOfDate == true) {
+    return _RequiredUpdate(FirmwareType.recovery, true, hwRev);
+  } else {
+    return null;
   }
 }
 
@@ -45,163 +81,172 @@ class UpdatePrompt extends HookConsumerWidget implements CobbleScreen {
 
   final fwUpdateControl = FirmwareUpdateControl();
 
+  Future<void> _doUpdate(_RequiredUpdate update, Firmwares firmwares) async {
+    final firmwareFile = await firmwares.getFirmwareFor(update.hwRev, update.type);
+    if ((await fwUpdateControl.checkFirmwareCompatible(StringWrapper(value: firmwareFile.path))).value!) {
+      if (!(await fwUpdateControl.beginFirmwareUpdate(StringWrapper(value: firmwareFile.path))).value!) {
+        throw Exception("Failed to start firmware update");
+      }
+    } else {
+      throw Exception("Firmware is not compatible with this watch");
+    }
+  }
+
+  String _titleForState(UpdatePromptState state) {
+    switch (state) {
+      case UpdatePromptState.checking:
+        return "Checking for updates...";
+      case UpdatePromptState.updateAvailable:
+        return "Update available!";
+      case UpdatePromptState.restoreRequired:
+        return "Update required";
+      case UpdatePromptState.updating:
+        return "Updating...";
+      case UpdatePromptState.reconnecting:
+        return "Reconnecting...";
+      case UpdatePromptState.success:
+        return "Success!";
+      case UpdatePromptState.error:
+        return "Failed to update";
+      case UpdatePromptState.noUpdate:
+        return "Up to date";
+    }
+  }
+
+  String? _descForState(UpdatePromptState state) {
+    switch (state) {
+      case UpdatePromptState.checking:
+      case UpdatePromptState.updating:
+        return null;
+      case UpdatePromptState.updateAvailable:
+        return "An update is available for your watch.";
+      case UpdatePromptState.restoreRequired:
+        return "Your watch firmware needs restoring.";
+      case UpdatePromptState.reconnecting:
+        return "Installation was successful, waiting for the watch to reboot.";
+      case UpdatePromptState.success:
+        return "Your watch is now up to date.";
+      case UpdatePromptState.error:
+        return "Failed to update.";
+      case UpdatePromptState.noUpdate:
+        return "Your watch is already up to date.";
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var connectionState = ref.watch(connectionStateProvider);
     var firmwares = ref.watch(firmwaresProvider.future);
     var installStatus = ref.watch(firmwareInstallStatusProvider);
-    double? progress;
-
-    final title = useState("Checking for update...");
     final error = useState<String?>(null);
     final updater = useState<Future<void>?>(null);
-    final desc = useState<String?>(null);
-    final updateRequiredFor = useState<FirmwareType?>(null);
-    final awaitingReconnect = useState(false);
+    final state = useState<UpdatePromptState>(UpdatePromptState.checking);
+    final showUpdateAnyway = state.value == UpdatePromptState.noUpdate;
 
-
-    Future<void> _updaterJob(FirmwareType type, bool isRecovery, String hwRev, Firmwares firmwares) async {
-      title.value = (isRecovery ? "Restoring" : "Updating") + " firmware...";
-      final firmwareFile = await firmwares.getFirmwareFor(hwRev, type);
-      try {
-        if ((await fwUpdateControl.checkFirmwareCompatible(StringWrapper(value: firmwareFile.path))).value!) {
-          Log.d("Firmware compatible, starting update");
-          if (!(await fwUpdateControl.beginFirmwareUpdate(StringWrapper(value: firmwareFile.path))).value!) {
-            Log.d("Failed to start update");
-            error.value = "Failed to start update";
+    void tryDoUpdate([bool force = false]) {
+      if (updater.value != null) {
+        Log.w("Update already in progress");
+        return;
+      }
+      updater.value = () async {
+        try {
+          final hwRev = connectionState.currentConnectedWatch?.runningFirmware.hardwarePlatform.getHardwarePlatformName();
+          if (hwRev == null) {
+            throw Exception("Failed to get hardware revision");
           }
-        } else {
-          Log.d("Firmware incompatible");
-          error.value = "Firmware incompatible";
-        }
-      } catch (e) {
-        Log.d("Failed to start update: $e");
-        error.value = "Failed to start update";
-      }
-    }
-
-    String? _getHWRev() {
-      try {
-        return connectionState.currentConnectedWatch?.runningFirmware.hardwarePlatform.getHardwarePlatformName();
-      } catch (e) {
-        return null;
-      }
-    }
-
-    useEffect(() {
-      firmwares.then((firmwares) async {
-        if (error.value != null) return;
-        final hwRev = _getHWRev();
-        if (hwRev == null) return;
-
-        if (connectionState.currentConnectedWatch != null && connectionState.isConnected == true && updater.value == null && !installStatus.success) {
-          final isRecovery = connectionState.currentConnectedWatch!.runningFirmware.isRecovery!;
-          final recoveryOutOfDate = await firmwares.doesFirmwareNeedUpdate(hwRev, FirmwareType.recovery, DateTime.fromMillisecondsSinceEpoch(connectionState.currentConnectedWatch!.recoveryFirmware.timestamp!));
-          final normalOutOfDate = isRecovery ? null : await firmwares.doesFirmwareNeedUpdate(hwRev, FirmwareType.normal, DateTime.fromMillisecondsSinceEpoch(connectionState.currentConnectedWatch!.runningFirmware.timestamp!));
-
-          if (isRecovery || normalOutOfDate == true) {
-            if (isRecovery) {
-              updater.value ??= _updaterJob(FirmwareType.normal, isRecovery, hwRev, firmwares);
+          var update = await _getRequiredUpdate(connectionState.currentConnectedWatch!, await firmwares, hwRev);
+          if (update == null) {
+            if (force) {
+              update = _RequiredUpdate(FirmwareType.normal, false, hwRev);
             } else {
-              updateRequiredFor.value = FirmwareType.normal;
-            }
-          } else if (recoveryOutOfDate) {
-            updateRequiredFor.value = FirmwareType.recovery;
-          } else {
-            if (installStatus.success) {
-              title.value = "Success!";
-              desc.value = "Your watch is now up to date.";
-              updater.value = null;
-            } else {
-              title.value = "Up to date";
-              desc.value = "Your watch is already up to date.";
+              state.value = UpdatePromptState.noUpdate;
+              return;
             }
           }
+          state.value = UpdatePromptState.updating;
+          await _doUpdate(update, await firmwares);
+        } catch (e) {
+          Log.e("Failed to check for updates: $e");
+          state.value = UpdatePromptState.error;
+          error.value = e.toString();
         }
-      }).catchError((e) {
-        error.value = "Failed to check for updates";
+      }().then((_) {
+        updater.value = null;
       });
-      return null;
-    }, [connectionState, firmwares]);
+    }
+
+    Future<void> checkUpdate() async {
+      if (state.value == UpdatePromptState.updating || state.value == UpdatePromptState.reconnecting) {
+        return;
+      }
+      state.value = UpdatePromptState.checking;
+      error.value = null;
+      try {
+        final hwRev = connectionState.currentConnectedWatch?.runningFirmware.hardwarePlatform.getHardwarePlatformName();
+        if (hwRev == null) {
+          throw Exception("Failed to get hardware revision");
+        }
+        final update = await _getRequiredUpdate(connectionState.currentConnectedWatch!, await firmwares, hwRev);
+        if (update == null) {
+          state.value = UpdatePromptState.noUpdate;
+          return;
+        } else {
+          if (update.skippable) {
+            state.value = UpdatePromptState.updateAvailable;
+          } else {
+            state.value = UpdatePromptState.restoreRequired;
+          }
+        }
+      } catch (e) {
+        Log.e("Failed to check for updates: $e");
+        state.value = UpdatePromptState.error;
+        error.value = e.toString();
+      }
+    }
 
     useEffect(() {
-      progress = installStatus.progress;
-      if (connectionState.currentConnectedWatch == null || connectionState.isConnected == false) {
-        if (installStatus.success) {
-          awaitingReconnect.value = true;
-          error.value = null;
-          title.value = "Reconnecting...";
-          desc.value = "Installation was successful, waiting for the watch to reboot.";
-        } else {
-          error.value = "Watch not connected or lost connection";
-          updater.value = null;
-        }
-      } else {
-        if (installStatus.isInstalling) {
-          title.value = "Installing...";
-        } else if (!installStatus.success) {
-          if (error.value == null) {
-            final rev = _getHWRev();
-            if (rev == null) {
-              error.value = "Failed to get hardware revision";
-            } else {
-              title.value = "Checking for update...";
-            }
+      switch (state.value) {
+        case UpdatePromptState.reconnecting:
+          if (connectionState.isConnected == true) {
+            state.value = UpdatePromptState.success;
           }
-        } else {
-          if (awaitingReconnect.value) {
-            WidgetsBinding.instance.scheduleFrameCallback((timeStamp) {
-              ref.read(firmwareInstallStatusProvider.notifier).reset();
-              onSuccess(context);
-            });
+          break;
+        case UpdatePromptState.updating:
+          if (installStatus.success && connectionState.isConnected != true) {
+            state.value = UpdatePromptState.reconnecting;
           }
-        }
+          break;
+        default:
+          break;
       }
       return null;
     }, [connectionState, installStatus]);
 
-    if (error.value != null) {
-      title.value = "Error";
-      desc.value = error.value;
-    }
-
-    final CobbleFab? fab;
-    if (error.value != null) {
-      fab = CobbleFab(
-        label: "Retry",
-        icon: RebbleIcons.check_for_updates,
-        onPressed: () {
-          error.value = null;
-          updater.value = null;
-        },
-      );
-    } else if (installStatus.success) {
-      if (confirmOnSuccess) {
-        fab = CobbleFab(
-          label: "OK",
-          icon: RebbleIcons.check_done,
-          onPressed: () {
-            onSuccess(context);
-          },
-        );
-      } else {
-        fab = null;
+    useEffect(() {
+      if (state.value == UpdatePromptState.checking) {
+        checkUpdate();
       }
-    } else if (!installStatus.isInstalling && updateRequiredFor.value != null) {
-      fab = CobbleFab(
-        label: "Install",
-        icon: RebbleIcons.apply_update,
-        onPressed: () async {
-          final hwRev = _getHWRev();
-          if (hwRev != null) {
-            updater.value ??= _updaterJob(updateRequiredFor.value!, false, hwRev, await firmwares);
-          }
-        },
-      );
-    } else {
-      fab = null;
-    }
+      return null;
+    }, []);
+
+    useEffect(() {
+      if (!confirmOnSuccess && (state.value == UpdatePromptState.success || state.value == UpdatePromptState.noUpdate)) {
+        onSuccess(context);
+      }
+    }, [state]);
+
+    final desc = _descForState(state.value);
+    final fab = state.value == UpdatePromptState.updateAvailable || state.value == UpdatePromptState.restoreRequired ? CobbleFab(
+      icon: RebbleIcons.apply_update,
+      onPressed: () {
+        tryDoUpdate();
+      }, label: 'Update',
+    ) : (state.value == UpdatePromptState.success || state.value == UpdatePromptState.noUpdate) && confirmOnSuccess ? CobbleFab(
+      icon: RebbleIcons.check_done,
+      onPressed: () {
+        onSuccess(context);
+      }, label: 'Ok',
+    ) : null;
 
     return WillPopScope(
       child: CobbleScaffold.page(
@@ -210,16 +255,16 @@ class UpdatePrompt extends HookConsumerWidget implements CobbleScreen {
             padding: const EdgeInsets.all(16.0),
             alignment: Alignment.topCenter,
             child: CobbleStep(
-              icon: _UpdateIcon(progress: installStatus, hasError: error.value != null, model: connectionState.currentConnectedWatch?.model ?? PebbleWatchModel.rebble_logo),
+              icon: _UpdateIcon(state: state.value, model: connectionState.currentConnectedWatch?.model ?? PebbleWatchModel.rebble_logo),
               iconPadding: installStatus.success ? null : const EdgeInsets.all(20),
-              title: title.value,
-              iconBackgroundColor: error.value != null ? context.scheme!.destructive : installStatus.success ? context.scheme!.positive : null,
+              title: _titleForState(state.value),
+              iconBackgroundColor: state.value == UpdatePromptState.error ? context.scheme!.destructive : state.value == UpdatePromptState.success ? context.scheme!.positive : null,
               child: Column(
                 children: [
-                  if (desc.value != null)
-                    Text(desc.value!)
+                  if (desc != null || error.value != null)
+                    Text(error.value ?? desc ?? "")
                   else
-                    LinearProgressIndicator(value: progress),
+                    LinearProgressIndicator(value: installStatus.progress),
                   const SizedBox(height: 16.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -229,13 +274,23 @@ class UpdatePrompt extends HookConsumerWidget implements CobbleScreen {
                       Text(connectionState.currentConnectedWatch?.name ?? "Watch"),
                     ],
                   ),
+                  if (showUpdateAnyway)
+                    ...[const SizedBox(height: 16.0),
+                    CobbleButton(
+                      label: "Update Anyway",
+                      icon: RebbleIcons.dead_watch_ghost80,
+                      onPressed: () {
+                        state.value = UpdatePromptState.updateAvailable;
+                        tryDoUpdate(true);
+                      },
+                    )]
                 ],
               ),
             ),
           ),
         floatingActionButton: fab,
       ),
-      onWillPop: () async => error.value != null || installStatus.success
+      onWillPop: () async => !installStatus.isInstalling && state.value != UpdatePromptState.updating,
     );
   }
 }
