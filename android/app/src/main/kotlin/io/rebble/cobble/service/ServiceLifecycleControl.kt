@@ -11,7 +11,6 @@ import io.rebble.cobble.notifications.NotificationListener
 import io.rebble.cobble.util.hasNotificationAccessPermission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject

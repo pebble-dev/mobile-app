@@ -1,9 +1,7 @@
-package io.rebble.cobble.bluetooth
+package io.rebble.cobble.bluetooth.ble
 
 import android.bluetooth.*
 import android.content.Context
-import io.rebble.cobble.bluetooth.workarounds.UnboundWatchBeforeConnecting
-import io.rebble.cobble.datasources.FlutterPreferences
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
@@ -17,12 +15,10 @@ import java.util.*
  */
 suspend fun BluetoothDevice.connectGatt(
         context: Context,
-        flutterPreferences: FlutterPreferences,
+        unbindOnTimeout: Boolean,
         auto: Boolean = false,
         cbTimeout: Long = 8000
 ): BlueGATTConnection? {
-    val unbindOnTimeout = flutterPreferences.shouldActivateWorkaround(UnboundWatchBeforeConnecting)
-
     return BlueGATTConnection(this, cbTimeout).connectGatt(context, auto, unbindOnTimeout)
 }
 
@@ -105,6 +101,7 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
     }
 
     @FlowPreview
+    @Throws(SecurityException::class)
     suspend fun connectGatt(context: Context, auto: Boolean, unbondOnTimeout: Boolean = true): BlueGATTConnection? {
         var res: ConnectionStateResult? = null
         try {
@@ -149,10 +146,12 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
         }
     }
 
+    @Throws(SecurityException::class)
     fun close() {
         gatt?.close()
     }
 
+    @Throws(SecurityException::class)
     suspend fun requestMtu(mtu: Int): MTUResult? {
         gatt!!.requestMtu(mtu)
         var mtuResult: MTUResult? = null
@@ -166,6 +165,7 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
         return mtuResult
     }
 
+    @Throws(SecurityException::class)
     suspend fun discoverServices(): StatusResult? {
         if (!gatt!!.discoverServices()) return null
         var result: StatusResult? = null
@@ -180,8 +180,10 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
     }
 
     fun getService(uuid: UUID): BluetoothGattService? = gatt!!.getService(uuid)
+    @Throws(SecurityException::class)
     fun setCharacteristicNotification(characteristic: BluetoothGattCharacteristic, enable: Boolean) = gatt!!.setCharacteristicNotification(characteristic, enable)
 
+    @Throws(SecurityException::class)
     suspend fun writeCharacteristic(characteristic: BluetoothGattCharacteristic, value: ByteArray): CharacteristicResult? {
         characteristic.value = value
         if (!gatt!!.writeCharacteristic(characteristic)) return null
@@ -196,6 +198,7 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
         return result
     }
 
+    @Throws(SecurityException::class)
     suspend fun readCharacteristic(characteristic: BluetoothGattCharacteristic): CharacteristicResult? {
         if (!gatt!!.readCharacteristic(characteristic)) return null
         var result: CharacteristicResult? = null
@@ -209,6 +212,7 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
         return result
     }
 
+    @Throws(SecurityException::class)
     suspend fun writeDescriptor(descriptor: BluetoothGattDescriptor, value: ByteArray): DescriptorResult? {
         descriptor.value = value
         if (!gatt!!.writeDescriptor(descriptor)) return null
@@ -223,6 +227,7 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
         return result
     }
 
+    @Throws(SecurityException::class)
     suspend fun readDescriptor(descriptor: BluetoothGattDescriptor): DescriptorResult? {
         if (!gatt!!.readDescriptor(descriptor)) return null
         var result: DescriptorResult? = null
@@ -236,6 +241,7 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
         return result
     }
 
+    @Throws(SecurityException::class)
     suspend fun disconnect() {
         gatt!!.disconnect()
         try {

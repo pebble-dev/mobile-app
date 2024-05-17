@@ -20,7 +20,6 @@ import io.rebble.libpebblecommon.services.SystemService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
@@ -30,11 +29,11 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalUnsignedTypes::class, ExperimentalStdlibApi::class)
 class SystemHandler @Inject constructor(
-        private val context: Context,
-        private val coroutineScope: CoroutineScope,
-        private val systemService: SystemService,
-        private val connectionLooper: ConnectionLooper,
-        private val watchMetadataStore: WatchMetadataStore
+    private val context: Context,
+    private val coroutineScope: CoroutineScope,
+    private val systemService: SystemService,
+    private val connectionLooper: ConnectionLooper,
+    private val watchMetadataStore: WatchMetadataStore
 ) : CobbleHandler {
     init {
         systemService.appVersionRequestHandler = this::handleAppVersionRequest

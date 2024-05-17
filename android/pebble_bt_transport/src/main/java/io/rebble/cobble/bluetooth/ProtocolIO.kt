@@ -1,10 +1,10 @@
 package io.rebble.cobble.bluetooth
 
-import io.rebble.cobble.datasources.IncomingPacketsListener
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.protocolhelpers.PebblePacket
 import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -23,7 +23,7 @@ class ProtocolIO(
         private val inputStream: InputStream,
         private val outputStream: OutputStream,
         private val protocolHandler: ProtocolHandler,
-        private val incomingPacketsListener: IncomingPacketsListener
+        private val incomingPacketsListener: MutableSharedFlow<ByteArray>
 ) {
     suspend fun readLoop() {
         try {
@@ -49,7 +49,7 @@ class ProtocolIO(
                 buf.rewind()
                 val packet = ByteArray(length.toInt() + 2 * (Short.SIZE_BYTES))
                 buf.get(packet, 0, packet.size)
-                incomingPacketsListener.receivedPackets.emit(packet)
+                incomingPacketsListener.emit(packet)
                 protocolHandler.receivePacket(packet.toUByteArray())
             }
         } finally {

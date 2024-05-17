@@ -8,20 +8,18 @@ import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.data.toPigeon
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.pigeons.Pigeons
-import io.rebble.cobble.util.macAddressToLong
 import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ConnectionFlutterBridge @Inject constructor(
-        bridgeLifecycleController: BridgeLifecycleController,
-        private val connectionLooper: ConnectionLooper,
-        private val coroutineScope: CoroutineScope,
-        private val protocolHandler: ProtocolHandler,
-        private val watchMetadataStore: WatchMetadataStore
+    bridgeLifecycleController: BridgeLifecycleController,
+    private val connectionLooper: ConnectionLooper,
+    private val coroutineScope: CoroutineScope,
+    private val protocolHandler: ProtocolHandler,
+    private val watchMetadataStore: WatchMetadataStore
 ) : FlutterBridge, Pigeons.ConnectionControl {
     private val connectionCallbacks = bridgeLifecycleController
             .createCallbacks(Pigeons::ConnectionCallbacks)

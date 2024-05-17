@@ -120,6 +120,7 @@ dependencies {
     implementation "com.squareup.okio:okio:$okioVersion"
 
     implementation "com.google.dagger:dagger:$daggerVersion"
+    implementation project(':pebble_bt_transport')
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
 
     testImplementation "junit:junit:$junitVersion"

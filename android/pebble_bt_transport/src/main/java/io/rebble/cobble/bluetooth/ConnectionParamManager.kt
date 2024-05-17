@@ -1,5 +1,6 @@
 package io.rebble.cobble.bluetooth
 
+import io.rebble.cobble.bluetooth.ble.BlueGATTConnection
 import io.rebble.libpebblecommon.ble.LEConstants
 import timber.log.Timber
 import java.nio.ByteBuffer

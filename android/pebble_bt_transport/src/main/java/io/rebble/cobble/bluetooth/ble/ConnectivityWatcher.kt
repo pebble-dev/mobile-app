@@ -1,4 +1,4 @@
-package io.rebble.cobble.bluetooth
+package io.rebble.cobble.bluetooth.ble
 
 import android.bluetooth.BluetoothGattCharacteristic
 import io.rebble.libpebblecommon.ble.LEConstants

@@ -1,12 +1,11 @@
 package io.rebble.cobble.bluetooth
 
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
 import android.content.Context
+import androidx.annotation.RequiresPermission
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import timber.log.Timber
 import javax.inject.Inject
@@ -17,9 +16,9 @@ import kotlin.coroutines.EmptyCoroutineContext
 @OptIn(ExperimentalCoroutinesApi::class)
 @Singleton
 class ConnectionLooper @Inject constructor(
-        private val context: Context,
-        private val blueCommon: BlueCommon,
-        private val errorHandler: CoroutineExceptionHandler
+    private val context: Context,
+    private val blueCommon: DeviceTransport,
+    private val errorHandler: CoroutineExceptionHandler
 ) {
     val connectionState: StateFlow<ConnectionState> get() = _connectionState
     private val _connectionState: MutableStateFlow<ConnectionState> = MutableStateFlow(
@@ -31,7 +30,7 @@ class ConnectionLooper @Inject constructor(
     private var currentConnection: Job? = null
     private var lastConnectedWatch: String? = null
 
-    fun negotiationsComplete(watch: PebbleBluetoothDevice) {
+    fun negotiationsComplete(watch: PebbleDevice) {
         if (connectionState.value is ConnectionState.Negotiating) {
             _connectionState.value = ConnectionState.Connected(watch)
         } else {
@@ -39,7 +38,7 @@ class ConnectionLooper @Inject constructor(
         }
     }
 
-    fun recoveryMode(watch: PebbleBluetoothDevice) {
+    fun recoveryMode(watch: PebbleDevice) {
         if (connectionState.value is ConnectionState.Connected || connectionState.value is ConnectionState.Negotiating) {
             _connectionState.value = ConnectionState.RecoveryMode(watch)
         } else {
@@ -47,6 +46,7 @@ class ConnectionLooper @Inject constructor(
         }
     }
 
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     fun connectToWatch(macAddress: String) {
         coroutineScope.launch {
             try {
@@ -63,7 +63,7 @@ class ConnectionLooper @Inject constructor(
                         Timber.d("Bluetooth is off. Waiting until it is on Cancel connection attempt.")
 
                         _connectionState.value = ConnectionState.WaitingForBluetoothToEnable(
-                                BluetoothAdapter.getDefaultAdapter()?.getRemoteDevice(macAddress)?.let { PebbleBluetoothDevice(it) }
+                                BluetoothAdapter.getDefaultAdapter()?.getRemoteDevice(macAddress)?.let { PebbleDevice(it) }
                         )
 
                         getBluetoothStatus(context).first { bluetoothOn -> bluetoothOn }
@@ -107,6 +107,7 @@ class ConnectionLooper @Inject constructor(
         }
     }
 
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     private fun CoroutineScope.launchRestartOnBluetoothOff(macAddress: String) {
         launch {
             var previousState = false

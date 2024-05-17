@@ -15,9 +15,7 @@ import io.rebble.cobble.handlers.CobbleHandler
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterIsInstance
 import timber.log.Timber
 import javax.inject.Provider
 

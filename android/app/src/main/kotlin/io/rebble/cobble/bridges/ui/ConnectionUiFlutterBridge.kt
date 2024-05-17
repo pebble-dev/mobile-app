@@ -19,22 +19,18 @@ import io.rebble.cobble.BuildConfig
 import io.rebble.cobble.MainActivity
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bridges.FlutterBridge
-import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.coroutines.asFlow
-import io.rebble.cobble.util.macAddressToLong
-import io.rebble.cobble.util.macAddressToString
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 import timber.log.Timber
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ConnectionUiFlutterBridge @Inject constructor(
-        bridgeLifecycleController: BridgeLifecycleController,
-        private val connectionLooper: ConnectionLooper,
-        coroutineScope: CoroutineScope,
-        private val activity: MainActivity
+    bridgeLifecycleController: BridgeLifecycleController,
+    private val connectionLooper: ConnectionLooper,
+    coroutineScope: CoroutineScope,
+    private val activity: MainActivity
 ) : FlutterBridge, Pigeons.UiConnectionControl {
     private val pairCallbacks = bridgeLifecycleController
             .createCallbacks(Pigeons::PairCallbacks)

@@ -10,10 +10,8 @@ import io.rebble.libpebblecommon.metadata.pbz.manifest.PbzManifest
 import io.rebble.libpebblecommon.packets.*
 import io.rebble.libpebblecommon.services.PutBytesService
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.consume
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import okio.BufferedSource
 import okio.buffer
 import timber.log.Timber
 import java.io.File
@@ -22,9 +20,9 @@ import javax.inject.Singleton
 
 @Singleton
 class PutBytesController @Inject constructor(
-        private val connectionLooper: ConnectionLooper,
-        private val putBytesService: PutBytesService,
-        private val metadataStore: WatchMetadataStore
+    private val connectionLooper: ConnectionLooper,
+    private val putBytesService: PutBytesService,
+    private val metadataStore: WatchMetadataStore
 ) {
     private val _status: MutableStateFlow<Status> = MutableStateFlow(Status(State.IDLE))
     val status: StateFlow<Status> get() = _status

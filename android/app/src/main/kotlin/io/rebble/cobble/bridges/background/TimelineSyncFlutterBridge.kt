@@ -14,7 +14,6 @@ import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.pigeons.Pigeons
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.TimeUnit

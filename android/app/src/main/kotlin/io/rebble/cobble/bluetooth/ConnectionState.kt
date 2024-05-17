@@ -1,18 +1,16 @@
 package io.rebble.cobble.bluetooth
 
-import android.bluetooth.BluetoothDevice
-
 sealed class ConnectionState {
     object Disconnected : ConnectionState()
-    class WaitingForBluetoothToEnable(val watch: PebbleBluetoothDevice?) : ConnectionState()
-    class WaitingForReconnect(val watch: PebbleBluetoothDevice?) : ConnectionState()
-    class Connecting(val watch: PebbleBluetoothDevice?) : ConnectionState()
-    class Negotiating(val watch: PebbleBluetoothDevice?) : ConnectionState()
-    class Connected(val watch: PebbleBluetoothDevice) : ConnectionState()
-    class RecoveryMode(val watch: PebbleBluetoothDevice) : ConnectionState()
+    class WaitingForBluetoothToEnable(val watch: PebbleDevice?) : ConnectionState()
+    class WaitingForReconnect(val watch: PebbleDevice?) : ConnectionState()
+    class Connecting(val watch: PebbleDevice?) : ConnectionState()
+    class Negotiating(val watch: PebbleDevice?) : ConnectionState()
+    class Connected(val watch: PebbleDevice) : ConnectionState()
+    class RecoveryMode(val watch: PebbleDevice) : ConnectionState()
 }
 
-val ConnectionState.watchOrNull: PebbleBluetoothDevice?
+val ConnectionState.watchOrNull: PebbleDevice?
     get() {
         return when (this) {
             is ConnectionState.Connecting -> watch

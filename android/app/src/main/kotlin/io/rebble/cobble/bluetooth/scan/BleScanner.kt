@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
+import androidx.annotation.RequiresPermission
 import io.rebble.cobble.bluetooth.BluePebbleDevice
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -14,12 +15,16 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.selects.select
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.selects.onTimeout
+
+private val SCAN_TIMEOUT_MS = 8_000L
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Singleton
 class BleScanner @Inject constructor() {
     private var stopTrigger: CompletableDeferred<Unit>? = null
 
+    @RequiresPermission(allOf = [android.Manifest.permission.BLUETOOTH_SCAN, android.Manifest.permission.BLUETOOTH_CONNECT])
     fun getScanFlow(): Flow<List<BluePebbleDevice>> = flow {
         coroutineScope {
             val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
@@ -93,5 +98,3 @@ class BleScanner @Inject constructor() {
         }
     }
 }
-
-private val SCAN_TIMEOUT_MS = 8_000L

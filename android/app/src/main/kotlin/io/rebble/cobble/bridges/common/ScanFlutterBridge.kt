@@ -1,16 +1,12 @@
 package io.rebble.cobble.bridges.common
 
-import android.bluetooth.le.ScanResult
 import io.rebble.cobble.BuildConfig
-import io.rebble.cobble.bluetooth.BluePebbleDevice
 import io.rebble.cobble.bluetooth.scan.BleScanner
 import io.rebble.cobble.bluetooth.scan.ClassicScanner
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
-import io.rebble.cobble.pigeons.ListWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

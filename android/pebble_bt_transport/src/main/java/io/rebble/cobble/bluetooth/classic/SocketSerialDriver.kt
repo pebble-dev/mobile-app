@@ -1,15 +1,12 @@
 package io.rebble.cobble.bluetooth.classic
 
-import io.rebble.cobble.bluetooth.BlueIO
-import io.rebble.cobble.bluetooth.PebbleBluetoothDevice
-import io.rebble.cobble.bluetooth.SingleConnectionStatus
-import io.rebble.cobble.bluetooth.readFully
-import io.rebble.cobble.datasources.IncomingPacketsListener
+import io.rebble.cobble.bluetooth.*
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.packets.QemuPacket
 import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 import timber.log.Timber
 import java.io.IOException
@@ -25,7 +22,7 @@ import kotlin.coroutines.coroutineContext
  */
 class SocketSerialDriver(
         private val protocolHandler: ProtocolHandler,
-        private val incomingPacketsListener: IncomingPacketsListener
+        private val incomingPacketsListener: MutableSharedFlow<ByteArray>
 ): BlueIO {
 
     private var inputStream: InputStream? = null
@@ -64,7 +61,7 @@ class SocketSerialDriver(
                 buf.rewind()
                 val packet = ByteArray(length.toInt() + 2 * (Short.SIZE_BYTES))
                 buf.get(packet, 0, packet.size)
-                incomingPacketsListener.receivedPackets.emit(packet)
+                incomingPacketsListener.emit(packet)
                 protocolHandler.receivePacket(packet.toUByteArray())
             }
         } finally {
@@ -92,7 +89,7 @@ class SocketSerialDriver(
     }
 
     @FlowPreview
-    override fun startSingleWatchConnection(device: PebbleBluetoothDevice): Flow<SingleConnectionStatus> = flow {
+    override fun startSingleWatchConnection(device: PebbleDevice): Flow<SingleConnectionStatus> = flow {
         val host = device.address
         coroutineScope {
             emit(SingleConnectionStatus.Connecting(device))

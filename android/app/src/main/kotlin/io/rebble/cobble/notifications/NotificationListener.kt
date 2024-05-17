@@ -3,7 +3,6 @@ package io.rebble.cobble.notifications
 import android.annotation.TargetApi
 import android.app.Notification
 import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
 import android.os.Build
@@ -17,7 +16,6 @@ import io.rebble.cobble.bluetooth.ConnectionState
 import io.rebble.cobble.bridges.background.NotificationsFlutterBridge
 import io.rebble.cobble.data.NotificationAction
 import io.rebble.cobble.data.NotificationMessage
-import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.libpebblecommon.packets.blobdb.*
 import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse

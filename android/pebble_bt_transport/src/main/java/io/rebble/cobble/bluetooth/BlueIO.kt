@@ -1,15 +1,18 @@
 package io.rebble.cobble.bluetooth
 
+import android.Manifest
 import android.bluetooth.BluetoothDevice
+import androidx.annotation.RequiresPermission
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 
 interface BlueIO {
     @FlowPreview
-    fun startSingleWatchConnection(device: PebbleBluetoothDevice): Flow<SingleConnectionStatus>
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
+    fun startSingleWatchConnection(device: PebbleDevice): Flow<SingleConnectionStatus>
 }
 
-data class PebbleBluetoothDevice (
+data class PebbleDevice (
         val bluetoothDevice: BluetoothDevice?,
         val emulated: Boolean,
         val address: String
@@ -23,6 +26,6 @@ data class PebbleBluetoothDevice (
 }
 
 sealed class SingleConnectionStatus {
-    class Connecting(val watch: PebbleBluetoothDevice) : SingleConnectionStatus()
-    class Connected(val watch: PebbleBluetoothDevice) : SingleConnectionStatus()
+    class Connecting(val watch: PebbleDevice) : SingleConnectionStatus()
+    class Connected(val watch: PebbleDevice) : SingleConnectionStatus()
 }
