@@ -26,14 +26,14 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  webview_flutter: ^2.0.1
+  webview_flutter: ^4.4.2
   shared_preferences: ^2.2.0
   url_launcher: ^6.1.0
   intl: ^0.17.0
   states_rebuilder: ^6.2.0
   path_provider: ^2.1.0
   sqflite: ^2.2.0
-  package_info_plus: ^3.0.0
+  package_info_plus: ^4.2.0
   state_notifier: ^0.7.0
   hooks_riverpod: ^2.0.0
   flutter_hooks: ^0.18.0
@@ -42,21 +42,21 @@ dependencies:
   path: ^1.8.0
   json_annotation: ^4.6.0
   copy_with_extension: ^5.0.0
-  flutter_local_notifications: ^13.0.0
+  flutter_local_notifications: ^17.1.2
   stream_transform: ^2.1.0
   flutter_svg: ^2.0.0
   flutter_svg_provider: ^1.0.4
   golden_toolkit: ^0.13.0
   rxdart: 0.27.7
-  share_plus: ^6.3.0
-  network_info_plus: ^3.0.0
+  share_plus: ^7.2.2
+  network_info_plus: ^5.0.3
   file: ^6.1.4
 
   collection: ^1.17.0
   flutter_secure_storage: ^8.0.0
   crypto: ^3.0.3
   cached_network_image: ^3.0.0
-  device_info_plus: ^8.2.0
+  device_info_plus: ^9.0.0
 
 dev_dependencies:
   flutter_launcher_icons: ^0.11.0

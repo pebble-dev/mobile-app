@@ -11,6 +11,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation"
         tools:targetApi="s" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" android:minSdkVersion="34"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" android:minSdkVersion="34"/>
 
     <!-- Required to scan for BT devices on API <31, includes coarse regardless of version for future weather stuff -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -116,11 +118,15 @@
 
         <service
             android:name=".service.WatchService"
-            android:permission="android.permission.FOREGROUND_SERVICE" />
+            android:permission="android.permission.FOREGROUND_SERVICE"
+            android:foregroundServiceType="connectedDevice"/>
         <service
             android:name=".notifications.NotificationListener"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:foregroundServiceType="specialUse"
             android:exported="true">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Used to receive and process all app notifications for forwarding to companion device"/>
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
