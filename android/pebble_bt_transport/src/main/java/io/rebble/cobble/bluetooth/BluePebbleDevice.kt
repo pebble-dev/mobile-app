@@ -2,8 +2,7 @@ package io.rebble.cobble.bluetooth
 
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.le.ScanResult
-import android.os.Build
-import androidx.annotation.RequiresApi
+import io.rebble.cobble.bluetooth.ble.LEMeta
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class BluePebbleDevice {

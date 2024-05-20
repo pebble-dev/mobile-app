@@ -3,6 +3,8 @@ package io.rebble.cobble.bluetooth.ble
 import android.bluetooth.BluetoothGattCharacteristic
 import io.rebble.libpebblecommon.ble.LEConstants
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import timber.log.Timber
 import java.util.*
 import kotlin.experimental.and
@@ -117,5 +119,10 @@ class ConnectivityWatcher(val gatt: BlueGATTConnection) {
         } finally {
             connectivityStatus = CompletableDeferred()
         }
+    }
+
+    suspend fun getStatusFlowed(): ConnectivityStatus {
+        val value = gatt.characteristicChanged.filter { it.characteristic?.uuid == UUID.fromString(LEConstants.UUIDs.CONNECTIVITY_CHARACTERISTIC) }.first {it.value != null}.value
+        return ConnectivityStatus(value!!)
     }
 }

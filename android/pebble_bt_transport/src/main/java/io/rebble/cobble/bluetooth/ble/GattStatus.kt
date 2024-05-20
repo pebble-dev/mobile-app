@@ -1,4 +1,4 @@
-package io.rebble.cobble.bluetooth
+package io.rebble.cobble.bluetooth.ble
 
 import android.bluetooth.BluetoothGatt
 import java.util.*

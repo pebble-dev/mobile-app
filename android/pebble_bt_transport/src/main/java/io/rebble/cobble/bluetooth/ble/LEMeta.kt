@@ -1,4 +1,4 @@
-package io.rebble.cobble.bluetooth
+package io.rebble.cobble.bluetooth.ble
 
 import timber.log.Timber
 import java.nio.BufferUnderflowException
