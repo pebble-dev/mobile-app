@@ -56,8 +56,8 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
     }
 
     class ConnectionStateResult(gatt: BluetoothGatt?, status: Int, val newState: Int) : StatusResult(gatt, status)
-    class CharacteristicResult(gatt: BluetoothGatt?, val characteristic: BluetoothGattCharacteristic?, status: Int = BluetoothGatt.GATT_SUCCESS) : StatusResult(gatt, status)
-    class DescriptorResult(gatt: BluetoothGatt?, val descriptor: BluetoothGattDescriptor?, status: Int = BluetoothGatt.GATT_SUCCESS) : StatusResult(gatt, status)
+    class CharacteristicResult(gatt: BluetoothGatt?, val characteristic: BluetoothGattCharacteristic?, val value: ByteArray? = null, status: Int = BluetoothGatt.GATT_SUCCESS) : StatusResult(gatt, status)
+    class DescriptorResult(gatt: BluetoothGatt?, val descriptor: BluetoothGattDescriptor?, status: Int = BluetoothGatt.GATT_SUCCESS, value: ByteArray? = null) : StatusResult(gatt, status)
     class MTUResult(gatt: BluetoothGatt?, val mtu: Int, status: Int) : StatusResult(gatt, status)
 
     override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
@@ -65,24 +65,24 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
         _connectionStateChanged.value = ConnectionStateResult(gatt, status, newState)
     }
 
-    override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
-        if (this.gatt?.device?.address == null || gatt?.device?.address != this.gatt!!.device.address) return
-        _characteristicChanged.value = CharacteristicResult(gatt, characteristic)
+    override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray) {
+        if (this.gatt?.device?.address == null || gatt.device?.address != this.gatt!!.device.address) return
+        _characteristicChanged.value = CharacteristicResult(gatt, characteristic, value)
     }
 
-    override fun onCharacteristicRead(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
-        if (this.gatt?.device?.address == null || gatt?.device?.address != this.gatt!!.device.address) return
-        _characteristicRead.value = CharacteristicResult(gatt, characteristic, status)
+    override fun onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int) {
+        if (this.gatt?.device?.address == null || gatt.device?.address != this.gatt!!.device.address) return
+        _characteristicRead.value = CharacteristicResult(gatt, characteristic, value, status)
     }
 
     override fun onCharacteristicWrite(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
         if (this.gatt?.device?.address == null || gatt?.device?.address != this.gatt!!.device.address) return
-        _characteristicWritten.value = CharacteristicResult(gatt, characteristic, status)
+        _characteristicWritten.value = CharacteristicResult(gatt, characteristic, status = status)
     }
 
-    override fun onDescriptorRead(gatt: BluetoothGatt?, descriptor: BluetoothGattDescriptor?, status: Int) {
-        if (this.gatt?.device?.address == null || gatt?.device?.address != this.gatt!!.device.address) return
-        _descriptorRead.value = DescriptorResult(gatt, descriptor, status)
+    override fun onDescriptorRead(gatt: BluetoothGatt, descriptor: BluetoothGattDescriptor, status: Int, value: ByteArray) {
+        if (this.gatt?.device?.address == null || gatt.device?.address != this.gatt!!.device.address) return
+        _descriptorRead.value = DescriptorResult(gatt, descriptor, status, value)
     }
 
     override fun onDescriptorWrite(gatt: BluetoothGatt?, descriptor: BluetoothGattDescriptor?, status: Int) {
