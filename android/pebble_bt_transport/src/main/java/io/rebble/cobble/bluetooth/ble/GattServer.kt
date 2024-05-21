@@ -1,17 +1,27 @@
 package io.rebble.cobble.bluetooth.ble
 
+import android.annotation.SuppressLint
 import android.bluetooth.*
 import android.content.Context
 import androidx.annotation.RequiresPermission
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.shareIn
 import timber.log.Timber
 import java.util.UUID
 
-class GattServer(private val bluetoothManager: BluetoothManager, private val context: Context, private val services: List<BluetoothGattService>) {
+class GattServer(private val bluetoothManager: BluetoothManager, private val context: Context, private val services: List<GattService>) {
+    private val scope = CoroutineScope(Dispatchers.Default)
     class GattServerException(message: String) : Exception(message)
+
+    @SuppressLint("MissingPermission")
+    val serverFlow: SharedFlow<ServerEvent> = openServer().shareIn(scope, SharingStarted.Lazily, replay = 1)
     @OptIn(ExperimentalCoroutinesApi::class)
     @RequiresPermission("android.permission.BLUETOOTH_CONNECT")
     fun openServer() = callbackFlow {
@@ -105,7 +115,8 @@ class GattServer(private val bluetoothManager: BluetoothManager, private val con
         openServer = bluetoothManager.openGattServer(context, callbacks)
         services.forEach {
             check(serviceAddedChannel.isEmpty) { "Service added event not consumed" }
-            if (!openServer.addService(it)) {
+            val service = it.register(serverFlow)
+            if (!openServer.addService(service)) {
                 throw GattServerException("Failed to request add service")
             }
             if (serviceAddedChannel.receive().status != BluetoothGatt.GATT_SUCCESS) {
