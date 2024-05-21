@@ -54,6 +54,50 @@ class GattServer(private val bluetoothManager: BluetoothManager, private val con
                 })
             }
 
+            override fun onDescriptorReadRequest(device: BluetoothDevice?, requestId: Int, offset: Int, descriptor: BluetoothGattDescriptor?) {
+                if (!listeningEnabled) {
+                    Timber.w("Event received while listening disabled: onDescriptorReadRequest")
+                    return
+                }
+                trySend(DescriptorReadEvent(device!!, requestId, offset, descriptor!!) { data ->
+                    try {
+                        openServer?.sendResponse(device, requestId, data.status, data.offset, data.value)
+                    } catch (e: SecurityException) {
+                        throw IllegalStateException("No permission to send response", e)
+                    }
+                })
+            }
+
+            override fun onDescriptorWriteRequest(device: BluetoothDevice?, requestId: Int, descriptor: BluetoothGattDescriptor?, preparedWrite: Boolean, responseNeeded: Boolean, offset: Int, value: ByteArray?) {
+                if (!listeningEnabled) {
+                    Timber.w("Event received while listening disabled: onDescriptorWriteRequest")
+                    return
+                }
+                trySend(DescriptorWriteEvent(device!!, requestId, descriptor!!, offset, value ?: byteArrayOf()) { status ->
+                    try {
+                        openServer?.sendResponse(device, requestId, status, offset, null)
+                    } catch (e: SecurityException) {
+                        throw IllegalStateException("No permission to send response", e)
+                    }
+                })
+            }
+
+            override fun onNotificationSent(device: BluetoothDevice?, status: Int) {
+                if (!listeningEnabled) {
+                    Timber.w("Event received while listening disabled: onNotificationSent")
+                    return
+                }
+                trySend(NotificationSentEvent(device!!, status))
+            }
+
+            override fun onMtuChanged(device: BluetoothDevice?, mtu: Int) {
+                if (!listeningEnabled) {
+                    Timber.w("Event received while listening disabled: onMtuChanged")
+                    return
+                }
+                trySend(MtuChangedEvent(device!!, mtu))
+            }
+
             override fun onServiceAdded(status: Int, service: BluetoothGattService?) {
                 serviceAddedChannel.trySend(ServiceAddedEvent(status, service))
             }
