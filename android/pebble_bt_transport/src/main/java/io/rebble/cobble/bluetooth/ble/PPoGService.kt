@@ -1,26 +1,17 @@
 package io.rebble.cobble.bluetooth.ble
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
-import android.bluetooth.BluetoothGattServer
 import android.bluetooth.BluetoothGattService
-import android.bluetooth.BluetoothStatusCodes
-import android.content.pm.PackageManager
-import android.os.Build
 import androidx.annotation.RequiresPermission
-import androidx.core.app.ActivityCompat
 import io.rebble.cobble.bluetooth.ble.util.GattCharacteristicBuilder
 import io.rebble.cobble.bluetooth.ble.util.GattDescriptorBuilder
 import io.rebble.cobble.bluetooth.ble.util.GattServiceBuilder
 import io.rebble.libpebblecommon.ble.LEConstants
 import io.rebble.libpebblecommon.protocolhelpers.PebblePacket
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -114,13 +105,8 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
     @RequiresPermission("android.permission.BLUETOOTH_CONNECT")
     suspend fun sendData(device: BluetoothDevice, data: ByteArray): Boolean {
         return gattServer?.let { server ->
-            server.serverActor.send(GattServer.ServerAction.NotifyCharacteristicChanged(
-                    device,
-                    dataCharacteristic,
-                    false,
-                    data
-            ))
-            val result = server.serverFlow
+            server.notifyCharacteristicChanged(device, dataCharacteristic, false, data)
+            val result = server.getFlow()
                     .filterIsInstance<NotificationSentEvent>()
                     .filter { it.device == device }.first()
             return result.status == BluetoothGatt.GATT_SUCCESS

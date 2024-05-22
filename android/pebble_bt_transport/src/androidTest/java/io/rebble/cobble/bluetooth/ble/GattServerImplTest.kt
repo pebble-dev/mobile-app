@@ -1,18 +1,14 @@
 package io.rebble.cobble.bluetooth.ble
 
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothGattServer
 import android.bluetooth.BluetoothGattService
 import android.bluetooth.BluetoothManager
 import android.content.Context
-import androidx.test.filters.RequiresDevice
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import io.rebble.libpebblecommon.util.runBlocking
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import org.junit.Before
 import org.junit.Rule
@@ -21,7 +17,7 @@ import timber.log.Timber
 import org.junit.Assert.*
 import java.util.UUID
 
-class GattServerTest {
+class GattServerImplTest {
     @JvmField
     @Rule
     val mGrantPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(
@@ -47,8 +43,8 @@ class GattServerTest {
 
     @Test
     fun createGattServer() {
-        val server = GattServer(bluetoothManager, context, emptyList())
-        val flow = server.openServer()
+        val server = GattServerImpl(bluetoothManager, context, emptyList())
+        val flow = server.getFlow()
         runBlocking {
             withTimeout(1000) {
                 flow.take(1).collect {
@@ -70,7 +66,7 @@ class GattServerTest {
                 return BluetoothGattService(UUID.randomUUID(), BluetoothGattService.SERVICE_TYPE_PRIMARY)
             }
         }
-        val server = GattServer(bluetoothManager, context, listOf(service, service2))
+        val server = GattServerImpl(bluetoothManager, context, listOf(service, service2))
         val flow = server.openServer()
         runBlocking {
             withTimeout(1000) {

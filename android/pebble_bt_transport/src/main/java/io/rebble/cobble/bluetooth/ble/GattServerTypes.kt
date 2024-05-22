@@ -4,12 +4,11 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
-import android.bluetooth.BluetoothGattServer
 import android.bluetooth.BluetoothGattService
 
 interface ServerEvent
 class ServiceAddedEvent(val status: Int, val service: BluetoothGattService?) : ServerEvent
-class ServerInitializedEvent(val btServer: BluetoothGattServer, val server: GattServer) : ServerEvent
+class ServerInitializedEvent(val server: GattServer) : ServerEvent
 
 open class ServiceEvent(val device: BluetoothDevice) : ServerEvent
 class ConnectionStateEvent(device: BluetoothDevice, val status: Int, val newState: Int) : ServiceEvent(device)
