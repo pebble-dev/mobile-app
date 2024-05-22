@@ -9,6 +9,7 @@ import androidx.test.rule.GrantPermissionRule
 import io.rebble.libpebblecommon.util.runBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import org.junit.Before
 import org.junit.Rule
@@ -42,20 +43,16 @@ class GattServerImplTest {
     }
 
     @Test
-    fun createGattServer() {
+    fun createGattServer() = runTest {
         val server = GattServerImpl(bluetoothManager, context, emptyList())
         val flow = server.getFlow()
-        runBlocking {
-            withTimeout(1000) {
-                flow.take(1).collect {
-                    assert(it is ServerInitializedEvent)
-                }
-            }
+        flow.take(1).collect {
+            assert(it is ServerInitializedEvent)
         }
     }
 
     @Test
-    fun createGattServerWithServices() {
+    fun createGattServerWithServices() = runTest {
         val service = object : GattService {
             override fun register(eventFlow: Flow<ServerEvent>): BluetoothGattService {
                 return BluetoothGattService(UUID.randomUUID(), BluetoothGattService.SERVICE_TYPE_PRIMARY)
@@ -67,15 +64,11 @@ class GattServerImplTest {
             }
         }
         val server = GattServerImpl(bluetoothManager, context, listOf(service, service2))
-        val flow = server.openServer()
-        runBlocking {
-            withTimeout(1000) {
-                flow.take(1).collect {
-                    assert(it is ServerInitializedEvent)
-                    it as ServerInitializedEvent
-                    assert(it.btServer.services.size == 2)
-                }
-            }
+        val flow = server.getFlow()
+        flow.take(1).collect {
+            assert(it is ServerInitializedEvent)
+            it as ServerInitializedEvent
+            assert(it.server.getServer()?.services?.size == 2)
         }
     }
 }
