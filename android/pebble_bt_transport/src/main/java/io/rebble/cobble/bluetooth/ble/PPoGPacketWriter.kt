@@ -3,17 +3,31 @@ package io.rebble.cobble.bluetooth.ble
 import androidx.annotation.RequiresPermission
 import io.rebble.libpebblecommon.ble.GATTPacket
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.cancel
+import kotlinx.coroutines.flow.first
 import timber.log.Timber
 import java.io.Closeable
 import java.util.LinkedList
 import kotlin.jvm.Throws
 
-class PPoGPacketWriter(private val scope: CoroutineScope, private val stateManager: PPoGSession.StateManager, private val serviceConnection: PPoGServiceConnection, private val onTimeout: () -> Unit): Closeable {
+class PPoGPacketWriter(private val scope: CoroutineScope, private val stateManager: PPoGSession.StateManager, private val onTimeout: () -> Unit): Closeable {
     private var metaWaitingToSend: GATTPacket? = null
     private val dataWaitingToSend: LinkedList<GATTPacket> = LinkedList()
     private val inflightPackets: LinkedList<GATTPacket> = LinkedList()
     var txWindow = 1
     private var timeoutJob: Job? = null
+    private val _packetWriteFlow = MutableSharedFlow<GATTPacket>()
+    val packetWriteFlow = _packetWriteFlow
+    private val packetSendStatusFlow = MutableSharedFlow<Pair<GATTPacket, Boolean>>()
+
+    suspend fun setPacketSendStatus(packet: GATTPacket, status: Boolean) {
+        packetSendStatusFlow.emit(Pair(packet, status))
+    }
+
+    private suspend fun packetSendStatus(packet: GATTPacket): Boolean {
+        return packetSendStatusFlow.first { it.first == packet }.second
+    }
 
     companion object {
         private const val PACKET_ACK_TIMEOUT_MILLIS = 10_000L
@@ -79,7 +93,8 @@ class PPoGPacketWriter(private val scope: CoroutineScope, private val stateManag
             return
         }
 
-        if (!sendPacket(packet)) {
+        sendPacket(packet)
+        if (!packetSendStatus(packet)) {
             return
         }
 
@@ -106,10 +121,10 @@ class PPoGPacketWriter(private val scope: CoroutineScope, private val stateManag
     }
 
     @RequiresPermission("android.permission.BLUETOOTH_CONNECT")
-    private suspend fun sendPacket(packet: GATTPacket): Boolean {
+    private suspend fun sendPacket(packet: GATTPacket) {
         val data = packet.toByteArray()
         require(data.size > stateManager.mtuSize) {"Packet too large to send: ${data.size} > ${stateManager.mtuSize}"}
-        return serviceConnection.writeData(data)
+        _packetWriteFlow.emit(packet)
     }
 
     override fun close() {

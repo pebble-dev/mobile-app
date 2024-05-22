@@ -3,20 +3,18 @@ package io.rebble.cobble.bluetooth.ble
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import androidx.annotation.RequiresPermission
+import io.rebble.cobble.bluetooth.ble.util.chunked
 import io.rebble.libpebblecommon.ble.LEConstants
 import io.rebble.libpebblecommon.protocolhelpers.PebblePacket
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import java.io.Closeable
 
-class PPoGServiceConnection(private val scope: CoroutineScope, private val ppogService: PPoGService, val device: BluetoothDevice, private val deviceEventFlow: Flow<ServiceEvent>, val onPebblePacket: suspend (PebblePacket) -> Unit): Closeable {
-    private var job: Job? = null
-    private val ppogSession = PPoGSession(scope, this, 23)
-    suspend fun runConnection() {
+class PPoGServiceConnection(parentScope: CoroutineScope, private val ppogService: PPoGService, val device: BluetoothDevice, private val deviceEventFlow: Flow<ServiceEvent>): Closeable {
+    private val connectionScope = CoroutineScope(parentScope.coroutineContext + SupervisorJob(parentScope.coroutineContext[Job]))
+    private val ppogSession = PPoGSession(connectionScope, this, 23)
+    private suspend fun runConnection() {
         deviceEventFlow.collect {
             when (it) {
                 is CharacteristicReadEvent -> {
@@ -52,16 +50,17 @@ class PPoGServiceConnection(private val scope: CoroutineScope, private val ppogS
         return CharacteristicResponse(BluetoothGatt.GATT_SUCCESS, 0, LEConstants.SERVER_META_RESPONSE)
     }
 
-    suspend fun start() {
-        job = scope.launch {
+    suspend fun start(): Flow<PebblePacket> {
+        connectionScope.launch {
             runConnection()
         }
+        return ppogSession.openPacketFlow()
     }
 
     @RequiresPermission("android.permission.BLUETOOTH_CONNECT")
-    suspend fun writeData(data: ByteArray): Boolean {
+    suspend fun writeDataRaw(data: ByteArray): Boolean {
         val result = CompletableDeferred<Boolean>()
-        val job = scope.launch {
+        val job = connectionScope.launch {
             val evt = deviceEventFlow.filterIsInstance<NotificationSentEvent>().first()
             result.complete(evt.status == BluetoothGatt.GATT_SUCCESS)
         }
@@ -69,9 +68,17 @@ class PPoGServiceConnection(private val scope: CoroutineScope, private val ppogS
             job.cancel()
             return false
         }
-        return result.await()
+        if (!result.await()) {
+            return false
+        }
+        return true
+    }
+
+    suspend fun sendPebblePacket(packet: PebblePacket) {
+        val data = packet.serialize().asByteArray()
+        ppogSession.sendData(data)
     }
     override fun close() {
-        job?.cancel()
+        connectionScope.cancel()
     }
 }

@@ -1,28 +1,32 @@
 package io.rebble.cobble.bluetooth.ble
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattServer
 import android.bluetooth.BluetoothGattService
 import android.bluetooth.BluetoothStatusCodes
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.RequiresPermission
+import androidx.core.app.ActivityCompat
 import io.rebble.cobble.bluetooth.ble.util.GattCharacteristicBuilder
 import io.rebble.cobble.bluetooth.ble.util.GattDescriptorBuilder
 import io.rebble.cobble.bluetooth.ble.util.GattServiceBuilder
 import io.rebble.libpebblecommon.ble.LEConstants
 import io.rebble.libpebblecommon.protocolhelpers.PebblePacket
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.UUID
 
-class PPoGService(private val scope: CoroutineScope, private val onPebblePacket: (PebblePacket, BluetoothDevice) -> Unit) : GattService {
+class PPoGService(private val scope: CoroutineScope) : GattService {
     private val dataCharacteristic = GattCharacteristicBuilder()
             .withUuid(UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER))
             .withProperties(BluetoothGattCharacteristic.PROPERTY_NOTIFY, BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)
@@ -49,7 +53,9 @@ class PPoGService(private val scope: CoroutineScope, private val onPebblePacket:
             .build()
 
     private val ppogConnections = mutableMapOf<String, PPoGServiceConnection>()
-    private var gattServer: BluetoothGattServer? = null
+    private var gattServer: GattServer? = null
+    private val deviceRxFlow = MutableSharedFlow<Pair<BluetoothDevice, PebblePacket>>()
+    private val deviceTxFlow = MutableSharedFlow<Pair<BluetoothDevice, PebblePacket>>()
 
     /**
      * Filter flow for events related to a specific device
@@ -63,7 +69,7 @@ class PPoGService(private val scope: CoroutineScope, private val onPebblePacket:
         }
     }
 
-    private suspend fun runService(eventFlow: Flow<ServerEvent>) {
+    private suspend fun runService(eventFlow: Flow<ServerEvent>) = flow {
         eventFlow.collect {
             when (it) {
                 is ServerInitializedEvent -> {
@@ -80,15 +86,17 @@ class PPoGService(private val scope: CoroutineScope, private val onPebblePacket:
                         if (ppogConnections.isEmpty()) {
                             val connection = PPoGServiceConnection(
                                     scope,
-                                    this,
+                                    this@PPoGService,
                                     it.device,
                                     eventFlow
                                         .filterIsInstance<ServiceEvent>()
                                         .filter(filterFlowForDevice(it.device.address))
-                            ) { packet ->
-                                onPebblePacket(packet, it.device)
+                            )
+                            scope.launch {
+                                connection.start().collect { packet ->
+                                    emit(Pair(packet, it.device))
+                                }
                             }
-                            connection.start()
                             ppogConnections[it.device.address] = connection
                         } else {
                             //TODO: Handle multiple connections
@@ -104,22 +112,44 @@ class PPoGService(private val scope: CoroutineScope, private val onPebblePacket:
     }
 
     @RequiresPermission("android.permission.BLUETOOTH_CONNECT")
-    fun sendData(device: BluetoothDevice, data: ByteArray): Boolean {
-        gattServer?.let {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                return it.notifyCharacteristicChanged(device, dataCharacteristic, false, data) == BluetoothStatusCodes.SUCCESS
-            } else {
-                dataCharacteristic.value = data
-                return it.notifyCharacteristicChanged(device, dataCharacteristic, false)
-            }
-        } ?: Timber.w("Tried to send data before server was initialized")
-        return false
+    suspend fun sendData(device: BluetoothDevice, data: ByteArray): Boolean {
+        return gattServer?.let { server ->
+            server.serverActor.send(GattServer.ServerAction.NotifyCharacteristicChanged(
+                    device,
+                    dataCharacteristic,
+                    false,
+                    data
+            ))
+            val result = server.serverFlow
+                    .filterIsInstance<NotificationSentEvent>()
+                    .filter { it.device == device }.first()
+            return result.status == BluetoothGatt.GATT_SUCCESS
+        } ?: false
     }
 
+    @SuppressLint("MissingPermission")
     override fun register(eventFlow: Flow<ServerEvent>): BluetoothGattService {
         scope.launch {
-            runService(eventFlow)
+            runService(eventFlow).buffer(8).collect {
+                val (packet, device) = it
+                deviceRxFlow.emit(Pair(device, packet))
+            }
+        }
+        scope.launch {
+            deviceTxFlow.buffer(8).collect {
+                val connection = ppogConnections[it.first.address]
+                connection?.sendPebblePacket(it.second)
+                        ?: Timber.w("No connection for device ${it.first.address}")
+            }
         }
         return bluetoothGattService
+    }
+
+    fun rxFlowFor(device: BluetoothDevice): Flow<PebblePacket> {
+        return deviceRxFlow.filter { it.first == device }.map { it.second }
+    }
+
+    suspend fun emitPacket(device: BluetoothDevice, packet: PebblePacket) {
+        deviceTxFlow.emit(Pair(device, packet))
     }
 }

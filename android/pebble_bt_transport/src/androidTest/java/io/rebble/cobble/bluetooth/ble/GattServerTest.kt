@@ -10,6 +10,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import io.rebble.libpebblecommon.util.runBlocking
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
@@ -59,8 +60,16 @@ class GattServerTest {
 
     @Test
     fun createGattServerWithServices() {
-        val service = BluetoothGattService(UUID.randomUUID(), BluetoothGattService.SERVICE_TYPE_PRIMARY)
-        val service2 = BluetoothGattService(UUID.randomUUID(), BluetoothGattService.SERVICE_TYPE_PRIMARY)
+        val service = object : GattService {
+            override fun register(eventFlow: Flow<ServerEvent>): BluetoothGattService {
+                return BluetoothGattService(UUID.randomUUID(), BluetoothGattService.SERVICE_TYPE_PRIMARY)
+            }
+        }
+        val service2 = object : GattService {
+            override fun register(eventFlow: Flow<ServerEvent>): BluetoothGattService {
+                return BluetoothGattService(UUID.randomUUID(), BluetoothGattService.SERVICE_TYPE_PRIMARY)
+            }
+        }
         val server = GattServer(bluetoothManager, context, listOf(service, service2))
         val flow = server.openServer()
         runBlocking {
@@ -68,7 +77,7 @@ class GattServerTest {
                 flow.take(1).collect {
                     assert(it is ServerInitializedEvent)
                     it as ServerInitializedEvent
-                    assert(it.server.services.size == 2)
+                    assert(it.btServer.services.size == 2)
                 }
             }
         }

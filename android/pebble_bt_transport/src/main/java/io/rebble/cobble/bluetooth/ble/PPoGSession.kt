@@ -1,8 +1,12 @@
 package io.rebble.cobble.bluetooth.ble
 
+import io.rebble.cobble.bluetooth.ble.util.chunked
 import io.rebble.libpebblecommon.ble.GATTPacket
+import io.rebble.libpebblecommon.protocolhelpers.PebblePacket
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
+import kotlinx.coroutines.flow.consumeAsFlow
 import timber.log.Timber
 import java.io.Closeable
 import kotlin.math.min
@@ -21,8 +25,11 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
     private var delayedAckJob: Job? = null
     private var delayedNACKJob: Job? = null
     private var resetAckJob: Job? = null
+    private var writerJob: Job? = null
     private var failedResetAttempts = 0
     private val pebblePacketAssembler = PPoGPebblePacketAssembler()
+
+    private val rxPebblePacketChannel = Channel<PebblePacket>(Channel.BUFFERED)
 
     private val jobActor = scope.actor<suspend () -> Unit> {
         for (job in channel) {
@@ -36,7 +43,7 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
             set(value) {}
     }
 
-    private val stateManager = StateManager()
+    val stateManager = StateManager()
     private var packetWriter = makePacketWriter()
 
     companion object {
@@ -56,7 +63,13 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
     }
 
     private fun makePacketWriter(): PPoGPacketWriter {
-        return PPoGPacketWriter(scope, stateManager, serviceConnection) { onTimeout() }
+        val writer = PPoGPacketWriter(scope, stateManager) { onTimeout() }
+        writerJob = scope.launch {
+            writer.packetWriteFlow.collect {
+                packetWriter.setPacketSendStatus(it, serviceConnection.writeDataRaw(it.toByteArray()))
+            }
+        }
+        return writer
     }
 
     suspend fun handleData(value: ByteArray) {
@@ -69,6 +82,18 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
                 pendingPackets[ppogPacket.sequence] = ppogPacket
                 processDataQueue()
             }
+        }
+    }
+
+    suspend fun sendData(data: ByteArray) {
+        if (stateManager.state != State.Open) {
+            throw PPoGSessionException("Session not open")
+        }
+        val dataChunks = data.chunked(stateManager.mtuSize - 3)
+        for (chunk in dataChunks) {
+            val packet = GATTPacket(GATTPacket.PacketType.DATA, sequenceOutCursor, data)
+            packetWriter.sendOrQueuePacket(packet)
+            sequenceOutCursor = incrementSequence(sequenceOutCursor)
         }
     }
 
@@ -205,7 +230,7 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
             val packet = pendingPackets.remove(sequenceInCursor)!!
             ack(packet.sequence)
             pebblePacketAssembler.assemble(packet.data).collect {
-                serviceConnection.onPebblePacket(it)
+                rxPebblePacketChannel.send(it)
             }
             sequenceInCursor = incrementSequence(sequenceInCursor)
         }
@@ -239,6 +264,7 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
         sequenceInCursor = 0
         sequenceOutCursor = 0
         packetWriter.close()
+        writerJob?.cancel()
         packetWriter = makePacketWriter()
         delayedNACKJob?.cancel()
         delayedAckJob?.cancel()
@@ -263,6 +289,8 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
             //TODO: handle data timeout
         }
     }
+
+    fun openPacketFlow() = rxPebblePacketChannel.consumeAsFlow()
 
     override fun close() {
         resetState()

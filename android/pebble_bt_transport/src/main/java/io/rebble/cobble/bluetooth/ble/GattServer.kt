@@ -3,11 +3,13 @@ package io.rebble.cobble.bluetooth.ble
 import android.annotation.SuppressLint
 import android.bluetooth.*
 import android.content.Context
+import android.os.Build
 import androidx.annotation.RequiresPermission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,6 +24,9 @@ class GattServer(private val bluetoothManager: BluetoothManager, private val con
 
     @SuppressLint("MissingPermission")
     val serverFlow: SharedFlow<ServerEvent> = openServer().shareIn(scope, SharingStarted.Lazily, replay = 1)
+
+    private var server: BluetoothGattServer? = null
+
     @OptIn(ExperimentalCoroutinesApi::class)
     @RequiresPermission("android.permission.BLUETOOTH_CONNECT")
     fun openServer() = callbackFlow {
@@ -123,8 +128,32 @@ class GattServer(private val bluetoothManager: BluetoothManager, private val con
                 throw GattServerException("Failed to add service")
             }
         }
-        send(ServerInitializedEvent(openServer))
+        send(ServerInitializedEvent(openServer, this@GattServer))
         listeningEnabled = true
         awaitClose { openServer.close() }
+    }
+
+    val serverActor = scope.actor<ServerAction> {
+        @SuppressLint("MissingPermission")
+        for (action in channel) {
+            when (action) {
+                is ServerAction.NotifyCharacteristicChanged -> {
+                    val device = action.device
+                    val characteristic = action.characteristic
+                    val confirm = action.confirm
+                    val value = action.value
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        server?.notifyCharacteristicChanged(device, characteristic, confirm, value)
+                    } else {
+                        characteristic.value = value
+                        server?.notifyCharacteristicChanged(device, characteristic, confirm)
+                    }
+                }
+            }
+        }
+    }
+
+    open class ServerAction {
+        class NotifyCharacteristicChanged(val device: BluetoothDevice, val characteristic: BluetoothGattCharacteristic, val confirm: Boolean, val value: ByteArray) : ServerAction()
     }
 }
