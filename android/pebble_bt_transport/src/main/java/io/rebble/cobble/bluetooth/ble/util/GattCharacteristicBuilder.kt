@@ -33,6 +33,9 @@ class GattCharacteristicBuilder {
     fun build(): BluetoothGattCharacteristic {
         check(uuid != null) { "UUID must be set" }
         val characteristic = BluetoothGattCharacteristic(uuid, properties, permissions)
+        descriptors.forEach {
+            characteristic.addDescriptor(it)
+        }
         return characteristic
     }
 }
