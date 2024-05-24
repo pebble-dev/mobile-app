@@ -11,11 +11,11 @@ import io.rebble.cobble.bluetooth.ble.util.GattDescriptorBuilder
 import io.rebble.cobble.bluetooth.ble.util.GattServiceBuilder
 import io.rebble.libpebblecommon.ble.LEConstants
 import io.rebble.libpebblecommon.protocolhelpers.PebblePacket
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.UUID
+import kotlin.coroutines.CoroutineContext
 
 class PPoGService(private val scope: CoroutineScope) : GattService {
     private val dataCharacteristic = GattCharacteristicBuilder()
@@ -45,7 +45,7 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
 
     private val ppogConnections = mutableMapOf<String, PPoGServiceConnection>()
     private var gattServer: GattServer? = null
-    private val deviceRxFlow = MutableSharedFlow<Pair<BluetoothDevice, PebblePacket>>()
+    private val deviceRxFlow = MutableSharedFlow<PPoGConnectionEvent>()
     private val deviceTxFlow = MutableSharedFlow<Pair<BluetoothDevice, PebblePacket>>()
 
     /**
@@ -60,10 +60,16 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
         }
     }
 
-    private suspend fun runService(eventFlow: Flow<ServerEvent>) = flow {
+    open class PPoGConnectionEvent(val device: BluetoothDevice) {
+        class LinkError(device: BluetoothDevice, val error: Throwable) : PPoGConnectionEvent(device)
+        class PacketReceived(device: BluetoothDevice, val packet: PebblePacket) : PPoGConnectionEvent(device)
+    }
+
+    private suspend fun runService(eventFlow: Flow<ServerEvent>) {
         eventFlow.collect {
             when (it) {
                 is ServerInitializedEvent -> {
+                    Timber.d("Server initialized")
                     gattServer = it.server
                 }
                 is ConnectionStateEvent -> {
@@ -75,17 +81,34 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
                     if (it.newState == BluetoothGatt.STATE_CONNECTED) {
                         check(ppogConnections[it.device.address] == null) { "Connection already exists for device ${it.device.address}" }
                         if (ppogConnections.isEmpty()) {
+                            Timber.d("Creating new connection for device ${it.device.address}")
+                            val connectionScope = CoroutineScope(scope.coroutineContext + SupervisorJob(scope.coroutineContext[Job]))
                             val connection = PPoGServiceConnection(
-                                    scope,
+                                    connectionScope,
                                     this@PPoGService,
                                     it.device,
                                     eventFlow
                                         .filterIsInstance<ServiceEvent>()
                                         .filter(filterFlowForDevice(it.device.address))
                             )
-                            scope.launch {
+                            connectionScope.launch {
+                                Timber.d("Starting connection for device ${it.device.address}")
+                                val stateFlow = PPoGLinkStateManager.getState(it.device.address)
+                                if (stateFlow.value != PPoGLinkState.ReadyForSession) {
+                                    Timber.i("Device not ready, waiting for state change")
+                                    try {
+                                        withTimeout(10000) {
+                                            stateFlow.first { it == PPoGLinkState.ReadyForSession }
+                                            Timber.i("Device ready for session")
+                                        }
+                                    } catch (e: TimeoutCancellationException) {
+                                        deviceRxFlow.emit(PPoGConnectionEvent.LinkError(it.device, e))
+                                        return@launch
+                                    }
+                                }
                                 connection.start().collect { packet ->
-                                    emit(Pair(packet, it.device))
+                                    Timber.v("RX ${packet.endpoint}")
+                                    deviceRxFlow.emit(PPoGConnectionEvent.PacketReceived(it.device, packet))
                                 }
                             }
                             ppogConnections[it.device.address] = connection
@@ -116,10 +139,7 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
     @SuppressLint("MissingPermission")
     override fun register(eventFlow: Flow<ServerEvent>): BluetoothGattService {
         scope.launch {
-            runService(eventFlow).buffer(8).collect {
-                val (packet, device) = it
-                deviceRxFlow.emit(Pair(device, packet))
-            }
+            runService(eventFlow)
         }
         scope.launch {
             deviceTxFlow.buffer(8).collect {
@@ -131,8 +151,10 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
         return bluetoothGattService
     }
 
-    fun rxFlowFor(device: BluetoothDevice): Flow<PebblePacket> {
-        return deviceRxFlow.filter { it.first == device }.map { it.second }
+    fun rxFlowFor(device: BluetoothDevice): Flow<PPoGConnectionEvent> {
+        return deviceRxFlow.onEach {
+            Timber.d("RX ${it.device.address} ${it::class.simpleName}")
+        }.filter { it.device.address == device.address }
     }
 
     suspend fun emitPacket(device: BluetoothDevice, packet: PebblePacket) {

@@ -11,8 +11,7 @@ import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import java.io.Closeable
 
-class PPoGServiceConnection(parentScope: CoroutineScope, private val ppogService: PPoGService, val device: BluetoothDevice, private val deviceEventFlow: Flow<ServiceEvent>): Closeable {
-    private val connectionScope = CoroutineScope(parentScope.coroutineContext + SupervisorJob(parentScope.coroutineContext[Job]))
+class PPoGServiceConnection(val connectionScope: CoroutineScope, private val ppogService: PPoGService, val device: BluetoothDevice, private val deviceEventFlow: Flow<ServiceEvent>): Closeable {
     private val ppogSession = PPoGSession(connectionScope, this, 23)
     private suspend fun runConnection() {
         deviceEventFlow.collect {

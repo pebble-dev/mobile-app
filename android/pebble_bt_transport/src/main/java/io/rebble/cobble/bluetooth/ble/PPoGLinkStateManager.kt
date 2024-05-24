@@ -1,26 +1,21 @@
 package io.rebble.cobble.bluetooth.ble
 
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.*
 
 object PPoGLinkStateManager {
-    private val states = mutableMapOf<String, Channel<PPoGLinkState>>()
+    private val states = mutableMapOf<String, MutableStateFlow<PPoGLinkState>>()
 
-    fun getState(deviceAddress: String): Flow<PPoGLinkState> {
+    fun getState(deviceAddress: String): StateFlow<PPoGLinkState> {
         return states.getOrPut(deviceAddress) {
-            Channel(Channel.BUFFERED)
-        }.consumeAsFlow()
-    }
-
-    fun removeState(deviceAddress: String) {
-        states.remove(deviceAddress)
+            MutableStateFlow(PPoGLinkState.Closed)
+        }.asStateFlow()
     }
 
     fun updateState(deviceAddress: String, state: PPoGLinkState) {
         states.getOrPut(deviceAddress) {
-            Channel(Channel.BUFFERED)
-        }.trySend(state)
+            MutableStateFlow(PPoGLinkState.Closed)
+        }.value = state
     }
 }
 

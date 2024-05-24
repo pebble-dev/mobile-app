@@ -40,6 +40,7 @@ class BlueLEDriver(
             emit(SingleConnectionStatus.Connecting(device))
             val connector = PebbleLEConnector(gatt, context, scope)
             var success = false
+            check(PPoGLinkStateManager.getState(device.address).value == PPoGLinkState.Closed) { "Device is already connected" }
             connector.connect().collect {
                 when (it) {
                     PebbleLEConnector.ConnectorState.CONNECTING -> Timber.d("PebbleLEConnector is connecting")
