@@ -32,10 +32,11 @@ android {
     }
 }
 
-val libpebblecommonVersion = "0.1.13"
+val libpebblecommonVersion = "0.1.15"
 val timberVersion = "4.7.1"
-val coroutinesVersion = "1.6.4"
+val coroutinesVersion = "1.7.3"
 val okioVersion = "3.7.0"
+val mockkVersion = "1.13.11"
 
 dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
@@ -44,7 +45,11 @@ dependencies {
     implementation("com.jakewharton.timber:timber:$timberVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
     implementation("com.squareup.okio:okio:$okioVersion")
+
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
+    testImplementation("io.mockk:mockk:$mockkVersion")
+
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.test:rules:1.5.0")
