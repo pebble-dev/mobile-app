@@ -9,8 +9,9 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    target-branch: "rws"
   - package-ecosystem: "gradle"
     directory: "/android"
     schedule:
       interval: "weekly"
-  
+    target-branch: "rws"
