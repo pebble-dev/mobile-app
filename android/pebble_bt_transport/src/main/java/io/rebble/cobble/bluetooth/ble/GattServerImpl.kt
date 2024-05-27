@@ -142,11 +142,14 @@ class GattServerImpl(private val bluetoothManager: BluetoothManager, private val
                     val characteristic = action.characteristic
                     val confirm = action.confirm
                     val value = action.value
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         server?.notifyCharacteristicChanged(device, characteristic, confirm, value)
                     } else {
                         characteristic.value = value
                         server?.notifyCharacteristicChanged(device, characteristic, confirm)
+                    }
+                    if (result != BluetoothGatt.GATT_SUCCESS) {
+                        Timber.w("Failed to notify characteristic changed: $result")
                     }
                 }
             }

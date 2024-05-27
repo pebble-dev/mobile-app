@@ -94,7 +94,12 @@ class PPoGPacketWriter(private val scope: CoroutineScope, private val stateManag
             return
         }
 
-        sendPacket(packet)
+        try {
+            sendPacket(packet)
+        } catch (e: Exception) {
+            Timber.e(e, "Exception while sending packet")
+            return
+        }
         if (!packetSendStatus(packet)) {
             return
         }

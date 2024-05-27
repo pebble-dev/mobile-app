@@ -13,37 +13,46 @@ import java.io.Closeable
 
 class PPoGServiceConnection(val connectionScope: CoroutineScope, private val ppogService: PPoGService, val device: BluetoothDevice, private val deviceEventFlow: Flow<ServiceEvent>): Closeable {
     private val ppogSession = PPoGSession(connectionScope, this, 23)
-    private suspend fun runConnection() {
-        deviceEventFlow.collect {
-            when (it) {
-                is CharacteristicReadEvent -> {
-                    if (it.characteristic.uuid.toString() == LEConstants.UUIDs.META_CHARACTERISTIC_SERVER) {
-                        it.respond(makeMetaResponse())
-                    } else {
-                        Timber.w("Unknown characteristic read request: ${it.characteristic.uuid}")
-                        it.respond(CharacteristicResponse.Failure)
-                    }
-                }
-                is CharacteristicWriteEvent -> {
-                    if (it.characteristic.uuid.toString() == LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER) {
-                        try {
-                            ppogSession.handleData(it.value)
-                            it.respond(BluetoothGatt.GATT_SUCCESS)
-                        } catch (e: Exception) {
-                            it.respond(BluetoothGatt.GATT_FAILURE)
-                            throw e
-                        }
-                    } else {
-                        Timber.w("Unknown characteristic write request: ${it.characteristic.uuid}")
-                        it.respond(BluetoothGatt.GATT_FAILURE)
-                    }
-                }
-                is MtuChangedEvent -> {
-                    ppogSession.mtu = it.mtu
+    companion object {
+        val metaCharacteristicUUID = UUID.fromString(LEConstants.UUIDs.META_CHARACTERISTIC_SERVER)
+        val ppogCharacteristicUUID = UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER)
+        val configurationDescriptorUUID = UUID.fromString(LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR)
+    }
+    private suspend fun runConnection() = deviceEventFlow.onEach {
+        Timber.d("Event: $it")
+        when (it) {
+            is CharacteristicReadEvent -> {
+                if (it.characteristic.uuid == metaCharacteristicUUID) {
+                    it.respond(makeMetaResponse())
+                } else {
+                    Timber.w("Unknown characteristic read request: ${it.characteristic.uuid}")
+                    it.respond(CharacteristicResponse.Failure)
                 }
             }
+            is CharacteristicWriteEvent -> {
+                if (it.characteristic.uuid == ppogCharacteristicUUID) {
+                    ppogSession.handleData(it.value)
+                } else {
+                    Timber.w("Unknown characteristic write request: ${it.characteristic.uuid}")
+                    it.respond(BluetoothGatt.GATT_FAILURE)
+                }
+            }
+            is DescriptorWriteEvent -> {
+                if (it.descriptor.uuid == configurationDescriptorUUID && it.descriptor.characteristic.uuid == ppogCharacteristicUUID) {
+                    it.respond(BluetoothGatt.GATT_SUCCESS)
+                } else {
+                    Timber.w("Unknown descriptor write request: ${it.descriptor.uuid}")
+                    it.respond(BluetoothGatt.GATT_FAILURE)
+                }
+            }
+            is MtuChangedEvent -> {
+                ppogSession.mtu = it.mtu
+            }
         }
-    }
+    }.catch {
+        Timber.e(it)
+        connectionScope.cancel("Error in device event flow", it)
+    }.launchIn(connectionScope)
 
     private fun makeMetaResponse(): CharacteristicResponse {
         return CharacteristicResponse(BluetoothGatt.GATT_SUCCESS, 0, LEConstants.SERVER_META_RESPONSE)

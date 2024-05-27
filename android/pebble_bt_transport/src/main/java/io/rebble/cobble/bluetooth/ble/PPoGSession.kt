@@ -103,7 +103,7 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
             throw PPoGSessionException("Reset packet must have sequence 0")
         }
         val nwVersion = packet.getPPoGConnectionVersion()
-        Timber.d("Reset requested, new PPoGATT version: ${nwVersion}")
+        Timber.d("Reset requested, new PPoGATT version: $nwVersion")
         ppogVersion = nwVersion
         stateManager.state = State.AwaitingResetAck
         packetWriter.rescheduleTimeout(true)

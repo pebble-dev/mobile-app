@@ -88,6 +88,9 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
                                     this@PPoGService,
                                     it.device,
                                     eventFlow
+                                        .onSubscription {
+                                            Timber.d("Subscription started for device ${it.device.address}")
+                                        }
                                         .filterIsInstance<ServiceEvent>()
                                         .filter(filterFlowForDevice(it.device.address))
                             )
