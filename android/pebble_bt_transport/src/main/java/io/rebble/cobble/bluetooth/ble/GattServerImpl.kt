@@ -129,6 +129,7 @@ class GattServerImpl(private val bluetoothManager: BluetoothManager, private val
                 throw GattServerException("Failed to add service")
             }
         }
+        server = openServer
         send(ServerInitializedEvent(this@GattServerImpl))
         listeningEnabled = true
         awaitClose { openServer.close() }
