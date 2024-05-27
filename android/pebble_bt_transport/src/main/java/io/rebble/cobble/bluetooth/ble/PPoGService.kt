@@ -45,7 +45,7 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
 
     private val ppogConnections = mutableMapOf<String, PPoGServiceConnection>()
     private var gattServer: GattServer? = null
-    private val deviceRxFlow = MutableSharedFlow<PPoGConnectionEvent>()
+    private val deviceRxFlow = MutableSharedFlow<PPoGConnectionEvent>(replay = 1)
     private val deviceTxFlow = MutableSharedFlow<Pair<BluetoothDevice, PebblePacket>>()
 
     /**
@@ -55,7 +55,7 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
      */
     private fun filterFlowForDevice(deviceAddress: String) = { event: ServerEvent ->
         when (event) {
-            is ConnectionStateEvent -> event.device.address == deviceAddress
+            is ServiceEvent -> event.device.address == deviceAddress
             else -> false
         }
     }
@@ -131,11 +131,15 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
     @RequiresPermission("android.permission.BLUETOOTH_CONNECT")
     suspend fun sendData(device: BluetoothDevice, data: ByteArray): Boolean {
         return gattServer?.let { server ->
+            val result = scope.async {
+                server.getFlow()
+                        .filterIsInstance<NotificationSentEvent>()
+                        .onEach { Timber.d("Notification sent: ${it.device.address}") }
+                        .first { it.device.address == device.address }
+            }
             server.notifyCharacteristicChanged(device, dataCharacteristic, false, data)
-            val result = server.getFlow()
-                    .filterIsInstance<NotificationSentEvent>()
-                    .filter { it.device == device }.first()
-            return result.status == BluetoothGatt.GATT_SUCCESS
+            val res = result.await().status == BluetoothGatt.GATT_SUCCESS
+            res
         } ?: false
     }
 

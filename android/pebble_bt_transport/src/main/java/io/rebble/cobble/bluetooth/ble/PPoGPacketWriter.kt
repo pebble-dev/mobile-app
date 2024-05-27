@@ -129,7 +129,7 @@ class PPoGPacketWriter(private val scope: CoroutineScope, private val stateManag
     @RequiresPermission("android.permission.BLUETOOTH_CONNECT")
     private suspend fun sendPacket(packet: GATTPacket) {
         val data = packet.toByteArray()
-        require(data.size > stateManager.mtuSize) {"Packet too large to send: ${data.size} > ${stateManager.mtuSize}"}
+        require(data.size <= stateManager.mtuSize) {"Packet too large to send: ${data.size} > ${stateManager.mtuSize}"}
         _packetWriteFlow.emit(packet)
     }
 

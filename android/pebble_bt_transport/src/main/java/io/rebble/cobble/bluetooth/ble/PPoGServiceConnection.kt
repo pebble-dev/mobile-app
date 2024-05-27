@@ -10,6 +10,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import java.io.Closeable
+import java.util.UUID
 
 class PPoGServiceConnection(val connectionScope: CoroutineScope, private val ppogService: PPoGService, val device: BluetoothDevice, private val deviceEventFlow: Flow<ServiceEvent>): Closeable {
     private val ppogSession = PPoGSession(connectionScope, this, 23)
@@ -59,27 +60,13 @@ class PPoGServiceConnection(val connectionScope: CoroutineScope, private val ppo
     }
 
     suspend fun start(): Flow<PebblePacket> {
-        connectionScope.launch {
-            runConnection()
-        }
+        runConnection()
         return ppogSession.openPacketFlow()
     }
 
     @RequiresPermission("android.permission.BLUETOOTH_CONNECT")
     suspend fun writeDataRaw(data: ByteArray): Boolean {
-        val result = CompletableDeferred<Boolean>()
-        val job = connectionScope.launch {
-            val evt = deviceEventFlow.filterIsInstance<NotificationSentEvent>().first()
-            result.complete(evt.status == BluetoothGatt.GATT_SUCCESS)
-        }
-        if (!ppogService.sendData(device, data)) {
-            job.cancel()
-            return false
-        }
-        if (!result.await()) {
-            return false
-        }
-        return true
+        return ppogService.sendData(device, data)
     }
 
     suspend fun sendPebblePacket(packet: PebblePacket) {

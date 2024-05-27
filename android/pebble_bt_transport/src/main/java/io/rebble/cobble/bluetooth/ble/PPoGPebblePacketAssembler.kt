@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flow
 import java.nio.ByteBuffer
 import kotlin.math.min
 
+@OptIn(ExperimentalUnsignedTypes::class)
 class PPoGPebblePacketAssembler {
     private var data: ByteBuffer? = null
 
@@ -21,31 +22,33 @@ class PPoGPebblePacketAssembler {
                 if (dataToAddBuf.remaining() < 4) {
                     throw PPoGPebblePacketAssemblyException("Not enough data for header")
                 }
-                beginAssembly(dataToAddBuf.slice())
-                dataToAddBuf.position(dataToAddBuf.position() + 4)
+                val header = ByteArray(4)
+                dataToAddBuf.get(header)
+                beginAssembly(header)
             }
 
-            val remaining = data!!.remaining()
-            val toRead = min(remaining, dataToAddBuf.remaining())
-            data!!.put(dataToAddBuf.array(), dataToAddBuf.position(), toRead)
-            dataToAddBuf.position(dataToAddBuf.position() + toRead)
+            val remaining = min(dataToAddBuf.remaining(), data!!.remaining())
+            val slice = ByteArray(remaining)
+            dataToAddBuf.get(slice)
+            data!!.put(slice)
 
-            if (data!!.remaining() == 0) {
+            if (!data!!.hasRemaining()) {
                 data!!.flip()
-                val packet = PebblePacket.deserialize(data!!.array().toUByteArray())
+                val packet = PebblePacket.deserialize(data!!.array().asUByteArray())
                 emit(packet)
                 clear()
             }
         }
     }
 
-    private fun beginAssembly(headerSlice: ByteBuffer) {
+    private fun beginAssembly(header: ByteArray) {
         val meta = StructMapper()
         val length = SUShort(meta)
         val ep = SUShort(meta)
-        meta.fromBytes(DataBuffer(headerSlice.array().asUByteArray()))
+        meta.fromBytes(DataBuffer(header.asUByteArray()))
         val packetLength = length.get()
-        data = ByteBuffer.allocate(packetLength.toInt())
+        data = ByteBuffer.allocate(packetLength.toInt()+4)
+        data!!.put(header)
     }
 
     fun clear() {

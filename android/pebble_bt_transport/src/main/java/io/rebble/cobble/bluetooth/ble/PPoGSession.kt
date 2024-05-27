@@ -7,6 +7,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 import java.io.Closeable
 import kotlin.math.min
@@ -64,11 +66,9 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
 
     private fun makePacketWriter(): PPoGPacketWriter {
         val writer = PPoGPacketWriter(scope, stateManager) { onTimeout() }
-        writerJob = scope.launch {
-            writer.packetWriteFlow.collect {
-                packetWriter.setPacketSendStatus(it, serviceConnection.writeDataRaw(it.toByteArray()))
-            }
-        }
+        writerJob = writer.packetWriteFlow.onEach {
+            packetWriter.setPacketSendStatus(it, serviceConnection.writeDataRaw(it.toByteArray()))
+        }.launchIn(scope)
         return writer
     }
 
@@ -105,11 +105,11 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
         val nwVersion = packet.getPPoGConnectionVersion()
         Timber.d("Reset requested, new PPoGATT version: $nwVersion")
         ppogVersion = nwVersion
-        stateManager.state = State.AwaitingResetAck
         packetWriter.rescheduleTimeout(true)
         resetState()
         val resetAckPacket = makeResetAck(sequenceOutCursor, MAX_SUPPORTED_WINDOW_SIZE, MAX_SUPPORTED_WINDOW_SIZE, ppogVersion)
-        sendResetAck(resetAckPacket)
+        sendResetAck(resetAckPacket).join()
+        stateManager.state = State.AwaitingResetAck
     }
 
     private fun makeResetAck(sequence: Int, rxWindow: Int, txWindow: Int, ppogVersion: GATTPacket.PPoGConnectionVersion): GATTPacket {
@@ -120,7 +120,7 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
         })
     }
 
-    private suspend fun sendResetAck(packet: GATTPacket) {
+    private suspend fun sendResetAck(packet: GATTPacket): Job {
         val job = scope.launch(start = CoroutineStart.LAZY) {
             packetWriter.sendOrQueuePacket(packet)
         }
@@ -133,6 +133,7 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
                 Timber.v("Reset ACK job cancelled")
             }
         }
+        return job
     }
 
     private suspend fun onResetAck(packet: GATTPacket) {
@@ -229,7 +230,8 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
         while (sequenceInCursor in pendingPackets) {
             val packet = pendingPackets.remove(sequenceInCursor)!!
             ack(packet.sequence)
-            pebblePacketAssembler.assemble(packet.data).collect {
+            val pebblePacket = packet.data.sliceArray(1 until packet.data.size)
+            pebblePacketAssembler.assemble(pebblePacket).collect {
                 rxPebblePacketChannel.send(it)
             }
             sequenceInCursor = incrementSequence(sequenceInCursor)
