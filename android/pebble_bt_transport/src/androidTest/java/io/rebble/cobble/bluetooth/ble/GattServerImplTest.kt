@@ -48,7 +48,7 @@ class GattServerImplTest {
         val server = GattServerImpl(bluetoothManager, context, emptyList())
         val flow = server.getFlow()
         flow.take(1).collect {
-            assert(it is ServerInitializedEvent)
+            assertTrue(it is ServerInitializedEvent)
         }
     }
 
@@ -67,9 +67,9 @@ class GattServerImplTest {
         val server = GattServerImpl(bluetoothManager, context, listOf(service, service2))
         val flow = server.getFlow()
         flow.take(1).collect {
-            assert(it is ServerInitializedEvent)
+            assertTrue(it is ServerInitializedEvent)
             it as ServerInitializedEvent
-            assert(it.server.getServer()?.services?.size == 2)
+            assertEquals(2, it.server.getServer()?.services?.size)
         }
     }
 }
