@@ -14,8 +14,8 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
 
-class GattServerImpl(private val bluetoothManager: BluetoothManager, private val context: Context, private val services: List<GattService>): GattServer {
-    private val scope = CoroutineScope(Dispatchers.Default)
+class GattServerImpl(private val bluetoothManager: BluetoothManager, private val context: Context, private val services: List<GattService>, private val gattDispatcher: CoroutineDispatcher = Dispatchers.IO): GattServer {
+    private val scope = CoroutineScope(gattDispatcher)
     class GattServerException(message: String) : Exception(message)
 
     @SuppressLint("MissingPermission")
