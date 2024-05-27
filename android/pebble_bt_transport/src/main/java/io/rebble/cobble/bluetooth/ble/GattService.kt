@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.SharedFlow
 interface GattService {
     /**
      * Called by a GATT server to register the service.
-     * Starts consuming events from the [eventFlow] (usually a [SharedFlow]) and handles them.
+     * Starts consuming events from the [eventFlow] and handles them.
      */
-    fun register(eventFlow: Flow<ServerEvent>): BluetoothGattService
+    fun register(eventFlow: SharedFlow<ServerEvent>): BluetoothGattService
 }

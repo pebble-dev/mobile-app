@@ -65,7 +65,7 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
         class PacketReceived(device: BluetoothDevice, val packet: PebblePacket) : PPoGConnectionEvent(device)
     }
 
-    private suspend fun runService(eventFlow: Flow<ServerEvent>) {
+    private suspend fun runService(eventFlow: SharedFlow<ServerEvent>) {
         eventFlow.collect {
             when (it) {
                 is ServerInitializedEvent -> {
@@ -137,7 +137,7 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
     }
 
     @SuppressLint("MissingPermission")
-    override fun register(eventFlow: Flow<ServerEvent>): BluetoothGattService {
+    override fun register(eventFlow: SharedFlow<ServerEvent>): BluetoothGattService {
         scope.launch {
             runService(eventFlow)
         }

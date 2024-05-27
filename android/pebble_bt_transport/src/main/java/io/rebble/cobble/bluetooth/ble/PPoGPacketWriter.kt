@@ -4,6 +4,7 @@ import androidx.annotation.RequiresPermission
 import io.rebble.libpebblecommon.ble.GATTPacket
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.cancel
 import kotlinx.coroutines.flow.first
 import timber.log.Timber
@@ -18,7 +19,7 @@ class PPoGPacketWriter(private val scope: CoroutineScope, private val stateManag
     var txWindow = 1
     private var timeoutJob: Job? = null
     private val _packetWriteFlow = MutableSharedFlow<GATTPacket>()
-    val packetWriteFlow = _packetWriteFlow
+    val packetWriteFlow: SharedFlow<GATTPacket> = _packetWriteFlow
     private val packetSendStatusFlow = MutableSharedFlow<Pair<GATTPacket, Boolean>>()
 
     suspend fun setPacketSendStatus(packet: GATTPacket, status: Boolean) {

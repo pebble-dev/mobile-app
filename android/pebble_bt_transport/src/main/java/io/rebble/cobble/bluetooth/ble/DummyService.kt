@@ -6,6 +6,7 @@ import io.rebble.cobble.bluetooth.ble.util.GattCharacteristicBuilder
 import io.rebble.cobble.bluetooth.ble.util.GattServiceBuilder
 import io.rebble.libpebblecommon.ble.LEConstants
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 import java.util.UUID
 
 class DummyService: GattService {
@@ -19,7 +20,7 @@ class DummyService: GattService {
                             .build()
             )
             .build()
-    override fun register(eventFlow: Flow<ServerEvent>): BluetoothGattService {
+    override fun register(eventFlow: SharedFlow<ServerEvent>): BluetoothGattService {
         return dummyService
     }
 }
