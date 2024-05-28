@@ -8,7 +8,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 29
+        minSdk = 23
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -41,7 +41,7 @@ val mockkVersion = "1.13.11"
 dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("io.rebble.libpebblecommon:libpebblecommon:$libpebblecommonVersion")
+    implementation("io.rebble.libpebblecommon:libpebblecommon-android:$libpebblecommonVersion")
     implementation("com.jakewharton.timber:timber:$timberVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
     implementation("com.squareup.okio:okio:$okioVersion")
