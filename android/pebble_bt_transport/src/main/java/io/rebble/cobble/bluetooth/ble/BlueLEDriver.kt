@@ -11,11 +11,13 @@ import io.rebble.cobble.bluetooth.workarounds.UnboundWatchBeforeConnecting
 import io.rebble.cobble.bluetooth.workarounds.WorkaroundDescriptor
 import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 import java.io.IOException
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Bluetooth Low Energy driver for Pebble watches
@@ -24,11 +26,12 @@ import java.io.IOException
  * @param workaroundResolver Function to check if a workaround is enabled
  */
 class BlueLEDriver(
+        coroutineContext: CoroutineContext = Dispatchers.IO,
         private val context: Context,
         private val protocolHandler: ProtocolHandler,
-        private val scope: CoroutineScope,
         private val workaroundResolver: (WorkaroundDescriptor) -> Boolean
 ): BlueIO {
+    private val scope = CoroutineScope(coroutineContext)
     @OptIn(FlowPreview::class)
     @Throws(SecurityException::class)
     override fun startSingleWatchConnection(device: PebbleDevice): Flow<SingleConnectionStatus> {
