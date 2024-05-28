@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -20,7 +21,11 @@ fun IntentFilter.asFlow(context: Context): Flow<Intent> = callbackFlow {
         }
     }
 
-    context.registerReceiver(receiver, this@asFlow)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        context.registerReceiver(receiver, this@asFlow, Context.RECEIVER_EXPORTED)
+    } else {
+        context.registerReceiver(receiver, this@asFlow)
+    }
 
     awaitClose {
         try {
