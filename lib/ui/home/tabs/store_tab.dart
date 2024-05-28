@@ -9,14 +9,18 @@ class StoreTab extends StatefulWidget implements CobbleScreen {
 }
 
 class _StoreTabState extends State<StoreTab> {
+  late WebViewController controller;
+  @override
+  void initState() {
+    super.initState();
+    controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..loadRequest(Uri.parse('https://store-beta.rebble.io/?native=true&platform=android'));
+  }
   @override
   Widget build(BuildContext context) {
     return CobbleScaffold.tab(
-      child: WebView(
-        initialUrl:
-            "https://store-beta.rebble.io/?native=true&platform=android",
-        javascriptMode: JavascriptMode.unrestricted,
-      ),
+      child: WebViewWidget(controller: controller),
     );
   }
 }

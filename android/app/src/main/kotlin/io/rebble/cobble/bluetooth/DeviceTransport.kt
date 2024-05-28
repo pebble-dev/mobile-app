@@ -61,8 +61,8 @@ class DeviceTransport @Inject constructor(
             }
             btDevice?.type == BluetoothDevice.DEVICE_TYPE_LE -> { // LE only device
                 BlueLEDriver(
-                    context,
-                    protocolHandler
+                    context = context,
+                    protocolHandler = protocolHandler
                 ) {
                     flutterPreferences.shouldActivateWorkaround(it)
                 }

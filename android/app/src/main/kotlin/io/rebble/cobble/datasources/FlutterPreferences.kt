@@ -91,7 +91,7 @@ private inline fun <T> SharedPreferences.flow(
 
         val listener = SharedPreferences
             .OnSharedPreferenceChangeListener { sharedPreferences: SharedPreferences,
-                                                changedKey: String ->
+                                                changedKey: String? ->
 
                 if (changedKey == key) {
                     trySend(mapper(sharedPreferences, key)).isSuccess
