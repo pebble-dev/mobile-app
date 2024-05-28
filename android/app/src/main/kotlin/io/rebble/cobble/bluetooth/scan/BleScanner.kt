@@ -49,7 +49,7 @@ class BleScanner @Inject constructor() {
                         callback.resultChannel.onReceive { result ->
                             val device = result.device
                             if (device.name != null &&
-                                    device.type == BluetoothDevice.DEVICE_TYPE_LE &&
+                                    (device.type == BluetoothDevice.DEVICE_TYPE_LE || device.type == BluetoothDevice.DEVICE_TYPE_DUAL) &&
                                     (device.name.startsWith("Pebble ") ||
                                             device.name.startsWith("Pebble-LE"))) {
                                 val i = foundDevices.indexOfFirst { it.bluetoothDevice.address == device.address }
