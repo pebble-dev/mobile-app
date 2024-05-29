@@ -34,7 +34,7 @@ class PPoGPebblePacketAssembler {
 
             if (!data!!.hasRemaining()) {
                 data!!.flip()
-                val packet = PebblePacket.deserialize(data!!.array().asUByteArray())
+                val packet = data!!.array().clone()
                 emit(packet)
                 clear()
             }

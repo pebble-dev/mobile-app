@@ -27,7 +27,8 @@ class ServiceLifecycleControl @Inject constructor(
             connectionLooper.connectionState.collect {
                 Timber.d("Watch connection status %s", it)
 
-                val shouldServiceBeRunning = it !is ConnectionState.Disconnected
+                //val shouldServiceBeRunning = it !is ConnectionState.Disconnected
+                val shouldServiceBeRunning = true
 
                 if (shouldServiceBeRunning != serviceRunning) {
                     if (shouldServiceBeRunning) {

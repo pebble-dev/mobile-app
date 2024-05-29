@@ -1,19 +1,19 @@
 package io.rebble.cobble.bluetooth.ble
 
+import android.bluetooth.BluetoothDevice
 import io.rebble.cobble.bluetooth.ble.util.chunked
 import io.rebble.libpebblecommon.ble.GATTPacket
 import io.rebble.libpebblecommon.protocolhelpers.PebblePacket
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import java.io.Closeable
+import java.util.LinkedList
 import kotlin.math.min
 
-class PPoGSession(private val scope: CoroutineScope, private val serviceConnection: PPoGServiceConnection, var mtu: Int): Closeable {
+class PPoGSession(private val scope: CoroutineScope, val device: BluetoothDevice, var mtu: Int): Closeable {
     class PPoGSessionException(message: String) : Exception(message)
 
     private val pendingPackets = mutableMapOf<Int, GATTPacket>()
@@ -24,23 +24,99 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
     private var sequenceInCursor = 0
     private var sequenceOutCursor = 0
     private var lastAck: GATTPacket? = null
-    private var delayedAckJob: Job? = null
-    private var delayedNACKJob: Job? = null
+    private val delayedAckScope = scope + Job()
+    private var delayedNACKScope = scope + Job()
     private var resetAckJob: Job? = null
     private var writerJob: Job? = null
     private var failedResetAttempts = 0
     private val pebblePacketAssembler = PPoGPebblePacketAssembler()
 
-    private val rxPebblePacketChannel = Channel<PebblePacket>(Channel.BUFFERED)
+    private val sessionFlow = MutableSharedFlow<PPoGSessionResponse>()
+    private val packetRetries: MutableMap<GATTPacket, Int> = mutableMapOf()
 
-    private val jobActor = scope.actor<suspend () -> Unit> {
-        for (job in channel) {
-            job()
+    open class PPoGSessionResponse {
+        class PebblePacket(val packet: ByteArray) : PPoGSessionResponse()
+        class WritePPoGCharacteristic(val data: ByteArray, val result: CompletableDeferred<Boolean>) : PPoGSessionResponse()
+    }
+    open class SessionCommand {
+        class SendMessage(val data: ByteArray) : SessionCommand()
+        class HandlePacket(val packet: ByteArray) : SessionCommand()
+        class SetMTU(val mtu: Int) : SessionCommand()
+        class OnUnblocked : SessionCommand()
+        class DelayedAck : SessionCommand()
+        class DelayedNack : SessionCommand()
+    }
+
+    private val sessionActor = scope.actor<SessionCommand>(capacity = 8) {
+        for (command in channel) {
+            when (command) {
+                is SessionCommand.SendMessage -> {
+                    if (stateManager.state != State.Open) {
+                        throw PPoGSessionException("Session not open")
+                    }
+                    val dataChunks = command.data.chunked(stateManager.mtuSize - 3)
+                    for (chunk in dataChunks) {
+                        val packet = GATTPacket(GATTPacket.PacketType.DATA, sequenceOutCursor, chunk)
+                        packetWriter.sendOrQueuePacket(packet)
+                        sequenceOutCursor = incrementSequence(sequenceOutCursor)
+                    }
+                }
+                is SessionCommand.HandlePacket -> {
+                    val ppogPacket = GATTPacket(command.packet)
+                    try {
+                        withTimeout(1000L) {
+                            when (ppogPacket.type) {
+                                GATTPacket.PacketType.RESET -> onResetRequest(ppogPacket)
+                                GATTPacket.PacketType.RESET_ACK -> onResetAck(ppogPacket)
+                                GATTPacket.PacketType.ACK -> onAck(ppogPacket)
+                                GATTPacket.PacketType.DATA -> {
+                                    Timber.v("-> DATA ${ppogPacket.sequence}")
+                                    pendingPackets[ppogPacket.sequence] = ppogPacket
+                                    processDataQueue()
+                                }
+                            }
+                        }
+                    } catch (e: TimeoutCancellationException) {
+                        Timber.e("Timeout while processing packet ${ppogPacket.type} ${ppogPacket.sequence}")
+                    }
+                }
+                is SessionCommand.SetMTU -> {
+                    mtu = command.mtu
+                }
+                is SessionCommand.OnUnblocked -> {
+                    packetWriter.sendNextPacket()
+                }
+                is SessionCommand.DelayedAck -> {
+                    delayedAckScope.coroutineContext.job.cancelChildren()
+                    delayedAckScope.launch {
+                        delay(COALESCED_ACK_DELAY_MS)
+                        sendAck()
+                    }.join()
+                }
+                is SessionCommand.DelayedNack -> {
+                    delayedNACKScope.coroutineContext.job.cancelChildren()
+                    delayedNACKScope.launch {
+                        delay(OUT_OF_ORDER_MAX_DELAY_MS)
+                        sendAck()
+                    }.join()
+                }
+            }
         }
     }
 
+    fun sendMessage(data: ByteArray): Boolean = sessionActor.trySend(SessionCommand.SendMessage(data)).isSuccess
+    fun handlePacket(packet: ByteArray): Boolean = sessionActor.trySend(SessionCommand.HandlePacket(packet)).isSuccess
+    fun setMTU(mtu: Int): Boolean = sessionActor.trySend(SessionCommand.SetMTU(mtu)).isSuccess
+    fun onUnblocked(): Boolean = sessionActor.trySend(SessionCommand.OnUnblocked()).isSuccess
+
     inner class StateManager {
-        var state: State = State.Closed
+        private var _state = State.Closed
+        var state: State
+            get() = _state
+            set(value) {
+                Timber.d("State changed from ${_state.name} to ${value.name}")
+                _state = value
+            }
         var mtuSize: Int get() = mtu
             set(value) {}
     }
@@ -55,6 +131,7 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
         private const val MAX_FAILED_RESETS = 3
         private const val MAX_SUPPORTED_WINDOW_SIZE = 25
         private const val MAX_SUPPORTED_WINDOW_SIZE_V0 = 4
+        private const val MAX_NUM_RETRIES = 2
     }
 
     enum class State(val allowedRxTypes: List<GATTPacket.PacketType>, val allowedTxTypes: List<GATTPacket.PacketType>) {
@@ -67,38 +144,17 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
     private fun makePacketWriter(): PPoGPacketWriter {
         val writer = PPoGPacketWriter(scope, stateManager) { onTimeout() }
         writerJob = writer.packetWriteFlow.onEach {
-            packetWriter.setPacketSendStatus(it, serviceConnection.writeDataRaw(it.toByteArray()))
+            Timber.v("<- ${it.type.name} ${it.sequence}")
+            val resultCompletable = CompletableDeferred<Boolean>()
+            sessionFlow.emit(PPoGSessionResponse.WritePPoGCharacteristic(it.toByteArray(), resultCompletable))
+            packetWriter.setPacketSendStatus(it, resultCompletable.await())
         }.launchIn(scope)
         return writer
     }
 
-    suspend fun handleData(value: ByteArray) {
-        val ppogPacket = GATTPacket(value)
-        when (ppogPacket.type) {
-            GATTPacket.PacketType.RESET -> onResetRequest(ppogPacket)
-            GATTPacket.PacketType.RESET_ACK -> onResetAck(ppogPacket)
-            GATTPacket.PacketType.ACK -> onAck(ppogPacket)
-            GATTPacket.PacketType.DATA -> {
-                pendingPackets[ppogPacket.sequence] = ppogPacket
-                processDataQueue()
-            }
-        }
-    }
-
-    suspend fun sendData(data: ByteArray) {
-        if (stateManager.state != State.Open) {
-            throw PPoGSessionException("Session not open")
-        }
-        val dataChunks = data.chunked(stateManager.mtuSize - 3)
-        for (chunk in dataChunks) {
-            val packet = GATTPacket(GATTPacket.PacketType.DATA, sequenceOutCursor, data)
-            packetWriter.sendOrQueuePacket(packet)
-            sequenceOutCursor = incrementSequence(sequenceOutCursor)
-        }
-    }
-
     private suspend fun onResetRequest(packet: GATTPacket) {
         require(packet.type == GATTPacket.PacketType.RESET)
+        Timber.v("-> RESET ${packet.sequence}")
         if (packet.sequence != 0) {
             throw PPoGSessionException("Reset packet must have sequence 0")
         }
@@ -108,7 +164,8 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
         packetWriter.rescheduleTimeout(true)
         resetState()
         val resetAckPacket = makeResetAck(sequenceOutCursor, MAX_SUPPORTED_WINDOW_SIZE, MAX_SUPPORTED_WINDOW_SIZE, ppogVersion)
-        sendResetAck(resetAckPacket).join()
+        packetWriter.sendOrQueuePacket(resetAckPacket)
+
         stateManager.state = State.AwaitingResetAck
     }
 
@@ -120,24 +177,9 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
         })
     }
 
-    private suspend fun sendResetAck(packet: GATTPacket): Job {
-        val job = scope.launch(start = CoroutineStart.LAZY) {
-            packetWriter.sendOrQueuePacket(packet)
-        }
-        resetAckJob = job
-        jobActor.send {
-            job.start()
-            try {
-                job.join()
-            } catch (e: CancellationException) {
-                Timber.v("Reset ACK job cancelled")
-            }
-        }
-        return job
-    }
-
     private suspend fun onResetAck(packet: GATTPacket) {
         require(packet.type == GATTPacket.PacketType.RESET_ACK)
+        Timber.v("-> RESET_ACK ${packet.sequence}")
         if (packet.sequence != 0) {
             throw PPoGSessionException("Reset ACK packet must have sequence 0")
         }
@@ -160,11 +202,12 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
             packetWriter.txWindow = packet.getMaxTXWindow().toInt()
         }
         stateManager.state = State.Open
-        PPoGLinkStateManager.updateState(serviceConnection.device.address, PPoGLinkState.SessionOpen)
+        PPoGLinkStateManager.updateState(device.address, PPoGLinkState.SessionOpen)
     }
 
     private suspend fun onAck(packet: GATTPacket) {
         require(packet.type == GATTPacket.PacketType.ACK)
+        Timber.v("-> ACK ${packet.sequence}")
         packetWriter.onAck(packet)
     }
 
@@ -186,30 +229,19 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
         scheduleDelayedAck()
     }
 
-    private suspend fun scheduleDelayedAck() {
-        delayedAckJob?.cancel()
-        val job = scope.launch(start = CoroutineStart.LAZY) {
-            delay(COALESCED_ACK_DELAY_MS)
-            sendAck()
-        }
-        delayedAckJob = job
-        jobActor.send {
-            job.start()
-            try {
-                job.join()
-            } catch (e: CancellationException) {
-                Timber.v("Delayed ACK job cancelled")
-            }
-        }
-    }
+    private fun scheduleDelayedAck() = sessionActor.trySend(SessionCommand.DelayedAck()).isSuccess
+    private fun scheduleDelayedNACK() = sessionActor.trySend(SessionCommand.DelayedNack()).isSuccess
 
     /**
      * Send an ACK cancelling the delayed ACK job if present
      */
     private suspend fun sendAckCancelling() {
-        delayedAckJob?.cancel()
+        delayedAckScope.coroutineContext.job.cancelChildren()
         sendAck()
     }
+
+
+    var dbgLastAckSeq = -1
 
     /**
      * Send the last ACK packet
@@ -218,6 +250,9 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
         // Send ack
         lastAck?.let {
             packetsSinceLastAck = 0
+            check(it.sequence != dbgLastAckSeq) { "Sending duplicate ACK for sequence ${it.sequence}" }
+            dbgLastAckSeq = it.sequence
+            Timber.d("Writing ACK for sequence ${it.sequence}")
             packetWriter.sendOrQueuePacket(it)
         }
     }
@@ -226,13 +261,13 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
      * Process received packet(s) in the queue
      */
     private suspend fun processDataQueue() {
-        delayedNACKJob?.cancel()
+        delayedNACKScope.coroutineContext.job.cancelChildren()
         while (sequenceInCursor in pendingPackets) {
             val packet = pendingPackets.remove(sequenceInCursor)!!
             ack(packet.sequence)
             val pebblePacket = packet.data.sliceArray(1 until packet.data.size)
             pebblePacketAssembler.assemble(pebblePacket).collect {
-                rxPebblePacketChannel.send(it)
+                sessionFlow.emit(PPoGSessionResponse.PebblePacket(it))
             }
             sequenceInCursor = incrementSequence(sequenceInCursor)
         }
@@ -242,34 +277,14 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
         }
     }
 
-    private suspend fun scheduleDelayedNACK() {
-        delayedNACKJob?.cancel()
-        val job = scope.launch(start = CoroutineStart.LAZY) {
-            delay(OUT_OF_ORDER_MAX_DELAY_MS)
-            if (pendingPackets.isNotEmpty()) {
-                pendingPackets.clear()
-                sendAck()
-            }
-        }
-        delayedNACKJob = job
-        jobActor.send {
-            job.start()
-            try {
-                job.join()
-            } catch (e: CancellationException) {
-                Timber.v("Delayed NACK job cancelled")
-            }
-        }
-    }
-
     private fun resetState() {
         sequenceInCursor = 0
         sequenceOutCursor = 0
         packetWriter.close()
         writerJob?.cancel()
         packetWriter = makePacketWriter()
-        delayedNACKJob?.cancel()
-        delayedAckJob?.cancel()
+        delayedNACKScope.coroutineContext.job.cancelChildren()
+        delayedAckScope.coroutineContext.job.cancelChildren()
     }
 
     private suspend fun requestReset() {
@@ -288,11 +303,25 @@ class PPoGSession(private val scope: CoroutineScope, private val serviceConnecti
                 }
                 requestReset()
             }
-            //TODO: handle data timeout
+            val packetsToResend = LinkedList<GATTPacket>()
+            while (true) {
+                val packet = packetWriter.inflightPackets.poll() ?: break
+                if ((packetRetries[packet] ?: 0) <= MAX_NUM_RETRIES) {
+                    Timber.w("Packet ${packet.sequence} timed out, resending")
+                    packetsToResend.add(packet)
+                    packetRetries[packet] = (packetRetries[packet] ?: 0) + 1
+                } else {
+                    Timber.w("Packet ${packet.sequence} timed out too many times, resetting")
+                    requestReset()
+                }
+            }
+
+            for (packet in packetsToResend.reversed()) {
+                packetWriter.dataWaitingToSend.addFirst(packet)
+            }
         }
     }
-
-    fun openPacketFlow() = rxPebblePacketChannel.consumeAsFlow()
+    fun flow() = sessionFlow.asSharedFlow()
 
     override fun close() {
         resetState()

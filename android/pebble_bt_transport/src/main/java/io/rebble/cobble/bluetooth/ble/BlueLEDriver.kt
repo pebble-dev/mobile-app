@@ -10,11 +10,8 @@ import io.rebble.cobble.bluetooth.SingleConnectionStatus
 import io.rebble.cobble.bluetooth.workarounds.UnboundWatchBeforeConnecting
 import io.rebble.cobble.bluetooth.workarounds.WorkaroundDescriptor
 import io.rebble.libpebblecommon.ProtocolHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 import java.io.IOException
 import kotlin.coroutines.CoroutineContext
@@ -38,12 +35,12 @@ class BlueLEDriver(
         require(!device.emulated)
         require(device.bluetoothDevice != null)
         return flow {
+            GattServerManager.initIfNeeded(context, scope)
             val gatt = device.bluetoothDevice.connectGatt(context, workaroundResolver(UnboundWatchBeforeConnecting))
                     ?: throw IOException("Failed to connect to device")
             emit(SingleConnectionStatus.Connecting(device))
             val connector = PebbleLEConnector(gatt, context, scope)
             var success = false
-            check(PPoGLinkStateManager.getState(device.address).value == PPoGLinkState.Closed) { "Device is already connected" }
             connector.connect().collect {
                 when (it) {
                     PebbleLEConnector.ConnectorState.CONNECTING -> Timber.d("PebbleLEConnector is connecting")
@@ -56,10 +53,41 @@ class BlueLEDriver(
                 }
             }
             check(success) { "Failed to connect to watch" }
-            withTimeout(10000) {
-                PPoGLinkStateManager.getState(device.address).first { it == PPoGLinkState.SessionOpen }
+            GattServerManager.getGattServer()?.getServer()?.connect(device.bluetoothDevice, true)
+            try {
+                withTimeout(10000) {
+                    val result = PPoGLinkStateManager.getState(device.address).first { it != PPoGLinkState.ReadyForSession }
+                    if (result == PPoGLinkState.SessionOpen) {
+                        Timber.d("Session established")
+                        emit(SingleConnectionStatus.Connected(device))
+                    } else {
+                        throw IOException("Failed to establish session")
+                    }
+                }
+            } catch (e: TimeoutCancellationException) {
+                throw IOException("Failed to establish session, timeout")
             }
-            emit(SingleConnectionStatus.Connected(device))
+
+            val sendLoop = scope.launch {
+                protocolHandler.startPacketSendingLoop {
+                    Timber.v("Sending packet")
+                    GattServerManager.ppogService!!.emitPacket(device.bluetoothDevice, it.asByteArray())
+                    Timber.v("Sent packet")
+                    return@startPacketSendingLoop true
+                }
+            }
+            GattServerManager.ppogService?.rxFlowFor(device.bluetoothDevice)!!.collect {
+                when (it) {
+                    is PPoGService.PPoGConnectionEvent.PacketReceived -> {
+                        protocolHandler.receivePacket(it.packet.asUByteArray())
+                    }
+                    is PPoGService.PPoGConnectionEvent.LinkError -> {
+                        Timber.e(it.error, "Link error")
+                        throw it.error
+                    }
+                }
+            }
+            sendLoop.cancel()
         }
     }
 }

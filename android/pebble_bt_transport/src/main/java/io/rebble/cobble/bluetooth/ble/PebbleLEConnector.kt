@@ -46,7 +46,15 @@ class PebbleLEConnector(private val connection: BlueGATTConnection, private val 
             throw IOException("Failed to discover services")
         }
         emit(ConnectorState.CONNECTING)
-
+        success = connection.requestMtu(LEConstants.TARGET_MTU)?.isSuccess() == true
+        if (!success) {
+            throw IOException("Failed to request MTU")
+        }
+        val paramManager = ConnectionParamManager(connection)
+        success = paramManager.subscribe()
+        if (!success) {
+            Timber.w("Continuing without connection parameters management")
+        }
         val connectivityWatcher = ConnectivityWatcher(connection)
         success = connectivityWatcher.subscribe()
         if (!success) {

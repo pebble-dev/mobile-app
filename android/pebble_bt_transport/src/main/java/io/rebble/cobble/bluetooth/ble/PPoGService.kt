@@ -46,7 +46,7 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
     private val ppogConnections = mutableMapOf<String, PPoGServiceConnection>()
     private var gattServer: GattServer? = null
     private val deviceRxFlow = MutableSharedFlow<PPoGConnectionEvent>(replay = 1)
-    private val deviceTxFlow = MutableSharedFlow<Pair<BluetoothDevice, PebblePacket>>()
+    private val deviceTxFlow = MutableSharedFlow<Pair<BluetoothDevice, ByteArray>>()
 
     /**
      * Filter flow for events related to a specific device
@@ -62,7 +62,7 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
 
     open class PPoGConnectionEvent(val device: BluetoothDevice) {
         class LinkError(device: BluetoothDevice, val error: Throwable) : PPoGConnectionEvent(device)
-        class PacketReceived(device: BluetoothDevice, val packet: PebblePacket) : PPoGConnectionEvent(device)
+        class PacketReceived(device: BluetoothDevice, val packet: ByteArray) : PPoGConnectionEvent(device)
     }
 
     private suspend fun runService(eventFlow: SharedFlow<ServerEvent>) {
@@ -78,11 +78,12 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
                         return@collect
                     }
                     Timber.d("Connection state changed: ${it.newState} for device ${it.device.address}")
-                    if (it.newState == BluetoothGatt.STATE_CONNECTED) {
+                    if (it.newState == GattConnectionState.Connected) {
                         check(ppogConnections[it.device.address] == null) { "Connection already exists for device ${it.device.address}" }
                         if (ppogConnections.isEmpty()) {
                             Timber.d("Creating new connection for device ${it.device.address}")
-                            val connectionScope = CoroutineScope(scope.coroutineContext + SupervisorJob(scope.coroutineContext[Job]))
+                            val supervisor = SupervisorJob(scope.coroutineContext[Job])
+                            val connectionScope = CoroutineScope(scope.coroutineContext + supervisor)
                             val connection = PPoGServiceConnection(
                                     connectionScope,
                                     this@PPoGService,
@@ -110,7 +111,6 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
                                     }
                                 }
                                 connection.start().collect { packet ->
-                                    Timber.v("RX ${packet.endpoint}")
                                     deviceRxFlow.emit(PPoGConnectionEvent.PacketReceived(it.device, packet))
                                 }
                             }
@@ -119,7 +119,7 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
                             //TODO: Handle multiple connections
                             Timber.w("Multiple connections not supported yet")
                         }
-                    } else if (it.newState == BluetoothGatt.STATE_DISCONNECTED) {
+                    } else if (it.newState == GattConnectionState.Disconnected) {
                         ppogConnections[it.device.address]?.close()
                         ppogConnections.remove(it.device.address)
                     }
@@ -159,12 +159,10 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
     }
 
     fun rxFlowFor(device: BluetoothDevice): Flow<PPoGConnectionEvent> {
-        return deviceRxFlow.onEach {
-            Timber.d("RX ${it.device.address} ${it::class.simpleName}")
-        }.filter { it.device.address == device.address }
+        return deviceRxFlow.filter { it.device.address == device.address }
     }
 
-    suspend fun emitPacket(device: BluetoothDevice, packet: PebblePacket) {
+    suspend fun emitPacket(device: BluetoothDevice, packet: ByteArray) {
         deviceTxFlow.emit(Pair(device, packet))
     }
 }

@@ -5,10 +5,7 @@ import android.bluetooth.*
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresPermission
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.channels.awaitClose
@@ -40,13 +37,16 @@ class GattServerImpl(private val bluetoothManager: BluetoothManager, private val
                     Timber.w("Event received while listening disabled: onConnectionStateChange")
                     return
                 }
-                trySend(ConnectionStateEvent(device, status, newState))
+                val newStateDecoded = GattConnectionState.fromInt(newState)
+                Timber.v("onConnectionStateChange: $device, $status, $newStateDecoded")
+                trySend(ConnectionStateEvent(device, status, newStateDecoded))
             }
             override fun onCharacteristicReadRequest(device: BluetoothDevice, requestId: Int, offset: Int, characteristic: BluetoothGattCharacteristic) {
                 if (!listeningEnabled) {
                     Timber.w("Event received while listening disabled: onCharacteristicReadRequest")
                     return
                 }
+                Timber.v("onCharacteristicReadRequest: $device, $requestId, $offset, ${characteristic.uuid}")
                 trySend(CharacteristicReadEvent(device, requestId, offset, characteristic) { data ->
                     try {
                         openServer?.sendResponse(device, requestId, data.status, data.offset, data.value)
@@ -61,6 +61,7 @@ class GattServerImpl(private val bluetoothManager: BluetoothManager, private val
                     Timber.w("Event received while listening disabled: onCharacteristicWriteRequest")
                     return
                 }
+                Timber.v("onCharacteristicWriteRequest: $device, $requestId, ${characteristic.uuid}, $preparedWrite, $responseNeeded, $offset, $value")
                 trySend(CharacteristicWriteEvent(device, requestId, characteristic, preparedWrite, responseNeeded, offset, value) { status ->
                     try {
                         openServer?.sendResponse(device, requestId, status, offset, null)
@@ -75,6 +76,7 @@ class GattServerImpl(private val bluetoothManager: BluetoothManager, private val
                     Timber.w("Event received while listening disabled: onDescriptorReadRequest")
                     return
                 }
+                Timber.v("onDescriptorReadRequest: $device, $requestId, $offset, ${descriptor?.characteristic?.uuid}->${descriptor?.uuid}")
                 trySend(DescriptorReadEvent(device!!, requestId, offset, descriptor!!) { data ->
                     try {
                         openServer?.sendResponse(device, requestId, data.status, data.offset, data.value)
@@ -89,6 +91,7 @@ class GattServerImpl(private val bluetoothManager: BluetoothManager, private val
                     Timber.w("Event received while listening disabled: onDescriptorWriteRequest")
                     return
                 }
+                Timber.v("onDescriptorWriteRequest: $device, $requestId, ${descriptor?.characteristic?.uuid}->${descriptor?.uuid}, $preparedWrite, $responseNeeded, $offset, $value")
                 trySend(DescriptorWriteEvent(device!!, requestId, descriptor!!, offset, value ?: byteArrayOf()) { status ->
                     try {
                         openServer?.sendResponse(device, requestId, status, offset, null)
@@ -103,6 +106,7 @@ class GattServerImpl(private val bluetoothManager: BluetoothManager, private val
                     Timber.w("Event received while listening disabled: onNotificationSent")
                     return
                 }
+                Timber.v("onNotificationSent: $device, $status")
                 trySend(NotificationSentEvent(device!!, status))
             }
 
@@ -111,14 +115,17 @@ class GattServerImpl(private val bluetoothManager: BluetoothManager, private val
                     Timber.w("Event received while listening disabled: onMtuChanged")
                     return
                 }
+                Timber.v("onMtuChanged: $device, $mtu")
                 trySend(MtuChangedEvent(device!!, mtu))
             }
 
             override fun onServiceAdded(status: Int, service: BluetoothGattService?) {
+                Timber.v("onServiceAdded: $status, ${service?.uuid}")
                 serviceAddedChannel.trySend(ServiceAddedEvent(status, service))
             }
         }
         openServer = bluetoothManager.openGattServer(context, callbacks)
+        openServer.clearServices()
         services.forEach {
             check(serviceAddedChannel.isEmpty) { "Service added event not consumed" }
             val service = it.register(serverFlow)
@@ -132,7 +139,10 @@ class GattServerImpl(private val bluetoothManager: BluetoothManager, private val
         server = openServer
         send(ServerInitializedEvent(this@GattServerImpl))
         listeningEnabled = true
-        awaitClose { openServer.close() }
+        awaitClose {
+            openServer.close()
+            server = null
+        }
     }
 
     private val serverActor = scope.actor<ServerAction> {
@@ -168,5 +178,15 @@ class GattServerImpl(private val bluetoothManager: BluetoothManager, private val
 
     override fun getFlow(): Flow<ServerEvent> {
         return serverFlow
+    }
+
+    override fun isOpened(): Boolean {
+        return server != null
+    }
+
+    override fun close() {
+        scope.cancel("GattServerImpl closed")
+        server?.close()
+        serverActor.close()
     }
 }

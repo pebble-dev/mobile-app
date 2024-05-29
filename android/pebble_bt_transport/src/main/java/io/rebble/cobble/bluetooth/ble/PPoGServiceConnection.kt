@@ -13,14 +13,13 @@ import java.io.Closeable
 import java.util.UUID
 
 class PPoGServiceConnection(val connectionScope: CoroutineScope, private val ppogService: PPoGService, val device: BluetoothDevice, private val deviceEventFlow: Flow<ServiceEvent>): Closeable {
-    private val ppogSession = PPoGSession(connectionScope, this, 23)
+    private val ppogSession = PPoGSession(connectionScope, device, LEConstants.DEFAULT_MTU)
     companion object {
         val metaCharacteristicUUID = UUID.fromString(LEConstants.UUIDs.META_CHARACTERISTIC_SERVER)
         val ppogCharacteristicUUID = UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER)
         val configurationDescriptorUUID = UUID.fromString(LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR)
     }
     private suspend fun runConnection() = deviceEventFlow.onEach {
-        Timber.d("Event: $it")
         when (it) {
             is CharacteristicReadEvent -> {
                 if (it.characteristic.uuid == metaCharacteristicUUID) {
@@ -32,7 +31,7 @@ class PPoGServiceConnection(val connectionScope: CoroutineScope, private val ppo
             }
             is CharacteristicWriteEvent -> {
                 if (it.characteristic.uuid == ppogCharacteristicUUID) {
-                    ppogSession.handleData(it.value)
+                    ppogSession.handlePacket(it.value)
                 } else {
                     Timber.w("Unknown characteristic write request: ${it.characteristic.uuid}")
                     it.respond(BluetoothGatt.GATT_FAILURE)
@@ -47,7 +46,7 @@ class PPoGServiceConnection(val connectionScope: CoroutineScope, private val ppo
                 }
             }
             is MtuChangedEvent -> {
-                ppogSession.mtu = it.mtu
+                ppogSession.setMTU(it.mtu)
             }
         }
     }.catch {
@@ -59,9 +58,17 @@ class PPoGServiceConnection(val connectionScope: CoroutineScope, private val ppo
         return CharacteristicResponse(BluetoothGatt.GATT_SUCCESS, 0, LEConstants.SERVER_META_RESPONSE)
     }
 
-    suspend fun start(): Flow<PebblePacket> {
+    /**
+     * Start the connection and return a flow of received data (pebble packets)
+     * @return Flow of received serialized pebble packets
+     */
+    suspend fun start(): Flow<ByteArray> {
         runConnection()
-        return ppogSession.openPacketFlow()
+        return ppogSession.flow().onEach {
+            if (it is PPoGSession.PPoGSessionResponse.WritePPoGCharacteristic) {
+                it.result.complete(ppogService.sendData(device, it.data))
+            }
+        }.filterIsInstance<PPoGSession.PPoGSessionResponse.PebblePacket>().map { it.packet }
     }
 
     @RequiresPermission("android.permission.BLUETOOTH_CONNECT")
@@ -69,9 +76,8 @@ class PPoGServiceConnection(val connectionScope: CoroutineScope, private val ppo
         return ppogService.sendData(device, data)
     }
 
-    suspend fun sendPebblePacket(packet: PebblePacket) {
-        val data = packet.serialize().asByteArray()
-        ppogSession.sendData(data)
+    suspend fun sendPebblePacket(packet: ByteArray) {
+        ppogSession.sendMessage(packet)
     }
     override fun close() {
         connectionScope.cancel()

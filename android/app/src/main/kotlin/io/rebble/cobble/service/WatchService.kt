@@ -2,6 +2,7 @@ package io.rebble.cobble.service
 
 import android.app.PendingIntent
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
 import android.content.Intent
 import android.os.Build
 import androidx.annotation.DrawableRes
@@ -11,11 +12,17 @@ import androidx.lifecycle.lifecycleScope
 import io.rebble.cobble.*
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.ConnectionState
+import io.rebble.cobble.bluetooth.ble.DummyService
+import io.rebble.cobble.bluetooth.ble.GattServerImpl
+import io.rebble.cobble.bluetooth.ble.GattServerManager
+import io.rebble.cobble.bluetooth.ble.PPoGService
 import io.rebble.cobble.handlers.CobbleHandler
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 import javax.inject.Provider
 
@@ -64,6 +71,11 @@ class WatchService : LifecycleService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         return START_STICKY
+    }
+
+    override fun onDestroy() {
+        GattServerManager.close()
+        super.onDestroy()
     }
 
     private fun startNotificationLoop() {

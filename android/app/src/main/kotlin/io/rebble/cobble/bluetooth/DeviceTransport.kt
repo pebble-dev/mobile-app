@@ -45,7 +45,6 @@ class DeviceTransport @Inject constructor(
 
         val driver = getTargetTransport(bluetoothDevice)
         this@DeviceTransport.driver = driver
-
         return driver.startSingleWatchConnection(bluetoothDevice)
     }
 
@@ -59,7 +58,7 @@ class DeviceTransport @Inject constructor(
                         incomingPacketsListener.receivedPackets
                 )
             }
-            btDevice?.type == BluetoothDevice.DEVICE_TYPE_LE -> { // LE only device
+            btDevice?.type == BluetoothDevice.DEVICE_TYPE_LE || btDevice?.type == BluetoothDevice.DEVICE_TYPE_DUAL -> { // LE device
                 BlueLEDriver(
                     context = context,
                     protocolHandler = protocolHandler

@@ -14,8 +14,8 @@ import kotlin.jvm.Throws
 
 class PPoGPacketWriter(private val scope: CoroutineScope, private val stateManager: PPoGSession.StateManager, private val onTimeout: () -> Unit): Closeable {
     private var metaWaitingToSend: GATTPacket? = null
-    private val dataWaitingToSend: LinkedList<GATTPacket> = LinkedList()
-    private val inflightPackets: LinkedList<GATTPacket> = LinkedList()
+    val dataWaitingToSend: LinkedList<GATTPacket> = LinkedList()
+    val inflightPackets: LinkedList<GATTPacket> = LinkedList()
     var txWindow = 1
     private var timeoutJob: Job? = null
     private val _packetWriteFlow = MutableSharedFlow<GATTPacket>()
@@ -55,22 +55,23 @@ class PPoGPacketWriter(private val scope: CoroutineScope, private val stateManag
                 break
             }
         }
-        if (!inflightPackets.contains(packet)) {
+        if (inflightPackets.find { it.sequence == packet.sequence } == null) {
             Timber.w("Received ACK for packet not in flight")
             return
         }
         var ackedPacket: GATTPacket? = null
 
         // remove packets until the acked packet
-        while (ackedPacket != packet) {
+        while (ackedPacket?.sequence != packet.sequence) {
             ackedPacket = inflightPackets.poll()
+            check(ackedPacket != null) { "Polled inflightPackets to empty" }
         }
         sendNextPacket()
         rescheduleTimeout()
     }
 
     @Throws(SecurityException::class)
-    private suspend fun sendNextPacket() {
+    suspend fun sendNextPacket() {
         if (metaWaitingToSend == null && dataWaitingToSend.isEmpty()) {
             return
         }

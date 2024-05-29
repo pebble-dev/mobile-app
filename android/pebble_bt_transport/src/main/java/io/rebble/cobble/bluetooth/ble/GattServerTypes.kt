@@ -11,7 +11,19 @@ class ServiceAddedEvent(val status: Int, val service: BluetoothGattService?) : S
 class ServerInitializedEvent(val server: GattServer) : ServerEvent
 
 open class ServiceEvent(val device: BluetoothDevice) : ServerEvent
-class ConnectionStateEvent(device: BluetoothDevice, val status: Int, val newState: Int) : ServiceEvent(device)
+class ConnectionStateEvent(device: BluetoothDevice, val status: Int, val newState: GattConnectionState) : ServiceEvent(device)
+enum class GattConnectionState(val value: Int) {
+    Disconnected(BluetoothGatt.STATE_DISCONNECTED),
+    Connecting(BluetoothGatt.STATE_CONNECTING),
+    Connected(BluetoothGatt.STATE_CONNECTED),
+    Disconnecting(BluetoothGatt.STATE_DISCONNECTING);
+
+    companion object {
+        fun fromInt(value: Int): GattConnectionState {
+            return entries.firstOrNull { it.value == value } ?: throw IllegalArgumentException("Unknown connection state: $value")
+        }
+    }
+}
 class CharacteristicReadEvent(device: BluetoothDevice, val requestId: Int, val offset: Int, val characteristic: BluetoothGattCharacteristic, val respond: (CharacteristicResponse) -> Unit) : ServiceEvent(device)
 class CharacteristicWriteEvent(device: BluetoothDevice, val requestId: Int, val characteristic: BluetoothGattCharacteristic, val preparedWrite: Boolean, val responseNeeded: Boolean, val offset: Int, val value: ByteArray, val respond: (Int) -> Unit) : ServiceEvent(device)
 class CharacteristicResponse(val status: Int, val offset: Int, val value: ByteArray) {
