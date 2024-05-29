@@ -233,7 +233,7 @@ class UpdatePrompt extends HookConsumerWidget implements CobbleScreen {
       if (!confirmOnSuccess && (state.value == UpdatePromptState.success || state.value == UpdatePromptState.noUpdate)) {
         onSuccess(context);
       }
-    }, [state]);
+    }, [state.value]);
 
     final desc = _descForState(state.value);
     final fab = state.value == UpdatePromptState.updateAvailable || state.value == UpdatePromptState.restoreRequired ? CobbleFab(
