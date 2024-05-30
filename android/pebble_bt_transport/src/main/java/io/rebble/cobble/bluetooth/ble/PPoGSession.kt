@@ -33,6 +33,7 @@ class PPoGSession(private val scope: CoroutineScope, val device: BluetoothDevice
 
     private val sessionFlow = MutableSharedFlow<PPoGSessionResponse>()
     private val packetRetries: MutableMap<GATTPacket, Int> = mutableMapOf()
+    private var pendingOutboundResetAck: GATTPacket? = null
 
     open class PPoGSessionResponse {
         class PebblePacket(val packet: ByteArray) : PPoGSessionResponse()
@@ -42,7 +43,8 @@ class PPoGSession(private val scope: CoroutineScope, val device: BluetoothDevice
         class SendMessage(val data: ByteArray) : SessionCommand()
         class HandlePacket(val packet: ByteArray) : SessionCommand()
         class SetMTU(val mtu: Int) : SessionCommand()
-        class OnUnblocked : SessionCommand()
+        class SendPendingResetAck : SessionCommand()
+        class OnUnblocked : SessionCommand() //TODO
         class DelayedAck : SessionCommand()
         class DelayedNack : SessionCommand()
     }
@@ -82,6 +84,13 @@ class PPoGSession(private val scope: CoroutineScope, val device: BluetoothDevice
                 }
                 is SessionCommand.SetMTU -> {
                     mtu = command.mtu
+                }
+                is SessionCommand.SendPendingResetAck -> {
+                    pendingOutboundResetAck?.let {
+                        Timber.i("Connection is now allowed, sending pending reset ACK")
+                        packetWriter.sendOrQueuePacket(it)
+                        pendingOutboundResetAck = null
+                    }
                 }
                 is SessionCommand.OnUnblocked -> {
                     packetWriter.sendNextPacket()
@@ -164,9 +173,17 @@ class PPoGSession(private val scope: CoroutineScope, val device: BluetoothDevice
         packetWriter.rescheduleTimeout(true)
         resetState()
         val resetAckPacket = makeResetAck(sequenceOutCursor, MAX_SUPPORTED_WINDOW_SIZE, MAX_SUPPORTED_WINDOW_SIZE, ppogVersion)
-        packetWriter.sendOrQueuePacket(resetAckPacket)
-
         stateManager.state = State.AwaitingResetAck
+        if (PPoGLinkStateManager.getState(device.address).value != PPoGLinkState.ReadyForSession) {
+            Timber.i("Connection not allowed yet, saving reset ACK for later")
+            pendingOutboundResetAck = resetAckPacket
+            scope.launch {
+                PPoGLinkStateManager.getState(device.address).first { it == PPoGLinkState.ReadyForSession }
+                sessionActor.send(SessionCommand.SendPendingResetAck())
+            }
+            return
+        }
+        packetWriter.sendOrQueuePacket(resetAckPacket)
     }
 
     private fun makeResetAck(sequence: Int, rxWindow: Int, txWindow: Int, ppogVersion: GATTPacket.PPoGConnectionVersion): GATTPacket {
@@ -250,7 +267,7 @@ class PPoGSession(private val scope: CoroutineScope, val device: BluetoothDevice
         // Send ack
         lastAck?.let {
             packetsSinceLastAck = 0
-            check(it.sequence != dbgLastAckSeq) { "Sending duplicate ACK for sequence ${it.sequence}" }
+            check(it.sequence != dbgLastAckSeq) { "Sending duplicate ACK for sequence ${it.sequence}" } //TODO: Check this issue
             dbgLastAckSeq = it.sequence
             Timber.d("Writing ACK for sequence ${it.sequence}")
             packetWriter.sendOrQueuePacket(it)

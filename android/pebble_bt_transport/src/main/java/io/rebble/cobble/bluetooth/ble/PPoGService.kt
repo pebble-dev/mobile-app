@@ -97,19 +97,6 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
                             )
                             connectionScope.launch {
                                 Timber.d("Starting connection for device ${it.device.address}")
-                                val stateFlow = PPoGLinkStateManager.getState(it.device.address)
-                                if (stateFlow.value != PPoGLinkState.ReadyForSession) {
-                                    Timber.i("Device not ready, waiting for state change")
-                                    try {
-                                        withTimeout(10000) {
-                                            stateFlow.first { it == PPoGLinkState.ReadyForSession }
-                                            Timber.i("Device ready for session")
-                                        }
-                                    } catch (e: TimeoutCancellationException) {
-                                        deviceRxFlow.emit(PPoGConnectionEvent.LinkError(it.device, e))
-                                        return@launch
-                                    }
-                                }
                                 connection.start().collect { packet ->
                                     deviceRxFlow.emit(PPoGConnectionEvent.PacketReceived(it.device, packet))
                                 }

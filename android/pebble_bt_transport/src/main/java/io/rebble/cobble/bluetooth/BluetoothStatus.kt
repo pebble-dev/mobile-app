@@ -21,10 +21,18 @@ fun getBluetoothStatus(context: Context): Flow<Boolean> {
             }
 }
 
-fun getBluetoothDevicePairEvents(context: Context, address: String): Flow<Int> {
+class BluetoothDevicePairEvent(val device: BluetoothDevice, val bondState: Int, val unbondReason: Int?)
+
+fun getBluetoothDevicePairEvents(context: Context, address: String): Flow<BluetoothDevicePairEvent> {
     return IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED).asFlow(context)
-            .filter {
-                it.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)?.address == address
+            .map {
+                BluetoothDevicePairEvent(
+                        it.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)!!,
+                        it.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.BOND_NONE),
+                        it.getIntExtra("android.bluetooth.device.extra.REASON", -1).takeIf { it != -1 }
+                )
             }
-            .map { it.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.BOND_NONE) }
+            .filter {
+                it.device.address == address
+            }
 }

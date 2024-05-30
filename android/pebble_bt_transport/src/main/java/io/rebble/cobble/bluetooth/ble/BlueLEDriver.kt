@@ -41,17 +41,23 @@ class BlueLEDriver(
             emit(SingleConnectionStatus.Connecting(device))
             val connector = PebbleLEConnector(gatt, context, scope)
             var success = false
-            connector.connect().collect {
-                when (it) {
-                    PebbleLEConnector.ConnectorState.CONNECTING -> Timber.d("PebbleLEConnector is connecting")
-                    PebbleLEConnector.ConnectorState.PAIRING -> Timber.d("PebbleLEConnector is pairing")
-                    PebbleLEConnector.ConnectorState.CONNECTED -> {
-                        Timber.d("PebbleLEConnector connected watch, waiting for watch")
-                        PPoGLinkStateManager.updateState(device.address, PPoGLinkState.ReadyForSession)
-                        success = true
+            try {
+                connector.connect().collect {
+                    when (it) {
+                        PebbleLEConnector.ConnectorState.CONNECTING -> Timber.d("PebbleLEConnector is connecting")
+                        PebbleLEConnector.ConnectorState.PAIRING -> Timber.d("PebbleLEConnector is pairing")
+                        PebbleLEConnector.ConnectorState.CONNECTED -> {
+                            Timber.d("PebbleLEConnector connected watch, waiting for watch")
+                            PPoGLinkStateManager.updateState(device.address, PPoGLinkState.ReadyForSession)
+                            success = true
+                        }
                     }
                 }
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to connect to watch")
+                throw e
             }
+
             check(success) { "Failed to connect to watch" }
             GattServerManager.getGattServer()?.getServer()?.connect(device.bluetoothDevice, true)
             try {

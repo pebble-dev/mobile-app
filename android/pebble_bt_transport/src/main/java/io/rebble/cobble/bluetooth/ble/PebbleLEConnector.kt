@@ -98,14 +98,7 @@ class PebbleLEConnector(private val connection: BlueGATTConnection, private val 
         emit(ConnectorState.CONNECTED)
     }
 
-    private fun createBondStateCompletable(): CompletableDeferred<Int> {
-        val bondStateCompleteable = CompletableDeferred<Int>()
-        scope.launch {
-            val bondState = getBluetoothDevicePairEvents(context, connection.device.address)
-            bondStateCompleteable.complete(bondState.first { it != BluetoothDevice.BOND_BONDING })
-        }
-        return bondStateCompleteable
-    }
+    private fun getBondStateFlow() = getBluetoothDevicePairEvents(context, connection.device.address)
 
     @Throws(IOException::class, SecurityException::class)
     private suspend fun requestPairing(connectivityRecord: ConnectivityWatcher.ConnectivityStatus) {
@@ -115,8 +108,15 @@ class PebbleLEConnector(private val connection: BlueGATTConnection, private val 
         val pairingTriggerCharacteristic = pairingService.getCharacteristic(UUID.fromString(LEConstants.UUIDs.PAIRING_TRIGGER_CHARACTERISTIC))
         check(pairingTriggerCharacteristic != null) { "Pairing trigger characteristic not found" }
 
-        val bondStateCompleteable = createBondStateCompletable()
+        val bondState = getBondStateFlow()
         var needsExplicitBond = true
+
+        val bondBonded = scope.async {
+            bondState.first { it.bondState == BluetoothDevice.BOND_BONDED }
+        }
+        val bondBonding = scope.async {
+            bondState.first { it.bondState == BluetoothDevice.BOND_BONDING }
+        }
 
         // A writeable pairing trigger allows addr pinning
         val writeablePairTrigger = pairingTriggerCharacteristic.properties and BluetoothGattCharacteristic.PROPERTY_WRITE != 0
@@ -127,15 +127,15 @@ class PebbleLEConnector(private val connection: BlueGATTConnection, private val 
                 throw IOException("Failed to request pinning")
             }
         }
-
         if (needsExplicitBond) {
             Timber.d("Explicit bond required")
             connection.device.createBond()
         }
-        val bondResult = withTimeout(PENDING_BOND_TIMEOUT) {
-            bondStateCompleteable.await()
+        withTimeout(PENDING_BOND_TIMEOUT) {
+            bondBonding.await()
         }
-        check(bondResult == BluetoothDevice.BOND_BONDED) { "Failed to bond" }
+        Timber.d("Bonding started")
+        check(bondBonded.await().bondState == BluetoothDevice.BOND_BONDED) { "Failed to bond, reason = ${bondBonded.await().unbondReason}" }
     }
 
     private fun makePairingTriggerValue(noSecurityRequest: Boolean, autoAcceptFuturePairing: Boolean, watchAsGattServer: Boolean): ByteArray {
