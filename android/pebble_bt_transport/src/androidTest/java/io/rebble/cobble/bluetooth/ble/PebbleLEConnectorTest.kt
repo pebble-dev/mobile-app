@@ -44,7 +44,7 @@ class PebbleLEConnectorTest {
     lateinit var bluetoothAdapter: BluetoothAdapter
 
     companion object {
-        private val DEVICE_ADDRESS_LE = "6F:F1:85:CA:8B:20"
+        private val DEVICE_ADDRESS_LE = "71:D2:AE:CE:30:C1"
     }
 
     @Before

@@ -79,7 +79,12 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
                     }
                     Timber.d("Connection state changed: ${it.newState} for device ${it.device.address}")
                     if (it.newState == GattConnectionState.Connected) {
-                        check(ppogConnections[it.device.address] == null) { "Connection already exists for device ${it.device.address}" }
+                        if (ppogConnections.containsKey(it.device.address)) {
+                            Timber.w("Connection already exists for device ${it.device.address}")
+                            ppogConnections[it.device.address]?.resetDebouncedClose()
+                            return@collect
+                        }
+
                         if (ppogConnections.isEmpty()) {
                             Timber.d("Creating new connection for device ${it.device.address}")
                             val supervisor = SupervisorJob(scope.coroutineContext[Job])
@@ -92,6 +97,7 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
                                         .onSubscription {
                                             Timber.d("Subscription started for device ${it.device.address}")
                                         }
+                                        .buffer()
                                         .filterIsInstance<ServiceEvent>()
                                         .filter(filterFlowForDevice(it.device.address))
                             )
@@ -107,8 +113,10 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
                             Timber.w("Multiple connections not supported yet")
                         }
                     } else if (it.newState == GattConnectionState.Disconnected) {
-                        ppogConnections[it.device.address]?.close()
-                        ppogConnections.remove(it.device.address)
+                        if (ppogConnections[it.device.address]?.debouncedClose() == true) {
+                            Timber.d("Connection for device ${it.device.address} closed")
+                            ppogConnections.remove(it.device.address)
+                        }
                     }
                 }
             }

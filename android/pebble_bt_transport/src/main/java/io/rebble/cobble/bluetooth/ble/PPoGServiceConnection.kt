@@ -14,6 +14,8 @@ import java.util.UUID
 
 class PPoGServiceConnection(val connectionScope: CoroutineScope, private val ppogService: PPoGService, val device: BluetoothDevice, private val deviceEventFlow: Flow<ServiceEvent>): Closeable {
     private val ppogSession = PPoGSession(connectionScope, device, LEConstants.DEFAULT_MTU)
+    var debouncedCloseJob: Job? = null
+
     companion object {
         val metaCharacteristicUUID = UUID.fromString(LEConstants.UUIDs.META_CHARACTERISTIC_SERVER)
         val ppogCharacteristicUUID = UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER)
@@ -81,5 +83,24 @@ class PPoGServiceConnection(val connectionScope: CoroutineScope, private val ppo
     }
     override fun close() {
         connectionScope.cancel()
+    }
+
+    suspend fun debouncedClose(): Boolean {
+        debouncedCloseJob?.cancel()
+        val job = connectionScope.launch {
+            delay(1000)
+            close()
+        }
+        debouncedCloseJob = job
+        try {
+            debouncedCloseJob?.join()
+        } catch (e: CancellationException) {
+            return false
+        }
+        return true
+    }
+
+    fun resetDebouncedClose() {
+        debouncedCloseJob?.cancel()
     }
 }

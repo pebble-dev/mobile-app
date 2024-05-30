@@ -13,13 +13,8 @@ import androidx.annotation.RequiresPermission
 import io.rebble.cobble.bluetooth.getBluetoothDevicePairEvents
 import io.rebble.libpebblecommon.ble.LEConstants
 import io.rebble.libpebblecommon.packets.PhoneAppVersion
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import java.io.IOException
 import java.util.BitSet
@@ -30,7 +25,7 @@ import java.util.regex.Pattern
 @OptIn(ExperimentalUnsignedTypes::class)
 class PebbleLEConnector(private val connection: BlueGATTConnection, private val context: Context, private val scope: CoroutineScope) {
     companion object {
-        private val PENDING_BOND_TIMEOUT = 30000L // Requires user interaction, so needs a longer timeout
+        private val PENDING_BOND_TIMEOUT = 60000L // Requires user interaction, so needs a longer timeout
         private val CONNECTIVITY_UPDATE_TIMEOUT = 10000L
     }
 
@@ -46,10 +41,10 @@ class PebbleLEConnector(private val connection: BlueGATTConnection, private val 
             throw IOException("Failed to discover services")
         }
         emit(ConnectorState.CONNECTING)
-        success = connection.requestMtu(LEConstants.TARGET_MTU)?.isSuccess() == true
+        /*success = connection.requestMtu(LEConstants.TARGET_MTU)?.isSuccess() == true
         if (!success) {
             throw IOException("Failed to request MTU")
-        }
+        }*/
         val paramManager = ConnectionParamManager(connection)
         success = paramManager.subscribe()
         if (!success) {
@@ -62,8 +57,15 @@ class PebbleLEConnector(private val connection: BlueGATTConnection, private val 
         } else {
             Timber.d("Subscribed to connectivity changes")
         }
+        val connStatusFlow = connectivityWatcher.getStatusFlow()
+        connStatusFlow.onEach {
+            Timber.d("Connection status: $it")
+            if (it.pairingErrorCode != ConnectivityWatcher.PairingErrorCode.NO_ERROR) {
+                Timber.e("Pairing error")
+            }
+        }.launchIn(scope)
         val connectionStatus = withTimeout(CONNECTIVITY_UPDATE_TIMEOUT) {
-            connectivityWatcher.getStatusFlowed()
+            connStatusFlow.first()
         }
         Timber.d("Connection status: $connectionStatus")
         if (connectionStatus.paired) {
@@ -73,7 +75,7 @@ class PebbleLEConnector(private val connection: BlueGATTConnection, private val 
                     emit(ConnectorState.CONNECTED)
                     return@flow
                 } else {
-                    val nwConnectionStatus = connectivityWatcher.getStatusFlowed()
+                    val nwConnectionStatus = connStatusFlow.first()
                     check(nwConnectionStatus.connected) { "Failed to connect to watch" }
                     emit(ConnectorState.CONNECTED)
                     return@flow
@@ -111,13 +113,6 @@ class PebbleLEConnector(private val connection: BlueGATTConnection, private val 
         val bondState = getBondStateFlow()
         var needsExplicitBond = true
 
-        val bondBonded = scope.async {
-            bondState.first { it.bondState == BluetoothDevice.BOND_BONDED }
-        }
-        val bondBonding = scope.async {
-            bondState.first { it.bondState == BluetoothDevice.BOND_BONDING }
-        }
-
         // A writeable pairing trigger allows addr pinning
         val writeablePairTrigger = pairingTriggerCharacteristic.properties and BluetoothGattCharacteristic.PROPERTY_WRITE != 0
         if (writeablePairTrigger) {
@@ -127,15 +122,16 @@ class PebbleLEConnector(private val connection: BlueGATTConnection, private val 
                 throw IOException("Failed to request pinning")
             }
         }
+
         if (needsExplicitBond) {
             Timber.d("Explicit bond required")
-            connection.device.createBond()
+            if (!connection.device.createBond()) {
+                throw IOException("Failed to request create bond")
+            }
         }
         withTimeout(PENDING_BOND_TIMEOUT) {
-            bondBonding.await()
+            bondState.onEach { Timber.v("Bond state: ${it.bondState}") }.first { it.bondState != BluetoothDevice.BOND_BONDED }
         }
-        Timber.d("Bonding started")
-        check(bondBonded.await().bondState == BluetoothDevice.BOND_BONDED) { "Failed to bond, reason = ${bondBonded.await().unbondReason}" }
     }
 
     private fun makePairingTriggerValue(noSecurityRequest: Boolean, autoAcceptFuturePairing: Boolean, watchAsGattServer: Boolean): ByteArray {

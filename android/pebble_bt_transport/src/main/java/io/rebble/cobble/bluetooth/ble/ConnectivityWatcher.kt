@@ -5,6 +5,7 @@ import io.rebble.libpebblecommon.ble.LEConstants
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapNotNull
 import timber.log.Timber
 import java.util.*
 import kotlin.experimental.and
@@ -121,8 +122,7 @@ class ConnectivityWatcher(val gatt: BlueGATTConnection) {
         }
     }
 
-    suspend fun getStatusFlowed(): ConnectivityStatus {
-        val value = gatt.characteristicChanged.filter { it.characteristic?.uuid == UUID.fromString(LEConstants.UUIDs.CONNECTIVITY_CHARACTERISTIC) }.first {it.value != null}.value
-        return ConnectivityStatus(value!!)
+    fun getStatusFlow() = gatt.characteristicChanged.filter { it.characteristic?.uuid == UUID.fromString(LEConstants.UUIDs.CONNECTIVITY_CHARACTERISTIC) }.mapNotNull {
+        it.value?.let { value -> ConnectivityStatus(value) }
     }
 }

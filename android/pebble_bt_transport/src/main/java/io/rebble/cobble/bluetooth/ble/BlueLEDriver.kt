@@ -59,9 +59,9 @@ class BlueLEDriver(
             }
 
             check(success) { "Failed to connect to watch" }
-            GattServerManager.getGattServer()?.getServer()?.connect(device.bluetoothDevice, true)
+            //GattServerManager.getGattServer()?.getServer()?.connect(device.bluetoothDevice, true)
             try {
-                withTimeout(10000) {
+                withTimeout(60000) {
                     val result = PPoGLinkStateManager.getState(device.address).first { it != PPoGLinkState.ReadyForSession }
                     if (result == PPoGLinkState.SessionOpen) {
                         Timber.d("Session established")
