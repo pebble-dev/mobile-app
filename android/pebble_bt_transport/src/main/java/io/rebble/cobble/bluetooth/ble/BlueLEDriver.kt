@@ -38,62 +38,66 @@ class BlueLEDriver(
             GattServerManager.initIfNeeded(context, scope)
             val gatt = device.bluetoothDevice.connectGatt(context, workaroundResolver(UnboundWatchBeforeConnecting))
                     ?: throw IOException("Failed to connect to device")
-            emit(SingleConnectionStatus.Connecting(device))
-            val connector = PebbleLEConnector(gatt, context, scope)
-            var success = false
             try {
-                connector.connect().collect {
+                emit(SingleConnectionStatus.Connecting(device))
+                val connector = PebbleLEConnector(gatt, context, scope)
+                var success = false
+                connector.connect()
+                        .catch {
+                            Timber.e(it, "LEConnector failed to connect")
+                            throw it
+                        }
+                        .collect {
+                            when (it) {
+                                PebbleLEConnector.ConnectorState.CONNECTING -> Timber.d("PebbleLEConnector ${connector} is connecting")
+                                PebbleLEConnector.ConnectorState.PAIRING -> Timber.d("PebbleLEConnector is pairing")
+                                PebbleLEConnector.ConnectorState.CONNECTED -> {
+                                    Timber.d("PebbleLEConnector connected watch, waiting for watch")
+                                    PPoGLinkStateManager.updateState(device.address, PPoGLinkState.ReadyForSession)
+                                    success = true
+                                }
+                            }
+                        }
+
+                check(success) { "Failed to connect to watch" }
+                //GattServerManager.getGattServer()?.getServer()?.connect(device.bluetoothDevice, true)
+                try {
+                    withTimeout(60000) {
+                        val result = PPoGLinkStateManager.getState(device.address).first { it != PPoGLinkState.ReadyForSession }
+                        if (result == PPoGLinkState.SessionOpen) {
+                            Timber.d("Session established")
+                            emit(SingleConnectionStatus.Connected(device))
+                        } else {
+                            throw IOException("Failed to establish session")
+                        }
+                    }
+                } catch (e: TimeoutCancellationException) {
+                    throw IOException("Failed to establish session, timeout")
+                }
+
+                val sendLoop = scope.launch {
+                    protocolHandler.startPacketSendingLoop {
+                        Timber.v("Sending packet")
+                        GattServerManager.ppogService!!.emitPacket(device.bluetoothDevice, it.asByteArray())
+                        Timber.v("Sent packet")
+                        return@startPacketSendingLoop true
+                    }
+                }
+                GattServerManager.ppogService?.rxFlowFor(device.bluetoothDevice)!!.collect {
                     when (it) {
-                        PebbleLEConnector.ConnectorState.CONNECTING -> Timber.d("PebbleLEConnector is connecting")
-                        PebbleLEConnector.ConnectorState.PAIRING -> Timber.d("PebbleLEConnector is pairing")
-                        PebbleLEConnector.ConnectorState.CONNECTED -> {
-                            Timber.d("PebbleLEConnector connected watch, waiting for watch")
-                            PPoGLinkStateManager.updateState(device.address, PPoGLinkState.ReadyForSession)
-                            success = true
+                        is PPoGService.PPoGConnectionEvent.PacketReceived -> {
+                            protocolHandler.receivePacket(it.packet.asUByteArray())
+                        }
+                        is PPoGService.PPoGConnectionEvent.LinkError -> {
+                            Timber.e(it.error, "Link error")
+                            throw it.error
                         }
                     }
                 }
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to connect to watch")
-                throw e
+                sendLoop.cancel()
+            } finally {
+                gatt.close()
             }
-
-            check(success) { "Failed to connect to watch" }
-            //GattServerManager.getGattServer()?.getServer()?.connect(device.bluetoothDevice, true)
-            try {
-                withTimeout(60000) {
-                    val result = PPoGLinkStateManager.getState(device.address).first { it != PPoGLinkState.ReadyForSession }
-                    if (result == PPoGLinkState.SessionOpen) {
-                        Timber.d("Session established")
-                        emit(SingleConnectionStatus.Connected(device))
-                    } else {
-                        throw IOException("Failed to establish session")
-                    }
-                }
-            } catch (e: TimeoutCancellationException) {
-                throw IOException("Failed to establish session, timeout")
-            }
-
-            val sendLoop = scope.launch {
-                protocolHandler.startPacketSendingLoop {
-                    Timber.v("Sending packet")
-                    GattServerManager.ppogService!!.emitPacket(device.bluetoothDevice, it.asByteArray())
-                    Timber.v("Sent packet")
-                    return@startPacketSendingLoop true
-                }
-            }
-            GattServerManager.ppogService?.rxFlowFor(device.bluetoothDevice)!!.collect {
-                when (it) {
-                    is PPoGService.PPoGConnectionEvent.PacketReceived -> {
-                        protocolHandler.receivePacket(it.packet.asUByteArray())
-                    }
-                    is PPoGService.PPoGConnectionEvent.LinkError -> {
-                        Timber.e(it.error, "Link error")
-                        throw it.error
-                    }
-                }
-            }
-            sendLoop.cancel()
         }
     }
 }
