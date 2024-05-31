@@ -68,6 +68,15 @@ class PPoGService(private val scope: CoroutineScope) : GattService {
     private suspend fun runService(eventFlow: SharedFlow<ServerEvent>) {
         eventFlow.collect {
             when (it) {
+                is CharacteristicReadEvent -> {
+                    if (it.characteristic.uuid == metaCharacteristic.uuid) {
+                        Timber.d("Meta characteristic read request")
+                        it.respond(CharacteristicResponse(BluetoothGatt.GATT_SUCCESS, 0, LEConstants.SERVER_META_RESPONSE))
+                    } else {
+                        Timber.w("Unknown characteristic read request: ${it.characteristic.uuid}")
+                        it.respond(CharacteristicResponse.Failure)
+                    }
+                }
                 is ServerInitializedEvent -> {
                     Timber.d("Server initialized")
                     gattServer = it.server

@@ -17,20 +17,11 @@ class PPoGServiceConnection(val connectionScope: CoroutineScope, private val ppo
     var debouncedCloseJob: Job? = null
 
     companion object {
-        val metaCharacteristicUUID = UUID.fromString(LEConstants.UUIDs.META_CHARACTERISTIC_SERVER)
         val ppogCharacteristicUUID = UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER)
         val configurationDescriptorUUID = UUID.fromString(LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR)
     }
     private suspend fun runConnection() = deviceEventFlow.onEach {
         when (it) {
-            is CharacteristicReadEvent -> {
-                if (it.characteristic.uuid == metaCharacteristicUUID) {
-                    it.respond(makeMetaResponse())
-                } else {
-                    Timber.w("Unknown characteristic read request: ${it.characteristic.uuid}")
-                    it.respond(CharacteristicResponse.Failure)
-                }
-            }
             is CharacteristicWriteEvent -> {
                 if (it.characteristic.uuid == ppogCharacteristicUUID) {
                     ppogSession.handlePacket(it.value)
@@ -55,10 +46,6 @@ class PPoGServiceConnection(val connectionScope: CoroutineScope, private val ppo
         Timber.e(it)
         connectionScope.cancel("Error in device event flow", it)
     }.launchIn(connectionScope)
-
-    private fun makeMetaResponse(): CharacteristicResponse {
-        return CharacteristicResponse(BluetoothGatt.GATT_SUCCESS, 0, LEConstants.SERVER_META_RESPONSE)
-    }
 
     /**
      * Start the connection and return a flow of received data (pebble packets)
