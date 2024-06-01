@@ -22,10 +22,12 @@ import kotlin.coroutines.CoroutineContext
  * @param protocolHandler Protocol handler for Pebble communication
  * @param workaroundResolver Function to check if a workaround is enabled
  */
+@OptIn(ExperimentalUnsignedTypes::class)
 class BlueLEDriver(
         coroutineContext: CoroutineContext = Dispatchers.IO,
         private val context: Context,
         private val protocolHandler: ProtocolHandler,
+        private val gattServerManager: GattServerManager,
         private val workaroundResolver: (WorkaroundDescriptor) -> Boolean
 ): BlueIO {
     private val scope = CoroutineScope(coroutineContext)
@@ -35,7 +37,7 @@ class BlueLEDriver(
         require(!device.emulated)
         require(device.bluetoothDevice != null)
         return flow {
-            GattServerManager.initIfNeeded(context, scope)
+            val gattServer = gattServerManager.gattServer.first()
             val gatt = device.bluetoothDevice.connectGatt(context, workaroundResolver(UnboundWatchBeforeConnecting))
                     ?: throw IOException("Failed to connect to device")
             try {
@@ -77,23 +79,12 @@ class BlueLEDriver(
 
                 val sendLoop = scope.launch {
                     protocolHandler.startPacketSendingLoop {
-                        Timber.v("Sending packet")
-                        GattServerManager.ppogService!!.emitPacket(device.bluetoothDevice, it.asByteArray())
-                        Timber.v("Sent packet")
-                        return@startPacketSendingLoop true
+                        return@startPacketSendingLoop gattServer.sendMessageToDevice(device.address, it.asByteArray())
                     }
                 }
-                GattServerManager.ppogService?.rxFlowFor(device.bluetoothDevice)!!.collect {
-                    when (it) {
-                        is PPoGService.PPoGConnectionEvent.PacketReceived -> {
-                            protocolHandler.receivePacket(it.packet.asUByteArray())
-                        }
-                        is PPoGService.PPoGConnectionEvent.LinkError -> {
-                            Timber.e(it.error, "Link error")
-                            throw it.error
-                        }
-                    }
-                }
+                gattServer.rxFlowFor(device.address)?.collect {
+                    protocolHandler.receivePacket(it.asUByteArray())
+                } ?: throw IOException("Failed to get rxFlow")
                 sendLoop.cancel()
             } finally {
                 gatt.close()

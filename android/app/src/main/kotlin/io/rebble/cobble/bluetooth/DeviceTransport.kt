@@ -6,6 +6,7 @@ import android.content.Context
 import androidx.annotation.RequiresPermission
 import io.rebble.cobble.BuildConfig
 import io.rebble.cobble.bluetooth.ble.BlueLEDriver
+import io.rebble.cobble.bluetooth.ble.GattServerManager
 import io.rebble.cobble.bluetooth.classic.BlueSerialDriver
 import io.rebble.cobble.bluetooth.classic.SocketSerialDriver
 import io.rebble.cobble.bluetooth.scan.BleScanner
@@ -28,6 +29,8 @@ class DeviceTransport @Inject constructor(
         private val incomingPacketsListener: IncomingPacketsListener
 ) {
     private var driver: BlueIO? = null
+
+    private val gattServerManager: GattServerManager = GattServerManager(context)
 
     private var externalIncomingPacketHandler: (suspend (ByteArray) -> Unit)? = null
 
@@ -59,9 +62,11 @@ class DeviceTransport @Inject constructor(
                 )
             }
             btDevice?.type == BluetoothDevice.DEVICE_TYPE_LE || btDevice?.type == BluetoothDevice.DEVICE_TYPE_DUAL -> { // LE device
+                gattServerManager.initIfNeeded()
                 BlueLEDriver(
-                    context = context,
-                    protocolHandler = protocolHandler
+                        context = context,
+                        protocolHandler = protocolHandler,
+                        gattServerManager = gattServerManager,
                 ) {
                     flutterPreferences.shouldActivateWorkaround(it)
                 }

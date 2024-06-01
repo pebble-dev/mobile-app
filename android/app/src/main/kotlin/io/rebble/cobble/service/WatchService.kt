@@ -1,28 +1,25 @@
 package io.rebble.cobble.service
 
+import android.Manifest
 import android.app.PendingIntent
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.DrawableRes
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import io.rebble.cobble.*
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.ConnectionState
-import io.rebble.cobble.bluetooth.ble.DummyService
-import io.rebble.cobble.bluetooth.ble.GattServerImpl
 import io.rebble.cobble.bluetooth.ble.GattServerManager
-import io.rebble.cobble.bluetooth.ble.PPoGService
 import io.rebble.cobble.handlers.CobbleHandler
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 import javax.inject.Provider
 
@@ -40,7 +37,6 @@ class WatchService : LifecycleService() {
 
     private lateinit var mainNotifBuilder: NotificationCompat.Builder
 
-
     override fun onCreate() {
         mainNotifBuilder = createBaseNotificationBuilder(NOTIFICATION_CHANNEL_WATCH_CONNECTING)
                 .setContentTitle("Waiting to connect")
@@ -49,14 +45,13 @@ class WatchService : LifecycleService() {
         startForeground(1, mainNotifBuilder.build())
 
         val injectionComponent = (applicationContext as CobbleApplication).component
+        val serviceComponent = injectionComponent.createServiceSubcomponentFactory()
+                .create(this)
 
         coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
         notificationService = injectionComponent.createNotificationService()
         protocolHandler = injectionComponent.createProtocolHandler()
         connectionLooper = injectionComponent.createConnectionLooper()
-
-        val serviceComponent = injectionComponent.createServiceSubcomponentFactory()
-                .create(this)
 
         super.onCreate()
 
@@ -74,7 +69,6 @@ class WatchService : LifecycleService() {
     }
 
     override fun onDestroy() {
-        GattServerManager.close()
         super.onDestroy()
     }
 

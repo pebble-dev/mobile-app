@@ -13,7 +13,7 @@ import java.io.Closeable
 import java.util.LinkedList
 import kotlin.math.min
 
-class PPoGSession(private val scope: CoroutineScope, val device: BluetoothDevice, var mtu: Int): Closeable {
+class PPoGSession(private val scope: CoroutineScope, private val deviceAddress: String, var mtu: Int): Closeable {
     class PPoGSessionException(message: String) : Exception(message)
 
     private val pendingPackets = mutableMapOf<Int, GATTPacket>()
@@ -49,6 +49,7 @@ class PPoGSession(private val scope: CoroutineScope, val device: BluetoothDevice
         class DelayedNack : SessionCommand()
     }
 
+    @OptIn(ObsoleteCoroutinesApi::class)
     private val sessionActor = scope.actor<SessionCommand>(capacity = 8) {
         for (command in channel) {
             when (command) {
@@ -127,7 +128,7 @@ class PPoGSession(private val scope: CoroutineScope, val device: BluetoothDevice
                 _state = value
             }
         var mtuSize: Int get() = mtu
-            set(value) {}
+            set(_) {}
     }
 
     val stateManager = StateManager()
@@ -145,8 +146,8 @@ class PPoGSession(private val scope: CoroutineScope, val device: BluetoothDevice
 
     enum class State(val allowedRxTypes: List<GATTPacket.PacketType>, val allowedTxTypes: List<GATTPacket.PacketType>) {
         Closed(listOf(GATTPacket.PacketType.RESET), listOf(GATTPacket.PacketType.RESET_ACK)),
-        AwaitingResetAck(listOf(GATTPacket.PacketType.RESET_ACK), listOf(GATTPacket.PacketType.RESET)),
-        AwaitingResetAckRequested(listOf(GATTPacket.PacketType.RESET_ACK), listOf(GATTPacket.PacketType.RESET)),
+        AwaitingResetAck(listOf(GATTPacket.PacketType.RESET_ACK), listOf(GATTPacket.PacketType.RESET, GATTPacket.PacketType.RESET_ACK)),
+        AwaitingResetAckRequested(listOf(GATTPacket.PacketType.RESET_ACK), listOf(GATTPacket.PacketType.RESET, GATTPacket.PacketType.RESET_ACK)),
         Open(listOf(GATTPacket.PacketType.RESET, GATTPacket.PacketType.ACK, GATTPacket.PacketType.DATA), listOf(GATTPacket.PacketType.ACK, GATTPacket.PacketType.DATA)),
     }
 
@@ -174,11 +175,11 @@ class PPoGSession(private val scope: CoroutineScope, val device: BluetoothDevice
         resetState()
         val resetAckPacket = makeResetAck(sequenceOutCursor, MAX_SUPPORTED_WINDOW_SIZE, MAX_SUPPORTED_WINDOW_SIZE, ppogVersion)
         stateManager.state = State.AwaitingResetAck
-        if (PPoGLinkStateManager.getState(device.address).value != PPoGLinkState.ReadyForSession) {
+        if (PPoGLinkStateManager.getState(deviceAddress).value != PPoGLinkState.ReadyForSession) {
             Timber.i("Connection not allowed yet, saving reset ACK for later")
             pendingOutboundResetAck = resetAckPacket
             scope.launch {
-                PPoGLinkStateManager.getState(device.address).first { it == PPoGLinkState.ReadyForSession }
+                PPoGLinkStateManager.getState(deviceAddress).first { it == PPoGLinkState.ReadyForSession }
                 sessionActor.send(SessionCommand.SendPendingResetAck())
             }
             return
@@ -219,7 +220,7 @@ class PPoGSession(private val scope: CoroutineScope, val device: BluetoothDevice
             packetWriter.txWindow = packet.getMaxTXWindow().toInt()
         }
         stateManager.state = State.Open
-        PPoGLinkStateManager.updateState(device.address, PPoGLinkState.SessionOpen)
+        PPoGLinkStateManager.updateState(deviceAddress, PPoGLinkState.SessionOpen)
     }
 
     private suspend fun onAck(packet: GATTPacket) {

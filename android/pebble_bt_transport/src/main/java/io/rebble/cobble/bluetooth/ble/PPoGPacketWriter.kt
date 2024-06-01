@@ -26,7 +26,7 @@ class PPoGPacketWriter(private val scope: CoroutineScope, private val stateManag
         packetSendStatusFlow.emit(Pair(packet, status))
     }
 
-    private suspend fun packetSendStatus(packet: GATTPacket): Boolean {
+    suspend fun packetSendStatus(packet: GATTPacket): Boolean {
         return packetSendStatusFlow.first { it.first == packet }.second
     }
 

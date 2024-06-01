@@ -1,93 +1,100 @@
 package io.rebble.cobble.bluetooth.ble
 
-import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothGatt
-import androidx.annotation.RequiresPermission
-import io.rebble.cobble.bluetooth.ble.util.chunked
 import io.rebble.libpebblecommon.ble.LEConstants
-import io.rebble.libpebblecommon.protocolhelpers.PebblePacket
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import no.nordicsemi.android.kotlin.ble.core.data.GattConnectionState
+import no.nordicsemi.android.kotlin.ble.core.data.util.DataByteArray
+import no.nordicsemi.android.kotlin.ble.core.data.util.IntFormat
+import no.nordicsemi.android.kotlin.ble.core.errors.GattOperationException
+import no.nordicsemi.android.kotlin.ble.server.main.service.ServerBluetoothGattConnection
 import timber.log.Timber
 import java.io.Closeable
 import java.util.UUID
 
-class PPoGServiceConnection(val connectionScope: CoroutineScope, private val ppogService: PPoGService, val device: BluetoothDevice, private val deviceEventFlow: Flow<ServiceEvent>): Closeable {
-    private val ppogSession = PPoGSession(connectionScope, device, LEConstants.DEFAULT_MTU)
-    var debouncedCloseJob: Job? = null
+@OptIn(FlowPreview::class)
+class PPoGServiceConnection(private val serverConnection: ServerBluetoothGattConnection, ioDispatcher: CoroutineDispatcher = Dispatchers.IO): Closeable {
+    private val scope = CoroutineScope(ioDispatcher)
+    private val ppogSession = PPoGSession(scope, serverConnection.device.address, LEConstants.DEFAULT_MTU)
 
     companion object {
-        val ppogCharacteristicUUID = UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER)
-        val configurationDescriptorUUID = UUID.fromString(LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR)
-    }
-    private suspend fun runConnection() = deviceEventFlow.onEach {
-        when (it) {
-            is CharacteristicWriteEvent -> {
-                if (it.characteristic.uuid == ppogCharacteristicUUID) {
-                    ppogSession.handlePacket(it.value)
-                } else {
-                    Timber.w("Unknown characteristic write request: ${it.characteristic.uuid}")
-                    it.respond(BluetoothGatt.GATT_FAILURE)
-                }
-            }
-            is DescriptorWriteEvent -> {
-                if (it.descriptor.uuid == configurationDescriptorUUID && it.descriptor.characteristic.uuid == ppogCharacteristicUUID) {
-                    it.respond(BluetoothGatt.GATT_SUCCESS)
-                } else {
-                    Timber.w("Unknown descriptor write request: ${it.descriptor.uuid}")
-                    it.respond(BluetoothGatt.GATT_FAILURE)
-                }
-            }
-            is MtuChangedEvent -> {
-                ppogSession.setMTU(it.mtu)
-            }
-        }
-    }.catch {
-        Timber.e(it)
-        connectionScope.cancel("Error in device event flow", it)
-    }.launchIn(connectionScope)
-
-    /**
-     * Start the connection and return a flow of received data (pebble packets)
-     * @return Flow of received serialized pebble packets
-     */
-    suspend fun start(): Flow<ByteArray> {
-        runConnection()
-        return ppogSession.flow().onEach {
-            if (it is PPoGSession.PPoGSessionResponse.WritePPoGCharacteristic) {
-                it.result.complete(ppogService.sendData(device, it.data))
-            }
-        }.filterIsInstance<PPoGSession.PPoGSessionResponse.PebblePacket>().map { it.packet }
+        val ppogServiceUUID: UUID = UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID_SERVER)
+        val ppogCharacteristicUUID: UUID = UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER)
+        val configurationDescriptorUUID: UUID = UUID.fromString(LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR)
+        val metaCharacteristicUUID: UUID = UUID.fromString(LEConstants.UUIDs.META_CHARACTERISTIC_SERVER)
     }
 
-    @RequiresPermission("android.permission.BLUETOOTH_CONNECT")
-    suspend fun writeDataRaw(data: ByteArray): Boolean {
-        return ppogService.sendData(device, data)
+    private val _latestPebblePacket = MutableStateFlow<ByteArray?>(null)
+    val latestPebblePacket: Flow<ByteArray?> = _latestPebblePacket
+
+    val isConnected: Boolean
+        get() = scope.isActive
+
+    private val notificationsEnabled = MutableStateFlow(false)
+
+    init {
+        Timber.d("PPoGServiceConnection created with ${serverConnection.device}: PHY (RX ${serverConnection.rxPhy} TX ${serverConnection.txPhy})")
+        //TODO: Uncomment me
+        //serverConnection.connectionProvider.updateMtu(LEConstants.TARGET_MTU)
+        serverConnection.services.findService(ppogServiceUUID)?.let { service ->
+            service.findCharacteristic(metaCharacteristicUUID)?.let { characteristic ->
+                Timber.d("(${serverConnection.device}) Initializing meta char")
+            } ?: throw IllegalStateException("Meta characteristic missing")
+            service.findCharacteristic(ppogCharacteristicUUID)?.let { characteristic ->
+                Timber.d("(${serverConnection.device}) Initializing PPOG char")
+                serverConnection.connectionProvider.mtu.onEach {
+                    ppogSession.mtu = it
+                }.launchIn(scope)
+                characteristic.value.onEach {
+                    ppogSession.handlePacket(it.value.clone())
+                }.launchIn(scope)
+                characteristic.findDescriptor(configurationDescriptorUUID)?.value?.onEach {
+                    val value = it.getIntValue(IntFormat.FORMAT_UINT8, 0)
+                    Timber.i("(${serverConnection.device}) PPOG Notify changed: $value")
+                    notificationsEnabled.value = value == 1
+                }?.launchIn(scope)
+                ppogSession.flow().onEach {
+                    when (it) {
+                        is PPoGSession.PPoGSessionResponse.WritePPoGCharacteristic -> {
+                            try {
+                                if (notificationsEnabled.value) {
+                                    characteristic.setValueAndNotifyClient(DataByteArray(it.data))
+                                    it.result.complete(true)
+                                } else {
+                                    Timber.w("(${serverConnection.device}) Tried to send PPoG packet while notifications are disabled")
+                                    it.result.complete(false)
+                                }
+                            } catch (e: GattOperationException) {
+                                Timber.e(e, "(${serverConnection.device}) Failed to send PPoG characteristic notification")
+                                it.result.complete(false)
+                            }
+                        }
+                        is PPoGSession.PPoGSessionResponse.PebblePacket -> {
+                            _latestPebblePacket.value = it.packet
+                        }
+                    }
+                }.launchIn(scope)
+                serverConnection.connectionProvider.connectionStateWithStatus
+                        .filterNotNull()
+                        .debounce(1000) // Debounce to ignore quick reconnects
+                        .onEach {
+                            Timber.v("(${serverConnection.device}) New connection state: ${it.state} ${it.status}")
+                        }
+                        .filter { it.state == GattConnectionState.STATE_DISCONNECTED }
+                        .onEach {
+                            Timber.i("(${serverConnection.device}) Connection lost")
+                            scope.cancel("Connection lost")
+                        }
+                        .launchIn(scope)
+            } ?: throw IllegalStateException("PPOG Characteristic missing")
+        } ?: throw IllegalStateException("PPOG Service missing")
     }
 
-    suspend fun sendPebblePacket(packet: ByteArray) {
-        ppogSession.sendMessage(packet)
-    }
     override fun close() {
-        connectionScope.cancel()
+        scope.cancel("Closed")
     }
 
-    suspend fun debouncedClose(): Boolean {
-        debouncedCloseJob?.cancel()
-        val job = connectionScope.launch {
-            delay(1000)
-            close()
-        }
-        debouncedCloseJob = job
-        try {
-            debouncedCloseJob?.join()
-        } catch (e: CancellationException) {
-            return false
-        }
-        return true
-    }
-
-    fun resetDebouncedClose() {
-        debouncedCloseJob?.cancel()
+    suspend fun sendMessage(packet: ByteArray): Boolean {
+        return ppogSession.sendMessage(packet)
     }
 }

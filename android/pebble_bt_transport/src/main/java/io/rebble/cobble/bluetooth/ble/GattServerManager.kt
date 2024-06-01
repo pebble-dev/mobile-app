@@ -1,45 +1,43 @@
 package io.rebble.cobble.bluetooth.ble
 
-import android.bluetooth.BluetoothManager
 import android.content.Context
+import androidx.annotation.RequiresPermission
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import timber.log.Timber
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
-object GattServerManager {
-    private var gattServer: GattServer? = null
-    private var gattServerJob: Job? = null
-    private var _ppogService: PPoGService? = null
-    val ppogService: PPoGService?
-        get() = _ppogService
+class GattServerManager(
+        private val context: Context,
+        private val ioDispatcher: CoroutineContext = Dispatchers.IO
+) {
+    private val _gattServer: MutableStateFlow<NordicGattServer?> = MutableStateFlow(null)
+    val gattServer = _gattServer.asStateFlow().filterNotNull()
 
-    fun getGattServer(): GattServer? {
-        return gattServer
-    }
-
-    fun initIfNeeded(context: Context, scope: CoroutineScope): GattServer {
-        if (gattServer?.isOpened() != true || gattServerJob?.isActive != true) {
+    @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
+    fun initIfNeeded(): NordicGattServer {
+        val gattServer = _gattServer.value
+        if (gattServer?.isOpened != true) {
             gattServer?.close()
-            _ppogService = PPoGService(scope)
-            gattServer = GattServerImpl(
-                    context.getSystemService(BluetoothManager::class.java)!!,
-                    context,
-                    listOf(ppogService!!, DummyService())
-            )
+            _gattServer.value = NordicGattServer(
+                    ioDispatcher = ioDispatcher,
+                    context = context
+            ).also {
+                CoroutineScope(ioDispatcher).launch {
+                    it.open()
+                }
+            }
         }
-        gattServerJob = gattServer!!.getFlow().onEach {
-            Timber.v("Server state: $it")
-        }.launchIn(scope)
-        return gattServer!!
+        return _gattServer.value!!
     }
 
     fun close() {
-        gattServer?.close()
-        gattServerJob?.cancel()
-        gattServer = null
-        gattServerJob = null
+        _gattServer.value?.close()
+        _gattServer.value = null
     }
 
 }
