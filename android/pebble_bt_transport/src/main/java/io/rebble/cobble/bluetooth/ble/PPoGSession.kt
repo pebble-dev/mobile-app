@@ -66,6 +66,9 @@ class PPoGSession(private val scope: CoroutineScope, private val deviceAddress: 
                 }
                 is SessionCommand.HandlePacket -> {
                     val ppogPacket = GATTPacket(command.packet)
+                    if (ppogPacket.type in stateManager.state.allowedRxTypes) {
+                        Timber.w("Received packet ${ppogPacket.type} ${ppogPacket.sequence} in state ${stateManager.state.name}")
+                    }
                     try {
                         withTimeout(1000L) {
                             when (ppogPacket.type) {
