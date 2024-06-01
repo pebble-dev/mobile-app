@@ -37,11 +37,8 @@ class PPoGServiceConnection(private val serverConnection: ServerBluetoothGattCon
         //TODO: Uncomment me
         //serverConnection.connectionProvider.updateMtu(LEConstants.TARGET_MTU)
         serverConnection.services.findService(ppogServiceUUID)?.let { service ->
-            service.findCharacteristic(metaCharacteristicUUID)?.let { characteristic ->
-                Timber.d("(${serverConnection.device}) Initializing meta char")
-            } ?: throw IllegalStateException("Meta characteristic missing")
+            check(service.findCharacteristic(metaCharacteristicUUID) != null) { "Meta characteristic missing" }
             service.findCharacteristic(ppogCharacteristicUUID)?.let { characteristic ->
-                Timber.d("(${serverConnection.device}) Initializing PPOG char")
                 serverConnection.connectionProvider.mtu.onEach {
                     ppogSession.mtu = it
                 }.launchIn(scope)
