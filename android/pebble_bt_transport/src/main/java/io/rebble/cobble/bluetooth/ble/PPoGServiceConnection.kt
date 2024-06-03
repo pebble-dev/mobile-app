@@ -31,6 +31,7 @@ class PPoGServiceConnection(private val serverConnection: ServerBluetoothGattCon
         get() = scope.isActive
 
     private val notificationsEnabled = MutableStateFlow(false)
+    private var lastNotify: DataByteArray? = null
 
     init {
         Timber.d("PPoGServiceConnection created with ${serverConnection.device}: PHY (RX ${serverConnection.rxPhy} TX ${serverConnection.txPhy})")
@@ -42,7 +43,9 @@ class PPoGServiceConnection(private val serverConnection: ServerBluetoothGattCon
                 serverConnection.connectionProvider.mtu.onEach {
                     ppogSession.mtu = it
                 }.launchIn(scope)
-                characteristic.value.onEach {
+                characteristic.value
+                        .filter { it != lastNotify } // Ignore echo
+                        .onEach {
                     ppogSession.handlePacket(it.value.clone())
                 }.launchIn(scope)
                 characteristic.findDescriptor(configurationDescriptorUUID)?.value?.onEach {
@@ -55,6 +58,7 @@ class PPoGServiceConnection(private val serverConnection: ServerBluetoothGattCon
                         is PPoGSession.PPoGSessionResponse.WritePPoGCharacteristic -> {
                             try {
                                 if (notificationsEnabled.value) {
+                                    lastNotify = DataByteArray(it.data)
                                     characteristic.setValueAndNotifyClient(DataByteArray(it.data))
                                     it.result.complete(true)
                                 } else {
