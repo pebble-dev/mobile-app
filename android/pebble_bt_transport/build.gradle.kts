@@ -51,6 +51,8 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
     implementation("com.squareup.okio:okio:$okioVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+
 
 
     implementation("no.nordicsemi.android.kotlin.ble:core:$nordicBleVersion")
