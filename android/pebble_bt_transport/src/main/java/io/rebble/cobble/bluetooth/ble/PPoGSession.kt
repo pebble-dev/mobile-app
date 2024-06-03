@@ -19,7 +19,7 @@ class PPoGSession(private val scope: CoroutineScope, private val deviceAddress: 
     private val pendingPackets = mutableMapOf<Int, GATTPacket>()
     private var ppogVersion: GATTPacket.PPoGConnectionVersion = GATTPacket.PPoGConnectionVersion.ZERO
 
-    private var rxWindow = 0
+    private var rxWindow = 1
     private var packetsSinceLastAck = 0
     private var sequenceInCursor = 0
     private var sequenceOutCursor = 0
