@@ -6,6 +6,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import java.util.*
+import kotlin.coroutines.CoroutineContext
 
 @FlowPreview
 /**
@@ -17,12 +18,13 @@ suspend fun BluetoothDevice.connectGatt(
         context: Context,
         unbindOnTimeout: Boolean,
         auto: Boolean = false,
-        cbTimeout: Long = 8000
+        cbTimeout: Long = 8000,
+        ioDispatcher: CoroutineContext = Dispatchers.IO
 ): BlueGATTConnection? {
-    return BlueGATTConnection(this, cbTimeout).connectGatt(context, auto, unbindOnTimeout)
+    return BlueGATTConnection(this, cbTimeout, ioDispatcher).connectGatt(context, auto, unbindOnTimeout)
 }
 
-class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Long) : BluetoothGattCallback() {
+class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Long, private val ioDispatcher: CoroutineContext = Dispatchers.IO) : BluetoothGattCallback() {
     var gatt: BluetoothGatt? = null
 
     private val _connectionStateChanged = MutableStateFlow<ConnectionStateResult?>(null)
@@ -106,7 +108,7 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
         var res: ConnectionStateResult? = null
         try {
             coroutineScope {
-                launch(Dispatchers.IO) {
+                launch(ioDispatcher) {
                     gatt = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                             device.connectGatt(context, auto, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_LE, BluetoothDevice.PHY_LE_1M)
@@ -148,6 +150,7 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
 
     @Throws(SecurityException::class)
     fun close() {
+        gatt?.disconnect()
         gatt?.close()
     }
 
