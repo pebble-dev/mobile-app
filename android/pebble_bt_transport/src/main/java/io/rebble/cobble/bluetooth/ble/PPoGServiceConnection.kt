@@ -35,8 +35,7 @@ class PPoGServiceConnection(private val serverConnection: ServerBluetoothGattCon
 
     init {
         Timber.d("PPoGServiceConnection created with ${serverConnection.device}: PHY (RX ${serverConnection.rxPhy} TX ${serverConnection.txPhy})")
-        //TODO: Uncomment me
-        //serverConnection.connectionProvider.updateMtu(LEConstants.TARGET_MTU)
+        serverConnection.connectionProvider.updateMtu(LEConstants.TARGET_MTU)
         serverConnection.services.findService(ppogServiceUUID)?.let { service ->
             check(service.findCharacteristic(metaCharacteristicUUID) != null) { "Meta characteristic missing" }
             service.findCharacteristic(ppogCharacteristicUUID)?.let { characteristic ->
