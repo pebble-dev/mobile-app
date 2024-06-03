@@ -49,6 +49,10 @@ class PPoGPacketWriter(private val scope: CoroutineScope, private val stateManag
 
     suspend fun onAck(packet: GATTPacket) {
         require(packet.type == GATTPacket.PacketType.ACK)
+        if (packet.sequence < (dataWaitingToSend.lastOrNull()?.sequence ?: -1)) {
+            Timber.w("Received rewind ACK")
+            return
+        }
         for (waitingPacket in dataWaitingToSend.iterator()) {
             if (waitingPacket.sequence == packet.sequence) {
                 dataWaitingToSend.remove(waitingPacket)
