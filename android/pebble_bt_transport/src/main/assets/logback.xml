@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="https://tony19.github.io/logback-android/xml https://cdn.jsdelivr.net/gh/tony19/logback-android/logback.xsd"
 >
-    <appender name="logcat" class="ch.qos.logback.classic.android.LogcatAppender">
+    <appender name="timber" class="io.rebble.cobble.TimberLogbackAppender">
         <tagEncoder>
             <pattern>%logger{12}</pattern>
         </tagEncoder>
@@ -12,7 +12,7 @@
         </encoder>
     </appender>
 
-    <root level="TRACE">
-        <appender-ref ref="logcat" />
+    <root level="DEBUG">
+        <appender-ref ref="timber" />
     </root>
 </configuration>
