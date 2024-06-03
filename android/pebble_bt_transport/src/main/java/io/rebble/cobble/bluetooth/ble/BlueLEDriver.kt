@@ -62,13 +62,11 @@ class BlueLEDriver(
                         }
 
                 check(success) { "Failed to connect to watch" }
-                //GattServerManager.getGattServer()?.getServer()?.connect(device.bluetoothDevice, true)
                 try {
                     withTimeout(60000) {
                         val result = PPoGLinkStateManager.getState(device.address).first { it != PPoGLinkState.ReadyForSession }
                         if (result == PPoGLinkState.SessionOpen) {
                             Timber.d("Session established")
-                            emit(SingleConnectionStatus.Connected(device))
                         } else {
                             throw IOException("Failed to establish session")
                         }
@@ -76,18 +74,19 @@ class BlueLEDriver(
                 } catch (e: TimeoutCancellationException) {
                     throw IOException("Failed to establish session, timeout")
                 }
-
                 val sendLoop = scope.launch {
                     protocolHandler.startPacketSendingLoop {
                         return@startPacketSendingLoop gattServer.sendMessageToDevice(device.address, it.asByteArray())
                     }
                 }
+                emit(SingleConnectionStatus.Connected(device))
                 gattServer.rxFlowFor(device.address)?.collect {
                     protocolHandler.receivePacket(it.asUByteArray())
                 } ?: throw IOException("Failed to get rxFlow")
                 sendLoop.cancel()
             } finally {
                 gatt.close()
+                Timber.d("Disconnected from watch")
             }
         }
     }
