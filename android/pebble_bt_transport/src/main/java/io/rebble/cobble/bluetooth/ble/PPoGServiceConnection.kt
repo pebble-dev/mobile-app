@@ -14,7 +14,7 @@ import java.util.UUID
 
 @OptIn(FlowPreview::class)
 class PPoGServiceConnection(private val serverConnection: ServerBluetoothGattConnection, ioDispatcher: CoroutineDispatcher = Dispatchers.IO): Closeable {
-    private val scope = CoroutineScope(ioDispatcher)
+    private val scope = serverConnection.connectionScope + ioDispatcher + CoroutineName("PPoGServiceConnection-${serverConnection.device.address}")
     private val ppogSession = PPoGSession(scope, serverConnection.device.address, LEConstants.DEFAULT_MTU)
 
     companion object {
