@@ -11,6 +11,7 @@ import no.nordicsemi.android.kotlin.ble.core.data.BleGattProperty
 import no.nordicsemi.android.kotlin.ble.core.data.util.DataByteArray
 import no.nordicsemi.android.kotlin.ble.server.main.ServerBleGatt
 import no.nordicsemi.android.kotlin.ble.server.main.ServerConnectionEvent
+import no.nordicsemi.android.kotlin.ble.server.main.data.ServerConnectionOption
 import no.nordicsemi.android.kotlin.ble.server.main.service.ServerBleGattCharacteristicConfig
 import no.nordicsemi.android.kotlin.ble.server.main.service.ServerBleGattDescriptorConfig
 import no.nordicsemi.android.kotlin.ble.server.main.service.ServerBleGattServiceConfig
@@ -79,7 +80,12 @@ class NordicGattServer(private val ioDispatcher: CoroutineContext = Dispatchers.
             Timber.v("GattServer scope closed")
             connections.clear()
         }
-        server = ServerBleGatt.create(context, serverScope, ppogServiceConfig, mock = mockServerDevice).also { server ->
+        server = ServerBleGatt.create(
+                context, serverScope,
+                ppogServiceConfig,
+                mock = mockServerDevice,
+                options = ServerConnectionOption(bufferSize = 32)
+        ).also { server ->
             server.connectionEvents
                     .debounce(1000)
                     .mapNotNull { it as? ServerConnectionEvent.DeviceConnected }
