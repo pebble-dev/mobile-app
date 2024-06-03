@@ -609,10 +609,10 @@ packages:
     dependency: transitive
     description:
       name: navigation_builder
-      sha256: "95e25150191d9cd4e4b86504f33cd9e786d1e6732edb2e3e635bbedc5ef0dea7"
+      sha256: d1b145dde5869849613d9b93ecd8f5a3ae929471ef81d1ba017f476b70bd7c39
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.3"
+    version: "0.0.4"
   network_info_plus:
     dependency: "direct main"
     description:
@@ -1006,10 +1006,10 @@ packages:
     dependency: "direct main"
     description:
       name: states_rebuilder
-      sha256: bf1a5ab5c543acdefce35e60f482eb7ab592339484fe3266d147ee597f18dc92
+      sha256: f760498bb7adbe12d0d6da67f23c07e6c41de6261052ba8794356222fe27ddf3
       url: "https://pub.dev"
     source: hosted
-    version: "6.3.0"
+    version: "6.4.0"
   stream_channel:
     dependency: transitive
     description:
