@@ -14,10 +14,7 @@ import io.rebble.cobble.bluetooth.ConnectionState
 import io.rebble.libpebblecommon.packets.PhoneControl
 import io.rebble.libpebblecommon.services.PhoneControlService
 import io.rebble.libpebblecommon.services.notification.NotificationService
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import timber.log.Timber
 import kotlin.random.Random
 
@@ -40,6 +37,12 @@ class InCallService: InCallService() {
         )
         contentResolver = applicationContext.contentResolver
         super.onCreate()
+    }
+
+    override fun onDestroy() {
+        Timber.d("InCallService destroyed")
+        coroutineScope.cancel()
+        super.onDestroy()
     }
 
     override fun onBind(intent: Intent?): IBinder? {
