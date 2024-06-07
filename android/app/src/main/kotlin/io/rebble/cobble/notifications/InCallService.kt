@@ -1,7 +1,9 @@
 package io.rebble.cobble.notifications
 
 import android.content.ContentResolver
+import android.content.Intent
 import android.os.Build
+import android.os.IBinder
 import android.provider.ContactsContract
 import android.provider.ContactsContract.Contacts
 import android.telecom.Call
@@ -38,6 +40,11 @@ class InCallService: InCallService() {
         )
         contentResolver = applicationContext.contentResolver
         super.onCreate()
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        Timber.d("InCallService bound")
+        return super.onBind(intent)
     }
 
     override fun onCallAdded(call: Call) {
