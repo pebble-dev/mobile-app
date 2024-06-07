@@ -231,7 +231,10 @@ class UpdatePrompt extends HookConsumerWidget implements CobbleScreen {
 
     useEffect(() {
       if (!confirmOnSuccess && (state.value == UpdatePromptState.success || state.value == UpdatePromptState.noUpdate)) {
-        onSuccess(context);
+        // Automatically continue if no confirmation is required by queuing for next frame
+        WidgetsBinding.instance!.addPostFrameCallback((_) {
+          onSuccess(context);
+        });
       }
     }, [state.value]);
 
