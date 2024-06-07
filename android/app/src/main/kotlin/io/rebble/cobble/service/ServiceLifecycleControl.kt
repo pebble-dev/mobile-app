@@ -45,11 +45,6 @@ class ServiceLifecycleControl @Inject constructor(
                                 NotificationListener.getComponentName(context)
                         )
                     }
-                    if (context.hasCallsPermission() && shouldServiceBeRunning && it !is ConnectionState.RecoveryMode) {
-                        context.startService(Intent(context, InCallService::class.java))
-                    } else {
-                        context.stopService(Intent(context, InCallService::class.java))
-                    }
 
                     serviceRunning = shouldServiceBeRunning
                 }
