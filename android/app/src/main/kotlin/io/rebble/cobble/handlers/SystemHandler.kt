@@ -17,12 +17,9 @@ import io.rebble.libpebblecommon.packets.PhoneAppVersion
 import io.rebble.libpebblecommon.packets.ProtocolCapsFlag
 import io.rebble.libpebblecommon.packets.TimeMessage
 import io.rebble.libpebblecommon.services.SystemService
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
@@ -46,7 +43,13 @@ class SystemHandler @Inject constructor(
             sendCurrentTime()
         }
 
+        negotiate()
+    }
+
+    fun negotiate() {
         coroutineScope.launch {
+            connectionLooper.connectionState.first { it is ConnectionState.Negotiating }
+            Timber.i("Negotiating with watch")
             try {
                 refreshWatchMetadata()
                 watchMetadataStore.lastConnectedWatchMetadata.value?.let {
@@ -66,11 +69,16 @@ class SystemHandler @Inject constructor(
     }
 
     private suspend fun refreshWatchMetadata() {
-        val watchInfo = systemService.requestWatchVersion()
-        watchMetadataStore.lastConnectedWatchMetadata.value = watchInfo
-
-        val watchModel = systemService.requestWatchModel()
-        watchMetadataStore.lastConnectedWatchModel.value = watchModel
+        try {
+            withTimeout(5000) {
+                val watchInfo = systemService.requestWatchVersion()
+                watchMetadataStore.lastConnectedWatchMetadata.value = watchInfo
+                val watchModel = systemService.requestWatchModel()
+                watchMetadataStore.lastConnectedWatchModel.value = watchModel
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to get watch metadata")
+        }
     }
 
 

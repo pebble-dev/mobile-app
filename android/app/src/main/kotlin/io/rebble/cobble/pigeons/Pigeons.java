@@ -4592,6 +4592,9 @@ public class Pigeons {
     @NonNull 
     BooleanWrapper hasBatteryExclusionEnabled();
 
+    @NonNull 
+    BooleanWrapper hasCallsPermissions();
+
     /** The codec used by PermissionCheck. */
     static @NonNull MessageCodec<Object> getCodec() {
       return PermissionCheckCodec.INSTANCE;
@@ -4686,6 +4689,28 @@ public class Pigeons {
           channel.setMessageHandler(null);
         }
       }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PermissionCheck.hasCallsPermissions", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  BooleanWrapper output = api.hasCallsPermissions();
+                  wrapped.add(0, output);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
     }
   }
 
@@ -4725,6 +4750,8 @@ public class Pigeons {
     void requestNotificationAccess(@NonNull Result<Void> result);
     /** This can only be performed when at least one watch is paired */
     void requestBatteryExclusion(@NonNull Result<Void> result);
+    /** This can only be performed when at least one watch is paired */
+    void requestCallsPermissions(@NonNull Result<Void> result);
 
     void requestBluetoothPermissions(@NonNull Result<NumberWrapper> result);
 
@@ -4839,6 +4866,33 @@ public class Pigeons {
                     };
 
                 api.requestBatteryExclusion(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestCallsPermissions", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                Result<Void> resultCallback =
+                    new Result<Void>() {
+                      public void success(Void result) {
+                        wrapped.add(0, null);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.requestCallsPermissions(resultCallback);
               });
         } else {
           channel.setMessageHandler(null);

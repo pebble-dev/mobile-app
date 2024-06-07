@@ -33,7 +33,7 @@ android {
     }
 }
 
-val libpebblecommonVersion = "0.1.16"
+val libpebblecommonVersion = "0.1.17"
 val timberVersion = "4.7.1"
 val coroutinesVersion = "1.8.0"
 val okioVersion = "3.7.0"

@@ -372,6 +372,8 @@ abstract class PermissionCheck {
   BooleanWrapper hasNotificationAccess();
 
   BooleanWrapper hasBatteryExclusionEnabled();
+
+  BooleanWrapper hasCallsPermissions();
 }
 
 @HostApi()
@@ -397,6 +399,10 @@ abstract class PermissionControl {
   /// This can only be performed when at least one watch is paired
   @async
   void requestBatteryExclusion();
+
+  /// This can only be performed when at least one watch is paired
+  @async
+  void requestCallsPermissions();
 
   @async
   NumberWrapper requestBluetoothPermissions();

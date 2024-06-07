@@ -80,6 +80,10 @@ class MyApp extends HookConsumerWidget {
           if (!(await permissionCheck.hasBatteryExclusionEnabled()).value!) {
             permissionControl.requestBatteryExclusion();
           }
+
+          if (!(await permissionCheck.hasCallsPermissions()).value!) {
+            permissionControl.requestCallsPermissions();
+          }
         }
       });
       return null;

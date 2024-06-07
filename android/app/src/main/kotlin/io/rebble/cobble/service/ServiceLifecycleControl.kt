@@ -7,7 +7,9 @@ import android.service.notification.NotificationListenerService
 import androidx.core.content.ContextCompat
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.ConnectionState
+import io.rebble.cobble.notifications.InCallService
 import io.rebble.cobble.notifications.NotificationListener
+import io.rebble.cobble.util.hasCallsPermission
 import io.rebble.cobble.util.hasNotificationAccessPermission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -42,6 +44,11 @@ class ServiceLifecycleControl @Inject constructor(
                         NotificationListenerService.requestRebind(
                                 NotificationListener.getComponentName(context)
                         )
+                    }
+                    if (context.hasCallsPermission() && shouldServiceBeRunning && it !is ConnectionState.RecoveryMode) {
+                        context.startService(Intent(context, InCallService::class.java))
+                    } else {
+                        context.stopService(Intent(context, InCallService::class.java))
                     }
 
                     serviceRunning = shouldServiceBeRunning

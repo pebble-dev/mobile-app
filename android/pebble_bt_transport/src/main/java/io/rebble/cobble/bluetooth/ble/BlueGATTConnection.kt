@@ -111,16 +111,20 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
                 launch(ioDispatcher) {
                     gatt = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                            device.connectGatt(context, auto, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_LE, BluetoothDevice.PHY_LE_1M)
+                            device.connectGatt(context, auto, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_AUTO, BluetoothDevice.PHY_LE_1M)
                         } else {
-                            device.connectGatt(context, auto, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_LE)
+                            device.connectGatt(context, auto, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_AUTO)
                         }
                     } else {
                         device.connectGatt(context, auto, this@BlueGATTConnection)
                     }
                 }
                 withTimeout(cbTimeout) {
-                    res = connectionStateChanged.first()
+                    if (_connectionStateChanged.value != null) {
+                        res = _connectionStateChanged.value
+                    } else {
+                        res = connectionStateChanged.first()
+                    }
                 }
             }
         } catch (e: TimeoutCancellationException) {

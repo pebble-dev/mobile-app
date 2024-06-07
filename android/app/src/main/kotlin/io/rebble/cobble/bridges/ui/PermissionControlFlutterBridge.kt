@@ -181,6 +181,21 @@ class PermissionControlFlutterBridge @Inject constructor(
         }
     }
 
+    override fun requestCallsPermissions(result: Pigeons.Result<Void?>) {
+        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
+            requestPermission(
+                    REQUEST_CODE_PHONE_STATE,
+                    Manifest.permission.READ_PHONE_STATE
+            )
+            requestPermission(
+                    REQUEST_CODE_CONTACTS,
+                    Manifest.permission.READ_CONTACTS
+            )
+
+            null
+        }
+    }
+
     override fun requestBluetoothPermissions(result: Pigeons.Result<Pigeons.NumberWrapper>) {
         coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -211,3 +226,5 @@ private const val REQUEST_CODE_NOTIFICATIONS = 125
 private const val REQUEST_CODE_BATTERY = 126
 private const val REQUEST_CODE_SETTINGS = 127
 private const val REQUEST_CODE_BT = 128
+private const val REQUEST_CODE_PHONE_STATE = 129
+private const val REQUEST_CODE_CONTACTS = 130

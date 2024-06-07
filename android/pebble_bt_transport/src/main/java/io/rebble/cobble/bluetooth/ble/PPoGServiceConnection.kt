@@ -2,6 +2,7 @@ package io.rebble.cobble.bluetooth.ble
 
 import io.rebble.libpebblecommon.ble.LEConstants
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import no.nordicsemi.android.kotlin.ble.core.data.GattConnectionState
 import no.nordicsemi.android.kotlin.ble.core.data.util.DataByteArray
@@ -17,6 +18,8 @@ class PPoGServiceConnection(private val serverConnection: ServerBluetoothGattCon
     private val scope = serverConnection.connectionScope + ioDispatcher + CoroutineName("PPoGServiceConnection-${serverConnection.device.address}")
     private val ppogSession = PPoGSession(scope, serverConnection.device.address, LEConstants.DEFAULT_MTU)
 
+    val device get() = serverConnection.device
+
     companion object {
         val ppogServiceUUID: UUID = UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID_SERVER)
         val ppogCharacteristicUUID: UUID = UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER)
@@ -24,8 +27,8 @@ class PPoGServiceConnection(private val serverConnection: ServerBluetoothGattCon
         val metaCharacteristicUUID: UUID = UUID.fromString(LEConstants.UUIDs.META_CHARACTERISTIC_SERVER)
     }
 
-    private val _latestPebblePacket = MutableStateFlow<ByteArray?>(null)
-    val latestPebblePacket: Flow<ByteArray?> = _latestPebblePacket
+    private val _incomingPebblePackets = Channel<ByteArray>(Channel.BUFFERED)
+    val incomingPebblePacketData: Flow<ByteArray> = _incomingPebblePackets.receiveAsFlow()
 
     val isConnected: Boolean
         get() = scope.isActive
@@ -70,7 +73,7 @@ class PPoGServiceConnection(private val serverConnection: ServerBluetoothGattCon
                             }
                         }
                         is PPoGSession.PPoGSessionResponse.PebblePacket -> {
-                            _latestPebblePacket.value = it.packet
+                            _incomingPebblePackets.trySend(it.packet).getOrThrow()
                         }
                     }
                 }.launchIn(scope)
@@ -95,6 +98,7 @@ class PPoGServiceConnection(private val serverConnection: ServerBluetoothGattCon
     }
 
     suspend fun sendMessage(packet: ByteArray): Boolean {
+        ppogSession.stateManager.stateFlow.first { it == PPoGSession.State.Open } // Wait for session to open, otherwise packet will be dropped
         return ppogSession.sendMessage(packet)
     }
 }

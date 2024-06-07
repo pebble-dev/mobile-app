@@ -2875,6 +2875,23 @@ void PermissionCheckSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<P
       [channel setMessageHandler:nil];
     }
   }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.PermissionCheck.hasCallsPermissions"
+        binaryMessenger:binaryMessenger
+        codec:PermissionCheckGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(hasCallsPermissionsWithError:)], @"PermissionCheck api (%@) doesn't respond to @selector(hasCallsPermissionsWithError:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        BooleanWrapper *output = [api hasCallsPermissionsWithError:&error];
+        callback(wrapResult(output, error));
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
 }
 @interface PermissionControlCodecReader : FlutterStandardReader
 @end
@@ -2987,6 +3004,24 @@ void PermissionControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject
       NSCAssert([api respondsToSelector:@selector(requestBatteryExclusionWithCompletion:)], @"PermissionControl api (%@) doesn't respond to @selector(requestBatteryExclusionWithCompletion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         [api requestBatteryExclusionWithCompletion:^(FlutterError *_Nullable error) {
+          callback(wrapResult(nil, error));
+        }];
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  /// This can only be performed when at least one watch is paired
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.PermissionControl.requestCallsPermissions"
+        binaryMessenger:binaryMessenger
+        codec:PermissionControlGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(requestCallsPermissionsWithCompletion:)], @"PermissionControl api (%@) doesn't respond to @selector(requestCallsPermissionsWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api requestCallsPermissionsWithCompletion:^(FlutterError *_Nullable error) {
           callback(wrapResult(nil, error));
         }];
       }];

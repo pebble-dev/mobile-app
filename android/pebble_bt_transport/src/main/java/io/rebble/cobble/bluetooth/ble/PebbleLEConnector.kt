@@ -129,8 +129,12 @@ class PebbleLEConnector(private val connection: BlueGATTConnection, private val 
                 throw IOException("Failed to request create bond")
             }
         }
-        withTimeout(PENDING_BOND_TIMEOUT) {
-            bondState.onEach { Timber.v("Bond state: ${it.bondState}") }.first { it.bondState != BluetoothDevice.BOND_BONDED }
+        try {
+            withTimeout(PENDING_BOND_TIMEOUT) {
+                bondState.onEach { Timber.v("Bond state: ${it.bondState}") }.first { it.bondState == BluetoothDevice.BOND_BONDED }
+            }
+        } catch (e: TimeoutCancellationException) {
+            throw IOException("Failed to bond in time")
         }
     }
 

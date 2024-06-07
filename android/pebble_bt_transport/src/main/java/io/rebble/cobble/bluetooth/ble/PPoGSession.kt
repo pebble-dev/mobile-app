@@ -4,6 +4,10 @@ import android.bluetooth.BluetoothDevice
 import io.rebble.cobble.bluetooth.ble.util.chunked
 import io.rebble.libpebblecommon.ble.GATTPacket
 import io.rebble.libpebblecommon.protocolhelpers.PebblePacket
+import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
+import io.rebble.libpebblecommon.structmapper.SUShort
+import io.rebble.libpebblecommon.structmapper.StructMapper
+import io.rebble.libpebblecommon.util.DataBuffer
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
@@ -59,6 +63,15 @@ class PPoGSession(private val scope: CoroutineScope, private val deviceAddress: 
                             throw PPoGSessionException("Session not open")
                         }
                         val dataChunks = command.data.chunked(stateManager.mtuSize - PPOG_PACKET_OVERHEAD)
+
+                        val dbgPacketHeader = StructMapper()
+                        val dbgLength = SUShort(dbgPacketHeader)
+                        val dbgEndpoint = SUShort(dbgPacketHeader)
+                        dbgPacketHeader.fromBytes(DataBuffer(dataChunks[0].toUByteArray()))
+                        Timber.v("  <- Pebble packet, length: ${dbgLength.get()}, endpoint: ${ProtocolEndpoint.getByValue(dbgEndpoint.get())}")
+
+                        check(dataChunks.sumOf { it.size } == command.data.size) { "Data chunking failed: chunk total != ${command.data.size}" }
+
                         for (chunk in dataChunks) {
                             val packet = GATTPacket(GATTPacket.PacketType.DATA, sequenceOutCursor, chunk)
                             packetWriter.sendOrQueuePacket(packet)
@@ -135,15 +148,16 @@ class PPoGSession(private val scope: CoroutineScope, private val deviceAddress: 
     private fun sendNack() = sessionTxActor.trySend(SessionTxCommand.SendNack())
 
     inner class StateManager {
-        private var _state = State.Closed
+        private var _state = MutableStateFlow(State.Closed)
+        val stateFlow = _state.asStateFlow()
         var state: State
-            get() = _state
+            get() = _state.value
             set(value) {
-                Timber.d("State changed from ${_state.name} to ${value.name}")
-                if (_state == value) {
+                Timber.d("State changed from ${_state.value.name} to ${value.name}")
+                if (_state.value == value) {
                     Timber.w("State change to same state ${value.name}")
                 }
-                _state = value
+                _state.value = value
             }
         var mtuSize: Int get() = mtu
             set(_) {}
@@ -302,9 +316,7 @@ class PPoGSession(private val scope: CoroutineScope, private val deviceAddress: 
             val packet = pendingPackets.remove(sequenceInCursor)!!
             ack(packet.sequence)
             val pebblePacket = packet.data.sliceArray(1 until packet.data.size)
-            pebblePacketAssembler.assemble(pebblePacket).collect {
-                sessionFlow.emit(PPoGSessionResponse.PebblePacket(it))
-            }
+            sessionFlow.emit(PPoGSessionResponse.PebblePacket(pebblePacket))
             sequenceInCursor = incrementSequence(sequenceInCursor)
         }
         if (pendingPackets.isNotEmpty()) {

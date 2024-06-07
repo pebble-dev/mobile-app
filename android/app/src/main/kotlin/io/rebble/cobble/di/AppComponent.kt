@@ -15,6 +15,7 @@ import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.errors.GlobalExceptionHandler
 import io.rebble.cobble.service.ServiceLifecycleControl
 import io.rebble.libpebblecommon.ProtocolHandler
+import io.rebble.libpebblecommon.services.PhoneControlService
 import io.rebble.libpebblecommon.services.ProtocolService
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import javax.inject.Singleton
@@ -26,6 +27,7 @@ import javax.inject.Singleton
 ])
 interface AppComponent {
     fun createNotificationService(): NotificationService
+    fun createPhoneControlService(): PhoneControlService
     fun createBlueCommon(): DeviceTransport
     fun createProtocolHandler(): ProtocolHandler
     fun createExceptionHandler(): GlobalExceptionHandler

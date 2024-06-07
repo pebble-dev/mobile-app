@@ -36,6 +36,12 @@ abstract class LibPebbleModule {
 
         @Provides
         @Singleton
+        fun providePhoneControlService(
+                protocolHandler: ProtocolHandler
+        ) = PhoneControlService(protocolHandler)
+
+        @Provides
+        @Singleton
         fun provideAppMessageService(
                 protocolHandler: ProtocolHandler
         ) = AppMessageService(protocolHandler)
@@ -102,6 +108,10 @@ abstract class LibPebbleModule {
     @Binds
     @IntoSet
     abstract fun bindNotificationService(notificationService: NotificationService): ProtocolService
+
+    @Binds
+    @IntoSet
+    abstract fun bindPhoneControlServiceIntoSet(phoneControlService: PhoneControlService): ProtocolService
 
     @Binds
     @IntoSet

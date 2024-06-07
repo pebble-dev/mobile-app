@@ -26,6 +26,14 @@ import kotlin.coroutines.CoroutineContext
 
 @OptIn(FlowPreview::class)
 class NordicGattServer(private val ioDispatcher: CoroutineContext = Dispatchers.IO, private val context: Context): Closeable {
+    enum class State {
+        INIT,
+        OPEN,
+        CLOSED
+    }
+    private val _state = MutableStateFlow(State.INIT)
+    val state = _state.asStateFlow()
+
     private val ppogServiceConfig = ServerBleGattServiceConfig(
             uuid = UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID_SERVER),
             type = ServerBleGattServiceType.SERVICE_TYPE_PRIMARY,
@@ -62,6 +70,23 @@ class NordicGattServer(private val ioDispatcher: CoroutineContext = Dispatchers.
                     )
             )
     )
+
+    private val fakeServiceConfig = ServerBleGattServiceConfig(
+            uuid = UUID.fromString(LEConstants.UUIDs.FAKE_SERVICE_UUID),
+            type = ServerBleGattServiceType.SERVICE_TYPE_PRIMARY,
+            characteristicConfigs = listOf(
+                    ServerBleGattCharacteristicConfig(
+                            uuid = UUID.fromString(LEConstants.UUIDs.FAKE_SERVICE_UUID),
+                            properties = listOf(
+                                    BleGattProperty.PROPERTY_READ,
+                            ),
+                            permissions = listOf(
+                                    BleGattPermission.PERMISSION_READ_ENCRYPTED,
+                            ),
+                    )
+            )
+    )
+
     private var scope: CoroutineScope? = null
     private var server: ServerBleGatt? = null
     private val connections: MutableMap<String, PPoGServiceConnection> = mutableMapOf()
@@ -78,11 +103,12 @@ class NordicGattServer(private val ioDispatcher: CoroutineContext = Dispatchers.
         val serverScope = CoroutineScope(ioDispatcher)
         serverScope.coroutineContext.job.invokeOnCompletion {
             Timber.v("GattServer scope closed")
-            connections.clear()
+            close()
         }
         server = ServerBleGatt.create(
                 context, serverScope,
                 ppogServiceConfig,
+                fakeServiceConfig,
                 mock = mockServerDevice,
                 options = ServerConnectionOption(bufferSize = 32)
         ).also { server ->
@@ -102,6 +128,7 @@ class NordicGattServer(private val ioDispatcher: CoroutineContext = Dispatchers.
                     .launchIn(serverScope)
         }
         scope = serverScope
+        _state.value = State.OPEN
     }
 
     suspend fun sendMessageToDevice(deviceAddress: String, packet: ByteArray): Boolean {
@@ -113,7 +140,7 @@ class NordicGattServer(private val ioDispatcher: CoroutineContext = Dispatchers.
     }
 
     fun rxFlowFor(deviceAddress: String): Flow<ByteArray>? {
-        return connections[deviceAddress]?.latestPebblePacket?.filterNotNull()
+        return connections[deviceAddress]?.incomingPebblePacketData
     }
 
     override fun close() {
@@ -123,7 +150,9 @@ class NordicGattServer(private val ioDispatcher: CoroutineContext = Dispatchers.
         } catch (e: SecurityException) {
             Timber.w(e, "Failed to close GATT server")
         }
+        connections.clear()
         server = null
         scope = null
+        _state.value = State.CLOSED
     }
 }

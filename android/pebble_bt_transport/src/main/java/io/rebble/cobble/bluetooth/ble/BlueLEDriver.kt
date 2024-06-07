@@ -1,12 +1,7 @@
 package io.rebble.cobble.bluetooth.ble
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
-import androidx.core.app.ActivityCompat
-import io.rebble.cobble.bluetooth.BlueIO
-import io.rebble.cobble.bluetooth.PebbleDevice
-import io.rebble.cobble.bluetooth.SingleConnectionStatus
+import io.rebble.cobble.bluetooth.*
 import io.rebble.cobble.bluetooth.workarounds.UnboundWatchBeforeConnecting
 import io.rebble.cobble.bluetooth.workarounds.WorkaroundDescriptor
 import io.rebble.libpebblecommon.ProtocolHandler
@@ -14,6 +9,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import java.io.IOException
+import java.io.PipedInputStream
+import java.io.PipedOutputStream
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -28,6 +25,7 @@ class BlueLEDriver(
         private val context: Context,
         private val protocolHandler: ProtocolHandler,
         private val gattServerManager: GattServerManager,
+        private val incomingPacketsListener: MutableSharedFlow<ByteArray>,
         private val workaroundResolver: (WorkaroundDescriptor) -> Boolean
 ): BlueIO {
     private val scope = CoroutineScope(coroutineContext)
@@ -38,10 +36,19 @@ class BlueLEDriver(
         require(device.bluetoothDevice != null)
         return flow {
             val gattServer = gattServerManager.gattServer.first()
-            val gatt = device.bluetoothDevice.connectGatt(context, workaroundResolver(UnboundWatchBeforeConnecting))
+            if (gattServer.state.value == NordicGattServer.State.INIT) {
+                Timber.i("Waiting for GATT server to open")
+                withTimeout(1000) {
+                    gattServer.state.first { it == NordicGattServer.State.OPEN }
+                }
+            }
+            check(gattServer.state.value == NordicGattServer.State.OPEN) { "GATT server is not open" }
+
+            var gatt: BlueGATTConnection = device.bluetoothDevice.connectGatt(context, workaroundResolver(UnboundWatchBeforeConnecting))
                     ?: throw IOException("Failed to connect to device")
             try {
                 emit(SingleConnectionStatus.Connecting(device))
+
                 val connector = PebbleLEConnector(gatt, context, scope)
                 var success = false
                 connector.connect()
@@ -62,8 +69,18 @@ class BlueLEDriver(
                         }
 
                 check(success) { "Failed to connect to watch" }
+                val protocolInputStream = PipedInputStream()
+                val protocolOutputStream = PipedOutputStream()
+                val rxStream = PipedOutputStream(protocolInputStream)
+
+                val protocolIO = ProtocolIO(
+                        protocolInputStream.buffered(8192),
+                        protocolOutputStream.buffered(8192),
+                        protocolHandler,
+                        incomingPacketsListener
+                )
                 try {
-                    withTimeout(60000) {
+                    withTimeout(20000) {
                         val result = PPoGLinkStateManager.getState(device.address).first { it != PPoGLinkState.ReadyForSession }
                         if (result == PPoGLinkState.SessionOpen) {
                             Timber.d("Session established")
@@ -72,22 +89,26 @@ class BlueLEDriver(
                         }
                     }
                 } catch (e: TimeoutCancellationException) {
-                    throw IOException("Failed to establish session, timeout")
+                    throw IOException("Failed to establish session, timed out")
                 }
-                val sendLoop = scope.launch {
+                val rxJob = gattServer.rxFlowFor(device.address)?.onEach {
+                    rxStream.write(it)
+                }?.flowOn(Dispatchers.IO)?.launchIn(scope) ?: throw IOException("Failed to get rxFlow")
+                val sendLoop = scope.launch(Dispatchers.IO) {
                     protocolHandler.startPacketSendingLoop {
-                        return@startPacketSendingLoop gattServer.sendMessageToDevice(device.address, it.asByteArray())
+                        gattServer.sendMessageToDevice(device.address, it.asByteArray())
+                        return@startPacketSendingLoop true
                     }
                 }
                 emit(SingleConnectionStatus.Connected(device))
-                gattServer.rxFlowFor(device.address)?.collect {
-                    protocolHandler.receivePacket(it.asUByteArray())
-                } ?: throw IOException("Failed to get rxFlow")
+                protocolIO.readLoop()
+                rxJob.cancel()
                 sendLoop.cancel()
             } finally {
                 gatt.close()
                 Timber.d("Disconnected from watch")
             }
         }
+                .flowOn(Dispatchers.IO)
     }
 }

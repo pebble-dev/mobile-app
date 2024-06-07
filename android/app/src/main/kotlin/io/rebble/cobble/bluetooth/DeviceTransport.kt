@@ -14,6 +14,7 @@ import io.rebble.cobble.bluetooth.scan.ClassicScanner
 import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.datasources.IncomingPacketsListener
 import io.rebble.libpebblecommon.ProtocolHandler
+import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -61,12 +62,13 @@ class DeviceTransport @Inject constructor(
                         incomingPacketsListener.receivedPackets
                 )
             }
-            btDevice?.type == BluetoothDevice.DEVICE_TYPE_LE || btDevice?.type == BluetoothDevice.DEVICE_TYPE_DUAL -> { // LE device
+            btDevice?.type == BluetoothDevice.DEVICE_TYPE_LE/* || btDevice?.type == BluetoothDevice.DEVICE_TYPE_DUAL */-> { // LE device
                 gattServerManager.initIfNeeded()
                 BlueLEDriver(
                         context = context,
                         protocolHandler = protocolHandler,
                         gattServerManager = gattServerManager,
+                        incomingPacketsListener = incomingPacketsListener.receivedPackets,
                 ) {
                     flutterPreferences.shouldActivateWorkaround(it)
                 }

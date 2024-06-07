@@ -3,6 +3,7 @@ package io.rebble.cobble.bluetooth
 import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import androidx.annotation.RequiresPermission
+import io.rebble.cobble.handlers.SystemHandler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -75,6 +76,7 @@ class ConnectionLooper @Inject constructor(
                                 // initial connection, wait on negotiation
                                 _connectionState.value = ConnectionState.Negotiating(it.watch)
                             } else {
+                                Timber.d("Not waiting for negotiation")
                                 _connectionState.value = it.toConnectionStatus()
                             }
                             if (it is SingleConnectionStatus.Connected) {

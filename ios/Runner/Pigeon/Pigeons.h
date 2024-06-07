@@ -560,6 +560,8 @@ NSObject<FlutterMessageCodec> *PermissionCheckGetCodec(void);
 - (nullable BooleanWrapper *)hasNotificationAccessWithError:(FlutterError *_Nullable *_Nonnull)error;
 /// @return `nil` only when `error != nil`.
 - (nullable BooleanWrapper *)hasBatteryExclusionEnabledWithError:(FlutterError *_Nullable *_Nonnull)error;
+/// @return `nil` only when `error != nil`.
+- (nullable BooleanWrapper *)hasCallsPermissionsWithError:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void PermissionCheckSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<PermissionCheck> *_Nullable api);
@@ -574,6 +576,8 @@ NSObject<FlutterMessageCodec> *PermissionControlGetCodec(void);
 - (void)requestNotificationAccessWithCompletion:(void (^)(FlutterError *_Nullable))completion;
 /// This can only be performed when at least one watch is paired
 - (void)requestBatteryExclusionWithCompletion:(void (^)(FlutterError *_Nullable))completion;
+/// This can only be performed when at least one watch is paired
+- (void)requestCallsPermissionsWithCompletion:(void (^)(FlutterError *_Nullable))completion;
 - (void)requestBluetoothPermissionsWithCompletion:(void (^)(NumberWrapper *_Nullable, FlutterError *_Nullable))completion;
 - (void)openPermissionSettingsWithCompletion:(void (^)(FlutterError *_Nullable))completion;
 @end
