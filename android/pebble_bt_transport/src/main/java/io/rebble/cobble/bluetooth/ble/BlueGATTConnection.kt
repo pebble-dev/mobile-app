@@ -109,21 +109,17 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
         try {
             coroutineScope {
                 launch(ioDispatcher) {
-                    gatt = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                            device.connectGatt(context, auto, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_AUTO, BluetoothDevice.PHY_LE_1M)
-                        } else {
-                            device.connectGatt(context, auto, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_AUTO)
-                        }
+                    gatt = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                        device.connectGatt(context, auto, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_LE, BluetoothDevice.PHY_LE_1M)
                     } else {
-                        device.connectGatt(context, auto, this@BlueGATTConnection)
+                        device.connectGatt(context, auto, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_LE)
                     }
                 }
                 withTimeout(cbTimeout) {
-                    if (_connectionStateChanged.value != null) {
-                        res = _connectionStateChanged.value
+                    res = if (_connectionStateChanged.value != null) {
+                        _connectionStateChanged.value
                     } else {
-                        res = connectionStateChanged.first()
+                        connectionStateChanged.first()
                     }
                 }
             }
@@ -142,7 +138,7 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
             Timber.e("connectGatt timed out")
         }
         if (res?.status != null && res!!.status != BluetoothGatt.GATT_SUCCESS) {
-            Timber.e("connectGatt status ${res?.status}")
+            Timber.e("connectGatt status ${GattStatus(res?.status ?: -1)}")
         }
         return if (res?.isSuccess() == true && res?.newState == BluetoothGatt.STATE_CONNECTED) {
             this
