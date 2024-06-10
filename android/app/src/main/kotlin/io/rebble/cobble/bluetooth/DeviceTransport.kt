@@ -2,7 +2,9 @@ package io.rebble.cobble.bluetooth
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.companion.CompanionDeviceManager
 import android.content.Context
+import android.os.Build
 import androidx.annotation.RequiresPermission
 import io.rebble.cobble.BuildConfig
 import io.rebble.cobble.bluetooth.ble.BlueLEDriver
@@ -17,6 +19,7 @@ import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -40,6 +43,12 @@ class DeviceTransport @Inject constructor(
     fun startSingleWatchConnection(macAddress: String): Flow<SingleConnectionStatus> {
         bleScanner.stopScan()
         classicScanner.stopScan()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val companionDeviceManager = context.getSystemService(CompanionDeviceManager::class.java)
+            Timber.d("Companion device associated: ${macAddress in companionDeviceManager.associations}, associations: ${companionDeviceManager.associations}")
+        }
+
         val bluetoothDevice = if (BuildConfig.DEBUG && !macAddress.contains(":")) {
             PebbleDevice(null, true, macAddress)
         } else {
@@ -62,8 +71,11 @@ class DeviceTransport @Inject constructor(
                         incomingPacketsListener.receivedPackets
                 )
             }
-            btDevice?.type == BluetoothDevice.DEVICE_TYPE_LE/* || btDevice?.type == BluetoothDevice.DEVICE_TYPE_DUAL */-> { // LE device
+            btDevice?.type == BluetoothDevice.DEVICE_TYPE_LE || btDevice?.type == BluetoothDevice.DEVICE_TYPE_UNKNOWN /* || btDevice?.type == BluetoothDevice.DEVICE_TYPE_DUAL */-> { // LE device
                 gattServerManager.initIfNeeded()
+                if (btDevice.type == BluetoothDevice.DEVICE_TYPE_UNKNOWN) {
+                    Timber.w("Device $pebbleDevice has type unknown, assuming LE will work")
+                }
                 BlueLEDriver(
                         context = context,
                         protocolHandler = protocolHandler,
@@ -73,7 +85,7 @@ class DeviceTransport @Inject constructor(
                     flutterPreferences.shouldActivateWorkaround(it)
                 }
             }
-            btDevice?.type != BluetoothDevice.DEVICE_TYPE_UNKNOWN -> { // Serial only device or serial/LE
+            btDevice?.type == BluetoothDevice.DEVICE_TYPE_LE || btDevice?.type == BluetoothDevice.DEVICE_TYPE_DUAL -> { // Serial only device or serial/LE
                 BlueSerialDriver(
                         protocolHandler,
                         incomingPacketsListener.receivedPackets
