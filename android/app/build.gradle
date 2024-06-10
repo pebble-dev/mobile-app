@@ -50,6 +50,9 @@ android {
         versionName flutterVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         android.defaultConfig.vectorDrawables.useSupportLibrary = true
+        manifestPlaceholders = [
+                overridePebbleKitProvider: 'true', // This makes the app incompatible with the official Pebble app when set to 'true'
+        ]
     }
     signingConfigs {
         release {
