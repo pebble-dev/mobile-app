@@ -334,7 +334,8 @@ class PPoGSession(private val scope: CoroutineScope, private val deviceAddress: 
         delayedAckJob?.cancel()
     }
 
-    private suspend fun requestReset() {
+    suspend fun requestReset() {
+        check(pendingOutboundResetAck == null) { "Tried to request reset while reset ACK is pending" }
         stateManager.state = State.AwaitingResetAckRequested
         resetState()
         packetWriter.rescheduleTimeout(true)

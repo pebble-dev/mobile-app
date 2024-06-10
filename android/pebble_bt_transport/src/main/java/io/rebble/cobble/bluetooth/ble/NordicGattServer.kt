@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory
 import org.slf4j.LoggerFactoryFriend
 import timber.log.Timber
 import java.io.Closeable
+import java.io.IOException
 import java.util.UUID
 import kotlin.coroutines.CoroutineContext
 
@@ -102,7 +103,7 @@ class NordicGattServer(private val ioDispatcher: CoroutineContext = Dispatchers.
         }
         val serverScope = CoroutineScope(ioDispatcher)
         serverScope.coroutineContext.job.invokeOnCompletion {
-            Timber.v("GattServer scope closed")
+            Timber.v(it, "GattServer scope closed")
             close()
         }
         server = ServerBleGatt.create(
@@ -122,8 +123,13 @@ class NordicGattServer(private val ioDispatcher: CoroutineContext = Dispatchers.
                             Timber.w("Connection already exists for device ${it.device.address}")
                             return@onEach
                         }
-                        val connection = PPoGServiceConnection(it)
-                        connections[it.device.address] = connection
+                        if (connections[it.device.address]?.isStillValid == true) {
+                            Timber.d("Reinitializing connection for device ${it.device.address}")
+                            connections[it.device.address]?.reinit(it)
+                        } else {
+                            val connection = PPoGServiceConnection(it)
+                            connections[it.device.address] = connection
+                        }
                     }
                     .launchIn(serverScope)
         }
@@ -137,6 +143,12 @@ class NordicGattServer(private val ioDispatcher: CoroutineContext = Dispatchers.
             return false
         }
         return connection.sendMessage(packet)
+    }
+
+    suspend fun resetDevice(deviceAddress: String) {
+        val connection = connections[deviceAddress]
+                ?: throw IOException("No connection for device $deviceAddress")
+        connection.requestReset()
     }
 
     fun rxFlowFor(deviceAddress: String): Flow<ByteArray>? {

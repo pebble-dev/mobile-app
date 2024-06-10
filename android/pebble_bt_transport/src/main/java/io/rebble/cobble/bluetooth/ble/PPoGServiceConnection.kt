@@ -5,6 +5,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import no.nordicsemi.android.kotlin.ble.core.data.GattConnectionState
+import no.nordicsemi.android.kotlin.ble.core.data.GattConnectionStateWithStatus
 import no.nordicsemi.android.kotlin.ble.core.data.util.DataByteArray
 import no.nordicsemi.android.kotlin.ble.core.data.util.IntFormat
 import no.nordicsemi.android.kotlin.ble.core.errors.GattOperationException
@@ -14,9 +15,10 @@ import java.io.Closeable
 import java.util.UUID
 
 @OptIn(FlowPreview::class)
-class PPoGServiceConnection(private val serverConnection: ServerBluetoothGattConnection, ioDispatcher: CoroutineDispatcher = Dispatchers.IO): Closeable {
-    private val scope = serverConnection.connectionScope + ioDispatcher + CoroutineName("PPoGServiceConnection-${serverConnection.device.address}")
-    private val ppogSession = PPoGSession(scope, serverConnection.device.address, LEConstants.DEFAULT_MTU)
+class PPoGServiceConnection(private var serverConnection: ServerBluetoothGattConnection, private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO): Closeable {
+    private var scope = serverConnection.connectionScope + ioDispatcher + CoroutineName("PPoGServiceConnection-${serverConnection.device.address}")
+    private val sessionScope = CoroutineScope(ioDispatcher) + CoroutineName("PPoGSession-${serverConnection.device.address}")
+    private val ppogSession = PPoGSession(sessionScope, serverConnection.device.address, LEConstants.DEFAULT_MTU)
 
     val device get() = serverConnection.device
 
@@ -30,14 +32,36 @@ class PPoGServiceConnection(private val serverConnection: ServerBluetoothGattCon
     private val _incomingPebblePackets = Channel<ByteArray>(Channel.BUFFERED)
     val incomingPebblePacketData: Flow<ByteArray> = _incomingPebblePackets.receiveAsFlow()
 
+    // Make our own connection state flow that debounces the connection state, as we might recreate the connection but only want to cancel everything if it doesn't reconnect
+    private val connectionStateDebounced = MutableStateFlow<GattConnectionStateWithStatus?>(null)
+
     val isConnected: Boolean
         get() = scope.isActive
+    val isStillValid: Boolean
+        get() = sessionScope.isActive
 
     private val notificationsEnabled = MutableStateFlow(false)
     private var lastNotify: DataByteArray? = null
 
     init {
-        Timber.d("PPoGServiceConnection created with ${serverConnection.device}: PHY (RX ${serverConnection.rxPhy} TX ${serverConnection.txPhy})")
+        connectionStateDebounced
+                .filterNotNull()
+                .debounce(1000)
+                .onEach {
+                    Timber.v("(${serverConnection.device}) New connection state: ${it.state} ${it.status}")
+                }
+                .filter { it.state == GattConnectionState.STATE_DISCONNECTED }
+                .onEach {
+                    Timber.i("(${serverConnection.device}) Connection lost")
+                    scope.cancel("Connection lost")
+                    sessionScope.cancel("Connection lost")
+                }
+                .launchIn(sessionScope)
+        launchFlows()
+    }
+
+    private fun launchFlows() {
+        Timber.d("PPoGServiceConnection created with ${serverConnection.device}")
         serverConnection.connectionProvider.updateMtu(LEConstants.TARGET_MTU)
         serverConnection.services.findService(ppogServiceUUID)?.let { service ->
             check(service.findCharacteristic(metaCharacteristicUUID) != null) { "Meta characteristic missing" }
@@ -48,8 +72,8 @@ class PPoGServiceConnection(private val serverConnection: ServerBluetoothGattCon
                 characteristic.value
                         .filter { it != lastNotify } // Ignore echo
                         .onEach {
-                    ppogSession.handlePacket(it.value.clone())
-                }.launchIn(scope)
+                            ppogSession.handlePacket(it.value.clone())
+                        }.launchIn(scope)
                 characteristic.findDescriptor(configurationDescriptorUUID)?.value?.onEach {
                     val value = it.getIntValue(IntFormat.FORMAT_UINT8, 0)
                     Timber.i("(${serverConnection.device}) PPOG Notify changed: $value")
@@ -78,27 +102,31 @@ class PPoGServiceConnection(private val serverConnection: ServerBluetoothGattCon
                     }
                 }.launchIn(scope)
                 serverConnection.connectionProvider.connectionStateWithStatus
-                        .filterNotNull()
-                        .debounce(1000) // Debounce to ignore quick reconnects
                         .onEach {
-                            Timber.v("(${serverConnection.device}) New connection state: ${it.state} ${it.status}")
-                        }
-                        .filter { it.state == GattConnectionState.STATE_DISCONNECTED }
-                        .onEach {
-                            Timber.i("(${serverConnection.device}) Connection lost")
-                            scope.cancel("Connection lost")
+                            connectionStateDebounced.value = it
                         }
                         .launchIn(scope)
             } ?: throw IllegalStateException("PPOG Characteristic missing")
         } ?: throw IllegalStateException("PPOG Service missing")
     }
 
+    fun reinit(serverConnection: ServerBluetoothGattConnection) {
+        this.serverConnection = serverConnection
+        scope.cancel("Reinit")
+        scope = serverConnection.connectionScope + ioDispatcher + CoroutineName("PPoGServiceConnection-${serverConnection.device.address}")
+    }
+
     override fun close() {
         scope.cancel("Closed")
+        sessionScope.cancel("Closed")
     }
 
     suspend fun sendMessage(packet: ByteArray): Boolean {
         ppogSession.stateManager.stateFlow.first { it == PPoGSession.State.Open } // Wait for session to open, otherwise packet will be dropped
         return ppogSession.sendMessage(packet)
+    }
+
+    suspend fun requestReset() {
+        ppogSession.requestReset()
     }
 }

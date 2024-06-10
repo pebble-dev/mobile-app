@@ -88,7 +88,7 @@ class PebbleLEConnector(private val connection: BlueGATTConnection, private val 
         } else {
             if (connection.device.bondState == BluetoothDevice.BOND_BONDED) {
                 Timber.w("Phone is bonded but watch is not paired")
-                //TODO: Request user to remove bond
+                BluetoothDevice::class.java.getMethod("removeBond").invoke(connection.device)
                 emit(ConnectorState.PAIRING)
                 requestPairing(connectionStatus)
             } else {
