@@ -46,7 +46,7 @@ dependencies:
   stream_transform: ^2.1.0
   flutter_svg: ^2.0.0
   flutter_svg_provider: ^1.0.4
-  golden_toolkit: ^0.13.0
+  golden_toolkit: ^0.15.0
   rxdart: 0.27.7
   share_plus: ^6.3.0
   network_info_plus: ^3.0.0
