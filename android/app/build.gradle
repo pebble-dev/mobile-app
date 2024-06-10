@@ -51,7 +51,8 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         android.defaultConfig.vectorDrawables.useSupportLibrary = true
         manifestPlaceholders = [
-                overridePebbleKitProvider: 'false', // This makes the app incompatible with the official Pebble app when set to 'true'
+                //pebbleKitProviderAuthority: 'com.getpebble.android.provider.basalt' // This makes the app incompatible with the official Pebble app
+                pebbleKitProviderAuthority: 'io.rebble.cobble.provider'
         ]
     }
     signingConfigs {

@@ -172,10 +172,9 @@
         </provider>
 
         <provider
-            android:enabled="${overridePebbleKitProvider}"
             android:name=".providers.PebbleKitProvider"
-            android:authorities="com.getpebble.android.provider.basalt"
-            android:exported="${overridePebbleKitProvider}"
+            android:authorities="${pebbleKitProviderAuthority}"
+            android:exported="true"
             tools:ignore="ExportedContentProvider" />
     </application>
 </manifest>
