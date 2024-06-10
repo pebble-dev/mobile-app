@@ -35,7 +35,10 @@ class ConnectionCallbacksStateNotifier
   void dispose() {
     ConnectionCallbacks.setup(null);
     _connectionControl.cancelObservingConnectionChanges();
-    super.dispose();
+    //XXX: Potentially a bug in riverpod
+    if (mounted) {
+      super.dispose();
+    }
   }
 }
 
@@ -43,6 +46,10 @@ final AutoDisposeStateNotifierProvider<ConnectionCallbacksStateNotifier, WatchCo
     connectionStateProvider =
     StateNotifierProvider.autoDispose<ConnectionCallbacksStateNotifier, WatchConnectionState>((ref) {
   final notifier = ConnectionCallbacksStateNotifier();
-  ref.onDispose(notifier.dispose);
+  ref.onDispose(() {
+    if (notifier.mounted) {
+      notifier.dispose();
+    }
+  });
   return notifier;
 });

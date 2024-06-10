@@ -5,6 +5,7 @@ class FakePermissionCheck implements PermissionCheck {
   bool reportedCalendarPermission = true;
   bool reportedLocationPermission = true;
   bool reportedNotificationAccess = true;
+  bool reportedCallsAccess = true;
 
   @override
   Future<BooleanWrapper> hasBatteryExclusionEnabled() {
@@ -31,6 +32,13 @@ class FakePermissionCheck implements PermissionCheck {
   Future<BooleanWrapper> hasNotificationAccess() {
     final wrapper = BooleanWrapper();
     wrapper.value = reportedNotificationAccess;
+    return Future.value(wrapper);
+  }
+
+  @override
+  Future<BooleanWrapper> hasCallsPermissions() {
+    final wrapper = BooleanWrapper();
+    wrapper.value = reportedCallsAccess;
     return Future.value(wrapper);
   }
 }
