@@ -37,7 +37,10 @@ dependencies:
   state_notifier: ^0.7.0
   hooks_riverpod: ^2.0.0
   flutter_hooks: ^0.18.0
-  device_calendar: ^4.3.0
+  device_calendar:
+    git:
+      url: https://github.com/builttoroam/device_calendar.git
+      ref: b21ffc1 # 4.3.2 + AGP 8.0 compat
   uuid_type: ^2.0.0
   path: ^1.8.0
   json_annotation: ^4.6.0

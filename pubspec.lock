@@ -244,11 +244,12 @@ packages:
   device_calendar:
     dependency: "direct main"
     description:
-      name: device_calendar
-      sha256: "991b55bb9e0a0850ec9367af8227fe25185210da4f5fa7bd15db4cc813b1e2e5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.3.2"
+      path: "."
+      ref: b21ffc1
+      resolved-ref: b21ffc128cf0e9c56d98523176554d8630ff04e1
+      url: "https://github.com/builttoroam/device_calendar.git"
+    source: git
+    version: "4.3.3"
   device_info_plus:
     dependency: "direct main"
     description:
