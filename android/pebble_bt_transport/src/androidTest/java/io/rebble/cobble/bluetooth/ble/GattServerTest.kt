@@ -117,6 +117,9 @@ class GattServerTest {
     @OptIn(FlowPreview::class)
     @Test
     fun connectToWatchAndPing() = runBlocking {
+        withTimeout(10000) {
+            restartBluetooth(bluetoothAdapter)
+        }
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val connectionScope = CoroutineScope(Dispatchers.IO) + CoroutineName("ConnectionScope")
         val server = NordicGattServer(
@@ -173,6 +176,9 @@ class GattServerTest {
     @OptIn(FlowPreview::class)
     @Test
     fun connectToWatchAndInstallApp() = runBlocking {
+        withTimeout(10000) {
+            restartBluetooth(bluetoothAdapter)
+        }
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val connectionScope = CoroutineScope(Dispatchers.IO) + CoroutineName("ConnectionScope")
         val server = NordicGattServer(

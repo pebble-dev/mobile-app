@@ -58,23 +58,10 @@ class PebbleLEConnectorTest {
         device::class.java.getMethod("removeBond").invoke(device) // Internal API
     }
 
-    @Suppress("DEPRECATION") // we are an exception as a test
-    private suspend fun restartBluetooth() {
-        bluetoothAdapter.disable()
-        while (bluetoothAdapter.isEnabled) {
-            delay(100)
-        }
-        delay(1000)
-        bluetoothAdapter.enable()
-        while (!bluetoothAdapter.isEnabled) {
-            delay(100)
-        }
-    }
-
     @Test
     fun testConnectPebble() = runBlocking {
         withTimeout(10000) {
-            restartBluetooth()
+            restartBluetooth(bluetoothAdapter)
         }
         val remoteDevice = bluetoothAdapter.getRemoteLeDevice(DEVICE_ADDRESS_LE, BluetoothDevice.ADDRESS_TYPE_RANDOM)
         removeBond(remoteDevice)
@@ -100,7 +87,7 @@ class PebbleLEConnectorTest {
     @Test
     fun testConnectPebbleWithBond() = runBlocking {
         withTimeout(10000) {
-            restartBluetooth()
+            restartBluetooth(bluetoothAdapter)
         }
         val remoteDevice = bluetoothAdapter.getRemoteLeDevice(DEVICE_ADDRESS_LE, BluetoothDevice.ADDRESS_TYPE_RANDOM)
         val connection = remoteDevice.connectGatt(context, false)
