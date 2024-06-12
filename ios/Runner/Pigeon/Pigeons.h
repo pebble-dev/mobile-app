@@ -514,7 +514,7 @@ extern void IntentControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObj
 NSObject<FlutterMessageCodec> *DebugControlGetCodec(void);
 
 @protocol DebugControl
-- (void)collectLogsWithError:(FlutterError *_Nullable *_Nonnull)error;
+- (void)collectLogsRwsId:(NSString *)rwsId error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void DebugControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DebugControl> *_Nullable api);

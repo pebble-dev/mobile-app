@@ -2,12 +2,12 @@ package io.rebble.cobble.bluetooth
 
 sealed class ConnectionState {
     object Disconnected : ConnectionState()
-    class WaitingForBluetoothToEnable(val watch: PebbleDevice?) : ConnectionState()
-    class WaitingForReconnect(val watch: PebbleDevice?) : ConnectionState()
-    class Connecting(val watch: PebbleDevice?) : ConnectionState()
-    class Negotiating(val watch: PebbleDevice?) : ConnectionState()
-    class Connected(val watch: PebbleDevice) : ConnectionState()
-    class RecoveryMode(val watch: PebbleDevice) : ConnectionState()
+    data class WaitingForBluetoothToEnable(val watch: PebbleDevice?) : ConnectionState()
+    data class WaitingForReconnect(val watch: PebbleDevice?) : ConnectionState()
+    data class Connecting(val watch: PebbleDevice?) : ConnectionState()
+    data class Negotiating(val watch: PebbleDevice?) : ConnectionState()
+    data class Connected(val watch: PebbleDevice) : ConnectionState()
+    data class RecoveryMode(val watch: PebbleDevice) : ConnectionState()
 }
 
 val ConnectionState.watchOrNull: PebbleDevice?

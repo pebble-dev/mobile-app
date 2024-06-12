@@ -2,7 +2,9 @@ package io.rebble.cobble.bluetooth
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice
+import android.content.pm.PackageManager
 import androidx.annotation.RequiresPermission
+import androidx.core.app.ActivityCompat
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 
@@ -23,6 +25,15 @@ data class PebbleDevice (
                     emulated,
                     bluetoothDevice?.address ?: throw IllegalArgumentException()
             )
+
+    override fun toString(): String {
+        val start = "< PebbleDevice emulated=$emulated, address=$address, bluetoothDevice=< BluetoothDevice address=${bluetoothDevice?.address}"
+        return try {
+            "$start, name=${bluetoothDevice?.name}, type=${bluetoothDevice?.type} > >"
+        } catch (e: SecurityException) {
+            "$start, name=unknown, type=unknown > >"
+        }
+    }
 }
 
 sealed class SingleConnectionStatus {

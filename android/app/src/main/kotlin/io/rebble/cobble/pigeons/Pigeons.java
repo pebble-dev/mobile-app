@@ -4248,7 +4248,7 @@ public class Pigeons {
   /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
   public interface DebugControl {
 
-    void collectLogs();
+    void collectLogs(@NonNull String rwsId);
 
     /** The codec used by DebugControl. */
     static @NonNull MessageCodec<Object> getCodec() {
@@ -4264,8 +4264,10 @@ public class Pigeons {
           channel.setMessageHandler(
               (message, reply) -> {
                 ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                String rwsIdArg = (String) args.get(0);
                 try {
-                  api.collectLogs();
+                  api.collectLogs(rwsIdArg);
                   wrapped.add(0, null);
                 }
  catch (Throwable exception) {

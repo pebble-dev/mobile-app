@@ -337,7 +337,7 @@ abstract class IntentControl {
 
 @HostApi()
 abstract class DebugControl {
-  void collectLogs();
+  void collectLogs(String rwsId);
 }
 
 @HostApi()

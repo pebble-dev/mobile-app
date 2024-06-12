@@ -1,9 +1,13 @@
 package io.rebble.cobble.log
 
+import android.companion.CompanionDeviceManager
 import android.content.ClipData
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.core.content.FileProvider
+import io.rebble.cobble.CobbleApplication
+import io.rebble.cobble.bluetooth.watchOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -13,20 +17,57 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
+import java.util.TimeZone
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
+
+private fun generateDebugInfo(context: Context, rwsId: String): String {
+    val sdkVersion = Build.VERSION.SDK_INT
+    val device = Build.DEVICE
+    val model = Build.MODEL
+    val product = Build.PRODUCT
+    val manufacturer = Build.MANUFACTURER
+
+    val inj = (context.applicationContext as CobbleApplication).component
+    val connectionLooper = inj.createConnectionLooper()
+    val connectionState = connectionLooper.connectionState.value
+
+    val associatedDevices = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val deviceManager = context.getSystemService(CompanionDeviceManager::class.java)
+        deviceManager.associations
+    } else {
+        null
+    }
+    return """
+    SDK Version: $sdkVersion
+    Device: $device
+    Model: $model
+    Product: $product
+    Manufacturer: $manufacturer
+    Connection State: $connectionState
+    Associated devices: $associatedDevices
+    RWS ID:
+    $rwsId
+    """.trimIndent()
+}
 
 /**
  * This should be eventually moved to flutter. Written it in Kotlin for now so we can use it while
  * testing other things.
  */
-fun collectAndShareLogs(context: Context) = GlobalScope.launch(Dispatchers.IO) {
+fun collectAndShareLogs(context: Context, rwsId: String) = GlobalScope.launch(Dispatchers.IO) {
     val logsFolder = File(context.cacheDir, "logs")
-
-    val targetFile = File(logsFolder, "logs.zip")
+    val date = LocalDateTime.now(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_DATE_TIME)
+    val targetFile = File(logsFolder, "logs-${date}.zip")
 
     var zipOutputStream: ZipOutputStream? = null
+    val debugInfo = generateDebugInfo(context, rwsId)
     try {
         zipOutputStream = ZipOutputStream(FileOutputStream(targetFile))
         for (file in logsFolder.listFiles() ?: emptyArray()) {
@@ -44,6 +85,9 @@ fun collectAndShareLogs(context: Context) = GlobalScope.launch(Dispatchers.IO) {
             inputStream.close()
             zipOutputStream.closeEntry()
         }
+        zipOutputStream.putNextEntry(ZipEntry("debug_info.txt"))
+        zipOutputStream.write(debugInfo.toByteArray())
+        zipOutputStream.closeEntry()
     } catch (e: Exception) {
         Timber.e(e, "Zip writing error")
     } finally {
@@ -63,9 +107,9 @@ fun collectAndShareLogs(context: Context) = GlobalScope.launch(Dispatchers.IO) {
         activityIntent.putExtra(Intent.EXTRA_STREAM, targetUri)
         activityIntent.setType("application/octet-stream")
 
-        activityIntent.setClipData(ClipData.newUri(context.getContentResolver(),
+        activityIntent.clipData = ClipData.newUri(context.contentResolver,
                 "Cobble Logs",
-                targetUri))
+                targetUri)
 
         activityIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 

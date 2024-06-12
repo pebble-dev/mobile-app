@@ -2500,10 +2500,12 @@ void DebugControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Debu
         binaryMessenger:binaryMessenger
         codec:DebugControlGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(collectLogsWithError:)], @"DebugControl api (%@) doesn't respond to @selector(collectLogsWithError:)", api);
+      NSCAssert([api respondsToSelector:@selector(collectLogsRwsId:error:)], @"DebugControl api (%@) doesn't respond to @selector(collectLogsRwsId:error:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        NSString *arg_rwsId = GetNullableObjectAtIndex(args, 0);
         FlutterError *error;
-        [api collectLogsWithError:&error];
+        [api collectLogsRwsId:arg_rwsId error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {
