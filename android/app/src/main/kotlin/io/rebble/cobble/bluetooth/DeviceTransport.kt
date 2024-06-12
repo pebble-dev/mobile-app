@@ -85,7 +85,7 @@ class DeviceTransport @Inject constructor(
                     flutterPreferences.shouldActivateWorkaround(it)
                 }
             }
-            btDevice?.type == BluetoothDevice.DEVICE_TYPE_LE || btDevice?.type == BluetoothDevice.DEVICE_TYPE_DUAL -> { // Serial only device or serial/LE
+            btDevice?.type == BluetoothDevice.DEVICE_TYPE_CLASSIC || btDevice?.type == BluetoothDevice.DEVICE_TYPE_DUAL -> { // Serial only device or serial/LE
                 BlueSerialDriver(
                         protocolHandler,
                         incomingPacketsListener.receivedPackets
