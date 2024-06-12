@@ -7,6 +7,7 @@ import android.content.Context
 import androidx.test.filters.RequiresDevice
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import io.rebble.cobble.bluetooth.ProtocolIO
 import io.rebble.libpebblecommon.PacketPriority
 import io.rebble.libpebblecommon.ProtocolHandlerImpl
 import io.rebble.libpebblecommon.disk.PbwBinHeader
@@ -16,6 +17,7 @@ import io.rebble.libpebblecommon.metadata.pbw.manifest.PbwManifest
 import io.rebble.libpebblecommon.packets.*
 import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
+import io.rebble.libpebblecommon.packets.blobdb.PushNotification
 import io.rebble.libpebblecommon.protocolhelpers.PebblePacket
 import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import io.rebble.libpebblecommon.services.AppFetchService
@@ -23,11 +25,9 @@ import io.rebble.libpebblecommon.services.PutBytesService
 import io.rebble.libpebblecommon.services.SystemService
 import io.rebble.libpebblecommon.services.app.AppRunStateService
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
+import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import okio.buffer
@@ -36,6 +36,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import timber.log.Timber
+import java.io.PipedInputStream
+import java.io.PipedOutputStream
 import java.util.TimeZone
 import java.util.UUID
 import java.util.zip.ZipInputStream
@@ -58,7 +60,7 @@ class GattServerTest {
     )
 
     companion object {
-        private const val DEVICE_ADDRESS_LE = "77:4B:47:8D:B1:20"
+        private const val DEVICE_ADDRESS_LE = "71:D2:AE:CE:30:C1"
         val appVersionSent = CompletableDeferred<Unit>()
 
         suspend fun appVersionRequestHandler(): PhoneAppVersion.AppVersionResponse {
@@ -141,16 +143,31 @@ class GattServerTest {
 
         val protocolHandler = ProtocolHandlerImpl()
         val systemService = SystemService(protocolHandler)
+        val blobService = BlobDBService(protocolHandler)
+        val notifService = NotificationService(blobService)
         systemService.appVersionRequestHandler = Companion::appVersionRequestHandler
 
+        val protocolInputStream = PipedInputStream()
+        val protocolOutputStream = PipedOutputStream()
+        val rxStream = PipedOutputStream(protocolInputStream)
+
+        val protocolIO = ProtocolIO(
+                protocolInputStream.buffered(8192),
+                protocolOutputStream.buffered(8192),
+                protocolHandler,
+                MutableSharedFlow()
+        )
         val sendLoop = connectionScope.launch {
             protocolHandler.startPacketSendingLoop {
                 server.sendMessageToDevice(device.address, it.asByteArray())
+                return@startPacketSendingLoop true
             }
         }
 
         serverRx!!.onEach {
-            protocolHandler.receivePacket(it.asUByteArray())
+            withContext(Dispatchers.IO) {
+                rxStream.write(it)
+            }
         }.launchIn(connectionScope)
 
         val ping = PingPong.Ping(1337u)
