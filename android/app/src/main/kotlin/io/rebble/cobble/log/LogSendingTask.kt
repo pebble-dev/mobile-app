@@ -8,6 +8,7 @@ import android.os.Build
 import androidx.core.content.FileProvider
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.watchOrNull
+import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -36,7 +37,16 @@ private fun generateDebugInfo(context: Context, rwsId: String): String {
 
     val inj = (context.applicationContext as CobbleApplication).component
     val connectionLooper = inj.createConnectionLooper()
+    val watchMetadataStore = inj.createWatchMetadataStore()
     val connectionState = connectionLooper.connectionState.value
+
+    val watchMeta = watchMetadataStore.lastConnectedWatchMetadata.value
+    val watchModel = watchMeta?.running?.hardwarePlatform?.get()?.let {
+        WatchHardwarePlatform.fromProtocolNumber(it)
+    }
+    val watchVersionTag = watchMeta?.running?.versionTag?.get()
+    val watchIsRecovery = watchMeta?.running?.isRecovery?.get()
+
 
     val associatedDevices = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val deviceManager = context.getSystemService(CompanionDeviceManager::class.java)
@@ -52,6 +62,9 @@ private fun generateDebugInfo(context: Context, rwsId: String): String {
     Manufacturer: $manufacturer
     Connection State: $connectionState
     Associated devices: $associatedDevices
+    Watch Model: $watchModel
+    Watch Version Tag: $watchVersionTag
+    Watch Is Recovery: $watchIsRecovery
     RWS ID:
     $rwsId
     """.trimIndent()
