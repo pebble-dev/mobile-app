@@ -118,7 +118,9 @@ class SystemHandler @Inject constructor(
 
         val locationManager = getSystemService(context, LocationManager::class.java)
         if (locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) == true || locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) == true) platflormFlags.add(PhoneAppVersion.PlatformFlag.GPS)
+
         //TODO: check phone and sms capabilities
+        platflormFlags.add(PhoneAppVersion.PlatformFlag.Telephony)
 
         return PhoneAppVersion.AppVersionResponse(
                 UInt.MAX_VALUE,

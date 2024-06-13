@@ -29,6 +29,7 @@
     <!-- Required for running in background indefinitely -->
     <uses-permission android:name="android.permission.REQUEST_COMPANION_RUN_IN_BACKGROUND" />
     <uses-permission android:name="android.permission.REQUEST_COMPANION_USE_DATA_IN_BACKGROUND" />
+    <uses-permission android:name="android.permission.REQUEST_COMPANION_PROFILE_WATCH" />
     <uses-permission
         android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"
         android:maxSdkVersion="26" />
@@ -40,7 +41,10 @@
 
     <!-- Incoming call handling -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.MANAGE_ONGOING_CALLS"
+        tools:ignore="ProtectedPermissions" /> <!-- This is a system permission, but we are an exception when paired -->
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -135,11 +139,14 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
-        <service android:name=".notifications.InCallService"
+        <!--<service android:name=".notifications.InCallService"
             android:permission="android.permission.BIND_INCALL_SERVICE"
             android:exported="true">
             <meta-data android:name="android.telecom.IN_CALL_SERVICE_UI" android:value="true" />
-        </service>
+            <intent-filter>
+                <action android:name="android.telecom.InCallService"/>
+            </intent-filter>
+        </service>-->
 
         <receiver android:name=".receivers.AppStartReceiver" android:exported="true">
             <intent-filter>
@@ -156,10 +163,18 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".receivers.CallReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.PHONE_STATE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
+            </intent-filter>
+        </receiver>
+
         <receiver
             android:name=".bridges.background.BackgroundTimelineFlutterBridge$Receiver"
             android:exported="false" />
-
 
         <provider
             android:name="androidx.core.content.FileProvider"

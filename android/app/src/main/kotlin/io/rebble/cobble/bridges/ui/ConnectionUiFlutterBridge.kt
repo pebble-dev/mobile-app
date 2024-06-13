@@ -113,6 +113,7 @@ class ConnectionUiFlutterBridge @Inject constructor(
 
         val associationRequest = AssociationRequest.Builder()
                 .addDeviceFilter(filter)
+                .setDeviceProfile(AssociationRequest.DEVICE_PROFILE_WATCH)
                 .setSingleDevice(true)
                 .build()
 
