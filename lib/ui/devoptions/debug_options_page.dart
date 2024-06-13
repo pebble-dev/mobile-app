@@ -1,5 +1,6 @@
 import 'package:cobble/domain/api/auth/auth.dart';
 import 'package:cobble/domain/api/auth/user.dart';
+import 'package:cobble/domain/api/no_token_exception.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/datasources/web_services/auth.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
@@ -87,20 +88,24 @@ class DebugOptionsPage extends HookConsumerWidget implements CobbleScreen {
           ),
           CobbleButton(
             onPressed: () async {
-              AuthService auth = await ref.read(authServiceProvider.future);
-              User user = await auth.user;
-              String id = user.uid.toString();
-              String bootOverrideCount = user.bootOverrides?.length.toString() ?? "0";
-              String subscribed = user.isSubscribed.toString();
-              String timelineTtl = user.timelineTtl.toString();
-              debug.collectLogs(
-                """
+              try {
+                AuthService auth = await ref.read(authServiceProvider.future);
+                User user = await auth.user;
+                String id = user.uid.toString();
+                String bootOverrideCount = user.bootOverrides?.length.toString() ?? "0";
+                String subscribed = user.isSubscribed.toString();
+                String timelineTtl = user.timelineTtl.toString();
+                debug.collectLogs(
+                  """
 User ID: $id
 Boot override count: $bootOverrideCount
 Subscribed: $subscribed
 Timeline TTL: $timelineTtl
                 """,
-              );
+                );
+              } on NoTokenException catch (_) {
+                debug.collectLogs("Not logged in");
+              }
             },
             label: "Share application logs",
           ),
