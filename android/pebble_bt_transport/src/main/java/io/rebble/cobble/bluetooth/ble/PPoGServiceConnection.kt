@@ -15,7 +15,7 @@ import java.io.Closeable
 import java.util.UUID
 
 @OptIn(FlowPreview::class)
-class PPoGServiceConnection(private var serverConnection: ServerBluetoothGattConnection, private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO): Closeable {
+class PPoGServiceConnection(private var serverConnection: ServerBluetoothGattConnection, private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO) : Closeable {
     private var scope = serverConnection.connectionScope + ioDispatcher + CoroutineName("PPoGServiceConnection-${serverConnection.device.address}")
     private val sessionScope = CoroutineScope(ioDispatcher) + CoroutineName("PPoGSession-${serverConnection.device.address}")
     private val ppogSession = PPoGSession(sessionScope, serverConnection.device.address, LEConstants.DEFAULT_MTU)
@@ -96,6 +96,7 @@ class PPoGServiceConnection(private var serverConnection: ServerBluetoothGattCon
                                 it.result.complete(false)
                             }
                         }
+
                         is PPoGSession.PPoGSessionResponse.PebblePacket -> {
                             _incomingPebblePackets.trySend(it.packet).getOrThrow()
                         }

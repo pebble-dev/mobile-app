@@ -1,7 +1,6 @@
 package io.rebble.cobble.bluetooth
 
 import io.rebble.libpebblecommon.ProtocolHandler
-import io.rebble.libpebblecommon.protocolhelpers.PebblePacket
 import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow

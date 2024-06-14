@@ -16,9 +16,6 @@ import no.nordicsemi.android.kotlin.ble.server.main.service.ServerBleGattCharact
 import no.nordicsemi.android.kotlin.ble.server.main.service.ServerBleGattDescriptorConfig
 import no.nordicsemi.android.kotlin.ble.server.main.service.ServerBleGattServiceConfig
 import no.nordicsemi.android.kotlin.ble.server.main.service.ServerBleGattServiceType
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import org.slf4j.LoggerFactoryFriend
 import timber.log.Timber
 import java.io.Closeable
 import java.io.IOException
@@ -26,12 +23,13 @@ import java.util.UUID
 import kotlin.coroutines.CoroutineContext
 
 @OptIn(FlowPreview::class)
-class NordicGattServer(private val ioDispatcher: CoroutineContext = Dispatchers.IO, private val context: Context): Closeable {
+class NordicGattServer(private val ioDispatcher: CoroutineContext = Dispatchers.IO, private val context: Context) : Closeable {
     enum class State {
         INIT,
         OPEN,
         CLOSED
     }
+
     private val _state = MutableStateFlow(State.INIT)
     val state = _state.asStateFlow()
 

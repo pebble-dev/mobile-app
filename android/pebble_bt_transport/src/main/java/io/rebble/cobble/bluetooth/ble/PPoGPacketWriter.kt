@@ -2,17 +2,18 @@ package io.rebble.cobble.bluetooth.ble
 
 import androidx.annotation.RequiresPermission
 import io.rebble.libpebblecommon.ble.GATTPacket
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.cancel
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.Closeable
 import java.util.LinkedList
-import kotlin.jvm.Throws
 
-class PPoGPacketWriter(private val scope: CoroutineScope, private val stateManager: PPoGSession.StateManager, private val onTimeout: () -> Unit): Closeable {
+class PPoGPacketWriter(private val scope: CoroutineScope, private val stateManager: PPoGSession.StateManager, private val onTimeout: () -> Unit) : Closeable {
     private var metaWaitingToSend: GATTPacket? = null
     val dataWaitingToSend: LinkedList<GATTPacket> = LinkedList()
     val inflightPackets: LinkedList<GATTPacket> = LinkedList()
@@ -134,7 +135,7 @@ class PPoGPacketWriter(private val scope: CoroutineScope, private val stateManag
     @RequiresPermission("android.permission.BLUETOOTH_CONNECT")
     private suspend fun sendPacket(packet: GATTPacket) {
         val data = packet.toByteArray()
-        require(data.size <= (stateManager.mtuSize-3)) {"Packet too large to send: ${data.size} > ${stateManager.mtuSize}-3"}
+        require(data.size <= (stateManager.mtuSize - 3)) { "Packet too large to send: ${data.size} > ${stateManager.mtuSize}-3" }
         _packetWriteFlow.emit(packet)
     }
 

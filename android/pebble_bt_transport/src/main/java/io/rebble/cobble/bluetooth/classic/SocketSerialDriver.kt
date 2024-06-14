@@ -1,6 +1,9 @@
 package io.rebble.cobble.bluetooth.classic
 
-import io.rebble.cobble.bluetooth.*
+import io.rebble.cobble.bluetooth.BlueIO
+import io.rebble.cobble.bluetooth.PebbleDevice
+import io.rebble.cobble.bluetooth.SingleConnectionStatus
+import io.rebble.cobble.bluetooth.readFully
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.packets.QemuPacket
 import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
@@ -23,7 +26,7 @@ import kotlin.coroutines.coroutineContext
 class SocketSerialDriver(
         private val protocolHandler: ProtocolHandler,
         private val incomingPacketsListener: MutableSharedFlow<ByteArray>
-): BlueIO {
+) : BlueIO {
 
     private var inputStream: InputStream? = null
     private var outputStream: OutputStream? = null

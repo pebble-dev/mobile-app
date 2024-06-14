@@ -8,7 +8,6 @@ import androidx.test.filters.RequiresDevice
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import io.rebble.cobble.bluetooth.ProtocolIO
-import io.rebble.libpebblecommon.PacketPriority
 import io.rebble.libpebblecommon.ProtocolHandlerImpl
 import io.rebble.libpebblecommon.disk.PbwBinHeader
 import io.rebble.libpebblecommon.metadata.WatchType
@@ -17,7 +16,6 @@ import io.rebble.libpebblecommon.metadata.pbw.manifest.PbwManifest
 import io.rebble.libpebblecommon.packets.*
 import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
-import io.rebble.libpebblecommon.packets.blobdb.PushNotification
 import io.rebble.libpebblecommon.protocolhelpers.PebblePacket
 import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import io.rebble.libpebblecommon.services.AppFetchService
@@ -30,7 +28,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
-import okio.buffer
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule

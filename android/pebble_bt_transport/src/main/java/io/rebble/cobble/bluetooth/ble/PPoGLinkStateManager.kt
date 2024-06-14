@@ -1,7 +1,8 @@
 package io.rebble.cobble.bluetooth.ble
 
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 object PPoGLinkStateManager {
     private val states = mutableMapOf<String, MutableStateFlow<PPoGLinkState>>()

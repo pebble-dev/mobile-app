@@ -1,15 +1,12 @@
 package io.rebble.cobble.bluetooth.ble
 
-import android.bluetooth.BluetoothDevice
 import io.rebble.cobble.bluetooth.ble.util.chunked
 import io.rebble.libpebblecommon.ble.GATTPacket
-import io.rebble.libpebblecommon.protocolhelpers.PebblePacket
 import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import io.rebble.libpebblecommon.structmapper.SUShort
 import io.rebble.libpebblecommon.structmapper.StructMapper
 import io.rebble.libpebblecommon.util.DataBuffer
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
@@ -17,7 +14,7 @@ import java.io.Closeable
 import java.util.LinkedList
 import kotlin.math.min
 
-class PPoGSession(private val scope: CoroutineScope, private val deviceAddress: String, var mtu: Int): Closeable {
+class PPoGSession(private val scope: CoroutineScope, private val deviceAddress: String, var mtu: Int) : Closeable {
     class PPoGSessionException(message: String) : Exception(message)
 
     private val pendingPackets = mutableMapOf<Int, GATTPacket>()
@@ -41,6 +38,7 @@ class PPoGSession(private val scope: CoroutineScope, private val deviceAddress: 
         class PebblePacket(val packet: ByteArray) : PPoGSessionResponse()
         class WritePPoGCharacteristic(val data: ByteArray, val result: CompletableDeferred<Boolean>) : PPoGSessionResponse()
     }
+
     open class SessionTxCommand {
         class SendMessage(val data: ByteArray, val result: CompletableDeferred<Boolean>) : SessionTxCommand()
         class SendPendingResetAck : SessionTxCommand()
@@ -79,6 +77,7 @@ class PPoGSession(private val scope: CoroutineScope, private val deviceAddress: 
                         }
                         command.result.complete(true)
                     }
+
                     is SessionTxCommand.SendPendingResetAck -> {
                         pendingOutboundResetAck?.let {
                             Timber.i("Connection is now allowed, sending pending reset ACK")
@@ -86,6 +85,7 @@ class PPoGSession(private val scope: CoroutineScope, private val deviceAddress: 
                             pendingOutboundResetAck = null
                         }
                     }
+
                     is SessionTxCommand.DelayedAck -> {
                         delayedAckJob?.cancel()
                         delayedAckJob = scope.launch {
@@ -95,9 +95,11 @@ class PPoGSession(private val scope: CoroutineScope, private val deviceAddress: 
                             }
                         }
                     }
+
                     is SessionTxCommand.SendNack -> {
                         sendAckCancelling()
                     }
+
                     else -> {
                         throw PPoGSessionException("Unknown command type")
                     }
@@ -142,6 +144,7 @@ class PPoGSession(private val scope: CoroutineScope, private val deviceAddress: 
         sessionTxActor.send(SessionTxCommand.SendMessage(data, result))
         return result.await()
     }
+
     suspend fun handlePacket(packet: ByteArray) = sessionRxActor.send(SessionRxCommand.HandlePacket(packet))
     private fun sendPendingResetAck() = sessionTxActor.trySend(SessionTxCommand.SendPendingResetAck())
     private fun scheduleDelayedAck() = sessionTxActor.trySend(SessionTxCommand.DelayedAck())
@@ -159,9 +162,11 @@ class PPoGSession(private val scope: CoroutineScope, private val deviceAddress: 
                 }
                 _state.value = value
             }
-        var mtuSize: Int get() = mtu
+        var mtuSize: Int
+            get() = mtu
             set(_) {}
     }
+
     val stateManager = StateManager()
 
     private var packetWriter = makePacketWriter()
@@ -174,7 +179,7 @@ class PPoGSession(private val scope: CoroutineScope, private val deviceAddress: 
         private const val MAX_SUPPORTED_WINDOW_SIZE = 25
         private const val MAX_SUPPORTED_WINDOW_SIZE_V0 = 4
         private const val MAX_NUM_RETRIES = 2
-        private const val PPOG_PACKET_OVERHEAD = 1+3 // 1 for ppogatt, 3 for transport header
+        private const val PPOG_PACKET_OVERHEAD = 1 + 3 // 1 for ppogatt, 3 for transport header
     }
 
     enum class State(val allowedRxTypes: List<GATTPacket.PacketType>, val allowedTxTypes: List<GATTPacket.PacketType>) {
@@ -369,6 +374,7 @@ class PPoGSession(private val scope: CoroutineScope, private val deviceAddress: 
             }
         }
     }
+
     fun flow() = sessionFlow.asSharedFlow()
 
     override fun close() {

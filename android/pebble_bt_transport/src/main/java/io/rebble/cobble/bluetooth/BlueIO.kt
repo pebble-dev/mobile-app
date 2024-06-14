@@ -2,9 +2,7 @@ package io.rebble.cobble.bluetooth
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice
-import android.content.pm.PackageManager
 import androidx.annotation.RequiresPermission
-import androidx.core.app.ActivityCompat
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 
@@ -14,7 +12,7 @@ interface BlueIO {
     fun startSingleWatchConnection(device: PebbleDevice): Flow<SingleConnectionStatus>
 }
 
-data class PebbleDevice (
+data class PebbleDevice(
         val bluetoothDevice: BluetoothDevice?,
         val emulated: Boolean,
         val address: String

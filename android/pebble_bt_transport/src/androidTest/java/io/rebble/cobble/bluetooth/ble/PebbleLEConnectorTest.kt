@@ -4,27 +4,19 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.Context
-import android.os.ParcelUuid
 import androidx.test.filters.RequiresDevice
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import io.rebble.cobble.bluetooth.ble.connectGatt
-import io.rebble.libpebblecommon.ble.LEConstants
 import io.rebble.libpebblecommon.util.runBlocking
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.withTimeout
-import org.junit.Test
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Rule
+import org.junit.Test
 import timber.log.Timber
-import java.util.UUID
 
 @RequiresDevice
 @OptIn(FlowPreview::class)
@@ -54,6 +46,7 @@ class PebbleLEConnectorTest {
         val bluetoothManager = context.getSystemService(BluetoothManager::class.java)
         bluetoothAdapter = bluetoothManager.adapter
     }
+
     private fun removeBond(device: BluetoothDevice) {
         device::class.java.getMethod("removeBond").invoke(device) // Internal API
     }
@@ -74,12 +67,12 @@ class PebbleLEConnectorTest {
             order.add(it)
         }
         assertEquals(
-            listOf(
-                PebbleLEConnector.ConnectorState.CONNECTING,
-                PebbleLEConnector.ConnectorState.PAIRING,
-                PebbleLEConnector.ConnectorState.CONNECTED
-            ),
-            order
+                listOf(
+                        PebbleLEConnector.ConnectorState.CONNECTING,
+                        PebbleLEConnector.ConnectorState.PAIRING,
+                        PebbleLEConnector.ConnectorState.CONNECTED
+                ),
+                order
         )
         connection.close()
     }
@@ -99,11 +92,11 @@ class PebbleLEConnectorTest {
             order.add(it)
         }
         assertEquals(
-            listOf(
-                PebbleLEConnector.ConnectorState.CONNECTING,
-                PebbleLEConnector.ConnectorState.CONNECTED
-            ),
-            order
+                listOf(
+                        PebbleLEConnector.ConnectorState.CONNECTING,
+                        PebbleLEConnector.ConnectorState.CONNECTED
+                ),
+                order
         )
         connection.close()
     }

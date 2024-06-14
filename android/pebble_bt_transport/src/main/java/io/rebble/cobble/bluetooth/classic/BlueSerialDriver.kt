@@ -1,16 +1,18 @@
 package io.rebble.cobble.bluetooth.classic
 
 import android.Manifest
-import android.bluetooth.BluetoothDevice
 import androidx.annotation.RequiresPermission
-import io.rebble.cobble.bluetooth.*
+import io.rebble.cobble.bluetooth.BlueIO
+import io.rebble.cobble.bluetooth.PebbleDevice
+import io.rebble.cobble.bluetooth.ProtocolIO
+import io.rebble.cobble.bluetooth.SingleConnectionStatus
 import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 import java.io.IOException
-import java.util.*
+import java.util.UUID
 
 @Suppress("BlockingMethodInNonBlockingContext")
 class BlueSerialDriver(

@@ -2,25 +2,20 @@ package io.rebble.cobble.bluetooth.ble
 
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGattCharacteristic
-import android.companion.AssociationInfo
-import android.companion.AssociationRequest
-import android.companion.BluetoothDeviceFilter
-import android.companion.CompanionDeviceManager
 import android.content.Context
-import android.content.IntentSender
-import android.os.ParcelUuid
-import androidx.annotation.RequiresPermission
 import io.rebble.cobble.bluetooth.getBluetoothDevicePairEvents
 import io.rebble.libpebblecommon.ble.LEConstants
-import io.rebble.libpebblecommon.packets.PhoneAppVersion
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 import java.io.IOException
 import java.util.BitSet
 import java.util.UUID
-import java.util.concurrent.Executor
-import java.util.regex.Pattern
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class PebbleLEConnector(private val connection: BlueGATTConnection, private val context: Context, private val scope: CoroutineScope) {
@@ -34,6 +29,7 @@ class PebbleLEConnector(private val connection: BlueGATTConnection, private val 
         PAIRING,
         CONNECTED
     }
+
     @Throws(IOException::class, SecurityException::class)
     suspend fun connect() = flow {
         var success = connection.discoverServices()?.isSuccess() == true

@@ -3,7 +3,7 @@ package io.rebble.cobble.bluetooth.ble
 import io.rebble.libpebblecommon.ble.LEConstants
 import timber.log.Timber
 import java.nio.ByteBuffer
-import java.util.*
+import java.util.UUID
 
 /**
  * Handles negotiating and reading changes to connection parameters, currently this feature is unused by us so it just tells the pebble to disable it
@@ -26,7 +26,7 @@ class ConnectionParamManager(val gatt: BlueGATTConnection) {
                     val configDescriptor = characteristic.getDescriptor(UUID.fromString(LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR))
                     if (gatt.readDescriptor(configDescriptor)?.descriptor?.value.contentEquals(LEConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)) {
                         Timber.w("Already subscribed to conn params")
-                    }else {
+                    } else {
                         if (gatt.writeDescriptor(configDescriptor, LEConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)?.isSuccess() == true) {
                             if (gatt.setCharacteristicNotification(characteristic, true)) {
                                 val mgmtData = ByteBuffer.allocate(2)

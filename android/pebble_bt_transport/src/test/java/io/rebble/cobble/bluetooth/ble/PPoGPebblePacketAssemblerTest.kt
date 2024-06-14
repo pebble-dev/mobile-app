@@ -2,14 +2,12 @@ package io.rebble.cobble.bluetooth.ble
 
 import io.rebble.cobble.bluetooth.ble.util.chunked
 import io.rebble.libpebblecommon.packets.PingPong
-import io.rebble.libpebblecommon.packets.PutBytesCommand
 import io.rebble.libpebblecommon.packets.PutBytesPut
 import io.rebble.libpebblecommon.protocolhelpers.PebblePacket
 import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest

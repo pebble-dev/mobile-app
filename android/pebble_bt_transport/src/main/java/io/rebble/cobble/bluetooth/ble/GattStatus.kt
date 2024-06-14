@@ -1,7 +1,7 @@
 package io.rebble.cobble.bluetooth.ble
 
 import android.bluetooth.BluetoothGatt
-import java.util.*
+import java.util.Locale
 
 class GattStatus(val value: Int) {
     override fun toString(): String {

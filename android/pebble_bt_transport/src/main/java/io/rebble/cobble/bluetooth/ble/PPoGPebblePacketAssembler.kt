@@ -47,7 +47,7 @@ class PPoGPebblePacketAssembler {
         val ep = SUShort(meta)
         meta.fromBytes(DataBuffer(header.asUByteArray()))
         val packetLength = length.get()
-        data = ByteBuffer.allocate(packetLength.toInt()+4)
+        data = ByteBuffer.allocate(packetLength.toInt() + 4)
         data!!.put(header)
     }
 

@@ -27,8 +27,9 @@ class BlueLEDriver(
         private val gattServerManager: GattServerManager,
         private val incomingPacketsListener: MutableSharedFlow<ByteArray>,
         private val workaroundResolver: (WorkaroundDescriptor) -> Boolean
-): BlueIO {
+) : BlueIO {
     private val scope = CoroutineScope(coroutineContext)
+
     @OptIn(FlowPreview::class)
     @Throws(SecurityException::class)
     override fun startSingleWatchConnection(device: PebbleDevice): Flow<SingleConnectionStatus> {
@@ -93,7 +94,8 @@ class BlueLEDriver(
                 }
                 val rxJob = gattServer.rxFlowFor(device.address)?.onEach {
                     rxStream.write(it)
-                }?.flowOn(Dispatchers.IO)?.launchIn(scope) ?: throw IOException("Failed to get rxFlow")
+                }?.flowOn(Dispatchers.IO)?.launchIn(scope)
+                        ?: throw IOException("Failed to get rxFlow")
                 val sendLoop = scope.launch(Dispatchers.IO) {
                     protocolHandler.startPacketSendingLoop {
                         gattServer.sendMessageToDevice(device.address, it.asByteArray())

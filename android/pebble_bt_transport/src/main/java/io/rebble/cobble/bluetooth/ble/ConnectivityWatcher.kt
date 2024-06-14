@@ -4,10 +4,9 @@ import android.bluetooth.BluetoothGattCharacteristic
 import io.rebble.libpebblecommon.ble.LEConstants
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import timber.log.Timber
-import java.util.*
+import java.util.UUID
 import kotlin.experimental.and
 import kotlin.properties.Delegates
 

@@ -183,6 +183,7 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
     }
 
     fun getService(uuid: UUID): BluetoothGattService? = gatt!!.getService(uuid)
+
     @Throws(SecurityException::class)
     fun setCharacteristicNotification(characteristic: BluetoothGattCharacteristic, enable: Boolean) = gatt!!.setCharacteristicNotification(characteristic, enable)
 
