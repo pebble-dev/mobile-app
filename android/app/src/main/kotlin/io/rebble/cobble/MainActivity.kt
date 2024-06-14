@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.text.TextUtils
@@ -144,8 +145,11 @@ class MainActivity : FlutterActivity() {
      * Start the CompanionDeviceService and InCallService
      */
     private fun startAdditionalServices() {
-        val companionDeviceServiceIntent = Intent(this, CompanionDeviceService::class.java)
-        startService(companionDeviceServiceIntent)
+        // The CompanionDeviceService is available but we want tiramisu APIs so limit it to that
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val companionDeviceServiceIntent = Intent(this, CompanionDeviceService::class.java)
+            startService(companionDeviceServiceIntent)
+        }
 
         val inCallServiceIntent = Intent(this, InCallService::class.java)
         startService(inCallServiceIntent)

@@ -2,12 +2,15 @@ package io.rebble.cobble.service
 
 import android.companion.AssociationInfo
 import android.companion.CompanionDeviceService
+import android.os.Build
+import androidx.annotation.RequiresApi
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.ConnectionState
 import io.rebble.cobble.bluetooth.watchOrNull
 import timber.log.Timber
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class CompanionDeviceService: CompanionDeviceService() {
     lateinit var connectionLooper: ConnectionLooper
     override fun onCreate() {
