@@ -137,6 +137,7 @@ class SystemHandler @Inject constructor(
                         listOf(
                                 ProtocolCapsFlag.Supports8kAppMessage,
                                 ProtocolCapsFlag.SupportsExtendedMusicProtocol,
+                                ProtocolCapsFlag.SupportsTwoWayDismissal,
                                 ProtocolCapsFlag.SupportsAppRunStateProtocol
                         )
                 )

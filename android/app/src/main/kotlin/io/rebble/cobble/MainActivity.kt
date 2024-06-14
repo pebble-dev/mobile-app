@@ -15,7 +15,8 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.datasources.PermissionChangeBus
-import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.service.InCallService
+import io.rebble.cobble.service.CompanionDeviceService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.plus
 import java.net.URI
@@ -134,7 +135,20 @@ class MainActivity : FlutterActivity() {
         flutterBridges = activityComponent.createCommonBridges() +
                 activityComponent.createUiBridges()
 
+        startAdditionalServices()
+
         handleIntent(intent)
+    }
+
+    /**
+     * Start the CompanionDeviceService and InCallService
+     */
+    private fun startAdditionalServices() {
+        val companionDeviceServiceIntent = Intent(this, CompanionDeviceService::class.java)
+        startService(companionDeviceServiceIntent)
+
+        val inCallServiceIntent = Intent(this, InCallService::class.java)
+        startService(inCallServiceIntent)
     }
 
     override fun onNewIntent(intent: Intent) {

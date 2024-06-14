@@ -1,6 +1,7 @@
 package io.rebble.cobble.bluetooth
 
 import android.bluetooth.BluetoothAdapter
+import android.companion.CompanionDeviceManager
 import android.content.Context
 import androidx.annotation.RequiresPermission
 import io.rebble.cobble.handlers.SystemHandler
@@ -25,11 +26,14 @@ class ConnectionLooper @Inject constructor(
     private val _connectionState: MutableStateFlow<ConnectionState> = MutableStateFlow(
             ConnectionState.Disconnected
     )
+    private val _watchPresenceState = MutableStateFlow<String?>(null)
+    val watchPresenceState: StateFlow<String?> get() = _watchPresenceState
 
     private val coroutineScope: CoroutineScope = GlobalScope + errorHandler
 
     private var currentConnection: Job? = null
     private var lastConnectedWatch: String? = null
+    private var delayJob: Job? = null
 
     fun negotiationsComplete(watch: PebbleDevice) {
         if (connectionState.value is ConnectionState.Negotiating) {
@@ -45,6 +49,17 @@ class ConnectionLooper @Inject constructor(
         } else {
             Timber.w("recoveryMode state mismatch!")
         }
+    }
+
+    fun signalWatchPresence(macAddress: String) {
+        _watchPresenceState.value = macAddress
+        if (lastConnectedWatch == macAddress) {
+            delayJob?.cancel()
+        }
+    }
+
+    fun signalWatchAbsence() {
+        _watchPresenceState.value = null
     }
 
     @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
@@ -100,7 +115,15 @@ class ConnectionLooper @Inject constructor(
                     }
                     Timber.d("Watch connection failed, waiting and reconnecting after $retryTime ms")
                     _connectionState.value = ConnectionState.WaitingForReconnect(lastWatch)
-                    delay(retryTime)
+                    delayJob = launch {
+                        delay(retryTime)
+                    }
+                    try {
+                        delayJob?.join()
+                    } catch (_: CancellationException) {
+                        Timber.i("Reconnect delay interrupted")
+                        retryTime = HALF_OF_INITAL_RETRY_TIME
+                    }
                 }
             } finally {
                 _connectionState.value = ConnectionState.Disconnected
@@ -127,6 +150,10 @@ class ConnectionLooper @Inject constructor(
     }
 
     fun closeConnection() {
+        lastConnectedWatch?.let {
+            val companionDeviceManager = context.getSystemService(CompanionDeviceManager::class.java)
+            companionDeviceManager.stopObservingDevicePresence(it)
+        }
         currentConnection?.cancel()
     }
 

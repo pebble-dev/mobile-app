@@ -37,6 +37,7 @@ class DeviceTransport @Inject constructor(
     private val gattServerManager: GattServerManager = GattServerManager(context)
 
     private var externalIncomingPacketHandler: (suspend (ByteArray) -> Unit)? = null
+    private var lastMacAddress: String? = null
 
     @OptIn(FlowPreview::class)
     @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
@@ -47,6 +48,11 @@ class DeviceTransport @Inject constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val companionDeviceManager = context.getSystemService(CompanionDeviceManager::class.java)
             Timber.d("Companion device associated: ${macAddress in companionDeviceManager.associations}, associations: ${companionDeviceManager.associations}")
+            lastMacAddress?.let {
+                companionDeviceManager.stopObservingDevicePresence(it)
+            }
+            lastMacAddress = macAddress
+            companionDeviceManager.startObservingDevicePresence(macAddress)
         }
 
         val bluetoothDevice = if (BuildConfig.DEBUG && !macAddress.contains(":")) {
