@@ -6,7 +6,6 @@ import io.rebble.cobble.middleware.AppLogController
 import io.rebble.cobble.pigeons.Pigeons
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject

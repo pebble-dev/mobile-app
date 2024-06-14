@@ -16,8 +16,8 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.datasources.PermissionChangeBus
-import io.rebble.cobble.service.InCallService
 import io.rebble.cobble.service.CompanionDeviceService
+import io.rebble.cobble.service.InCallService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.plus
 import java.net.URI
@@ -68,6 +68,7 @@ class MainActivity : FlutterActivity() {
                                             Toast.makeText(context, "Updated boot URL: $boot", Toast.LENGTH_LONG).show()
                                             bootIntentCallback?.invoke(true)
                                         }
+
                                         DialogInterface.BUTTON_NEGATIVE -> {
                                             Toast.makeText(context, "Cancelled boot URL change", Toast.LENGTH_SHORT).show()
                                             bootIntentCallback?.invoke(false)
@@ -86,6 +87,7 @@ class MainActivity : FlutterActivity() {
                         }
                     }
                 }
+
                 "rebble" -> {
                     when (data.host) {
                         "auth_complete" -> {

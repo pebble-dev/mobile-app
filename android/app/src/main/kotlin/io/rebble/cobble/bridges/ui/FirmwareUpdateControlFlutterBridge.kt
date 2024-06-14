@@ -8,7 +8,6 @@ import io.rebble.cobble.pigeons.BooleanWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.launchPigeonResult
 import io.rebble.cobble.util.zippedSource
-import io.rebble.libpebblecommon.PacketPriority
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
 import io.rebble.libpebblecommon.metadata.pbz.manifest.PbzManifest
 import io.rebble.libpebblecommon.packets.SystemMessage
@@ -22,7 +21,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
-import okio.BufferedSource
 import okio.buffer
 import timber.log.Timber
 import java.io.File
@@ -100,12 +98,12 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
             require(manifest.type == "firmware") { "PBZ is not a firmware update" }
 
             val firmwareBin = openZippedFile(pbzFile, manifest.firmware.name).use { it.readByteArray() }
-            val systemResources = manifest.resources?.let {res -> openZippedFile(pbzFile, res.name).use { it.readByteArray() } }
+            val systemResources = manifest.resources?.let { res -> openZippedFile(pbzFile, res.name).use { it.readByteArray() } }
 
             val calculatedFwCRC32 = Crc32Calculator().apply {
                 addBytes(firmwareBin.asUByteArray())
             }.finalize().toLong()
-            val calculatedResourcesCRC32 = systemResources?.let {res ->
+            val calculatedResourcesCRC32 = systemResources?.let { res ->
                 Crc32Calculator().apply {
                     addBytes(res.asUByteArray())
                 }.finalize().toLong()
@@ -139,7 +137,8 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
 
             Timber.i("All checks passed, starting firmware update")
             sendTime()
-            val response = systemService.firmwareUpdateStart(0u, (manifest.firmware.size + (manifest.resources?.size ?: 0)).toUInt())
+            val response = systemService.firmwareUpdateStart(0u, (manifest.firmware.size + (manifest.resources?.size
+                    ?: 0)).toUInt())
             Timber.d("Firmware update start response: $response")
             firmwareUpdateCallbacks.onFirmwareUpdateStarted {}
             val job = coroutineScope.launch {
@@ -147,7 +146,8 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
                     putBytesController.status.collect {
                         firmwareUpdateCallbacks.onFirmwareUpdateProgress(it.progress) {}
                     }
-                } catch (_: CancellationException) { }
+                } catch (_: CancellationException) {
+                }
             }
             try {
                 putBytesController.startFirmwareInstall(firmwareBin, systemResources, manifest).join()

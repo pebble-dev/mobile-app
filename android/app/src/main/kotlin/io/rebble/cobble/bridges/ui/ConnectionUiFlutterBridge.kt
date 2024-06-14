@@ -21,16 +21,18 @@ import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.coroutines.asFlow
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ConnectionUiFlutterBridge @Inject constructor(
-    bridgeLifecycleController: BridgeLifecycleController,
-    private val connectionLooper: ConnectionLooper,
-    coroutineScope: CoroutineScope,
-    private val activity: MainActivity
+        bridgeLifecycleController: BridgeLifecycleController,
+        private val connectionLooper: ConnectionLooper,
+        coroutineScope: CoroutineScope,
+        private val activity: MainActivity
 ) : FlutterBridge, Pigeons.UiConnectionControl {
     private val pairCallbacks = bridgeLifecycleController
             .createCallbacks(Pigeons::PairCallbacks)
@@ -152,9 +154,11 @@ class ConnectionUiFlutterBridge @Inject constructor(
                 }
                 deviceToPair.address
             }
+
             is ScanResult -> {
                 deviceToPair.device.address
             }
+
             else -> {
                 throw IllegalStateException("Unknown device type: $deviceToPair")
             }

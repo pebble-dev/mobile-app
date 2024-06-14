@@ -13,8 +13,8 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class AppLogController @Inject constructor(
-    connectionLooper: ConnectionLooper,
-    private val appLogsService: AppLogService
+        connectionLooper: ConnectionLooper,
+        private val appLogsService: AppLogService
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     val logs = connectionLooper.connectionState.flatMapLatest {

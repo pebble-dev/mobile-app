@@ -21,16 +21,16 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
 import timber.log.Timber
-import java.util.*
+import java.util.TimeZone
 import javax.inject.Inject
 
 @OptIn(ExperimentalUnsignedTypes::class, ExperimentalStdlibApi::class)
 class SystemHandler @Inject constructor(
-    private val context: Context,
-    private val coroutineScope: CoroutineScope,
-    private val systemService: SystemService,
-    private val connectionLooper: ConnectionLooper,
-    private val watchMetadataStore: WatchMetadataStore
+        private val context: Context,
+        private val coroutineScope: CoroutineScope,
+        private val systemService: SystemService,
+        private val connectionLooper: ConnectionLooper,
+        private val watchMetadataStore: WatchMetadataStore
 ) : CobbleHandler {
     init {
         systemService.appVersionRequestHandler = this::handleAppVersionRequest

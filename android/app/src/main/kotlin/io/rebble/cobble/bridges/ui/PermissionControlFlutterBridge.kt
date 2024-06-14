@@ -11,7 +11,6 @@ import android.os.Build
 import android.provider.Settings
 import androidx.core.content.getSystemService
 import androidx.lifecycle.Lifecycle
-import io.flutter.plugin.common.BinaryMessenger
 import io.rebble.cobble.MainActivity
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.datasources.PermissionChangeBus
@@ -20,8 +19,6 @@ import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.asFlow
 import io.rebble.cobble.util.launchPigeonResult
-import io.rebble.cobble.util.registerAsyncPigeonCallback
-import io.rebble.cobble.util.voidResult
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
@@ -38,6 +35,7 @@ class PermissionControlFlutterBridge @Inject constructor(
     init {
         bridgeLifecycleController.setupControl(Pigeons.PermissionControl::setup, this)
     }
+
     private suspend fun requestNotificationAccess() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val companionDeviceManager: CompanionDeviceManager = activity.getSystemService()!!

@@ -7,10 +7,10 @@ import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.launchPigeonResult
-import io.rebble.libpebblecommon.util.ushr
 import io.rebble.libpebblecommon.packets.*
 import io.rebble.libpebblecommon.services.ScreenshotService
 import io.rebble.libpebblecommon.util.DataBuffer
+import io.rebble.libpebblecommon.util.ushr
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -62,6 +62,7 @@ class ScreenshotsFlutterBridge @Inject constructor(
                     ScreenshotVersion.BLACK_WHITE_1_BIT -> {
                         width * height / 8
                     }
+
                     ScreenshotVersion.COLOR_8_BIT -> {
                         width * height
                     }
@@ -80,6 +81,7 @@ class ScreenshotsFlutterBridge @Inject constructor(
                     ScreenshotVersion.BLACK_WHITE_1_BIT -> {
                         decodeBlackWhite1BitImagePixels(width, height, buffer)
                     }
+
                     ScreenshotVersion.COLOR_8_BIT -> {
                         decodeColor8BitImagePixels(width, height, buffer)
                     }

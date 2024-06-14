@@ -3,13 +3,7 @@ package io.rebble.cobble.bridges.background
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
-import android.graphics.Color
-import android.graphics.ColorSpace
-import android.os.Build
 import android.os.Bundle
-import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
@@ -26,16 +20,15 @@ import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import io.rebble.libpebblecommon.structmapper.SUUID
 import io.rebble.libpebblecommon.structmapper.StructMapper
-import kotlinx.coroutines.*
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import timber.log.Timber
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -153,9 +146,11 @@ class NotificationsFlutterBridge @Inject constructor(
                 Timber.w("Notification listening pigeon null")
             }
             notifListening?.handleNotification(notif) { notifToSend ->
-                val parsedAttributes : List<TimelineAttribute> = notifToSend.attributesJson?.let { Json.decodeFromString(it) } ?: emptyList()
+                val parsedAttributes: List<TimelineAttribute> = notifToSend.attributesJson?.let { Json.decodeFromString(it) }
+                        ?: emptyList()
 
-                val parsedActions : List<TimelineAction> = notifToSend.actionsJson?.let { Json.decodeFromString(it) } ?: emptyList()
+                val parsedActions: List<TimelineAction> = notifToSend.actionsJson?.let { Json.decodeFromString(it) }
+                        ?: emptyList()
 
                 val itemId = UUID.fromString(notifToSend.itemId)
                 val timelineItem = TimelineItem(

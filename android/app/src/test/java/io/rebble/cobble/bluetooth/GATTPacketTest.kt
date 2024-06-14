@@ -2,7 +2,8 @@ package io.rebble.cobble.bluetooth
 
 import io.rebble.libpebblecommon.ble.GATTPacket
 import io.rebble.libpebblecommon.packets.blobdb.PushNotification
-import org.junit.Assert.*
+import org.junit.Assert.assertArrayEquals
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 internal class GATTPacketTest {

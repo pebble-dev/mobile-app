@@ -15,10 +15,12 @@ import io.rebble.cobble.handlers.CobbleHandler
 import io.rebble.cobble.util.Debouncer
 import io.rebble.libpebblecommon.packets.MusicControl
 import io.rebble.libpebblecommon.services.MusicService
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.job
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -116,6 +118,7 @@ class MusicHandler @Inject constructor(
                         "Check Rebble app"
                 )
             }
+
             metadata != null -> {
                 MusicControl.UpdateCurrentTrack(
                         metadata.getString(MediaMetadata.METADATA_KEY_ARTIST) ?: "",
@@ -126,6 +129,7 @@ class MusicHandler @Inject constructor(
                         metadata.getLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER).toInt()
                 )
             }
+
             else -> {
                 MusicControl.UpdateCurrentTrack(
                         "",
@@ -162,13 +166,17 @@ class MusicHandler @Inject constructor(
             PlaybackState.STATE_PLAYING,
             PlaybackState.STATE_BUFFERING ->
                 MusicControl.PlaybackState.Playing
+
             PlaybackState.STATE_REWINDING,
             PlaybackState.STATE_SKIPPING_TO_PREVIOUS ->
                 MusicControl.PlaybackState.Rewinding
+
             PlaybackState.STATE_FAST_FORWARDING,
             PlaybackState.STATE_SKIPPING_TO_NEXT -> MusicControl.PlaybackState.FastForwarding
+
             PlaybackState.STATE_PAUSED,
             PlaybackState.STATE_STOPPED -> MusicControl.PlaybackState.Paused
+
             else -> MusicControl.PlaybackState.Unknown
         }
 
@@ -220,29 +228,37 @@ class MusicHandler @Inject constructor(
                             beginPlayback()
                         }
                     }
+
                     MusicControl.Message.Pause -> {
                         beginPlayback()
                     }
+
                     MusicControl.Message.Play -> {
                         currentMediaController?.transportControls?.pause()
                     }
+
                     MusicControl.Message.NextTrack -> {
                         currentMediaController?.transportControls?.skipToNext()
                     }
+
                     MusicControl.Message.PreviousTrack -> {
                         currentMediaController?.transportControls?.skipToPrevious()
                     }
+
                     MusicControl.Message.VolumeUp -> {
                         currentMediaController?.adjustVolume(AudioManager.ADJUST_RAISE, 0)
                         currentMediaController?.playbackInfo?.let { sendVolumeUpdate(it) }
                     }
+
                     MusicControl.Message.VolumeDown -> {
                         currentMediaController?.adjustVolume(AudioManager.ADJUST_LOWER, 0)
                         currentMediaController?.playbackInfo?.let { sendVolumeUpdate(it) }
                     }
+
                     MusicControl.Message.GetCurrentTrack -> {
                         sendCurrentTrackUpdate(currentMediaController?.metadata)
                     }
+
                     MusicControl.Message.UpdateCurrentTrack,
                     MusicControl.Message.UpdatePlayStateInfo,
                     MusicControl.Message.UpdateVolumeInfo,

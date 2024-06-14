@@ -4,7 +4,7 @@ import com.getpebble.android.kit.util.PebbleDictionary
 import com.getpebble.android.kit.util.PebbleTuple
 import io.rebble.libpebblecommon.packets.AppMessage
 import io.rebble.libpebblecommon.packets.AppMessageTuple
-import java.util.*
+import java.util.UUID
 
 @OptIn(ExperimentalUnsignedTypes::class)
 fun PebbleDictionary.toPacket(uuid: UUID, transactionId: Int): AppMessage.AppMessagePush {
@@ -18,35 +18,45 @@ fun PebbleDictionary.toPacket(uuid: UUID, transactionId: Int): AppMessage.AppMes
                         (value as ByteArray).toUByteArray()
                 )
             }
+
             PebbleTuple.TupleType.STRING -> {
                 AppMessageTuple.createString(key, value as String)
 
             }
+
             PebbleTuple.TupleType.UINT -> {
                 when (pebbleTuple.width) {
                     null, PebbleTuple.Width.NONE ->
                         throw IllegalArgumentException("NONE width not supported")
+
                     PebbleTuple.Width.BYTE ->
                         AppMessageTuple.createUByte(key, (value as Long).toUByte())
+
                     PebbleTuple.Width.SHORT ->
                         AppMessageTuple.createUShort(key, (value as Long).toUShort())
+
                     PebbleTuple.Width.WORD ->
                         AppMessageTuple.createUInt(key, (value as Long).toUInt())
                 }
 
             }
+
             PebbleTuple.TupleType.INT -> {
                 when (pebbleTuple.width) {
                     null, PebbleTuple.Width.NONE ->
                         throw IllegalArgumentException("NONE width not supported")
+
                     PebbleTuple.Width.BYTE ->
                         AppMessageTuple.createByte(key, (value as Long).toByte())
+
                     PebbleTuple.Width.SHORT ->
                         AppMessageTuple.createShort(key, (value as Long).toShort())
+
                     PebbleTuple.Width.WORD ->
                         AppMessageTuple.createInt(key, (value as Long).toInt())
                 }
             }
+
             null -> throw IllegalArgumentException("Tuple type shouldn't be null")
         }
     }
@@ -68,9 +78,11 @@ fun AppMessage.AppMessagePush.getPebbleDictionary(): PebbleDictionary {
             AppMessageTuple.Type.ByteArray -> {
                 pebbleDictionary.addBytes(intKey, item.data.get().toByteArray())
             }
+
             AppMessageTuple.Type.CString -> {
                 pebbleDictionary.addString(intKey, item.dataAsString)
             }
+
             AppMessageTuple.Type.UInt -> {
                 pebbleDictionary.addTuple(
                         PebbleTuple.create(
@@ -81,6 +93,7 @@ fun AppMessage.AppMessagePush.getPebbleDictionary(): PebbleDictionary {
                         )
                 )
             }
+
             AppMessageTuple.Type.Int -> {
                 pebbleDictionary.addTuple(
                         PebbleTuple.create(

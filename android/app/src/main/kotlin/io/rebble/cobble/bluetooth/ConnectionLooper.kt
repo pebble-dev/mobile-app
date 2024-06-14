@@ -4,7 +4,6 @@ import android.bluetooth.BluetoothAdapter
 import android.companion.CompanionDeviceManager
 import android.content.Context
 import androidx.annotation.RequiresPermission
-import io.rebble.cobble.handlers.SystemHandler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,9 +17,9 @@ import kotlin.coroutines.EmptyCoroutineContext
 @OptIn(ExperimentalCoroutinesApi::class)
 @Singleton
 class ConnectionLooper @Inject constructor(
-    private val context: Context,
-    private val blueCommon: DeviceTransport,
-    private val errorHandler: CoroutineExceptionHandler
+        private val context: Context,
+        private val blueCommon: DeviceTransport,
+        private val errorHandler: CoroutineExceptionHandler
 ) {
     val connectionState: StateFlow<ConnectionState> get() = _connectionState
     private val _connectionState: MutableStateFlow<ConnectionState> = MutableStateFlow(

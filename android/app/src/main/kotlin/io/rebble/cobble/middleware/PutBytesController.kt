@@ -7,7 +7,8 @@ import io.rebble.cobble.util.requirePbwManifest
 import io.rebble.libpebblecommon.metadata.WatchType
 import io.rebble.libpebblecommon.metadata.pbw.manifest.PbwBlob
 import io.rebble.libpebblecommon.metadata.pbz.manifest.PbzManifest
-import io.rebble.libpebblecommon.packets.*
+import io.rebble.libpebblecommon.packets.ObjectType
+import io.rebble.libpebblecommon.packets.PutBytesAbort
 import io.rebble.libpebblecommon.services.PutBytesService
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,9 +21,9 @@ import javax.inject.Singleton
 
 @Singleton
 class PutBytesController @Inject constructor(
-    private val connectionLooper: ConnectionLooper,
-    private val putBytesService: PutBytesService,
-    private val metadataStore: WatchMetadataStore
+        private val connectionLooper: ConnectionLooper,
+        private val putBytesService: PutBytesService,
+        private val metadataStore: WatchMetadataStore
 ) {
     private val _status: MutableStateFlow<Status> = MutableStateFlow(Status(State.IDLE))
     val status: StateFlow<Status> get() = _status
@@ -81,16 +82,17 @@ class PutBytesController @Inject constructor(
             "Resources are only supported for normal firmware"
         }
         var count = 0
-        val progressJob = launch{
+        val progressJob = launch {
             try {
                 while (isActive) {
                     val progress = putBytesService.progressUpdates.receive()
                     count += progress.delta
-                    val nwProgress = count/totalSize.toDouble()
+                    val nwProgress = count / totalSize.toDouble()
                     lastProgress = nwProgress
                     _status.value = Status(State.SENDING, nwProgress)
                 }
-            } catch (_: CancellationException) {}
+            } catch (_: CancellationException) {
+            }
         }
         try {
             resources?.let {

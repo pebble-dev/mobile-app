@@ -12,10 +12,10 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.selects.onTimeout
 import kotlinx.coroutines.selects.select
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.selects.onTimeout
 
 private val SCAN_TIMEOUT_MS = 8_000L
 

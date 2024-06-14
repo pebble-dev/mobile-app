@@ -11,15 +11,17 @@ import io.rebble.cobble.middleware.getPebbleDictionary
 import io.rebble.cobble.middleware.toPacket
 import io.rebble.cobble.util.coroutines.asFlow
 import io.rebble.cobble.util.getIntExtraOrNull
-import io.rebble.libpebblecommon.packets.*
+import io.rebble.libpebblecommon.packets.AppCustomizationSetStockAppTitleMessage
+import io.rebble.libpebblecommon.packets.AppMessage
+import io.rebble.libpebblecommon.packets.AppRunStateMessage
+import io.rebble.libpebblecommon.packets.AppType
 import io.rebble.libpebblecommon.services.app.AppRunStateService
 import io.rebble.libpebblecommon.services.appmessage.AppMessageService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -85,9 +87,11 @@ class AppMessageHandler @Inject constructor(
                     is AppMessage.AppMessagePush -> {
                         sendPushIntent(message)
                     }
+
                     is AppMessage.AppMessageACK -> {
                         sendAckIntent(message)
                     }
+
                     is AppMessage.AppMessageNACK -> {
                         sendNackIntent(message.transactionId.get().toInt())
                     }

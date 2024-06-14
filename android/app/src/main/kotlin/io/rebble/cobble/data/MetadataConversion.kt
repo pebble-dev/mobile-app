@@ -1,9 +1,7 @@
 package io.rebble.cobble.data
 
-import android.bluetooth.BluetoothDevice
 import io.rebble.cobble.bluetooth.PebbleDevice
 import io.rebble.cobble.pigeons.Pigeons
-import io.rebble.cobble.util.macAddressToLong
 import io.rebble.libpebblecommon.packets.WatchFirmwareVersion
 import io.rebble.libpebblecommon.packets.WatchVersion
 

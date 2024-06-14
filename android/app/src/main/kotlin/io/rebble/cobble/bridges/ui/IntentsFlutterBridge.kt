@@ -63,11 +63,11 @@ class IntentsFlutterBridge @Inject constructor(
                         .setCode(res[0])
                         .setState(res[1])
                         .build()
-            }else if (res[2] != null) {
+            } else if (res[2] != null) {
                 Pigeons.OAuthResult.Builder()
                         .setError(res[2])
                         .build()
-            }else {
+            } else {
                 Pigeons.OAuthResult.Builder()
                         .setError("_invalid_callback_params")
                         .build()

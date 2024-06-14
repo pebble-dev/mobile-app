@@ -15,6 +15,7 @@ import javax.inject.Provider
 interface ServiceSubcomponent {
     @Named("negotiation")
     fun getNegotiationMessageHandlersProvider(): Provider<Set<CobbleHandler>>
+
     @Named("normal")
     fun getNormalMessageHandlersProvider(): Provider<Set<CobbleHandler>>
 

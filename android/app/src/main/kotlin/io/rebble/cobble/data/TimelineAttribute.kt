@@ -22,16 +22,20 @@ data class TimelineAttribute(
                 string.encodeToByteArrayTrimmed(maxLength)
                         .toUByteArray()
             }
+
             listOfString != null -> {
                 val combinedStrings = listOfString.joinToString(separator = "\u0000")
                 combinedStrings.encodeToByteArrayTrimmed(maxLength).toUByteArray()
             }
+
             uint8 != null -> {
                 ubyteArrayOf(uint8.toUByte())
             }
+
             uint32 != null -> {
                 SUInt(StructMapper(), uint32.toUInt(), '<').toBytes()
             }
+
             else -> throw IllegalArgumentException("Received empty timeline attribute: $this")
         }
 

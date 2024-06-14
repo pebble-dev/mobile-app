@@ -1,20 +1,16 @@
 package io.rebble.cobble.service
 
-import android.Manifest
 import android.app.PendingIntent
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.DrawableRes
-import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import io.rebble.cobble.*
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.ConnectionState
-import io.rebble.cobble.bluetooth.ble.GattServerManager
 import io.rebble.cobble.handlers.CobbleHandler
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.notification.NotificationService
@@ -89,6 +85,7 @@ class WatchService : LifecycleService() {
                         // service will be stopped
                         return@collect
                     }
+
                     is ConnectionState.Connecting,
                     is ConnectionState.Negotiating,
                     is ConnectionState.WaitingForReconnect -> {
@@ -97,18 +94,21 @@ class WatchService : LifecycleService() {
                         deviceName = null
                         channel = NOTIFICATION_CHANNEL_WATCH_CONNECTING
                     }
+
                     is ConnectionState.WaitingForBluetoothToEnable -> {
                         icon = R.drawable.ic_notification_disconnected
                         titleText = getString(R.string.bluetooth_off)
                         deviceName = null
                         channel = NOTIFICATION_CHANNEL_WATCH_CONNECTING
                     }
+
                     is ConnectionState.Connected -> {
                         icon = R.drawable.ic_notification_connected
                         titleText = "Connected to device"
                         deviceName = if (it.watch.emulated) "[EMU] ${it.watch.address}" else it.watch.bluetoothDevice?.name!!
                         channel = NOTIFICATION_CHANNEL_WATCH_CONNECTED
                     }
+
                     is ConnectionState.RecoveryMode -> {
                         icon = R.drawable.ic_notification_connected
                         titleText = "Connected to device (Recovery Mode)"

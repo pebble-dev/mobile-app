@@ -15,11 +15,11 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ConnectionFlutterBridge @Inject constructor(
-    bridgeLifecycleController: BridgeLifecycleController,
-    private val connectionLooper: ConnectionLooper,
-    private val coroutineScope: CoroutineScope,
-    private val protocolHandler: ProtocolHandler,
-    private val watchMetadataStore: WatchMetadataStore
+        bridgeLifecycleController: BridgeLifecycleController,
+        private val connectionLooper: ConnectionLooper,
+        private val coroutineScope: CoroutineScope,
+        private val protocolHandler: ProtocolHandler,
+        private val watchMetadataStore: WatchMetadataStore
 ) : FlutterBridge, Pigeons.ConnectionControl {
     private val connectionCallbacks = bridgeLifecycleController
             .createCallbacks(Pigeons::ConnectionCallbacks)

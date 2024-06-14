@@ -6,7 +6,6 @@ import androidx.core.net.toFile
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.background.BackgroundAppInstallBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
-
 import io.rebble.cobble.data.pbw.appinfo.toPigeon
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.middleware.PutBytesController
@@ -35,7 +34,7 @@ import okio.sink
 import okio.source
 import timber.log.Timber
 import java.io.InputStream
-import java.util.*
+import java.util.UUID
 import java.util.zip.ZipInputStream
 import javax.inject.Inject
 import kotlin.random.Random
@@ -58,7 +57,7 @@ class AppInstallFlutterBridge @Inject constructor(
     private var statusObservingJob: Job? = null
 
     companion object {
-        private val json = Json { ignoreUnknownKeys = true}
+        private val json = Json { ignoreUnknownKeys = true }
     }
 
     init {

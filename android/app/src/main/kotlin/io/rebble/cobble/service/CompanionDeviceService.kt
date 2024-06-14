@@ -11,7 +11,7 @@ import io.rebble.cobble.bluetooth.watchOrNull
 import timber.log.Timber
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-class CompanionDeviceService: CompanionDeviceService() {
+class CompanionDeviceService : CompanionDeviceService() {
     lateinit var connectionLooper: ConnectionLooper
     override fun onCreate() {
         val injectionComponent = (applicationContext as CobbleApplication).component

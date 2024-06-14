@@ -1,9 +1,7 @@
 package io.rebble.cobble.service
 
 import android.content.ContentResolver
-import android.content.Intent
 import android.os.Build
-import android.os.IBinder
 import android.provider.ContactsContract
 import android.provider.ContactsContract.Contacts
 import android.telecom.Call
@@ -21,7 +19,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import timber.log.Timber
 import kotlin.random.Random
 
-class InCallService: InCallService() {
+class InCallService : InCallService() {
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var phoneControlService: PhoneControlService
     private lateinit var connectionLooper: ConnectionLooper
@@ -57,6 +55,7 @@ class InCallService: InCallService() {
                         }
                     }
                 }
+
                 is PhoneControl.Hangup -> {
                     synchronized(this@InCallService) {
                         if (it.cookie.get() == lastCookie) {
@@ -73,6 +72,7 @@ class InCallService: InCallService() {
                         }
                     }
                 }
+
                 else -> {
                     Timber.w("Unhandled phone control message: $it")
                 }
@@ -143,6 +143,7 @@ class InCallService: InCallService() {
                                         )
                                     }
                                 }
+
                                 Call.STATE_DISCONNECTED -> {
                                     synchronized(this@InCallService) {
                                         if (lastCookie == cookie) {

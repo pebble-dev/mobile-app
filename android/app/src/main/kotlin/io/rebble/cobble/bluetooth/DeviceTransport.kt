@@ -16,7 +16,6 @@ import io.rebble.cobble.bluetooth.scan.ClassicScanner
 import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.datasources.IncomingPacketsListener
 import io.rebble.libpebblecommon.ProtocolHandler
-import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import timber.log.Timber
@@ -77,7 +76,8 @@ class DeviceTransport @Inject constructor(
                         incomingPacketsListener.receivedPackets
                 )
             }
-            btDevice?.type == BluetoothDevice.DEVICE_TYPE_LE || btDevice?.type == BluetoothDevice.DEVICE_TYPE_UNKNOWN /* || btDevice?.type == BluetoothDevice.DEVICE_TYPE_DUAL */-> { // LE device
+
+            btDevice?.type == BluetoothDevice.DEVICE_TYPE_LE || btDevice?.type == BluetoothDevice.DEVICE_TYPE_UNKNOWN /* || btDevice?.type == BluetoothDevice.DEVICE_TYPE_DUAL */ -> { // LE device
                 gattServerManager.initIfNeeded()
                 if (btDevice.type == BluetoothDevice.DEVICE_TYPE_UNKNOWN) {
                     Timber.w("Device $pebbleDevice has type unknown, assuming LE will work")
@@ -91,12 +91,14 @@ class DeviceTransport @Inject constructor(
                     flutterPreferences.shouldActivateWorkaround(it)
                 }
             }
+
             btDevice?.type == BluetoothDevice.DEVICE_TYPE_CLASSIC || btDevice?.type == BluetoothDevice.DEVICE_TYPE_DUAL -> { // Serial only device or serial/LE
                 BlueSerialDriver(
                         protocolHandler,
                         incomingPacketsListener.receivedPackets
                 )
             }
+
             else -> throw IllegalArgumentException("Unknown device type: ${btDevice?.type}") // Can't contact device
         }
     }
