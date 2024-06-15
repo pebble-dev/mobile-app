@@ -23,9 +23,11 @@ class AppRunStateHandler @Inject constructor(
                     is AppRunStateMessage.AppRunStateStart -> {
                         watchMetadataStore.currentActiveApp.value = message.uuid.get()
                     }
+
                     is AppRunStateMessage.AppRunStateStop -> {
                         watchMetadataStore.currentActiveApp.value = null
                     }
+
                     is AppRunStateMessage.AppRunStateRequest -> {
                         // Not supported
                     }

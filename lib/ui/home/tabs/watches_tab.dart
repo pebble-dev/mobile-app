@@ -18,13 +18,12 @@ import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
+import 'package:cobble/ui/screens/update_prompt.dart';
 import 'package:cobble/ui/setup/pair_page.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
-import '../../common/icons/fonts/rebble_icons.dart';
 
 class MyWatchesTab extends HookConsumerWidget implements CobbleScreen {
   final Color _disconnectedColor = Color.fromRGBO(255, 255, 255, 0.5);
@@ -132,12 +131,15 @@ class MyWatchesTab extends HookConsumerWidget implements CobbleScreen {
       }
 
       pairedStorage.unregister(device.address);
-      Navigator.pop(context);
     }
 
     void _onUpdatePressed(PebbleScanDevice device) {
-      Navigator.pop(context);
-      //TODO
+      context.pushRoot(UpdatePrompt(
+        confirmOnSuccess: true,
+        onSuccess: (BuildContext screenContext) {
+          screenContext.pop();
+        },
+      ));
     }
 
     void _onSettingsPressed(bool isConnected, String? address) {
@@ -181,7 +183,10 @@ class MyWatchesTab extends HookConsumerWidget implements CobbleScreen {
                     child: CobbleTile.action(
                       leading: RebbleIcons.connect_to_watch,
                       title: tr.watchesPage.action.connect,
-                      onTap: () => _onConnectPressed(device, true),
+                      onTap: () => {
+                        Navigator.pop(context),
+                        _onConnectPressed(device, true)
+                      },
                     ),
                   ),
                   Offstage(
@@ -189,20 +194,29 @@ class MyWatchesTab extends HookConsumerWidget implements CobbleScreen {
                     child: CobbleTile.action(
                       leading: RebbleIcons.disconnect_from_watch,
                       title: tr.watchesPage.action.disconnect,
-                      onTap: () => _onDisconnectPressed(true),
+                      onTap: () => {
+                        Navigator.pop(context),
+                        _onDisconnectPressed(true)
+                      },
                     ),
                   ),
                   CobbleTile.action(
                     leading: RebbleIcons.check_for_updates,
                     title: tr.watchesPage.action.checkUpdates,
-                    onTap: () => _onUpdatePressed(device),
+                    onTap: () => {
+                      Navigator.pop(context),
+                      _onUpdatePressed(device)
+                    },
                   ),
                   CobbleDivider(),
                   CobbleTile.action(
                     leading: RebbleIcons.x_close,
                     title: tr.watchesPage.action.forget,
                     intent: context.scheme!.destructive,
-                    onTap: () => _onForgetPressed(device),
+                    onTap: () => {
+                      Navigator.pop(context),
+                      _onForgetPressed(device)
+                    },
                   ),
                 ],
               ),
@@ -294,7 +308,7 @@ class MyWatchesTab extends HookConsumerWidget implements CobbleScreen {
                           Container(
                             child: Center(
                                 child: PebbleWatchIcon(
-                                    PebbleWatchModel.values[e.color!],
+                                    PebbleWatchModel.values[e.color ?? 0],
                                     backgroundColor: _getBrStatusColor(e))),
                           ),
                           SizedBox(width: 16),

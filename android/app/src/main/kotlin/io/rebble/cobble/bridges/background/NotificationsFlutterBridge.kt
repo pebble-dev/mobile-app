@@ -3,13 +3,7 @@ package io.rebble.cobble.bridges.background
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
-import android.graphics.Color
-import android.graphics.ColorSpace
-import android.os.Build
 import android.os.Bundle
-import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
@@ -26,16 +20,15 @@ import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import io.rebble.libpebblecommon.structmapper.SUUID
 import io.rebble.libpebblecommon.structmapper.StructMapper
-import kotlinx.coroutines.*
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import timber.log.Timber
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -49,32 +42,30 @@ class NotificationsFlutterBridge @Inject constructor(
 
     private val notifUtils = object : Pigeons.NotificationUtils {
         override fun openNotification(arg: Pigeons.StringWrapper) {
-            val id = UUID.fromString(arg?.value)
+            val id = UUID.fromString(arg.value)
             activeNotifs[id]?.notification?.contentIntent?.send()
         }
 
         override fun executeAction(arg: Pigeons.NotifActionExecuteReq) {
-            if (arg != null) {
-                val id = UUID.fromString(arg.itemId)
-                val action = activeNotifs[id]?.notification?.let { NotificationCompat.getAction(it, arg.actionId!!.toInt()) }
-                if (arg.responseText?.isEmpty() == false) {
-                    val key = action?.remoteInputs?.first()?.resultKey
-                    if (key != null) {
-                        val intent = Intent()
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        val bundle = Bundle()
-                        bundle.putString(key, arg.responseText)
-                        RemoteInput.addResultsToIntent(action?.remoteInputs!!, intent, bundle)
-                        action?.actionIntent?.send(context, 0, intent)
-                        return
-                    }
+            val id = UUID.fromString(arg.itemId)
+            val action = activeNotifs[id]?.notification?.let { NotificationCompat.getAction(it, arg.actionId!!.toInt()) }
+            if (arg.responseText?.isEmpty() == false) {
+                val key = action?.remoteInputs?.first()?.resultKey
+                if (key != null) {
+                    val intent = Intent()
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    val bundle = Bundle()
+                    bundle.putString(key, arg.responseText)
+                    RemoteInput.addResultsToIntent(action.remoteInputs!!, intent, bundle)
+                    action.actionIntent?.send(context, 0, intent)
+                    return
                 }
-                action?.actionIntent?.send()
             }
+            action?.actionIntent?.send()
         }
 
         override fun dismissNotificationWatch(arg: Pigeons.StringWrapper) {
-            val id = UUID.fromString(arg?.value)
+            val id = UUID.fromString(arg.value)
             val command = BlobCommand.DeleteCommand(Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(), BlobCommand.BlobDatabase.Notification, SUUID(StructMapper(), id).toBytes())
             GlobalScope.launch {
                 var blobResult = blobDBService.send(command)
@@ -86,7 +77,7 @@ class NotificationsFlutterBridge @Inject constructor(
             }
         }
 
-        override fun dismissNotification(arg: Pigeons.StringWrapper, result: Pigeons.Result<Pigeons.BooleanWrapper>?) {
+        override fun dismissNotification(arg: Pigeons.StringWrapper, result: Pigeons.Result<Pigeons.BooleanWrapper>) {
             if (arg != null) {
                 val id = UUID.fromString(arg.value)
                 try {
@@ -94,7 +85,7 @@ class NotificationsFlutterBridge @Inject constructor(
                             ?: Timber.w("Dismiss on untracked notif")
                 } catch (e: PendingIntent.CanceledException) {
                 }
-                result?.success(BooleanWrapper(true))
+                result.success(BooleanWrapper(true))
 
                 val command = BlobCommand.DeleteCommand(Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(), BlobCommand.BlobDatabase.Notification, SUUID(StructMapper(), id).toBytes())
                 GlobalScope.launch {
@@ -155,9 +146,11 @@ class NotificationsFlutterBridge @Inject constructor(
                 Timber.w("Notification listening pigeon null")
             }
             notifListening?.handleNotification(notif) { notifToSend ->
-                val parsedAttributes : List<TimelineAttribute> = Json.decodeFromString(notifToSend.attributesJson!!) ?: emptyList()
+                val parsedAttributes: List<TimelineAttribute> = notifToSend.attributesJson?.let { Json.decodeFromString(it) }
+                        ?: emptyList()
 
-                val parsedActions : List<TimelineAction> = Json.decodeFromString(notifToSend.actionsJson!!) ?: emptyList()
+                val parsedActions: List<TimelineAction> = notifToSend.actionsJson?.let { Json.decodeFromString(it) }
+                        ?: emptyList()
 
                 val itemId = UUID.fromString(notifToSend.itemId)
                 val timelineItem = TimelineItem(

@@ -287,6 +287,8 @@ public final class Constants {
     public static final int KIT_STATE_COLUMN_VERSION_MINOR = 4;
     public static final int KIT_STATE_COLUMN_VERSION_POINT = 5;
     public static final int KIT_STATE_COLUMN_VERSION_TAG = 6;
+    public static final Uri URI_CONTENT_BASALT = Uri.parse("content://com.getpebble.android.provider.basalt/state");
+    /* package */ static final Uri URI_CONTENT_PRIMARY = Uri.parse("content://com.getpebble.android.provider/state");
 
     /**
      * Instantiates a new constants.
@@ -378,8 +380,4 @@ public final class Constants {
             return null;
         }
     }
-
-    /* package */ static final Uri URI_CONTENT_PRIMARY = Uri.parse("content://com.getpebble.android.provider/state");
-
-    public static final Uri URI_CONTENT_BASALT = Uri.parse("content://com.getpebble.android.provider.basalt/state");
 }

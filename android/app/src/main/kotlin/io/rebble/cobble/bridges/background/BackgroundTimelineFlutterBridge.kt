@@ -17,7 +17,6 @@ import io.rebble.libpebblecommon.packets.blobdb.TimelineAction
 import io.rebble.libpebblecommon.services.blobdb.TimelineService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -98,7 +97,8 @@ class BackgroundTimelineFlutterBridge @Inject constructor(
             }
 
             callbacks.handleTimelineAction(pigeonActionTrigger) { pigeonResponse ->
-                val parsedAttributes: List<TimelineAttribute> = Json.decodeFromString(pigeonResponse.attributesJson!!) ?: emptyList()
+                val parsedAttributes: List<TimelineAttribute> = Json.decodeFromString(pigeonResponse.attributesJson!!)
+                        ?: emptyList()
 
                 continuation.resume(
                         TimelineService.ActionResponse(

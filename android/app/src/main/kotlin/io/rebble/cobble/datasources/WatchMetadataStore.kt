@@ -2,7 +2,7 @@ package io.rebble.cobble.datasources
 
 import io.rebble.libpebblecommon.packets.WatchVersion
 import kotlinx.coroutines.flow.MutableStateFlow
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 

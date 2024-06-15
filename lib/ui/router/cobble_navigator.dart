@@ -6,6 +6,12 @@ extension CobbleNavigator on BuildContext {
     return Navigator.of(this).push(CupertinoPageRoute<T>(builder: (_) => page!));
   }
 
+  /// Pushes a new screen on top of the root navigator stack.
+  Future<T?> pushRoot<T extends Object>(CobbleScreen page) {
+    return Navigator.of(this, rootNavigator: true)
+        .push(CupertinoPageRoute<T>(builder: (_) => page));
+  }
+
   Future<T?> pushReplacement<T extends Object, TO extends Object>(
     CobbleScreen page, {
     TO? result,
@@ -21,5 +27,9 @@ extension CobbleNavigator on BuildContext {
       CupertinoPageRoute<T>(builder: (_) => page),
       (_) => false,
     );
+  }
+
+  void pop<T extends Object>([T? result]) {
+    Navigator.of(this).pop(result);
   }
 }

@@ -1,14 +1,12 @@
 package io.rebble.cobble.data
 
-import android.bluetooth.BluetoothDevice
-import io.rebble.cobble.bluetooth.PebbleBluetoothDevice
+import io.rebble.cobble.bluetooth.PebbleDevice
 import io.rebble.cobble.pigeons.Pigeons
-import io.rebble.cobble.util.macAddressToLong
 import io.rebble.libpebblecommon.packets.WatchFirmwareVersion
 import io.rebble.libpebblecommon.packets.WatchVersion
 
 fun WatchVersion.WatchVersionResponse?.toPigeon(
-        btDevice: PebbleBluetoothDevice?,
+        btDevice: PebbleDevice?,
         model: Int?
 ): Pigeons.PebbleDevicePigeon {
     // Pigeon does not appear to allow null values. We have to set some dummy values instead

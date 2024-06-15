@@ -5,7 +5,7 @@ import io.rebble.libpebblecommon.packets.AppMessageTuple
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.util.*
+import java.util.UUID
 
 @OptIn(ExperimentalUnsignedTypes::class)
 internal class PebbleDictionaryConverterTest {

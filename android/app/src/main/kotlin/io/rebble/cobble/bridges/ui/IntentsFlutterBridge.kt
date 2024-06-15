@@ -54,8 +54,8 @@ class IntentsFlutterBridge @Inject constructor(
         flutterReadyToReceiveIntents = false
     }
 
-    override fun waitForOAuth(result: Pigeons.Result<Pigeons.OAuthResult>?) {
-        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
+    override fun waitForOAuth(result: Pigeons.Result<Pigeons.OAuthResult>) {
+        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
             val res = oauthTrigger.await()
             check(res.size == 3)
             if (res[0] != null && res[1] != null) {
@@ -63,11 +63,11 @@ class IntentsFlutterBridge @Inject constructor(
                         .setCode(res[0])
                         .setState(res[1])
                         .build()
-            }else if (res[2] != null) {
+            } else if (res[2] != null) {
                 Pigeons.OAuthResult.Builder()
                         .setError(res[2])
                         .build()
-            }else {
+            } else {
                 Pigeons.OAuthResult.Builder()
                         .setError("_invalid_callback_params")
                         .build()

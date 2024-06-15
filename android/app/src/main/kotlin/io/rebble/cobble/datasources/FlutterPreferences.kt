@@ -9,9 +9,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import timber.log.Timber
 import java.io.ByteArrayInputStream
-import java.io.IOException
 import java.io.ObjectInputStream
 import javax.inject.Inject
 
@@ -90,13 +88,13 @@ private inline fun <T> SharedPreferences.flow(
         trySend(mapper(this@flow, key)).isSuccess
 
         val listener = SharedPreferences
-            .OnSharedPreferenceChangeListener { sharedPreferences: SharedPreferences,
-                                                changedKey: String ->
+                .OnSharedPreferenceChangeListener { sharedPreferences: SharedPreferences,
+                                                    changedKey: String? ->
 
-                if (changedKey == key) {
-                    trySend(mapper(sharedPreferences, key)).isSuccess
+                    if (changedKey == key) {
+                        trySend(mapper(sharedPreferences, key)).isSuccess
+                    }
                 }
-            }
 
         registerOnSharedPreferenceChangeListener(listener)
 
@@ -113,4 +111,4 @@ private const val KEY_MASTER_NOTIFICATION_TOGGLE = "flutter.MASTER_NOTIFICATION_
 private const val KEY_PREFIX_DISABLE_WORKAROUND = "flutter.DISABLE_WORKAROUND_"
 private const val KEY_MUTED_NOTIF_PACKAGES = "flutter.MUTED_NOTIF_PACKAGES"
 
-private const val LIST_IDENTIFIER = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu";
+private const val LIST_IDENTIFIER = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu"

@@ -2,10 +2,14 @@
 import 'dart:ui';
 
 import 'package:cobble/background/main_background.dart';
+import 'package:cobble/infrastructure/backgroundcomm/BackgroundReceiver.dart';
+import 'package:cobble/infrastructure/backgroundcomm/BackgroundRpc.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/localization/localization_delegate.dart';
 import 'package:cobble/localization/model/model_generator.model.dart';
+import 'package:cobble/ui/router/cobble_navigator.dart';
+import 'package:cobble/ui/screens/update_prompt.dart';
 import 'package:cobble/ui/splash/splash_page.dart';
 import 'package:cobble/ui/theme/cobble_scheme.dart';
 import 'package:cobble/ui/theme/cobble_theme.dart';
@@ -75,6 +79,10 @@ class MyApp extends HookConsumerWidget {
 
           if (!(await permissionCheck.hasBatteryExclusionEnabled()).value!) {
             permissionControl.requestBatteryExclusion();
+          }
+
+          if (!(await permissionCheck.hasCallsPermissions()).value!) {
+            permissionControl.requestCallsPermissions();
           }
         }
       });

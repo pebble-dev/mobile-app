@@ -14,7 +14,7 @@ class DebugFlutterBridge @Inject constructor(
         bridgeLifecycleController.setupControl(Pigeons.DebugControl::setup, this)
     }
 
-    override fun collectLogs() {
-        collectAndShareLogs(context)
+    override fun collectLogs(rwsId: String) {
+        collectAndShareLogs(context, rwsId)
     }
 }

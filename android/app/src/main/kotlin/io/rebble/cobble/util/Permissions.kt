@@ -19,3 +19,9 @@ fun Context.hasBatteryExclusionPermission(): Boolean {
     val powerManager: PowerManager = getSystemService()!!
     return powerManager.isIgnoringBatteryOptimizations(packageName)
 }
+
+fun Context.hasCallsPermission() =
+        checkSelfPermission(android.Manifest.permission.READ_PHONE_STATE) == android.content.pm.PackageManager.PERMISSION_GRANTED
+
+fun Context.hasContactsPermission() =
+        checkSelfPermission(android.Manifest.permission.READ_CONTACTS) == android.content.pm.PackageManager.PERMISSION_GRANTED

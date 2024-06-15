@@ -46,5 +46,5 @@ app.*.map.json
 
 test/**/failures/
 
-# Flutter sdk from Flutter Version Manager
-/.fvm/flutter_sdk
+# Flutter Version Manager
+/.fvm

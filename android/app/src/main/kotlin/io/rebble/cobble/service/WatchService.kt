@@ -15,8 +15,7 @@ import io.rebble.cobble.handlers.CobbleHandler
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.filter
 import timber.log.Timber
 import javax.inject.Provider
 
@@ -34,7 +33,6 @@ class WatchService : LifecycleService() {
 
     private lateinit var mainNotifBuilder: NotificationCompat.Builder
 
-
     override fun onCreate() {
         mainNotifBuilder = createBaseNotificationBuilder(NOTIFICATION_CHANNEL_WATCH_CONNECTING)
                 .setContentTitle("Waiting to connect")
@@ -43,14 +41,13 @@ class WatchService : LifecycleService() {
         startForeground(1, mainNotifBuilder.build())
 
         val injectionComponent = (applicationContext as CobbleApplication).component
+        val serviceComponent = injectionComponent.createServiceSubcomponentFactory()
+                .create(this)
 
         coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
         notificationService = injectionComponent.createNotificationService()
         protocolHandler = injectionComponent.createProtocolHandler()
         connectionLooper = injectionComponent.createConnectionLooper()
-
-        val serviceComponent = injectionComponent.createServiceSubcomponentFactory()
-                .create(this)
 
         super.onCreate()
 
@@ -59,7 +56,7 @@ class WatchService : LifecycleService() {
         }
 
         startNotificationLoop()
-        startHandlersLoop(serviceComponent.getMessageHandlersProvider())
+        startHandlersLoop(serviceComponent.getNegotiationMessageHandlersProvider(), serviceComponent.getNormalMessageHandlersProvider())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -84,23 +81,34 @@ class WatchService : LifecycleService() {
                         // service will be stopped
                         return@collect
                     }
+
                     is ConnectionState.Connecting,
+                    is ConnectionState.Negotiating,
                     is ConnectionState.WaitingForReconnect -> {
                         icon = R.drawable.ic_notification_disconnected
                         titleText = "Connecting"
                         deviceName = null
                         channel = NOTIFICATION_CHANNEL_WATCH_CONNECTING
                     }
+
                     is ConnectionState.WaitingForBluetoothToEnable -> {
                         icon = R.drawable.ic_notification_disconnected
                         titleText = getString(R.string.bluetooth_off)
                         deviceName = null
                         channel = NOTIFICATION_CHANNEL_WATCH_CONNECTING
                     }
+
                     is ConnectionState.Connected -> {
                         icon = R.drawable.ic_notification_connected
                         titleText = "Connected to device"
-                        deviceName = if (it.watch.emulated) "[EMU] ${it.watch.address}" else it.watch.bluetoothDevice?.name
+                        deviceName = if (it.watch.emulated) "[EMU] ${it.watch.address}" else it.watch.bluetoothDevice?.name!!
+                        channel = NOTIFICATION_CHANNEL_WATCH_CONNECTED
+                    }
+
+                    is ConnectionState.RecoveryMode -> {
+                        icon = R.drawable.ic_notification_connected
+                        titleText = "Connected to device (Recovery Mode)"
+                        deviceName = if (it.watch.emulated) "[EMU] ${it.watch.address}" else it.watch.bluetoothDevice?.name!!
                         channel = NOTIFICATION_CHANNEL_WATCH_CONNECTED
                     }
                 }
@@ -130,14 +138,17 @@ class WatchService : LifecycleService() {
                 .setContentIntent(mainActivityIntent)
     }
 
-    private fun startHandlersLoop(handlers: Provider<Set<CobbleHandler>>) {
+    private fun startHandlersLoop(negotiationHandlers: Provider<Set<CobbleHandler>>, normalHandlers: Provider<Set<CobbleHandler>>) {
         coroutineScope.launch {
             connectionLooper.connectionState
-                    .filterIsInstance<ConnectionState.Connected>()
+                    .filter { it is ConnectionState.Connected || it is ConnectionState.Negotiating }
                     .collect {
                         watchConnectionScope = connectionLooper
                                 .getWatchConnectedScope(Dispatchers.Main.immediate)
-                        handlers.get()
+                        negotiationHandlers.get()
+                        if (it is ConnectionState.Connected) {
+                            normalHandlers.get()
+                        }
                     }
         }
     }

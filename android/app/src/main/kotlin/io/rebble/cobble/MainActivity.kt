@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.text.TextUtils
@@ -15,7 +16,8 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.datasources.PermissionChangeBus
-import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.service.CompanionDeviceService
+import io.rebble.cobble.service.InCallService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.plus
 import java.net.URI
@@ -66,6 +68,7 @@ class MainActivity : FlutterActivity() {
                                             Toast.makeText(context, "Updated boot URL: $boot", Toast.LENGTH_LONG).show()
                                             bootIntentCallback?.invoke(true)
                                         }
+
                                         DialogInterface.BUTTON_NEGATIVE -> {
                                             Toast.makeText(context, "Cancelled boot URL change", Toast.LENGTH_SHORT).show()
                                             bootIntentCallback?.invoke(false)
@@ -84,13 +87,14 @@ class MainActivity : FlutterActivity() {
                         }
                     }
                 }
+
                 "rebble" -> {
                     when (data.host) {
                         "auth_complete" -> {
                             val code = data.getQueryParameter("code")
                             val state = data.getQueryParameter("state")
                             val error = data.getQueryParameter("error")
-                            oauthIntentCallback?.invoke(code, state, error);
+                            oauthIntentCallback?.invoke(code, state, error)
                         }
                     }
                 }
@@ -134,7 +138,23 @@ class MainActivity : FlutterActivity() {
         flutterBridges = activityComponent.createCommonBridges() +
                 activityComponent.createUiBridges()
 
+        startAdditionalServices()
+
         handleIntent(intent)
+    }
+
+    /**
+     * Start the CompanionDeviceService and InCallService
+     */
+    private fun startAdditionalServices() {
+        // The CompanionDeviceService is available but we want tiramisu APIs so limit it to that
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val companionDeviceServiceIntent = Intent(this, CompanionDeviceService::class.java)
+            startService(companionDeviceServiceIntent)
+        }
+
+        val inCallServiceIntent = Intent(this, InCallService::class.java)
+        startService(inCallServiceIntent)
     }
 
     override fun onNewIntent(intent: Intent) {

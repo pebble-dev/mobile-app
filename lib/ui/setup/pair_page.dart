@@ -1,4 +1,4 @@
-import 'package:cobble/domain/connection/pair_provider.dart';
+import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/connection/scan_provider.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/datasources/paired_storage.dart';
@@ -8,10 +8,10 @@ import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/common/icons/watch_icon.dart';
-import 'package:cobble/ui/home/home_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
+import 'package:cobble/ui/screens/update_prompt.dart';
 import 'package:cobble/ui/setup/boot/rebble_setup.dart';
 import 'package:cobble/ui/setup/more_setup.dart';
 import 'package:collection/collection.dart' show IterableExtension;
@@ -51,62 +51,82 @@ class PairPage extends HookConsumerWidget implements CobbleScreen {
   Widget build(BuildContext context, WidgetRef ref) {
     final pairedStorage = ref.watch(pairedStorageProvider.notifier);
     final scan = ref.watch(scanProvider);
-    final pair = ref.watch(pairProvider).value;
+    //final pair = ref.watch(pairProvider).value;
     final preferences = ref.watch(preferencesProvider);
+    final connectionState = ref.watch(connectionStateProvider);
 
     useEffect(() {
-      if (pair == null || scan.devices.isEmpty) return null;
+      if (/*pair == null*/ connectionState.isConnected != true || connectionState.currentConnectedWatch?.address == null || scan.devices.isEmpty) return null;
+
+      /*PebbleScanDevice? dev = scan.devices.firstWhereOrNull(
+        (element) => element.address == pair,
+      );*/
 
       PebbleScanDevice? dev = scan.devices.firstWhereOrNull(
-        (element) => element.address == pair,
+        (element) => element.address == connectionState.currentConnectedWatch?.address
       );
 
       if (dev == null) return null;
 
-      WidgetsBinding.instance!.scheduleFrameCallback((timeStamp) {
+      if (connectionState.currentConnectedWatch?.address != dev.address) {
+        return null;
+      }
+      preferences.value?.setHasBeenConnected();
+
+      WidgetsBinding.instance.scheduleFrameCallback((timeStamp) {
         pairedStorage.register(dev);
         pairedStorage.setDefault(dev.address!);
         if (fromLanding) {
-          context.pushReplacement(MoreSetup());
+          context.pushAndRemoveAllBelow(UpdatePrompt(
+            confirmOnSuccess: false,
+            onSuccess: (BuildContext screenContext) {
+              screenContext.pushReplacement(MoreSetup());
+            },
+          ));
         } else {
-          context.pushReplacement(HomePage());
+          context.pushAndRemoveAllBelow(UpdatePrompt(
+            confirmOnSuccess: true,
+            onSuccess: (BuildContext screenContext) {
+              screenContext.pop();
+            },
+          ));
         }
       });
 
       return null;
-    }, [scan, pair]);
+    }, [scan, /*pair,*/ connectionState]);
 
     useEffect(() {
       scanControl.startBleScan();
       return null;
     }, []);
 
-    final _refreshDevicesBle = () {
+    _refreshDevicesBle() {
       if (!scan.scanning) {
         ref.refresh(scanProvider.notifier).onScanStarted();
         scanControl.startBleScan();
       }
-    };
+    }
 
-    final _refreshDevicesClassic = () {
+    _refreshDevicesClassic() {
       if (!scan.scanning) {
         ref.refresh(scanProvider.notifier).onScanStarted();
         scanControl.startClassicScan();
       }
-    };
+    }
 
-    final _targetPebble = (PebbleScanDevice dev) {
+    _targetPebble(PebbleScanDevice dev) async {
       StringWrapper addressWrapper = StringWrapper();
       addressWrapper.value = dev.address;
-      uiConnectionControl.connectToWatch(addressWrapper);
+      await uiConnectionControl.connectToWatch(addressWrapper);
       preferences.value?.setHasBeenConnected();
-    };
+    }
 
     final title = tr.pairPage.title;
     final body = ListView(
       children: [
         if (scan.scanning)
-          Padding(
+          const Padding(
             padding: EdgeInsets.all(16.0),
             child: UnconstrainedBox(
               child: CircularProgressIndicator(),
@@ -119,31 +139,32 @@ class PairPage extends HookConsumerWidget implements CobbleScreen {
                   child: Row(
                     children: <Widget>[
                       PebbleWatchIcon(
-                        PebbleWatchModel.values[e.color!],
+                        PebbleWatchModel.values[e.color ?? 0],
                         size: 56,
                       ),
-                      SizedBox(width: 16),
+                      const SizedBox(width: 16),
                       Column(
                         children: <Widget>[
                           Text(
                             e.name!,
                             style: TextStyle(fontSize: 16),
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Text(
                             e.version ?? "",
                           ),
+                          Text(connectionState.isConnected == true ? "Connected" : "Not connected"),
                           Wrap(
                             spacing: 4,
                             children: [
-                              if (e.runningPRF! && !e.firstUse!)
+                              if (e.runningPRF == true && e.firstUse == false)
                                 Chip(
                                   backgroundColor: Colors.deepOrange,
                                   label: Text(tr.pairPage.status.recovery),
                                 ),
-                              if (e.firstUse!)
+                              if (e.firstUse == true)
                                 Chip(
-                                  backgroundColor: Color(0xffd4af37),
+                                  backgroundColor: const Color(0xffd4af37),
                                   label: Text(tr.pairPage.status.newDevice),
                                 ),
                             ],
@@ -154,13 +175,20 @@ class PairPage extends HookConsumerWidget implements CobbleScreen {
                       Expanded(
                         child: Container(width: 0.0, height: 0.0),
                       ),
-                      Icon(RebbleIcons.caret_right,
-                          color: Theme.of(context).colorScheme.secondary),
+                      if (e.address == connectionState.currentConnectedWatch?.address &&
+                          connectionState.isConnecting == true)
+                        const CircularProgressIndicator()
+                      else
+                        Icon(RebbleIcons.caret_right,
+                            color: Theme.of(context).colorScheme.secondary),
                     ],
                   ),
-                  margin: EdgeInsets.all(16),
+                  margin: const EdgeInsets.all(16),
                 ),
                 onTap: () {
+                  if (connectionState.isConnected == true || connectionState.isConnecting == true) {
+                    return;
+                  }
                   _targetPebble(e);
                 },
               ),
@@ -168,45 +196,52 @@ class PairPage extends HookConsumerWidget implements CobbleScreen {
             .toList(),
         if (!scan.scanning) ...[
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 32.0),
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
             child: CobbleButton(
               outlined: false,
               label: tr.pairPage.searchAgain.ble,
-              color: Theme.of(context).accentColor,
-              onPressed: _refreshDevicesBle,
+              onPressed: connectionState.isConnected == true || connectionState.isConnecting == true ? null : _refreshDevicesBle,
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 32.0),
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
             child: CobbleButton(
               outlined: false,
               label: tr.pairPage.searchAgain.classic,
-              color: Theme.of(context).accentColor,
-              onPressed: _refreshDevicesClassic,
+              onPressed: connectionState.isConnected == true || connectionState.isConnecting == true ? null : _refreshDevicesClassic,
             ),
           ),
         ],
         if (fromLanding)
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 32.0),
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
             child: CobbleButton(
               outlined: false,
               label: tr.common.skip,
-              onPressed: () => context.pushReplacement(RebbleSetup()),
+              onPressed:
+                connectionState.isConnected == true || connectionState.isConnecting == true ? null : () {
+                  context.pushReplacement(RebbleSetup());
+                },
             ),
           )
       ],
     );
-
-    if (fromLanding)
-      return CobbleScaffold.page(
+    return WillPopScope(
+      child:fromLanding ?
+        CobbleScaffold.page(
+          title: title,
+          child: body,
+        ) :
+        CobbleScaffold.tab(
         title: title,
         child: body,
-      );
-    else
-      return CobbleScaffold.tab(
-        title: title,
-        child: body,
-      );
+        ),
+      onWillPop: () async {
+        if (connectionState.isConnecting == true) {
+          return false;
+        }
+        return true;
+      }
+    );
   }
 }

@@ -9,6 +9,7 @@ import android.location.LocationManager
 import androidx.core.content.ContextCompat.getSystemService
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.ConnectionState
+import io.rebble.cobble.bluetooth.watchOrNull
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.util.coroutines.asFlow
 import io.rebble.libpebblecommon.PacketPriority
@@ -16,14 +17,11 @@ import io.rebble.libpebblecommon.packets.PhoneAppVersion
 import io.rebble.libpebblecommon.packets.ProtocolCapsFlag
 import io.rebble.libpebblecommon.packets.TimeMessage
 import io.rebble.libpebblecommon.services.SystemService
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.launch
-import java.util.*
+import timber.log.Timber
+import java.util.TimeZone
 import javax.inject.Inject
 
 @OptIn(ExperimentalUnsignedTypes::class, ExperimentalStdlibApi::class)
@@ -45,9 +43,23 @@ class SystemHandler @Inject constructor(
             sendCurrentTime()
         }
 
+        negotiate()
+    }
+
+    fun negotiate() {
         coroutineScope.launch {
+            connectionLooper.connectionState.first { it is ConnectionState.Negotiating }
+            Timber.i("Negotiating with watch")
             try {
                 refreshWatchMetadata()
+                watchMetadataStore.lastConnectedWatchMetadata.value?.let {
+                    if (it.running.isRecovery.get()) {
+                        Timber.i("Watch is in recovery mode, switching to recovery state")
+                        connectionLooper.connectionState.value.watchOrNull?.let { it1 -> connectionLooper.recoveryMode(it1) }
+                    } else {
+                        connectionLooper.connectionState.value.watchOrNull?.let { it1 -> connectionLooper.negotiationsComplete(it1) }
+                    }
+                }
                 awaitCancellation()
             } finally {
                 watchMetadataStore.lastConnectedWatchMetadata.value = null
@@ -57,11 +69,16 @@ class SystemHandler @Inject constructor(
     }
 
     private suspend fun refreshWatchMetadata() {
-        val watchInfo = systemService.requestWatchVersion()
-        watchMetadataStore.lastConnectedWatchMetadata.value = watchInfo
-
-        val watchModel = systemService.requestWatchModel()
-        watchMetadataStore.lastConnectedWatchModel.value = watchModel
+        try {
+            withTimeout(5000) {
+                val watchInfo = systemService.requestWatchVersion()
+                watchMetadataStore.lastConnectedWatchMetadata.value = watchInfo
+                val watchModel = systemService.requestWatchModel()
+                watchMetadataStore.lastConnectedWatchModel.value = watchModel
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to get watch metadata")
+        }
     }
 
 
@@ -101,7 +118,9 @@ class SystemHandler @Inject constructor(
 
         val locationManager = getSystemService(context, LocationManager::class.java)
         if (locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) == true || locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) == true) platflormFlags.add(PhoneAppVersion.PlatformFlag.GPS)
+
         //TODO: check phone and sms capabilities
+        platflormFlags.add(PhoneAppVersion.PlatformFlag.Telephony)
 
         return PhoneAppVersion.AppVersionResponse(
                 UInt.MAX_VALUE,
@@ -118,6 +137,7 @@ class SystemHandler @Inject constructor(
                         listOf(
                                 ProtocolCapsFlag.Supports8kAppMessage,
                                 ProtocolCapsFlag.SupportsExtendedMusicProtocol,
+                                ProtocolCapsFlag.SupportsTwoWayDismissal,
                                 ProtocolCapsFlag.SupportsAppRunStateProtocol
                         )
                 )

@@ -1,18 +1,13 @@
 package io.rebble.cobble.bridges.common
 
-import android.bluetooth.le.ScanResult
 import io.rebble.cobble.BuildConfig
-import io.rebble.cobble.bluetooth.BluePebbleDevice
 import io.rebble.cobble.bluetooth.scan.BleScanner
 import io.rebble.cobble.bluetooth.scan.ClassicScanner
+import io.rebble.cobble.bluetooth.toPigeon
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
-import io.rebble.cobble.pigeons.ListWrapper
 import io.rebble.cobble.pigeons.Pigeons
-import io.rebble.cobble.pigeons.Pigeons.PebbleScanDevicePigeon
-import io.rebble.cobble.pigeons.toMapExt
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,18 +30,18 @@ class ScanFlutterBridge @Inject constructor(
             scanCallbacks.onScanStarted { }
 
             if (BuildConfig.DEBUG) {
-                scanCallbacks.onScanUpdate(ListWrapper(listOf(PebbleScanDevicePigeon().also {
-                    it.address = "10.0.2.2" //TODO: make configurable
-                    it.name = "Emulator"
-                    it.firstUse = false
-                    it.runningPRF = false
-                    it.serialNumber = "EMULATOR"
-                }.toMapExt()))) {}
+                scanCallbacks.onScanUpdate(listOf(Pigeons.PebbleScanDevicePigeon.Builder()
+                        .setAddress("10.0.2.2")
+                        .setName("Emulator")
+                        .setFirstUse(false)
+                        .setRunningPRF(false)
+                        .setSerialNumber("EMULATOR")
+                        .build())) {}
             }
 
             bleScanner.getScanFlow().collect { foundDevices ->
                 scanCallbacks.onScanUpdate(
-                        ListWrapper(foundDevices.map { it.toPigeon().toMapExt() })
+                        foundDevices.map { it.toPigeon() }
                 ) {}
             }
 
@@ -60,7 +55,7 @@ class ScanFlutterBridge @Inject constructor(
 
             classicScanner.getScanFlow().collect { foundDevices ->
                 scanCallbacks.onScanUpdate(
-                        ListWrapper(foundDevices.map { it.toPigeon().toMapExt() })
+                        foundDevices.map { it.toPigeon() }
                 ) {}
             }
 

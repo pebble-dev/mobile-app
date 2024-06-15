@@ -8,8 +8,7 @@ import io.rebble.cobble.util.launchPigeonResult
 import io.rebble.libpebblecommon.packets.AppRunStateMessage
 import io.rebble.libpebblecommon.services.app.AppRunStateService
 import kotlinx.coroutines.CoroutineScope
-import timber.log.Timber
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 class AppLifecycleFlutterBridge @Inject constructor(

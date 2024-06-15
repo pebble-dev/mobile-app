@@ -1,61 +1,26 @@
-import 'package:cobble/domain/apps/requests/force_refresh_request.dart';
-import 'package:cobble/domain/apps/requests/app_reorder_request.dart';
-import 'package:cobble/domain/calendar/requests/delete_all_pins_request.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-class RpcRequest {
+part 'RpcRequest.g.dart';
+
+
+abstract class SerializableRpcRequest {
+  Map<String, dynamic> toJson();
+}
+
+@JsonSerializable()
+class RpcRequest extends SerializableRpcRequest {
   final int requestId;
-  final Object input;
+  final String type;
+  final Map<String, dynamic> input;
 
-  RpcRequest(this.requestId, this.input);
-
-  Map<String, dynamic> toMap() {
-    return {
-      'type': 'RpcRequest',
-      'requestId': requestId,
-      'input': _mapInput(),
-    };
-  }
-
-  factory RpcRequest.fromMap(Map<String, dynamic> map) {
-    final String type = map['type'] as String;
-    if (type == 'RpcRequest') {
-      return RpcRequest(
-        map['requestId'] as int,
-        _createInputFromMap(map['input']),
-      );
-    }
-    throw ArgumentError('Invalid type: $type');
-  }
-
-  dynamic _mapInput() {
-    if (input is ForceRefreshRequest) {
-      return {'type': 'ForceRefreshRequest', 'data': (input as ForceRefreshRequest).toMap()};
-    } else if (input is AppReorderRequest) {
-      return {'type': 'AppReorderRequest', 'data': (input as AppReorderRequest).toMap()};
-    } else if (input is DeleteAllCalendarPinsRequest) {
-      return {'type': 'DeleteAllCalendarPinsRequest', 'data': { 'type': 'DeleteAllCalendarPinsRequest' } as Map<String, dynamic>};
-    }
-    throw ArgumentError('Unsupported input type: ${input.runtimeType}');
-  }
-
-  static Object _createInputFromMap(Map<String, dynamic> map) {
-    final String type = map['type'] as String;
-    final Map<String, dynamic> data = map['data'] as Map<String, dynamic>;
-
-    switch (type) {
-      case 'ForceRefreshRequest':
-        return ForceRefreshRequest.fromMap(data);
-      case 'AppReorderRequest':
-        return AppReorderRequest.fromMap(data);
-      case 'DeleteAllCalendarPinsRequest':
-        return DeleteAllCalendarPinsRequest();
-      default:
-        throw ArgumentError('Invalid input type: $type');
-    }
-  }
+  RpcRequest(this.requestId, this.input, this.type);
 
   @override
   String toString() {
-    return 'RpcRequest{requestId: $requestId, input: $input}';
+    return 'RpcRequest{requestId: $requestId, input: $input, type: $type}';
   }
+
+  factory RpcRequest.fromJson(Map<String, dynamic> json) => _$RpcRequestFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => _$RpcRequestToJson(this);
 }

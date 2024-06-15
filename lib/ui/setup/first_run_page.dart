@@ -5,6 +5,7 @@ import 'package:cobble/ui/home/home_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
+import 'package:cobble/ui/setup/boot/rebble_setup.dart';
 import 'package:cobble/ui/setup/pair_page.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:flutter/material.dart';
@@ -108,9 +109,7 @@ class _FirstRunPageState extends State<FirstRunPage> {
                     icon: Text(tr.firstRun.fab),
                     label: Icon(RebbleIcons.caret_right),
                     backgroundColor: Theme.of(context).primaryColor,
-                    onPressed: () => context.push(
-                      PairPage.fromLanding(),
-                    ),
+                    onPressed: () => context.push(const RebbleSetup()),
                   ),
                 ],
               ),

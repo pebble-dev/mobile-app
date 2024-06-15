@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import dagger.Reusable
 import io.rebble.cobble.errors.GlobalExceptionHandler
 import kotlinx.coroutines.CoroutineExceptionHandler
 

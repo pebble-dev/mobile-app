@@ -34,26 +34,26 @@ android {
     if (System.getenv("ANDROID_NDK_HOME") != null) {
         ndkPath "$System.env.ANDROID_NDK_HOME"
     }
-    compileSdkVersion 33
+    compileSdk 34
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
         androidTest.java.srcDirs += 'src/androidTest/kotlin'
     }
 
-    lintOptions {
-        disable 'InvalidPackage'
-        checkReleaseBuilds false
-    }
 
     defaultConfig {
         applicationId "io.rebble.cobble"
-        minSdkVersion 21
-        targetSdkVersion 30
+        minSdkVersion 29
+        targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         android.defaultConfig.vectorDrawables.useSupportLibrary = true
+        manifestPlaceholders = [
+                //pebbleKitProviderAuthority: 'com.getpebble.android.provider.basalt' // This makes the app incompatible with the official Pebble app
+                pebbleKitProviderAuthority: 'io.rebble.cobble.provider'
+        ]
     }
     signingConfigs {
         release {
@@ -74,21 +74,23 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true
     }
     // For Kotlin projects
     kotlinOptions {
         jvmTarget = "1.8"
     }
-}
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-    kotlinOptions {
-        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
-        freeCompilerArgs += "-Xopt-in=kotlin.ExperimentalUnsignedTypes"
+    namespace 'io.rebble.cobble'
+    lint {
+        checkReleaseBuilds false
+        disable 'InvalidPackage'
     }
 }
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     kotlinOptions {
-        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+        freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+        freeCompilerArgs += "-opt-in=kotlin.ExperimentalUnsignedTypes"
+        freeCompilerArgs += "-opt-in=kotlinx.serialization.ExperimentalSerializationApi"
     }
 }
 
@@ -96,20 +98,21 @@ flutter {
     source '../..'
 }
 
-def libpebblecommon_version = '0.1.4'
-def coroutinesVersion = "1.6.0"
-def lifecycleVersion = "2.2.0"
+def libpebblecommon_version = '0.1.17'
+def coroutinesVersion = "1.7.3"
+def lifecycleVersion = "2.8.0"
 def timberVersion = "5.0.1"
-def androidxCoreVersion = '1.3.2'
+def androidxCoreVersion = '1.13.1'
 def daggerVersion = '2.51.1'
-def workManagerVersion = '2.4.0'
+def workManagerVersion = '2.9.0'
 def okioVersion = '3.9.0'
 def serializationJsonVersion = '1.6.3'
 
 def junitVersion = '4.13.2'
-def androidxTestVersion = "1.4.0"
+def androidxTestVersion = "1.5.0"
 
 dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationJsonVersion"
     implementation "io.rebble.libpebblecommon:libpebblecommon-android:$libpebblecommon_version"
@@ -123,6 +126,7 @@ dependencies {
     implementation "com.squareup.okio:okio:$okioVersion"
 
     implementation "com.google.dagger:dagger:$daggerVersion"
+    implementation project(':pebble_bt_transport')
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
 
     testImplementation "junit:junit:$junitVersion"

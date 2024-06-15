@@ -4,8 +4,8 @@ import android.app.Application
 import dagger.BindsInstance
 import dagger.Component
 import io.rebble.cobble.NotificationChannelManager
-import io.rebble.cobble.bluetooth.BlueCommon
 import io.rebble.cobble.bluetooth.ConnectionLooper
+import io.rebble.cobble.bluetooth.DeviceTransport
 import io.rebble.cobble.bridges.background.BackgroundTimelineFlutterBridge
 import io.rebble.cobble.bridges.background.CalendarFlutterBridge
 import io.rebble.cobble.bridges.background.NotificationsFlutterBridge
@@ -15,6 +15,7 @@ import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.errors.GlobalExceptionHandler
 import io.rebble.cobble.service.ServiceLifecycleControl
 import io.rebble.libpebblecommon.ProtocolHandler
+import io.rebble.libpebblecommon.services.PhoneControlService
 import io.rebble.libpebblecommon.services.ProtocolService
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import javax.inject.Singleton
@@ -26,7 +27,8 @@ import javax.inject.Singleton
 ])
 interface AppComponent {
     fun createNotificationService(): NotificationService
-    fun createBlueCommon(): BlueCommon
+    fun createPhoneControlService(): PhoneControlService
+    fun createBlueCommon(): DeviceTransport
     fun createProtocolHandler(): ProtocolHandler
     fun createExceptionHandler(): GlobalExceptionHandler
     fun createConnectionLooper(): ConnectionLooper

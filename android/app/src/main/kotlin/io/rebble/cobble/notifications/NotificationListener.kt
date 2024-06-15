@@ -3,7 +3,6 @@ package io.rebble.cobble.notifications
 import android.annotation.TargetApi
 import android.app.Notification
 import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
 import android.os.Build
@@ -17,10 +16,9 @@ import io.rebble.cobble.bluetooth.ConnectionState
 import io.rebble.cobble.bridges.background.NotificationsFlutterBridge
 import io.rebble.cobble.data.NotificationAction
 import io.rebble.cobble.data.NotificationMessage
-import io.rebble.cobble.pigeons.Pigeons
-import io.rebble.libpebblecommon.packets.blobdb.*
 import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
+import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -93,7 +91,8 @@ class NotificationListener : NotificationListenerService() {
                 try {
                     val channels = getNotificationChannels(sbn.packageName, sbn.user)
                     channels?.forEach {
-                        notificationBridge.updateChannel(it.id, sbn.packageName, false, (it.name ?: it.id).toString(), it.description ?: "")
+                        notificationBridge.updateChannel(it.id, sbn.packageName, false, (it.name
+                                ?: it.id).toString(), it.description ?: "")
                     }
                 } catch (e: Exception) {
                     Timber.w(e, "Failed to get notif channels from ${sbn.packageName}")
@@ -109,7 +108,8 @@ class NotificationListener : NotificationListenerService() {
                 tagId = sbn.notification.channelId
             }
             val title = sbn.notification.extras[Notification.EXTRA_TITLE] as? String
-                    ?: sbn.notification.extras[Notification.EXTRA_CONVERSATION_TITLE] as? String ?: ""
+                    ?: sbn.notification.extras[Notification.EXTRA_CONVERSATION_TITLE] as? String
+                    ?: ""
 
             val text = sbn.notification.extras[Notification.EXTRA_TEXT] as? String
                     ?: sbn.notification.extras[Notification.EXTRA_BIG_TEXT] as? String ?: ""
@@ -130,12 +130,15 @@ class NotificationListener : NotificationListenerService() {
             }
 
             GlobalScope.launch(Dispatchers.Main.immediate) {
-                var result: Pair<TimelineItem, BlobResponse.BlobStatus>? = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, title, text, sbn.notification.category?:"", sbn.notification.color, messages?: listOf(), actions)
+                var result: Pair<TimelineItem, BlobResponse.BlobStatus>? = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, title, text, sbn.notification.category
+                        ?: "", sbn.notification.color, messages ?: listOf(), actions)
                         ?: return@launch
 
                 while (result!!.second == BlobResponse.BlobStatus.TryLater) {
                     delay(1000)
-                    result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, title, text, sbn.notification.category?:"", sbn.notification.color, messages?: listOf(), actions) ?: return@launch
+                    result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, title, text, sbn.notification.category
+                            ?: "", sbn.notification.color, messages ?: listOf(), actions)
+                            ?: return@launch
                 }
                 Timber.d(result.second.toString())
                 notificationBridge.activeNotifs[result.first.itemId.get()] = sbn
@@ -170,12 +173,12 @@ class NotificationListener : NotificationListenerService() {
             }
             val channelDesc = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 channel.description ?: ""
-            }else {
+            } else {
                 ""
             }
             val channelName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 channel.name.toString()
-            }else {
+            } else {
                 "Miscellaneous"
             }
             notificationBridge.updateChannel(channelId, packageId, delete, channelName, channelDesc)
@@ -192,7 +195,7 @@ class NotificationListener : NotificationListenerService() {
 
         coroutineScope.launch(Dispatchers.Main.immediate) {
             connectionLooper.connectionState.collect {
-                if (it is ConnectionState.Disconnected) {
+                if (it is ConnectionState.Disconnected || it is ConnectionState.RecoveryMode) {
                     requestUnbind()
                 }
             }

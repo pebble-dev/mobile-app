@@ -7,7 +7,6 @@ import io.rebble.cobble.bridges.background.CalendarFlutterBridge
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.Debouncer
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 

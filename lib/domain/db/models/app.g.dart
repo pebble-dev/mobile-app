@@ -36,7 +36,7 @@ Map<String, dynamic> _$AppToJson(App instance) => <String, dynamic>{
       'isSystem': const BooleanNumberConverter().toJson(instance.isSystem),
       'supportedHardware': const CommaSeparatedListConverter()
           .toJson(instance.supportedHardware),
-      'nextSyncAction': _$NextSyncActionEnumMap[instance.nextSyncAction],
+      'nextSyncAction': _$NextSyncActionEnumMap[instance.nextSyncAction]!,
       'appOrder': instance.appOrder,
     };
 

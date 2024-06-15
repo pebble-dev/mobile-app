@@ -6,15 +6,14 @@ part of 'notification_channel.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-NotificationChannel _$NotificationChannelFromJson(Map<String, dynamic> json) {
-  return NotificationChannel(
-    json['packageId'] as String,
-    json['channelId'] as String,
-    const BooleanNumberConverter().fromJson(json['shouldNotify'] as int),
-    name: json['name'] as String?,
-    description: json['description'] as String?,
-  );
-}
+NotificationChannel _$NotificationChannelFromJson(Map<String, dynamic> json) =>
+    NotificationChannel(
+      json['packageId'] as String,
+      json['channelId'] as String,
+      const BooleanNumberConverter().fromJson(json['shouldNotify'] as int),
+      name: json['name'] as String? ?? null,
+      description: json['description'] as String? ?? null,
+    );
 
 Map<String, dynamic> _$NotificationChannelToJson(
         NotificationChannel instance) =>
