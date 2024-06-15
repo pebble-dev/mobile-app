@@ -474,10 +474,10 @@ packages:
     dependency: "direct main"
     description:
       name: golden_toolkit
-      sha256: ec9d7f1f429ad8c317f1dd08e6e4c81535af5d68e8bd05e02a07edb2e9e9f7ad
+      sha256: "8f74adab33154fe7b731395782797021f97d2edc52f7bfb85ff4f1b5c4a215f0"
       url: "https://pub.dev"
     source: hosted
-    version: "0.13.0"
+    version: "0.15.0"
   graphs:
     dependency: transitive
     description:
@@ -1015,10 +1015,10 @@ packages:
     dependency: "direct main"
     description:
       name: state_notifier
-      sha256: "8fe42610f179b843b12371e40db58c9444f8757f8b69d181c97e50787caed289"
+      sha256: b8677376aa54f2d7c58280d5a007f9e8774f1968d1fb1c096adcb4792fba29bb
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.2+1"
+    version: "1.0.0"
   states_rebuilder:
     dependency: "direct main"
     description:

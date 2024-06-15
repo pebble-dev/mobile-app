@@ -30,11 +30,11 @@ dependencies:
   shared_preferences: ^2.2.0
   url_launcher: ^6.1.0
   intl: ^0.17.0
-  states_rebuilder: ^6.2.0
+  states_rebuilder: ^6.4.0
   path_provider: ^2.1.0
   sqflite: ^2.2.0
   package_info_plus: ^4.2.0
-  state_notifier: ^0.7.0
+  state_notifier: ^1.0.0
   hooks_riverpod: ^2.0.0
   flutter_hooks: ^0.18.0
   device_calendar:
@@ -49,7 +49,7 @@ dependencies:
   stream_transform: ^2.1.0
   flutter_svg: ^2.0.0
   flutter_svg_provider: ^1.0.4
-  golden_toolkit: ^0.13.0
+  golden_toolkit: ^0.15.0
   rxdart: 0.27.7
   share_plus: ^7.2.2
   network_info_plus: ^5.0.3
