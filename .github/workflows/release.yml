@@ -14,12 +14,12 @@ jobs:
     environment: Staging
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'zulu'
-      - uses: dart-lang/setup-dart@v1.3
+      - uses: dart-lang/setup-dart@v1.4
       - run: dart pub global activate fvm
       - run: echo $KEY_JKS | base64 -d > android/key.jks
         env:
