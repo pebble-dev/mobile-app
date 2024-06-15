@@ -44,15 +44,15 @@ class DeviceTransport @Inject constructor(
         bleScanner.stopScan()
         classicScanner.stopScan()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val companionDeviceManager = context.getSystemService(CompanionDeviceManager::class.java)
-            Timber.d("Companion device associated: ${macAddress in companionDeviceManager.associations}, associations: ${companionDeviceManager.associations}")
+        val companionDeviceManager = context.getSystemService(CompanionDeviceManager::class.java)
+        Timber.d("Companion device associated: ${macAddress in companionDeviceManager.associations}, associations: ${companionDeviceManager.associations}")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             lastMacAddress?.let {
                 companionDeviceManager.stopObservingDevicePresence(it)
             }
-            lastMacAddress = macAddress
             companionDeviceManager.startObservingDevicePresence(macAddress)
         }
+        lastMacAddress = macAddress
 
         val bluetoothDevice = if (BuildConfig.DEBUG && !macAddress.contains(":")) {
             PebbleDevice(null, true, macAddress)

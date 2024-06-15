@@ -3,6 +3,7 @@ package io.rebble.cobble.bluetooth
 import android.bluetooth.BluetoothAdapter
 import android.companion.CompanionDeviceManager
 import android.content.Context
+import android.os.Build
 import androidx.annotation.RequiresPermission
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +14,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.math.min
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Singleton
@@ -73,6 +75,7 @@ class ConnectionLooper @Inject constructor(
                 launchRestartOnBluetoothOff(macAddress)
 
                 var retryTime = HALF_OF_INITAL_RETRY_TIME
+                var retries = 0
                 while (isActive) {
                     if (BluetoothAdapter.getDefaultAdapter()?.isEnabled != true) {
                         Timber.d("Bluetooth is off. Waiting until it is on Cancel connection attempt.")
@@ -95,6 +98,7 @@ class ConnectionLooper @Inject constructor(
                             }
                             if (it is SingleConnectionStatus.Connected) {
                                 retryTime = HALF_OF_INITAL_RETRY_TIME
+                                retries = 0
                             }
                         }
                     } catch (_: CancellationException) {
@@ -106,13 +110,9 @@ class ConnectionLooper @Inject constructor(
 
                     val lastWatch = connectionState.value.watchOrNull
 
-                    retryTime *= 2
-                    if (retryTime > MAX_RETRY_TIME) {
-                        Timber.d("Watch failed to connect after numerous attempts. Abort connection.")
-
-                        break
-                    }
-                    Timber.d("Watch connection failed, waiting and reconnecting after $retryTime ms")
+                    retryTime = min(retryTime + HALF_OF_INITAL_RETRY_TIME, MAX_RETRY_TIME)
+                    retries++
+                    Timber.d("Watch connection failed, waiting and reconnecting after $retryTime ms (retry: $retries)")
                     _connectionState.value = ConnectionState.WaitingForReconnect(lastWatch)
                     delayJob = launch {
                         delay(retryTime)
@@ -122,6 +122,7 @@ class ConnectionLooper @Inject constructor(
                     } catch (_: CancellationException) {
                         Timber.i("Reconnect delay interrupted")
                         retryTime = HALF_OF_INITAL_RETRY_TIME
+                        retries = 0
                     }
                 }
             } finally {
@@ -151,7 +152,9 @@ class ConnectionLooper @Inject constructor(
     fun closeConnection() {
         lastConnectedWatch?.let {
             val companionDeviceManager = context.getSystemService(CompanionDeviceManager::class.java)
-            companionDeviceManager.stopObservingDevicePresence(it)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                companionDeviceManager.stopObservingDevicePresence(it)
+            }
         }
         currentConnection?.cancel()
     }
@@ -187,4 +190,4 @@ private fun SingleConnectionStatus.toConnectionStatus(): ConnectionState {
 }
 
 private const val HALF_OF_INITAL_RETRY_TIME = 2_000L // initial retry = 4 seconds
-private const val MAX_RETRY_TIME = 10 * 3600 * 1000L // 10 hours
+private const val MAX_RETRY_TIME = 10_000L // Max retry = 10 seconds
