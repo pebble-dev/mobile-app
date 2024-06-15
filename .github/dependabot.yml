@@ -15,3 +15,7 @@ updates:
     schedule:
       interval: "weekly"
     target-branch: "rws"
+  - package-ecosystem: "github-actions"
+    schedule:
+      interval: "weekly"
+    target-branch: "rws"
