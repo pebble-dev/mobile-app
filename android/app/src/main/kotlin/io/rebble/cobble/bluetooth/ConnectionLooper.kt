@@ -5,10 +5,9 @@ import android.companion.CompanionDeviceManager
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresPermission
+import io.rebble.cobble.bluetooth.classic.ReconnectionSocketServer
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -76,6 +75,11 @@ class ConnectionLooper @Inject constructor(
 
                 var retryTime = HALF_OF_INITAL_RETRY_TIME
                 var retries = 0
+                val reconnectionSocketServer = ReconnectionSocketServer(BluetoothAdapter.getDefaultAdapter()!!)
+                reconnectionSocketServer.start().onEach {
+                    Timber.d("Reconnection socket server received connection from $it")
+                    signalWatchPresence(macAddress)
+                }.launchIn(this)
                 while (isActive) {
                     if (BluetoothAdapter.getDefaultAdapter()?.isEnabled != true) {
                         Timber.d("Bluetooth is off. Waiting until it is on Cancel connection attempt.")
