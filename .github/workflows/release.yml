@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '17'
-      - uses: dart-lang/setup-dart@v1.3
+      - uses: dart-lang/setup-dart@v1.4
       - run: dart pub global activate fvm
       - run: echo $KEY_JKS | base64 -d > android/key.jks
         env:
