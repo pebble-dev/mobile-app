@@ -145,7 +145,7 @@ class PermissionControlFlutterBridge @Inject constructor(
     }
 
     override fun requestLocationPermission(result: Pigeons.Result<Pigeons.NumberWrapper>) {
-        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
+        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
             requestPermission(
                     REQUEST_CODE_LOCATION,
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) Manifest.permission.ACCESS_COARSE_LOCATION else Manifest.permission.ACCESS_FINE_LOCATION
@@ -154,7 +154,7 @@ class PermissionControlFlutterBridge @Inject constructor(
     }
 
     override fun requestCalendarPermission(result: Pigeons.Result<Pigeons.NumberWrapper>) {
-        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
+        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
             requestPermission(
                     REQUEST_CODE_CALENDAR,
                     Manifest.permission.READ_CALENDAR,

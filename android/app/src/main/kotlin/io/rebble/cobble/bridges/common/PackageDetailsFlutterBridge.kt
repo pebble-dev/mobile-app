@@ -17,7 +17,7 @@ class PackageDetailsFlutterBridge @Inject constructor(
     override fun getPackageList(): Pigeons.AppEntriesPigeon {
         val mainIntent = Intent(Intent.ACTION_MAIN, null)
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
-        val packages = context.getPackageManager().queryIntentActivities(mainIntent, 0)
+        val packages = context.packageManager.queryIntentActivities(mainIntent, 0)
         val ret = Pigeons.AppEntriesPigeon()
         val pm = context.packageManager
         ret.appName = ArrayList(packages.map {

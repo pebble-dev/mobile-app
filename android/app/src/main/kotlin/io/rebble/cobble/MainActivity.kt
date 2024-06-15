@@ -94,7 +94,7 @@ class MainActivity : FlutterActivity() {
                             val code = data.getQueryParameter("code")
                             val state = data.getQueryParameter("state")
                             val error = data.getQueryParameter("error")
-                            oauthIntentCallback?.invoke(code, state, error);
+                            oauthIntentCallback?.invoke(code, state, error)
                         }
                     }
                 }

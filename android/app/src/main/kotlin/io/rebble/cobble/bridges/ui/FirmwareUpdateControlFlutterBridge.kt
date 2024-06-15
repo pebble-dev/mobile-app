@@ -158,7 +158,7 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
                     error("Firmware update failed - Only reached ${putBytesController.status.value.progress}")
                 } else {
                     systemService.send(SystemMessage.FirmwareUpdateComplete())
-                    firmwareUpdateCallbacks.onFirmwareUpdateFinished() {}
+                    firmwareUpdateCallbacks.onFirmwareUpdateFinished {}
                 }
             }
             return@launchPigeonResult BooleanWrapper(true)

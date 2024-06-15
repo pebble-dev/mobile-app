@@ -10,7 +10,7 @@ class GattStatus(val value: Int) {
                     p.name.startsWith("GATT_") &&
                     p.getInt(null) == value
         }
-        var ret = err?.name?.replace("GATT", "")?.replace("_", "")?.toLowerCase(Locale.ROOT)?.capitalize()
+        var ret = err?.name?.replace("GATT", "")?.replace("_", "")?.lowercase(Locale.ROOT)?.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
                 ?: "Unknown error"
         ret += " (${value})"
         return ret

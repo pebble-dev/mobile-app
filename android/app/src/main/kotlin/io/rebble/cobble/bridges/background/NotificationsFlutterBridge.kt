@@ -42,7 +42,7 @@ class NotificationsFlutterBridge @Inject constructor(
 
     private val notifUtils = object : Pigeons.NotificationUtils {
         override fun openNotification(arg: Pigeons.StringWrapper) {
-            val id = UUID.fromString(arg?.value)
+            val id = UUID.fromString(arg.value)
             activeNotifs[id]?.notification?.contentIntent?.send()
         }
 
@@ -65,7 +65,7 @@ class NotificationsFlutterBridge @Inject constructor(
         }
 
         override fun dismissNotificationWatch(arg: Pigeons.StringWrapper) {
-            val id = UUID.fromString(arg?.value)
+            val id = UUID.fromString(arg.value)
             val command = BlobCommand.DeleteCommand(Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(), BlobCommand.BlobDatabase.Notification, SUUID(StructMapper(), id).toBytes())
             GlobalScope.launch {
                 var blobResult = blobDBService.send(command)
@@ -85,7 +85,7 @@ class NotificationsFlutterBridge @Inject constructor(
                             ?: Timber.w("Dismiss on untracked notif")
                 } catch (e: PendingIntent.CanceledException) {
                 }
-                result?.success(BooleanWrapper(true))
+                result.success(BooleanWrapper(true))
 
                 val command = BlobCommand.DeleteCommand(Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(), BlobCommand.BlobDatabase.Notification, SUUID(StructMapper(), id).toBytes())
                 GlobalScope.launch {

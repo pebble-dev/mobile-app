@@ -64,10 +64,6 @@ class WatchService : LifecycleService() {
         return START_STICKY
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
     private fun startNotificationLoop() {
         coroutineScope.launch {
             Timber.d("Notification Loop start")
