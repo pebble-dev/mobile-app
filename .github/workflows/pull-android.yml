@@ -19,6 +19,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           java-version: '17'
+          distribution: 'zulu'
       - uses: dart-lang/setup-dart@v1.3
       - run: dart pub global activate fvm
       - run: fvm install
