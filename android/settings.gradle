@@ -1,3 +1,10 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
 include ':app'
 
 def flutterProjectRoot = rootProject.projectDir.parentFile.toPath()
@@ -13,4 +20,6 @@ plugins.each { name, path ->
     include ":$name"
     project(":$name").projectDir = pluginDirectory
 }
+
 include ':pebble_bt_transport'
+include ':shared'
