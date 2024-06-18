@@ -4,9 +4,12 @@ import android.companion.CompanionDeviceManager
 import android.content.ClipData
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
+import android.service.notification.NotificationListenerService
 import androidx.core.content.FileProvider
 import io.rebble.cobble.CobbleApplication
+import io.rebble.cobble.util.hasNotificationAccessPermission
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -50,6 +53,10 @@ private fun generateDebugInfo(context: Context, rwsId: String): String {
     } else {
         null
     }
+    val allowedPermissions = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)
+            .requestedPermissions.map {
+                it to (context.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED)
+            }
     return """
     SDK Version: $sdkVersion
     Device: $device
@@ -63,6 +70,9 @@ private fun generateDebugInfo(context: Context, rwsId: String): String {
     Watch Is Recovery: $watchIsRecovery
     RWS ID:
     $rwsId
+    Allowed Permissions:
+    ${allowedPermissions.joinToString("\n") { (permission, result) -> "$permission: $result" }}
+    Notification listening enabled: ${context.hasNotificationAccessPermission()}
     """.trimIndent()
 }
 
