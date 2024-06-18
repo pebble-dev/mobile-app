@@ -53,9 +53,11 @@ class NotificationListener : NotificationListenerService() {
 
         super.onCreate()
         _isActive.value = true
+        Timber.d("NotificationListener created")
     }
 
     override fun onDestroy() {
+        Timber.d("NotificationListener destroyed")
         _isActive.value = false
         super.onDestroy()
 
@@ -72,10 +74,12 @@ class NotificationListener : NotificationListenerService() {
         controlListenerHints()
         observeNotificationToggle()
         observeMutedPackages()
+        Timber.d("NotificationListener connected")
     }
 
     override fun onListenerDisconnected() {
         isListening = false
+        Timber.d("NotificationListener disconnected")
     }
 
     @OptIn(ExperimentalStdlibApi::class)
