@@ -14,6 +14,7 @@ on:
   workflow_dispatch:
 jobs:
   build:
+    environment: Nightly
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,6 +24,9 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
       - run: dart pub global activate fvm
+      - run: echo $KEY_JKS | base64 -d > android/key.jks
+        env:
+          KEY_JKS: ${{ secrets.KEY_JKS }}
       - run: fvm install
       - run: fvm flutter pub get
       - run: fvm flutter analyze
@@ -32,7 +36,10 @@ jobs:
         run: fvm flutter test
       - run: fvm flutter build apk --debug
         env:
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          ALIAS_PASSWORD: ${{ secrets.ALIAS_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NIGHTLY: 'true'
       - uses: actions/upload-artifact@v4
         with:
           name: debug-apk

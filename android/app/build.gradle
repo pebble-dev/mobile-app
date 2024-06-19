@@ -62,12 +62,25 @@ android {
             storeFile file("../key.jks")
             storePassword = "$System.env.KEY_PASSWORD"
         }
+
+        nightly {
+            keyAlias = "upload"
+            keyPassword = "$System.env.ALIAS_PASSWORD"
+            storeFile file("../key.jks")
+            storePassword = "$System.env.KEY_PASSWORD"
+        }
     }
     buildTypes {
         release {
             signingConfig signingConfigs.release
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            if ("$System.env.NIGHTLY" == "true") {
+                signingConfig signingConfigs.nightly
+            }
         }
     }
 
