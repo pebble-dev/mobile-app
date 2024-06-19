@@ -64,7 +64,7 @@ android {
         }
 
         nightly {
-            keyAlias = "upload"
+            keyAlias = "key0"
             keyPassword = "$System.env.ALIAS_PASSWORD"
             storeFile file("../key.jks")
             storePassword = "$System.env.KEY_PASSWORD"
