@@ -63,9 +63,6 @@ class NotificationListener : NotificationListenerService() {
 
     override fun onListenerConnected() {
         isListening = true
-
-        unbindOnWatchDisconnect()
-
         controlListenerHints()
         observeNotificationToggle()
         observeMutedPackages()
@@ -128,7 +125,7 @@ class NotificationListener : NotificationListenerService() {
                 }
             }
 
-            GlobalScope.launch(Dispatchers.Main.immediate) {
+            coroutineScope.launch(Dispatchers.Main) {
                 var result: Pair<TimelineItem, BlobResponse.BlobStatus>? = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, title, text, sbn.notification.category
                         ?: "", sbn.notification.color, messages ?: listOf(), actions)
                         ?: return@launch
@@ -181,24 +178,6 @@ class NotificationListener : NotificationListenerService() {
                 "Miscellaneous"
             }
             notificationBridge.updateChannel(channelId, packageId, delete, channelName, channelDesc)
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.N)
-    private fun unbindOnWatchDisconnect() {
-        // It is a waste of resources to keep running notification listener in the background when
-        // watch disconnects.
-
-        // When watch disconnects, we call requestUnbind() to kill ourselves it and wait for
-        // ServiceLifecycleControl to starts up back up when watch reconnects.
-
-        coroutineScope.launch(Dispatchers.Main.immediate) {
-            connectionLooper.connectionState.drop(1).collect {
-                if (it is ConnectionState.Disconnected || it is ConnectionState.RecoveryMode) {
-                    Timber.d("Connection state is $it, unbinding listener")
-                    requestUnbind()
-                }
-            }
         }
     }
 

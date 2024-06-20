@@ -8,6 +8,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.service.notification.NotificationListenerService
 import android.text.TextUtils
 import android.widget.Toast
 import androidx.collection.ArrayMap
@@ -16,8 +17,10 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.datasources.PermissionChangeBus
+import io.rebble.cobble.notifications.NotificationListener
 import io.rebble.cobble.service.CompanionDeviceService
 import io.rebble.cobble.service.InCallService
+import io.rebble.cobble.util.hasNotificationAccessPermission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.plus
 import java.net.URI
@@ -102,28 +105,6 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun isNotificationServiceEnabled(): Boolean {
-        try {
-            val pkgName = packageName
-            val flat: String = Settings.Secure.getString(contentResolver,
-                    "enabled_notification_listeners")
-            if (!TextUtils.isEmpty(flat)) {
-                val names = flat.split(":").toTypedArray()
-                for (i in names.indices) {
-                    val cn = ComponentName.unflattenFromString(names[i])
-                    if (cn != null) {
-                        if (TextUtils.equals(pkgName, cn.packageName)) {
-                            return true
-                        }
-                    }
-                }
-            }
-        } catch (e: NullPointerException) {
-            return false
-        }
-        return false
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         val injectionComponent = (applicationContext as CobbleApplication).component
         val activityComponent = injectionComponent.createActivitySubcomponentFactory()
@@ -155,6 +136,13 @@ class MainActivity : FlutterActivity() {
 
         val inCallServiceIntent = Intent(this, InCallService::class.java)
         startService(inCallServiceIntent)
+
+
+        if (context.hasNotificationAccessPermission()) {
+            NotificationListenerService.requestRebind(
+                    NotificationListener.getComponentName(context)
+            )
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
