@@ -36,9 +36,9 @@ class ServiceLifecycleControl @Inject constructor(
                         context.stopService(serviceIntent)
                     }
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
-                            shouldServiceBeRunning &&
+                    if (shouldServiceBeRunning &&
                             context.hasNotificationAccessPermission() && it !is ConnectionState.RecoveryMode) {
+                        Timber.d("Requesting notifications rebind")
                         NotificationListenerService.requestRebind(
                                 NotificationListener.getComponentName(context)
                         )

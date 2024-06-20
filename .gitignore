@@ -31,6 +31,7 @@
 /build/
 android/key.properties
 android/key.jks
+android/.kotlin/metadata
 
 # Web related
 lib/generated_plugin_registrant.dart

@@ -21,10 +21,7 @@ import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
 import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
 
 class NotificationListener : NotificationListenerService() {
@@ -196,7 +193,7 @@ class NotificationListener : NotificationListenerService() {
         // ServiceLifecycleControl to starts up back up when watch reconnects.
 
         coroutineScope.launch(Dispatchers.Main.immediate) {
-            connectionLooper.connectionState.collect {
+            connectionLooper.connectionState.drop(1).collect {
                 if (it is ConnectionState.Disconnected || it is ConnectionState.RecoveryMode) {
                     Timber.d("Connection state is $it, unbinding listener")
                     requestUnbind()
