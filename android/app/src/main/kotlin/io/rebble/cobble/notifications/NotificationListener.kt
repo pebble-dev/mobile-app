@@ -67,9 +67,7 @@ class NotificationListener : NotificationListenerService() {
     override fun onListenerConnected() {
         isListening = true
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            unbindOnWatchDisconnect()
-        }
+        unbindOnWatchDisconnect()
 
         controlListenerHints()
         observeNotificationToggle()
@@ -200,6 +198,7 @@ class NotificationListener : NotificationListenerService() {
         coroutineScope.launch(Dispatchers.Main.immediate) {
             connectionLooper.connectionState.collect {
                 if (it is ConnectionState.Disconnected || it is ConnectionState.RecoveryMode) {
+                    Timber.d("Connection state is $it, unbinding listener")
                     requestUnbind()
                 }
             }
