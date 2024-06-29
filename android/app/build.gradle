@@ -1,8 +1,8 @@
 plugins {
-    id 'org.jetbrains.kotlin.android'
-    id 'org.jetbrains.kotlin.kapt'
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.plugin.serialization' version "$kotlin_version"
+    alias libs.plugins.kapt
+    alias libs.plugins.serialization
+    alias libs.plugins.android.kotlin
+    alias libs.plugins.android.application
 }
 
 def localProperties = new Properties()
@@ -111,15 +111,12 @@ flutter {
     source '../..'
 }
 
-def libpebblecommon_version = '0.1.20'
 def coroutinesVersion = "1.8.1"
 def lifecycleVersion = "2.8.2"
 def timberVersion = "5.0.1"
 def androidxCoreVersion = '1.13.1'
-def daggerVersion = '2.51.1'
 def workManagerVersion = '2.9.0'
 def okioVersion = '3.9.0'
-def serializationJsonVersion = '1.7.0'
 
 def junitVersion = '4.13.2'
 def androidxTestVersion = "1.5.0"
@@ -127,8 +124,8 @@ def androidxTestVersion = "1.5.0"
 dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationJsonVersion"
-    implementation "io.rebble.libpebblecommon:libpebblecommon:$libpebblecommon_version"
+    implementation libs.kotlinx.serialization.json
+    implementation libs.libpebblecommon
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
@@ -138,10 +135,10 @@ dependencies {
     implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
     implementation "com.squareup.okio:okio:$okioVersion"
 
-    implementation "com.google.dagger:dagger:$daggerVersion"
+    implementation libs.dagger
     implementation project(':pebble_bt_transport')
     implementation project(':shared')
-    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+    kapt libs.dagger.compiler
 
     testImplementation "junit:junit:$junitVersion"
 

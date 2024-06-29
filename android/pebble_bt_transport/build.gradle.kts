@@ -1,6 +1,6 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.kotlin)
 }
 
 android {
@@ -8,7 +8,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 23
+        minSdk = libs.versions.android.minSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -33,7 +33,6 @@ android {
     }
 }
 
-val libpebblecommonVersion = "0.1.20"
 val timberVersion = "4.7.1"
 val coroutinesVersion = "1.8.0"
 val okioVersion = "3.7.0"
@@ -43,7 +42,7 @@ val nordicBleVersion = "1.0.16"
 dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("io.rebble.libpebblecommon:libpebblecommon:$libpebblecommonVersion")
+    implementation(libs.libpebblecommon)
     implementation("com.jakewharton.timber:timber:$timberVersion")
     // for nordic ble
     implementation("org.slf4j:slf4j-api:2.0.9")
@@ -51,7 +50,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
     implementation("com.squareup.okio:okio:$okioVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    implementation(libs.kotlinx.serialization.json)
 
 
 
