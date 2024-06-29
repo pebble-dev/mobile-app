@@ -10,10 +10,10 @@ import androidx.core.app.RemoteInput
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.data.NotificationAction
 import io.rebble.cobble.data.NotificationMessage
-import io.rebble.cobble.data.TimelineAction
-import io.rebble.cobble.data.TimelineAttribute
 import io.rebble.cobble.pigeons.BooleanWrapper
 import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.shared.data.TimelineAction
+import io.rebble.cobble.shared.data.TimelineAttribute
 import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
 import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
@@ -24,7 +24,6 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
@@ -160,7 +159,7 @@ class NotificationsFlutterBridge @Inject constructor(
                         notifToSend.duration!!.toUShort(),
                         TimelineItem.Type.Notification,
                         TimelineItem.Flag.makeFlags(listOf()),
-                        notifToSend.layout!!.toUByte(),
+                        TimelineItem.Layout.fromValue(notifToSend.layout!!.toUByte()),
                         parsedAttributes.map { it.toProtocolAttribute() },
                         parsedActions.map { it.toProtocolAction() }
                 )

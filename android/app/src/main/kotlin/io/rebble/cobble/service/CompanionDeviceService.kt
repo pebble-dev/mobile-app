@@ -6,8 +6,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.bluetooth.ConnectionState
-import io.rebble.cobble.bluetooth.watchOrNull
+import io.rebble.cobble.shared.domain.state.ConnectionState
+import io.rebble.cobble.shared.domain.state.watchOrNull
 import timber.log.Timber
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)

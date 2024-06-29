@@ -1,20 +1,19 @@
-package io.rebble.cobble.data
+package io.rebble.cobble.shared.data
 
+import io.rebble.libpebblecommon.packets.blobdb.TimelineAction
 import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class TimelineAction(
         val actionId: Int,
-        val actionType: Int,
+        val actionType: TimelineItem.Action.Type,
         val attributes: List<TimelineAttribute>
 ) {
     fun toProtocolAction(): TimelineItem.Action {
         return TimelineItem.Action(
                 actionId.toUByte(),
-                TimelineItem.Action.Type.values().firstOrNull {
-                    it.value == actionType.toUByte()
-                } ?: error("Unknown action type $actionType"),
+                actionType,
                 attributes.map { it.toProtocolAttribute() }
         )
     }

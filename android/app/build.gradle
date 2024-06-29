@@ -111,7 +111,7 @@ flutter {
     source '../..'
 }
 
-def libpebblecommon_version = '0.1.18'
+def libpebblecommon_version = '0.1.20'
 def coroutinesVersion = "1.8.1"
 def lifecycleVersion = "2.8.2"
 def timberVersion = "5.0.1"
@@ -128,7 +128,7 @@ dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationJsonVersion"
-    implementation "io.rebble.libpebblecommon:libpebblecommon-android:$libpebblecommon_version"
+    implementation "io.rebble.libpebblecommon:libpebblecommon:$libpebblecommon_version"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"

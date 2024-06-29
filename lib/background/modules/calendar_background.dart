@@ -20,7 +20,9 @@ class CalendarBackground implements CalendarCallbacks {
 
   CalendarBackground(this.container);
 
+  //TODO: Remove dart calendar syncer
   void init() async {
+    return;
     calendarSyncer = container.listen<CalendarSyncer>(calendarSyncerProvider, (previous, value) {}).read();
     watchTimelineSyncer = container.listen<WatchTimelineSyncer>(watchTimelineSyncerProvider, (previous, value) {}).read();
     timelinePinDao = container.listen<TimelinePinDao>(timelinePinDaoProvider, (previous, value) {}).read();

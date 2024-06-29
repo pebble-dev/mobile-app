@@ -1,13 +1,13 @@
 package io.rebble.cobble.bridges.common
 
 import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.bluetooth.ConnectionState
-import io.rebble.cobble.bluetooth.watchOrNull
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.data.toPigeon
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.shared.domain.state.ConnectionState
+import io.rebble.cobble.shared.domain.state.watchOrNull
 import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.combine
@@ -62,7 +62,7 @@ class ConnectionFlutterBridge @Inject constructor(
                                 connectionState is ConnectionState.RecoveryMode)
                         .setIsConnecting(connectionState is ConnectionState.Connecting ||
                                 connectionState is ConnectionState.WaitingForReconnect ||
-                                connectionState is ConnectionState.WaitingForBluetoothToEnable ||
+                                connectionState is ConnectionState.WaitingForTransport ||
                                 connectionState is ConnectionState.Negotiating)
                         .setCurrentWatchAddress(bluetoothDevice?.address)
                         .setCurrentConnectedWatch(watchMetadata.toPigeon(bluetoothDevice, model))

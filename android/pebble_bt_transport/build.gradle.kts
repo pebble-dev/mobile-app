@@ -33,7 +33,7 @@ android {
     }
 }
 
-val libpebblecommonVersion = "0.1.17"
+val libpebblecommonVersion = "0.1.20"
 val timberVersion = "4.7.1"
 val coroutinesVersion = "1.8.0"
 val okioVersion = "3.7.0"
@@ -43,7 +43,7 @@ val nordicBleVersion = "1.0.16"
 dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("io.rebble.libpebblecommon:libpebblecommon-android:$libpebblecommonVersion")
+    implementation("io.rebble.libpebblecommon:libpebblecommon:$libpebblecommonVersion")
     implementation("com.jakewharton.timber:timber:$timberVersion")
     // for nordic ble
     implementation("org.slf4j:slf4j-api:2.0.9")
@@ -57,6 +57,7 @@ dependencies {
 
     implementation("no.nordicsemi.android.kotlin.ble:core:$nordicBleVersion")
     implementation("no.nordicsemi.android.kotlin.ble:server:$nordicBleVersion")
+    implementation(project(":shared"))
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")

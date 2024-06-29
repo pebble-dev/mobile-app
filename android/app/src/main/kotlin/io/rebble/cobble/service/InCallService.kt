@@ -9,7 +9,7 @@ import android.telecom.InCallService
 import android.telecom.VideoProfile
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.bluetooth.ConnectionState
+import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.libpebblecommon.packets.PhoneControl
 import io.rebble.libpebblecommon.services.PhoneControlService
 import kotlinx.coroutines.*

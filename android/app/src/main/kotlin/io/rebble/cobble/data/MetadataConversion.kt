@@ -1,6 +1,8 @@
 package io.rebble.cobble.data
 
-import io.rebble.cobble.bluetooth.PebbleDevice
+import io.rebble.cobble.bluetooth.BluetoothPebbleDevice
+import io.rebble.cobble.bluetooth.EmulatedPebbleDevice
+import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.libpebblecommon.packets.WatchFirmwareVersion
 import io.rebble.libpebblecommon.packets.WatchVersion
@@ -12,8 +14,8 @@ fun WatchVersion.WatchVersionResponse?.toPigeon(
     // Pigeon does not appear to allow null values. We have to set some dummy values instead
 
     return Pigeons.PebbleDevicePigeon().also {
-        it.name = if (btDevice?.emulated == true) "[Emulator]" else btDevice?.bluetoothDevice?.name.orEmpty()
-        it.address = btDevice?.address ?: ""
+        it.name = if (btDevice is EmulatedPebbleDevice) "[Emulator]" else if (btDevice is BluetoothPebbleDevice) btDevice.bluetoothDevice.name.orEmpty() else error("Unknown PebbleDevice type")
+        it.address = btDevice.address
         it.runningFirmware = this?.running?.toPigeon() ?: blankWatchFirwmareVersion()
         it.recoveryFirmware = this?.recovery?.toPigeon() ?: blankWatchFirwmareVersion()
         it.model = model?.toLong() ?: 0L

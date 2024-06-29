@@ -11,11 +11,11 @@ import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.bluetooth.ConnectionState
 import io.rebble.cobble.bridges.background.NotificationsFlutterBridge
 import io.rebble.cobble.data.NotificationAction
 import io.rebble.cobble.data.NotificationMessage
 import io.rebble.cobble.datasources.FlutterPreferences
+import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
 import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
 import io.rebble.libpebblecommon.services.notification.NotificationService

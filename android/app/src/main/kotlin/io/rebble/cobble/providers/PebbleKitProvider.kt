@@ -8,8 +8,8 @@ import android.net.Uri
 import com.getpebble.android.kit.Constants
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.bluetooth.ConnectionState
 import io.rebble.cobble.datasources.WatchMetadataStore
+import io.rebble.cobble.shared.domain.state.ConnectionState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope

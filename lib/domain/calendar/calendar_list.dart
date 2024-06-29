@@ -17,7 +17,8 @@ class CalendarList extends StateNotifier<AsyncValue<List<SelectableCalendar>>> {
   CalendarList(this._deviceCalendarPlugin, this._permissionCheck,
       this._preferencesFuture)
       : super(AsyncValue.loading()) {
-    _refresh();
+    //TODO: Remove dart calendar syncer
+    //_refresh();
   }
 
   Future<void> _refresh() async {

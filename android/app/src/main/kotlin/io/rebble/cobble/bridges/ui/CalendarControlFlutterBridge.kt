@@ -1,10 +1,10 @@
 package io.rebble.cobble.bridges.ui
 
 import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.bluetooth.ConnectionState
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.background.CalendarFlutterBridge
 import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.util.Debouncer
 import kotlinx.coroutines.CoroutineScope
 import timber.log.Timber

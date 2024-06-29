@@ -4,6 +4,7 @@ import android.content.Context
 import io.rebble.cobble.bluetooth.*
 import io.rebble.cobble.bluetooth.workarounds.UnboundWatchBeforeConnecting
 import io.rebble.cobble.bluetooth.workarounds.WorkaroundDescriptor
+import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -33,8 +34,7 @@ class BlueLEDriver(
     @OptIn(FlowPreview::class)
     @Throws(SecurityException::class)
     override fun startSingleWatchConnection(device: PebbleDevice): Flow<SingleConnectionStatus> {
-        require(!device.emulated)
-        require(device.bluetoothDevice != null)
+        require(device is BluetoothPebbleDevice) { "Device must be BluetoothPebbleDevice" }
         return flow {
             val gattServer = gattServerManager.gattServer.first()
             if (gattServer.state.value == NordicGattServer.State.INIT) {

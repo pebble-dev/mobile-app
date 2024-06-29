@@ -1,9 +1,7 @@
 package io.rebble.cobble.bluetooth.classic
 
-import io.rebble.cobble.bluetooth.BlueIO
-import io.rebble.cobble.bluetooth.PebbleDevice
-import io.rebble.cobble.bluetooth.SingleConnectionStatus
-import io.rebble.cobble.bluetooth.readFully
+import io.rebble.cobble.bluetooth.*
+import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.packets.QemuPacket
 import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
@@ -93,6 +91,7 @@ class SocketSerialDriver(
 
     @FlowPreview
     override fun startSingleWatchConnection(device: PebbleDevice): Flow<SingleConnectionStatus> = flow {
+        require(device is EmulatedPebbleDevice) { "Device must be EmulatedPebbleDevice" }
         val host = device.address
         coroutineScope {
             emit(SingleConnectionStatus.Connecting(device))

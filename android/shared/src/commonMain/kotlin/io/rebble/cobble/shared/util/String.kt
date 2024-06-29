@@ -1,4 +1,4 @@
-package io.rebble.cobble.util
+package io.rebble.cobble.shared.util
 
 fun String.encodeToByteArrayTrimmed(maxBytes: Int): ByteArray {
     check(maxBytes >= 2) {
@@ -19,4 +19,11 @@ fun String.encodeToByteArrayTrimmed(maxBytes: Int): ByteArray {
     }
 
     return encoded
+}
+
+fun String.trimWithEllipsis(maxLength: Int): String {
+    if (length <= maxLength) {
+        return this
+    }
+    return take(maxLength - 1) + "…"
 }

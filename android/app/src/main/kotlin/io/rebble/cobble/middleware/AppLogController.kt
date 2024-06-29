@@ -1,7 +1,7 @@
 package io.rebble.cobble.middleware
 
 import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.bluetooth.ConnectionState
+import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.libpebblecommon.packets.AppLogShippingControlMessage
 import io.rebble.libpebblecommon.services.AppLogService
 import kotlinx.coroutines.ExperimentalCoroutinesApi

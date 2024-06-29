@@ -2,10 +2,8 @@ package io.rebble.cobble.bluetooth.classic
 
 import android.Manifest
 import androidx.annotation.RequiresPermission
-import io.rebble.cobble.bluetooth.BlueIO
-import io.rebble.cobble.bluetooth.PebbleDevice
-import io.rebble.cobble.bluetooth.ProtocolIO
-import io.rebble.cobble.bluetooth.SingleConnectionStatus
+import io.rebble.cobble.bluetooth.*
+import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -24,8 +22,7 @@ class BlueSerialDriver(
     @FlowPreview
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     override fun startSingleWatchConnection(device: PebbleDevice): Flow<SingleConnectionStatus> = flow {
-        require(!device.emulated)
-        require(device.bluetoothDevice != null)
+        require(device is BluetoothPebbleDevice) { "Device must be BluetoothPebbleDevice" }
         coroutineScope {
             emit(SingleConnectionStatus.Connecting(device))
 

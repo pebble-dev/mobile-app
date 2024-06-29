@@ -9,9 +9,9 @@ import android.os.Build
 import androidx.core.content.getSystemService
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.bluetooth.ConnectionState
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.shared.domain.state.ConnectionState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

@@ -2,10 +2,10 @@ package io.rebble.cobble.bridges.common
 
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
-import io.rebble.cobble.data.TimelineAction
-import io.rebble.cobble.data.TimelineAttribute
 import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.shared.data.TimelineAction
+import io.rebble.cobble.shared.data.TimelineAttribute
 import io.rebble.cobble.util.launchPigeonResult
 import io.rebble.libpebblecommon.PacketPriority
 import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
@@ -31,8 +31,6 @@ class TimelineControlFlutterBridge @Inject constructor(
         bridgeLifecycleController.setupControl(Pigeons.TimelineControl::setup, this)
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
-    @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun addTimelinePin(pin: Pigeons.TimelinePinPigeon): BlobResponse.BlobStatus {
         val parsedAttributes: List<TimelineAttribute> = Json.decodeFromString(pin.attributesJson!!)
                 ?: emptyList()
@@ -66,7 +64,7 @@ class TimelineControlFlutterBridge @Inject constructor(
                 pin.duration!!.toUShort(),
                 TimelineItem.Type.Pin,
                 TimelineItem.Flag.makeFlags(flags),
-                pin.layout!!.toUByte(),
+                TimelineItem.Layout.fromValue(pin.layout!!.toUByte()),
                 parsedAttributes.map { it.toProtocolAttribute() },
                 parsedActions.map { it.toProtocolAction() }
         )

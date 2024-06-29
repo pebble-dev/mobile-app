@@ -6,8 +6,8 @@ import android.os.Build
 import android.service.notification.NotificationListenerService
 import androidx.core.content.ContextCompat
 import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.bluetooth.ConnectionState
 import io.rebble.cobble.notifications.NotificationListener
+import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.util.hasNotificationAccessPermission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope

@@ -8,9 +8,9 @@ import android.hardware.SensorManager
 import android.location.LocationManager
 import androidx.core.content.ContextCompat.getSystemService
 import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.bluetooth.ConnectionState
-import io.rebble.cobble.bluetooth.watchOrNull
 import io.rebble.cobble.datasources.WatchMetadataStore
+import io.rebble.cobble.shared.domain.state.ConnectionState
+import io.rebble.cobble.shared.domain.state.watchOrNull
 import io.rebble.cobble.util.coroutines.asFlow
 import io.rebble.libpebblecommon.PacketPriority
 import io.rebble.libpebblecommon.packets.PhoneAppVersion

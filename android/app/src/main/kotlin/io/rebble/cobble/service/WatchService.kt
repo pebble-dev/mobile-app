@@ -9,9 +9,13 @@ import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import io.rebble.cobble.*
+import io.rebble.cobble.bluetooth.BluetoothPebbleDevice
 import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.bluetooth.ConnectionState
+import io.rebble.cobble.bluetooth.EmulatedPebbleDevice
 import io.rebble.cobble.handlers.CobbleHandler
+import io.rebble.cobble.shared.di.initKoin
+import io.rebble.cobble.shared.domain.calendar.CalendarSync
+import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.*
@@ -31,6 +35,8 @@ class WatchService : LifecycleService() {
     lateinit var notificationService: NotificationService
         private set
 
+    private lateinit var calendarSync: CalendarSync
+
     private lateinit var mainNotifBuilder: NotificationCompat.Builder
 
     override fun onCreate() {
@@ -40,6 +46,8 @@ class WatchService : LifecycleService() {
                 .setSmallIcon(R.drawable.ic_notification_disconnected)
         startForeground(1, mainNotifBuilder.build())
 
+        initKoin(this)
+
         val injectionComponent = (applicationContext as CobbleApplication).component
         val serviceComponent = injectionComponent.createServiceSubcomponentFactory()
                 .create(this)
@@ -48,6 +56,8 @@ class WatchService : LifecycleService() {
         notificationService = injectionComponent.createNotificationService()
         protocolHandler = injectionComponent.createProtocolHandler()
         connectionLooper = injectionComponent.createConnectionLooper()
+
+        calendarSync = CalendarSync(coroutineScope)
 
         super.onCreate()
 
@@ -91,7 +101,7 @@ class WatchService : LifecycleService() {
                         channel = NOTIFICATION_CHANNEL_WATCH_CONNECTING
                     }
 
-                    is ConnectionState.WaitingForBluetoothToEnable -> {
+                    is ConnectionState.WaitingForTransport -> {
                         icon = R.drawable.ic_notification_disconnected
                         titleText = getString(R.string.bluetooth_off)
                         deviceName = null
@@ -101,16 +111,17 @@ class WatchService : LifecycleService() {
                     is ConnectionState.Connected -> {
                         icon = R.drawable.ic_notification_connected
                         titleText = "Connected to device"
-                        deviceName = if (it.watch.emulated) "[EMU] ${it.watch.address}" else it.watch.bluetoothDevice?.name!!
+                        deviceName = if (it.watch is EmulatedPebbleDevice) "[EMU] ${it.watch.address}" else if (it.watch is BluetoothPebbleDevice) (it.watch as BluetoothPebbleDevice).bluetoothDevice.name!! else it.watch.address
                         channel = NOTIFICATION_CHANNEL_WATCH_CONNECTED
                     }
 
                     is ConnectionState.RecoveryMode -> {
                         icon = R.drawable.ic_notification_connected
                         titleText = "Connected to device (Recovery Mode)"
-                        deviceName = if (it.watch.emulated) "[EMU] ${it.watch.address}" else it.watch.bluetoothDevice?.name!!
+                        deviceName = if (it.watch is EmulatedPebbleDevice) "[EMU] ${it.watch.address}" else if (it.watch is BluetoothPebbleDevice) (it.watch as BluetoothPebbleDevice).bluetoothDevice.name!! else it.watch.address
                         channel = NOTIFICATION_CHANNEL_WATCH_CONNECTED
                     }
+                    else -> error("Unhandled connection state")
                 }
 
                 Timber.d("Notification Title Text %s", titleText)

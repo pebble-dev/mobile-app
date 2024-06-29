@@ -6,6 +6,9 @@ import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresPermission
 import io.rebble.cobble.bluetooth.classic.ReconnectionSocketServer
+import io.rebble.cobble.shared.domain.common.PebbleDevice
+import io.rebble.cobble.shared.domain.state.ConnectionState
+import io.rebble.cobble.shared.domain.state.watchOrNull
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
@@ -84,8 +87,8 @@ class ConnectionLooper @Inject constructor(
                     if (BluetoothAdapter.getDefaultAdapter()?.isEnabled != true) {
                         Timber.d("Bluetooth is off. Waiting until it is on Cancel connection attempt.")
 
-                        _connectionState.value = ConnectionState.WaitingForBluetoothToEnable(
-                                BluetoothAdapter.getDefaultAdapter()?.getRemoteDevice(macAddress)?.let { PebbleDevice(it) }
+                        _connectionState.value = ConnectionState.WaitingForTransport(
+                                BluetoothAdapter.getDefaultAdapter()?.getRemoteDevice(macAddress)?.let { BluetoothPebbleDevice(it, it.address) }
                         )
 
                         getBluetoothStatus(context).first { bluetoothOn -> bluetoothOn }
