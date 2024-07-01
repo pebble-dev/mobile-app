@@ -1,6 +1,7 @@
 import 'package:cobble/domain/api/auth/auth.dart';
 import 'package:cobble/domain/api/auth/user.dart';
 import 'package:cobble/domain/api/no_token_exception.dart';
+import 'package:cobble/domain/calendar/device_calendar_plugin_provider.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/datasources/web_services/auth.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
@@ -20,6 +21,7 @@ class DebugOptionsPage extends HookConsumerWidget implements CobbleScreen {
         ref.watch(shouldOverrideBootProvider).value ?? false;
     final overrideBootUrl =
         ref.watch(overrideBootValueProvider).value ?? "";
+    final calendarControl = ref.watch(calendarControlProvider);
 
     final bootUrlController = useTextEditingController();
     final bootOverrideUrlController = useTextEditingController();
@@ -108,6 +110,13 @@ Timeline TTL: $timelineTtl
               }
             },
             label: "Share application logs",
+          ),
+          const SizedBox(height: 20),
+          CobbleButton(
+            label: "Force calendar resync",
+            onPressed: () async {
+              calendarControl.requestCalendarSync(true);
+            },
           ),
         ],
       ).toList()),

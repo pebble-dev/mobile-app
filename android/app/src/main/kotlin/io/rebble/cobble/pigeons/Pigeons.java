@@ -4925,7 +4925,7 @@ public class Pigeons {
   /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
   public interface CalendarControl {
 
-    void requestCalendarSync();
+    void requestCalendarSync(@NonNull Boolean forceResync);
 
     void setCalendarSyncEnabled(@NonNull Boolean enabled, @NonNull Result<Void> result);
 
@@ -4947,8 +4947,10 @@ public class Pigeons {
           channel.setMessageHandler(
               (message, reply) -> {
                 ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                Boolean forceResyncArg = (Boolean) args.get(0);
                 try {
-                  api.requestCalendarSync();
+                  api.requestCalendarSync(forceResyncArg);
                   wrapped.add(0, null);
                 }
  catch (Throwable exception) {

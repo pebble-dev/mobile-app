@@ -3039,10 +3039,12 @@ void CalendarControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<C
         binaryMessenger:binaryMessenger
         codec:CalendarControlGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(requestCalendarSyncWithError:)], @"CalendarControl api (%@) doesn't respond to @selector(requestCalendarSyncWithError:)", api);
+      NSCAssert([api respondsToSelector:@selector(requestCalendarSyncForceResync:error:)], @"CalendarControl api (%@) doesn't respond to @selector(requestCalendarSyncForceResync:error:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        NSNumber *arg_forceResync = GetNullableObjectAtIndex(args, 0);
         FlutterError *error;
-        [api requestCalendarSyncWithError:&error];
+        [api requestCalendarSyncForceResync:arg_forceResync error:&error];
         callback(wrapResult(nil, error));
       }];
     } else {

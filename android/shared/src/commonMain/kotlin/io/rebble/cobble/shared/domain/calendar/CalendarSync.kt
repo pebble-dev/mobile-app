@@ -55,6 +55,13 @@ class CalendarSync(
         return calendarSyncer.syncDeviceCalendarsToDb() && syncTimelineToWatch()
     }
 
+    suspend fun forceFullResync() {
+        Logging.i("Forcing full calendar resync")
+        calendarSyncer.clearAllCalendarsFromDb()
+        calendarSyncer.syncDeviceCalendarsToDb()
+        watchTimelineSyncer.clearAllPinsFromWatchAndResync()
+    }
+
     private suspend fun syncTimelineToWatch(): Boolean {
         return watchTimelineSyncer.syncPinDatabaseWithWatch()
     }

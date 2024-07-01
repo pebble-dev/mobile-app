@@ -579,7 +579,7 @@ extern void PermissionControlSetup(id<FlutterBinaryMessenger> binaryMessenger, N
 NSObject<FlutterMessageCodec> *CalendarControlGetCodec(void);
 
 @protocol CalendarControl
-- (void)requestCalendarSyncWithError:(FlutterError *_Nullable *_Nonnull)error;
+- (void)requestCalendarSyncForceResync:(NSNumber *)forceResync error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setCalendarSyncEnabledEnabled:(NSNumber *)enabled completion:(void (^)(FlutterError *_Nullable))completion;
 - (void)getCalendarSyncEnabledWithCompletion:(void (^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
 - (void)deleteAllCalendarPinsWithCompletion:(void (^)(FlutterError *_Nullable))completion;

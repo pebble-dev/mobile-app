@@ -26,7 +26,7 @@ class CalendarControlFlutterBridge @Inject constructor(
         bridgeLifecycleController.setupControl(Pigeons.CalendarControl::setup, this)
     }
 
-    override fun requestCalendarSync() {
+    override fun requestCalendarSync(forceResync: Boolean) {
         Timber.d("Request calendar sync %s", connectionLooper.connectionState.value)
         if (connectionLooper.connectionState.value is ConnectionState.Disconnected) {
             // No need to do anything. Calendar will be re-synced automatically when service
@@ -34,11 +34,17 @@ class CalendarControlFlutterBridge @Inject constructor(
             return
         }
 
-        // Use debouncer to ensure user quickly selecting his/hers calendars will not trigger too
-        // many sync requests
-        debouncer.executeDebouncing {
-            Timber.d("Sync calendar on request after debounce")
-            calendarSync.doFullCalendarSync()
+        if (forceResync) {
+            coroutineScope.launch {
+                calendarSync.forceFullResync()
+            }
+        } else {
+            // Use debouncer to ensure user quickly selecting calendars will not trigger too
+            // many sync requests
+            debouncer.executeDebouncing {
+                Timber.d("Sync calendar on request after debounce")
+                calendarSync.doFullCalendarSync()
+            }
         }
     }
 

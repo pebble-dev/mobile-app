@@ -405,7 +405,7 @@ abstract class PermissionControl {
 
 @HostApi()
 abstract class CalendarControl {
-  void requestCalendarSync();
+  void requestCalendarSync(bool forceResync);
 
   @async
   void setCalendarSyncEnabled(bool enabled);

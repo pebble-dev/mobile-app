@@ -130,4 +130,4 @@ class CalendarHandler @Inject constructor(
 
 }
 
-private val CALENDAR_WORK_TAG = "CalendarSync"
+private const val CALENDAR_WORK_TAG = "CalendarSync"

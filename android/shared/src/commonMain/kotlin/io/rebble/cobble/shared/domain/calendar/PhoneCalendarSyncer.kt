@@ -32,6 +32,12 @@ class PhoneCalendarSyncer(
 ): KoinComponent {
     private val calendarDao: CalendarDao by inject()
     private val timelinePinDao: TimelinePinDao by inject()
+
+    suspend fun clearAllCalendarsFromDb() {
+        timelinePinDao.deletePinsForWatchapp(calendarWatchappId)
+        calendarDao.deleteAll()
+    }
+
     suspend fun syncDeviceCalendarsToDb(): Boolean {
         val existingCalendars = calendarDao.getAll()
         val calendars = getCalendars(platformContext)
