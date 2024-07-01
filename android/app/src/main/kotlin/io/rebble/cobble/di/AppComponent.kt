@@ -7,16 +7,17 @@ import io.rebble.cobble.NotificationChannelManager
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.DeviceTransport
 import io.rebble.cobble.bridges.background.BackgroundTimelineFlutterBridge
-import io.rebble.cobble.bridges.background.CalendarFlutterBridge
 import io.rebble.cobble.bridges.background.NotificationsFlutterBridge
 import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.datasources.PairedStorage
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.errors.GlobalExceptionHandler
 import io.rebble.cobble.service.ServiceLifecycleControl
+import io.rebble.cobble.shared.domain.calendar.CalendarSync
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.PhoneControlService
 import io.rebble.libpebblecommon.services.ProtocolService
+import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import javax.inject.Singleton
 
@@ -29,12 +30,14 @@ interface AppComponent {
     fun createNotificationService(): NotificationService
     fun createPhoneControlService(): PhoneControlService
     fun createBlueCommon(): DeviceTransport
+
     fun createProtocolHandler(): ProtocolHandler
+    fun createBlobDBService(): BlobDBService
+
     fun createExceptionHandler(): GlobalExceptionHandler
     fun createConnectionLooper(): ConnectionLooper
     fun createWatchMetadataStore(): WatchMetadataStore
     fun createPairedStorage(): PairedStorage
-    fun createCalendarFlutterBridge(): CalendarFlutterBridge
     fun createTimelineSyncFlutterBridge(): BackgroundTimelineFlutterBridge
     fun createNotificationsFlutterBridge(): NotificationsFlutterBridge
     fun createFlutterPreferences(): FlutterPreferences
@@ -45,6 +48,9 @@ interface AppComponent {
 
     fun createActivitySubcomponentFactory(): ActivitySubcomponent.Factory
     fun createServiceSubcomponentFactory(): ServiceSubcomponent.Factory
+
+    //TODO: Unify DI under Koin
+    fun createKMPCalendarSync(): CalendarSync
 
     @Component.Factory
     interface Factory {

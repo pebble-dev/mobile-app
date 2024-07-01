@@ -14,8 +14,12 @@ fun WatchVersion.WatchVersionResponse?.toPigeon(
     // Pigeon does not appear to allow null values. We have to set some dummy values instead
 
     return Pigeons.PebbleDevicePigeon().also {
-        it.name = if (btDevice is EmulatedPebbleDevice) "[Emulator]" else if (btDevice is BluetoothPebbleDevice) btDevice.bluetoothDevice.name.orEmpty() else error("Unknown PebbleDevice type")
-        it.address = btDevice.address
+        it.name = btDevice?.let {
+            if (btDevice is EmulatedPebbleDevice) "[Emulator]"
+            else if (btDevice is BluetoothPebbleDevice) btDevice.bluetoothDevice.name.orEmpty()
+            else error("Unknown PebbleDevice type")
+        } ?: ""
+        it.address = btDevice?.address ?: ""
         it.runningFirmware = this?.running?.toPigeon() ?: blankWatchFirwmareVersion()
         it.recoveryFirmware = this?.recovery?.toPigeon() ?: blankWatchFirwmareVersion()
         it.model = model?.toLong() ?: 0L

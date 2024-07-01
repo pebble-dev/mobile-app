@@ -46,8 +46,6 @@ class WatchService : LifecycleService() {
                 .setSmallIcon(R.drawable.ic_notification_disconnected)
         startForeground(1, mainNotifBuilder.build())
 
-        initKoin(this)
-
         val injectionComponent = (applicationContext as CobbleApplication).component
         val serviceComponent = injectionComponent.createServiceSubcomponentFactory()
                 .create(this)
@@ -57,7 +55,7 @@ class WatchService : LifecycleService() {
         protocolHandler = injectionComponent.createProtocolHandler()
         connectionLooper = injectionComponent.createConnectionLooper()
 
-        calendarSync = CalendarSync(coroutineScope)
+        calendarSync = injectionComponent.createKMPCalendarSync()
 
         super.onCreate()
 

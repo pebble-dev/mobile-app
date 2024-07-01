@@ -60,15 +60,6 @@ class Preferences {
     _preferencesUpdateStream.add(this);
   }
 
-  bool? isCalendarSyncEnabled() {
-    return _sharedPrefs.getBool("ENABLE_CALENDAR_SYNC");
-  }
-
-  Future<void> setCalendarSyncEnabled(bool value) async {
-    await _sharedPrefs.setBool("ENABLE_CALENDAR_SYNC", value);
-    _preferencesUpdateStream.add(this);
-  }
-
   bool? isPhoneNotificationMuteEnabled() {
     return _sharedPrefs.getBool("MUTE_PHONE_NOTIFICATIONS");
   }
@@ -165,10 +156,6 @@ final preferencesProvider = FutureProvider<Preferences>((ref) async {
   final sharedPreferences = await ref.watch(sharedPreferencesProvider);
   return Preferences(sharedPreferences);
 });
-
-final calendarSyncEnabledProvider = _createPreferenceProvider<bool?>(
-  (preferences) => preferences.isCalendarSyncEnabled(),
-);
 
 final phoneNotificationsMuteProvider = _createPreferenceProvider<bool?>(
   (preferences) => preferences.isPhoneNotificationMuteEnabled(),

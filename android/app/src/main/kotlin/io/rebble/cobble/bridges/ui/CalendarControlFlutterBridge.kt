@@ -2,18 +2,22 @@ package io.rebble.cobble.bridges.ui
 
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bridges.FlutterBridge
-import io.rebble.cobble.bridges.background.CalendarFlutterBridge
 import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.shared.datastore.KMPPrefs
+import io.rebble.cobble.shared.domain.calendar.CalendarSync
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.util.Debouncer
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
 class CalendarControlFlutterBridge @Inject constructor(
         private val connectionLooper: ConnectionLooper,
-        private val calendarFlutterBridge: CalendarFlutterBridge,
+        private val calendarSync: CalendarSync,
         private val coroutineScope: CoroutineScope,
+        private val kmpPrefs: KMPPrefs,
         bridgeLifecycleController: BridgeLifecycleController
 ) : Pigeons.CalendarControl, FlutterBridge {
     private val debouncer = Debouncer(debouncingTimeMs = 5_000L, scope = coroutineScope)
@@ -34,7 +38,31 @@ class CalendarControlFlutterBridge @Inject constructor(
         // many sync requests
         debouncer.executeDebouncing {
             Timber.d("Sync calendar on request after debounce")
-            calendarFlutterBridge.syncCalendar()
+            calendarSync.doFullCalendarSync()
         }
     }
+
+    override fun getCalendarSyncEnabled(result: Pigeons.Result<Boolean>) {
+        coroutineScope.launch {
+            kmpPrefs.calendarSyncEnabled.first().let {
+                result.success(it)
+            }
+        }
+    }
+
+    override fun deleteAllCalendarPins(result: Pigeons.Result<Void>) {
+        coroutineScope.launch {
+            calendarSync.deleteCalendarPinsFromWatch()
+            result.success(null)
+        }
+    }
+
+    override fun setCalendarSyncEnabled(enabled: Boolean, result: Pigeons.Result<Void>) {
+        coroutineScope.launch {
+            kmpPrefs.setCalendarSyncEnabled(enabled)
+            result.success(null)
+        }
+    }
+
+
 }

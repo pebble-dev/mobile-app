@@ -23,11 +23,6 @@ class FlutterPreferences @Inject constructor(private val context: Context) {
             Context.MODE_PRIVATE
     )
 
-    val calendarSyncEnabled = preferences.flow(KEY_CALENDAR_SYNC_ENABLED) { prefs: SharedPreferences,
-                                                                            key: String ->
-        prefs.getBoolean(key, false)
-    }
-
     val mutePhoneNotificationSounds = preferences.flow(
             KEY_MUTE_PHONE_NOTIFICATION_SOUNDS
     ) { prefs: SharedPreferences,
@@ -79,32 +74,6 @@ private fun decodeList(encodedList: String): List<String>? {
     }
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
-private inline fun <T> SharedPreferences.flow(
-        key: String,
-        crossinline mapper: (preferences: SharedPreferences, key: String) -> T): Flow<T> {
-
-    return callbackFlow {
-        trySend(mapper(this@flow, key)).isSuccess
-
-        val listener = SharedPreferences
-                .OnSharedPreferenceChangeListener { sharedPreferences: SharedPreferences,
-                                                    changedKey: String? ->
-
-                    if (changedKey == key) {
-                        trySend(mapper(sharedPreferences, key)).isSuccess
-                    }
-                }
-
-        registerOnSharedPreferenceChangeListener(listener)
-
-        awaitClose {
-            unregisterOnSharedPreferenceChangeListener(listener)
-        }
-    }
-}
-
-private const val KEY_CALENDAR_SYNC_ENABLED = "flutter.ENABLE_CALENDAR_SYNC"
 private const val KEY_MUTE_PHONE_NOTIFICATION_SOUNDS = "flutter.MUTE_PHONE_NOTIFICATIONS"
 private const val KEY_MUTE_PHONE_CALL_SOUNDS = "flutter.MUTE_PHONE_CALLS"
 private const val KEY_MASTER_NOTIFICATION_TOGGLE = "flutter.MASTER_NOTIFICATION_TOGGLE"

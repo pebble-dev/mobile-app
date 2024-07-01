@@ -3,7 +3,7 @@ package io.rebble.cobble.bluetooth
 import io.rebble.cobble.pigeons.Pigeons
 
 @Throws(SecurityException::class)
-fun BluePebbleDevice.toPigeon(): Pigeons.PebbleScanDevicePigeon {
+fun ScannedPebbleDevice.toPigeon(): Pigeons.PebbleScanDevicePigeon {
     return Pigeons.PebbleScanDevicePigeon().also {
         it.name = bluetoothDevice.name
         it.address = bluetoothDevice.address

@@ -10,18 +10,16 @@ import androidx.core.content.ContextCompat
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import io.rebble.cobble.background.CalendarSyncWorker
-import io.rebble.cobble.bridges.background.CalendarFlutterBridge
 import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.datasources.PermissionChangeBus
+import io.rebble.cobble.shared.datastore.KMPPrefs
+import io.rebble.cobble.shared.domain.calendar.CalendarSync
 import io.rebble.cobble.util.Debouncer
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.job
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -29,8 +27,9 @@ import javax.inject.Inject
 class CalendarHandler @Inject constructor(
         private val context: Context,
         private val coroutineScope: CoroutineScope,
-        private val calendarFlutterBridge: CalendarFlutterBridge,
-        private val flutterPreferences: FlutterPreferences
+        private val calendarSync: CalendarSync,
+        private val flutterPreferences: FlutterPreferences,
+        private val prefs: KMPPrefs
 ) : CobbleHandler {
     private var initialSyncJob: Job? = null
     private var calendarHandlerStarted = false
@@ -43,7 +42,7 @@ class CalendarHandler @Inject constructor(
             // Use debouncer to wait for the last change and then trigger sync
             calendarDebouncer.executeDebouncing {
                 Timber.d("Calendar change detected. Syncing...")
-                calendarFlutterBridge.syncCalendar()
+                calendarSync.doFullCalendarSync()
                 Timber.d("Sync complete")
             }
         }
@@ -58,7 +57,7 @@ class CalendarHandler @Inject constructor(
         coroutineScope.launch {
             combine(
                     permissionChangeFlow,
-                    flutterPreferences.calendarSyncEnabled
+                    prefs.calendarSyncEnabled
             ) { _,
                 calendarSyncEnabled ->
                 startStopCalendar(calendarSyncEnabled)
@@ -71,13 +70,17 @@ class CalendarHandler @Inject constructor(
                 context,
                 Manifest.permission.READ_CALENDAR
         ) == PackageManager.PERMISSION_GRANTED
+        synchronized(this) {
+            val shouldSyncCalendar = hasPermission && calendarSyncEnabled
+            Timber.d("Should sync calendar: $shouldSyncCalendar")
 
-        val shouldSyncCalendar = hasPermission && calendarSyncEnabled
-
-        if (shouldSyncCalendar && !calendarHandlerStarted) {
-            startCalendarHandler()
-        } else if (!shouldSyncCalendar && calendarHandlerStarted) {
-            stopCalendarHandler()
+            if (shouldSyncCalendar && !calendarHandlerStarted) {
+                startCalendarHandler()
+                calendarHandlerStarted = true
+            } else if (!shouldSyncCalendar && calendarHandlerStarted) {
+                stopCalendarHandler()
+                calendarHandlerStarted = false
+            }
         }
     }
 
@@ -91,7 +94,7 @@ class CalendarHandler @Inject constructor(
             // Sync calendar
 
             Timber.d("Watch service started or we received permissions. Syncing calendar...")
-            calendarFlutterBridge.syncCalendar()
+            calendarSync.doFullCalendarSync()
             Timber.d("Sync complete")
         }
 

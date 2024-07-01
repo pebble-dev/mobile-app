@@ -12,10 +12,11 @@ class CalendarList extends StateNotifier<AsyncValue<List<SelectableCalendar>>> {
   final DeviceCalendarPlugin _deviceCalendarPlugin;
   final PermissionCheck _permissionCheck;
   final Future<SharedPreferences> _preferencesFuture;
+  final CalendarControl _calendarControl;
   List<String>? _blacklistedCalendars = List.empty();
 
   CalendarList(this._deviceCalendarPlugin, this._permissionCheck,
-      this._preferencesFuture)
+      this._preferencesFuture, this._calendarControl)
       : super(AsyncValue.loading()) {
     //TODO: Remove dart calendar syncer
     //_refresh();
@@ -82,8 +83,9 @@ final AutoDisposeStateNotifierProvider<CalendarList, AsyncValue<List<SelectableC
   final deviceCalendarPlugin = ref.read(deviceCalendarPluginProvider);
   final permissionCheck = ref.watch(permissionCheckProvider);
   final sharedPreferences = ref.read(sharedPreferencesProvider);
+  final calendarControl = ref.watch(calendarControlProvider);
 
-  return CalendarList(deviceCalendarPlugin, permissionCheck, sharedPreferences);
+  return CalendarList(deviceCalendarPlugin, permissionCheck, sharedPreferences, calendarControl);
 });
 
 const _preferencesKeyBlacklistedCalendars = "blacklisted_calendars";

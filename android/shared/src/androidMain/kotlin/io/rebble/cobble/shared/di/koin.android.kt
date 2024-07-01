@@ -10,6 +10,8 @@ fun initKoin(context: Context) {
         modules(
             calendarModule,
             stateModule,
+            databaseModule,
+            dataStoreModule,
             androidModule
         )
     }

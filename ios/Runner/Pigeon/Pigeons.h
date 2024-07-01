@@ -361,20 +361,11 @@ NSObject<FlutterMessageCodec> *PairCallbacksGetCodec(void);
 - (void)onWatchPairCompleteAddress:(StringWrapper *)address completion:(void (^)(FlutterError *_Nullable))completion;
 @end
 
-/// The codec used by CalendarCallbacks.
-NSObject<FlutterMessageCodec> *CalendarCallbacksGetCodec(void);
-
-@interface CalendarCallbacks : NSObject
-- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
-- (void)doFullCalendarSyncWithCompletion:(void (^)(FlutterError *_Nullable))completion;
-@end
-
 /// The codec used by TimelineCallbacks.
 NSObject<FlutterMessageCodec> *TimelineCallbacksGetCodec(void);
 
 @interface TimelineCallbacks : NSObject
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
-- (void)syncTimelineToWatchWithCompletion:(void (^)(FlutterError *_Nullable))completion;
 - (void)handleTimelineActionActionTrigger:(ActionTrigger *)actionTrigger completion:(void (^)(ActionResponsePigeon *_Nullable, FlutterError *_Nullable))completion;
 @end
 
@@ -589,6 +580,9 @@ NSObject<FlutterMessageCodec> *CalendarControlGetCodec(void);
 
 @protocol CalendarControl
 - (void)requestCalendarSyncWithError:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setCalendarSyncEnabledEnabled:(NSNumber *)enabled completion:(void (^)(FlutterError *_Nullable))completion;
+- (void)getCalendarSyncEnabledWithCompletion:(void (^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
+- (void)deleteAllCalendarPinsWithCompletion:(void (^)(FlutterError *_Nullable))completion;
 @end
 
 extern void CalendarControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<CalendarControl> *_Nullable api);

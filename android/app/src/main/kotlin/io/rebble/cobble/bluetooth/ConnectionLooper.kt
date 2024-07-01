@@ -8,6 +8,7 @@ import androidx.annotation.RequiresPermission
 import io.rebble.cobble.bluetooth.classic.ReconnectionSocketServer
 import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.cobble.shared.domain.state.ConnectionState
+import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.domain.state.watchOrNull
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -26,9 +27,9 @@ class ConnectionLooper @Inject constructor(
         private val errorHandler: CoroutineExceptionHandler
 ) {
     val connectionState: StateFlow<ConnectionState> get() = _connectionState
-    private val _connectionState: MutableStateFlow<ConnectionState> = MutableStateFlow(
+    private val _connectionState: MutableStateFlow<ConnectionState> = /*MutableStateFlow(
             ConnectionState.Disconnected
-    )
+    )*/ ConnectionStateManager.connectionState
     private val _watchPresenceState = MutableStateFlow<String?>(null)
     val watchPresenceState: StateFlow<String?> get() = _watchPresenceState
 

@@ -1,6 +1,7 @@
 package io.rebble.cobble.shared.domain.calendar
 
 import android.content.ContentResolver
+import android.content.ContentUris
 import android.database.Cursor
 import android.net.Uri
 import android.provider.CalendarContract
@@ -13,9 +14,7 @@ import io.rebble.cobble.shared.data.EventAttendee
 import io.rebble.cobble.shared.data.EventRecurrenceRule
 import io.rebble.cobble.shared.data.EventReminder
 import io.rebble.cobble.shared.database.entity.Calendar
-import kotlinx.datetime.DayOfWeek
-import kotlinx.datetime.Instant
-import kotlinx.datetime.Month
+import kotlinx.datetime.*
 
 private val calendarUri: Uri = CalendarContract.Calendars.CONTENT_URI
 private val calendarProjection = arrayOf(
@@ -26,19 +25,21 @@ private val calendarProjection = arrayOf(
         CalendarContract.Calendars.CALENDAR_COLOR
 )
 
-private val eventUri: Uri = CalendarContract.Events.CONTENT_URI
+private val eventUri: Uri = CalendarContract.Instances.CONTENT_URI
 private val eventProjection = arrayOf(
-        CalendarContract.Events._ID,
-        CalendarContract.Events.CALENDAR_ID,
-        CalendarContract.Events.TITLE,
-        CalendarContract.Events.DESCRIPTION,
-        CalendarContract.Events.DTSTART,
-        CalendarContract.Events.DTEND,
-        CalendarContract.Events.ALL_DAY,
-        CalendarContract.Events.EVENT_LOCATION,
-        CalendarContract.Events.AVAILABILITY,
-        CalendarContract.Events.STATUS,
-        CalendarContract.Events.RRULE,
+        CalendarContract.Instances._ID,
+        CalendarContract.Instances.EVENT_ID,
+        CalendarContract.Instances.CALENDAR_ID,
+        CalendarContract.Instances.TITLE,
+        CalendarContract.Instances.DESCRIPTION,
+        CalendarContract.Instances.BEGIN,
+        CalendarContract.Instances.END,
+        CalendarContract.Instances.ALL_DAY,
+        CalendarContract.Instances.EVENT_LOCATION,
+        CalendarContract.Instances.AVAILABILITY,
+        CalendarContract.Instances.STATUS,
+        CalendarContract.Instances.RRULE,
+        CalendarContract.Instances.RDATE
 )
 
 private val attendeeUri: Uri = CalendarContract.Attendees.CONTENT_URI
@@ -105,12 +106,24 @@ private fun Cursor.getNullableColumnIndex(columnName: String): Int? {
 
 actual suspend fun getCalendarEvents(
     platformContext: PlatformContext,
-    calendar: Calendar
+    calendar: Calendar,
+    startDate: Instant,
+    endDate: Instant
 ): List<CalendarEvent> {
 platformContext as AndroidPlatformContext
 
     val contentResolver = platformContext.applicationContext.contentResolver
-    return contentResolver.query(eventUri, eventProjection, "${CalendarContract.Events.CALENDAR_ID} = ?", arrayOf(calendar.platformId), null)?.use { cursor ->
+    val uriBuilder = eventUri.buildUpon()
+    ContentUris.appendId(uriBuilder, startDate.toEpochMilliseconds())
+    ContentUris.appendId(uriBuilder, endDate.toEpochMilliseconds())
+    val builtUri = uriBuilder.build()
+
+    return contentResolver.query(builtUri, eventProjection,
+            "${CalendarContract.Instances.CALENDAR_ID} = ?"
+            + " AND IFNULL(" + CalendarContract.Instances.STATUS + ", " + CalendarContract.Instances.STATUS_TENTATIVE + ") != " + CalendarContract.Instances.STATUS_CANCELED
+            + " AND IFNULL(" + CalendarContract.Instances.SELF_ATTENDEE_STATUS + ", " + CalendarContract.Attendees.ATTENDEE_STATUS_NONE + ") != " + CalendarContract.Attendees.ATTENDEE_STATUS_DECLINED,
+            arrayOf(calendar.platformId), null
+    )?.use { cursor ->
         return@use generateSequence {
             if (cursor.moveToNext()) {
                 resolveCalendarEvent(contentResolver, cursor, calendar.ownerId)
@@ -122,27 +135,29 @@ platformContext as AndroidPlatformContext
 }
 
 private fun resolveCalendarEvent(contentResolver: ContentResolver, cursor: Cursor, ownerEmail: String): CalendarEvent? {
-    val id = cursor.getNullableColumnIndex(CalendarContract.Events._ID)
+    val id = cursor.getNullableColumnIndex(CalendarContract.Instances._ID)
             ?.let { cursor.getLong(it) } ?: return null
-    val calendarId = cursor.getNullableColumnIndex(CalendarContract.Events.CALENDAR_ID)
+    val eventId = cursor.getNullableColumnIndex(CalendarContract.Instances.EVENT_ID)
             ?.let { cursor.getLong(it) } ?: return null
-    val title = cursor.getNullableColumnIndex(CalendarContract.Events.TITLE)
+    val calendarId = cursor.getNullableColumnIndex(CalendarContract.Instances.CALENDAR_ID)
+            ?.let { cursor.getLong(it) } ?: return null
+    val title = cursor.getNullableColumnIndex(CalendarContract.Instances.TITLE)
             ?.let { cursor.getString(it) } ?: return null
-    val description = cursor.getNullableColumnIndex(CalendarContract.Events.DESCRIPTION)
+    val description = cursor.getNullableColumnIndex(CalendarContract.Instances.DESCRIPTION)
             ?.let { cursor.getString(it) } ?: return null
-    val dtStart = cursor.getNullableColumnIndex(CalendarContract.Events.DTSTART)
+    val start = cursor.getNullableColumnIndex(CalendarContract.Instances.BEGIN)
             ?.let { cursor.getLong(it) } ?: return null
-    val dtEnd = cursor.getNullableColumnIndex(CalendarContract.Events.DTEND)
+    val end = cursor.getNullableColumnIndex(CalendarContract.Instances.END)
             ?.let { cursor.getLong(it) } ?: return null
-    val allDay = cursor.getNullableColumnIndex(CalendarContract.Events.ALL_DAY)
+    val allDay = cursor.getNullableColumnIndex(CalendarContract.Instances.ALL_DAY)
             ?.let { cursor.getInt(it) } ?: return null
-    val location = cursor.getNullableColumnIndex(CalendarContract.Events.EVENT_LOCATION)
+    val location = cursor.getNullableColumnIndex(CalendarContract.Instances.EVENT_LOCATION)
             ?.let { cursor.getString(it) } ?: return null
-    val availability = cursor.getNullableColumnIndex(CalendarContract.Events.AVAILABILITY)
+    val availability = cursor.getNullableColumnIndex(CalendarContract.Instances.AVAILABILITY)
             ?.let { cursor.getInt(it) } ?: return null
-    val status = cursor.getNullableColumnIndex(CalendarContract.Events.STATUS)
+    val status = cursor.getNullableColumnIndex(CalendarContract.Instances.STATUS)
             ?.let { cursor.getInt(it) } ?: return null
-    val recurrenceRule = cursor.getNullableColumnIndex(CalendarContract.Events.RRULE)
+    val recurrenceRule = cursor.getNullableColumnIndex(CalendarContract.Instances.RRULE)
             ?.let { cursor.getString(it) } ?: return null
 
     return CalendarEvent(
@@ -151,22 +166,22 @@ private fun resolveCalendarEvent(contentResolver: ContentResolver, cursor: Curso
             title = title,
             description = description,
             location = location,
-            startTime = Instant.fromEpochMilliseconds(dtStart),
-            endTime = Instant.fromEpochMilliseconds(dtEnd),
+            startTime = Instant.fromEpochMilliseconds(start),
+            endTime = Instant.fromEpochMilliseconds(end),
             allDay = allDay != 0,
-            attendees = resolveAttendees(id, ownerEmail, contentResolver),
-            recurrenceRule = resolveRecurrenceRule(recurrenceRule),
-            reminders = resolveReminders(id, contentResolver),
+            attendees = resolveAttendees(eventId, ownerEmail, contentResolver),
+            recurrenceRule = resolveRecurrenceRule(recurrenceRule, Instant.fromEpochMilliseconds(start)),
+            reminders = resolveReminders(eventId, contentResolver),
             availability = when (availability) {
-                CalendarContract.Events.AVAILABILITY_BUSY -> CalendarEvent.Availability.Busy
-                CalendarContract.Events.AVAILABILITY_FREE -> CalendarEvent.Availability.Free
-                CalendarContract.Events.AVAILABILITY_TENTATIVE -> CalendarEvent.Availability.Tentative
+                CalendarContract.Instances.AVAILABILITY_BUSY -> CalendarEvent.Availability.Busy
+                CalendarContract.Instances.AVAILABILITY_FREE -> CalendarEvent.Availability.Free
+                CalendarContract.Instances.AVAILABILITY_TENTATIVE -> CalendarEvent.Availability.Tentative
                 else -> CalendarEvent.Availability.Unavailable
             },
             status = when (status) {
-                CalendarContract.Events.STATUS_CONFIRMED -> CalendarEvent.Status.Confirmed
-                CalendarContract.Events.STATUS_CANCELED -> CalendarEvent.Status.Cancelled
-                CalendarContract.Events.STATUS_TENTATIVE -> CalendarEvent.Status.Tentative
+                CalendarContract.Instances.STATUS_CONFIRMED -> CalendarEvent.Status.Confirmed
+                CalendarContract.Instances.STATUS_CANCELED -> CalendarEvent.Status.Cancelled
+                CalendarContract.Instances.STATUS_TENTATIVE -> CalendarEvent.Status.Tentative
                 else -> CalendarEvent.Status.None
             }
     )
@@ -220,7 +235,7 @@ private fun resolveAttendees(eventId: Long, ownerEmail: String, contentResolver:
 /**
  * Resolve recurrence rule from string, see [RFC 5545](https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.5.3)
  */
-private fun resolveRecurrenceRule(rule: String): EventRecurrenceRule {
+private fun resolveRecurrenceRule(rule: String, eventStart: Instant): EventRecurrenceRule {
     val rrule = RRule(rule)
     return EventRecurrenceRule(
             interval = rrule.interval,
@@ -229,18 +244,18 @@ private fun resolveRecurrenceRule(rule: String): EventRecurrenceRule {
             recurrenceFrequency = when (rrule.freq) {
                 Frequency.Daily -> EventRecurrenceRule.Frequency.Daily
                 Frequency.Weekly -> EventRecurrenceRule.Frequency.Weekly(
-                        rrule.byDay.map { wdNum -> DayOfWeek.values()[wdNum.number - 1] }.toSet()
+                        rrule.byDay.mapNotNull { wdNum -> DayOfWeek.values().find { it.ordinal == wdNum.weekday.ordinal } }.toSet()
                 )
                 Frequency.Monthly -> EventRecurrenceRule.Frequency.Monthly(
                         rrule.byMonthDay.firstOrNull(),
-                        rrule.byDay.map { wdNum -> DayOfWeek.values()[wdNum.number - 1] }.toSet(),
-                        rrule.byWeekNo.firstOrNull()
+                        rrule.byDay.mapNotNull { wdNum -> DayOfWeek.values().find { it.ordinal == wdNum.weekday.ordinal } }.toSet(),
+                        rrule.bySetPos.firstOrNull()
                 )
                 Frequency.Yearly -> EventRecurrenceRule.Frequency.Yearly(
-                        rrule.byMonth.firstOrNull()?.let { Month.values()[it - 1] } ?: error("Missing month"),
-                        rrule.byMonthDay.firstOrNull(),
-                        rrule.byDay.map { wdNum -> DayOfWeek.values()[wdNum.number - 1] }.toSet(),
-                        rrule.byWeekNo.firstOrNull()
+                        rrule.byMonth.firstOrNull()?.let { bm -> Month.values().find { it.ordinal == bm } },
+                        rrule.byMonthDay.firstOrNull() ?: eventStart.toLocalDateTime(TimeZone.UTC).dayOfMonth,
+                        rrule.byDay.mapNotNull { wdNum -> DayOfWeek.values().find { it.ordinal == wdNum.weekday.ordinal } }.toSet(),
+                        rrule.bySetPos.firstOrNull()
                 )
                 else -> error("Unsupported frequency: ${rrule.freq}")
             },

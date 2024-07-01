@@ -5,7 +5,7 @@ import android.bluetooth.le.ScanResult
 import io.rebble.cobble.bluetooth.ble.LEMeta
 
 @OptIn(ExperimentalUnsignedTypes::class)
-class BluePebbleDevice {
+class ScannedPebbleDevice {
     val bluetoothDevice: BluetoothDevice
     val leMeta: LEMeta?
 

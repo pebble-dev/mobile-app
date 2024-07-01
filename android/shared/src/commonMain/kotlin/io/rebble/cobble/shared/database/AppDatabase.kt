@@ -12,6 +12,9 @@ import io.rebble.cobble.shared.database.entity.TimelinePin
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.mp.KoinPlatformTools
 
 @Database(
         entities = [
@@ -30,8 +33,11 @@ expect fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase>
 
 fun getDatabase(ioDispatcher: CoroutineDispatcher = Dispatchers.IO): AppDatabase {
     return getDatabaseBuilder()
-            .fallbackToDestructiveMigrationOnDowngrade(true)
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(ioDispatcher)
             .build()
+}
+
+fun closeDatabase() {
+    KoinPlatformTools.defaultContext().get().get<AppDatabase>().close()
 }

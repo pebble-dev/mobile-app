@@ -22,11 +22,11 @@ class CalendarSyncWorker(appContext: Context, params: WorkerParameters) : Corout
             return Result.success()
         }
 
-        return if (component.createCalendarFlutterBridge().syncCalendar()) {
+        return if (component.createKMPCalendarSync().doFullCalendarSync()) {
             Timber.d("Success")
             Result.success()
         } else {
-            Timber.d("Flutter failure")
+            Timber.d("KMP failure")
             Result.retry()
         }
     }

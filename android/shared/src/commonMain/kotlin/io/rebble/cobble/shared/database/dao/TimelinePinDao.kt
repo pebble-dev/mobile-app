@@ -7,6 +7,7 @@ import io.rebble.cobble.shared.database.entity.TimelinePin
 
 @Dao
 interface TimelinePinDao {
+    @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplacePins(pins: List<TimelinePin>)
 
@@ -21,6 +22,9 @@ interface TimelinePinDao {
 
     @Delete
     suspend fun deletePin(pin: TimelinePin)
+    @Transaction
+    @Delete
+    suspend fun deletePins(pins: List<TimelinePin>)
 
     @Query("UPDATE TimelinePin SET nextSyncAction = :nextSyncAction WHERE parentId = :appId")
     suspend fun setSyncActionForAllPinsFromApp(appId: Uuid, nextSyncAction: NextSyncAction)

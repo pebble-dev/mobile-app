@@ -18,16 +18,20 @@ import io.rebble.libpebblecommon.structmapper.StructMapper
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import kotlin.math.round
 import kotlin.random.Random
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 
 @ExperimentalUnsignedTypes
 class WatchTimelineSyncer(
-        private val timelinePinDao: TimelinePinDao,
-        private val blobDBService: BlobDBService,
-        private val context: PlatformContext
-) {
+        private val blobDBService: BlobDBService
+): KoinComponent {
+    private val context: PlatformContext by inject()
+    private val timelinePinDao: TimelinePinDao by inject()
+
     suspend fun syncPinDatabaseWithWatch(): Boolean {
         when (val status = performSync()) {
             BlobResponse.BlobStatus.Success -> {
@@ -156,8 +160,8 @@ class WatchTimelineSyncer(
         val timelineItem = TimelineItem(
                 pin.itemId,
                 pin.parentId,
-                pin.timestamp.toEpochMilliseconds().toUInt(),
-                pin.duration!!.toUShort(),
+                round(pin.timestamp.toEpochMilliseconds() / 1000f).toUInt(),
+                pin.duration?.toUShort() ?: 0u,
                 TimelineItem.Type.Pin,
                 TimelineItem.Flag.makeFlags(flags),
                 pin.layout,

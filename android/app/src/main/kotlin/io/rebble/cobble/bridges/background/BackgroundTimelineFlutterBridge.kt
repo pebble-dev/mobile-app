@@ -74,9 +74,10 @@ class BackgroundTimelineFlutterBridge @Inject constructor(
     }
 
     fun syncTimelineToWatchNow() {
-        GlobalScope.launch(Dispatchers.Main.immediate) {
-            getTimelineSyncCallbacks()?.syncTimelineToWatch { }
-        }
+        //TODO: Reimplement as KMP
+        //GlobalScope.launch(Dispatchers.Main.immediate) {
+        //    getTimelineSyncCallbacks()?.syncTimelineToWatch { }
+        //}
     }
 
     suspend fun handleTimelineAction(

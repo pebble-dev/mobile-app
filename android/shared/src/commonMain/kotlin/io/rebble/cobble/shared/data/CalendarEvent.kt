@@ -48,7 +48,7 @@ val calendarWatchappId = uuidFrom("6c6c6fc2-1912-4d25-8396-3547d1dfac5b")
 
 private fun transformDescription(rawDescription: String): String {
     val regex = Regex("<[^>]*>", setOf(RegexOption.MULTILINE))
-    return rawDescription.replace(regex, "").trimWithEllipsis(500)
+    return rawDescription.replace(regex, "").trimWithEllipsis(300)
 }
 
 private fun CalendarEvent.makeAttributes(calendar: Calendar): List<TimelineAttribute> {
@@ -107,7 +107,8 @@ private fun CalendarEvent.makeAttributes(calendar: Calendar): List<TimelineAttri
 private fun CalendarEvent.makeActions(): List<TimelineAction> {
     val selfAttendee = attendees.find { it.isCurrentUser }
     return buildList {
-        if (selfAttendee != null) {
+        //TODO: Implement action handling on KMP
+        /*if (selfAttendee != null) {
             if (selfAttendee.attendanceStatus != EventAttendee.AttendanceStatus.Accepted) {
                 add(TimelineAction(
                         CalendarTimelineActionId.AcceptEvent.id,
@@ -153,7 +154,7 @@ private fun CalendarEvent.makeActions(): List<TimelineAction> {
                 listOf(
                         TimelineAttribute.title("Mute Calendar")
                 )
-        ))
+        ))*/
     }
 }
 

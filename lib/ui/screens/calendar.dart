@@ -24,7 +24,6 @@ class Calendar extends HookConsumerWidget implements CobbleScreen {
     final backgroundRpc = ref.watch(backgroundRpcProvider);
 
     final preferences = ref.watch(preferencesProvider);
-    final calendarSyncEnabled = ref.watch(calendarSyncEnabledProvider);
     final permissionControl = ref.watch(permissionControlProvider);
     final permissionCheck = ref.watch(permissionCheckProvider);
 
@@ -37,6 +36,21 @@ class Calendar extends HookConsumerWidget implements CobbleScreen {
       return null;
     }, ["one-time"]);
 
+    final calendarSyncEnabled = useState(false);
+    useEffect(() {
+      calendarControl.getCalendarSyncEnabled().then((value) {
+        calendarSyncEnabled.value = value;
+      });
+    }, [calendarSyncEnabled]);
+
+    Future<void> setCalendarSyncEnabled(bool value) async {
+      await calendarControl.setCalendarSyncEnabled(value);
+      calendarSyncEnabled.value = value;
+      if (!value) {
+        await calendarControl.deleteAllCalendarPins();
+      }
+    }
+
     return CobbleScaffold.tab(
       title: tr.calendar.title,
       child: ListView(
@@ -46,18 +60,14 @@ class Calendar extends HookConsumerWidget implements CobbleScreen {
             title: tr.calendar.toggleTitle,
             subtitle: tr.calendar.toggleSubtitle,
             child: Switch(
-              value: calendarSyncEnabled.value ?? false,
+              value: calendarSyncEnabled.value,
               onChanged: (value) async {
-                await preferences.value?.setCalendarSyncEnabled(value);
-
-                if (!value) {
-                  backgroundRpc.triggerMethod(DeleteAllCalendarPinsRequest());
-                }
+                await setCalendarSyncEnabled(value);
               },
             ),
           ),
           CobbleDivider(),
-          if (calendarSyncEnabled.value ?? false) ...[
+          if (calendarSyncEnabled.value) ...[
             CobbleTile.title(
               title: tr.calendar.choose,
             ),

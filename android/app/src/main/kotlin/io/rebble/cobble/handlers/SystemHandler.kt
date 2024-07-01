@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.shared.domain.state.ConnectionState
+import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.domain.state.watchOrNull
 import io.rebble.cobble.util.coroutines.asFlow
 import io.rebble.libpebblecommon.PacketPriority
@@ -72,6 +73,8 @@ class SystemHandler @Inject constructor(
         try {
             withTimeout(5000) {
                 val watchInfo = systemService.requestWatchVersion()
+                //FIXME: Possible race condition here
+                ConnectionStateManager.connectionState.value.watchOrNull?.metadata?.value = watchInfo
                 watchMetadataStore.lastConnectedWatchMetadata.value = watchInfo
                 val watchModel = systemService.requestWatchModel()
                 watchMetadataStore.lastConnectedWatchModel.value = watchModel

@@ -41,14 +41,17 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(libs.koin.core)
+            api(libs.kotlinx.serialization.core)
 
             implementation("com.benasher44:uuid:$uuidVersion")
             implementation(libs.kotlinx.serialization.json)
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
+            implementation(libs.kotlinx.datetime)
             implementation(libs.androidx.room.runtime)
             implementation(libs.libpebblecommon)
             implementation(libs.androidx.sqlite)
             implementation(libs.androidx.sqlite.bundled)
+            implementation(libs.androidx.datastore)
+            implementation(libs.androidx.datastore.preferences)
         }
         androidMain.dependencies {
             implementation("io.insert-koin:koin-android:$koinVersion")
@@ -79,4 +82,5 @@ android {
 dependencies {
     implementation("com.google.firebase:protolite-well-known-types:18.0.0")
     add("kspCommonMainMetadata", libs.androidx.room.compiler)
+    add("kspAndroid", libs.androidx.room.compiler)
 }

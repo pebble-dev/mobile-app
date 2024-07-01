@@ -6,6 +6,7 @@ import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
+//TODO: Consolidate this with the shared ConnectionStateManager
 @Singleton
 class WatchMetadataStore @Inject constructor() {
     val lastConnectedWatchMetadata = MutableStateFlow<WatchVersion.WatchVersionResponse?>(null)

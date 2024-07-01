@@ -5,12 +5,14 @@ daggerVersion = "2.51.1"
 gradle = "8.5.0"
 koinVersion = "3.2.0"
 kotlin = "2.0.20-Beta1"
+kotlinxDatetime = "0.6.0"
 kotlinxSerializationJson = "1.7.0"
 ksp = "2.0.20-Beta1-1.0.22"
 libpebblecommonVersion = "0.1.20"
 
 room = "2.7.0-alpha04"
 room-sqlite = "2.5.0-alpha04"
+datastore = "1.1.1"
 
 [plugins]
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -33,6 +35,10 @@ androidx-sqlite = { module = "androidx.sqlite:sqlite", version.ref = "room-sqlit
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "room-sqlite" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinVersion" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationJson" }
 libpebblecommon = { module = "io.rebble.libpebblecommon:libpebblecommon", version.ref = "libpebblecommonVersion" }

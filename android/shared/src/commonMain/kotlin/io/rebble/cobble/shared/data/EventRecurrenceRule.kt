@@ -45,6 +45,6 @@ data class EventRecurrenceRule(
          * @param days Set of days of the week when the event should repeat
          * @param weekOfMonth Week of the month when the event should repeat, if dayOfMonth is null
          */
-        class Yearly(val month: Month, val dayOfMonth: Int?, val days: Set<DayOfWeek>?, weekOfMonth: Int?) : Frequency()
+        class Yearly(val month: Month?, val dayOfMonth: Int?, val days: Set<DayOfWeek>?, weekOfMonth: Int?) : Frequency()
     }
 }

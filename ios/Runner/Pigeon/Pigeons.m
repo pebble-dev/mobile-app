@@ -1302,37 +1302,6 @@ NSObject<FlutterMessageCodec> *PairCallbacksGetCodec(void) {
 }
 @end
 
-NSObject<FlutterMessageCodec> *CalendarCallbacksGetCodec(void) {
-  static FlutterStandardMessageCodec *sSharedObject = nil;
-  sSharedObject = [FlutterStandardMessageCodec sharedInstance];
-  return sSharedObject;
-}
-
-@interface CalendarCallbacks ()
-@property(nonatomic, strong) NSObject<FlutterBinaryMessenger> *binaryMessenger;
-@end
-
-@implementation CalendarCallbacks
-
-- (instancetype)initWithBinaryMessenger:(NSObject<FlutterBinaryMessenger> *)binaryMessenger {
-  self = [super init];
-  if (self) {
-    _binaryMessenger = binaryMessenger;
-  }
-  return self;
-}
-- (void)doFullCalendarSyncWithCompletion:(void (^)(FlutterError *_Nullable))completion {
-  FlutterBasicMessageChannel *channel =
-    [FlutterBasicMessageChannel
-      messageChannelWithName:@"dev.flutter.pigeon.CalendarCallbacks.doFullCalendarSync"
-      binaryMessenger:self.binaryMessenger
-      codec:CalendarCallbacksGetCodec()];
-  [channel sendMessage:nil reply:^(id reply) {
-    completion(nil);
-  }];
-}
-@end
-
 @interface TimelineCallbacksCodecReader : FlutterStandardReader
 @end
 @implementation TimelineCallbacksCodecReader
@@ -1397,16 +1366,6 @@ NSObject<FlutterMessageCodec> *TimelineCallbacksGetCodec(void) {
     _binaryMessenger = binaryMessenger;
   }
   return self;
-}
-- (void)syncTimelineToWatchWithCompletion:(void (^)(FlutterError *_Nullable))completion {
-  FlutterBasicMessageChannel *channel =
-    [FlutterBasicMessageChannel
-      messageChannelWithName:@"dev.flutter.pigeon.TimelineCallbacks.syncTimelineToWatch"
-      binaryMessenger:self.binaryMessenger
-      codec:TimelineCallbacksGetCodec()];
-  [channel sendMessage:nil reply:^(id reply) {
-    completion(nil);
-  }];
 }
 - (void)handleTimelineActionActionTrigger:(ActionTrigger *)arg_actionTrigger completion:(void (^)(ActionResponsePigeon *_Nullable, FlutterError *_Nullable))completion {
   FlutterBasicMessageChannel *channel =
@@ -3085,6 +3044,59 @@ void CalendarControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<C
         FlutterError *error;
         [api requestCalendarSyncWithError:&error];
         callback(wrapResult(nil, error));
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.CalendarControl.setCalendarSyncEnabled"
+        binaryMessenger:binaryMessenger
+        codec:CalendarControlGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(setCalendarSyncEnabledEnabled:completion:)], @"CalendarControl api (%@) doesn't respond to @selector(setCalendarSyncEnabledEnabled:completion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        NSNumber *arg_enabled = GetNullableObjectAtIndex(args, 0);
+        [api setCalendarSyncEnabledEnabled:arg_enabled completion:^(FlutterError *_Nullable error) {
+          callback(wrapResult(nil, error));
+        }];
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.CalendarControl.getCalendarSyncEnabled"
+        binaryMessenger:binaryMessenger
+        codec:CalendarControlGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(getCalendarSyncEnabledWithCompletion:)], @"CalendarControl api (%@) doesn't respond to @selector(getCalendarSyncEnabledWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api getCalendarSyncEnabledWithCompletion:^(NSNumber *_Nullable output, FlutterError *_Nullable error) {
+          callback(wrapResult(output, error));
+        }];
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.CalendarControl.deleteAllCalendarPins"
+        binaryMessenger:binaryMessenger
+        codec:CalendarControlGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(deleteAllCalendarPinsWithCompletion:)], @"CalendarControl api (%@) doesn't respond to @selector(deleteAllCalendarPinsWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api deleteAllCalendarPinsWithCompletion:^(FlutterError *_Nullable error) {
+          callback(wrapResult(nil, error));
+        }];
       }];
     } else {
       [channel setMessageHandler:nil];

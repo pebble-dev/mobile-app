@@ -5,9 +5,12 @@ import androidx.room.PrimaryKey
 import com.benasher44.uuid.Uuid
 import io.rebble.cobble.shared.database.NextSyncAction
 import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.minutes
 
 @Entity
 data class TimelinePin(
@@ -60,39 +63,9 @@ data class TimelinePin(
         val nextSyncAction: NextSyncAction?
 )
 
-fun TimelinePin.toBlobData(): TimelineItem {
-    val parsedAttributes: List<TimelineItem.Attribute> = attributesJson?.let { Json.decodeFromString(it) }
-            ?: emptyList()
-
-    val parsedActions: List<TimelineItem.Action> = actionsJson?.let { Json.decodeFromString(it) }
-            ?: emptyList()
-    return TimelineItem(
-            itemId = itemId,
-            parentId = parentId,
-            timestamp = timestamp.toEpochMilliseconds().toUInt(),
-            duration = (duration ?: 0).toUShort(),
-            type = type,
-            flags = TimelineItem.Flag.makeFlags(varsToFlags()),
-            layout = layout,
-            attributes = parsedAttributes,
-            actions = parsedActions
-    )
-}
-
-private fun TimelinePin.varsToFlags() = buildList {
-    if (isVisible) {
-        add(TimelineItem.Flag.IS_VISIBLE)
+val TimelinePin.isInPast: Boolean
+    get() = if (isAllDay) {
+        timestamp + 1.days < Clock.System.now()
+    } else {
+        timestamp + (duration?.minutes ?: 0.minutes) < Clock.System.now()
     }
-
-    if (isFloating) {
-        add(TimelineItem.Flag.IS_FLOATING)
-    }
-
-    if (isAllDay) {
-        add(TimelineItem.Flag.IS_ALL_DAY)
-    }
-
-    if (persistQuickView) {
-        add(TimelineItem.Flag.PERSIST_QUICK_VIEW)
-    }
-}

@@ -18,7 +18,6 @@ import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'actions/master_action_handler.dart';
-import 'modules/calendar_background.dart';
 
 void main_background() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,7 +29,6 @@ void main_background() {
 class BackgroundReceiver implements TimelineCallbacks {
   final container = ProviderContainer();
 
-  late CalendarBackground calendarBackground;
   late NotificationsBackground notificationsBackground;
   late AppsBackground appsBackground;
 
@@ -72,8 +70,6 @@ class BackgroundReceiver implements TimelineCallbacks {
 
     TimelineCallbacks.setup(this);
 
-    calendarBackground = CalendarBackground(this.container);
-    calendarBackground.init();
     notificationsBackground = NotificationsBackground(this.container);
     notificationsBackground.init();
     appsBackground = AppsBackground(this.container);
@@ -129,16 +125,7 @@ class BackgroundReceiver implements TimelineCallbacks {
       return result;
     }
 
-    result = calendarBackground.onMessageFromUi(type, message);
-    if (result != null) {
-      return result;
-    }
-
     throw Exception("Unknown message $message");
-  }
-
-  Future syncTimelineToWatch() async {
-    await calendarBackground.syncTimelineToWatch();
   }
 
   bool? isConnectedToWatch() {

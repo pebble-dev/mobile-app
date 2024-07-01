@@ -7,6 +7,8 @@ fun initKoin() {
         modules(
             calendarModule,
             stateModule,
+            databaseModule,
+            dataStoreModule,
             iosModule
         )
     }

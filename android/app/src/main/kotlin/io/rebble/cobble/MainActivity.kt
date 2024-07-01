@@ -20,6 +20,7 @@ import io.rebble.cobble.datasources.PermissionChangeBus
 import io.rebble.cobble.notifications.NotificationListener
 import io.rebble.cobble.service.CompanionDeviceService
 import io.rebble.cobble.service.InCallService
+import io.rebble.cobble.shared.database.closeDatabase
 import io.rebble.cobble.util.hasNotificationAccessPermission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.plus
@@ -122,6 +123,11 @@ class MainActivity : FlutterActivity() {
         startAdditionalServices()
 
         handleIntent(intent)
+    }
+
+    override fun onDestroy() {
+        closeDatabase()
+        super.onDestroy()
     }
 
     /**

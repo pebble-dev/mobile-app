@@ -215,15 +215,7 @@ abstract class PairCallbacks {
 }
 
 @FlutterApi()
-abstract class CalendarCallbacks {
-  @async
-  void doFullCalendarSync();
-}
-
-@FlutterApi()
 abstract class TimelineCallbacks {
-  void syncTimelineToWatch();
-
   @async
   ActionResponsePigeon handleTimelineAction(ActionTrigger actionTrigger);
 }
@@ -414,6 +406,13 @@ abstract class PermissionControl {
 @HostApi()
 abstract class CalendarControl {
   void requestCalendarSync();
+
+  @async
+  void setCalendarSyncEnabled(bool enabled);
+  @async
+  bool getCalendarSyncEnabled();
+  @async
+  void deleteAllCalendarPins();
 }
 
 @HostApi()

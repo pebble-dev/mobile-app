@@ -4,6248 +4,6120 @@
 package io.rebble.cobble.pigeons;
 
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MessageCodec;
 import io.flutter.plugin.common.StandardMessageCodec;
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-/**
- * Generated class from Pigeon.
- */
+/** Generated class from Pigeon. */
 @SuppressWarnings({"unused", "unchecked", "CodeBlock2Expr", "RedundantSuppression", "serial"})
 public class Pigeons {
 
+  /** Error class for passing custom error details to Flutter via a thrown PlatformException. */
+  public static class FlutterError extends RuntimeException {
+
+    /** The error code. */
+    public final String code;
+
+    /** The error details. Must be a datatype supported by the api codec. */
+    public final Object details;
+
+    public FlutterError(@NonNull String code, @Nullable String message, @Nullable Object details) 
+    {
+      super(message);
+      this.code = code;
+      this.details = details;
+    }
+  }
+
+  @NonNull
+  protected static ArrayList<Object> wrapError(@NonNull Throwable exception) {
+    ArrayList<Object> errorList = new ArrayList<Object>(3);
+    if (exception instanceof FlutterError) {
+      FlutterError error = (FlutterError) exception;
+      errorList.add(error.code);
+      errorList.add(error.getMessage());
+      errorList.add(error.details);
+    } else {
+      errorList.add(exception.toString());
+      errorList.add(exception.getClass().getSimpleName());
+      errorList.add(
+        "Cause: " + exception.getCause() + ", Stacktrace: " + Log.getStackTraceString(exception));
+    }
+    return errorList;
+  }
+
+  /**
+   * Pigeon only supports classes as return/receive type.
+   * That is why we must wrap primitive types into wrapper
+   *
+   * Generated class from Pigeon that represents data sent in messages.
+   */
+  public static final class BooleanWrapper {
+    private @Nullable Boolean value;
+
+    public @Nullable Boolean getValue() {
+      return value;
+    }
+
+    public void setValue(@Nullable Boolean setterArg) {
+      this.value = setterArg;
+    }
+
+    public static final class Builder {
+
+      private @Nullable Boolean value;
+
+      public @NonNull Builder setValue(@Nullable Boolean setterArg) {
+        this.value = setterArg;
+        return this;
+      }
+
+      public @NonNull BooleanWrapper build() {
+        BooleanWrapper pigeonReturn = new BooleanWrapper();
+        pigeonReturn.setValue(value);
+        return pigeonReturn;
+      }
+    }
+
     @NonNull
-    protected static ArrayList<Object> wrapError(@NonNull Throwable exception) {
-        ArrayList<Object> errorList = new ArrayList<Object>(3);
-        if (exception instanceof FlutterError) {
-            FlutterError error = (FlutterError) exception;
-            errorList.add(error.code);
-            errorList.add(error.getMessage());
-            errorList.add(error.details);
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(1);
+      toListResult.add(value);
+      return toListResult;
+    }
+
+    static @NonNull BooleanWrapper fromList(@NonNull ArrayList<Object> list) {
+      BooleanWrapper pigeonResult = new BooleanWrapper();
+      Object value = list.get(0);
+      pigeonResult.setValue((Boolean) value);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class NumberWrapper {
+    private @Nullable Long value;
+
+    public @Nullable Long getValue() {
+      return value;
+    }
+
+    public void setValue(@Nullable Long setterArg) {
+      this.value = setterArg;
+    }
+
+    public static final class Builder {
+
+      private @Nullable Long value;
+
+      public @NonNull Builder setValue(@Nullable Long setterArg) {
+        this.value = setterArg;
+        return this;
+      }
+
+      public @NonNull NumberWrapper build() {
+        NumberWrapper pigeonReturn = new NumberWrapper();
+        pigeonReturn.setValue(value);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(1);
+      toListResult.add(value);
+      return toListResult;
+    }
+
+    static @NonNull NumberWrapper fromList(@NonNull ArrayList<Object> list) {
+      NumberWrapper pigeonResult = new NumberWrapper();
+      Object value = list.get(0);
+      pigeonResult.setValue((value == null) ? null : ((value instanceof Integer) ? (Integer) value : (Long) value));
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class StringWrapper {
+    private @Nullable String value;
+
+    public @Nullable String getValue() {
+      return value;
+    }
+
+    public void setValue(@Nullable String setterArg) {
+      this.value = setterArg;
+    }
+
+    public static final class Builder {
+
+      private @Nullable String value;
+
+      public @NonNull Builder setValue(@Nullable String setterArg) {
+        this.value = setterArg;
+        return this;
+      }
+
+      public @NonNull StringWrapper build() {
+        StringWrapper pigeonReturn = new StringWrapper();
+        pigeonReturn.setValue(value);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(1);
+      toListResult.add(value);
+      return toListResult;
+    }
+
+    static @NonNull StringWrapper fromList(@NonNull ArrayList<Object> list) {
+      StringWrapper pigeonResult = new StringWrapper();
+      Object value = list.get(0);
+      pigeonResult.setValue((String) value);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class ListWrapper {
+    private @Nullable List<Object> value;
+
+    public @Nullable List<Object> getValue() {
+      return value;
+    }
+
+    public void setValue(@Nullable List<Object> setterArg) {
+      this.value = setterArg;
+    }
+
+    public static final class Builder {
+
+      private @Nullable List<Object> value;
+
+      public @NonNull Builder setValue(@Nullable List<Object> setterArg) {
+        this.value = setterArg;
+        return this;
+      }
+
+      public @NonNull ListWrapper build() {
+        ListWrapper pigeonReturn = new ListWrapper();
+        pigeonReturn.setValue(value);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(1);
+      toListResult.add(value);
+      return toListResult;
+    }
+
+    static @NonNull ListWrapper fromList(@NonNull ArrayList<Object> list) {
+      ListWrapper pigeonResult = new ListWrapper();
+      Object value = list.get(0);
+      pigeonResult.setValue((List<Object>) value);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class PebbleFirmwarePigeon {
+    private @Nullable Long timestamp;
+
+    public @Nullable Long getTimestamp() {
+      return timestamp;
+    }
+
+    public void setTimestamp(@Nullable Long setterArg) {
+      this.timestamp = setterArg;
+    }
+
+    private @Nullable String version;
+
+    public @Nullable String getVersion() {
+      return version;
+    }
+
+    public void setVersion(@Nullable String setterArg) {
+      this.version = setterArg;
+    }
+
+    private @Nullable String gitHash;
+
+    public @Nullable String getGitHash() {
+      return gitHash;
+    }
+
+    public void setGitHash(@Nullable String setterArg) {
+      this.gitHash = setterArg;
+    }
+
+    private @Nullable Boolean isRecovery;
+
+    public @Nullable Boolean getIsRecovery() {
+      return isRecovery;
+    }
+
+    public void setIsRecovery(@Nullable Boolean setterArg) {
+      this.isRecovery = setterArg;
+    }
+
+    private @Nullable Long hardwarePlatform;
+
+    public @Nullable Long getHardwarePlatform() {
+      return hardwarePlatform;
+    }
+
+    public void setHardwarePlatform(@Nullable Long setterArg) {
+      this.hardwarePlatform = setterArg;
+    }
+
+    private @Nullable Long metadataVersion;
+
+    public @Nullable Long getMetadataVersion() {
+      return metadataVersion;
+    }
+
+    public void setMetadataVersion(@Nullable Long setterArg) {
+      this.metadataVersion = setterArg;
+    }
+
+    public static final class Builder {
+
+      private @Nullable Long timestamp;
+
+      public @NonNull Builder setTimestamp(@Nullable Long setterArg) {
+        this.timestamp = setterArg;
+        return this;
+      }
+
+      private @Nullable String version;
+
+      public @NonNull Builder setVersion(@Nullable String setterArg) {
+        this.version = setterArg;
+        return this;
+      }
+
+      private @Nullable String gitHash;
+
+      public @NonNull Builder setGitHash(@Nullable String setterArg) {
+        this.gitHash = setterArg;
+        return this;
+      }
+
+      private @Nullable Boolean isRecovery;
+
+      public @NonNull Builder setIsRecovery(@Nullable Boolean setterArg) {
+        this.isRecovery = setterArg;
+        return this;
+      }
+
+      private @Nullable Long hardwarePlatform;
+
+      public @NonNull Builder setHardwarePlatform(@Nullable Long setterArg) {
+        this.hardwarePlatform = setterArg;
+        return this;
+      }
+
+      private @Nullable Long metadataVersion;
+
+      public @NonNull Builder setMetadataVersion(@Nullable Long setterArg) {
+        this.metadataVersion = setterArg;
+        return this;
+      }
+
+      public @NonNull PebbleFirmwarePigeon build() {
+        PebbleFirmwarePigeon pigeonReturn = new PebbleFirmwarePigeon();
+        pigeonReturn.setTimestamp(timestamp);
+        pigeonReturn.setVersion(version);
+        pigeonReturn.setGitHash(gitHash);
+        pigeonReturn.setIsRecovery(isRecovery);
+        pigeonReturn.setHardwarePlatform(hardwarePlatform);
+        pigeonReturn.setMetadataVersion(metadataVersion);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(6);
+      toListResult.add(timestamp);
+      toListResult.add(version);
+      toListResult.add(gitHash);
+      toListResult.add(isRecovery);
+      toListResult.add(hardwarePlatform);
+      toListResult.add(metadataVersion);
+      return toListResult;
+    }
+
+    static @NonNull PebbleFirmwarePigeon fromList(@NonNull ArrayList<Object> list) {
+      PebbleFirmwarePigeon pigeonResult = new PebbleFirmwarePigeon();
+      Object timestamp = list.get(0);
+      pigeonResult.setTimestamp((timestamp == null) ? null : ((timestamp instanceof Integer) ? (Integer) timestamp : (Long) timestamp));
+      Object version = list.get(1);
+      pigeonResult.setVersion((String) version);
+      Object gitHash = list.get(2);
+      pigeonResult.setGitHash((String) gitHash);
+      Object isRecovery = list.get(3);
+      pigeonResult.setIsRecovery((Boolean) isRecovery);
+      Object hardwarePlatform = list.get(4);
+      pigeonResult.setHardwarePlatform((hardwarePlatform == null) ? null : ((hardwarePlatform instanceof Integer) ? (Integer) hardwarePlatform : (Long) hardwarePlatform));
+      Object metadataVersion = list.get(5);
+      pigeonResult.setMetadataVersion((metadataVersion == null) ? null : ((metadataVersion instanceof Integer) ? (Integer) metadataVersion : (Long) metadataVersion));
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class PebbleDevicePigeon {
+    private @Nullable String name;
+
+    public @Nullable String getName() {
+      return name;
+    }
+
+    public void setName(@Nullable String setterArg) {
+      this.name = setterArg;
+    }
+
+    private @Nullable String address;
+
+    public @Nullable String getAddress() {
+      return address;
+    }
+
+    public void setAddress(@Nullable String setterArg) {
+      this.address = setterArg;
+    }
+
+    private @Nullable PebbleFirmwarePigeon runningFirmware;
+
+    public @Nullable PebbleFirmwarePigeon getRunningFirmware() {
+      return runningFirmware;
+    }
+
+    public void setRunningFirmware(@Nullable PebbleFirmwarePigeon setterArg) {
+      this.runningFirmware = setterArg;
+    }
+
+    private @Nullable PebbleFirmwarePigeon recoveryFirmware;
+
+    public @Nullable PebbleFirmwarePigeon getRecoveryFirmware() {
+      return recoveryFirmware;
+    }
+
+    public void setRecoveryFirmware(@Nullable PebbleFirmwarePigeon setterArg) {
+      this.recoveryFirmware = setterArg;
+    }
+
+    private @Nullable Long model;
+
+    public @Nullable Long getModel() {
+      return model;
+    }
+
+    public void setModel(@Nullable Long setterArg) {
+      this.model = setterArg;
+    }
+
+    private @Nullable Long bootloaderTimestamp;
+
+    public @Nullable Long getBootloaderTimestamp() {
+      return bootloaderTimestamp;
+    }
+
+    public void setBootloaderTimestamp(@Nullable Long setterArg) {
+      this.bootloaderTimestamp = setterArg;
+    }
+
+    private @Nullable String board;
+
+    public @Nullable String getBoard() {
+      return board;
+    }
+
+    public void setBoard(@Nullable String setterArg) {
+      this.board = setterArg;
+    }
+
+    private @Nullable String serial;
+
+    public @Nullable String getSerial() {
+      return serial;
+    }
+
+    public void setSerial(@Nullable String setterArg) {
+      this.serial = setterArg;
+    }
+
+    private @Nullable String language;
+
+    public @Nullable String getLanguage() {
+      return language;
+    }
+
+    public void setLanguage(@Nullable String setterArg) {
+      this.language = setterArg;
+    }
+
+    private @Nullable Long languageVersion;
+
+    public @Nullable Long getLanguageVersion() {
+      return languageVersion;
+    }
+
+    public void setLanguageVersion(@Nullable Long setterArg) {
+      this.languageVersion = setterArg;
+    }
+
+    private @Nullable Boolean isUnfaithful;
+
+    public @Nullable Boolean getIsUnfaithful() {
+      return isUnfaithful;
+    }
+
+    public void setIsUnfaithful(@Nullable Boolean setterArg) {
+      this.isUnfaithful = setterArg;
+    }
+
+    public static final class Builder {
+
+      private @Nullable String name;
+
+      public @NonNull Builder setName(@Nullable String setterArg) {
+        this.name = setterArg;
+        return this;
+      }
+
+      private @Nullable String address;
+
+      public @NonNull Builder setAddress(@Nullable String setterArg) {
+        this.address = setterArg;
+        return this;
+      }
+
+      private @Nullable PebbleFirmwarePigeon runningFirmware;
+
+      public @NonNull Builder setRunningFirmware(@Nullable PebbleFirmwarePigeon setterArg) {
+        this.runningFirmware = setterArg;
+        return this;
+      }
+
+      private @Nullable PebbleFirmwarePigeon recoveryFirmware;
+
+      public @NonNull Builder setRecoveryFirmware(@Nullable PebbleFirmwarePigeon setterArg) {
+        this.recoveryFirmware = setterArg;
+        return this;
+      }
+
+      private @Nullable Long model;
+
+      public @NonNull Builder setModel(@Nullable Long setterArg) {
+        this.model = setterArg;
+        return this;
+      }
+
+      private @Nullable Long bootloaderTimestamp;
+
+      public @NonNull Builder setBootloaderTimestamp(@Nullable Long setterArg) {
+        this.bootloaderTimestamp = setterArg;
+        return this;
+      }
+
+      private @Nullable String board;
+
+      public @NonNull Builder setBoard(@Nullable String setterArg) {
+        this.board = setterArg;
+        return this;
+      }
+
+      private @Nullable String serial;
+
+      public @NonNull Builder setSerial(@Nullable String setterArg) {
+        this.serial = setterArg;
+        return this;
+      }
+
+      private @Nullable String language;
+
+      public @NonNull Builder setLanguage(@Nullable String setterArg) {
+        this.language = setterArg;
+        return this;
+      }
+
+      private @Nullable Long languageVersion;
+
+      public @NonNull Builder setLanguageVersion(@Nullable Long setterArg) {
+        this.languageVersion = setterArg;
+        return this;
+      }
+
+      private @Nullable Boolean isUnfaithful;
+
+      public @NonNull Builder setIsUnfaithful(@Nullable Boolean setterArg) {
+        this.isUnfaithful = setterArg;
+        return this;
+      }
+
+      public @NonNull PebbleDevicePigeon build() {
+        PebbleDevicePigeon pigeonReturn = new PebbleDevicePigeon();
+        pigeonReturn.setName(name);
+        pigeonReturn.setAddress(address);
+        pigeonReturn.setRunningFirmware(runningFirmware);
+        pigeonReturn.setRecoveryFirmware(recoveryFirmware);
+        pigeonReturn.setModel(model);
+        pigeonReturn.setBootloaderTimestamp(bootloaderTimestamp);
+        pigeonReturn.setBoard(board);
+        pigeonReturn.setSerial(serial);
+        pigeonReturn.setLanguage(language);
+        pigeonReturn.setLanguageVersion(languageVersion);
+        pigeonReturn.setIsUnfaithful(isUnfaithful);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(11);
+      toListResult.add(name);
+      toListResult.add(address);
+      toListResult.add((runningFirmware == null) ? null : runningFirmware.toList());
+      toListResult.add((recoveryFirmware == null) ? null : recoveryFirmware.toList());
+      toListResult.add(model);
+      toListResult.add(bootloaderTimestamp);
+      toListResult.add(board);
+      toListResult.add(serial);
+      toListResult.add(language);
+      toListResult.add(languageVersion);
+      toListResult.add(isUnfaithful);
+      return toListResult;
+    }
+
+    static @NonNull PebbleDevicePigeon fromList(@NonNull ArrayList<Object> list) {
+      PebbleDevicePigeon pigeonResult = new PebbleDevicePigeon();
+      Object name = list.get(0);
+      pigeonResult.setName((String) name);
+      Object address = list.get(1);
+      pigeonResult.setAddress((String) address);
+      Object runningFirmware = list.get(2);
+      pigeonResult.setRunningFirmware((runningFirmware == null) ? null : PebbleFirmwarePigeon.fromList((ArrayList<Object>) runningFirmware));
+      Object recoveryFirmware = list.get(3);
+      pigeonResult.setRecoveryFirmware((recoveryFirmware == null) ? null : PebbleFirmwarePigeon.fromList((ArrayList<Object>) recoveryFirmware));
+      Object model = list.get(4);
+      pigeonResult.setModel((model == null) ? null : ((model instanceof Integer) ? (Integer) model : (Long) model));
+      Object bootloaderTimestamp = list.get(5);
+      pigeonResult.setBootloaderTimestamp((bootloaderTimestamp == null) ? null : ((bootloaderTimestamp instanceof Integer) ? (Integer) bootloaderTimestamp : (Long) bootloaderTimestamp));
+      Object board = list.get(6);
+      pigeonResult.setBoard((String) board);
+      Object serial = list.get(7);
+      pigeonResult.setSerial((String) serial);
+      Object language = list.get(8);
+      pigeonResult.setLanguage((String) language);
+      Object languageVersion = list.get(9);
+      pigeonResult.setLanguageVersion((languageVersion == null) ? null : ((languageVersion instanceof Integer) ? (Integer) languageVersion : (Long) languageVersion));
+      Object isUnfaithful = list.get(10);
+      pigeonResult.setIsUnfaithful((Boolean) isUnfaithful);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class PebbleScanDevicePigeon {
+    private @Nullable String name;
+
+    public @Nullable String getName() {
+      return name;
+    }
+
+    public void setName(@Nullable String setterArg) {
+      this.name = setterArg;
+    }
+
+    private @Nullable String address;
+
+    public @Nullable String getAddress() {
+      return address;
+    }
+
+    public void setAddress(@Nullable String setterArg) {
+      this.address = setterArg;
+    }
+
+    private @Nullable String version;
+
+    public @Nullable String getVersion() {
+      return version;
+    }
+
+    public void setVersion(@Nullable String setterArg) {
+      this.version = setterArg;
+    }
+
+    private @Nullable String serialNumber;
+
+    public @Nullable String getSerialNumber() {
+      return serialNumber;
+    }
+
+    public void setSerialNumber(@Nullable String setterArg) {
+      this.serialNumber = setterArg;
+    }
+
+    private @Nullable Long color;
+
+    public @Nullable Long getColor() {
+      return color;
+    }
+
+    public void setColor(@Nullable Long setterArg) {
+      this.color = setterArg;
+    }
+
+    private @Nullable Boolean runningPRF;
+
+    public @Nullable Boolean getRunningPRF() {
+      return runningPRF;
+    }
+
+    public void setRunningPRF(@Nullable Boolean setterArg) {
+      this.runningPRF = setterArg;
+    }
+
+    private @Nullable Boolean firstUse;
+
+    public @Nullable Boolean getFirstUse() {
+      return firstUse;
+    }
+
+    public void setFirstUse(@Nullable Boolean setterArg) {
+      this.firstUse = setterArg;
+    }
+
+    public static final class Builder {
+
+      private @Nullable String name;
+
+      public @NonNull Builder setName(@Nullable String setterArg) {
+        this.name = setterArg;
+        return this;
+      }
+
+      private @Nullable String address;
+
+      public @NonNull Builder setAddress(@Nullable String setterArg) {
+        this.address = setterArg;
+        return this;
+      }
+
+      private @Nullable String version;
+
+      public @NonNull Builder setVersion(@Nullable String setterArg) {
+        this.version = setterArg;
+        return this;
+      }
+
+      private @Nullable String serialNumber;
+
+      public @NonNull Builder setSerialNumber(@Nullable String setterArg) {
+        this.serialNumber = setterArg;
+        return this;
+      }
+
+      private @Nullable Long color;
+
+      public @NonNull Builder setColor(@Nullable Long setterArg) {
+        this.color = setterArg;
+        return this;
+      }
+
+      private @Nullable Boolean runningPRF;
+
+      public @NonNull Builder setRunningPRF(@Nullable Boolean setterArg) {
+        this.runningPRF = setterArg;
+        return this;
+      }
+
+      private @Nullable Boolean firstUse;
+
+      public @NonNull Builder setFirstUse(@Nullable Boolean setterArg) {
+        this.firstUse = setterArg;
+        return this;
+      }
+
+      public @NonNull PebbleScanDevicePigeon build() {
+        PebbleScanDevicePigeon pigeonReturn = new PebbleScanDevicePigeon();
+        pigeonReturn.setName(name);
+        pigeonReturn.setAddress(address);
+        pigeonReturn.setVersion(version);
+        pigeonReturn.setSerialNumber(serialNumber);
+        pigeonReturn.setColor(color);
+        pigeonReturn.setRunningPRF(runningPRF);
+        pigeonReturn.setFirstUse(firstUse);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(7);
+      toListResult.add(name);
+      toListResult.add(address);
+      toListResult.add(version);
+      toListResult.add(serialNumber);
+      toListResult.add(color);
+      toListResult.add(runningPRF);
+      toListResult.add(firstUse);
+      return toListResult;
+    }
+
+    static @NonNull PebbleScanDevicePigeon fromList(@NonNull ArrayList<Object> list) {
+      PebbleScanDevicePigeon pigeonResult = new PebbleScanDevicePigeon();
+      Object name = list.get(0);
+      pigeonResult.setName((String) name);
+      Object address = list.get(1);
+      pigeonResult.setAddress((String) address);
+      Object version = list.get(2);
+      pigeonResult.setVersion((String) version);
+      Object serialNumber = list.get(3);
+      pigeonResult.setSerialNumber((String) serialNumber);
+      Object color = list.get(4);
+      pigeonResult.setColor((color == null) ? null : ((color instanceof Integer) ? (Integer) color : (Long) color));
+      Object runningPRF = list.get(5);
+      pigeonResult.setRunningPRF((Boolean) runningPRF);
+      Object firstUse = list.get(6);
+      pigeonResult.setFirstUse((Boolean) firstUse);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class WatchConnectionStatePigeon {
+    private @NonNull Boolean isConnected;
+
+    public @NonNull Boolean getIsConnected() {
+      return isConnected;
+    }
+
+    public void setIsConnected(@NonNull Boolean setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"isConnected\" is null.");
+      }
+      this.isConnected = setterArg;
+    }
+
+    private @NonNull Boolean isConnecting;
+
+    public @NonNull Boolean getIsConnecting() {
+      return isConnecting;
+    }
+
+    public void setIsConnecting(@NonNull Boolean setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"isConnecting\" is null.");
+      }
+      this.isConnecting = setterArg;
+    }
+
+    private @Nullable String currentWatchAddress;
+
+    public @Nullable String getCurrentWatchAddress() {
+      return currentWatchAddress;
+    }
+
+    public void setCurrentWatchAddress(@Nullable String setterArg) {
+      this.currentWatchAddress = setterArg;
+    }
+
+    private @Nullable PebbleDevicePigeon currentConnectedWatch;
+
+    public @Nullable PebbleDevicePigeon getCurrentConnectedWatch() {
+      return currentConnectedWatch;
+    }
+
+    public void setCurrentConnectedWatch(@Nullable PebbleDevicePigeon setterArg) {
+      this.currentConnectedWatch = setterArg;
+    }
+
+    /** Constructor is non-public to enforce null safety; use Builder. */
+    WatchConnectionStatePigeon() {}
+
+    public static final class Builder {
+
+      private @Nullable Boolean isConnected;
+
+      public @NonNull Builder setIsConnected(@NonNull Boolean setterArg) {
+        this.isConnected = setterArg;
+        return this;
+      }
+
+      private @Nullable Boolean isConnecting;
+
+      public @NonNull Builder setIsConnecting(@NonNull Boolean setterArg) {
+        this.isConnecting = setterArg;
+        return this;
+      }
+
+      private @Nullable String currentWatchAddress;
+
+      public @NonNull Builder setCurrentWatchAddress(@Nullable String setterArg) {
+        this.currentWatchAddress = setterArg;
+        return this;
+      }
+
+      private @Nullable PebbleDevicePigeon currentConnectedWatch;
+
+      public @NonNull Builder setCurrentConnectedWatch(@Nullable PebbleDevicePigeon setterArg) {
+        this.currentConnectedWatch = setterArg;
+        return this;
+      }
+
+      public @NonNull WatchConnectionStatePigeon build() {
+        WatchConnectionStatePigeon pigeonReturn = new WatchConnectionStatePigeon();
+        pigeonReturn.setIsConnected(isConnected);
+        pigeonReturn.setIsConnecting(isConnecting);
+        pigeonReturn.setCurrentWatchAddress(currentWatchAddress);
+        pigeonReturn.setCurrentConnectedWatch(currentConnectedWatch);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(4);
+      toListResult.add(isConnected);
+      toListResult.add(isConnecting);
+      toListResult.add(currentWatchAddress);
+      toListResult.add((currentConnectedWatch == null) ? null : currentConnectedWatch.toList());
+      return toListResult;
+    }
+
+    static @NonNull WatchConnectionStatePigeon fromList(@NonNull ArrayList<Object> list) {
+      WatchConnectionStatePigeon pigeonResult = new WatchConnectionStatePigeon();
+      Object isConnected = list.get(0);
+      pigeonResult.setIsConnected((Boolean) isConnected);
+      Object isConnecting = list.get(1);
+      pigeonResult.setIsConnecting((Boolean) isConnecting);
+      Object currentWatchAddress = list.get(2);
+      pigeonResult.setCurrentWatchAddress((String) currentWatchAddress);
+      Object currentConnectedWatch = list.get(3);
+      pigeonResult.setCurrentConnectedWatch((currentConnectedWatch == null) ? null : PebbleDevicePigeon.fromList((ArrayList<Object>) currentConnectedWatch));
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class TimelinePinPigeon {
+    private @Nullable String itemId;
+
+    public @Nullable String getItemId() {
+      return itemId;
+    }
+
+    public void setItemId(@Nullable String setterArg) {
+      this.itemId = setterArg;
+    }
+
+    private @Nullable String parentId;
+
+    public @Nullable String getParentId() {
+      return parentId;
+    }
+
+    public void setParentId(@Nullable String setterArg) {
+      this.parentId = setterArg;
+    }
+
+    private @Nullable Long timestamp;
+
+    public @Nullable Long getTimestamp() {
+      return timestamp;
+    }
+
+    public void setTimestamp(@Nullable Long setterArg) {
+      this.timestamp = setterArg;
+    }
+
+    private @Nullable Long type;
+
+    public @Nullable Long getType() {
+      return type;
+    }
+
+    public void setType(@Nullable Long setterArg) {
+      this.type = setterArg;
+    }
+
+    private @Nullable Long duration;
+
+    public @Nullable Long getDuration() {
+      return duration;
+    }
+
+    public void setDuration(@Nullable Long setterArg) {
+      this.duration = setterArg;
+    }
+
+    private @Nullable Boolean isVisible;
+
+    public @Nullable Boolean getIsVisible() {
+      return isVisible;
+    }
+
+    public void setIsVisible(@Nullable Boolean setterArg) {
+      this.isVisible = setterArg;
+    }
+
+    private @Nullable Boolean isFloating;
+
+    public @Nullable Boolean getIsFloating() {
+      return isFloating;
+    }
+
+    public void setIsFloating(@Nullable Boolean setterArg) {
+      this.isFloating = setterArg;
+    }
+
+    private @Nullable Boolean isAllDay;
+
+    public @Nullable Boolean getIsAllDay() {
+      return isAllDay;
+    }
+
+    public void setIsAllDay(@Nullable Boolean setterArg) {
+      this.isAllDay = setterArg;
+    }
+
+    private @Nullable Boolean persistQuickView;
+
+    public @Nullable Boolean getPersistQuickView() {
+      return persistQuickView;
+    }
+
+    public void setPersistQuickView(@Nullable Boolean setterArg) {
+      this.persistQuickView = setterArg;
+    }
+
+    private @Nullable Long layout;
+
+    public @Nullable Long getLayout() {
+      return layout;
+    }
+
+    public void setLayout(@Nullable Long setterArg) {
+      this.layout = setterArg;
+    }
+
+    private @Nullable String attributesJson;
+
+    public @Nullable String getAttributesJson() {
+      return attributesJson;
+    }
+
+    public void setAttributesJson(@Nullable String setterArg) {
+      this.attributesJson = setterArg;
+    }
+
+    private @Nullable String actionsJson;
+
+    public @Nullable String getActionsJson() {
+      return actionsJson;
+    }
+
+    public void setActionsJson(@Nullable String setterArg) {
+      this.actionsJson = setterArg;
+    }
+
+    public static final class Builder {
+
+      private @Nullable String itemId;
+
+      public @NonNull Builder setItemId(@Nullable String setterArg) {
+        this.itemId = setterArg;
+        return this;
+      }
+
+      private @Nullable String parentId;
+
+      public @NonNull Builder setParentId(@Nullable String setterArg) {
+        this.parentId = setterArg;
+        return this;
+      }
+
+      private @Nullable Long timestamp;
+
+      public @NonNull Builder setTimestamp(@Nullable Long setterArg) {
+        this.timestamp = setterArg;
+        return this;
+      }
+
+      private @Nullable Long type;
+
+      public @NonNull Builder setType(@Nullable Long setterArg) {
+        this.type = setterArg;
+        return this;
+      }
+
+      private @Nullable Long duration;
+
+      public @NonNull Builder setDuration(@Nullable Long setterArg) {
+        this.duration = setterArg;
+        return this;
+      }
+
+      private @Nullable Boolean isVisible;
+
+      public @NonNull Builder setIsVisible(@Nullable Boolean setterArg) {
+        this.isVisible = setterArg;
+        return this;
+      }
+
+      private @Nullable Boolean isFloating;
+
+      public @NonNull Builder setIsFloating(@Nullable Boolean setterArg) {
+        this.isFloating = setterArg;
+        return this;
+      }
+
+      private @Nullable Boolean isAllDay;
+
+      public @NonNull Builder setIsAllDay(@Nullable Boolean setterArg) {
+        this.isAllDay = setterArg;
+        return this;
+      }
+
+      private @Nullable Boolean persistQuickView;
+
+      public @NonNull Builder setPersistQuickView(@Nullable Boolean setterArg) {
+        this.persistQuickView = setterArg;
+        return this;
+      }
+
+      private @Nullable Long layout;
+
+      public @NonNull Builder setLayout(@Nullable Long setterArg) {
+        this.layout = setterArg;
+        return this;
+      }
+
+      private @Nullable String attributesJson;
+
+      public @NonNull Builder setAttributesJson(@Nullable String setterArg) {
+        this.attributesJson = setterArg;
+        return this;
+      }
+
+      private @Nullable String actionsJson;
+
+      public @NonNull Builder setActionsJson(@Nullable String setterArg) {
+        this.actionsJson = setterArg;
+        return this;
+      }
+
+      public @NonNull TimelinePinPigeon build() {
+        TimelinePinPigeon pigeonReturn = new TimelinePinPigeon();
+        pigeonReturn.setItemId(itemId);
+        pigeonReturn.setParentId(parentId);
+        pigeonReturn.setTimestamp(timestamp);
+        pigeonReturn.setType(type);
+        pigeonReturn.setDuration(duration);
+        pigeonReturn.setIsVisible(isVisible);
+        pigeonReturn.setIsFloating(isFloating);
+        pigeonReturn.setIsAllDay(isAllDay);
+        pigeonReturn.setPersistQuickView(persistQuickView);
+        pigeonReturn.setLayout(layout);
+        pigeonReturn.setAttributesJson(attributesJson);
+        pigeonReturn.setActionsJson(actionsJson);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(12);
+      toListResult.add(itemId);
+      toListResult.add(parentId);
+      toListResult.add(timestamp);
+      toListResult.add(type);
+      toListResult.add(duration);
+      toListResult.add(isVisible);
+      toListResult.add(isFloating);
+      toListResult.add(isAllDay);
+      toListResult.add(persistQuickView);
+      toListResult.add(layout);
+      toListResult.add(attributesJson);
+      toListResult.add(actionsJson);
+      return toListResult;
+    }
+
+    static @NonNull TimelinePinPigeon fromList(@NonNull ArrayList<Object> list) {
+      TimelinePinPigeon pigeonResult = new TimelinePinPigeon();
+      Object itemId = list.get(0);
+      pigeonResult.setItemId((String) itemId);
+      Object parentId = list.get(1);
+      pigeonResult.setParentId((String) parentId);
+      Object timestamp = list.get(2);
+      pigeonResult.setTimestamp((timestamp == null) ? null : ((timestamp instanceof Integer) ? (Integer) timestamp : (Long) timestamp));
+      Object type = list.get(3);
+      pigeonResult.setType((type == null) ? null : ((type instanceof Integer) ? (Integer) type : (Long) type));
+      Object duration = list.get(4);
+      pigeonResult.setDuration((duration == null) ? null : ((duration instanceof Integer) ? (Integer) duration : (Long) duration));
+      Object isVisible = list.get(5);
+      pigeonResult.setIsVisible((Boolean) isVisible);
+      Object isFloating = list.get(6);
+      pigeonResult.setIsFloating((Boolean) isFloating);
+      Object isAllDay = list.get(7);
+      pigeonResult.setIsAllDay((Boolean) isAllDay);
+      Object persistQuickView = list.get(8);
+      pigeonResult.setPersistQuickView((Boolean) persistQuickView);
+      Object layout = list.get(9);
+      pigeonResult.setLayout((layout == null) ? null : ((layout instanceof Integer) ? (Integer) layout : (Long) layout));
+      Object attributesJson = list.get(10);
+      pigeonResult.setAttributesJson((String) attributesJson);
+      Object actionsJson = list.get(11);
+      pigeonResult.setActionsJson((String) actionsJson);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class ActionTrigger {
+    private @Nullable String itemId;
+
+    public @Nullable String getItemId() {
+      return itemId;
+    }
+
+    public void setItemId(@Nullable String setterArg) {
+      this.itemId = setterArg;
+    }
+
+    private @Nullable Long actionId;
+
+    public @Nullable Long getActionId() {
+      return actionId;
+    }
+
+    public void setActionId(@Nullable Long setterArg) {
+      this.actionId = setterArg;
+    }
+
+    private @Nullable String attributesJson;
+
+    public @Nullable String getAttributesJson() {
+      return attributesJson;
+    }
+
+    public void setAttributesJson(@Nullable String setterArg) {
+      this.attributesJson = setterArg;
+    }
+
+    public static final class Builder {
+
+      private @Nullable String itemId;
+
+      public @NonNull Builder setItemId(@Nullable String setterArg) {
+        this.itemId = setterArg;
+        return this;
+      }
+
+      private @Nullable Long actionId;
+
+      public @NonNull Builder setActionId(@Nullable Long setterArg) {
+        this.actionId = setterArg;
+        return this;
+      }
+
+      private @Nullable String attributesJson;
+
+      public @NonNull Builder setAttributesJson(@Nullable String setterArg) {
+        this.attributesJson = setterArg;
+        return this;
+      }
+
+      public @NonNull ActionTrigger build() {
+        ActionTrigger pigeonReturn = new ActionTrigger();
+        pigeonReturn.setItemId(itemId);
+        pigeonReturn.setActionId(actionId);
+        pigeonReturn.setAttributesJson(attributesJson);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(3);
+      toListResult.add(itemId);
+      toListResult.add(actionId);
+      toListResult.add(attributesJson);
+      return toListResult;
+    }
+
+    static @NonNull ActionTrigger fromList(@NonNull ArrayList<Object> list) {
+      ActionTrigger pigeonResult = new ActionTrigger();
+      Object itemId = list.get(0);
+      pigeonResult.setItemId((String) itemId);
+      Object actionId = list.get(1);
+      pigeonResult.setActionId((actionId == null) ? null : ((actionId instanceof Integer) ? (Integer) actionId : (Long) actionId));
+      Object attributesJson = list.get(2);
+      pigeonResult.setAttributesJson((String) attributesJson);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class ActionResponsePigeon {
+    private @Nullable Boolean success;
+
+    public @Nullable Boolean getSuccess() {
+      return success;
+    }
+
+    public void setSuccess(@Nullable Boolean setterArg) {
+      this.success = setterArg;
+    }
+
+    private @Nullable String attributesJson;
+
+    public @Nullable String getAttributesJson() {
+      return attributesJson;
+    }
+
+    public void setAttributesJson(@Nullable String setterArg) {
+      this.attributesJson = setterArg;
+    }
+
+    public static final class Builder {
+
+      private @Nullable Boolean success;
+
+      public @NonNull Builder setSuccess(@Nullable Boolean setterArg) {
+        this.success = setterArg;
+        return this;
+      }
+
+      private @Nullable String attributesJson;
+
+      public @NonNull Builder setAttributesJson(@Nullable String setterArg) {
+        this.attributesJson = setterArg;
+        return this;
+      }
+
+      public @NonNull ActionResponsePigeon build() {
+        ActionResponsePigeon pigeonReturn = new ActionResponsePigeon();
+        pigeonReturn.setSuccess(success);
+        pigeonReturn.setAttributesJson(attributesJson);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(2);
+      toListResult.add(success);
+      toListResult.add(attributesJson);
+      return toListResult;
+    }
+
+    static @NonNull ActionResponsePigeon fromList(@NonNull ArrayList<Object> list) {
+      ActionResponsePigeon pigeonResult = new ActionResponsePigeon();
+      Object success = list.get(0);
+      pigeonResult.setSuccess((Boolean) success);
+      Object attributesJson = list.get(1);
+      pigeonResult.setAttributesJson((String) attributesJson);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class NotifActionExecuteReq {
+    private @Nullable String itemId;
+
+    public @Nullable String getItemId() {
+      return itemId;
+    }
+
+    public void setItemId(@Nullable String setterArg) {
+      this.itemId = setterArg;
+    }
+
+    private @Nullable Long actionId;
+
+    public @Nullable Long getActionId() {
+      return actionId;
+    }
+
+    public void setActionId(@Nullable Long setterArg) {
+      this.actionId = setterArg;
+    }
+
+    private @Nullable String responseText;
+
+    public @Nullable String getResponseText() {
+      return responseText;
+    }
+
+    public void setResponseText(@Nullable String setterArg) {
+      this.responseText = setterArg;
+    }
+
+    public static final class Builder {
+
+      private @Nullable String itemId;
+
+      public @NonNull Builder setItemId(@Nullable String setterArg) {
+        this.itemId = setterArg;
+        return this;
+      }
+
+      private @Nullable Long actionId;
+
+      public @NonNull Builder setActionId(@Nullable Long setterArg) {
+        this.actionId = setterArg;
+        return this;
+      }
+
+      private @Nullable String responseText;
+
+      public @NonNull Builder setResponseText(@Nullable String setterArg) {
+        this.responseText = setterArg;
+        return this;
+      }
+
+      public @NonNull NotifActionExecuteReq build() {
+        NotifActionExecuteReq pigeonReturn = new NotifActionExecuteReq();
+        pigeonReturn.setItemId(itemId);
+        pigeonReturn.setActionId(actionId);
+        pigeonReturn.setResponseText(responseText);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(3);
+      toListResult.add(itemId);
+      toListResult.add(actionId);
+      toListResult.add(responseText);
+      return toListResult;
+    }
+
+    static @NonNull NotifActionExecuteReq fromList(@NonNull ArrayList<Object> list) {
+      NotifActionExecuteReq pigeonResult = new NotifActionExecuteReq();
+      Object itemId = list.get(0);
+      pigeonResult.setItemId((String) itemId);
+      Object actionId = list.get(1);
+      pigeonResult.setActionId((actionId == null) ? null : ((actionId instanceof Integer) ? (Integer) actionId : (Long) actionId));
+      Object responseText = list.get(2);
+      pigeonResult.setResponseText((String) responseText);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class NotificationPigeon {
+    private @Nullable String packageId;
+
+    public @Nullable String getPackageId() {
+      return packageId;
+    }
+
+    public void setPackageId(@Nullable String setterArg) {
+      this.packageId = setterArg;
+    }
+
+    private @Nullable Long notifId;
+
+    public @Nullable Long getNotifId() {
+      return notifId;
+    }
+
+    public void setNotifId(@Nullable Long setterArg) {
+      this.notifId = setterArg;
+    }
+
+    private @Nullable String appName;
+
+    public @Nullable String getAppName() {
+      return appName;
+    }
+
+    public void setAppName(@Nullable String setterArg) {
+      this.appName = setterArg;
+    }
+
+    private @Nullable String tagId;
+
+    public @Nullable String getTagId() {
+      return tagId;
+    }
+
+    public void setTagId(@Nullable String setterArg) {
+      this.tagId = setterArg;
+    }
+
+    private @Nullable String title;
+
+    public @Nullable String getTitle() {
+      return title;
+    }
+
+    public void setTitle(@Nullable String setterArg) {
+      this.title = setterArg;
+    }
+
+    private @Nullable String text;
+
+    public @Nullable String getText() {
+      return text;
+    }
+
+    public void setText(@Nullable String setterArg) {
+      this.text = setterArg;
+    }
+
+    private @Nullable String category;
+
+    public @Nullable String getCategory() {
+      return category;
+    }
+
+    public void setCategory(@Nullable String setterArg) {
+      this.category = setterArg;
+    }
+
+    private @Nullable Long color;
+
+    public @Nullable Long getColor() {
+      return color;
+    }
+
+    public void setColor(@Nullable Long setterArg) {
+      this.color = setterArg;
+    }
+
+    private @Nullable String messagesJson;
+
+    public @Nullable String getMessagesJson() {
+      return messagesJson;
+    }
+
+    public void setMessagesJson(@Nullable String setterArg) {
+      this.messagesJson = setterArg;
+    }
+
+    private @Nullable String actionsJson;
+
+    public @Nullable String getActionsJson() {
+      return actionsJson;
+    }
+
+    public void setActionsJson(@Nullable String setterArg) {
+      this.actionsJson = setterArg;
+    }
+
+    public static final class Builder {
+
+      private @Nullable String packageId;
+
+      public @NonNull Builder setPackageId(@Nullable String setterArg) {
+        this.packageId = setterArg;
+        return this;
+      }
+
+      private @Nullable Long notifId;
+
+      public @NonNull Builder setNotifId(@Nullable Long setterArg) {
+        this.notifId = setterArg;
+        return this;
+      }
+
+      private @Nullable String appName;
+
+      public @NonNull Builder setAppName(@Nullable String setterArg) {
+        this.appName = setterArg;
+        return this;
+      }
+
+      private @Nullable String tagId;
+
+      public @NonNull Builder setTagId(@Nullable String setterArg) {
+        this.tagId = setterArg;
+        return this;
+      }
+
+      private @Nullable String title;
+
+      public @NonNull Builder setTitle(@Nullable String setterArg) {
+        this.title = setterArg;
+        return this;
+      }
+
+      private @Nullable String text;
+
+      public @NonNull Builder setText(@Nullable String setterArg) {
+        this.text = setterArg;
+        return this;
+      }
+
+      private @Nullable String category;
+
+      public @NonNull Builder setCategory(@Nullable String setterArg) {
+        this.category = setterArg;
+        return this;
+      }
+
+      private @Nullable Long color;
+
+      public @NonNull Builder setColor(@Nullable Long setterArg) {
+        this.color = setterArg;
+        return this;
+      }
+
+      private @Nullable String messagesJson;
+
+      public @NonNull Builder setMessagesJson(@Nullable String setterArg) {
+        this.messagesJson = setterArg;
+        return this;
+      }
+
+      private @Nullable String actionsJson;
+
+      public @NonNull Builder setActionsJson(@Nullable String setterArg) {
+        this.actionsJson = setterArg;
+        return this;
+      }
+
+      public @NonNull NotificationPigeon build() {
+        NotificationPigeon pigeonReturn = new NotificationPigeon();
+        pigeonReturn.setPackageId(packageId);
+        pigeonReturn.setNotifId(notifId);
+        pigeonReturn.setAppName(appName);
+        pigeonReturn.setTagId(tagId);
+        pigeonReturn.setTitle(title);
+        pigeonReturn.setText(text);
+        pigeonReturn.setCategory(category);
+        pigeonReturn.setColor(color);
+        pigeonReturn.setMessagesJson(messagesJson);
+        pigeonReturn.setActionsJson(actionsJson);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(10);
+      toListResult.add(packageId);
+      toListResult.add(notifId);
+      toListResult.add(appName);
+      toListResult.add(tagId);
+      toListResult.add(title);
+      toListResult.add(text);
+      toListResult.add(category);
+      toListResult.add(color);
+      toListResult.add(messagesJson);
+      toListResult.add(actionsJson);
+      return toListResult;
+    }
+
+    static @NonNull NotificationPigeon fromList(@NonNull ArrayList<Object> list) {
+      NotificationPigeon pigeonResult = new NotificationPigeon();
+      Object packageId = list.get(0);
+      pigeonResult.setPackageId((String) packageId);
+      Object notifId = list.get(1);
+      pigeonResult.setNotifId((notifId == null) ? null : ((notifId instanceof Integer) ? (Integer) notifId : (Long) notifId));
+      Object appName = list.get(2);
+      pigeonResult.setAppName((String) appName);
+      Object tagId = list.get(3);
+      pigeonResult.setTagId((String) tagId);
+      Object title = list.get(4);
+      pigeonResult.setTitle((String) title);
+      Object text = list.get(5);
+      pigeonResult.setText((String) text);
+      Object category = list.get(6);
+      pigeonResult.setCategory((String) category);
+      Object color = list.get(7);
+      pigeonResult.setColor((color == null) ? null : ((color instanceof Integer) ? (Integer) color : (Long) color));
+      Object messagesJson = list.get(8);
+      pigeonResult.setMessagesJson((String) messagesJson);
+      Object actionsJson = list.get(9);
+      pigeonResult.setActionsJson((String) actionsJson);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class AppEntriesPigeon {
+    private @Nullable List<String> appName;
+
+    public @Nullable List<String> getAppName() {
+      return appName;
+    }
+
+    public void setAppName(@Nullable List<String> setterArg) {
+      this.appName = setterArg;
+    }
+
+    private @Nullable List<String> packageId;
+
+    public @Nullable List<String> getPackageId() {
+      return packageId;
+    }
+
+    public void setPackageId(@Nullable List<String> setterArg) {
+      this.packageId = setterArg;
+    }
+
+    public static final class Builder {
+
+      private @Nullable List<String> appName;
+
+      public @NonNull Builder setAppName(@Nullable List<String> setterArg) {
+        this.appName = setterArg;
+        return this;
+      }
+
+      private @Nullable List<String> packageId;
+
+      public @NonNull Builder setPackageId(@Nullable List<String> setterArg) {
+        this.packageId = setterArg;
+        return this;
+      }
+
+      public @NonNull AppEntriesPigeon build() {
+        AppEntriesPigeon pigeonReturn = new AppEntriesPigeon();
+        pigeonReturn.setAppName(appName);
+        pigeonReturn.setPackageId(packageId);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(2);
+      toListResult.add(appName);
+      toListResult.add(packageId);
+      return toListResult;
+    }
+
+    static @NonNull AppEntriesPigeon fromList(@NonNull ArrayList<Object> list) {
+      AppEntriesPigeon pigeonResult = new AppEntriesPigeon();
+      Object appName = list.get(0);
+      pigeonResult.setAppName((List<String>) appName);
+      Object packageId = list.get(1);
+      pigeonResult.setPackageId((List<String>) packageId);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class PbwAppInfo {
+    private @Nullable Boolean isValid;
+
+    public @Nullable Boolean getIsValid() {
+      return isValid;
+    }
+
+    public void setIsValid(@Nullable Boolean setterArg) {
+      this.isValid = setterArg;
+    }
+
+    private @Nullable String uuid;
+
+    public @Nullable String getUuid() {
+      return uuid;
+    }
+
+    public void setUuid(@Nullable String setterArg) {
+      this.uuid = setterArg;
+    }
+
+    private @Nullable String shortName;
+
+    public @Nullable String getShortName() {
+      return shortName;
+    }
+
+    public void setShortName(@Nullable String setterArg) {
+      this.shortName = setterArg;
+    }
+
+    private @Nullable String longName;
+
+    public @Nullable String getLongName() {
+      return longName;
+    }
+
+    public void setLongName(@Nullable String setterArg) {
+      this.longName = setterArg;
+    }
+
+    private @Nullable String companyName;
+
+    public @Nullable String getCompanyName() {
+      return companyName;
+    }
+
+    public void setCompanyName(@Nullable String setterArg) {
+      this.companyName = setterArg;
+    }
+
+    private @Nullable Long versionCode;
+
+    public @Nullable Long getVersionCode() {
+      return versionCode;
+    }
+
+    public void setVersionCode(@Nullable Long setterArg) {
+      this.versionCode = setterArg;
+    }
+
+    private @Nullable String versionLabel;
+
+    public @Nullable String getVersionLabel() {
+      return versionLabel;
+    }
+
+    public void setVersionLabel(@Nullable String setterArg) {
+      this.versionLabel = setterArg;
+    }
+
+    private @Nullable Map<String, Long> appKeys;
+
+    public @Nullable Map<String, Long> getAppKeys() {
+      return appKeys;
+    }
+
+    public void setAppKeys(@Nullable Map<String, Long> setterArg) {
+      this.appKeys = setterArg;
+    }
+
+    private @Nullable List<String> capabilities;
+
+    public @Nullable List<String> getCapabilities() {
+      return capabilities;
+    }
+
+    public void setCapabilities(@Nullable List<String> setterArg) {
+      this.capabilities = setterArg;
+    }
+
+    private @Nullable List<WatchResource> resources;
+
+    public @Nullable List<WatchResource> getResources() {
+      return resources;
+    }
+
+    public void setResources(@Nullable List<WatchResource> setterArg) {
+      this.resources = setterArg;
+    }
+
+    private @Nullable String sdkVersion;
+
+    public @Nullable String getSdkVersion() {
+      return sdkVersion;
+    }
+
+    public void setSdkVersion(@Nullable String setterArg) {
+      this.sdkVersion = setterArg;
+    }
+
+    private @Nullable List<String> targetPlatforms;
+
+    public @Nullable List<String> getTargetPlatforms() {
+      return targetPlatforms;
+    }
+
+    public void setTargetPlatforms(@Nullable List<String> setterArg) {
+      this.targetPlatforms = setterArg;
+    }
+
+    private @Nullable WatchappInfo watchapp;
+
+    public @Nullable WatchappInfo getWatchapp() {
+      return watchapp;
+    }
+
+    public void setWatchapp(@Nullable WatchappInfo setterArg) {
+      this.watchapp = setterArg;
+    }
+
+    public static final class Builder {
+
+      private @Nullable Boolean isValid;
+
+      public @NonNull Builder setIsValid(@Nullable Boolean setterArg) {
+        this.isValid = setterArg;
+        return this;
+      }
+
+      private @Nullable String uuid;
+
+      public @NonNull Builder setUuid(@Nullable String setterArg) {
+        this.uuid = setterArg;
+        return this;
+      }
+
+      private @Nullable String shortName;
+
+      public @NonNull Builder setShortName(@Nullable String setterArg) {
+        this.shortName = setterArg;
+        return this;
+      }
+
+      private @Nullable String longName;
+
+      public @NonNull Builder setLongName(@Nullable String setterArg) {
+        this.longName = setterArg;
+        return this;
+      }
+
+      private @Nullable String companyName;
+
+      public @NonNull Builder setCompanyName(@Nullable String setterArg) {
+        this.companyName = setterArg;
+        return this;
+      }
+
+      private @Nullable Long versionCode;
+
+      public @NonNull Builder setVersionCode(@Nullable Long setterArg) {
+        this.versionCode = setterArg;
+        return this;
+      }
+
+      private @Nullable String versionLabel;
+
+      public @NonNull Builder setVersionLabel(@Nullable String setterArg) {
+        this.versionLabel = setterArg;
+        return this;
+      }
+
+      private @Nullable Map<String, Long> appKeys;
+
+      public @NonNull Builder setAppKeys(@Nullable Map<String, Long> setterArg) {
+        this.appKeys = setterArg;
+        return this;
+      }
+
+      private @Nullable List<String> capabilities;
+
+      public @NonNull Builder setCapabilities(@Nullable List<String> setterArg) {
+        this.capabilities = setterArg;
+        return this;
+      }
+
+      private @Nullable List<WatchResource> resources;
+
+      public @NonNull Builder setResources(@Nullable List<WatchResource> setterArg) {
+        this.resources = setterArg;
+        return this;
+      }
+
+      private @Nullable String sdkVersion;
+
+      public @NonNull Builder setSdkVersion(@Nullable String setterArg) {
+        this.sdkVersion = setterArg;
+        return this;
+      }
+
+      private @Nullable List<String> targetPlatforms;
+
+      public @NonNull Builder setTargetPlatforms(@Nullable List<String> setterArg) {
+        this.targetPlatforms = setterArg;
+        return this;
+      }
+
+      private @Nullable WatchappInfo watchapp;
+
+      public @NonNull Builder setWatchapp(@Nullable WatchappInfo setterArg) {
+        this.watchapp = setterArg;
+        return this;
+      }
+
+      public @NonNull PbwAppInfo build() {
+        PbwAppInfo pigeonReturn = new PbwAppInfo();
+        pigeonReturn.setIsValid(isValid);
+        pigeonReturn.setUuid(uuid);
+        pigeonReturn.setShortName(shortName);
+        pigeonReturn.setLongName(longName);
+        pigeonReturn.setCompanyName(companyName);
+        pigeonReturn.setVersionCode(versionCode);
+        pigeonReturn.setVersionLabel(versionLabel);
+        pigeonReturn.setAppKeys(appKeys);
+        pigeonReturn.setCapabilities(capabilities);
+        pigeonReturn.setResources(resources);
+        pigeonReturn.setSdkVersion(sdkVersion);
+        pigeonReturn.setTargetPlatforms(targetPlatforms);
+        pigeonReturn.setWatchapp(watchapp);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(13);
+      toListResult.add(isValid);
+      toListResult.add(uuid);
+      toListResult.add(shortName);
+      toListResult.add(longName);
+      toListResult.add(companyName);
+      toListResult.add(versionCode);
+      toListResult.add(versionLabel);
+      toListResult.add(appKeys);
+      toListResult.add(capabilities);
+      toListResult.add(resources);
+      toListResult.add(sdkVersion);
+      toListResult.add(targetPlatforms);
+      toListResult.add((watchapp == null) ? null : watchapp.toList());
+      return toListResult;
+    }
+
+    static @NonNull PbwAppInfo fromList(@NonNull ArrayList<Object> list) {
+      PbwAppInfo pigeonResult = new PbwAppInfo();
+      Object isValid = list.get(0);
+      pigeonResult.setIsValid((Boolean) isValid);
+      Object uuid = list.get(1);
+      pigeonResult.setUuid((String) uuid);
+      Object shortName = list.get(2);
+      pigeonResult.setShortName((String) shortName);
+      Object longName = list.get(3);
+      pigeonResult.setLongName((String) longName);
+      Object companyName = list.get(4);
+      pigeonResult.setCompanyName((String) companyName);
+      Object versionCode = list.get(5);
+      pigeonResult.setVersionCode((versionCode == null) ? null : ((versionCode instanceof Integer) ? (Integer) versionCode : (Long) versionCode));
+      Object versionLabel = list.get(6);
+      pigeonResult.setVersionLabel((String) versionLabel);
+      Object appKeys = list.get(7);
+      pigeonResult.setAppKeys((Map<String, Long>) appKeys);
+      Object capabilities = list.get(8);
+      pigeonResult.setCapabilities((List<String>) capabilities);
+      Object resources = list.get(9);
+      pigeonResult.setResources((List<WatchResource>) resources);
+      Object sdkVersion = list.get(10);
+      pigeonResult.setSdkVersion((String) sdkVersion);
+      Object targetPlatforms = list.get(11);
+      pigeonResult.setTargetPlatforms((List<String>) targetPlatforms);
+      Object watchapp = list.get(12);
+      pigeonResult.setWatchapp((watchapp == null) ? null : WatchappInfo.fromList((ArrayList<Object>) watchapp));
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class WatchappInfo {
+    private @Nullable Boolean watchface;
+
+    public @Nullable Boolean getWatchface() {
+      return watchface;
+    }
+
+    public void setWatchface(@Nullable Boolean setterArg) {
+      this.watchface = setterArg;
+    }
+
+    private @Nullable Boolean hiddenApp;
+
+    public @Nullable Boolean getHiddenApp() {
+      return hiddenApp;
+    }
+
+    public void setHiddenApp(@Nullable Boolean setterArg) {
+      this.hiddenApp = setterArg;
+    }
+
+    private @Nullable Boolean onlyShownOnCommunication;
+
+    public @Nullable Boolean getOnlyShownOnCommunication() {
+      return onlyShownOnCommunication;
+    }
+
+    public void setOnlyShownOnCommunication(@Nullable Boolean setterArg) {
+      this.onlyShownOnCommunication = setterArg;
+    }
+
+    public static final class Builder {
+
+      private @Nullable Boolean watchface;
+
+      public @NonNull Builder setWatchface(@Nullable Boolean setterArg) {
+        this.watchface = setterArg;
+        return this;
+      }
+
+      private @Nullable Boolean hiddenApp;
+
+      public @NonNull Builder setHiddenApp(@Nullable Boolean setterArg) {
+        this.hiddenApp = setterArg;
+        return this;
+      }
+
+      private @Nullable Boolean onlyShownOnCommunication;
+
+      public @NonNull Builder setOnlyShownOnCommunication(@Nullable Boolean setterArg) {
+        this.onlyShownOnCommunication = setterArg;
+        return this;
+      }
+
+      public @NonNull WatchappInfo build() {
+        WatchappInfo pigeonReturn = new WatchappInfo();
+        pigeonReturn.setWatchface(watchface);
+        pigeonReturn.setHiddenApp(hiddenApp);
+        pigeonReturn.setOnlyShownOnCommunication(onlyShownOnCommunication);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(3);
+      toListResult.add(watchface);
+      toListResult.add(hiddenApp);
+      toListResult.add(onlyShownOnCommunication);
+      return toListResult;
+    }
+
+    static @NonNull WatchappInfo fromList(@NonNull ArrayList<Object> list) {
+      WatchappInfo pigeonResult = new WatchappInfo();
+      Object watchface = list.get(0);
+      pigeonResult.setWatchface((Boolean) watchface);
+      Object hiddenApp = list.get(1);
+      pigeonResult.setHiddenApp((Boolean) hiddenApp);
+      Object onlyShownOnCommunication = list.get(2);
+      pigeonResult.setOnlyShownOnCommunication((Boolean) onlyShownOnCommunication);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class WatchResource {
+    private @Nullable String file;
+
+    public @Nullable String getFile() {
+      return file;
+    }
+
+    public void setFile(@Nullable String setterArg) {
+      this.file = setterArg;
+    }
+
+    private @Nullable Boolean menuIcon;
+
+    public @Nullable Boolean getMenuIcon() {
+      return menuIcon;
+    }
+
+    public void setMenuIcon(@Nullable Boolean setterArg) {
+      this.menuIcon = setterArg;
+    }
+
+    private @Nullable String name;
+
+    public @Nullable String getName() {
+      return name;
+    }
+
+    public void setName(@Nullable String setterArg) {
+      this.name = setterArg;
+    }
+
+    private @Nullable String type;
+
+    public @Nullable String getType() {
+      return type;
+    }
+
+    public void setType(@Nullable String setterArg) {
+      this.type = setterArg;
+    }
+
+    public static final class Builder {
+
+      private @Nullable String file;
+
+      public @NonNull Builder setFile(@Nullable String setterArg) {
+        this.file = setterArg;
+        return this;
+      }
+
+      private @Nullable Boolean menuIcon;
+
+      public @NonNull Builder setMenuIcon(@Nullable Boolean setterArg) {
+        this.menuIcon = setterArg;
+        return this;
+      }
+
+      private @Nullable String name;
+
+      public @NonNull Builder setName(@Nullable String setterArg) {
+        this.name = setterArg;
+        return this;
+      }
+
+      private @Nullable String type;
+
+      public @NonNull Builder setType(@Nullable String setterArg) {
+        this.type = setterArg;
+        return this;
+      }
+
+      public @NonNull WatchResource build() {
+        WatchResource pigeonReturn = new WatchResource();
+        pigeonReturn.setFile(file);
+        pigeonReturn.setMenuIcon(menuIcon);
+        pigeonReturn.setName(name);
+        pigeonReturn.setType(type);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(4);
+      toListResult.add(file);
+      toListResult.add(menuIcon);
+      toListResult.add(name);
+      toListResult.add(type);
+      return toListResult;
+    }
+
+    static @NonNull WatchResource fromList(@NonNull ArrayList<Object> list) {
+      WatchResource pigeonResult = new WatchResource();
+      Object file = list.get(0);
+      pigeonResult.setFile((String) file);
+      Object menuIcon = list.get(1);
+      pigeonResult.setMenuIcon((Boolean) menuIcon);
+      Object name = list.get(2);
+      pigeonResult.setName((String) name);
+      Object type = list.get(3);
+      pigeonResult.setType((String) type);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class InstallData {
+    private @NonNull String uri;
+
+    public @NonNull String getUri() {
+      return uri;
+    }
+
+    public void setUri(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"uri\" is null.");
+      }
+      this.uri = setterArg;
+    }
+
+    private @NonNull PbwAppInfo appInfo;
+
+    public @NonNull PbwAppInfo getAppInfo() {
+      return appInfo;
+    }
+
+    public void setAppInfo(@NonNull PbwAppInfo setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"appInfo\" is null.");
+      }
+      this.appInfo = setterArg;
+    }
+
+    private @NonNull Boolean stayOffloaded;
+
+    public @NonNull Boolean getStayOffloaded() {
+      return stayOffloaded;
+    }
+
+    public void setStayOffloaded(@NonNull Boolean setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"stayOffloaded\" is null.");
+      }
+      this.stayOffloaded = setterArg;
+    }
+
+    /** Constructor is non-public to enforce null safety; use Builder. */
+    InstallData() {}
+
+    public static final class Builder {
+
+      private @Nullable String uri;
+
+      public @NonNull Builder setUri(@NonNull String setterArg) {
+        this.uri = setterArg;
+        return this;
+      }
+
+      private @Nullable PbwAppInfo appInfo;
+
+      public @NonNull Builder setAppInfo(@NonNull PbwAppInfo setterArg) {
+        this.appInfo = setterArg;
+        return this;
+      }
+
+      private @Nullable Boolean stayOffloaded;
+
+      public @NonNull Builder setStayOffloaded(@NonNull Boolean setterArg) {
+        this.stayOffloaded = setterArg;
+        return this;
+      }
+
+      public @NonNull InstallData build() {
+        InstallData pigeonReturn = new InstallData();
+        pigeonReturn.setUri(uri);
+        pigeonReturn.setAppInfo(appInfo);
+        pigeonReturn.setStayOffloaded(stayOffloaded);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(3);
+      toListResult.add(uri);
+      toListResult.add((appInfo == null) ? null : appInfo.toList());
+      toListResult.add(stayOffloaded);
+      return toListResult;
+    }
+
+    static @NonNull InstallData fromList(@NonNull ArrayList<Object> list) {
+      InstallData pigeonResult = new InstallData();
+      Object uri = list.get(0);
+      pigeonResult.setUri((String) uri);
+      Object appInfo = list.get(1);
+      pigeonResult.setAppInfo((appInfo == null) ? null : PbwAppInfo.fromList((ArrayList<Object>) appInfo));
+      Object stayOffloaded = list.get(2);
+      pigeonResult.setStayOffloaded((Boolean) stayOffloaded);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class AppInstallStatus {
+    /** Progress in range [0-1] */
+    private @NonNull Double progress;
+
+    public @NonNull Double getProgress() {
+      return progress;
+    }
+
+    public void setProgress(@NonNull Double setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"progress\" is null.");
+      }
+      this.progress = setterArg;
+    }
+
+    private @NonNull Boolean isInstalling;
+
+    public @NonNull Boolean getIsInstalling() {
+      return isInstalling;
+    }
+
+    public void setIsInstalling(@NonNull Boolean setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"isInstalling\" is null.");
+      }
+      this.isInstalling = setterArg;
+    }
+
+    /** Constructor is non-public to enforce null safety; use Builder. */
+    AppInstallStatus() {}
+
+    public static final class Builder {
+
+      private @Nullable Double progress;
+
+      public @NonNull Builder setProgress(@NonNull Double setterArg) {
+        this.progress = setterArg;
+        return this;
+      }
+
+      private @Nullable Boolean isInstalling;
+
+      public @NonNull Builder setIsInstalling(@NonNull Boolean setterArg) {
+        this.isInstalling = setterArg;
+        return this;
+      }
+
+      public @NonNull AppInstallStatus build() {
+        AppInstallStatus pigeonReturn = new AppInstallStatus();
+        pigeonReturn.setProgress(progress);
+        pigeonReturn.setIsInstalling(isInstalling);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(2);
+      toListResult.add(progress);
+      toListResult.add(isInstalling);
+      return toListResult;
+    }
+
+    static @NonNull AppInstallStatus fromList(@NonNull ArrayList<Object> list) {
+      AppInstallStatus pigeonResult = new AppInstallStatus();
+      Object progress = list.get(0);
+      pigeonResult.setProgress((Double) progress);
+      Object isInstalling = list.get(1);
+      pigeonResult.setIsInstalling((Boolean) isInstalling);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class ScreenshotResult {
+    private @NonNull Boolean success;
+
+    public @NonNull Boolean getSuccess() {
+      return success;
+    }
+
+    public void setSuccess(@NonNull Boolean setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"success\" is null.");
+      }
+      this.success = setterArg;
+    }
+
+    private @Nullable String imagePath;
+
+    public @Nullable String getImagePath() {
+      return imagePath;
+    }
+
+    public void setImagePath(@Nullable String setterArg) {
+      this.imagePath = setterArg;
+    }
+
+    /** Constructor is non-public to enforce null safety; use Builder. */
+    ScreenshotResult() {}
+
+    public static final class Builder {
+
+      private @Nullable Boolean success;
+
+      public @NonNull Builder setSuccess(@NonNull Boolean setterArg) {
+        this.success = setterArg;
+        return this;
+      }
+
+      private @Nullable String imagePath;
+
+      public @NonNull Builder setImagePath(@Nullable String setterArg) {
+        this.imagePath = setterArg;
+        return this;
+      }
+
+      public @NonNull ScreenshotResult build() {
+        ScreenshotResult pigeonReturn = new ScreenshotResult();
+        pigeonReturn.setSuccess(success);
+        pigeonReturn.setImagePath(imagePath);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(2);
+      toListResult.add(success);
+      toListResult.add(imagePath);
+      return toListResult;
+    }
+
+    static @NonNull ScreenshotResult fromList(@NonNull ArrayList<Object> list) {
+      ScreenshotResult pigeonResult = new ScreenshotResult();
+      Object success = list.get(0);
+      pigeonResult.setSuccess((Boolean) success);
+      Object imagePath = list.get(1);
+      pigeonResult.setImagePath((String) imagePath);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class AppLogEntry {
+    private @NonNull String uuid;
+
+    public @NonNull String getUuid() {
+      return uuid;
+    }
+
+    public void setUuid(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"uuid\" is null.");
+      }
+      this.uuid = setterArg;
+    }
+
+    private @NonNull Long timestamp;
+
+    public @NonNull Long getTimestamp() {
+      return timestamp;
+    }
+
+    public void setTimestamp(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"timestamp\" is null.");
+      }
+      this.timestamp = setterArg;
+    }
+
+    private @NonNull Long level;
+
+    public @NonNull Long getLevel() {
+      return level;
+    }
+
+    public void setLevel(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"level\" is null.");
+      }
+      this.level = setterArg;
+    }
+
+    private @NonNull Long lineNumber;
+
+    public @NonNull Long getLineNumber() {
+      return lineNumber;
+    }
+
+    public void setLineNumber(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"lineNumber\" is null.");
+      }
+      this.lineNumber = setterArg;
+    }
+
+    private @NonNull String filename;
+
+    public @NonNull String getFilename() {
+      return filename;
+    }
+
+    public void setFilename(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"filename\" is null.");
+      }
+      this.filename = setterArg;
+    }
+
+    private @NonNull String message;
+
+    public @NonNull String getMessage() {
+      return message;
+    }
+
+    public void setMessage(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"message\" is null.");
+      }
+      this.message = setterArg;
+    }
+
+    /** Constructor is non-public to enforce null safety; use Builder. */
+    AppLogEntry() {}
+
+    public static final class Builder {
+
+      private @Nullable String uuid;
+
+      public @NonNull Builder setUuid(@NonNull String setterArg) {
+        this.uuid = setterArg;
+        return this;
+      }
+
+      private @Nullable Long timestamp;
+
+      public @NonNull Builder setTimestamp(@NonNull Long setterArg) {
+        this.timestamp = setterArg;
+        return this;
+      }
+
+      private @Nullable Long level;
+
+      public @NonNull Builder setLevel(@NonNull Long setterArg) {
+        this.level = setterArg;
+        return this;
+      }
+
+      private @Nullable Long lineNumber;
+
+      public @NonNull Builder setLineNumber(@NonNull Long setterArg) {
+        this.lineNumber = setterArg;
+        return this;
+      }
+
+      private @Nullable String filename;
+
+      public @NonNull Builder setFilename(@NonNull String setterArg) {
+        this.filename = setterArg;
+        return this;
+      }
+
+      private @Nullable String message;
+
+      public @NonNull Builder setMessage(@NonNull String setterArg) {
+        this.message = setterArg;
+        return this;
+      }
+
+      public @NonNull AppLogEntry build() {
+        AppLogEntry pigeonReturn = new AppLogEntry();
+        pigeonReturn.setUuid(uuid);
+        pigeonReturn.setTimestamp(timestamp);
+        pigeonReturn.setLevel(level);
+        pigeonReturn.setLineNumber(lineNumber);
+        pigeonReturn.setFilename(filename);
+        pigeonReturn.setMessage(message);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(6);
+      toListResult.add(uuid);
+      toListResult.add(timestamp);
+      toListResult.add(level);
+      toListResult.add(lineNumber);
+      toListResult.add(filename);
+      toListResult.add(message);
+      return toListResult;
+    }
+
+    static @NonNull AppLogEntry fromList(@NonNull ArrayList<Object> list) {
+      AppLogEntry pigeonResult = new AppLogEntry();
+      Object uuid = list.get(0);
+      pigeonResult.setUuid((String) uuid);
+      Object timestamp = list.get(1);
+      pigeonResult.setTimestamp((timestamp == null) ? null : ((timestamp instanceof Integer) ? (Integer) timestamp : (Long) timestamp));
+      Object level = list.get(2);
+      pigeonResult.setLevel((level == null) ? null : ((level instanceof Integer) ? (Integer) level : (Long) level));
+      Object lineNumber = list.get(3);
+      pigeonResult.setLineNumber((lineNumber == null) ? null : ((lineNumber instanceof Integer) ? (Integer) lineNumber : (Long) lineNumber));
+      Object filename = list.get(4);
+      pigeonResult.setFilename((String) filename);
+      Object message = list.get(5);
+      pigeonResult.setMessage((String) message);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class OAuthResult {
+    private @Nullable String code;
+
+    public @Nullable String getCode() {
+      return code;
+    }
+
+    public void setCode(@Nullable String setterArg) {
+      this.code = setterArg;
+    }
+
+    private @Nullable String state;
+
+    public @Nullable String getState() {
+      return state;
+    }
+
+    public void setState(@Nullable String setterArg) {
+      this.state = setterArg;
+    }
+
+    private @Nullable String error;
+
+    public @Nullable String getError() {
+      return error;
+    }
+
+    public void setError(@Nullable String setterArg) {
+      this.error = setterArg;
+    }
+
+    public static final class Builder {
+
+      private @Nullable String code;
+
+      public @NonNull Builder setCode(@Nullable String setterArg) {
+        this.code = setterArg;
+        return this;
+      }
+
+      private @Nullable String state;
+
+      public @NonNull Builder setState(@Nullable String setterArg) {
+        this.state = setterArg;
+        return this;
+      }
+
+      private @Nullable String error;
+
+      public @NonNull Builder setError(@Nullable String setterArg) {
+        this.error = setterArg;
+        return this;
+      }
+
+      public @NonNull OAuthResult build() {
+        OAuthResult pigeonReturn = new OAuthResult();
+        pigeonReturn.setCode(code);
+        pigeonReturn.setState(state);
+        pigeonReturn.setError(error);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(3);
+      toListResult.add(code);
+      toListResult.add(state);
+      toListResult.add(error);
+      return toListResult;
+    }
+
+    static @NonNull OAuthResult fromList(@NonNull ArrayList<Object> list) {
+      OAuthResult pigeonResult = new OAuthResult();
+      Object code = list.get(0);
+      pigeonResult.setCode((String) code);
+      Object state = list.get(1);
+      pigeonResult.setState((String) state);
+      Object error = list.get(2);
+      pigeonResult.setError((String) error);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class NotifChannelPigeon {
+    private @Nullable String packageId;
+
+    public @Nullable String getPackageId() {
+      return packageId;
+    }
+
+    public void setPackageId(@Nullable String setterArg) {
+      this.packageId = setterArg;
+    }
+
+    private @Nullable String channelId;
+
+    public @Nullable String getChannelId() {
+      return channelId;
+    }
+
+    public void setChannelId(@Nullable String setterArg) {
+      this.channelId = setterArg;
+    }
+
+    private @Nullable String channelName;
+
+    public @Nullable String getChannelName() {
+      return channelName;
+    }
+
+    public void setChannelName(@Nullable String setterArg) {
+      this.channelName = setterArg;
+    }
+
+    private @Nullable String channelDesc;
+
+    public @Nullable String getChannelDesc() {
+      return channelDesc;
+    }
+
+    public void setChannelDesc(@Nullable String setterArg) {
+      this.channelDesc = setterArg;
+    }
+
+    private @Nullable Boolean delete;
+
+    public @Nullable Boolean getDelete() {
+      return delete;
+    }
+
+    public void setDelete(@Nullable Boolean setterArg) {
+      this.delete = setterArg;
+    }
+
+    public static final class Builder {
+
+      private @Nullable String packageId;
+
+      public @NonNull Builder setPackageId(@Nullable String setterArg) {
+        this.packageId = setterArg;
+        return this;
+      }
+
+      private @Nullable String channelId;
+
+      public @NonNull Builder setChannelId(@Nullable String setterArg) {
+        this.channelId = setterArg;
+        return this;
+      }
+
+      private @Nullable String channelName;
+
+      public @NonNull Builder setChannelName(@Nullable String setterArg) {
+        this.channelName = setterArg;
+        return this;
+      }
+
+      private @Nullable String channelDesc;
+
+      public @NonNull Builder setChannelDesc(@Nullable String setterArg) {
+        this.channelDesc = setterArg;
+        return this;
+      }
+
+      private @Nullable Boolean delete;
+
+      public @NonNull Builder setDelete(@Nullable Boolean setterArg) {
+        this.delete = setterArg;
+        return this;
+      }
+
+      public @NonNull NotifChannelPigeon build() {
+        NotifChannelPigeon pigeonReturn = new NotifChannelPigeon();
+        pigeonReturn.setPackageId(packageId);
+        pigeonReturn.setChannelId(channelId);
+        pigeonReturn.setChannelName(channelName);
+        pigeonReturn.setChannelDesc(channelDesc);
+        pigeonReturn.setDelete(delete);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(5);
+      toListResult.add(packageId);
+      toListResult.add(channelId);
+      toListResult.add(channelName);
+      toListResult.add(channelDesc);
+      toListResult.add(delete);
+      return toListResult;
+    }
+
+    static @NonNull NotifChannelPigeon fromList(@NonNull ArrayList<Object> list) {
+      NotifChannelPigeon pigeonResult = new NotifChannelPigeon();
+      Object packageId = list.get(0);
+      pigeonResult.setPackageId((String) packageId);
+      Object channelId = list.get(1);
+      pigeonResult.setChannelId((String) channelId);
+      Object channelName = list.get(2);
+      pigeonResult.setChannelName((String) channelName);
+      Object channelDesc = list.get(3);
+      pigeonResult.setChannelDesc((String) channelDesc);
+      Object delete = list.get(4);
+      pigeonResult.setDelete((Boolean) delete);
+      return pigeonResult;
+    }
+  }
+
+  public interface Result<T> {
+    @SuppressWarnings("UnknownNullness")
+    void success(T result);
+
+    void error(@NonNull Throwable error);
+  }
+
+  private static class ScanCallbacksCodec extends StandardMessageCodec {
+    public static final ScanCallbacksCodec INSTANCE = new ScanCallbacksCodec();
+
+    private ScanCallbacksCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return PebbleScanDevicePigeon.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof PebbleScanDevicePigeon) {
+        stream.write(128);
+        writeValue(stream, ((PebbleScanDevicePigeon) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
+  public static class ScanCallbacks {
+    private final @NonNull BinaryMessenger binaryMessenger;
+
+    public ScanCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
+      this.binaryMessenger = argBinaryMessenger;
+    }
+
+    /** Public interface for sending reply. */ 
+    @SuppressWarnings("UnknownNullness")
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+    /** The codec used by ScanCallbacks. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return ScanCallbacksCodec.INSTANCE;
+    }
+    /** pebbles = list of PebbleScanDevicePigeon */
+    public void onScanUpdate(@NonNull List<PebbleScanDevicePigeon> pebblesArg, @NonNull Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.ScanCallbacks.onScanUpdate", getCodec());
+      channel.send(
+          new ArrayList<Object>(Collections.singletonList(pebblesArg)),
+          channelReply -> callback.reply(null));
+    }
+    public void onScanStarted(@NonNull Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.ScanCallbacks.onScanStarted", getCodec());
+      channel.send(
+          null,
+          channelReply -> callback.reply(null));
+    }
+    public void onScanStopped(@NonNull Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.ScanCallbacks.onScanStopped", getCodec());
+      channel.send(
+          null,
+          channelReply -> callback.reply(null));
+    }
+  }
+
+  private static class ConnectionCallbacksCodec extends StandardMessageCodec {
+    public static final ConnectionCallbacksCodec INSTANCE = new ConnectionCallbacksCodec();
+
+    private ConnectionCallbacksCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return PebbleDevicePigeon.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 129:
+          return PebbleFirmwarePigeon.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 130:
+          return WatchConnectionStatePigeon.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof PebbleDevicePigeon) {
+        stream.write(128);
+        writeValue(stream, ((PebbleDevicePigeon) value).toList());
+      } else if (value instanceof PebbleFirmwarePigeon) {
+        stream.write(129);
+        writeValue(stream, ((PebbleFirmwarePigeon) value).toList());
+      } else if (value instanceof WatchConnectionStatePigeon) {
+        stream.write(130);
+        writeValue(stream, ((WatchConnectionStatePigeon) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
+  public static class ConnectionCallbacks {
+    private final @NonNull BinaryMessenger binaryMessenger;
+
+    public ConnectionCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
+      this.binaryMessenger = argBinaryMessenger;
+    }
+
+    /** Public interface for sending reply. */ 
+    @SuppressWarnings("UnknownNullness")
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+    /** The codec used by ConnectionCallbacks. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return ConnectionCallbacksCodec.INSTANCE;
+    }
+    public void onWatchConnectionStateChanged(@NonNull WatchConnectionStatePigeon newStateArg, @NonNull Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.ConnectionCallbacks.onWatchConnectionStateChanged", getCodec());
+      channel.send(
+          new ArrayList<Object>(Collections.singletonList(newStateArg)),
+          channelReply -> callback.reply(null));
+    }
+  }
+
+  private static class RawIncomingPacketsCallbacksCodec extends StandardMessageCodec {
+    public static final RawIncomingPacketsCallbacksCodec INSTANCE = new RawIncomingPacketsCallbacksCodec();
+
+    private RawIncomingPacketsCallbacksCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return ListWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof ListWrapper) {
+        stream.write(128);
+        writeValue(stream, ((ListWrapper) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
+  public static class RawIncomingPacketsCallbacks {
+    private final @NonNull BinaryMessenger binaryMessenger;
+
+    public RawIncomingPacketsCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
+      this.binaryMessenger = argBinaryMessenger;
+    }
+
+    /** Public interface for sending reply. */ 
+    @SuppressWarnings("UnknownNullness")
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+    /** The codec used by RawIncomingPacketsCallbacks. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return RawIncomingPacketsCallbacksCodec.INSTANCE;
+    }
+    public void onPacketReceived(@NonNull ListWrapper listOfBytesArg, @NonNull Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.RawIncomingPacketsCallbacks.onPacketReceived", getCodec());
+      channel.send(
+          new ArrayList<Object>(Collections.singletonList(listOfBytesArg)),
+          channelReply -> callback.reply(null));
+    }
+  }
+
+  private static class PairCallbacksCodec extends StandardMessageCodec {
+    public static final PairCallbacksCodec INSTANCE = new PairCallbacksCodec();
+
+    private PairCallbacksCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof StringWrapper) {
+        stream.write(128);
+        writeValue(stream, ((StringWrapper) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
+  public static class PairCallbacks {
+    private final @NonNull BinaryMessenger binaryMessenger;
+
+    public PairCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
+      this.binaryMessenger = argBinaryMessenger;
+    }
+
+    /** Public interface for sending reply. */ 
+    @SuppressWarnings("UnknownNullness")
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+    /** The codec used by PairCallbacks. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return PairCallbacksCodec.INSTANCE;
+    }
+    public void onWatchPairComplete(@NonNull StringWrapper addressArg, @NonNull Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.PairCallbacks.onWatchPairComplete", getCodec());
+      channel.send(
+          new ArrayList<Object>(Collections.singletonList(addressArg)),
+          channelReply -> callback.reply(null));
+    }
+  }
+
+  private static class TimelineCallbacksCodec extends StandardMessageCodec {
+    public static final TimelineCallbacksCodec INSTANCE = new TimelineCallbacksCodec();
+
+    private TimelineCallbacksCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return ActionResponsePigeon.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 129:
+          return ActionTrigger.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof ActionResponsePigeon) {
+        stream.write(128);
+        writeValue(stream, ((ActionResponsePigeon) value).toList());
+      } else if (value instanceof ActionTrigger) {
+        stream.write(129);
+        writeValue(stream, ((ActionTrigger) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
+  public static class TimelineCallbacks {
+    private final @NonNull BinaryMessenger binaryMessenger;
+
+    public TimelineCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
+      this.binaryMessenger = argBinaryMessenger;
+    }
+
+    /** Public interface for sending reply. */ 
+    @SuppressWarnings("UnknownNullness")
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+    /** The codec used by TimelineCallbacks. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return TimelineCallbacksCodec.INSTANCE;
+    }
+    public void handleTimelineAction(@NonNull ActionTrigger actionTriggerArg, @NonNull Reply<ActionResponsePigeon> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.TimelineCallbacks.handleTimelineAction", getCodec());
+      channel.send(
+          new ArrayList<Object>(Collections.singletonList(actionTriggerArg)),
+          channelReply -> {
+            @SuppressWarnings("ConstantConditions")
+            ActionResponsePigeon output = (ActionResponsePigeon) channelReply;
+            callback.reply(output);
+          });
+    }
+  }
+
+  private static class IntentCallbacksCodec extends StandardMessageCodec {
+    public static final IntentCallbacksCodec INSTANCE = new IntentCallbacksCodec();
+
+    private IntentCallbacksCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof StringWrapper) {
+        stream.write(128);
+        writeValue(stream, ((StringWrapper) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
+  public static class IntentCallbacks {
+    private final @NonNull BinaryMessenger binaryMessenger;
+
+    public IntentCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
+      this.binaryMessenger = argBinaryMessenger;
+    }
+
+    /** Public interface for sending reply. */ 
+    @SuppressWarnings("UnknownNullness")
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+    /** The codec used by IntentCallbacks. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return IntentCallbacksCodec.INSTANCE;
+    }
+    public void openUri(@NonNull StringWrapper uriArg, @NonNull Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.IntentCallbacks.openUri", getCodec());
+      channel.send(
+          new ArrayList<Object>(Collections.singletonList(uriArg)),
+          channelReply -> callback.reply(null));
+    }
+  }
+
+  private static class BackgroundAppInstallCallbacksCodec extends StandardMessageCodec {
+    public static final BackgroundAppInstallCallbacksCodec INSTANCE = new BackgroundAppInstallCallbacksCodec();
+
+    private BackgroundAppInstallCallbacksCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return InstallData.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 129:
+          return PbwAppInfo.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 130:
+          return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 131:
+          return WatchResource.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 132:
+          return WatchappInfo.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof InstallData) {
+        stream.write(128);
+        writeValue(stream, ((InstallData) value).toList());
+      } else if (value instanceof PbwAppInfo) {
+        stream.write(129);
+        writeValue(stream, ((PbwAppInfo) value).toList());
+      } else if (value instanceof StringWrapper) {
+        stream.write(130);
+        writeValue(stream, ((StringWrapper) value).toList());
+      } else if (value instanceof WatchResource) {
+        stream.write(131);
+        writeValue(stream, ((WatchResource) value).toList());
+      } else if (value instanceof WatchappInfo) {
+        stream.write(132);
+        writeValue(stream, ((WatchappInfo) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
+  public static class BackgroundAppInstallCallbacks {
+    private final @NonNull BinaryMessenger binaryMessenger;
+
+    public BackgroundAppInstallCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
+      this.binaryMessenger = argBinaryMessenger;
+    }
+
+    /** Public interface for sending reply. */ 
+    @SuppressWarnings("UnknownNullness")
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+    /** The codec used by BackgroundAppInstallCallbacks. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return BackgroundAppInstallCallbacksCodec.INSTANCE;
+    }
+    public void beginAppInstall(@NonNull InstallData installDataArg, @NonNull Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall", getCodec());
+      channel.send(
+          new ArrayList<Object>(Collections.singletonList(installDataArg)),
+          channelReply -> callback.reply(null));
+    }
+    public void deleteApp(@NonNull StringWrapper uuidArg, @NonNull Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.BackgroundAppInstallCallbacks.deleteApp", getCodec());
+      channel.send(
+          new ArrayList<Object>(Collections.singletonList(uuidArg)),
+          channelReply -> callback.reply(null));
+    }
+  }
+
+  private static class AppInstallStatusCallbacksCodec extends StandardMessageCodec {
+    public static final AppInstallStatusCallbacksCodec INSTANCE = new AppInstallStatusCallbacksCodec();
+
+    private AppInstallStatusCallbacksCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return AppInstallStatus.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof AppInstallStatus) {
+        stream.write(128);
+        writeValue(stream, ((AppInstallStatus) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
+  public static class AppInstallStatusCallbacks {
+    private final @NonNull BinaryMessenger binaryMessenger;
+
+    public AppInstallStatusCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
+      this.binaryMessenger = argBinaryMessenger;
+    }
+
+    /** Public interface for sending reply. */ 
+    @SuppressWarnings("UnknownNullness")
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+    /** The codec used by AppInstallStatusCallbacks. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return AppInstallStatusCallbacksCodec.INSTANCE;
+    }
+    public void onStatusUpdated(@NonNull AppInstallStatus statusArg, @NonNull Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.AppInstallStatusCallbacks.onStatusUpdated", getCodec());
+      channel.send(
+          new ArrayList<Object>(Collections.singletonList(statusArg)),
+          channelReply -> callback.reply(null));
+    }
+  }
+
+  private static class NotificationListeningCodec extends StandardMessageCodec {
+    public static final NotificationListeningCodec INSTANCE = new NotificationListeningCodec();
+
+    private NotificationListeningCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return BooleanWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 129:
+          return NotifChannelPigeon.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 130:
+          return NotificationPigeon.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 131:
+          return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 132:
+          return TimelinePinPigeon.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof BooleanWrapper) {
+        stream.write(128);
+        writeValue(stream, ((BooleanWrapper) value).toList());
+      } else if (value instanceof NotifChannelPigeon) {
+        stream.write(129);
+        writeValue(stream, ((NotifChannelPigeon) value).toList());
+      } else if (value instanceof NotificationPigeon) {
+        stream.write(130);
+        writeValue(stream, ((NotificationPigeon) value).toList());
+      } else if (value instanceof StringWrapper) {
+        stream.write(131);
+        writeValue(stream, ((StringWrapper) value).toList());
+      } else if (value instanceof TimelinePinPigeon) {
+        stream.write(132);
+        writeValue(stream, ((TimelinePinPigeon) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
+  public static class NotificationListening {
+    private final @NonNull BinaryMessenger binaryMessenger;
+
+    public NotificationListening(@NonNull BinaryMessenger argBinaryMessenger) {
+      this.binaryMessenger = argBinaryMessenger;
+    }
+
+    /** Public interface for sending reply. */ 
+    @SuppressWarnings("UnknownNullness")
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+    /** The codec used by NotificationListening. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return NotificationListeningCodec.INSTANCE;
+    }
+    public void handleNotification(@NonNull NotificationPigeon notificationArg, @NonNull Reply<TimelinePinPigeon> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.NotificationListening.handleNotification", getCodec());
+      channel.send(
+          new ArrayList<Object>(Collections.singletonList(notificationArg)),
+          channelReply -> {
+            @SuppressWarnings("ConstantConditions")
+            TimelinePinPigeon output = (TimelinePinPigeon) channelReply;
+            callback.reply(output);
+          });
+    }
+    public void dismissNotification(@NonNull StringWrapper itemIdArg, @NonNull Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.NotificationListening.dismissNotification", getCodec());
+      channel.send(
+          new ArrayList<Object>(Collections.singletonList(itemIdArg)),
+          channelReply -> callback.reply(null));
+    }
+    public void shouldNotify(@NonNull NotifChannelPigeon channelArg, @NonNull Reply<BooleanWrapper> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.NotificationListening.shouldNotify", getCodec());
+      channel.send(
+          new ArrayList<Object>(Collections.singletonList(channelArg)),
+          channelReply -> {
+            @SuppressWarnings("ConstantConditions")
+            BooleanWrapper output = (BooleanWrapper) channelReply;
+            callback.reply(output);
+          });
+    }
+    public void updateChannel(@NonNull NotifChannelPigeon channelArg, @NonNull Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.NotificationListening.updateChannel", getCodec());
+      channel.send(
+          new ArrayList<Object>(Collections.singletonList(channelArg)),
+          channelReply -> callback.reply(null));
+    }
+  }
+
+  private static class AppLogCallbacksCodec extends StandardMessageCodec {
+    public static final AppLogCallbacksCodec INSTANCE = new AppLogCallbacksCodec();
+
+    private AppLogCallbacksCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return AppLogEntry.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof AppLogEntry) {
+        stream.write(128);
+        writeValue(stream, ((AppLogEntry) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
+  public static class AppLogCallbacks {
+    private final @NonNull BinaryMessenger binaryMessenger;
+
+    public AppLogCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
+      this.binaryMessenger = argBinaryMessenger;
+    }
+
+    /** Public interface for sending reply. */ 
+    @SuppressWarnings("UnknownNullness")
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+    /** The codec used by AppLogCallbacks. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return AppLogCallbacksCodec.INSTANCE;
+    }
+    public void onLogReceived(@NonNull AppLogEntry entryArg, @NonNull Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.AppLogCallbacks.onLogReceived", getCodec());
+      channel.send(
+          new ArrayList<Object>(Collections.singletonList(entryArg)),
+          channelReply -> callback.reply(null));
+    }
+  }
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
+  public static class FirmwareUpdateCallbacks {
+    private final @NonNull BinaryMessenger binaryMessenger;
+
+    public FirmwareUpdateCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
+      this.binaryMessenger = argBinaryMessenger;
+    }
+
+    /** Public interface for sending reply. */ 
+    @SuppressWarnings("UnknownNullness")
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+    /** The codec used by FirmwareUpdateCallbacks. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return new StandardMessageCodec();
+    }
+    public void onFirmwareUpdateStarted(@NonNull Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.FirmwareUpdateCallbacks.onFirmwareUpdateStarted", getCodec());
+      channel.send(
+          null,
+          channelReply -> callback.reply(null));
+    }
+    public void onFirmwareUpdateProgress(@NonNull Double progressArg, @NonNull Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.FirmwareUpdateCallbacks.onFirmwareUpdateProgress", getCodec());
+      channel.send(
+          new ArrayList<Object>(Collections.singletonList(progressArg)),
+          channelReply -> callback.reply(null));
+    }
+    public void onFirmwareUpdateFinished(@NonNull Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.FirmwareUpdateCallbacks.onFirmwareUpdateFinished", getCodec());
+      channel.send(
+          null,
+          channelReply -> callback.reply(null));
+    }
+  }
+
+  private static class NotificationUtilsCodec extends StandardMessageCodec {
+    public static final NotificationUtilsCodec INSTANCE = new NotificationUtilsCodec();
+
+    private NotificationUtilsCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return BooleanWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 129:
+          return NotifActionExecuteReq.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 130:
+          return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof BooleanWrapper) {
+        stream.write(128);
+        writeValue(stream, ((BooleanWrapper) value).toList());
+      } else if (value instanceof NotifActionExecuteReq) {
+        stream.write(129);
+        writeValue(stream, ((NotifActionExecuteReq) value).toList());
+      } else if (value instanceof StringWrapper) {
+        stream.write(130);
+        writeValue(stream, ((StringWrapper) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface NotificationUtils {
+
+    void dismissNotification(@NonNull StringWrapper itemId, @NonNull Result<BooleanWrapper> result);
+
+    void dismissNotificationWatch(@NonNull StringWrapper itemId);
+
+    void openNotification(@NonNull StringWrapper itemId);
+
+    void executeAction(@NonNull NotifActionExecuteReq action);
+
+    /** The codec used by NotificationUtils. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return NotificationUtilsCodec.INSTANCE;
+    }
+    /**Sets up an instance of `NotificationUtils` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable NotificationUtils api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.NotificationUtils.dismissNotification", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper itemIdArg = (StringWrapper) args.get(0);
+                Result<BooleanWrapper> resultCallback =
+                    new Result<BooleanWrapper>() {
+                      public void success(BooleanWrapper result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.dismissNotification(itemIdArg, resultCallback);
+              });
         } else {
-            errorList.add(exception.toString());
-            errorList.add(exception.getClass().getSimpleName());
-            errorList.add(
-                    "Cause: " + exception.getCause() + ", Stacktrace: " + Log.getStackTraceString(exception));
+          channel.setMessageHandler(null);
         }
-        return errorList;
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.NotificationUtils.dismissNotificationWatch", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper itemIdArg = (StringWrapper) args.get(0);
+                try {
+                  api.dismissNotificationWatch(itemIdArg);
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.NotificationUtils.openNotification", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper itemIdArg = (StringWrapper) args.get(0);
+                try {
+                  api.openNotification(itemIdArg);
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.NotificationUtils.executeAction", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                NotifActionExecuteReq actionArg = (NotifActionExecuteReq) args.get(0);
+                try {
+                  api.executeAction(actionArg);
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface ScanControl {
+
+    void startBleScan();
+
+    void startClassicScan();
+
+    /** The codec used by ScanControl. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return new StandardMessageCodec();
+    }
+    /**Sets up an instance of `ScanControl` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable ScanControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.ScanControl.startBleScan", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  api.startBleScan();
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.ScanControl.startClassicScan", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  api.startClassicScan();
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+
+  private static class ConnectionControlCodec extends StandardMessageCodec {
+    public static final ConnectionControlCodec INSTANCE = new ConnectionControlCodec();
+
+    private ConnectionControlCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return BooleanWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 129:
+          return ListWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
     }
 
-    public interface Result<T> {
-        @SuppressWarnings("UnknownNullness")
-        void success(T result);
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof BooleanWrapper) {
+        stream.write(128);
+        writeValue(stream, ((BooleanWrapper) value).toList());
+      } else if (value instanceof ListWrapper) {
+        stream.write(129);
+        writeValue(stream, ((ListWrapper) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
 
-        void error(@NonNull Throwable error);
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface ConnectionControl {
+
+    @NonNull 
+    BooleanWrapper isConnected();
+
+    void disconnect();
+
+    void sendRawPacket(@NonNull ListWrapper listOfBytes);
+
+    void observeConnectionChanges();
+
+    void cancelObservingConnectionChanges();
+
+    /** The codec used by ConnectionControl. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return ConnectionControlCodec.INSTANCE;
+    }
+    /**Sets up an instance of `ConnectionControl` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable ConnectionControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.ConnectionControl.isConnected", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  BooleanWrapper output = api.isConnected();
+                  wrapped.add(0, output);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.ConnectionControl.disconnect", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  api.disconnect();
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.ConnectionControl.sendRawPacket", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                ListWrapper listOfBytesArg = (ListWrapper) args.get(0);
+                try {
+                  api.sendRawPacket(listOfBytesArg);
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.ConnectionControl.observeConnectionChanges", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  api.observeConnectionChanges();
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.ConnectionControl.cancelObservingConnectionChanges", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  api.cancelObservingConnectionChanges();
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface RawIncomingPacketsControl {
+
+    void observeIncomingPackets();
+
+    void cancelObservingIncomingPackets();
+
+    /** The codec used by RawIncomingPacketsControl. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return new StandardMessageCodec();
+    }
+    /**Sets up an instance of `RawIncomingPacketsControl` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable RawIncomingPacketsControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.RawIncomingPacketsControl.observeIncomingPackets", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  api.observeIncomingPackets();
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.RawIncomingPacketsControl.cancelObservingIncomingPackets", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  api.cancelObservingIncomingPackets();
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+
+  private static class UiConnectionControlCodec extends StandardMessageCodec {
+    public static final UiConnectionControlCodec INSTANCE = new UiConnectionControlCodec();
+
+    private UiConnectionControlCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
     }
 
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof StringWrapper) {
+        stream.write(128);
+        writeValue(stream, ((StringWrapper) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /**
+   * Connection methods that require UI reside in separate pigeon class.
+   * This allows easier separation between background and UI methods.
+   *
+   * Generated interface from Pigeon that represents a handler of messages from Flutter.
+   */
+  public interface UiConnectionControl {
+
+    void connectToWatch(@NonNull StringWrapper macAddress);
+
+    void unpairWatch(@NonNull StringWrapper macAddress);
+
+    /** The codec used by UiConnectionControl. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return UiConnectionControlCodec.INSTANCE;
+    }
+    /**Sets up an instance of `UiConnectionControl` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable UiConnectionControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.UiConnectionControl.connectToWatch", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper macAddressArg = (StringWrapper) args.get(0);
+                try {
+                  api.connectToWatch(macAddressArg);
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.UiConnectionControl.unpairWatch", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper macAddressArg = (StringWrapper) args.get(0);
+                try {
+                  api.unpairWatch(macAddressArg);
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface NotificationsControl {
+
+    void sendTestNotification();
+
+    /** The codec used by NotificationsControl. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return new StandardMessageCodec();
+    }
+    /**Sets up an instance of `NotificationsControl` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable NotificationsControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.NotificationsControl.sendTestNotification", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  api.sendTestNotification();
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+
+  private static class IntentControlCodec extends StandardMessageCodec {
+    public static final IntentControlCodec INSTANCE = new IntentControlCodec();
+
+    private IntentControlCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return OAuthResult.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof OAuthResult) {
+        stream.write(128);
+        writeValue(stream, ((OAuthResult) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface IntentControl {
+
+    void notifyFlutterReadyForIntents();
+
+    void notifyFlutterNotReadyForIntents();
+
+    void waitForOAuth(@NonNull Result<OAuthResult> result);
+
+    /** The codec used by IntentControl. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return IntentControlCodec.INSTANCE;
+    }
+    /**Sets up an instance of `IntentControl` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable IntentControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.IntentControl.notifyFlutterReadyForIntents", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  api.notifyFlutterReadyForIntents();
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.IntentControl.notifyFlutterNotReadyForIntents", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  api.notifyFlutterNotReadyForIntents();
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.IntentControl.waitForOAuth", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                Result<OAuthResult> resultCallback =
+                    new Result<OAuthResult>() {
+                      public void success(OAuthResult result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.waitForOAuth(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface DebugControl {
+
+    void collectLogs(@NonNull String rwsId);
+
+    /** The codec used by DebugControl. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return new StandardMessageCodec();
+    }
+    /**Sets up an instance of `DebugControl` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable DebugControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.DebugControl.collectLogs", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                String rwsIdArg = (String) args.get(0);
+                try {
+                  api.collectLogs(rwsIdArg);
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+
+  private static class TimelineControlCodec extends StandardMessageCodec {
+    public static final TimelineControlCodec INSTANCE = new TimelineControlCodec();
+
+    private TimelineControlCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return NumberWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 129:
+          return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 130:
+          return TimelinePinPigeon.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof NumberWrapper) {
+        stream.write(128);
+        writeValue(stream, ((NumberWrapper) value).toList());
+      } else if (value instanceof StringWrapper) {
+        stream.write(129);
+        writeValue(stream, ((StringWrapper) value).toList());
+      } else if (value instanceof TimelinePinPigeon) {
+        stream.write(130);
+        writeValue(stream, ((TimelinePinPigeon) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface TimelineControl {
+
+    void addPin(@NonNull TimelinePinPigeon pin, @NonNull Result<NumberWrapper> result);
+
+    void removePin(@NonNull StringWrapper pinUuid, @NonNull Result<NumberWrapper> result);
+
+    void removeAllPins(@NonNull Result<NumberWrapper> result);
+
+    /** The codec used by TimelineControl. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return TimelineControlCodec.INSTANCE;
+    }
+    /**Sets up an instance of `TimelineControl` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable TimelineControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.TimelineControl.addPin", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                TimelinePinPigeon pinArg = (TimelinePinPigeon) args.get(0);
+                Result<NumberWrapper> resultCallback =
+                    new Result<NumberWrapper>() {
+                      public void success(NumberWrapper result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.addPin(pinArg, resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.TimelineControl.removePin", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper pinUuidArg = (StringWrapper) args.get(0);
+                Result<NumberWrapper> resultCallback =
+                    new Result<NumberWrapper>() {
+                      public void success(NumberWrapper result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.removePin(pinUuidArg, resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.TimelineControl.removeAllPins", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                Result<NumberWrapper> resultCallback =
+                    new Result<NumberWrapper>() {
+                      public void success(NumberWrapper result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.removeAllPins(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+
+  private static class BackgroundSetupControlCodec extends StandardMessageCodec {
+    public static final BackgroundSetupControlCodec INSTANCE = new BackgroundSetupControlCodec();
+
+    private BackgroundSetupControlCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return NumberWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof NumberWrapper) {
+        stream.write(128);
+        writeValue(stream, ((NumberWrapper) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface BackgroundSetupControl {
+
+    void setupBackground(@NonNull NumberWrapper callbackHandle);
+
+    /** The codec used by BackgroundSetupControl. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return BackgroundSetupControlCodec.INSTANCE;
+    }
+    /**Sets up an instance of `BackgroundSetupControl` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable BackgroundSetupControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.BackgroundSetupControl.setupBackground", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                NumberWrapper callbackHandleArg = (NumberWrapper) args.get(0);
+                try {
+                  api.setupBackground(callbackHandleArg);
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+
+  private static class BackgroundControlCodec extends StandardMessageCodec {
+    public static final BackgroundControlCodec INSTANCE = new BackgroundControlCodec();
+
+    private BackgroundControlCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return NumberWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof NumberWrapper) {
+        stream.write(128);
+        writeValue(stream, ((NumberWrapper) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface BackgroundControl {
+
+    void notifyFlutterBackgroundStarted(@NonNull Result<NumberWrapper> result);
+
+    /** The codec used by BackgroundControl. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return BackgroundControlCodec.INSTANCE;
+    }
+    /**Sets up an instance of `BackgroundControl` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable BackgroundControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.BackgroundControl.notifyFlutterBackgroundStarted", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                Result<NumberWrapper> resultCallback =
+                    new Result<NumberWrapper>() {
+                      public void success(NumberWrapper result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.notifyFlutterBackgroundStarted(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+
+  private static class PermissionCheckCodec extends StandardMessageCodec {
+    public static final PermissionCheckCodec INSTANCE = new PermissionCheckCodec();
+
+    private PermissionCheckCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return BooleanWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof BooleanWrapper) {
+        stream.write(128);
+        writeValue(stream, ((BooleanWrapper) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface PermissionCheck {
+
+    @NonNull 
+    BooleanWrapper hasLocationPermission();
+
+    @NonNull 
+    BooleanWrapper hasCalendarPermission();
+
+    @NonNull 
+    BooleanWrapper hasNotificationAccess();
+
+    @NonNull 
+    BooleanWrapper hasBatteryExclusionEnabled();
+
+    @NonNull 
+    BooleanWrapper hasCallsPermissions();
+
+    /** The codec used by PermissionCheck. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return PermissionCheckCodec.INSTANCE;
+    }
+    /**Sets up an instance of `PermissionCheck` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable PermissionCheck api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PermissionCheck.hasLocationPermission", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  BooleanWrapper output = api.hasLocationPermission();
+                  wrapped.add(0, output);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PermissionCheck.hasCalendarPermission", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  BooleanWrapper output = api.hasCalendarPermission();
+                  wrapped.add(0, output);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PermissionCheck.hasNotificationAccess", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  BooleanWrapper output = api.hasNotificationAccess();
+                  wrapped.add(0, output);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PermissionCheck.hasBatteryExclusionEnabled", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  BooleanWrapper output = api.hasBatteryExclusionEnabled();
+                  wrapped.add(0, output);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PermissionCheck.hasCallsPermissions", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  BooleanWrapper output = api.hasCallsPermissions();
+                  wrapped.add(0, output);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+
+  private static class PermissionControlCodec extends StandardMessageCodec {
+    public static final PermissionControlCodec INSTANCE = new PermissionControlCodec();
+
+    private PermissionControlCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return NumberWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof NumberWrapper) {
+        stream.write(128);
+        writeValue(stream, ((NumberWrapper) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface PermissionControl {
+
+    void requestLocationPermission(@NonNull Result<NumberWrapper> result);
+
+    void requestCalendarPermission(@NonNull Result<NumberWrapper> result);
+    /** This can only be performed when at least one watch is paired */
+    void requestNotificationAccess(@NonNull Result<Void> result);
+    /** This can only be performed when at least one watch is paired */
+    void requestBatteryExclusion(@NonNull Result<Void> result);
+    /** This can only be performed when at least one watch is paired */
+    void requestCallsPermissions(@NonNull Result<Void> result);
+
+    void requestBluetoothPermissions(@NonNull Result<NumberWrapper> result);
+
+    void openPermissionSettings(@NonNull Result<Void> result);
+
+    /** The codec used by PermissionControl. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return PermissionControlCodec.INSTANCE;
+    }
+    /**Sets up an instance of `PermissionControl` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable PermissionControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestLocationPermission", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                Result<NumberWrapper> resultCallback =
+                    new Result<NumberWrapper>() {
+                      public void success(NumberWrapper result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.requestLocationPermission(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestCalendarPermission", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                Result<NumberWrapper> resultCallback =
+                    new Result<NumberWrapper>() {
+                      public void success(NumberWrapper result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.requestCalendarPermission(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestNotificationAccess", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                Result<Void> resultCallback =
+                    new Result<Void>() {
+                      public void success(Void result) {
+                        wrapped.add(0, null);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.requestNotificationAccess(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestBatteryExclusion", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                Result<Void> resultCallback =
+                    new Result<Void>() {
+                      public void success(Void result) {
+                        wrapped.add(0, null);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.requestBatteryExclusion(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestCallsPermissions", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                Result<Void> resultCallback =
+                    new Result<Void>() {
+                      public void success(Void result) {
+                        wrapped.add(0, null);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.requestCallsPermissions(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestBluetoothPermissions", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                Result<NumberWrapper> resultCallback =
+                    new Result<NumberWrapper>() {
+                      public void success(NumberWrapper result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.requestBluetoothPermissions(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PermissionControl.openPermissionSettings", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                Result<Void> resultCallback =
+                    new Result<Void>() {
+                      public void success(Void result) {
+                        wrapped.add(0, null);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.openPermissionSettings(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface CalendarControl {
+
+    void requestCalendarSync();
+
+    void setCalendarSyncEnabled(@NonNull Boolean enabled, @NonNull Result<Void> result);
+
+    void getCalendarSyncEnabled(@NonNull Result<Boolean> result);
+
+    void deleteAllCalendarPins(@NonNull Result<Void> result);
+
+    /** The codec used by CalendarControl. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return new StandardMessageCodec();
+    }
+    /**Sets up an instance of `CalendarControl` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable CalendarControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.CalendarControl.requestCalendarSync", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  api.requestCalendarSync();
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.CalendarControl.setCalendarSyncEnabled", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                Boolean enabledArg = (Boolean) args.get(0);
+                Result<Void> resultCallback =
+                    new Result<Void>() {
+                      public void success(Void result) {
+                        wrapped.add(0, null);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.setCalendarSyncEnabled(enabledArg, resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.CalendarControl.getCalendarSyncEnabled", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                Result<Boolean> resultCallback =
+                    new Result<Boolean>() {
+                      public void success(Boolean result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.getCalendarSyncEnabled(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.CalendarControl.deleteAllCalendarPins", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                Result<Void> resultCallback =
+                    new Result<Void>() {
+                      public void success(Void result) {
+                        wrapped.add(0, null);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.deleteAllCalendarPins(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+
+  private static class PigeonLoggerCodec extends StandardMessageCodec {
+    public static final PigeonLoggerCodec INSTANCE = new PigeonLoggerCodec();
+
+    private PigeonLoggerCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof StringWrapper) {
+        stream.write(128);
+        writeValue(stream, ((StringWrapper) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface PigeonLogger {
+
+    void v(@NonNull StringWrapper message);
+
+    void d(@NonNull StringWrapper message);
+
+    void i(@NonNull StringWrapper message);
+
+    void w(@NonNull StringWrapper message);
+
+    void e(@NonNull StringWrapper message);
+
+    /** The codec used by PigeonLogger. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return PigeonLoggerCodec.INSTANCE;
+    }
+    /**Sets up an instance of `PigeonLogger` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable PigeonLogger api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PigeonLogger.v", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper messageArg = (StringWrapper) args.get(0);
+                try {
+                  api.v(messageArg);
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PigeonLogger.d", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper messageArg = (StringWrapper) args.get(0);
+                try {
+                  api.d(messageArg);
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PigeonLogger.i", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper messageArg = (StringWrapper) args.get(0);
+                try {
+                  api.i(messageArg);
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PigeonLogger.w", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper messageArg = (StringWrapper) args.get(0);
+                try {
+                  api.w(messageArg);
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PigeonLogger.e", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper messageArg = (StringWrapper) args.get(0);
+                try {
+                  api.e(messageArg);
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface TimelineSyncControl {
+
+    void syncTimelineToWatchLater();
+
+    /** The codec used by TimelineSyncControl. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return new StandardMessageCodec();
+    }
+    /**Sets up an instance of `TimelineSyncControl` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable TimelineSyncControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.TimelineSyncControl.syncTimelineToWatchLater", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  api.syncTimelineToWatchLater();
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+
+  private static class WorkaroundsControlCodec extends StandardMessageCodec {
+    public static final WorkaroundsControlCodec INSTANCE = new WorkaroundsControlCodec();
+
+    private WorkaroundsControlCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return ListWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof ListWrapper) {
+        stream.write(128);
+        writeValue(stream, ((ListWrapper) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface WorkaroundsControl {
+
+    @NonNull 
+    ListWrapper getNeededWorkarounds();
+
+    /** The codec used by WorkaroundsControl. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return WorkaroundsControlCodec.INSTANCE;
+    }
+    /**Sets up an instance of `WorkaroundsControl` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable WorkaroundsControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.WorkaroundsControl.getNeededWorkarounds", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  ListWrapper output = api.getNeededWorkarounds();
+                  wrapped.add(0, output);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+
+  private static class AppInstallControlCodec extends StandardMessageCodec {
+    public static final AppInstallControlCodec INSTANCE = new AppInstallControlCodec();
+
+    private AppInstallControlCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return BooleanWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 129:
+          return InstallData.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 130:
+          return ListWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 131:
+          return NumberWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 132:
+          return PbwAppInfo.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 133:
+          return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 134:
+          return WatchResource.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 135:
+          return WatchappInfo.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof BooleanWrapper) {
+        stream.write(128);
+        writeValue(stream, ((BooleanWrapper) value).toList());
+      } else if (value instanceof InstallData) {
+        stream.write(129);
+        writeValue(stream, ((InstallData) value).toList());
+      } else if (value instanceof ListWrapper) {
+        stream.write(130);
+        writeValue(stream, ((ListWrapper) value).toList());
+      } else if (value instanceof NumberWrapper) {
+        stream.write(131);
+        writeValue(stream, ((NumberWrapper) value).toList());
+      } else if (value instanceof PbwAppInfo) {
+        stream.write(132);
+        writeValue(stream, ((PbwAppInfo) value).toList());
+      } else if (value instanceof StringWrapper) {
+        stream.write(133);
+        writeValue(stream, ((StringWrapper) value).toList());
+      } else if (value instanceof WatchResource) {
+        stream.write(134);
+        writeValue(stream, ((WatchResource) value).toList());
+      } else if (value instanceof WatchappInfo) {
+        stream.write(135);
+        writeValue(stream, ((WatchappInfo) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface AppInstallControl {
+
+    void getAppInfo(@NonNull StringWrapper localPbwUri, @NonNull Result<PbwAppInfo> result);
+
+    void beginAppInstall(@NonNull InstallData installData, @NonNull Result<BooleanWrapper> result);
+
+    void beginAppDeletion(@NonNull StringWrapper uuid, @NonNull Result<BooleanWrapper> result);
     /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
+     * Read header from pbw file already in Cobble's storage and send it to
+     * BlobDB on the watch
      */
-    public interface NotificationUtils {
+    void insertAppIntoBlobDb(@NonNull StringWrapper uuidString, @NonNull Result<NumberWrapper> result);
 
-        /**
-         * The codec used by NotificationUtils.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return NotificationUtilsCodec.INSTANCE;
+    void removeAppFromBlobDb(@NonNull StringWrapper appUuidString, @NonNull Result<NumberWrapper> result);
+
+    void removeAllApps(@NonNull Result<NumberWrapper> result);
+
+    void subscribeToAppStatus();
+
+    void unsubscribeFromAppStatus();
+
+    void sendAppOrderToWatch(@NonNull ListWrapper uuidStringList, @NonNull Result<NumberWrapper> result);
+
+    /** The codec used by AppInstallControl. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return AppInstallControlCodec.INSTANCE;
+    }
+    /**Sets up an instance of `AppInstallControl` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable AppInstallControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.AppInstallControl.getAppInfo", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper localPbwUriArg = (StringWrapper) args.get(0);
+                Result<PbwAppInfo> resultCallback =
+                    new Result<PbwAppInfo>() {
+                      public void success(PbwAppInfo result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.getAppInfo(localPbwUriArg, resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
         }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.AppInstallControl.beginAppInstall", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                InstallData installDataArg = (InstallData) args.get(0);
+                Result<BooleanWrapper> resultCallback =
+                    new Result<BooleanWrapper>() {
+                      public void success(BooleanWrapper result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
 
-        /**
-         * Sets up an instance of `NotificationUtils` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable NotificationUtils api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.NotificationUtils.dismissNotification", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                StringWrapper itemIdArg = (StringWrapper) args.get(0);
-                                Result<BooleanWrapper> resultCallback =
-                                        new Result<BooleanWrapper>() {
-                                            public void success(BooleanWrapper result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
 
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
+                api.beginAppInstall(installDataArg, resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.AppInstallControl.beginAppDeletion", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper uuidArg = (StringWrapper) args.get(0);
+                Result<BooleanWrapper> resultCallback =
+                    new Result<BooleanWrapper>() {
+                      public void success(BooleanWrapper result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
 
-                                api.dismissNotification(itemIdArg, resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.beginAppDeletion(uuidArg, resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.AppInstallControl.insertAppIntoBlobDb", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper uuidStringArg = (StringWrapper) args.get(0);
+                Result<NumberWrapper> resultCallback =
+                    new Result<NumberWrapper>() {
+                      public void success(NumberWrapper result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.insertAppIntoBlobDb(uuidStringArg, resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.AppInstallControl.removeAppFromBlobDb", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper appUuidStringArg = (StringWrapper) args.get(0);
+                Result<NumberWrapper> resultCallback =
+                    new Result<NumberWrapper>() {
+                      public void success(NumberWrapper result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.removeAppFromBlobDb(appUuidStringArg, resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.AppInstallControl.removeAllApps", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                Result<NumberWrapper> resultCallback =
+                    new Result<NumberWrapper>() {
+                      public void success(NumberWrapper result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.removeAllApps(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.AppInstallControl.subscribeToAppStatus", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  api.subscribeToAppStatus();
+                  wrapped.add(0, null);
                 }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.NotificationUtils.dismissNotificationWatch", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                StringWrapper itemIdArg = (StringWrapper) args.get(0);
-                                try {
-                                    api.dismissNotificationWatch(itemIdArg);
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
                 }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.NotificationUtils.openNotification", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                StringWrapper itemIdArg = (StringWrapper) args.get(0);
-                                try {
-                                    api.openNotification(itemIdArg);
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.AppInstallControl.unsubscribeFromAppStatus", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  api.unsubscribeFromAppStatus();
+                  wrapped.add(0, null);
                 }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.NotificationUtils.executeAction", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                NotifActionExecuteReq actionArg = (NotifActionExecuteReq) args.get(0);
-                                try {
-                                    api.executeAction(actionArg);
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
                 }
-            }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
         }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.AppInstallControl.sendAppOrderToWatch", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                ListWrapper uuidStringListArg = (ListWrapper) args.get(0);
+                Result<NumberWrapper> resultCallback =
+                    new Result<NumberWrapper>() {
+                      public void success(NumberWrapper result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
 
-        void dismissNotification(@NonNull StringWrapper itemId, @NonNull Result<BooleanWrapper> result);
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
 
-        void dismissNotificationWatch(@NonNull StringWrapper itemId);
+                api.sendAppOrderToWatch(uuidStringListArg, resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
 
-        void openNotification(@NonNull StringWrapper itemId);
+  private static class AppLifecycleControlCodec extends StandardMessageCodec {
+    public static final AppLifecycleControlCodec INSTANCE = new AppLifecycleControlCodec();
 
-        void executeAction(@NonNull NotifActionExecuteReq action);
+    private AppLifecycleControlCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return BooleanWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 129:
+          return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
     }
 
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface ScanControl {
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof BooleanWrapper) {
+        stream.write(128);
+        writeValue(stream, ((BooleanWrapper) value).toList());
+      } else if (value instanceof StringWrapper) {
+        stream.write(129);
+        writeValue(stream, ((StringWrapper) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
 
-        /**
-         * The codec used by ScanControl.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return new StandardMessageCodec();
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface AppLifecycleControl {
+
+    void openAppOnTheWatch(@NonNull StringWrapper uuidString, @NonNull Result<BooleanWrapper> result);
+
+    /** The codec used by AppLifecycleControl. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return AppLifecycleControlCodec.INSTANCE;
+    }
+    /**Sets up an instance of `AppLifecycleControl` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable AppLifecycleControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.AppLifecycleControl.openAppOnTheWatch", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper uuidStringArg = (StringWrapper) args.get(0);
+                Result<BooleanWrapper> resultCallback =
+                    new Result<BooleanWrapper>() {
+                      public void success(BooleanWrapper result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.openAppOnTheWatch(uuidStringArg, resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
         }
+      }
+    }
+  }
 
-        /**
-         * Sets up an instance of `ScanControl` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable ScanControl api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.ScanControl.startBleScan", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    api.startBleScan();
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
+  private static class PackageDetailsCodec extends StandardMessageCodec {
+    public static final PackageDetailsCodec INSTANCE = new PackageDetailsCodec();
+
+    private PackageDetailsCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return AppEntriesPigeon.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof AppEntriesPigeon) {
+        stream.write(128);
+        writeValue(stream, ((AppEntriesPigeon) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface PackageDetails {
+
+    @NonNull 
+    AppEntriesPigeon getPackageList();
+
+    /** The codec used by PackageDetails. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return PackageDetailsCodec.INSTANCE;
+    }
+    /**Sets up an instance of `PackageDetails` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable PackageDetails api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.PackageDetails.getPackageList", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  AppEntriesPigeon output = api.getPackageList();
+                  wrapped.add(0, output);
                 }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.ScanControl.startClassicScan", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    api.startClassicScan();
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
                 }
-            }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
         }
+      }
+    }
+  }
 
-        void startBleScan();
+  private static class ScreenshotsControlCodec extends StandardMessageCodec {
+    public static final ScreenshotsControlCodec INSTANCE = new ScreenshotsControlCodec();
 
-        void startClassicScan();
+    private ScreenshotsControlCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return ScreenshotResult.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
     }
 
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface ConnectionControl {
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof ScreenshotResult) {
+        stream.write(128);
+        writeValue(stream, ((ScreenshotResult) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
 
-        /**
-         * The codec used by ConnectionControl.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return ConnectionControlCodec.INSTANCE;
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface ScreenshotsControl {
+
+    void takeWatchScreenshot(@NonNull Result<ScreenshotResult> result);
+
+    /** The codec used by ScreenshotsControl. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return ScreenshotsControlCodec.INSTANCE;
+    }
+    /**Sets up an instance of `ScreenshotsControl` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable ScreenshotsControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.ScreenshotsControl.takeWatchScreenshot", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                Result<ScreenshotResult> resultCallback =
+                    new Result<ScreenshotResult>() {
+                      public void success(ScreenshotResult result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.takeWatchScreenshot(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
         }
+      }
+    }
+  }
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface AppLogControl {
 
-        /**
-         * Sets up an instance of `ConnectionControl` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable ConnectionControl api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.ConnectionControl.isConnected", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    BooleanWrapper output = api.isConnected();
-                                    wrapped.add(0, output);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
+    void startSendingLogs();
+
+    void stopSendingLogs();
+
+    /** The codec used by AppLogControl. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return new StandardMessageCodec();
+    }
+    /**Sets up an instance of `AppLogControl` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable AppLogControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.AppLogControl.startSendingLogs", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  api.startSendingLogs();
+                  wrapped.add(0, null);
                 }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.ConnectionControl.disconnect", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    api.disconnect();
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
                 }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.ConnectionControl.sendRawPacket", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                ListWrapper listOfBytesArg = (ListWrapper) args.get(0);
-                                try {
-                                    api.sendRawPacket(listOfBytesArg);
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.AppLogControl.stopSendingLogs", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  api.stopSendingLogs();
+                  wrapped.add(0, null);
                 }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.ConnectionControl.observeConnectionChanges", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    api.observeConnectionChanges();
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
                 }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.ConnectionControl.cancelObservingConnectionChanges", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    api.cancelObservingConnectionChanges();
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+
+  private static class FirmwareUpdateControlCodec extends StandardMessageCodec {
+    public static final FirmwareUpdateControlCodec INSTANCE = new FirmwareUpdateControlCodec();
+
+    private FirmwareUpdateControlCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return BooleanWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 129:
+          return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof BooleanWrapper) {
+        stream.write(128);
+        writeValue(stream, ((BooleanWrapper) value).toList());
+      } else if (value instanceof StringWrapper) {
+        stream.write(129);
+        writeValue(stream, ((StringWrapper) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface FirmwareUpdateControl {
+
+    void checkFirmwareCompatible(@NonNull StringWrapper fwUri, @NonNull Result<BooleanWrapper> result);
+
+    void beginFirmwareUpdate(@NonNull StringWrapper fwUri, @NonNull Result<BooleanWrapper> result);
+
+    /** The codec used by FirmwareUpdateControl. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return FirmwareUpdateControlCodec.INSTANCE;
+    }
+    /**Sets up an instance of `FirmwareUpdateControl` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable FirmwareUpdateControl api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.FirmwareUpdateControl.checkFirmwareCompatible", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper fwUriArg = (StringWrapper) args.get(0);
+                Result<BooleanWrapper> resultCallback =
+                    new Result<BooleanWrapper>() {
+                      public void success(BooleanWrapper result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.checkFirmwareCompatible(fwUriArg, resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.FirmwareUpdateControl.beginFirmwareUpdate", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper fwUriArg = (StringWrapper) args.get(0);
+                Result<BooleanWrapper> resultCallback =
+                    new Result<BooleanWrapper>() {
+                      public void success(BooleanWrapper result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.beginFirmwareUpdate(fwUriArg, resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+
+  private static class KeepUnusedHackCodec extends StandardMessageCodec {
+    public static final KeepUnusedHackCodec INSTANCE = new KeepUnusedHackCodec();
+
+    private KeepUnusedHackCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return PebbleScanDevicePigeon.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 129:
+          return WatchResource.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof PebbleScanDevicePigeon) {
+        stream.write(128);
+        writeValue(stream, ((PebbleScanDevicePigeon) value).toList());
+      } else if (value instanceof WatchResource) {
+        stream.write(129);
+        writeValue(stream, ((WatchResource) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /**
+   * This class will keep all classes that appear in lists from being deleted
+   * by pigeon (they are not kept by default because pigeon does not support
+   * generics in lists).
+   *
+   * Generated interface from Pigeon that represents a handler of messages from Flutter.
+   */
+  public interface KeepUnusedHack {
+
+    void keepPebbleScanDevicePigeon(@NonNull PebbleScanDevicePigeon cls);
+
+    void keepWatchResource(@NonNull WatchResource cls);
+
+    /** The codec used by KeepUnusedHack. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return KeepUnusedHackCodec.INSTANCE;
+    }
+    /**Sets up an instance of `KeepUnusedHack` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable KeepUnusedHack api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.KeepUnusedHack.keepPebbleScanDevicePigeon", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                PebbleScanDevicePigeon clsArg = (PebbleScanDevicePigeon) args.get(0);
+                try {
+                  api.keepPebbleScanDevicePigeon(clsArg);
+                  wrapped.add(0, null);
                 }
-            }
-        }
-
-        @NonNull
-        BooleanWrapper isConnected();
-
-        void disconnect();
-
-        void sendRawPacket(@NonNull ListWrapper listOfBytes);
-
-        void observeConnectionChanges();
-
-        void cancelObservingConnectionChanges();
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface RawIncomingPacketsControl {
-
-        /**
-         * The codec used by RawIncomingPacketsControl.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return new StandardMessageCodec();
-        }
-
-        /**
-         * Sets up an instance of `RawIncomingPacketsControl` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable RawIncomingPacketsControl api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.RawIncomingPacketsControl.observeIncomingPackets", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    api.observeIncomingPackets();
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
                 }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.RawIncomingPacketsControl.cancelObservingIncomingPackets", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    api.cancelObservingIncomingPackets();
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.KeepUnusedHack.keepWatchResource", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                WatchResource clsArg = (WatchResource) args.get(0);
+                try {
+                  api.keepWatchResource(clsArg);
+                  wrapped.add(0, null);
                 }
-            }
-        }
-
-        void observeIncomingPackets();
-
-        void cancelObservingIncomingPackets();
-    }
-
-    /**
-     * Connection methods that require UI reside in separate pigeon class.
-     * This allows easier separation between background and UI methods.
-     * <p>
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface UiConnectionControl {
-
-        /**
-         * The codec used by UiConnectionControl.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return UiConnectionControlCodec.INSTANCE;
-        }
-
-        /**
-         * Sets up an instance of `UiConnectionControl` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable UiConnectionControl api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.UiConnectionControl.connectToWatch", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                StringWrapper macAddressArg = (StringWrapper) args.get(0);
-                                try {
-                                    api.connectToWatch(macAddressArg);
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
                 }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.UiConnectionControl.unpairWatch", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                StringWrapper macAddressArg = (StringWrapper) args.get(0);
-                                try {
-                                    api.unpairWatch(macAddressArg);
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
         }
-
-        void connectToWatch(@NonNull StringWrapper macAddress);
-
-        void unpairWatch(@NonNull StringWrapper macAddress);
+      }
     }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface NotificationsControl {
-
-        /**
-         * The codec used by NotificationsControl.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return new StandardMessageCodec();
-        }
-
-        /**
-         * Sets up an instance of `NotificationsControl` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable NotificationsControl api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.NotificationsControl.sendTestNotification", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    api.sendTestNotification();
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-
-        void sendTestNotification();
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface IntentControl {
-
-        /**
-         * The codec used by IntentControl.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return IntentControlCodec.INSTANCE;
-        }
-
-        /**
-         * Sets up an instance of `IntentControl` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable IntentControl api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.IntentControl.notifyFlutterReadyForIntents", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    api.notifyFlutterReadyForIntents();
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.IntentControl.notifyFlutterNotReadyForIntents", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    api.notifyFlutterNotReadyForIntents();
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.IntentControl.waitForOAuth", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                Result<OAuthResult> resultCallback =
-                                        new Result<OAuthResult>() {
-                                            public void success(OAuthResult result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.waitForOAuth(resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-
-        void notifyFlutterReadyForIntents();
-
-        void notifyFlutterNotReadyForIntents();
-
-        void waitForOAuth(@NonNull Result<OAuthResult> result);
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface DebugControl {
-
-        /**
-         * The codec used by DebugControl.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return new StandardMessageCodec();
-        }
-
-        /**
-         * Sets up an instance of `DebugControl` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable DebugControl api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.DebugControl.collectLogs", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                String rwsIdArg = (String) args.get(0);
-                                try {
-                                    api.collectLogs(rwsIdArg);
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-
-        void collectLogs(@NonNull String rwsId);
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface TimelineControl {
-
-        /**
-         * The codec used by TimelineControl.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return TimelineControlCodec.INSTANCE;
-        }
-
-        /**
-         * Sets up an instance of `TimelineControl` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable TimelineControl api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.TimelineControl.addPin", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                TimelinePinPigeon pinArg = (TimelinePinPigeon) args.get(0);
-                                Result<NumberWrapper> resultCallback =
-                                        new Result<NumberWrapper>() {
-                                            public void success(NumberWrapper result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.addPin(pinArg, resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.TimelineControl.removePin", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                StringWrapper pinUuidArg = (StringWrapper) args.get(0);
-                                Result<NumberWrapper> resultCallback =
-                                        new Result<NumberWrapper>() {
-                                            public void success(NumberWrapper result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.removePin(pinUuidArg, resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.TimelineControl.removeAllPins", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                Result<NumberWrapper> resultCallback =
-                                        new Result<NumberWrapper>() {
-                                            public void success(NumberWrapper result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.removeAllPins(resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-
-        void addPin(@NonNull TimelinePinPigeon pin, @NonNull Result<NumberWrapper> result);
-
-        void removePin(@NonNull StringWrapper pinUuid, @NonNull Result<NumberWrapper> result);
-
-        void removeAllPins(@NonNull Result<NumberWrapper> result);
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface BackgroundSetupControl {
-
-        /**
-         * The codec used by BackgroundSetupControl.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return BackgroundSetupControlCodec.INSTANCE;
-        }
-
-        /**
-         * Sets up an instance of `BackgroundSetupControl` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable BackgroundSetupControl api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.BackgroundSetupControl.setupBackground", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                NumberWrapper callbackHandleArg = (NumberWrapper) args.get(0);
-                                try {
-                                    api.setupBackground(callbackHandleArg);
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-
-        void setupBackground(@NonNull NumberWrapper callbackHandle);
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface BackgroundControl {
-
-        /**
-         * The codec used by BackgroundControl.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return BackgroundControlCodec.INSTANCE;
-        }
-
-        /**
-         * Sets up an instance of `BackgroundControl` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable BackgroundControl api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.BackgroundControl.notifyFlutterBackgroundStarted", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                Result<NumberWrapper> resultCallback =
-                                        new Result<NumberWrapper>() {
-                                            public void success(NumberWrapper result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.notifyFlutterBackgroundStarted(resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-
-        void notifyFlutterBackgroundStarted(@NonNull Result<NumberWrapper> result);
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface PermissionCheck {
-
-        /**
-         * The codec used by PermissionCheck.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return PermissionCheckCodec.INSTANCE;
-        }
-
-        /**
-         * Sets up an instance of `PermissionCheck` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable PermissionCheck api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.PermissionCheck.hasLocationPermission", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    BooleanWrapper output = api.hasLocationPermission();
-                                    wrapped.add(0, output);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.PermissionCheck.hasCalendarPermission", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    BooleanWrapper output = api.hasCalendarPermission();
-                                    wrapped.add(0, output);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.PermissionCheck.hasNotificationAccess", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    BooleanWrapper output = api.hasNotificationAccess();
-                                    wrapped.add(0, output);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.PermissionCheck.hasBatteryExclusionEnabled", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    BooleanWrapper output = api.hasBatteryExclusionEnabled();
-                                    wrapped.add(0, output);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.PermissionCheck.hasCallsPermissions", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    BooleanWrapper output = api.hasCallsPermissions();
-                                    wrapped.add(0, output);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-
-        @NonNull
-        BooleanWrapper hasLocationPermission();
-
-        @NonNull
-        BooleanWrapper hasCalendarPermission();
-
-        @NonNull
-        BooleanWrapper hasNotificationAccess();
-
-        @NonNull
-        BooleanWrapper hasBatteryExclusionEnabled();
-
-        @NonNull
-        BooleanWrapper hasCallsPermissions();
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface PermissionControl {
-
-        /**
-         * The codec used by PermissionControl.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return PermissionControlCodec.INSTANCE;
-        }
-
-        /**
-         * Sets up an instance of `PermissionControl` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable PermissionControl api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestLocationPermission", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                Result<NumberWrapper> resultCallback =
-                                        new Result<NumberWrapper>() {
-                                            public void success(NumberWrapper result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.requestLocationPermission(resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestCalendarPermission", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                Result<NumberWrapper> resultCallback =
-                                        new Result<NumberWrapper>() {
-                                            public void success(NumberWrapper result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.requestCalendarPermission(resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestNotificationAccess", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                Result<Void> resultCallback =
-                                        new Result<Void>() {
-                                            public void success(Void result) {
-                                                wrapped.add(0, null);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.requestNotificationAccess(resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestBatteryExclusion", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                Result<Void> resultCallback =
-                                        new Result<Void>() {
-                                            public void success(Void result) {
-                                                wrapped.add(0, null);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.requestBatteryExclusion(resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestCallsPermissions", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                Result<Void> resultCallback =
-                                        new Result<Void>() {
-                                            public void success(Void result) {
-                                                wrapped.add(0, null);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.requestCallsPermissions(resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.PermissionControl.requestBluetoothPermissions", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                Result<NumberWrapper> resultCallback =
-                                        new Result<NumberWrapper>() {
-                                            public void success(NumberWrapper result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.requestBluetoothPermissions(resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.PermissionControl.openPermissionSettings", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                Result<Void> resultCallback =
-                                        new Result<Void>() {
-                                            public void success(Void result) {
-                                                wrapped.add(0, null);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.openPermissionSettings(resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-
-        void requestLocationPermission(@NonNull Result<NumberWrapper> result);
-
-        void requestCalendarPermission(@NonNull Result<NumberWrapper> result);
-
-        /**
-         * This can only be performed when at least one watch is paired
-         */
-        void requestNotificationAccess(@NonNull Result<Void> result);
-
-        /**
-         * This can only be performed when at least one watch is paired
-         */
-        void requestBatteryExclusion(@NonNull Result<Void> result);
-
-        /**
-         * This can only be performed when at least one watch is paired
-         */
-        void requestCallsPermissions(@NonNull Result<Void> result);
-
-        void requestBluetoothPermissions(@NonNull Result<NumberWrapper> result);
-
-        void openPermissionSettings(@NonNull Result<Void> result);
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface CalendarControl {
-
-        /**
-         * The codec used by CalendarControl.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return new StandardMessageCodec();
-        }
-
-        /**
-         * Sets up an instance of `CalendarControl` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable CalendarControl api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.CalendarControl.requestCalendarSync", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    api.requestCalendarSync();
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-
-        void requestCalendarSync();
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface PigeonLogger {
-
-        /**
-         * The codec used by PigeonLogger.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return PigeonLoggerCodec.INSTANCE;
-        }
-
-        /**
-         * Sets up an instance of `PigeonLogger` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable PigeonLogger api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.PigeonLogger.v", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                StringWrapper messageArg = (StringWrapper) args.get(0);
-                                try {
-                                    api.v(messageArg);
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.PigeonLogger.d", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                StringWrapper messageArg = (StringWrapper) args.get(0);
-                                try {
-                                    api.d(messageArg);
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.PigeonLogger.i", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                StringWrapper messageArg = (StringWrapper) args.get(0);
-                                try {
-                                    api.i(messageArg);
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.PigeonLogger.w", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                StringWrapper messageArg = (StringWrapper) args.get(0);
-                                try {
-                                    api.w(messageArg);
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.PigeonLogger.e", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                StringWrapper messageArg = (StringWrapper) args.get(0);
-                                try {
-                                    api.e(messageArg);
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-
-        void v(@NonNull StringWrapper message);
-
-        void d(@NonNull StringWrapper message);
-
-        void i(@NonNull StringWrapper message);
-
-        void w(@NonNull StringWrapper message);
-
-        void e(@NonNull StringWrapper message);
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface TimelineSyncControl {
-
-        /**
-         * The codec used by TimelineSyncControl.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return new StandardMessageCodec();
-        }
-
-        /**
-         * Sets up an instance of `TimelineSyncControl` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable TimelineSyncControl api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.TimelineSyncControl.syncTimelineToWatchLater", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    api.syncTimelineToWatchLater();
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-
-        void syncTimelineToWatchLater();
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface WorkaroundsControl {
-
-        /**
-         * The codec used by WorkaroundsControl.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return WorkaroundsControlCodec.INSTANCE;
-        }
-
-        /**
-         * Sets up an instance of `WorkaroundsControl` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable WorkaroundsControl api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.WorkaroundsControl.getNeededWorkarounds", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    ListWrapper output = api.getNeededWorkarounds();
-                                    wrapped.add(0, output);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-
-        @NonNull
-        ListWrapper getNeededWorkarounds();
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface AppInstallControl {
-
-        /**
-         * The codec used by AppInstallControl.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return AppInstallControlCodec.INSTANCE;
-        }
-
-        /**
-         * Sets up an instance of `AppInstallControl` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable AppInstallControl api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.AppInstallControl.getAppInfo", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                StringWrapper localPbwUriArg = (StringWrapper) args.get(0);
-                                Result<PbwAppInfo> resultCallback =
-                                        new Result<PbwAppInfo>() {
-                                            public void success(PbwAppInfo result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.getAppInfo(localPbwUriArg, resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.AppInstallControl.beginAppInstall", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                InstallData installDataArg = (InstallData) args.get(0);
-                                Result<BooleanWrapper> resultCallback =
-                                        new Result<BooleanWrapper>() {
-                                            public void success(BooleanWrapper result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.beginAppInstall(installDataArg, resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.AppInstallControl.beginAppDeletion", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                StringWrapper uuidArg = (StringWrapper) args.get(0);
-                                Result<BooleanWrapper> resultCallback =
-                                        new Result<BooleanWrapper>() {
-                                            public void success(BooleanWrapper result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.beginAppDeletion(uuidArg, resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.AppInstallControl.insertAppIntoBlobDb", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                StringWrapper uuidStringArg = (StringWrapper) args.get(0);
-                                Result<NumberWrapper> resultCallback =
-                                        new Result<NumberWrapper>() {
-                                            public void success(NumberWrapper result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.insertAppIntoBlobDb(uuidStringArg, resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.AppInstallControl.removeAppFromBlobDb", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                StringWrapper appUuidStringArg = (StringWrapper) args.get(0);
-                                Result<NumberWrapper> resultCallback =
-                                        new Result<NumberWrapper>() {
-                                            public void success(NumberWrapper result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.removeAppFromBlobDb(appUuidStringArg, resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.AppInstallControl.removeAllApps", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                Result<NumberWrapper> resultCallback =
-                                        new Result<NumberWrapper>() {
-                                            public void success(NumberWrapper result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.removeAllApps(resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.AppInstallControl.subscribeToAppStatus", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    api.subscribeToAppStatus();
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.AppInstallControl.unsubscribeFromAppStatus", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    api.unsubscribeFromAppStatus();
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.AppInstallControl.sendAppOrderToWatch", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                ListWrapper uuidStringListArg = (ListWrapper) args.get(0);
-                                Result<NumberWrapper> resultCallback =
-                                        new Result<NumberWrapper>() {
-                                            public void success(NumberWrapper result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.sendAppOrderToWatch(uuidStringListArg, resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-
-        void getAppInfo(@NonNull StringWrapper localPbwUri, @NonNull Result<PbwAppInfo> result);
-
-        void beginAppInstall(@NonNull InstallData installData, @NonNull Result<BooleanWrapper> result);
-
-        void beginAppDeletion(@NonNull StringWrapper uuid, @NonNull Result<BooleanWrapper> result);
-
-        /**
-         * Read header from pbw file already in Cobble's storage and send it to
-         * BlobDB on the watch
-         */
-        void insertAppIntoBlobDb(@NonNull StringWrapper uuidString, @NonNull Result<NumberWrapper> result);
-
-        void removeAppFromBlobDb(@NonNull StringWrapper appUuidString, @NonNull Result<NumberWrapper> result);
-
-        void removeAllApps(@NonNull Result<NumberWrapper> result);
-
-        void subscribeToAppStatus();
-
-        void unsubscribeFromAppStatus();
-
-        void sendAppOrderToWatch(@NonNull ListWrapper uuidStringList, @NonNull Result<NumberWrapper> result);
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface AppLifecycleControl {
-
-        /**
-         * The codec used by AppLifecycleControl.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return AppLifecycleControlCodec.INSTANCE;
-        }
-
-        /**
-         * Sets up an instance of `AppLifecycleControl` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable AppLifecycleControl api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.AppLifecycleControl.openAppOnTheWatch", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                StringWrapper uuidStringArg = (StringWrapper) args.get(0);
-                                Result<BooleanWrapper> resultCallback =
-                                        new Result<BooleanWrapper>() {
-                                            public void success(BooleanWrapper result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.openAppOnTheWatch(uuidStringArg, resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-
-        void openAppOnTheWatch(@NonNull StringWrapper uuidString, @NonNull Result<BooleanWrapper> result);
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface PackageDetails {
-
-        /**
-         * The codec used by PackageDetails.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return PackageDetailsCodec.INSTANCE;
-        }
-
-        /**
-         * Sets up an instance of `PackageDetails` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable PackageDetails api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.PackageDetails.getPackageList", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    AppEntriesPigeon output = api.getPackageList();
-                                    wrapped.add(0, output);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-
-        @NonNull
-        AppEntriesPigeon getPackageList();
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface ScreenshotsControl {
-
-        /**
-         * The codec used by ScreenshotsControl.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return ScreenshotsControlCodec.INSTANCE;
-        }
-
-        /**
-         * Sets up an instance of `ScreenshotsControl` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable ScreenshotsControl api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.ScreenshotsControl.takeWatchScreenshot", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                Result<ScreenshotResult> resultCallback =
-                                        new Result<ScreenshotResult>() {
-                                            public void success(ScreenshotResult result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.takeWatchScreenshot(resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-
-        void takeWatchScreenshot(@NonNull Result<ScreenshotResult> result);
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface AppLogControl {
-
-        /**
-         * The codec used by AppLogControl.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return new StandardMessageCodec();
-        }
-
-        /**
-         * Sets up an instance of `AppLogControl` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable AppLogControl api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.AppLogControl.startSendingLogs", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    api.startSendingLogs();
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.AppLogControl.stopSendingLogs", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                try {
-                                    api.stopSendingLogs();
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-
-        void startSendingLogs();
-
-        void stopSendingLogs();
-    }
-
-    /**
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface FirmwareUpdateControl {
-
-        /**
-         * The codec used by FirmwareUpdateControl.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return FirmwareUpdateControlCodec.INSTANCE;
-        }
-
-        /**
-         * Sets up an instance of `FirmwareUpdateControl` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable FirmwareUpdateControl api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.FirmwareUpdateControl.checkFirmwareCompatible", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                StringWrapper fwUriArg = (StringWrapper) args.get(0);
-                                Result<BooleanWrapper> resultCallback =
-                                        new Result<BooleanWrapper>() {
-                                            public void success(BooleanWrapper result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.checkFirmwareCompatible(fwUriArg, resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.FirmwareUpdateControl.beginFirmwareUpdate", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                StringWrapper fwUriArg = (StringWrapper) args.get(0);
-                                Result<BooleanWrapper> resultCallback =
-                                        new Result<BooleanWrapper>() {
-                                            public void success(BooleanWrapper result) {
-                                                wrapped.add(0, result);
-                                                reply.reply(wrapped);
-                                            }
-
-                                            public void error(Throwable error) {
-                                                ArrayList<Object> wrappedError = wrapError(error);
-                                                reply.reply(wrappedError);
-                                            }
-                                        };
-
-                                api.beginFirmwareUpdate(fwUriArg, resultCallback);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-
-        void checkFirmwareCompatible(@NonNull StringWrapper fwUri, @NonNull Result<BooleanWrapper> result);
-
-        void beginFirmwareUpdate(@NonNull StringWrapper fwUri, @NonNull Result<BooleanWrapper> result);
-    }
-
-    /**
-     * This class will keep all classes that appear in lists from being deleted
-     * by pigeon (they are not kept by default because pigeon does not support
-     * generics in lists).
-     * <p>
-     * Generated interface from Pigeon that represents a handler of messages from Flutter.
-     */
-    public interface KeepUnusedHack {
-
-        /**
-         * The codec used by KeepUnusedHack.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return KeepUnusedHackCodec.INSTANCE;
-        }
-
-        /**
-         * Sets up an instance of `KeepUnusedHack` to handle messages through the `binaryMessenger`.
-         */
-        static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable KeepUnusedHack api) {
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.KeepUnusedHack.keepPebbleScanDevicePigeon", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                PebbleScanDevicePigeon clsArg = (PebbleScanDevicePigeon) args.get(0);
-                                try {
-                                    api.keepPebbleScanDevicePigeon(clsArg);
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-            {
-                BasicMessageChannel<Object> channel =
-                        new BasicMessageChannel<>(
-                                binaryMessenger, "dev.flutter.pigeon.KeepUnusedHack.keepWatchResource", getCodec());
-                if (api != null) {
-                    channel.setMessageHandler(
-                            (message, reply) -> {
-                                ArrayList<Object> wrapped = new ArrayList<Object>();
-                                ArrayList<Object> args = (ArrayList<Object>) message;
-                                WatchResource clsArg = (WatchResource) args.get(0);
-                                try {
-                                    api.keepWatchResource(clsArg);
-                                    wrapped.add(0, null);
-                                } catch (Throwable exception) {
-                                    ArrayList<Object> wrappedError = wrapError(exception);
-                                    wrapped = wrappedError;
-                                }
-                                reply.reply(wrapped);
-                            });
-                } else {
-                    channel.setMessageHandler(null);
-                }
-            }
-        }
-
-        void keepPebbleScanDevicePigeon(@NonNull PebbleScanDevicePigeon cls);
-
-        void keepWatchResource(@NonNull WatchResource cls);
-    }
-
-    /**
-     * Error class for passing custom error details to Flutter via a thrown PlatformException.
-     */
-    public static class FlutterError extends RuntimeException {
-
-        /**
-         * The error code.
-         */
-        public final String code;
-
-        /**
-         * The error details. Must be a datatype supported by the api codec.
-         */
-        public final Object details;
-
-        public FlutterError(@NonNull String code, @Nullable String message, @Nullable Object details) {
-            super(message);
-            this.code = code;
-            this.details = details;
-        }
-    }
-
-    /**
-     * Pigeon only supports classes as return/receive type.
-     * That is why we must wrap primitive types into wrapper
-     * <p>
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class BooleanWrapper {
-        private @Nullable Boolean value;
-
-        static @NonNull BooleanWrapper fromList(@NonNull ArrayList<Object> list) {
-            BooleanWrapper pigeonResult = new BooleanWrapper();
-            Object value = list.get(0);
-            pigeonResult.setValue((Boolean) value);
-            return pigeonResult;
-        }
-
-        public @Nullable Boolean getValue() {
-            return value;
-        }
-
-        public void setValue(@Nullable Boolean setterArg) {
-            this.value = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(1);
-            toListResult.add(value);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable Boolean value;
-
-            public @NonNull Builder setValue(@Nullable Boolean setterArg) {
-                this.value = setterArg;
-                return this;
-            }
-
-            public @NonNull BooleanWrapper build() {
-                BooleanWrapper pigeonReturn = new BooleanWrapper();
-                pigeonReturn.setValue(value);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class NumberWrapper {
-        private @Nullable Long value;
-
-        static @NonNull NumberWrapper fromList(@NonNull ArrayList<Object> list) {
-            NumberWrapper pigeonResult = new NumberWrapper();
-            Object value = list.get(0);
-            pigeonResult.setValue((value == null) ? null : ((value instanceof Integer) ? (Integer) value : (Long) value));
-            return pigeonResult;
-        }
-
-        public @Nullable Long getValue() {
-            return value;
-        }
-
-        public void setValue(@Nullable Long setterArg) {
-            this.value = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(1);
-            toListResult.add(value);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable Long value;
-
-            public @NonNull Builder setValue(@Nullable Long setterArg) {
-                this.value = setterArg;
-                return this;
-            }
-
-            public @NonNull NumberWrapper build() {
-                NumberWrapper pigeonReturn = new NumberWrapper();
-                pigeonReturn.setValue(value);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class StringWrapper {
-        private @Nullable String value;
-
-        static @NonNull StringWrapper fromList(@NonNull ArrayList<Object> list) {
-            StringWrapper pigeonResult = new StringWrapper();
-            Object value = list.get(0);
-            pigeonResult.setValue((String) value);
-            return pigeonResult;
-        }
-
-        public @Nullable String getValue() {
-            return value;
-        }
-
-        public void setValue(@Nullable String setterArg) {
-            this.value = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(1);
-            toListResult.add(value);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable String value;
-
-            public @NonNull Builder setValue(@Nullable String setterArg) {
-                this.value = setterArg;
-                return this;
-            }
-
-            public @NonNull StringWrapper build() {
-                StringWrapper pigeonReturn = new StringWrapper();
-                pigeonReturn.setValue(value);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class ListWrapper {
-        private @Nullable List<Object> value;
-
-        static @NonNull ListWrapper fromList(@NonNull ArrayList<Object> list) {
-            ListWrapper pigeonResult = new ListWrapper();
-            Object value = list.get(0);
-            pigeonResult.setValue((List<Object>) value);
-            return pigeonResult;
-        }
-
-        public @Nullable List<Object> getValue() {
-            return value;
-        }
-
-        public void setValue(@Nullable List<Object> setterArg) {
-            this.value = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(1);
-            toListResult.add(value);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable List<Object> value;
-
-            public @NonNull Builder setValue(@Nullable List<Object> setterArg) {
-                this.value = setterArg;
-                return this;
-            }
-
-            public @NonNull ListWrapper build() {
-                ListWrapper pigeonReturn = new ListWrapper();
-                pigeonReturn.setValue(value);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class PebbleFirmwarePigeon {
-        private @Nullable Long timestamp;
-        private @Nullable String version;
-        private @Nullable String gitHash;
-        private @Nullable Boolean isRecovery;
-        private @Nullable Long hardwarePlatform;
-        private @Nullable Long metadataVersion;
-
-        static @NonNull PebbleFirmwarePigeon fromList(@NonNull ArrayList<Object> list) {
-            PebbleFirmwarePigeon pigeonResult = new PebbleFirmwarePigeon();
-            Object timestamp = list.get(0);
-            pigeonResult.setTimestamp((timestamp == null) ? null : ((timestamp instanceof Integer) ? (Integer) timestamp : (Long) timestamp));
-            Object version = list.get(1);
-            pigeonResult.setVersion((String) version);
-            Object gitHash = list.get(2);
-            pigeonResult.setGitHash((String) gitHash);
-            Object isRecovery = list.get(3);
-            pigeonResult.setIsRecovery((Boolean) isRecovery);
-            Object hardwarePlatform = list.get(4);
-            pigeonResult.setHardwarePlatform((hardwarePlatform == null) ? null : ((hardwarePlatform instanceof Integer) ? (Integer) hardwarePlatform : (Long) hardwarePlatform));
-            Object metadataVersion = list.get(5);
-            pigeonResult.setMetadataVersion((metadataVersion == null) ? null : ((metadataVersion instanceof Integer) ? (Integer) metadataVersion : (Long) metadataVersion));
-            return pigeonResult;
-        }
-
-        public @Nullable Long getTimestamp() {
-            return timestamp;
-        }
-
-        public void setTimestamp(@Nullable Long setterArg) {
-            this.timestamp = setterArg;
-        }
-
-        public @Nullable String getVersion() {
-            return version;
-        }
-
-        public void setVersion(@Nullable String setterArg) {
-            this.version = setterArg;
-        }
-
-        public @Nullable String getGitHash() {
-            return gitHash;
-        }
-
-        public void setGitHash(@Nullable String setterArg) {
-            this.gitHash = setterArg;
-        }
-
-        public @Nullable Boolean getIsRecovery() {
-            return isRecovery;
-        }
-
-        public void setIsRecovery(@Nullable Boolean setterArg) {
-            this.isRecovery = setterArg;
-        }
-
-        public @Nullable Long getHardwarePlatform() {
-            return hardwarePlatform;
-        }
-
-        public void setHardwarePlatform(@Nullable Long setterArg) {
-            this.hardwarePlatform = setterArg;
-        }
-
-        public @Nullable Long getMetadataVersion() {
-            return metadataVersion;
-        }
-
-        public void setMetadataVersion(@Nullable Long setterArg) {
-            this.metadataVersion = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(6);
-            toListResult.add(timestamp);
-            toListResult.add(version);
-            toListResult.add(gitHash);
-            toListResult.add(isRecovery);
-            toListResult.add(hardwarePlatform);
-            toListResult.add(metadataVersion);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable Long timestamp;
-            private @Nullable String version;
-            private @Nullable String gitHash;
-            private @Nullable Boolean isRecovery;
-            private @Nullable Long hardwarePlatform;
-            private @Nullable Long metadataVersion;
-
-            public @NonNull Builder setTimestamp(@Nullable Long setterArg) {
-                this.timestamp = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setVersion(@Nullable String setterArg) {
-                this.version = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setGitHash(@Nullable String setterArg) {
-                this.gitHash = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setIsRecovery(@Nullable Boolean setterArg) {
-                this.isRecovery = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setHardwarePlatform(@Nullable Long setterArg) {
-                this.hardwarePlatform = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setMetadataVersion(@Nullable Long setterArg) {
-                this.metadataVersion = setterArg;
-                return this;
-            }
-
-            public @NonNull PebbleFirmwarePigeon build() {
-                PebbleFirmwarePigeon pigeonReturn = new PebbleFirmwarePigeon();
-                pigeonReturn.setTimestamp(timestamp);
-                pigeonReturn.setVersion(version);
-                pigeonReturn.setGitHash(gitHash);
-                pigeonReturn.setIsRecovery(isRecovery);
-                pigeonReturn.setHardwarePlatform(hardwarePlatform);
-                pigeonReturn.setMetadataVersion(metadataVersion);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class PebbleDevicePigeon {
-        private @Nullable String name;
-        private @Nullable String address;
-        private @Nullable PebbleFirmwarePigeon runningFirmware;
-        private @Nullable PebbleFirmwarePigeon recoveryFirmware;
-        private @Nullable Long model;
-        private @Nullable Long bootloaderTimestamp;
-        private @Nullable String board;
-        private @Nullable String serial;
-        private @Nullable String language;
-        private @Nullable Long languageVersion;
-        private @Nullable Boolean isUnfaithful;
-
-        static @NonNull PebbleDevicePigeon fromList(@NonNull ArrayList<Object> list) {
-            PebbleDevicePigeon pigeonResult = new PebbleDevicePigeon();
-            Object name = list.get(0);
-            pigeonResult.setName((String) name);
-            Object address = list.get(1);
-            pigeonResult.setAddress((String) address);
-            Object runningFirmware = list.get(2);
-            pigeonResult.setRunningFirmware((runningFirmware == null) ? null : PebbleFirmwarePigeon.fromList((ArrayList<Object>) runningFirmware));
-            Object recoveryFirmware = list.get(3);
-            pigeonResult.setRecoveryFirmware((recoveryFirmware == null) ? null : PebbleFirmwarePigeon.fromList((ArrayList<Object>) recoveryFirmware));
-            Object model = list.get(4);
-            pigeonResult.setModel((model == null) ? null : ((model instanceof Integer) ? (Integer) model : (Long) model));
-            Object bootloaderTimestamp = list.get(5);
-            pigeonResult.setBootloaderTimestamp((bootloaderTimestamp == null) ? null : ((bootloaderTimestamp instanceof Integer) ? (Integer) bootloaderTimestamp : (Long) bootloaderTimestamp));
-            Object board = list.get(6);
-            pigeonResult.setBoard((String) board);
-            Object serial = list.get(7);
-            pigeonResult.setSerial((String) serial);
-            Object language = list.get(8);
-            pigeonResult.setLanguage((String) language);
-            Object languageVersion = list.get(9);
-            pigeonResult.setLanguageVersion((languageVersion == null) ? null : ((languageVersion instanceof Integer) ? (Integer) languageVersion : (Long) languageVersion));
-            Object isUnfaithful = list.get(10);
-            pigeonResult.setIsUnfaithful((Boolean) isUnfaithful);
-            return pigeonResult;
-        }
-
-        public @Nullable String getName() {
-            return name;
-        }
-
-        public void setName(@Nullable String setterArg) {
-            this.name = setterArg;
-        }
-
-        public @Nullable String getAddress() {
-            return address;
-        }
-
-        public void setAddress(@Nullable String setterArg) {
-            this.address = setterArg;
-        }
-
-        public @Nullable PebbleFirmwarePigeon getRunningFirmware() {
-            return runningFirmware;
-        }
-
-        public void setRunningFirmware(@Nullable PebbleFirmwarePigeon setterArg) {
-            this.runningFirmware = setterArg;
-        }
-
-        public @Nullable PebbleFirmwarePigeon getRecoveryFirmware() {
-            return recoveryFirmware;
-        }
-
-        public void setRecoveryFirmware(@Nullable PebbleFirmwarePigeon setterArg) {
-            this.recoveryFirmware = setterArg;
-        }
-
-        public @Nullable Long getModel() {
-            return model;
-        }
-
-        public void setModel(@Nullable Long setterArg) {
-            this.model = setterArg;
-        }
-
-        public @Nullable Long getBootloaderTimestamp() {
-            return bootloaderTimestamp;
-        }
-
-        public void setBootloaderTimestamp(@Nullable Long setterArg) {
-            this.bootloaderTimestamp = setterArg;
-        }
-
-        public @Nullable String getBoard() {
-            return board;
-        }
-
-        public void setBoard(@Nullable String setterArg) {
-            this.board = setterArg;
-        }
-
-        public @Nullable String getSerial() {
-            return serial;
-        }
-
-        public void setSerial(@Nullable String setterArg) {
-            this.serial = setterArg;
-        }
-
-        public @Nullable String getLanguage() {
-            return language;
-        }
-
-        public void setLanguage(@Nullable String setterArg) {
-            this.language = setterArg;
-        }
-
-        public @Nullable Long getLanguageVersion() {
-            return languageVersion;
-        }
-
-        public void setLanguageVersion(@Nullable Long setterArg) {
-            this.languageVersion = setterArg;
-        }
-
-        public @Nullable Boolean getIsUnfaithful() {
-            return isUnfaithful;
-        }
-
-        public void setIsUnfaithful(@Nullable Boolean setterArg) {
-            this.isUnfaithful = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(11);
-            toListResult.add(name);
-            toListResult.add(address);
-            toListResult.add((runningFirmware == null) ? null : runningFirmware.toList());
-            toListResult.add((recoveryFirmware == null) ? null : recoveryFirmware.toList());
-            toListResult.add(model);
-            toListResult.add(bootloaderTimestamp);
-            toListResult.add(board);
-            toListResult.add(serial);
-            toListResult.add(language);
-            toListResult.add(languageVersion);
-            toListResult.add(isUnfaithful);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable String name;
-            private @Nullable String address;
-            private @Nullable PebbleFirmwarePigeon runningFirmware;
-            private @Nullable PebbleFirmwarePigeon recoveryFirmware;
-            private @Nullable Long model;
-            private @Nullable Long bootloaderTimestamp;
-            private @Nullable String board;
-            private @Nullable String serial;
-            private @Nullable String language;
-            private @Nullable Long languageVersion;
-            private @Nullable Boolean isUnfaithful;
-
-            public @NonNull Builder setName(@Nullable String setterArg) {
-                this.name = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setAddress(@Nullable String setterArg) {
-                this.address = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setRunningFirmware(@Nullable PebbleFirmwarePigeon setterArg) {
-                this.runningFirmware = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setRecoveryFirmware(@Nullable PebbleFirmwarePigeon setterArg) {
-                this.recoveryFirmware = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setModel(@Nullable Long setterArg) {
-                this.model = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setBootloaderTimestamp(@Nullable Long setterArg) {
-                this.bootloaderTimestamp = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setBoard(@Nullable String setterArg) {
-                this.board = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setSerial(@Nullable String setterArg) {
-                this.serial = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setLanguage(@Nullable String setterArg) {
-                this.language = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setLanguageVersion(@Nullable Long setterArg) {
-                this.languageVersion = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setIsUnfaithful(@Nullable Boolean setterArg) {
-                this.isUnfaithful = setterArg;
-                return this;
-            }
-
-            public @NonNull PebbleDevicePigeon build() {
-                PebbleDevicePigeon pigeonReturn = new PebbleDevicePigeon();
-                pigeonReturn.setName(name);
-                pigeonReturn.setAddress(address);
-                pigeonReturn.setRunningFirmware(runningFirmware);
-                pigeonReturn.setRecoveryFirmware(recoveryFirmware);
-                pigeonReturn.setModel(model);
-                pigeonReturn.setBootloaderTimestamp(bootloaderTimestamp);
-                pigeonReturn.setBoard(board);
-                pigeonReturn.setSerial(serial);
-                pigeonReturn.setLanguage(language);
-                pigeonReturn.setLanguageVersion(languageVersion);
-                pigeonReturn.setIsUnfaithful(isUnfaithful);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class PebbleScanDevicePigeon {
-        private @Nullable String name;
-        private @Nullable String address;
-        private @Nullable String version;
-        private @Nullable String serialNumber;
-        private @Nullable Long color;
-        private @Nullable Boolean runningPRF;
-        private @Nullable Boolean firstUse;
-
-        static @NonNull PebbleScanDevicePigeon fromList(@NonNull ArrayList<Object> list) {
-            PebbleScanDevicePigeon pigeonResult = new PebbleScanDevicePigeon();
-            Object name = list.get(0);
-            pigeonResult.setName((String) name);
-            Object address = list.get(1);
-            pigeonResult.setAddress((String) address);
-            Object version = list.get(2);
-            pigeonResult.setVersion((String) version);
-            Object serialNumber = list.get(3);
-            pigeonResult.setSerialNumber((String) serialNumber);
-            Object color = list.get(4);
-            pigeonResult.setColor((color == null) ? null : ((color instanceof Integer) ? (Integer) color : (Long) color));
-            Object runningPRF = list.get(5);
-            pigeonResult.setRunningPRF((Boolean) runningPRF);
-            Object firstUse = list.get(6);
-            pigeonResult.setFirstUse((Boolean) firstUse);
-            return pigeonResult;
-        }
-
-        public @Nullable String getName() {
-            return name;
-        }
-
-        public void setName(@Nullable String setterArg) {
-            this.name = setterArg;
-        }
-
-        public @Nullable String getAddress() {
-            return address;
-        }
-
-        public void setAddress(@Nullable String setterArg) {
-            this.address = setterArg;
-        }
-
-        public @Nullable String getVersion() {
-            return version;
-        }
-
-        public void setVersion(@Nullable String setterArg) {
-            this.version = setterArg;
-        }
-
-        public @Nullable String getSerialNumber() {
-            return serialNumber;
-        }
-
-        public void setSerialNumber(@Nullable String setterArg) {
-            this.serialNumber = setterArg;
-        }
-
-        public @Nullable Long getColor() {
-            return color;
-        }
-
-        public void setColor(@Nullable Long setterArg) {
-            this.color = setterArg;
-        }
-
-        public @Nullable Boolean getRunningPRF() {
-            return runningPRF;
-        }
-
-        public void setRunningPRF(@Nullable Boolean setterArg) {
-            this.runningPRF = setterArg;
-        }
-
-        public @Nullable Boolean getFirstUse() {
-            return firstUse;
-        }
-
-        public void setFirstUse(@Nullable Boolean setterArg) {
-            this.firstUse = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(7);
-            toListResult.add(name);
-            toListResult.add(address);
-            toListResult.add(version);
-            toListResult.add(serialNumber);
-            toListResult.add(color);
-            toListResult.add(runningPRF);
-            toListResult.add(firstUse);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable String name;
-            private @Nullable String address;
-            private @Nullable String version;
-            private @Nullable String serialNumber;
-            private @Nullable Long color;
-            private @Nullable Boolean runningPRF;
-            private @Nullable Boolean firstUse;
-
-            public @NonNull Builder setName(@Nullable String setterArg) {
-                this.name = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setAddress(@Nullable String setterArg) {
-                this.address = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setVersion(@Nullable String setterArg) {
-                this.version = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setSerialNumber(@Nullable String setterArg) {
-                this.serialNumber = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setColor(@Nullable Long setterArg) {
-                this.color = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setRunningPRF(@Nullable Boolean setterArg) {
-                this.runningPRF = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setFirstUse(@Nullable Boolean setterArg) {
-                this.firstUse = setterArg;
-                return this;
-            }
-
-            public @NonNull PebbleScanDevicePigeon build() {
-                PebbleScanDevicePigeon pigeonReturn = new PebbleScanDevicePigeon();
-                pigeonReturn.setName(name);
-                pigeonReturn.setAddress(address);
-                pigeonReturn.setVersion(version);
-                pigeonReturn.setSerialNumber(serialNumber);
-                pigeonReturn.setColor(color);
-                pigeonReturn.setRunningPRF(runningPRF);
-                pigeonReturn.setFirstUse(firstUse);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class WatchConnectionStatePigeon {
-        private @NonNull Boolean isConnected;
-        private @NonNull Boolean isConnecting;
-        private @Nullable String currentWatchAddress;
-        private @Nullable PebbleDevicePigeon currentConnectedWatch;
-
-        /**
-         * Constructor is non-public to enforce null safety; use Builder.
-         */
-        WatchConnectionStatePigeon() {
-        }
-
-        static @NonNull WatchConnectionStatePigeon fromList(@NonNull ArrayList<Object> list) {
-            WatchConnectionStatePigeon pigeonResult = new WatchConnectionStatePigeon();
-            Object isConnected = list.get(0);
-            pigeonResult.setIsConnected((Boolean) isConnected);
-            Object isConnecting = list.get(1);
-            pigeonResult.setIsConnecting((Boolean) isConnecting);
-            Object currentWatchAddress = list.get(2);
-            pigeonResult.setCurrentWatchAddress((String) currentWatchAddress);
-            Object currentConnectedWatch = list.get(3);
-            pigeonResult.setCurrentConnectedWatch((currentConnectedWatch == null) ? null : PebbleDevicePigeon.fromList((ArrayList<Object>) currentConnectedWatch));
-            return pigeonResult;
-        }
-
-        public @NonNull Boolean getIsConnected() {
-            return isConnected;
-        }
-
-        public void setIsConnected(@NonNull Boolean setterArg) {
-            if (setterArg == null) {
-                throw new IllegalStateException("Nonnull field \"isConnected\" is null.");
-            }
-            this.isConnected = setterArg;
-        }
-
-        public @NonNull Boolean getIsConnecting() {
-            return isConnecting;
-        }
-
-        public void setIsConnecting(@NonNull Boolean setterArg) {
-            if (setterArg == null) {
-                throw new IllegalStateException("Nonnull field \"isConnecting\" is null.");
-            }
-            this.isConnecting = setterArg;
-        }
-
-        public @Nullable String getCurrentWatchAddress() {
-            return currentWatchAddress;
-        }
-
-        public void setCurrentWatchAddress(@Nullable String setterArg) {
-            this.currentWatchAddress = setterArg;
-        }
-
-        public @Nullable PebbleDevicePigeon getCurrentConnectedWatch() {
-            return currentConnectedWatch;
-        }
-
-        public void setCurrentConnectedWatch(@Nullable PebbleDevicePigeon setterArg) {
-            this.currentConnectedWatch = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(4);
-            toListResult.add(isConnected);
-            toListResult.add(isConnecting);
-            toListResult.add(currentWatchAddress);
-            toListResult.add((currentConnectedWatch == null) ? null : currentConnectedWatch.toList());
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable Boolean isConnected;
-            private @Nullable Boolean isConnecting;
-            private @Nullable String currentWatchAddress;
-            private @Nullable PebbleDevicePigeon currentConnectedWatch;
-
-            public @NonNull Builder setIsConnected(@NonNull Boolean setterArg) {
-                this.isConnected = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setIsConnecting(@NonNull Boolean setterArg) {
-                this.isConnecting = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setCurrentWatchAddress(@Nullable String setterArg) {
-                this.currentWatchAddress = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setCurrentConnectedWatch(@Nullable PebbleDevicePigeon setterArg) {
-                this.currentConnectedWatch = setterArg;
-                return this;
-            }
-
-            public @NonNull WatchConnectionStatePigeon build() {
-                WatchConnectionStatePigeon pigeonReturn = new WatchConnectionStatePigeon();
-                pigeonReturn.setIsConnected(isConnected);
-                pigeonReturn.setIsConnecting(isConnecting);
-                pigeonReturn.setCurrentWatchAddress(currentWatchAddress);
-                pigeonReturn.setCurrentConnectedWatch(currentConnectedWatch);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class TimelinePinPigeon {
-        private @Nullable String itemId;
-        private @Nullable String parentId;
-        private @Nullable Long timestamp;
-        private @Nullable Long type;
-        private @Nullable Long duration;
-        private @Nullable Boolean isVisible;
-        private @Nullable Boolean isFloating;
-        private @Nullable Boolean isAllDay;
-        private @Nullable Boolean persistQuickView;
-        private @Nullable Long layout;
-        private @Nullable String attributesJson;
-        private @Nullable String actionsJson;
-
-        static @NonNull TimelinePinPigeon fromList(@NonNull ArrayList<Object> list) {
-            TimelinePinPigeon pigeonResult = new TimelinePinPigeon();
-            Object itemId = list.get(0);
-            pigeonResult.setItemId((String) itemId);
-            Object parentId = list.get(1);
-            pigeonResult.setParentId((String) parentId);
-            Object timestamp = list.get(2);
-            pigeonResult.setTimestamp((timestamp == null) ? null : ((timestamp instanceof Integer) ? (Integer) timestamp : (Long) timestamp));
-            Object type = list.get(3);
-            pigeonResult.setType((type == null) ? null : ((type instanceof Integer) ? (Integer) type : (Long) type));
-            Object duration = list.get(4);
-            pigeonResult.setDuration((duration == null) ? null : ((duration instanceof Integer) ? (Integer) duration : (Long) duration));
-            Object isVisible = list.get(5);
-            pigeonResult.setIsVisible((Boolean) isVisible);
-            Object isFloating = list.get(6);
-            pigeonResult.setIsFloating((Boolean) isFloating);
-            Object isAllDay = list.get(7);
-            pigeonResult.setIsAllDay((Boolean) isAllDay);
-            Object persistQuickView = list.get(8);
-            pigeonResult.setPersistQuickView((Boolean) persistQuickView);
-            Object layout = list.get(9);
-            pigeonResult.setLayout((layout == null) ? null : ((layout instanceof Integer) ? (Integer) layout : (Long) layout));
-            Object attributesJson = list.get(10);
-            pigeonResult.setAttributesJson((String) attributesJson);
-            Object actionsJson = list.get(11);
-            pigeonResult.setActionsJson((String) actionsJson);
-            return pigeonResult;
-        }
-
-        public @Nullable String getItemId() {
-            return itemId;
-        }
-
-        public void setItemId(@Nullable String setterArg) {
-            this.itemId = setterArg;
-        }
-
-        public @Nullable String getParentId() {
-            return parentId;
-        }
-
-        public void setParentId(@Nullable String setterArg) {
-            this.parentId = setterArg;
-        }
-
-        public @Nullable Long getTimestamp() {
-            return timestamp;
-        }
-
-        public void setTimestamp(@Nullable Long setterArg) {
-            this.timestamp = setterArg;
-        }
-
-        public @Nullable Long getType() {
-            return type;
-        }
-
-        public void setType(@Nullable Long setterArg) {
-            this.type = setterArg;
-        }
-
-        public @Nullable Long getDuration() {
-            return duration;
-        }
-
-        public void setDuration(@Nullable Long setterArg) {
-            this.duration = setterArg;
-        }
-
-        public @Nullable Boolean getIsVisible() {
-            return isVisible;
-        }
-
-        public void setIsVisible(@Nullable Boolean setterArg) {
-            this.isVisible = setterArg;
-        }
-
-        public @Nullable Boolean getIsFloating() {
-            return isFloating;
-        }
-
-        public void setIsFloating(@Nullable Boolean setterArg) {
-            this.isFloating = setterArg;
-        }
-
-        public @Nullable Boolean getIsAllDay() {
-            return isAllDay;
-        }
-
-        public void setIsAllDay(@Nullable Boolean setterArg) {
-            this.isAllDay = setterArg;
-        }
-
-        public @Nullable Boolean getPersistQuickView() {
-            return persistQuickView;
-        }
-
-        public void setPersistQuickView(@Nullable Boolean setterArg) {
-            this.persistQuickView = setterArg;
-        }
-
-        public @Nullable Long getLayout() {
-            return layout;
-        }
-
-        public void setLayout(@Nullable Long setterArg) {
-            this.layout = setterArg;
-        }
-
-        public @Nullable String getAttributesJson() {
-            return attributesJson;
-        }
-
-        public void setAttributesJson(@Nullable String setterArg) {
-            this.attributesJson = setterArg;
-        }
-
-        public @Nullable String getActionsJson() {
-            return actionsJson;
-        }
-
-        public void setActionsJson(@Nullable String setterArg) {
-            this.actionsJson = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(12);
-            toListResult.add(itemId);
-            toListResult.add(parentId);
-            toListResult.add(timestamp);
-            toListResult.add(type);
-            toListResult.add(duration);
-            toListResult.add(isVisible);
-            toListResult.add(isFloating);
-            toListResult.add(isAllDay);
-            toListResult.add(persistQuickView);
-            toListResult.add(layout);
-            toListResult.add(attributesJson);
-            toListResult.add(actionsJson);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable String itemId;
-            private @Nullable String parentId;
-            private @Nullable Long timestamp;
-            private @Nullable Long type;
-            private @Nullable Long duration;
-            private @Nullable Boolean isVisible;
-            private @Nullable Boolean isFloating;
-            private @Nullable Boolean isAllDay;
-            private @Nullable Boolean persistQuickView;
-            private @Nullable Long layout;
-            private @Nullable String attributesJson;
-            private @Nullable String actionsJson;
-
-            public @NonNull Builder setItemId(@Nullable String setterArg) {
-                this.itemId = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setParentId(@Nullable String setterArg) {
-                this.parentId = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setTimestamp(@Nullable Long setterArg) {
-                this.timestamp = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setType(@Nullable Long setterArg) {
-                this.type = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setDuration(@Nullable Long setterArg) {
-                this.duration = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setIsVisible(@Nullable Boolean setterArg) {
-                this.isVisible = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setIsFloating(@Nullable Boolean setterArg) {
-                this.isFloating = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setIsAllDay(@Nullable Boolean setterArg) {
-                this.isAllDay = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setPersistQuickView(@Nullable Boolean setterArg) {
-                this.persistQuickView = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setLayout(@Nullable Long setterArg) {
-                this.layout = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setAttributesJson(@Nullable String setterArg) {
-                this.attributesJson = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setActionsJson(@Nullable String setterArg) {
-                this.actionsJson = setterArg;
-                return this;
-            }
-
-            public @NonNull TimelinePinPigeon build() {
-                TimelinePinPigeon pigeonReturn = new TimelinePinPigeon();
-                pigeonReturn.setItemId(itemId);
-                pigeonReturn.setParentId(parentId);
-                pigeonReturn.setTimestamp(timestamp);
-                pigeonReturn.setType(type);
-                pigeonReturn.setDuration(duration);
-                pigeonReturn.setIsVisible(isVisible);
-                pigeonReturn.setIsFloating(isFloating);
-                pigeonReturn.setIsAllDay(isAllDay);
-                pigeonReturn.setPersistQuickView(persistQuickView);
-                pigeonReturn.setLayout(layout);
-                pigeonReturn.setAttributesJson(attributesJson);
-                pigeonReturn.setActionsJson(actionsJson);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class ActionTrigger {
-        private @Nullable String itemId;
-        private @Nullable Long actionId;
-        private @Nullable String attributesJson;
-
-        static @NonNull ActionTrigger fromList(@NonNull ArrayList<Object> list) {
-            ActionTrigger pigeonResult = new ActionTrigger();
-            Object itemId = list.get(0);
-            pigeonResult.setItemId((String) itemId);
-            Object actionId = list.get(1);
-            pigeonResult.setActionId((actionId == null) ? null : ((actionId instanceof Integer) ? (Integer) actionId : (Long) actionId));
-            Object attributesJson = list.get(2);
-            pigeonResult.setAttributesJson((String) attributesJson);
-            return pigeonResult;
-        }
-
-        public @Nullable String getItemId() {
-            return itemId;
-        }
-
-        public void setItemId(@Nullable String setterArg) {
-            this.itemId = setterArg;
-        }
-
-        public @Nullable Long getActionId() {
-            return actionId;
-        }
-
-        public void setActionId(@Nullable Long setterArg) {
-            this.actionId = setterArg;
-        }
-
-        public @Nullable String getAttributesJson() {
-            return attributesJson;
-        }
-
-        public void setAttributesJson(@Nullable String setterArg) {
-            this.attributesJson = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(3);
-            toListResult.add(itemId);
-            toListResult.add(actionId);
-            toListResult.add(attributesJson);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable String itemId;
-            private @Nullable Long actionId;
-            private @Nullable String attributesJson;
-
-            public @NonNull Builder setItemId(@Nullable String setterArg) {
-                this.itemId = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setActionId(@Nullable Long setterArg) {
-                this.actionId = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setAttributesJson(@Nullable String setterArg) {
-                this.attributesJson = setterArg;
-                return this;
-            }
-
-            public @NonNull ActionTrigger build() {
-                ActionTrigger pigeonReturn = new ActionTrigger();
-                pigeonReturn.setItemId(itemId);
-                pigeonReturn.setActionId(actionId);
-                pigeonReturn.setAttributesJson(attributesJson);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class ActionResponsePigeon {
-        private @Nullable Boolean success;
-        private @Nullable String attributesJson;
-
-        static @NonNull ActionResponsePigeon fromList(@NonNull ArrayList<Object> list) {
-            ActionResponsePigeon pigeonResult = new ActionResponsePigeon();
-            Object success = list.get(0);
-            pigeonResult.setSuccess((Boolean) success);
-            Object attributesJson = list.get(1);
-            pigeonResult.setAttributesJson((String) attributesJson);
-            return pigeonResult;
-        }
-
-        public @Nullable Boolean getSuccess() {
-            return success;
-        }
-
-        public void setSuccess(@Nullable Boolean setterArg) {
-            this.success = setterArg;
-        }
-
-        public @Nullable String getAttributesJson() {
-            return attributesJson;
-        }
-
-        public void setAttributesJson(@Nullable String setterArg) {
-            this.attributesJson = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(2);
-            toListResult.add(success);
-            toListResult.add(attributesJson);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable Boolean success;
-            private @Nullable String attributesJson;
-
-            public @NonNull Builder setSuccess(@Nullable Boolean setterArg) {
-                this.success = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setAttributesJson(@Nullable String setterArg) {
-                this.attributesJson = setterArg;
-                return this;
-            }
-
-            public @NonNull ActionResponsePigeon build() {
-                ActionResponsePigeon pigeonReturn = new ActionResponsePigeon();
-                pigeonReturn.setSuccess(success);
-                pigeonReturn.setAttributesJson(attributesJson);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class NotifActionExecuteReq {
-        private @Nullable String itemId;
-        private @Nullable Long actionId;
-        private @Nullable String responseText;
-
-        static @NonNull NotifActionExecuteReq fromList(@NonNull ArrayList<Object> list) {
-            NotifActionExecuteReq pigeonResult = new NotifActionExecuteReq();
-            Object itemId = list.get(0);
-            pigeonResult.setItemId((String) itemId);
-            Object actionId = list.get(1);
-            pigeonResult.setActionId((actionId == null) ? null : ((actionId instanceof Integer) ? (Integer) actionId : (Long) actionId));
-            Object responseText = list.get(2);
-            pigeonResult.setResponseText((String) responseText);
-            return pigeonResult;
-        }
-
-        public @Nullable String getItemId() {
-            return itemId;
-        }
-
-        public void setItemId(@Nullable String setterArg) {
-            this.itemId = setterArg;
-        }
-
-        public @Nullable Long getActionId() {
-            return actionId;
-        }
-
-        public void setActionId(@Nullable Long setterArg) {
-            this.actionId = setterArg;
-        }
-
-        public @Nullable String getResponseText() {
-            return responseText;
-        }
-
-        public void setResponseText(@Nullable String setterArg) {
-            this.responseText = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(3);
-            toListResult.add(itemId);
-            toListResult.add(actionId);
-            toListResult.add(responseText);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable String itemId;
-            private @Nullable Long actionId;
-            private @Nullable String responseText;
-
-            public @NonNull Builder setItemId(@Nullable String setterArg) {
-                this.itemId = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setActionId(@Nullable Long setterArg) {
-                this.actionId = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setResponseText(@Nullable String setterArg) {
-                this.responseText = setterArg;
-                return this;
-            }
-
-            public @NonNull NotifActionExecuteReq build() {
-                NotifActionExecuteReq pigeonReturn = new NotifActionExecuteReq();
-                pigeonReturn.setItemId(itemId);
-                pigeonReturn.setActionId(actionId);
-                pigeonReturn.setResponseText(responseText);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class NotificationPigeon {
-        private @Nullable String packageId;
-        private @Nullable Long notifId;
-        private @Nullable String appName;
-        private @Nullable String tagId;
-        private @Nullable String title;
-        private @Nullable String text;
-        private @Nullable String category;
-        private @Nullable Long color;
-        private @Nullable String messagesJson;
-        private @Nullable String actionsJson;
-
-        static @NonNull NotificationPigeon fromList(@NonNull ArrayList<Object> list) {
-            NotificationPigeon pigeonResult = new NotificationPigeon();
-            Object packageId = list.get(0);
-            pigeonResult.setPackageId((String) packageId);
-            Object notifId = list.get(1);
-            pigeonResult.setNotifId((notifId == null) ? null : ((notifId instanceof Integer) ? (Integer) notifId : (Long) notifId));
-            Object appName = list.get(2);
-            pigeonResult.setAppName((String) appName);
-            Object tagId = list.get(3);
-            pigeonResult.setTagId((String) tagId);
-            Object title = list.get(4);
-            pigeonResult.setTitle((String) title);
-            Object text = list.get(5);
-            pigeonResult.setText((String) text);
-            Object category = list.get(6);
-            pigeonResult.setCategory((String) category);
-            Object color = list.get(7);
-            pigeonResult.setColor((color == null) ? null : ((color instanceof Integer) ? (Integer) color : (Long) color));
-            Object messagesJson = list.get(8);
-            pigeonResult.setMessagesJson((String) messagesJson);
-            Object actionsJson = list.get(9);
-            pigeonResult.setActionsJson((String) actionsJson);
-            return pigeonResult;
-        }
-
-        public @Nullable String getPackageId() {
-            return packageId;
-        }
-
-        public void setPackageId(@Nullable String setterArg) {
-            this.packageId = setterArg;
-        }
-
-        public @Nullable Long getNotifId() {
-            return notifId;
-        }
-
-        public void setNotifId(@Nullable Long setterArg) {
-            this.notifId = setterArg;
-        }
-
-        public @Nullable String getAppName() {
-            return appName;
-        }
-
-        public void setAppName(@Nullable String setterArg) {
-            this.appName = setterArg;
-        }
-
-        public @Nullable String getTagId() {
-            return tagId;
-        }
-
-        public void setTagId(@Nullable String setterArg) {
-            this.tagId = setterArg;
-        }
-
-        public @Nullable String getTitle() {
-            return title;
-        }
-
-        public void setTitle(@Nullable String setterArg) {
-            this.title = setterArg;
-        }
-
-        public @Nullable String getText() {
-            return text;
-        }
-
-        public void setText(@Nullable String setterArg) {
-            this.text = setterArg;
-        }
-
-        public @Nullable String getCategory() {
-            return category;
-        }
-
-        public void setCategory(@Nullable String setterArg) {
-            this.category = setterArg;
-        }
-
-        public @Nullable Long getColor() {
-            return color;
-        }
-
-        public void setColor(@Nullable Long setterArg) {
-            this.color = setterArg;
-        }
-
-        public @Nullable String getMessagesJson() {
-            return messagesJson;
-        }
-
-        public void setMessagesJson(@Nullable String setterArg) {
-            this.messagesJson = setterArg;
-        }
-
-        public @Nullable String getActionsJson() {
-            return actionsJson;
-        }
-
-        public void setActionsJson(@Nullable String setterArg) {
-            this.actionsJson = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(10);
-            toListResult.add(packageId);
-            toListResult.add(notifId);
-            toListResult.add(appName);
-            toListResult.add(tagId);
-            toListResult.add(title);
-            toListResult.add(text);
-            toListResult.add(category);
-            toListResult.add(color);
-            toListResult.add(messagesJson);
-            toListResult.add(actionsJson);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable String packageId;
-            private @Nullable Long notifId;
-            private @Nullable String appName;
-            private @Nullable String tagId;
-            private @Nullable String title;
-            private @Nullable String text;
-            private @Nullable String category;
-            private @Nullable Long color;
-            private @Nullable String messagesJson;
-            private @Nullable String actionsJson;
-
-            public @NonNull Builder setPackageId(@Nullable String setterArg) {
-                this.packageId = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setNotifId(@Nullable Long setterArg) {
-                this.notifId = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setAppName(@Nullable String setterArg) {
-                this.appName = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setTagId(@Nullable String setterArg) {
-                this.tagId = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setTitle(@Nullable String setterArg) {
-                this.title = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setText(@Nullable String setterArg) {
-                this.text = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setCategory(@Nullable String setterArg) {
-                this.category = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setColor(@Nullable Long setterArg) {
-                this.color = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setMessagesJson(@Nullable String setterArg) {
-                this.messagesJson = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setActionsJson(@Nullable String setterArg) {
-                this.actionsJson = setterArg;
-                return this;
-            }
-
-            public @NonNull NotificationPigeon build() {
-                NotificationPigeon pigeonReturn = new NotificationPigeon();
-                pigeonReturn.setPackageId(packageId);
-                pigeonReturn.setNotifId(notifId);
-                pigeonReturn.setAppName(appName);
-                pigeonReturn.setTagId(tagId);
-                pigeonReturn.setTitle(title);
-                pigeonReturn.setText(text);
-                pigeonReturn.setCategory(category);
-                pigeonReturn.setColor(color);
-                pigeonReturn.setMessagesJson(messagesJson);
-                pigeonReturn.setActionsJson(actionsJson);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class AppEntriesPigeon {
-        private @Nullable List<String> appName;
-        private @Nullable List<String> packageId;
-
-        static @NonNull AppEntriesPigeon fromList(@NonNull ArrayList<Object> list) {
-            AppEntriesPigeon pigeonResult = new AppEntriesPigeon();
-            Object appName = list.get(0);
-            pigeonResult.setAppName((List<String>) appName);
-            Object packageId = list.get(1);
-            pigeonResult.setPackageId((List<String>) packageId);
-            return pigeonResult;
-        }
-
-        public @Nullable List<String> getAppName() {
-            return appName;
-        }
-
-        public void setAppName(@Nullable List<String> setterArg) {
-            this.appName = setterArg;
-        }
-
-        public @Nullable List<String> getPackageId() {
-            return packageId;
-        }
-
-        public void setPackageId(@Nullable List<String> setterArg) {
-            this.packageId = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(2);
-            toListResult.add(appName);
-            toListResult.add(packageId);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable List<String> appName;
-            private @Nullable List<String> packageId;
-
-            public @NonNull Builder setAppName(@Nullable List<String> setterArg) {
-                this.appName = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setPackageId(@Nullable List<String> setterArg) {
-                this.packageId = setterArg;
-                return this;
-            }
-
-            public @NonNull AppEntriesPigeon build() {
-                AppEntriesPigeon pigeonReturn = new AppEntriesPigeon();
-                pigeonReturn.setAppName(appName);
-                pigeonReturn.setPackageId(packageId);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class PbwAppInfo {
-        private @Nullable Boolean isValid;
-        private @Nullable String uuid;
-        private @Nullable String shortName;
-        private @Nullable String longName;
-        private @Nullable String companyName;
-        private @Nullable Long versionCode;
-        private @Nullable String versionLabel;
-        private @Nullable Map<String, Long> appKeys;
-        private @Nullable List<String> capabilities;
-        private @Nullable List<WatchResource> resources;
-        private @Nullable String sdkVersion;
-        private @Nullable List<String> targetPlatforms;
-        private @Nullable WatchappInfo watchapp;
-
-        static @NonNull PbwAppInfo fromList(@NonNull ArrayList<Object> list) {
-            PbwAppInfo pigeonResult = new PbwAppInfo();
-            Object isValid = list.get(0);
-            pigeonResult.setIsValid((Boolean) isValid);
-            Object uuid = list.get(1);
-            pigeonResult.setUuid((String) uuid);
-            Object shortName = list.get(2);
-            pigeonResult.setShortName((String) shortName);
-            Object longName = list.get(3);
-            pigeonResult.setLongName((String) longName);
-            Object companyName = list.get(4);
-            pigeonResult.setCompanyName((String) companyName);
-            Object versionCode = list.get(5);
-            pigeonResult.setVersionCode((versionCode == null) ? null : ((versionCode instanceof Integer) ? (Integer) versionCode : (Long) versionCode));
-            Object versionLabel = list.get(6);
-            pigeonResult.setVersionLabel((String) versionLabel);
-            Object appKeys = list.get(7);
-            pigeonResult.setAppKeys((Map<String, Long>) appKeys);
-            Object capabilities = list.get(8);
-            pigeonResult.setCapabilities((List<String>) capabilities);
-            Object resources = list.get(9);
-            pigeonResult.setResources((List<WatchResource>) resources);
-            Object sdkVersion = list.get(10);
-            pigeonResult.setSdkVersion((String) sdkVersion);
-            Object targetPlatforms = list.get(11);
-            pigeonResult.setTargetPlatforms((List<String>) targetPlatforms);
-            Object watchapp = list.get(12);
-            pigeonResult.setWatchapp((watchapp == null) ? null : WatchappInfo.fromList((ArrayList<Object>) watchapp));
-            return pigeonResult;
-        }
-
-        public @Nullable Boolean getIsValid() {
-            return isValid;
-        }
-
-        public void setIsValid(@Nullable Boolean setterArg) {
-            this.isValid = setterArg;
-        }
-
-        public @Nullable String getUuid() {
-            return uuid;
-        }
-
-        public void setUuid(@Nullable String setterArg) {
-            this.uuid = setterArg;
-        }
-
-        public @Nullable String getShortName() {
-            return shortName;
-        }
-
-        public void setShortName(@Nullable String setterArg) {
-            this.shortName = setterArg;
-        }
-
-        public @Nullable String getLongName() {
-            return longName;
-        }
-
-        public void setLongName(@Nullable String setterArg) {
-            this.longName = setterArg;
-        }
-
-        public @Nullable String getCompanyName() {
-            return companyName;
-        }
-
-        public void setCompanyName(@Nullable String setterArg) {
-            this.companyName = setterArg;
-        }
-
-        public @Nullable Long getVersionCode() {
-            return versionCode;
-        }
-
-        public void setVersionCode(@Nullable Long setterArg) {
-            this.versionCode = setterArg;
-        }
-
-        public @Nullable String getVersionLabel() {
-            return versionLabel;
-        }
-
-        public void setVersionLabel(@Nullable String setterArg) {
-            this.versionLabel = setterArg;
-        }
-
-        public @Nullable Map<String, Long> getAppKeys() {
-            return appKeys;
-        }
-
-        public void setAppKeys(@Nullable Map<String, Long> setterArg) {
-            this.appKeys = setterArg;
-        }
-
-        public @Nullable List<String> getCapabilities() {
-            return capabilities;
-        }
-
-        public void setCapabilities(@Nullable List<String> setterArg) {
-            this.capabilities = setterArg;
-        }
-
-        public @Nullable List<WatchResource> getResources() {
-            return resources;
-        }
-
-        public void setResources(@Nullable List<WatchResource> setterArg) {
-            this.resources = setterArg;
-        }
-
-        public @Nullable String getSdkVersion() {
-            return sdkVersion;
-        }
-
-        public void setSdkVersion(@Nullable String setterArg) {
-            this.sdkVersion = setterArg;
-        }
-
-        public @Nullable List<String> getTargetPlatforms() {
-            return targetPlatforms;
-        }
-
-        public void setTargetPlatforms(@Nullable List<String> setterArg) {
-            this.targetPlatforms = setterArg;
-        }
-
-        public @Nullable WatchappInfo getWatchapp() {
-            return watchapp;
-        }
-
-        public void setWatchapp(@Nullable WatchappInfo setterArg) {
-            this.watchapp = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(13);
-            toListResult.add(isValid);
-            toListResult.add(uuid);
-            toListResult.add(shortName);
-            toListResult.add(longName);
-            toListResult.add(companyName);
-            toListResult.add(versionCode);
-            toListResult.add(versionLabel);
-            toListResult.add(appKeys);
-            toListResult.add(capabilities);
-            toListResult.add(resources);
-            toListResult.add(sdkVersion);
-            toListResult.add(targetPlatforms);
-            toListResult.add((watchapp == null) ? null : watchapp.toList());
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable Boolean isValid;
-            private @Nullable String uuid;
-            private @Nullable String shortName;
-            private @Nullable String longName;
-            private @Nullable String companyName;
-            private @Nullable Long versionCode;
-            private @Nullable String versionLabel;
-            private @Nullable Map<String, Long> appKeys;
-            private @Nullable List<String> capabilities;
-            private @Nullable List<WatchResource> resources;
-            private @Nullable String sdkVersion;
-            private @Nullable List<String> targetPlatforms;
-            private @Nullable WatchappInfo watchapp;
-
-            public @NonNull Builder setIsValid(@Nullable Boolean setterArg) {
-                this.isValid = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setUuid(@Nullable String setterArg) {
-                this.uuid = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setShortName(@Nullable String setterArg) {
-                this.shortName = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setLongName(@Nullable String setterArg) {
-                this.longName = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setCompanyName(@Nullable String setterArg) {
-                this.companyName = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setVersionCode(@Nullable Long setterArg) {
-                this.versionCode = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setVersionLabel(@Nullable String setterArg) {
-                this.versionLabel = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setAppKeys(@Nullable Map<String, Long> setterArg) {
-                this.appKeys = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setCapabilities(@Nullable List<String> setterArg) {
-                this.capabilities = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setResources(@Nullable List<WatchResource> setterArg) {
-                this.resources = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setSdkVersion(@Nullable String setterArg) {
-                this.sdkVersion = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setTargetPlatforms(@Nullable List<String> setterArg) {
-                this.targetPlatforms = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setWatchapp(@Nullable WatchappInfo setterArg) {
-                this.watchapp = setterArg;
-                return this;
-            }
-
-            public @NonNull PbwAppInfo build() {
-                PbwAppInfo pigeonReturn = new PbwAppInfo();
-                pigeonReturn.setIsValid(isValid);
-                pigeonReturn.setUuid(uuid);
-                pigeonReturn.setShortName(shortName);
-                pigeonReturn.setLongName(longName);
-                pigeonReturn.setCompanyName(companyName);
-                pigeonReturn.setVersionCode(versionCode);
-                pigeonReturn.setVersionLabel(versionLabel);
-                pigeonReturn.setAppKeys(appKeys);
-                pigeonReturn.setCapabilities(capabilities);
-                pigeonReturn.setResources(resources);
-                pigeonReturn.setSdkVersion(sdkVersion);
-                pigeonReturn.setTargetPlatforms(targetPlatforms);
-                pigeonReturn.setWatchapp(watchapp);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class WatchappInfo {
-        private @Nullable Boolean watchface;
-        private @Nullable Boolean hiddenApp;
-        private @Nullable Boolean onlyShownOnCommunication;
-
-        static @NonNull WatchappInfo fromList(@NonNull ArrayList<Object> list) {
-            WatchappInfo pigeonResult = new WatchappInfo();
-            Object watchface = list.get(0);
-            pigeonResult.setWatchface((Boolean) watchface);
-            Object hiddenApp = list.get(1);
-            pigeonResult.setHiddenApp((Boolean) hiddenApp);
-            Object onlyShownOnCommunication = list.get(2);
-            pigeonResult.setOnlyShownOnCommunication((Boolean) onlyShownOnCommunication);
-            return pigeonResult;
-        }
-
-        public @Nullable Boolean getWatchface() {
-            return watchface;
-        }
-
-        public void setWatchface(@Nullable Boolean setterArg) {
-            this.watchface = setterArg;
-        }
-
-        public @Nullable Boolean getHiddenApp() {
-            return hiddenApp;
-        }
-
-        public void setHiddenApp(@Nullable Boolean setterArg) {
-            this.hiddenApp = setterArg;
-        }
-
-        public @Nullable Boolean getOnlyShownOnCommunication() {
-            return onlyShownOnCommunication;
-        }
-
-        public void setOnlyShownOnCommunication(@Nullable Boolean setterArg) {
-            this.onlyShownOnCommunication = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(3);
-            toListResult.add(watchface);
-            toListResult.add(hiddenApp);
-            toListResult.add(onlyShownOnCommunication);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable Boolean watchface;
-            private @Nullable Boolean hiddenApp;
-            private @Nullable Boolean onlyShownOnCommunication;
-
-            public @NonNull Builder setWatchface(@Nullable Boolean setterArg) {
-                this.watchface = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setHiddenApp(@Nullable Boolean setterArg) {
-                this.hiddenApp = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setOnlyShownOnCommunication(@Nullable Boolean setterArg) {
-                this.onlyShownOnCommunication = setterArg;
-                return this;
-            }
-
-            public @NonNull WatchappInfo build() {
-                WatchappInfo pigeonReturn = new WatchappInfo();
-                pigeonReturn.setWatchface(watchface);
-                pigeonReturn.setHiddenApp(hiddenApp);
-                pigeonReturn.setOnlyShownOnCommunication(onlyShownOnCommunication);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class WatchResource {
-        private @Nullable String file;
-        private @Nullable Boolean menuIcon;
-        private @Nullable String name;
-        private @Nullable String type;
-
-        static @NonNull WatchResource fromList(@NonNull ArrayList<Object> list) {
-            WatchResource pigeonResult = new WatchResource();
-            Object file = list.get(0);
-            pigeonResult.setFile((String) file);
-            Object menuIcon = list.get(1);
-            pigeonResult.setMenuIcon((Boolean) menuIcon);
-            Object name = list.get(2);
-            pigeonResult.setName((String) name);
-            Object type = list.get(3);
-            pigeonResult.setType((String) type);
-            return pigeonResult;
-        }
-
-        public @Nullable String getFile() {
-            return file;
-        }
-
-        public void setFile(@Nullable String setterArg) {
-            this.file = setterArg;
-        }
-
-        public @Nullable Boolean getMenuIcon() {
-            return menuIcon;
-        }
-
-        public void setMenuIcon(@Nullable Boolean setterArg) {
-            this.menuIcon = setterArg;
-        }
-
-        public @Nullable String getName() {
-            return name;
-        }
-
-        public void setName(@Nullable String setterArg) {
-            this.name = setterArg;
-        }
-
-        public @Nullable String getType() {
-            return type;
-        }
-
-        public void setType(@Nullable String setterArg) {
-            this.type = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(4);
-            toListResult.add(file);
-            toListResult.add(menuIcon);
-            toListResult.add(name);
-            toListResult.add(type);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable String file;
-            private @Nullable Boolean menuIcon;
-            private @Nullable String name;
-            private @Nullable String type;
-
-            public @NonNull Builder setFile(@Nullable String setterArg) {
-                this.file = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setMenuIcon(@Nullable Boolean setterArg) {
-                this.menuIcon = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setName(@Nullable String setterArg) {
-                this.name = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setType(@Nullable String setterArg) {
-                this.type = setterArg;
-                return this;
-            }
-
-            public @NonNull WatchResource build() {
-                WatchResource pigeonReturn = new WatchResource();
-                pigeonReturn.setFile(file);
-                pigeonReturn.setMenuIcon(menuIcon);
-                pigeonReturn.setName(name);
-                pigeonReturn.setType(type);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class InstallData {
-        private @NonNull String uri;
-        private @NonNull PbwAppInfo appInfo;
-        private @NonNull Boolean stayOffloaded;
-
-        /**
-         * Constructor is non-public to enforce null safety; use Builder.
-         */
-        InstallData() {
-        }
-
-        static @NonNull InstallData fromList(@NonNull ArrayList<Object> list) {
-            InstallData pigeonResult = new InstallData();
-            Object uri = list.get(0);
-            pigeonResult.setUri((String) uri);
-            Object appInfo = list.get(1);
-            pigeonResult.setAppInfo((appInfo == null) ? null : PbwAppInfo.fromList((ArrayList<Object>) appInfo));
-            Object stayOffloaded = list.get(2);
-            pigeonResult.setStayOffloaded((Boolean) stayOffloaded);
-            return pigeonResult;
-        }
-
-        public @NonNull String getUri() {
-            return uri;
-        }
-
-        public void setUri(@NonNull String setterArg) {
-            if (setterArg == null) {
-                throw new IllegalStateException("Nonnull field \"uri\" is null.");
-            }
-            this.uri = setterArg;
-        }
-
-        public @NonNull PbwAppInfo getAppInfo() {
-            return appInfo;
-        }
-
-        public void setAppInfo(@NonNull PbwAppInfo setterArg) {
-            if (setterArg == null) {
-                throw new IllegalStateException("Nonnull field \"appInfo\" is null.");
-            }
-            this.appInfo = setterArg;
-        }
-
-        public @NonNull Boolean getStayOffloaded() {
-            return stayOffloaded;
-        }
-
-        public void setStayOffloaded(@NonNull Boolean setterArg) {
-            if (setterArg == null) {
-                throw new IllegalStateException("Nonnull field \"stayOffloaded\" is null.");
-            }
-            this.stayOffloaded = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(3);
-            toListResult.add(uri);
-            toListResult.add((appInfo == null) ? null : appInfo.toList());
-            toListResult.add(stayOffloaded);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable String uri;
-            private @Nullable PbwAppInfo appInfo;
-            private @Nullable Boolean stayOffloaded;
-
-            public @NonNull Builder setUri(@NonNull String setterArg) {
-                this.uri = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setAppInfo(@NonNull PbwAppInfo setterArg) {
-                this.appInfo = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setStayOffloaded(@NonNull Boolean setterArg) {
-                this.stayOffloaded = setterArg;
-                return this;
-            }
-
-            public @NonNull InstallData build() {
-                InstallData pigeonReturn = new InstallData();
-                pigeonReturn.setUri(uri);
-                pigeonReturn.setAppInfo(appInfo);
-                pigeonReturn.setStayOffloaded(stayOffloaded);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class AppInstallStatus {
-        /**
-         * Progress in range [0-1]
-         */
-        private @NonNull Double progress;
-        private @NonNull Boolean isInstalling;
-
-        /**
-         * Constructor is non-public to enforce null safety; use Builder.
-         */
-        AppInstallStatus() {
-        }
-
-        static @NonNull AppInstallStatus fromList(@NonNull ArrayList<Object> list) {
-            AppInstallStatus pigeonResult = new AppInstallStatus();
-            Object progress = list.get(0);
-            pigeonResult.setProgress((Double) progress);
-            Object isInstalling = list.get(1);
-            pigeonResult.setIsInstalling((Boolean) isInstalling);
-            return pigeonResult;
-        }
-
-        public @NonNull Double getProgress() {
-            return progress;
-        }
-
-        public void setProgress(@NonNull Double setterArg) {
-            if (setterArg == null) {
-                throw new IllegalStateException("Nonnull field \"progress\" is null.");
-            }
-            this.progress = setterArg;
-        }
-
-        public @NonNull Boolean getIsInstalling() {
-            return isInstalling;
-        }
-
-        public void setIsInstalling(@NonNull Boolean setterArg) {
-            if (setterArg == null) {
-                throw new IllegalStateException("Nonnull field \"isInstalling\" is null.");
-            }
-            this.isInstalling = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(2);
-            toListResult.add(progress);
-            toListResult.add(isInstalling);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable Double progress;
-            private @Nullable Boolean isInstalling;
-
-            public @NonNull Builder setProgress(@NonNull Double setterArg) {
-                this.progress = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setIsInstalling(@NonNull Boolean setterArg) {
-                this.isInstalling = setterArg;
-                return this;
-            }
-
-            public @NonNull AppInstallStatus build() {
-                AppInstallStatus pigeonReturn = new AppInstallStatus();
-                pigeonReturn.setProgress(progress);
-                pigeonReturn.setIsInstalling(isInstalling);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class ScreenshotResult {
-        private @NonNull Boolean success;
-        private @Nullable String imagePath;
-
-        /**
-         * Constructor is non-public to enforce null safety; use Builder.
-         */
-        ScreenshotResult() {
-        }
-
-        static @NonNull ScreenshotResult fromList(@NonNull ArrayList<Object> list) {
-            ScreenshotResult pigeonResult = new ScreenshotResult();
-            Object success = list.get(0);
-            pigeonResult.setSuccess((Boolean) success);
-            Object imagePath = list.get(1);
-            pigeonResult.setImagePath((String) imagePath);
-            return pigeonResult;
-        }
-
-        public @NonNull Boolean getSuccess() {
-            return success;
-        }
-
-        public void setSuccess(@NonNull Boolean setterArg) {
-            if (setterArg == null) {
-                throw new IllegalStateException("Nonnull field \"success\" is null.");
-            }
-            this.success = setterArg;
-        }
-
-        public @Nullable String getImagePath() {
-            return imagePath;
-        }
-
-        public void setImagePath(@Nullable String setterArg) {
-            this.imagePath = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(2);
-            toListResult.add(success);
-            toListResult.add(imagePath);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable Boolean success;
-            private @Nullable String imagePath;
-
-            public @NonNull Builder setSuccess(@NonNull Boolean setterArg) {
-                this.success = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setImagePath(@Nullable String setterArg) {
-                this.imagePath = setterArg;
-                return this;
-            }
-
-            public @NonNull ScreenshotResult build() {
-                ScreenshotResult pigeonReturn = new ScreenshotResult();
-                pigeonReturn.setSuccess(success);
-                pigeonReturn.setImagePath(imagePath);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class AppLogEntry {
-        private @NonNull String uuid;
-        private @NonNull Long timestamp;
-        private @NonNull Long level;
-        private @NonNull Long lineNumber;
-        private @NonNull String filename;
-        private @NonNull String message;
-
-        /**
-         * Constructor is non-public to enforce null safety; use Builder.
-         */
-        AppLogEntry() {
-        }
-
-        static @NonNull AppLogEntry fromList(@NonNull ArrayList<Object> list) {
-            AppLogEntry pigeonResult = new AppLogEntry();
-            Object uuid = list.get(0);
-            pigeonResult.setUuid((String) uuid);
-            Object timestamp = list.get(1);
-            pigeonResult.setTimestamp((timestamp == null) ? null : ((timestamp instanceof Integer) ? (Integer) timestamp : (Long) timestamp));
-            Object level = list.get(2);
-            pigeonResult.setLevel((level == null) ? null : ((level instanceof Integer) ? (Integer) level : (Long) level));
-            Object lineNumber = list.get(3);
-            pigeonResult.setLineNumber((lineNumber == null) ? null : ((lineNumber instanceof Integer) ? (Integer) lineNumber : (Long) lineNumber));
-            Object filename = list.get(4);
-            pigeonResult.setFilename((String) filename);
-            Object message = list.get(5);
-            pigeonResult.setMessage((String) message);
-            return pigeonResult;
-        }
-
-        public @NonNull String getUuid() {
-            return uuid;
-        }
-
-        public void setUuid(@NonNull String setterArg) {
-            if (setterArg == null) {
-                throw new IllegalStateException("Nonnull field \"uuid\" is null.");
-            }
-            this.uuid = setterArg;
-        }
-
-        public @NonNull Long getTimestamp() {
-            return timestamp;
-        }
-
-        public void setTimestamp(@NonNull Long setterArg) {
-            if (setterArg == null) {
-                throw new IllegalStateException("Nonnull field \"timestamp\" is null.");
-            }
-            this.timestamp = setterArg;
-        }
-
-        public @NonNull Long getLevel() {
-            return level;
-        }
-
-        public void setLevel(@NonNull Long setterArg) {
-            if (setterArg == null) {
-                throw new IllegalStateException("Nonnull field \"level\" is null.");
-            }
-            this.level = setterArg;
-        }
-
-        public @NonNull Long getLineNumber() {
-            return lineNumber;
-        }
-
-        public void setLineNumber(@NonNull Long setterArg) {
-            if (setterArg == null) {
-                throw new IllegalStateException("Nonnull field \"lineNumber\" is null.");
-            }
-            this.lineNumber = setterArg;
-        }
-
-        public @NonNull String getFilename() {
-            return filename;
-        }
-
-        public void setFilename(@NonNull String setterArg) {
-            if (setterArg == null) {
-                throw new IllegalStateException("Nonnull field \"filename\" is null.");
-            }
-            this.filename = setterArg;
-        }
-
-        public @NonNull String getMessage() {
-            return message;
-        }
-
-        public void setMessage(@NonNull String setterArg) {
-            if (setterArg == null) {
-                throw new IllegalStateException("Nonnull field \"message\" is null.");
-            }
-            this.message = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(6);
-            toListResult.add(uuid);
-            toListResult.add(timestamp);
-            toListResult.add(level);
-            toListResult.add(lineNumber);
-            toListResult.add(filename);
-            toListResult.add(message);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable String uuid;
-            private @Nullable Long timestamp;
-            private @Nullable Long level;
-            private @Nullable Long lineNumber;
-            private @Nullable String filename;
-            private @Nullable String message;
-
-            public @NonNull Builder setUuid(@NonNull String setterArg) {
-                this.uuid = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setTimestamp(@NonNull Long setterArg) {
-                this.timestamp = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setLevel(@NonNull Long setterArg) {
-                this.level = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setLineNumber(@NonNull Long setterArg) {
-                this.lineNumber = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setFilename(@NonNull String setterArg) {
-                this.filename = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setMessage(@NonNull String setterArg) {
-                this.message = setterArg;
-                return this;
-            }
-
-            public @NonNull AppLogEntry build() {
-                AppLogEntry pigeonReturn = new AppLogEntry();
-                pigeonReturn.setUuid(uuid);
-                pigeonReturn.setTimestamp(timestamp);
-                pigeonReturn.setLevel(level);
-                pigeonReturn.setLineNumber(lineNumber);
-                pigeonReturn.setFilename(filename);
-                pigeonReturn.setMessage(message);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class OAuthResult {
-        private @Nullable String code;
-        private @Nullable String state;
-        private @Nullable String error;
-
-        static @NonNull OAuthResult fromList(@NonNull ArrayList<Object> list) {
-            OAuthResult pigeonResult = new OAuthResult();
-            Object code = list.get(0);
-            pigeonResult.setCode((String) code);
-            Object state = list.get(1);
-            pigeonResult.setState((String) state);
-            Object error = list.get(2);
-            pigeonResult.setError((String) error);
-            return pigeonResult;
-        }
-
-        public @Nullable String getCode() {
-            return code;
-        }
-
-        public void setCode(@Nullable String setterArg) {
-            this.code = setterArg;
-        }
-
-        public @Nullable String getState() {
-            return state;
-        }
-
-        public void setState(@Nullable String setterArg) {
-            this.state = setterArg;
-        }
-
-        public @Nullable String getError() {
-            return error;
-        }
-
-        public void setError(@Nullable String setterArg) {
-            this.error = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(3);
-            toListResult.add(code);
-            toListResult.add(state);
-            toListResult.add(error);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable String code;
-            private @Nullable String state;
-            private @Nullable String error;
-
-            public @NonNull Builder setCode(@Nullable String setterArg) {
-                this.code = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setState(@Nullable String setterArg) {
-                this.state = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setError(@Nullable String setterArg) {
-                this.error = setterArg;
-                return this;
-            }
-
-            public @NonNull OAuthResult build() {
-                OAuthResult pigeonReturn = new OAuthResult();
-                pigeonReturn.setCode(code);
-                pigeonReturn.setState(state);
-                pigeonReturn.setError(error);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents data sent in messages.
-     */
-    public static final class NotifChannelPigeon {
-        private @Nullable String packageId;
-        private @Nullable String channelId;
-        private @Nullable String channelName;
-        private @Nullable String channelDesc;
-        private @Nullable Boolean delete;
-
-        static @NonNull NotifChannelPigeon fromList(@NonNull ArrayList<Object> list) {
-            NotifChannelPigeon pigeonResult = new NotifChannelPigeon();
-            Object packageId = list.get(0);
-            pigeonResult.setPackageId((String) packageId);
-            Object channelId = list.get(1);
-            pigeonResult.setChannelId((String) channelId);
-            Object channelName = list.get(2);
-            pigeonResult.setChannelName((String) channelName);
-            Object channelDesc = list.get(3);
-            pigeonResult.setChannelDesc((String) channelDesc);
-            Object delete = list.get(4);
-            pigeonResult.setDelete((Boolean) delete);
-            return pigeonResult;
-        }
-
-        public @Nullable String getPackageId() {
-            return packageId;
-        }
-
-        public void setPackageId(@Nullable String setterArg) {
-            this.packageId = setterArg;
-        }
-
-        public @Nullable String getChannelId() {
-            return channelId;
-        }
-
-        public void setChannelId(@Nullable String setterArg) {
-            this.channelId = setterArg;
-        }
-
-        public @Nullable String getChannelName() {
-            return channelName;
-        }
-
-        public void setChannelName(@Nullable String setterArg) {
-            this.channelName = setterArg;
-        }
-
-        public @Nullable String getChannelDesc() {
-            return channelDesc;
-        }
-
-        public void setChannelDesc(@Nullable String setterArg) {
-            this.channelDesc = setterArg;
-        }
-
-        public @Nullable Boolean getDelete() {
-            return delete;
-        }
-
-        public void setDelete(@Nullable Boolean setterArg) {
-            this.delete = setterArg;
-        }
-
-        @NonNull
-        ArrayList<Object> toList() {
-            ArrayList<Object> toListResult = new ArrayList<Object>(5);
-            toListResult.add(packageId);
-            toListResult.add(channelId);
-            toListResult.add(channelName);
-            toListResult.add(channelDesc);
-            toListResult.add(delete);
-            return toListResult;
-        }
-
-        public static final class Builder {
-
-            private @Nullable String packageId;
-            private @Nullable String channelId;
-            private @Nullable String channelName;
-            private @Nullable String channelDesc;
-            private @Nullable Boolean delete;
-
-            public @NonNull Builder setPackageId(@Nullable String setterArg) {
-                this.packageId = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setChannelId(@Nullable String setterArg) {
-                this.channelId = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setChannelName(@Nullable String setterArg) {
-                this.channelName = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setChannelDesc(@Nullable String setterArg) {
-                this.channelDesc = setterArg;
-                return this;
-            }
-
-            public @NonNull Builder setDelete(@Nullable Boolean setterArg) {
-                this.delete = setterArg;
-                return this;
-            }
-
-            public @NonNull NotifChannelPigeon build() {
-                NotifChannelPigeon pigeonReturn = new NotifChannelPigeon();
-                pigeonReturn.setPackageId(packageId);
-                pigeonReturn.setChannelId(channelId);
-                pigeonReturn.setChannelName(channelName);
-                pigeonReturn.setChannelDesc(channelDesc);
-                pigeonReturn.setDelete(delete);
-                return pigeonReturn;
-            }
-        }
-    }
-
-    private static class ScanCallbacksCodec extends StandardMessageCodec {
-        public static final ScanCallbacksCodec INSTANCE = new ScanCallbacksCodec();
-
-        private ScanCallbacksCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return PebbleScanDevicePigeon.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof PebbleScanDevicePigeon) {
-                stream.write(128);
-                writeValue(stream, ((PebbleScanDevicePigeon) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
-     */
-    public static class ScanCallbacks {
-        private final @NonNull BinaryMessenger binaryMessenger;
-
-        public ScanCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
-            this.binaryMessenger = argBinaryMessenger;
-        }
-
-        /**
-         * The codec used by ScanCallbacks.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return ScanCallbacksCodec.INSTANCE;
-        }
-
-        /**
-         * pebbles = list of PebbleScanDevicePigeon
-         */
-        public void onScanUpdate(@NonNull List<PebbleScanDevicePigeon> pebblesArg, @NonNull Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.ScanCallbacks.onScanUpdate", getCodec());
-            channel.send(
-                    new ArrayList<Object>(Collections.singletonList(pebblesArg)),
-                    channelReply -> callback.reply(null));
-        }
-
-        public void onScanStarted(@NonNull Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.ScanCallbacks.onScanStarted", getCodec());
-            channel.send(
-                    null,
-                    channelReply -> callback.reply(null));
-        }
-
-        public void onScanStopped(@NonNull Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.ScanCallbacks.onScanStopped", getCodec());
-            channel.send(
-                    null,
-                    channelReply -> callback.reply(null));
-        }
-
-        /**
-         * Public interface for sending reply.
-         */
-        @SuppressWarnings("UnknownNullness")
-        public interface Reply<T> {
-            void reply(T reply);
-        }
-    }
-
-    private static class ConnectionCallbacksCodec extends StandardMessageCodec {
-        public static final ConnectionCallbacksCodec INSTANCE = new ConnectionCallbacksCodec();
-
-        private ConnectionCallbacksCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return PebbleDevicePigeon.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 129:
-                    return PebbleFirmwarePigeon.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 130:
-                    return WatchConnectionStatePigeon.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof PebbleDevicePigeon) {
-                stream.write(128);
-                writeValue(stream, ((PebbleDevicePigeon) value).toList());
-            } else if (value instanceof PebbleFirmwarePigeon) {
-                stream.write(129);
-                writeValue(stream, ((PebbleFirmwarePigeon) value).toList());
-            } else if (value instanceof WatchConnectionStatePigeon) {
-                stream.write(130);
-                writeValue(stream, ((WatchConnectionStatePigeon) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
-     */
-    public static class ConnectionCallbacks {
-        private final @NonNull BinaryMessenger binaryMessenger;
-
-        public ConnectionCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
-            this.binaryMessenger = argBinaryMessenger;
-        }
-
-        /**
-         * The codec used by ConnectionCallbacks.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return ConnectionCallbacksCodec.INSTANCE;
-        }
-
-        public void onWatchConnectionStateChanged(@NonNull WatchConnectionStatePigeon newStateArg, @NonNull Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.ConnectionCallbacks.onWatchConnectionStateChanged", getCodec());
-            channel.send(
-                    new ArrayList<Object>(Collections.singletonList(newStateArg)),
-                    channelReply -> callback.reply(null));
-        }
-
-        /**
-         * Public interface for sending reply.
-         */
-        @SuppressWarnings("UnknownNullness")
-        public interface Reply<T> {
-            void reply(T reply);
-        }
-    }
-
-    private static class RawIncomingPacketsCallbacksCodec extends StandardMessageCodec {
-        public static final RawIncomingPacketsCallbacksCodec INSTANCE = new RawIncomingPacketsCallbacksCodec();
-
-        private RawIncomingPacketsCallbacksCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return ListWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof ListWrapper) {
-                stream.write(128);
-                writeValue(stream, ((ListWrapper) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
-     */
-    public static class RawIncomingPacketsCallbacks {
-        private final @NonNull BinaryMessenger binaryMessenger;
-
-        public RawIncomingPacketsCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
-            this.binaryMessenger = argBinaryMessenger;
-        }
-
-        /**
-         * The codec used by RawIncomingPacketsCallbacks.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return RawIncomingPacketsCallbacksCodec.INSTANCE;
-        }
-
-        public void onPacketReceived(@NonNull ListWrapper listOfBytesArg, @NonNull Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.RawIncomingPacketsCallbacks.onPacketReceived", getCodec());
-            channel.send(
-                    new ArrayList<Object>(Collections.singletonList(listOfBytesArg)),
-                    channelReply -> callback.reply(null));
-        }
-
-        /**
-         * Public interface for sending reply.
-         */
-        @SuppressWarnings("UnknownNullness")
-        public interface Reply<T> {
-            void reply(T reply);
-        }
-    }
-
-    private static class PairCallbacksCodec extends StandardMessageCodec {
-        public static final PairCallbacksCodec INSTANCE = new PairCallbacksCodec();
-
-        private PairCallbacksCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof StringWrapper) {
-                stream.write(128);
-                writeValue(stream, ((StringWrapper) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
-     */
-    public static class PairCallbacks {
-        private final @NonNull BinaryMessenger binaryMessenger;
-
-        public PairCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
-            this.binaryMessenger = argBinaryMessenger;
-        }
-
-        /**
-         * The codec used by PairCallbacks.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return PairCallbacksCodec.INSTANCE;
-        }
-
-        public void onWatchPairComplete(@NonNull StringWrapper addressArg, @NonNull Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.PairCallbacks.onWatchPairComplete", getCodec());
-            channel.send(
-                    new ArrayList<Object>(Collections.singletonList(addressArg)),
-                    channelReply -> callback.reply(null));
-        }
-
-        /**
-         * Public interface for sending reply.
-         */
-        @SuppressWarnings("UnknownNullness")
-        public interface Reply<T> {
-            void reply(T reply);
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
-     */
-    public static class CalendarCallbacks {
-        private final @NonNull BinaryMessenger binaryMessenger;
-
-        public CalendarCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
-            this.binaryMessenger = argBinaryMessenger;
-        }
-
-        /**
-         * The codec used by CalendarCallbacks.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return new StandardMessageCodec();
-        }
-
-        public void doFullCalendarSync(@NonNull Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.CalendarCallbacks.doFullCalendarSync", getCodec());
-            channel.send(
-                    null,
-                    channelReply -> callback.reply(null));
-        }
-
-        /**
-         * Public interface for sending reply.
-         */
-        @SuppressWarnings("UnknownNullness")
-        public interface Reply<T> {
-            void reply(T reply);
-        }
-    }
-
-    private static class TimelineCallbacksCodec extends StandardMessageCodec {
-        public static final TimelineCallbacksCodec INSTANCE = new TimelineCallbacksCodec();
-
-        private TimelineCallbacksCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return ActionResponsePigeon.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 129:
-                    return ActionTrigger.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof ActionResponsePigeon) {
-                stream.write(128);
-                writeValue(stream, ((ActionResponsePigeon) value).toList());
-            } else if (value instanceof ActionTrigger) {
-                stream.write(129);
-                writeValue(stream, ((ActionTrigger) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
-     */
-    public static class TimelineCallbacks {
-        private final @NonNull BinaryMessenger binaryMessenger;
-
-        public TimelineCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
-            this.binaryMessenger = argBinaryMessenger;
-        }
-
-        /**
-         * The codec used by TimelineCallbacks.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return TimelineCallbacksCodec.INSTANCE;
-        }
-
-        public void syncTimelineToWatch(@NonNull Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.TimelineCallbacks.syncTimelineToWatch", getCodec());
-            channel.send(
-                    null,
-                    channelReply -> callback.reply(null));
-        }
-
-        public void handleTimelineAction(@NonNull ActionTrigger actionTriggerArg, @NonNull Reply<ActionResponsePigeon> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.TimelineCallbacks.handleTimelineAction", getCodec());
-            channel.send(
-                    new ArrayList<Object>(Collections.singletonList(actionTriggerArg)),
-                    channelReply -> {
-                        @SuppressWarnings("ConstantConditions")
-                        ActionResponsePigeon output = (ActionResponsePigeon) channelReply;
-                        callback.reply(output);
-                    });
-        }
-
-        /**
-         * Public interface for sending reply.
-         */
-        @SuppressWarnings("UnknownNullness")
-        public interface Reply<T> {
-            void reply(T reply);
-        }
-    }
-
-    private static class IntentCallbacksCodec extends StandardMessageCodec {
-        public static final IntentCallbacksCodec INSTANCE = new IntentCallbacksCodec();
-
-        private IntentCallbacksCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof StringWrapper) {
-                stream.write(128);
-                writeValue(stream, ((StringWrapper) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
-     */
-    public static class IntentCallbacks {
-        private final @NonNull BinaryMessenger binaryMessenger;
-
-        public IntentCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
-            this.binaryMessenger = argBinaryMessenger;
-        }
-
-        /**
-         * The codec used by IntentCallbacks.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return IntentCallbacksCodec.INSTANCE;
-        }
-
-        public void openUri(@NonNull StringWrapper uriArg, @NonNull Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.IntentCallbacks.openUri", getCodec());
-            channel.send(
-                    new ArrayList<Object>(Collections.singletonList(uriArg)),
-                    channelReply -> callback.reply(null));
-        }
-
-        /**
-         * Public interface for sending reply.
-         */
-        @SuppressWarnings("UnknownNullness")
-        public interface Reply<T> {
-            void reply(T reply);
-        }
-    }
-
-    private static class BackgroundAppInstallCallbacksCodec extends StandardMessageCodec {
-        public static final BackgroundAppInstallCallbacksCodec INSTANCE = new BackgroundAppInstallCallbacksCodec();
-
-        private BackgroundAppInstallCallbacksCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return InstallData.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 129:
-                    return PbwAppInfo.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 130:
-                    return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 131:
-                    return WatchResource.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 132:
-                    return WatchappInfo.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof InstallData) {
-                stream.write(128);
-                writeValue(stream, ((InstallData) value).toList());
-            } else if (value instanceof PbwAppInfo) {
-                stream.write(129);
-                writeValue(stream, ((PbwAppInfo) value).toList());
-            } else if (value instanceof StringWrapper) {
-                stream.write(130);
-                writeValue(stream, ((StringWrapper) value).toList());
-            } else if (value instanceof WatchResource) {
-                stream.write(131);
-                writeValue(stream, ((WatchResource) value).toList());
-            } else if (value instanceof WatchappInfo) {
-                stream.write(132);
-                writeValue(stream, ((WatchappInfo) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
-     */
-    public static class BackgroundAppInstallCallbacks {
-        private final @NonNull BinaryMessenger binaryMessenger;
-
-        public BackgroundAppInstallCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
-            this.binaryMessenger = argBinaryMessenger;
-        }
-
-        /**
-         * The codec used by BackgroundAppInstallCallbacks.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return BackgroundAppInstallCallbacksCodec.INSTANCE;
-        }
-
-        public void beginAppInstall(@NonNull InstallData installDataArg, @NonNull Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall", getCodec());
-            channel.send(
-                    new ArrayList<Object>(Collections.singletonList(installDataArg)),
-                    channelReply -> callback.reply(null));
-        }
-
-        public void deleteApp(@NonNull StringWrapper uuidArg, @NonNull Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.BackgroundAppInstallCallbacks.deleteApp", getCodec());
-            channel.send(
-                    new ArrayList<Object>(Collections.singletonList(uuidArg)),
-                    channelReply -> callback.reply(null));
-        }
-
-        /**
-         * Public interface for sending reply.
-         */
-        @SuppressWarnings("UnknownNullness")
-        public interface Reply<T> {
-            void reply(T reply);
-        }
-    }
-
-    private static class AppInstallStatusCallbacksCodec extends StandardMessageCodec {
-        public static final AppInstallStatusCallbacksCodec INSTANCE = new AppInstallStatusCallbacksCodec();
-
-        private AppInstallStatusCallbacksCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return AppInstallStatus.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof AppInstallStatus) {
-                stream.write(128);
-                writeValue(stream, ((AppInstallStatus) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
-     */
-    public static class AppInstallStatusCallbacks {
-        private final @NonNull BinaryMessenger binaryMessenger;
-
-        public AppInstallStatusCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
-            this.binaryMessenger = argBinaryMessenger;
-        }
-
-        /**
-         * The codec used by AppInstallStatusCallbacks.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return AppInstallStatusCallbacksCodec.INSTANCE;
-        }
-
-        public void onStatusUpdated(@NonNull AppInstallStatus statusArg, @NonNull Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.AppInstallStatusCallbacks.onStatusUpdated", getCodec());
-            channel.send(
-                    new ArrayList<Object>(Collections.singletonList(statusArg)),
-                    channelReply -> callback.reply(null));
-        }
-
-        /**
-         * Public interface for sending reply.
-         */
-        @SuppressWarnings("UnknownNullness")
-        public interface Reply<T> {
-            void reply(T reply);
-        }
-    }
-
-    private static class NotificationListeningCodec extends StandardMessageCodec {
-        public static final NotificationListeningCodec INSTANCE = new NotificationListeningCodec();
-
-        private NotificationListeningCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return BooleanWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 129:
-                    return NotifChannelPigeon.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 130:
-                    return NotificationPigeon.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 131:
-                    return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 132:
-                    return TimelinePinPigeon.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof BooleanWrapper) {
-                stream.write(128);
-                writeValue(stream, ((BooleanWrapper) value).toList());
-            } else if (value instanceof NotifChannelPigeon) {
-                stream.write(129);
-                writeValue(stream, ((NotifChannelPigeon) value).toList());
-            } else if (value instanceof NotificationPigeon) {
-                stream.write(130);
-                writeValue(stream, ((NotificationPigeon) value).toList());
-            } else if (value instanceof StringWrapper) {
-                stream.write(131);
-                writeValue(stream, ((StringWrapper) value).toList());
-            } else if (value instanceof TimelinePinPigeon) {
-                stream.write(132);
-                writeValue(stream, ((TimelinePinPigeon) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
-     */
-    public static class NotificationListening {
-        private final @NonNull BinaryMessenger binaryMessenger;
-
-        public NotificationListening(@NonNull BinaryMessenger argBinaryMessenger) {
-            this.binaryMessenger = argBinaryMessenger;
-        }
-
-        /**
-         * The codec used by NotificationListening.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return NotificationListeningCodec.INSTANCE;
-        }
-
-        public void handleNotification(@NonNull NotificationPigeon notificationArg, @NonNull Reply<TimelinePinPigeon> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.NotificationListening.handleNotification", getCodec());
-            channel.send(
-                    new ArrayList<Object>(Collections.singletonList(notificationArg)),
-                    channelReply -> {
-                        @SuppressWarnings("ConstantConditions")
-                        TimelinePinPigeon output = (TimelinePinPigeon) channelReply;
-                        callback.reply(output);
-                    });
-        }
-
-        public void dismissNotification(@NonNull StringWrapper itemIdArg, @NonNull Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.NotificationListening.dismissNotification", getCodec());
-            channel.send(
-                    new ArrayList<Object>(Collections.singletonList(itemIdArg)),
-                    channelReply -> callback.reply(null));
-        }
-
-        public void shouldNotify(@NonNull NotifChannelPigeon channelArg, @NonNull Reply<BooleanWrapper> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.NotificationListening.shouldNotify", getCodec());
-            channel.send(
-                    new ArrayList<Object>(Collections.singletonList(channelArg)),
-                    channelReply -> {
-                        @SuppressWarnings("ConstantConditions")
-                        BooleanWrapper output = (BooleanWrapper) channelReply;
-                        callback.reply(output);
-                    });
-        }
-
-        public void updateChannel(@NonNull NotifChannelPigeon channelArg, @NonNull Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.NotificationListening.updateChannel", getCodec());
-            channel.send(
-                    new ArrayList<Object>(Collections.singletonList(channelArg)),
-                    channelReply -> callback.reply(null));
-        }
-
-        /**
-         * Public interface for sending reply.
-         */
-        @SuppressWarnings("UnknownNullness")
-        public interface Reply<T> {
-            void reply(T reply);
-        }
-    }
-
-    private static class AppLogCallbacksCodec extends StandardMessageCodec {
-        public static final AppLogCallbacksCodec INSTANCE = new AppLogCallbacksCodec();
-
-        private AppLogCallbacksCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return AppLogEntry.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof AppLogEntry) {
-                stream.write(128);
-                writeValue(stream, ((AppLogEntry) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
-     */
-    public static class AppLogCallbacks {
-        private final @NonNull BinaryMessenger binaryMessenger;
-
-        public AppLogCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
-            this.binaryMessenger = argBinaryMessenger;
-        }
-
-        /**
-         * The codec used by AppLogCallbacks.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return AppLogCallbacksCodec.INSTANCE;
-        }
-
-        public void onLogReceived(@NonNull AppLogEntry entryArg, @NonNull Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.AppLogCallbacks.onLogReceived", getCodec());
-            channel.send(
-                    new ArrayList<Object>(Collections.singletonList(entryArg)),
-                    channelReply -> callback.reply(null));
-        }
-
-        /**
-         * Public interface for sending reply.
-         */
-        @SuppressWarnings("UnknownNullness")
-        public interface Reply<T> {
-            void reply(T reply);
-        }
-    }
-
-    /**
-     * Generated class from Pigeon that represents Flutter messages that can be called from Java.
-     */
-    public static class FirmwareUpdateCallbacks {
-        private final @NonNull BinaryMessenger binaryMessenger;
-
-        public FirmwareUpdateCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
-            this.binaryMessenger = argBinaryMessenger;
-        }
-
-        /**
-         * The codec used by FirmwareUpdateCallbacks.
-         */
-        static @NonNull MessageCodec<Object> getCodec() {
-            return new StandardMessageCodec();
-        }
-
-        public void onFirmwareUpdateStarted(@NonNull Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.FirmwareUpdateCallbacks.onFirmwareUpdateStarted", getCodec());
-            channel.send(
-                    null,
-                    channelReply -> callback.reply(null));
-        }
-
-        public void onFirmwareUpdateProgress(@NonNull Double progressArg, @NonNull Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.FirmwareUpdateCallbacks.onFirmwareUpdateProgress", getCodec());
-            channel.send(
-                    new ArrayList<Object>(Collections.singletonList(progressArg)),
-                    channelReply -> callback.reply(null));
-        }
-
-        public void onFirmwareUpdateFinished(@NonNull Reply<Void> callback) {
-            BasicMessageChannel<Object> channel =
-                    new BasicMessageChannel<>(
-                            binaryMessenger, "dev.flutter.pigeon.FirmwareUpdateCallbacks.onFirmwareUpdateFinished", getCodec());
-            channel.send(
-                    null,
-                    channelReply -> callback.reply(null));
-        }
-
-        /**
-         * Public interface for sending reply.
-         */
-        @SuppressWarnings("UnknownNullness")
-        public interface Reply<T> {
-            void reply(T reply);
-        }
-    }
-
-    private static class NotificationUtilsCodec extends StandardMessageCodec {
-        public static final NotificationUtilsCodec INSTANCE = new NotificationUtilsCodec();
-
-        private NotificationUtilsCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return BooleanWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 129:
-                    return NotifActionExecuteReq.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 130:
-                    return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof BooleanWrapper) {
-                stream.write(128);
-                writeValue(stream, ((BooleanWrapper) value).toList());
-            } else if (value instanceof NotifActionExecuteReq) {
-                stream.write(129);
-                writeValue(stream, ((NotifActionExecuteReq) value).toList());
-            } else if (value instanceof StringWrapper) {
-                stream.write(130);
-                writeValue(stream, ((StringWrapper) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    private static class ConnectionControlCodec extends StandardMessageCodec {
-        public static final ConnectionControlCodec INSTANCE = new ConnectionControlCodec();
-
-        private ConnectionControlCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return BooleanWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 129:
-                    return ListWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof BooleanWrapper) {
-                stream.write(128);
-                writeValue(stream, ((BooleanWrapper) value).toList());
-            } else if (value instanceof ListWrapper) {
-                stream.write(129);
-                writeValue(stream, ((ListWrapper) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    private static class UiConnectionControlCodec extends StandardMessageCodec {
-        public static final UiConnectionControlCodec INSTANCE = new UiConnectionControlCodec();
-
-        private UiConnectionControlCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof StringWrapper) {
-                stream.write(128);
-                writeValue(stream, ((StringWrapper) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    private static class IntentControlCodec extends StandardMessageCodec {
-        public static final IntentControlCodec INSTANCE = new IntentControlCodec();
-
-        private IntentControlCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return OAuthResult.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof OAuthResult) {
-                stream.write(128);
-                writeValue(stream, ((OAuthResult) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    private static class TimelineControlCodec extends StandardMessageCodec {
-        public static final TimelineControlCodec INSTANCE = new TimelineControlCodec();
-
-        private TimelineControlCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return NumberWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 129:
-                    return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 130:
-                    return TimelinePinPigeon.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof NumberWrapper) {
-                stream.write(128);
-                writeValue(stream, ((NumberWrapper) value).toList());
-            } else if (value instanceof StringWrapper) {
-                stream.write(129);
-                writeValue(stream, ((StringWrapper) value).toList());
-            } else if (value instanceof TimelinePinPigeon) {
-                stream.write(130);
-                writeValue(stream, ((TimelinePinPigeon) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    private static class BackgroundSetupControlCodec extends StandardMessageCodec {
-        public static final BackgroundSetupControlCodec INSTANCE = new BackgroundSetupControlCodec();
-
-        private BackgroundSetupControlCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return NumberWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof NumberWrapper) {
-                stream.write(128);
-                writeValue(stream, ((NumberWrapper) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    private static class BackgroundControlCodec extends StandardMessageCodec {
-        public static final BackgroundControlCodec INSTANCE = new BackgroundControlCodec();
-
-        private BackgroundControlCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return NumberWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof NumberWrapper) {
-                stream.write(128);
-                writeValue(stream, ((NumberWrapper) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    private static class PermissionCheckCodec extends StandardMessageCodec {
-        public static final PermissionCheckCodec INSTANCE = new PermissionCheckCodec();
-
-        private PermissionCheckCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return BooleanWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof BooleanWrapper) {
-                stream.write(128);
-                writeValue(stream, ((BooleanWrapper) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    private static class PermissionControlCodec extends StandardMessageCodec {
-        public static final PermissionControlCodec INSTANCE = new PermissionControlCodec();
-
-        private PermissionControlCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return NumberWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof NumberWrapper) {
-                stream.write(128);
-                writeValue(stream, ((NumberWrapper) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    private static class PigeonLoggerCodec extends StandardMessageCodec {
-        public static final PigeonLoggerCodec INSTANCE = new PigeonLoggerCodec();
-
-        private PigeonLoggerCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof StringWrapper) {
-                stream.write(128);
-                writeValue(stream, ((StringWrapper) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    private static class WorkaroundsControlCodec extends StandardMessageCodec {
-        public static final WorkaroundsControlCodec INSTANCE = new WorkaroundsControlCodec();
-
-        private WorkaroundsControlCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return ListWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof ListWrapper) {
-                stream.write(128);
-                writeValue(stream, ((ListWrapper) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    private static class AppInstallControlCodec extends StandardMessageCodec {
-        public static final AppInstallControlCodec INSTANCE = new AppInstallControlCodec();
-
-        private AppInstallControlCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return BooleanWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 129:
-                    return InstallData.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 130:
-                    return ListWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 131:
-                    return NumberWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 132:
-                    return PbwAppInfo.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 133:
-                    return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 134:
-                    return WatchResource.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 135:
-                    return WatchappInfo.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof BooleanWrapper) {
-                stream.write(128);
-                writeValue(stream, ((BooleanWrapper) value).toList());
-            } else if (value instanceof InstallData) {
-                stream.write(129);
-                writeValue(stream, ((InstallData) value).toList());
-            } else if (value instanceof ListWrapper) {
-                stream.write(130);
-                writeValue(stream, ((ListWrapper) value).toList());
-            } else if (value instanceof NumberWrapper) {
-                stream.write(131);
-                writeValue(stream, ((NumberWrapper) value).toList());
-            } else if (value instanceof PbwAppInfo) {
-                stream.write(132);
-                writeValue(stream, ((PbwAppInfo) value).toList());
-            } else if (value instanceof StringWrapper) {
-                stream.write(133);
-                writeValue(stream, ((StringWrapper) value).toList());
-            } else if (value instanceof WatchResource) {
-                stream.write(134);
-                writeValue(stream, ((WatchResource) value).toList());
-            } else if (value instanceof WatchappInfo) {
-                stream.write(135);
-                writeValue(stream, ((WatchappInfo) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    private static class AppLifecycleControlCodec extends StandardMessageCodec {
-        public static final AppLifecycleControlCodec INSTANCE = new AppLifecycleControlCodec();
-
-        private AppLifecycleControlCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return BooleanWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 129:
-                    return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof BooleanWrapper) {
-                stream.write(128);
-                writeValue(stream, ((BooleanWrapper) value).toList());
-            } else if (value instanceof StringWrapper) {
-                stream.write(129);
-                writeValue(stream, ((StringWrapper) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    private static class PackageDetailsCodec extends StandardMessageCodec {
-        public static final PackageDetailsCodec INSTANCE = new PackageDetailsCodec();
-
-        private PackageDetailsCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return AppEntriesPigeon.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof AppEntriesPigeon) {
-                stream.write(128);
-                writeValue(stream, ((AppEntriesPigeon) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    private static class ScreenshotsControlCodec extends StandardMessageCodec {
-        public static final ScreenshotsControlCodec INSTANCE = new ScreenshotsControlCodec();
-
-        private ScreenshotsControlCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return ScreenshotResult.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof ScreenshotResult) {
-                stream.write(128);
-                writeValue(stream, ((ScreenshotResult) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    private static class FirmwareUpdateControlCodec extends StandardMessageCodec {
-        public static final FirmwareUpdateControlCodec INSTANCE = new FirmwareUpdateControlCodec();
-
-        private FirmwareUpdateControlCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return BooleanWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 129:
-                    return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof BooleanWrapper) {
-                stream.write(128);
-                writeValue(stream, ((BooleanWrapper) value).toList());
-            } else if (value instanceof StringWrapper) {
-                stream.write(129);
-                writeValue(stream, ((StringWrapper) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
-
-    private static class KeepUnusedHackCodec extends StandardMessageCodec {
-        public static final KeepUnusedHackCodec INSTANCE = new KeepUnusedHackCodec();
-
-        private KeepUnusedHackCodec() {
-        }
-
-        @Override
-        protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
-            switch (type) {
-                case (byte) 128:
-                    return PebbleScanDevicePigeon.fromList((ArrayList<Object>) readValue(buffer));
-                case (byte) 129:
-                    return WatchResource.fromList((ArrayList<Object>) readValue(buffer));
-                default:
-                    return super.readValueOfType(type, buffer);
-            }
-        }
-
-        @Override
-        protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-            if (value instanceof PebbleScanDevicePigeon) {
-                stream.write(128);
-                writeValue(stream, ((PebbleScanDevicePigeon) value).toList());
-            } else if (value instanceof WatchResource) {
-                stream.write(129);
-                writeValue(stream, ((WatchResource) value).toList());
-            } else {
-                super.writeValue(stream, value);
-            }
-        }
-    }
+  }
 }

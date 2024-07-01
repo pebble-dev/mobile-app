@@ -5,7 +5,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import androidx.annotation.RequiresPermission
-import io.rebble.cobble.bluetooth.BluePebbleDevice
+import io.rebble.cobble.bluetooth.ScannedPebbleDevice
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -25,7 +25,7 @@ class BleScanner @Inject constructor() {
     private var stopTrigger: CompletableDeferred<Unit>? = null
 
     @RequiresPermission(allOf = [android.Manifest.permission.BLUETOOTH_SCAN, android.Manifest.permission.BLUETOOTH_CONNECT])
-    fun getScanFlow(): Flow<List<BluePebbleDevice>> = flow {
+    fun getScanFlow(): Flow<List<ScannedPebbleDevice>> = flow {
         coroutineScope {
             val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
                     ?: throw BluetoothNotSupportedException("Device does not have a bluetooth adapter")
@@ -33,7 +33,7 @@ class BleScanner @Inject constructor() {
             val leScanner = bluetoothAdapter.bluetoothLeScanner
             val callback = ScanCallbackChannel()
 
-            var foundDevices = emptyList<BluePebbleDevice>()
+            var foundDevices = emptyList<ScannedPebbleDevice>()
 
             val stopTrigger = CompletableDeferred<Unit>()
             this@BleScanner.stopTrigger = stopTrigger
@@ -54,12 +54,12 @@ class BleScanner @Inject constructor() {
                                             device.name.startsWith("Pebble-LE"))) {
                                 val i = foundDevices.indexOfFirst { it.bluetoothDevice.address == device.address }
                                 if (i < 0) {
-                                    val bluePebbleDevice = BluePebbleDevice(result)
-                                    foundDevices = foundDevices + bluePebbleDevice
+                                    val scannedPebbleDevice = ScannedPebbleDevice(result)
+                                    foundDevices = foundDevices + scannedPebbleDevice
                                     emit(foundDevices)
                                 } else if (foundDevices[i].leMeta?.color == null) {
                                     val fd = foundDevices as MutableList
-                                    fd[i] = BluePebbleDevice(result)
+                                    fd[i] = ScannedPebbleDevice(result)
                                     foundDevices = fd
                                     emit(foundDevices)
                                 }

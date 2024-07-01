@@ -8,7 +8,8 @@ actual fun log(
     message: String,
     throwable: Throwable?
 ) {
-    Timber.tag("CobbleKMP").log(level.toTimber(), throwable, message)
+    val caller = Throwable().stackTrace[3]
+    Timber.tag("${caller.className.split(".").last()}$${caller.methodName}").log(level.toTimber(), throwable, message)
 }
 
 private fun LogLevel.toTimber(): Int {
