@@ -8,6 +8,7 @@ import android.provider.CalendarContract
 import com.philjay.Frequency
 import com.philjay.RRule
 import io.rebble.cobble.shared.AndroidPlatformContext
+import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.PlatformContext
 import io.rebble.cobble.shared.data.CalendarEvent
 import io.rebble.cobble.shared.data.EventAttendee
@@ -118,20 +119,23 @@ platformContext as AndroidPlatformContext
     ContentUris.appendId(uriBuilder, endDate.toEpochMilliseconds())
     val builtUri = uriBuilder.build()
 
-    return contentResolver.query(builtUri, eventProjection,
+    val result = contentResolver.query(builtUri, eventProjection,
             "${CalendarContract.Instances.CALENDAR_ID} = ?"
             + " AND IFNULL(" + CalendarContract.Instances.STATUS + ", " + CalendarContract.Instances.STATUS_TENTATIVE + ") != " + CalendarContract.Instances.STATUS_CANCELED
             + " AND IFNULL(" + CalendarContract.Instances.SELF_ATTENDEE_STATUS + ", " + CalendarContract.Attendees.ATTENDEE_STATUS_NONE + ") != " + CalendarContract.Attendees.ATTENDEE_STATUS_DECLINED,
-            arrayOf(calendar.platformId), null
+            arrayOf(calendar.platformId), "BEGIN ASC"
     )?.use { cursor ->
-        return@use generateSequence {
-            if (cursor.moveToNext()) {
-                resolveCalendarEvent(contentResolver, cursor, calendar.ownerId)
-            } else {
-                null
+        Logging.d("Found ${cursor.count} events for calendar ${calendar.name}")
+        val list = mutableListOf<CalendarEvent>()
+        while (cursor.moveToNext()) {
+            val event = resolveCalendarEvent(contentResolver, cursor, calendar.ownerId)
+            if (event != null) {
+                list.add(event)
             }
-        }.toList()
+        }
+        list
     } ?: listOf()
+    return result
 }
 
 private fun resolveCalendarEvent(contentResolver: ContentResolver, cursor: Cursor, ownerEmail: String): CalendarEvent? {
@@ -142,23 +146,23 @@ private fun resolveCalendarEvent(contentResolver: ContentResolver, cursor: Curso
     val calendarId = cursor.getNullableColumnIndex(CalendarContract.Instances.CALENDAR_ID)
             ?.let { cursor.getLong(it) } ?: return null
     val title = cursor.getNullableColumnIndex(CalendarContract.Instances.TITLE)
-            ?.let { cursor.getString(it) } ?: return null
+            ?.let { cursor.getString(it) } ?: "Untitled event"
     val description = cursor.getNullableColumnIndex(CalendarContract.Instances.DESCRIPTION)
-            ?.let { cursor.getString(it) } ?: return null
+            ?.let { cursor.getString(it) } ?: ""
     val start = cursor.getNullableColumnIndex(CalendarContract.Instances.BEGIN)
             ?.let { cursor.getLong(it) } ?: return null
     val end = cursor.getNullableColumnIndex(CalendarContract.Instances.END)
             ?.let { cursor.getLong(it) } ?: return null
     val allDay = cursor.getNullableColumnIndex(CalendarContract.Instances.ALL_DAY)
-            ?.let { cursor.getInt(it) } ?: return null
+            ?.let { cursor.getInt(it) } ?: false
     val location = cursor.getNullableColumnIndex(CalendarContract.Instances.EVENT_LOCATION)
-            ?.let { cursor.getString(it) } ?: return null
+            ?.let { cursor.getString(it) }
     val availability = cursor.getNullableColumnIndex(CalendarContract.Instances.AVAILABILITY)
             ?.let { cursor.getInt(it) } ?: return null
     val status = cursor.getNullableColumnIndex(CalendarContract.Instances.STATUS)
             ?.let { cursor.getInt(it) } ?: return null
     val recurrenceRule = cursor.getNullableColumnIndex(CalendarContract.Instances.RRULE)
-            ?.let { cursor.getString(it) } ?: return null
+            ?.let { cursor.getString(it) }
 
     return CalendarEvent(
             id = id,
@@ -170,7 +174,7 @@ private fun resolveCalendarEvent(contentResolver: ContentResolver, cursor: Curso
             endTime = Instant.fromEpochMilliseconds(end),
             allDay = allDay != 0,
             attendees = resolveAttendees(eventId, ownerEmail, contentResolver),
-            recurrenceRule = resolveRecurrenceRule(recurrenceRule, Instant.fromEpochMilliseconds(start)),
+            recurrenceRule = recurrenceRule?.let { resolveRecurrenceRule(it, Instant.fromEpochMilliseconds(start)) },
             reminders = resolveReminders(eventId, contentResolver),
             availability = when (availability) {
                 CalendarContract.Instances.AVAILABILITY_BUSY -> CalendarEvent.Availability.Busy
