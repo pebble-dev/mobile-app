@@ -36,6 +36,7 @@ object TimelineActionTypeSerializer : KSerializer<TimelineItem.Action.Type> {
     }
 
     override fun deserialize(decoder: Decoder): TimelineItem.Action.Type {
-        return TimelineItem.Action.Type.entries.first { it.value.toInt() == decoder.decodeInt() }
+        val raw = decoder.decodeInt()
+        return TimelineItem.Action.Type.entries.first { it.value.toInt() == raw}
     }
 }
