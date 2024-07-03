@@ -24,6 +24,7 @@ import kotlin.math.round
 import kotlin.random.Random
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.milliseconds
 
 @ExperimentalUnsignedTypes
 class WatchTimelineSyncer(
@@ -160,7 +161,7 @@ class WatchTimelineSyncer(
         val timelineItem = TimelineItem(
                 pin.itemId,
                 pin.parentId,
-                round(pin.timestamp.toEpochMilliseconds() / 1000f).toUInt(),
+                pin.timestamp.toEpochMilliseconds().milliseconds.inWholeSeconds.toUInt(),
                 pin.duration?.toUShort() ?: 0u,
                 TimelineItem.Type.Pin,
                 TimelineItem.Flag.makeFlags(flags),
