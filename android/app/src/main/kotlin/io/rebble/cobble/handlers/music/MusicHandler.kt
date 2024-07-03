@@ -12,6 +12,10 @@ import androidx.lifecycle.asFlow
 import io.rebble.cobble.datasources.PermissionChangeBus
 import io.rebble.cobble.datasources.notificationPermissionFlow
 import io.rebble.cobble.handlers.CobbleHandler
+import io.rebble.cobble.shared.data.MusicTrack
+import io.rebble.cobble.shared.data.PlayState
+import io.rebble.cobble.shared.domain.music.MusicSync
+import io.rebble.cobble.shared.domain.music.PlatformMusicController
 import io.rebble.cobble.util.Debouncer
 import io.rebble.libpebblecommon.packets.MusicControl
 import io.rebble.libpebblecommon.services.MusicService
@@ -24,6 +28,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
 
 class MusicHandler @Inject constructor(
         private val context: Context,
@@ -31,27 +36,11 @@ class MusicHandler @Inject constructor(
         private val musicService: MusicService,
         private val activeMediaSessionProvider: ActiveMediaSessionProvider,
         private val packageManager: PackageManager
-) : CobbleHandler {
+) : CobbleHandler, PlatformMusicController {
     private var currentMediaController: MediaController? = null
     private var hasPermission: Boolean = false
-
-    private val playStateDebouncer = Debouncer(
-            debouncingTimeMs = 500L,
-            triggerFirstImmediately = true,
-            scope = coroutineScope
-    )
-
-    private val trackDebouncer = Debouncer(
-            debouncingTimeMs = 500L,
-            triggerFirstImmediately = true,
-            scope = coroutineScope
-    )
-
-    private val volumDebouncer = Debouncer(
-            debouncingTimeMs = 500L,
-            triggerFirstImmediately = true,
-            scope = coroutineScope
-    )
+    //TODO: inject this
+    private val musicSync = MusicSync(coroutineScope, musicService, this)
 
     private fun onMediaPlayerChanged(newPlayer: MediaController?) {
         Timber.d("New Player %s %s", newPlayer?.packageName, newPlayer.hashCode())
@@ -129,72 +118,28 @@ class MusicHandler @Inject constructor(
                         metadata.getLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER).toInt()
                 )
             }
-
             else -> {
-                MusicControl.UpdateCurrentTrack(
-                        "",
-                        "",
-                        ""
-                )
+                null
             }
         }
 
-        trackDebouncer.executeDebouncing {
-            Timber.d("transmit track")
-            musicService.send(updateTrackObject)
-        }
+        musicSync.updateTrack(metadata?.toMusicTrack())
     }
 
 
     private fun sendVolumeUpdate(playbackInfo: MediaController.PlaybackInfo) {
-        Timber.d("Send volume update %s", playbackInfo)
-        volumDebouncer.executeDebouncing {
-            Timber.d("Transmit volume")
-            musicService.send(MusicControl.UpdateVolumeInfo(
-                    (100f * playbackInfo.currentVolume / playbackInfo.maxVolume)
-                            .roundToInt()
-                            .toUByte()
-            ))
-        }
-
+        val volNorm = playbackInfo.getPebbleVolume()
+        musicSync.updateVolume(volNorm)
     }
 
     private fun sendPlayStateUpdate(playbackState: PlaybackState?) {
         Timber.d("Send play state %s", playbackState)
 
-        val state = when (playbackState?.state) {
-            PlaybackState.STATE_PLAYING,
-            PlaybackState.STATE_BUFFERING ->
-                MusicControl.PlaybackState.Playing
-
-            PlaybackState.STATE_REWINDING,
-            PlaybackState.STATE_SKIPPING_TO_PREVIOUS ->
-                MusicControl.PlaybackState.Rewinding
-
-            PlaybackState.STATE_FAST_FORWARDING,
-            PlaybackState.STATE_SKIPPING_TO_NEXT -> MusicControl.PlaybackState.FastForwarding
-
-            PlaybackState.STATE_PAUSED,
-            PlaybackState.STATE_STOPPED -> MusicControl.PlaybackState.Paused
-
-            else -> MusicControl.PlaybackState.Unknown
-        }
-
         val timeSinceLastPositionUpdate = SystemClock.elapsedRealtime() -
                 (playbackState?.lastPositionUpdateTime ?: SystemClock.elapsedRealtime())
-        val position = (playbackState?.position ?: 0) + timeSinceLastPositionUpdate
 
-        val playbackSpeed = playbackState?.playbackSpeed ?: 1f
-        playStateDebouncer.executeDebouncing {
-            Timber.d("Transmit play state")
-            musicService.send(MusicControl.UpdatePlayStateInfo(
-                    state,
-                    position.toUInt(),
-                    (playbackSpeed * 100f).roundToInt().toUInt(),
-                    MusicControl.ShuffleState.Unknown,
-                    MusicControl.RepeatState.Unknown
-            ))
-        }
+        val playState = playbackState?.toPlayState(timeSinceLastPositionUpdate)
+        musicSync.updatePlayState(playState)
     }
 
     private fun listenForPlayerChanges() {
@@ -207,65 +152,12 @@ class MusicHandler @Inject constructor(
                         if (hasNotificationPermission) {
                             activeMediaSessionProvider.asFlow()
                         } else {
-                            sendCurrentTrackUpdate(null)
+                            musicSync.updateTrack(null)
                             flowOf(null)
                         }
                     }.collect {
                         onMediaPlayerChanged(it)
                     }
-        }
-    }
-
-    private fun listenForIncomingMessages() {
-        coroutineScope.launch(Dispatchers.Main.immediate) {
-            for (msg in musicService.receivedMessages) {
-                Timber.d("Received music packet %s %s", msg.message, currentMediaController?.packageName)
-                when (msg.message) {
-                    MusicControl.Message.PlayPause -> {
-                        if (currentMediaController?.isPlaying() == true) {
-                            currentMediaController?.transportControls?.pause()
-                        } else {
-                            beginPlayback()
-                        }
-                    }
-
-                    MusicControl.Message.Pause -> {
-                        beginPlayback()
-                    }
-
-                    MusicControl.Message.Play -> {
-                        currentMediaController?.transportControls?.pause()
-                    }
-
-                    MusicControl.Message.NextTrack -> {
-                        currentMediaController?.transportControls?.skipToNext()
-                    }
-
-                    MusicControl.Message.PreviousTrack -> {
-                        currentMediaController?.transportControls?.skipToPrevious()
-                    }
-
-                    MusicControl.Message.VolumeUp -> {
-                        currentMediaController?.adjustVolume(AudioManager.ADJUST_RAISE, 0)
-                        currentMediaController?.playbackInfo?.let { sendVolumeUpdate(it) }
-                    }
-
-                    MusicControl.Message.VolumeDown -> {
-                        currentMediaController?.adjustVolume(AudioManager.ADJUST_LOWER, 0)
-                        currentMediaController?.playbackInfo?.let { sendVolumeUpdate(it) }
-                    }
-
-                    MusicControl.Message.GetCurrentTrack -> {
-                        sendCurrentTrackUpdate(currentMediaController?.metadata)
-                    }
-
-                    MusicControl.Message.UpdateCurrentTrack,
-                    MusicControl.Message.UpdatePlayStateInfo,
-                    MusicControl.Message.UpdateVolumeInfo,
-                    MusicControl.Message.UpdatePlayerInfo,
-                    -> Unit
-                }
-            }
         }
     }
 
@@ -289,11 +181,99 @@ class MusicHandler @Inject constructor(
     }
 
     init {
-        listenForIncomingMessages()
         listenForPlayerChanges()
 
         coroutineScope.coroutineContext.job.invokeOnCompletion {
             disposeCurrentMediaController()
         }
     }
+
+    override fun play() {
+        val currentMediaController = currentMediaController
+        Timber.d("Begin playback %s", currentMediaController?.packageName)
+        if (currentMediaController != null) {
+            currentMediaController.transportControls.play()
+        } else {
+            // Simulate play button to start playback of the last active app
+            val audioService = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+
+            audioService.dispatchMediaKeyEvent(
+                    KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY)
+            )
+            audioService.dispatchMediaKeyEvent(
+                    KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY)
+            )
+        }
+    }
+
+    override fun pause() {
+        currentMediaController?.transportControls?.pause()
+    }
+
+    override fun skipToNext() {
+        currentMediaController?.transportControls?.skipToNext()
+    }
+
+    override fun skipToPrevious() {
+        currentMediaController?.transportControls?.skipToPrevious()
+    }
+
+    override fun volumeUp() {
+        currentMediaController?.adjustVolume(AudioManager.ADJUST_RAISE, 0)
+    }
+
+    override fun volumeDown() {
+        currentMediaController?.adjustVolume(AudioManager.ADJUST_LOWER, 0)
+    }
+
+    override val isPlaying: Boolean
+        get() = currentMediaController?.isPlaying() == true
+    override val currentTrack: MusicTrack?
+        get() = currentMediaController?.metadata?.toMusicTrack()
+    override val currentVolume: Int
+        get() = currentMediaController?.playbackInfo?.getPebbleVolume() ?: 0
+}
+
+private fun MediaMetadata.toMusicTrack(): MusicTrack {
+    return MusicTrack(
+            this.getString(MediaMetadata.METADATA_KEY_ARTIST),
+            this.getString(MediaMetadata.METADATA_KEY_ALBUM),
+            this.getString(MediaMetadata.METADATA_KEY_TITLE),
+            this.getLong(MediaMetadata.METADATA_KEY_DURATION).milliseconds,
+            this.getLong(MediaMetadata.METADATA_KEY_NUM_TRACKS).toInt(),
+            this.getLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER).toInt()
+    )
+}
+
+private fun PlaybackState.toPlayState(timeSinceLastPositionUpdate: Long): PlayState {
+    val playbackState = when (state) {
+        PlaybackState.STATE_PLAYING,
+        PlaybackState.STATE_BUFFERING -> MusicControl.PlaybackState.Playing
+
+        PlaybackState.STATE_REWINDING,
+        PlaybackState.STATE_SKIPPING_TO_PREVIOUS -> MusicControl.PlaybackState.Rewinding
+
+        PlaybackState.STATE_FAST_FORWARDING,
+        PlaybackState.STATE_SKIPPING_TO_NEXT -> MusicControl.PlaybackState.FastForwarding
+
+        PlaybackState.STATE_PAUSED,
+        PlaybackState.STATE_STOPPED -> MusicControl.PlaybackState.Paused
+
+        else -> MusicControl.PlaybackState.Unknown
+    }
+
+    return PlayState(
+            playbackState,
+            (position + timeSinceLastPositionUpdate).toInt(),
+            (playbackSpeed * 100f).roundToInt(),
+            MusicControl.ShuffleState.Unknown,
+            MusicControl.RepeatState.Unknown
+    )
+}
+
+/**
+ * Returns the volume of the media session in Pebble volume format (0-100)
+ */
+private fun MediaController.PlaybackInfo.getPebbleVolume(): Int {
+    return (100f * currentVolume / maxVolume).roundToInt()
 }
