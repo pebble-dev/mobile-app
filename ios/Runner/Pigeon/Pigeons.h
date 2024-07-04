@@ -506,6 +506,8 @@ NSObject<FlutterMessageCodec> *DebugControlGetCodec(void);
 
 @protocol DebugControl
 - (void)collectLogsRwsId:(NSString *)rwsId error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)getSensitiveLoggingEnabledWithCompletion:(void (^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
+- (void)setSensitiveLoggingEnabledEnabled:(NSNumber *)enabled completion:(void (^)(FlutterError *_Nullable))completion;
 @end
 
 extern void DebugControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DebugControl> *_Nullable api);

@@ -2471,6 +2471,42 @@ void DebugControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Debu
       [channel setMessageHandler:nil];
     }
   }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.DebugControl.getSensitiveLoggingEnabled"
+        binaryMessenger:binaryMessenger
+        codec:DebugControlGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(getSensitiveLoggingEnabledWithCompletion:)], @"DebugControl api (%@) doesn't respond to @selector(getSensitiveLoggingEnabledWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api getSensitiveLoggingEnabledWithCompletion:^(NSNumber *_Nullable output, FlutterError *_Nullable error) {
+          callback(wrapResult(output, error));
+        }];
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.DebugControl.setSensitiveLoggingEnabled"
+        binaryMessenger:binaryMessenger
+        codec:DebugControlGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(setSensitiveLoggingEnabledEnabled:completion:)], @"DebugControl api (%@) doesn't respond to @selector(setSensitiveLoggingEnabledEnabled:completion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        NSNumber *arg_enabled = GetNullableObjectAtIndex(args, 0);
+        [api setSensitiveLoggingEnabledEnabled:arg_enabled completion:^(FlutterError *_Nullable error) {
+          callback(wrapResult(nil, error));
+        }];
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
 }
 @interface TimelineControlCodecReader : FlutterStandardReader
 @end

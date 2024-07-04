@@ -13,6 +13,7 @@ import io.rebble.cobble.datasources.PairedStorage
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.errors.GlobalExceptionHandler
 import io.rebble.cobble.service.ServiceLifecycleControl
+import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.calendar.CalendarSync
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.PhoneControlService
@@ -51,6 +52,7 @@ interface AppComponent {
 
     //TODO: Unify DI under Koin
     fun createKMPCalendarSync(): CalendarSync
+    fun createKMPPrefs(): KMPPrefs
 
     @Component.Factory
     interface Factory {

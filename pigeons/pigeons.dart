@@ -330,6 +330,10 @@ abstract class IntentControl {
 @HostApi()
 abstract class DebugControl {
   void collectLogs(String rwsId);
+  @async
+  bool getSensitiveLoggingEnabled();
+  @async
+  void setSensitiveLoggingEnabled(bool enabled);
 }
 
 @HostApi()

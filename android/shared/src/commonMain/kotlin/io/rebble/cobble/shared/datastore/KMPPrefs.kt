@@ -19,6 +19,16 @@ class KMPPrefs: KoinComponent {
             preferences[ENABLE_CALENDAR_KEY] = enabled
         }
     }
+
+    val sensitiveDataLoggingEnabled = dataStore.data.map { preferences ->
+        preferences[SENSITIVE_DATA_LOGGING_KEY] ?: false
+    }
+    suspend fun setSensitiveDataLoggingEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[SENSITIVE_DATA_LOGGING_KEY] = enabled
+        }
+    }
 }
 
 private val ENABLE_CALENDAR_KEY = booleanPreferencesKey("enable_calendar_sync")
+private val SENSITIVE_DATA_LOGGING_KEY = booleanPreferencesKey("sensitive_data_logging")

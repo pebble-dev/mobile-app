@@ -15,15 +15,13 @@ import io.rebble.cobble.bridges.background.NotificationsFlutterBridge
 import io.rebble.cobble.data.NotificationAction
 import io.rebble.cobble.data.NotificationMessage
 import io.rebble.cobble.datasources.FlutterPreferences
+import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
 import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
 
 class NotificationListener : NotificationListenerService() {
@@ -37,6 +35,7 @@ class NotificationListener : NotificationListenerService() {
 
     private lateinit var notificationService: NotificationService
     private lateinit var notificationBridge: NotificationsFlutterBridge
+    private lateinit var prefs: KMPPrefs
 
     override fun onCreate() {
         val injectionComponent = (applicationContext as CobbleApplication).component
@@ -49,6 +48,7 @@ class NotificationListener : NotificationListenerService() {
         notificationService = injectionComponent.createNotificationService()
         notificationBridge = injectionComponent.createNotificationsFlutterBridge()
         flutterPreferences = injectionComponent.createFlutterPreferences()
+        prefs = injectionComponent.createKMPPrefs()
 
         super.onCreate()
         _isActive.value = true
@@ -100,6 +100,14 @@ class NotificationListener : NotificationListenerService() {
             if (sbn.notification.flags and Notification.FLAG_ONGOING_EVENT != 0) return // ignore ongoing notifications
             //if (sbn.notification.group != null && !NotificationCompat.isGroupSummary(sbn.notification)) return
             if (mutedPackages.contains(sbn.packageName)) return // ignore muted packages
+
+
+            coroutineScope.launch {
+                if (prefs.sensitiveDataLoggingEnabled.firstOrNull() == true) {
+                    Timber.d("Notification posted: ${sbn.packageName}")
+                    Timber.d("Notification: ${sbn.notification}\n${sbn.notification.extras}")
+                }
+            }
 
             var tagId: String? = null
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

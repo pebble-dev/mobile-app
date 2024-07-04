@@ -27,6 +27,13 @@ class DebugOptionsPage extends HookConsumerWidget implements CobbleScreen {
     final bootOverrideUrlController = useTextEditingController();
 
     final DebugControl debug = DebugControl();
+    final sensitiveLoggingEnabled = useState(false);
+    useEffect(() {
+      debug.getSensitiveLoggingEnabled().then((value) {
+        sensitiveLoggingEnabled.value = value;
+      });
+      return null;
+    }, []);
 
     useEffect(() {
       bootUrlController.text = bootUrl;
@@ -87,6 +94,16 @@ class DebugOptionsPage extends HookConsumerWidget implements CobbleScreen {
                     ))
               ],
             ),
+          ),
+          SwitchListTile(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            value: sensitiveLoggingEnabled.value,
+            onChanged: (value) {
+              debug.setSensitiveLoggingEnabled(value);
+              sensitiveLoggingEnabled.value = value;
+            },
+            title: const Text("Enable sensitive data logging"),
+            subtitle: const Text("Enables more in-depth logging at the cost of privacy (e.g. notification contents)"),
           ),
           CobbleButton(
             onPressed: () async {
