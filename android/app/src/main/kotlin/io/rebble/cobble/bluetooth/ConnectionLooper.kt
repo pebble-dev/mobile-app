@@ -66,6 +66,16 @@ class ConnectionLooper @Inject constructor(
         _watchPresenceState.value = null
     }
 
+    fun tryReconnect() {
+        try {
+            lastConnectedWatch?.let {
+                connectToWatch(it)
+            }
+        } catch (e: SecurityException) {
+            Timber.e(e, "Failed to trigger reconnect due to permissions issue")
+        }
+    }
+
     @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     fun connectToWatch(macAddress: String) {
         coroutineScope.launch {

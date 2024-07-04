@@ -70,17 +70,29 @@ class SystemHandler @Inject constructor(
     }
 
     private suspend fun refreshWatchMetadata() {
-        try {
-            withTimeout(5000) {
-                val watchInfo = systemService.requestWatchVersion()
-                //FIXME: Possible race condition here
-                ConnectionStateManager.connectionState.value.watchOrNull?.metadata?.value = watchInfo
-                watchMetadataStore.lastConnectedWatchMetadata.value = watchInfo
-                val watchModel = systemService.requestWatchModel()
-                watchMetadataStore.lastConnectedWatchModel.value = watchModel
+        var retries = 0
+        while (retries < 3) {
+            try {
+                withTimeout(3000) {
+                    val watchInfo = systemService.requestWatchVersion()
+                    //FIXME: Possible race condition here
+                    ConnectionStateManager.connectionState.value.watchOrNull?.metadata?.value = watchInfo
+                    watchMetadataStore.lastConnectedWatchMetadata.value = watchInfo
+                    val watchModel = systemService.requestWatchModel()
+                    watchMetadataStore.lastConnectedWatchModel.value = watchModel
+                }
+                break
+            } catch (e: TimeoutCancellationException) {
+                Timber.e(e, "Failed to get watch metadata, retrying")
+                retries++
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to get watch metadata")
+                break
             }
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to get watch metadata")
+        }
+        if (retries >= 3) {
+            Timber.e("Failed to get watch metadata after 3 retries, giving up and reconnecting")
+            connectionLooper.tryReconnect()
         }
     }
 
