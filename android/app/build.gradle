@@ -123,7 +123,7 @@ def androidxTestVersion = "1.5.0"
 
 dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+    implementation libs.kotlinx.coroutines.android
     implementation libs.kotlinx.serialization.json
     implementation libs.libpebblecommon
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"

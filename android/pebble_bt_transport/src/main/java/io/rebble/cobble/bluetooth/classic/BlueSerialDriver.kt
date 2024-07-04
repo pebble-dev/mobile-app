@@ -33,7 +33,7 @@ class BlueSerialDriver(
                 }
             }
 
-            val sendLoop = launch {
+            val sendLoop = launch(CoroutineName("SendLoop")) {
                 protocolHandler.startPacketSendingLoop(::sendPacket)
             }
 
@@ -57,7 +57,6 @@ class BlueSerialDriver(
 
     private suspend fun sendPacket(bytes: UByteArray): Boolean {
         val protocolIO = protocolIO ?: return false
-        @Suppress("BlockingMethodInNonBlockingContext")
         protocolIO.write(bytes.toByteArray())
         return true
     }
