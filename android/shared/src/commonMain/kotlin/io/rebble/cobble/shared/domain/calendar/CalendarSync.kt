@@ -4,7 +4,9 @@ import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.PlatformContext
 import io.rebble.cobble.shared.data.calendarWatchappId
 import io.rebble.cobble.shared.database.NextSyncAction
+import io.rebble.cobble.shared.database.dao.CalendarDao
 import io.rebble.cobble.shared.database.dao.TimelinePinDao
+import io.rebble.cobble.shared.database.entity.Calendar
 import io.rebble.cobble.shared.database.getDatabase
 import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.cobble.shared.domain.state.ConnectionState
@@ -25,6 +27,7 @@ class CalendarSync(
     private val watchTimelineSyncer = WatchTimelineSyncer(blobDBService)
     private val metadataFlow: Flow<WatchVersion.WatchVersionResponse> by inject(named("connectedWatchMetadata"))
     private val timelinePinDao: TimelinePinDao by inject()
+    private val calendarDao: CalendarDao by inject()
 
     init {
         Logging.d("CalendarSync init")
@@ -52,7 +55,23 @@ class CalendarSync(
     }
 
     suspend fun doFullCalendarSync(): Boolean {
-        return calendarSyncer.syncDeviceCalendarsToDb() && syncTimelineToWatch()
+        return if (calendarSyncer.syncDeviceCalendarsToDb()) {
+            syncTimelineToWatch()
+        } else {
+            true
+        }
+    }
+
+    suspend fun getCalendars(): List<Calendar> {
+        return calendarDao.getAll()
+    }
+
+    fun getUpdatesFlow(): Flow<List<Calendar>> {
+        return calendarDao.getFlow()
+    }
+
+    suspend fun setCalendarEnabled(calendarId: Long, enabled: Boolean) {
+        calendarDao.setEnabled(calendarId, enabled)
     }
 
     suspend fun forceFullResync() {

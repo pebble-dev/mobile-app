@@ -2,6 +2,7 @@ package io.rebble.cobble.shared.database.dao
 
 import androidx.room.*
 import io.rebble.cobble.shared.database.entity.Calendar
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CalendarDao {
@@ -22,4 +23,10 @@ interface CalendarDao {
 
     @Delete
     suspend fun delete(calendar: Calendar)
+
+    @Query("UPDATE Calendar SET enabled = :enabled WHERE id = :calendarId")
+    suspend fun setEnabled(calendarId: Long, enabled: Boolean)
+
+    @Query("SELECT * FROM Calendar")
+    fun getFlow(): Flow<List<Calendar>>
 }

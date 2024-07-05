@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cobble/background/actions/master_action_handler.dart';
-import 'package:cobble/domain/calendar/calendar_list.dart';
 import 'package:cobble/domain/calendar/calendar_pin_convert.dart';
-import 'package:cobble/domain/calendar/calendar_syncer.db.dart';
 import 'package:cobble/domain/calendar/device_calendar_plugin_provider.dart';
 import 'package:cobble/domain/calendar/selectable_calendar.dart';
 import 'package:cobble/domain/db/dao/timeline_pin_dao.dart';
@@ -14,29 +12,14 @@ import 'package:cobble/domain/logging.dart';
 import 'package:cobble/domain/timeline/timeline_action_response.dart';
 import 'package:cobble/domain/timeline/timeline_attribute.dart';
 import 'package:cobble/domain/timeline/timeline_icon.dart';
-import 'package:cobble/domain/timeline/watch_timeline_syncer.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/localization/localization.dart';
-import 'package:cobble/util/state_provider_extension.dart';
-import 'package:cobble/util/stream_extensions.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:device_calendar/device_calendar.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class CalendarActionHandler implements ActionHandler {
-  final TimelinePinDao _dao;
-  final CalendarSyncer _calendarSyncer;
-  final WatchTimelineSyncer _watchSyncer;
-  final CalendarList _calendarList;
-  final DeviceCalendarPlugin _deviceCalendarPlugin;
-
-  CalendarActionHandler(
-    this._dao,
-    this._calendarSyncer,
-    this._watchSyncer,
-    this._calendarList,
-    this._deviceCalendarPlugin,
-  );
+  CalendarActionHandler();
 
   @override
   Future<TimelineActionResponse> handleTimelineAction(
@@ -62,10 +45,10 @@ class CalendarActionHandler implements ActionHandler {
   Future<TimelineActionResponse> _handleRemoveEventAction(
     TimelinePin pin,
   ) async {
-    Future.microtask(() async {
+    /*Future.microtask(() async {
       await _dao.setSyncAction(pin.itemId, NextSyncAction.Delete);
       await _watchSyncer.syncPinDatabaseWithWatch();
-    });
+    });*/
 
     return TimelineActionResponse(true, attributes: [
       TimelineAttribute.subtitle(tr.timelineAttribute.subtitle.removed),
@@ -77,7 +60,7 @@ class CalendarActionHandler implements ActionHandler {
   Future<TimelineActionResponse> _handleMuteCalendarAction(
     TimelinePin pin,
   ) async {
-    final calendarList =
+    /*final calendarList =
     await (_calendarList.streamWithExistingValue.firstSuccessOrError() as FutureOr<AsyncValue<List<SelectableCalendar>>>);
 
     final calendars = calendarList.value;
@@ -94,7 +77,7 @@ class CalendarActionHandler implements ActionHandler {
       await _calendarList.setCalendarEnabled(eventId.calendarId, false);
       await _calendarSyncer.syncDeviceCalendarsToDb();
       await _watchSyncer.syncPinDatabaseWithWatch();
-    });
+    });*/
 
     return TimelineActionResponse(true, attributes: [
       TimelineAttribute.subtitle(tr.timelineAttribute.subtitle.calendarMuted),
@@ -105,6 +88,7 @@ class CalendarActionHandler implements ActionHandler {
   @override
   Future<TimelineActionResponse> _handleAttendanceAction(TimelinePin pin,
       int? actionId,) async {
+    /*
     final eventId = CalendarEventId.fromTimelinePin(pin);
     if (eventId == null) {
       Log.e("Unknown timeline pin backing ID ${pin.backingId}");
@@ -204,17 +188,11 @@ class CalendarActionHandler implements ActionHandler {
       default:
         Log.e("Unknown action $actionId");
         return TimelineActionResponse(false);
-    }
+    }*/
 
-    return TimelineActionResponse(true, attributes: attributes);
+    return TimelineActionResponse(true, /*attributes: attributes*/);
   }
 }
 
 final calendarActionHandlerProvider = Provider<CalendarActionHandler>((ref) =>
-    CalendarActionHandler(
-      ref.read(timelinePinDaoProvider),
-      ref.read(calendarSyncerProvider),
-      ref.read(watchTimelineSyncerProvider),
-      ref.read(calendarListProvider.notifier),
-      ref.read(deviceCalendarPluginProvider),
-    ));
+    CalendarActionHandler());

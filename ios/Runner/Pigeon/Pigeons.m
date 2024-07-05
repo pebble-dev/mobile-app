@@ -159,6 +159,12 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 - (NSArray *)toList;
 @end
 
+@interface CalendarPigeon ()
++ (CalendarPigeon *)fromList:(NSArray *)list;
++ (nullable CalendarPigeon *)nullableFromList:(NSArray *)list;
+- (NSArray *)toList;
+@end
+
 @implementation BooleanWrapper
 + (instancetype)makeWithValue:(nullable NSNumber *)value {
   BooleanWrapper* pigeonResult = [[BooleanWrapper alloc] init];
@@ -981,6 +987,115 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
     (self.channelDesc ?: [NSNull null]),
     (self.delete ?: [NSNull null]),
   ];
+}
+@end
+
+@implementation CalendarPigeon
++ (instancetype)makeWithId:(NSNumber *)id
+    name:(NSString *)name
+    color:(NSNumber *)color
+    enabled:(NSNumber *)enabled {
+  CalendarPigeon* pigeonResult = [[CalendarPigeon alloc] init];
+  pigeonResult.id = id;
+  pigeonResult.name = name;
+  pigeonResult.color = color;
+  pigeonResult.enabled = enabled;
+  return pigeonResult;
+}
++ (CalendarPigeon *)fromList:(NSArray *)list {
+  CalendarPigeon *pigeonResult = [[CalendarPigeon alloc] init];
+  pigeonResult.id = GetNullableObjectAtIndex(list, 0);
+  NSAssert(pigeonResult.id != nil, @"");
+  pigeonResult.name = GetNullableObjectAtIndex(list, 1);
+  NSAssert(pigeonResult.name != nil, @"");
+  pigeonResult.color = GetNullableObjectAtIndex(list, 2);
+  NSAssert(pigeonResult.color != nil, @"");
+  pigeonResult.enabled = GetNullableObjectAtIndex(list, 3);
+  NSAssert(pigeonResult.enabled != nil, @"");
+  return pigeonResult;
+}
++ (nullable CalendarPigeon *)nullableFromList:(NSArray *)list {
+  return (list) ? [CalendarPigeon fromList:list] : nil;
+}
+- (NSArray *)toList {
+  return @[
+    (self.id ?: [NSNull null]),
+    (self.name ?: [NSNull null]),
+    (self.color ?: [NSNull null]),
+    (self.enabled ?: [NSNull null]),
+  ];
+}
+@end
+
+@interface CalendarCallbacksCodecReader : FlutterStandardReader
+@end
+@implementation CalendarCallbacksCodecReader
+- (nullable id)readValueOfType:(UInt8)type {
+  switch (type) {
+    case 128: 
+      return [CalendarPigeon fromList:[self readValue]];
+    default:
+      return [super readValueOfType:type];
+  }
+}
+@end
+
+@interface CalendarCallbacksCodecWriter : FlutterStandardWriter
+@end
+@implementation CalendarCallbacksCodecWriter
+- (void)writeValue:(id)value {
+  if ([value isKindOfClass:[CalendarPigeon class]]) {
+    [self writeByte:128];
+    [self writeValue:[value toList]];
+  } else {
+    [super writeValue:value];
+  }
+}
+@end
+
+@interface CalendarCallbacksCodecReaderWriter : FlutterStandardReaderWriter
+@end
+@implementation CalendarCallbacksCodecReaderWriter
+- (FlutterStandardWriter *)writerWithData:(NSMutableData *)data {
+  return [[CalendarCallbacksCodecWriter alloc] initWithData:data];
+}
+- (FlutterStandardReader *)readerWithData:(NSData *)data {
+  return [[CalendarCallbacksCodecReader alloc] initWithData:data];
+}
+@end
+
+NSObject<FlutterMessageCodec> *CalendarCallbacksGetCodec(void) {
+  static FlutterStandardMessageCodec *sSharedObject = nil;
+  static dispatch_once_t sPred = 0;
+  dispatch_once(&sPred, ^{
+    CalendarCallbacksCodecReaderWriter *readerWriter = [[CalendarCallbacksCodecReaderWriter alloc] init];
+    sSharedObject = [FlutterStandardMessageCodec codecWithReaderWriter:readerWriter];
+  });
+  return sSharedObject;
+}
+
+@interface CalendarCallbacks ()
+@property(nonatomic, strong) NSObject<FlutterBinaryMessenger> *binaryMessenger;
+@end
+
+@implementation CalendarCallbacks
+
+- (instancetype)initWithBinaryMessenger:(NSObject<FlutterBinaryMessenger> *)binaryMessenger {
+  self = [super init];
+  if (self) {
+    _binaryMessenger = binaryMessenger;
+  }
+  return self;
+}
+- (void)onCalendarListUpdatedCalendars:(NSArray<CalendarPigeon *> *)arg_calendars completion:(void (^)(FlutterError *_Nullable))completion {
+  FlutterBasicMessageChannel *channel =
+    [FlutterBasicMessageChannel
+      messageChannelWithName:@"dev.flutter.pigeon.CalendarCallbacks.onCalendarListUpdated"
+      binaryMessenger:self.binaryMessenger
+      codec:CalendarCallbacksGetCodec()];
+  [channel sendMessage:@[arg_calendars ?: [NSNull null]] reply:^(id reply) {
+    completion(nil);
+  }];
 }
 @end
 
@@ -3025,9 +3140,50 @@ void PermissionControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject
     }
   }
 }
+@interface CalendarControlCodecReader : FlutterStandardReader
+@end
+@implementation CalendarControlCodecReader
+- (nullable id)readValueOfType:(UInt8)type {
+  switch (type) {
+    case 128: 
+      return [CalendarPigeon fromList:[self readValue]];
+    default:
+      return [super readValueOfType:type];
+  }
+}
+@end
+
+@interface CalendarControlCodecWriter : FlutterStandardWriter
+@end
+@implementation CalendarControlCodecWriter
+- (void)writeValue:(id)value {
+  if ([value isKindOfClass:[CalendarPigeon class]]) {
+    [self writeByte:128];
+    [self writeValue:[value toList]];
+  } else {
+    [super writeValue:value];
+  }
+}
+@end
+
+@interface CalendarControlCodecReaderWriter : FlutterStandardReaderWriter
+@end
+@implementation CalendarControlCodecReaderWriter
+- (FlutterStandardWriter *)writerWithData:(NSMutableData *)data {
+  return [[CalendarControlCodecWriter alloc] initWithData:data];
+}
+- (FlutterStandardReader *)readerWithData:(NSData *)data {
+  return [[CalendarControlCodecReader alloc] initWithData:data];
+}
+@end
+
 NSObject<FlutterMessageCodec> *CalendarControlGetCodec(void) {
   static FlutterStandardMessageCodec *sSharedObject = nil;
-  sSharedObject = [FlutterStandardMessageCodec sharedInstance];
+  static dispatch_once_t sPred = 0;
+  dispatch_once(&sPred, ^{
+    CalendarControlCodecReaderWriter *readerWriter = [[CalendarControlCodecReaderWriter alloc] init];
+    sSharedObject = [FlutterStandardMessageCodec codecWithReaderWriter:readerWriter];
+  });
   return sSharedObject;
 }
 
@@ -3097,6 +3253,43 @@ void CalendarControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<C
       NSCAssert([api respondsToSelector:@selector(deleteAllCalendarPinsWithCompletion:)], @"CalendarControl api (%@) doesn't respond to @selector(deleteAllCalendarPinsWithCompletion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         [api deleteAllCalendarPinsWithCompletion:^(FlutterError *_Nullable error) {
+          callback(wrapResult(nil, error));
+        }];
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.CalendarControl.getCalendars"
+        binaryMessenger:binaryMessenger
+        codec:CalendarControlGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(getCalendarsWithCompletion:)], @"CalendarControl api (%@) doesn't respond to @selector(getCalendarsWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api getCalendarsWithCompletion:^(NSArray<CalendarPigeon *> *_Nullable output, FlutterError *_Nullable error) {
+          callback(wrapResult(output, error));
+        }];
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.CalendarControl.setCalendarEnabled"
+        binaryMessenger:binaryMessenger
+        codec:CalendarControlGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(setCalendarEnabledId:enabled:completion:)], @"CalendarControl api (%@) doesn't respond to @selector(setCalendarEnabledId:enabled:completion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        NSNumber *arg_id = GetNullableObjectAtIndex(args, 0);
+        NSNumber *arg_enabled = GetNullableObjectAtIndex(args, 1);
+        [api setCalendarEnabledId:arg_id enabled:arg_enabled completion:^(FlutterError *_Nullable error) {
           callback(wrapResult(nil, error));
         }];
       }];

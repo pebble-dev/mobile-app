@@ -1,6 +1,5 @@
-import 'package:cobble/domain/calendar/calendar_list.dart';
+import 'package:cobble/domain/calendar/calendar_list_provider.dart';
 import 'package:cobble/domain/calendar/device_calendar_plugin_provider.dart';
-import 'package:cobble/domain/calendar/requests/delete_all_pins_request.dart';
 import 'package:cobble/domain/permissions.dart';
 import 'package:cobble/infrastructure/backgroundcomm/BackgroundRpc.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
@@ -15,13 +14,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class Calendar extends HookConsumerWidget implements CobbleScreen {
+  const Calendar({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final calendars = ref.watch(calendarListProvider);
-    final calendarSelector = ref.watch(calendarListProvider.notifier);
     final calendarControl = ref.watch(calendarControlProvider);
-    final backgroundRpc = ref.watch(backgroundRpcProvider);
+    final calendarList = ref.watch(calendarListProvider);
 
     final preferences = ref.watch(preferencesProvider);
     final permissionControl = ref.watch(permissionControlProvider);
@@ -71,23 +69,22 @@ class Calendar extends HookConsumerWidget implements CobbleScreen {
             CobbleTile.title(
               title: tr.calendar.choose,
             ),
-            ...calendars.value?.map((e) {
+            ...calendarList.map((e) {
               return CobbleTile.setting(
+                key: ValueKey(e.id),
                 leading: BoxDecoration(
                   color: Color(e.color).withOpacity(1),
                   shape: BoxShape.circle,
                 ),
-                    title: e.name,
-                    child: Checkbox(
-                      value: e.enabled,
-                      onChanged: (enabled) {
-                        calendarSelector.setCalendarEnabled(e.id, enabled!);
-                        calendarControl.requestCalendarSync(false);
-                      },
-                    ),
-                  );
-                }).toList() ??
-                [],
+                title: e.name,
+                child: Checkbox(
+                  value: e.enabled,
+                  onChanged: (enabled) {
+                    calendarControl.setCalendarEnabled(e.id, enabled!);
+                  },
+                ),
+              );
+            }).toList(),
           ],
         ],
       ),

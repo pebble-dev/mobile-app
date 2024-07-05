@@ -2831,11 +2831,185 @@ public class Pigeons {
     }
   }
 
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class CalendarPigeon {
+    private @NonNull Long id;
+
+    public @NonNull Long getId() {
+      return id;
+    }
+
+    public void setId(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"id\" is null.");
+      }
+      this.id = setterArg;
+    }
+
+    private @NonNull String name;
+
+    public @NonNull String getName() {
+      return name;
+    }
+
+    public void setName(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"name\" is null.");
+      }
+      this.name = setterArg;
+    }
+
+    private @NonNull Long color;
+
+    public @NonNull Long getColor() {
+      return color;
+    }
+
+    public void setColor(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"color\" is null.");
+      }
+      this.color = setterArg;
+    }
+
+    private @NonNull Boolean enabled;
+
+    public @NonNull Boolean getEnabled() {
+      return enabled;
+    }
+
+    public void setEnabled(@NonNull Boolean setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"enabled\" is null.");
+      }
+      this.enabled = setterArg;
+    }
+
+    /** Constructor is non-public to enforce null safety; use Builder. */
+    CalendarPigeon() {}
+
+    public static final class Builder {
+
+      private @Nullable Long id;
+
+      public @NonNull Builder setId(@NonNull Long setterArg) {
+        this.id = setterArg;
+        return this;
+      }
+
+      private @Nullable String name;
+
+      public @NonNull Builder setName(@NonNull String setterArg) {
+        this.name = setterArg;
+        return this;
+      }
+
+      private @Nullable Long color;
+
+      public @NonNull Builder setColor(@NonNull Long setterArg) {
+        this.color = setterArg;
+        return this;
+      }
+
+      private @Nullable Boolean enabled;
+
+      public @NonNull Builder setEnabled(@NonNull Boolean setterArg) {
+        this.enabled = setterArg;
+        return this;
+      }
+
+      public @NonNull CalendarPigeon build() {
+        CalendarPigeon pigeonReturn = new CalendarPigeon();
+        pigeonReturn.setId(id);
+        pigeonReturn.setName(name);
+        pigeonReturn.setColor(color);
+        pigeonReturn.setEnabled(enabled);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(4);
+      toListResult.add(id);
+      toListResult.add(name);
+      toListResult.add(color);
+      toListResult.add(enabled);
+      return toListResult;
+    }
+
+    static @NonNull CalendarPigeon fromList(@NonNull ArrayList<Object> list) {
+      CalendarPigeon pigeonResult = new CalendarPigeon();
+      Object id = list.get(0);
+      pigeonResult.setId((id == null) ? null : ((id instanceof Integer) ? (Integer) id : (Long) id));
+      Object name = list.get(1);
+      pigeonResult.setName((String) name);
+      Object color = list.get(2);
+      pigeonResult.setColor((color == null) ? null : ((color instanceof Integer) ? (Integer) color : (Long) color));
+      Object enabled = list.get(3);
+      pigeonResult.setEnabled((Boolean) enabled);
+      return pigeonResult;
+    }
+  }
+
   public interface Result<T> {
     @SuppressWarnings("UnknownNullness")
     void success(T result);
 
     void error(@NonNull Throwable error);
+  }
+
+  private static class CalendarCallbacksCodec extends StandardMessageCodec {
+    public static final CalendarCallbacksCodec INSTANCE = new CalendarCallbacksCodec();
+
+    private CalendarCallbacksCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return CalendarPigeon.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof CalendarPigeon) {
+        stream.write(128);
+        writeValue(stream, ((CalendarPigeon) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
+  public static class CalendarCallbacks {
+    private final @NonNull BinaryMessenger binaryMessenger;
+
+    public CalendarCallbacks(@NonNull BinaryMessenger argBinaryMessenger) {
+      this.binaryMessenger = argBinaryMessenger;
+    }
+
+    /** Public interface for sending reply. */ 
+    @SuppressWarnings("UnknownNullness")
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+    /** The codec used by CalendarCallbacks. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return CalendarCallbacksCodec.INSTANCE;
+    }
+    public void onCalendarListUpdated(@NonNull List<CalendarPigeon> calendarsArg, @NonNull Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.CalendarCallbacks.onCalendarListUpdated", getCodec());
+      channel.send(
+          new ArrayList<Object>(Collections.singletonList(calendarsArg)),
+          channelReply -> callback.reply(null));
+    }
   }
 
   private static class ScanCallbacksCodec extends StandardMessageCodec {
@@ -4922,6 +5096,33 @@ public class Pigeons {
       }
     }
   }
+
+  private static class CalendarControlCodec extends StandardMessageCodec {
+    public static final CalendarControlCodec INSTANCE = new CalendarControlCodec();
+
+    private CalendarControlCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return CalendarPigeon.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof CalendarPigeon) {
+        stream.write(128);
+        writeValue(stream, ((CalendarPigeon) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
   /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
   public interface CalendarControl {
 
@@ -4933,9 +5134,13 @@ public class Pigeons {
 
     void deleteAllCalendarPins(@NonNull Result<Void> result);
 
+    void getCalendars(@NonNull Result<List<CalendarPigeon>> result);
+
+    void setCalendarEnabled(@NonNull Long id, @NonNull Boolean enabled, @NonNull Result<Void> result);
+
     /** The codec used by CalendarControl. */
     static @NonNull MessageCodec<Object> getCodec() {
-      return new StandardMessageCodec();
+      return CalendarControlCodec.INSTANCE;
     }
     /**Sets up an instance of `CalendarControl` to handle messages through the `binaryMessenger`. */
     static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable CalendarControl api) {
@@ -5041,6 +5246,63 @@ public class Pigeons {
                     };
 
                 api.deleteAllCalendarPins(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.CalendarControl.getCalendars", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                Result<List<CalendarPigeon>> resultCallback =
+                    new Result<List<CalendarPigeon>>() {
+                      public void success(List<CalendarPigeon> result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.getCalendars(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.CalendarControl.setCalendarEnabled", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                Number idArg = (Number) args.get(0);
+                Boolean enabledArg = (Boolean) args.get(1);
+                Result<Void> resultCallback =
+                    new Result<Void>() {
+                      public void success(Void result) {
+                        wrapped.add(0, null);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.setCalendarEnabled((idArg == null) ? null : idArg.longValue(), enabledArg, resultCallback);
               });
         } else {
           channel.setMessageHandler(null);

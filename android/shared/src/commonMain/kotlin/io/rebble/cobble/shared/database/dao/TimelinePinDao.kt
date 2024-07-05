@@ -17,6 +17,9 @@ interface TimelinePinDao {
     @Query("SELECT * FROM TimelinePin WHERE nextSyncAction IN (:nextSyncActions)")
     suspend fun getAllPinsWithNextSyncAction(vararg nextSyncActions: NextSyncAction): List<TimelinePin>
 
+    @Query("UPDATE TimelinePin SET nextSyncAction = :nextSyncAction WHERE itemId in (:itemIds)")
+    suspend fun setSyncActionForPins(itemIds: List<Uuid>, nextSyncAction: NextSyncAction)
+
     @Update
     suspend fun updatePin(pin: TimelinePin)
 

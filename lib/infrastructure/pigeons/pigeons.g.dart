@@ -912,6 +912,93 @@ class NotifChannelPigeon {
   }
 }
 
+class CalendarPigeon {
+  CalendarPigeon({
+    required this.id,
+    required this.name,
+    required this.color,
+    required this.enabled,
+  });
+
+  int id;
+
+  String name;
+
+  int color;
+
+  bool enabled;
+
+  Object encode() {
+    return <Object?>[
+      id,
+      name,
+      color,
+      enabled,
+    ];
+  }
+
+  static CalendarPigeon decode(Object result) {
+    result as List<Object?>;
+    return CalendarPigeon(
+      id: result[0]! as int,
+      name: result[1]! as String,
+      color: result[2]! as int,
+      enabled: result[3]! as bool,
+    );
+  }
+}
+
+class _CalendarCallbacksCodec extends StandardMessageCodec {
+  const _CalendarCallbacksCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is CalendarPigeon) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128: 
+        return CalendarPigeon.decode(readValue(buffer)!);
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
+abstract class CalendarCallbacks {
+  static const MessageCodec<Object?> codec = _CalendarCallbacksCodec();
+
+  void onCalendarListUpdated(List<CalendarPigeon?> calendars);
+
+  static void setup(CalendarCallbacks? api, {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.CalendarCallbacks.onCalendarListUpdated', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.CalendarCallbacks.onCalendarListUpdated was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final List<CalendarPigeon?>? arg_calendars = (args[0] as List<Object?>?)?.cast<CalendarPigeon?>();
+          assert(arg_calendars != null,
+              'Argument for dev.flutter.pigeon.CalendarCallbacks.onCalendarListUpdated was null, expected non-null List<CalendarPigeon?>.');
+          api.onCalendarListUpdated(arg_calendars!);
+          return;
+        });
+      }
+    }
+  }
+}
+
 class _ScanCallbacksCodec extends StandardMessageCodec {
   const _ScanCallbacksCodec();
   @override
@@ -2923,6 +3010,29 @@ class PermissionControl {
   }
 }
 
+class _CalendarControlCodec extends StandardMessageCodec {
+  const _CalendarControlCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is CalendarPigeon) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128: 
+        return CalendarPigeon.decode(readValue(buffer)!);
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
 class CalendarControl {
   /// Constructor for [CalendarControl].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
@@ -2931,7 +3041,7 @@ class CalendarControl {
       : _binaryMessenger = binaryMessenger;
   final BinaryMessenger? _binaryMessenger;
 
-  static const MessageCodec<Object?> codec = StandardMessageCodec();
+  static const MessageCodec<Object?> codec = _CalendarControlCodec();
 
   Future<void> requestCalendarSync(bool arg_forceResync) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
@@ -3010,6 +3120,55 @@ class CalendarControl {
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<List<CalendarPigeon?>> getCalendars() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.CalendarControl.getCalendars', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(null) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else if (replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyList[0] as List<Object?>?)!.cast<CalendarPigeon?>();
+    }
+  }
+
+  Future<void> setCalendarEnabled(int arg_id, bool arg_enabled) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.CalendarControl.setCalendarEnabled', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(<Object?>[arg_id, arg_enabled]) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',

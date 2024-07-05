@@ -3,12 +3,16 @@ package io.rebble.cobble.bridges.ui
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.pigeons.Pigeons.CalendarCallbacks
+import io.rebble.cobble.shared.database.dao.CalendarDao
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.calendar.CalendarSync
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.util.Debouncer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -21,9 +25,20 @@ class CalendarControlFlutterBridge @Inject constructor(
         bridgeLifecycleController: BridgeLifecycleController
 ) : Pigeons.CalendarControl, FlutterBridge {
     private val debouncer = Debouncer(debouncingTimeMs = 5_000L, scope = coroutineScope)
+    private val calendarCallbacks = bridgeLifecycleController.createCallbacks(Pigeons::CalendarCallbacks)
 
     init {
         bridgeLifecycleController.setupControl(Pigeons.CalendarControl::setup, this)
+        calendarSync.getUpdatesFlow().onEach { calendars ->
+            calendarCallbacks.onCalendarListUpdated(calendars.map {
+                Pigeons.CalendarPigeon.Builder()
+                        .setId(it.id.toLong())
+                        .setName(it.name)
+                        .setColor(it.color.toLong())
+                        .setEnabled(it.enabled)
+                        .build()
+            }.toMutableList()) {}
+        }.launchIn(coroutineScope)
     }
 
     override fun requestCalendarSync(forceResync: Boolean) {
@@ -59,6 +74,28 @@ class CalendarControlFlutterBridge @Inject constructor(
     override fun deleteAllCalendarPins(result: Pigeons.Result<Void>) {
         coroutineScope.launch {
             calendarSync.deleteCalendarPinsFromWatch()
+            result.success(null)
+        }
+    }
+
+    override fun getCalendars(result: Pigeons.Result<MutableList<Pigeons.CalendarPigeon>>) {
+        coroutineScope.launch {
+            val calendars = calendarSync.getCalendars()
+            result.success(calendars.map {
+                Pigeons.CalendarPigeon.Builder()
+                        .setId(it.id.toLong())
+                        .setName(it.name)
+                        .setColor(it.color.toLong())
+                        .setEnabled(it.enabled)
+                        .build()
+            }.toMutableList())
+        }
+    }
+
+    override fun setCalendarEnabled(id: Long, enabled: Boolean, result: Pigeons.Result<Void>) {
+        coroutineScope.launch {
+            calendarSync.setCalendarEnabled(id, enabled)
+            calendarSync.doFullCalendarSync()
             result.success(null)
         }
     }

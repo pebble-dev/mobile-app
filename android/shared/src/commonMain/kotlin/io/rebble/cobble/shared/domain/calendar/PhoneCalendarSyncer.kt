@@ -11,6 +11,7 @@ import io.rebble.cobble.shared.database.dao.CalendarDao
 import io.rebble.cobble.shared.database.dao.TimelinePinDao
 import io.rebble.cobble.shared.database.entity.Calendar
 import io.rebble.cobble.shared.database.entity.isInPast
+import io.rebble.cobble.shared.datastore.KMPPrefs
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -32,6 +33,7 @@ class PhoneCalendarSyncer(
 ): KoinComponent {
     private val calendarDao: CalendarDao by inject()
     private val timelinePinDao: TimelinePinDao by inject()
+    private val prefs: KMPPrefs by inject()
 
     suspend fun clearAllCalendarsFromDb() {
         timelinePinDao.deletePinsForWatchapp(calendarWatchappId)
@@ -51,7 +53,6 @@ class PhoneCalendarSyncer(
                         ownerName = matchingCalendar.ownerName,
                         ownerId = matchingCalendar.ownerId,
                         color = matchingCalendar.color,
-                        enabled = shouldCalendarBeEnabled(matchingCalendar)
                 )
                 calendarDao.update(updateCal)
             } else {
@@ -60,7 +61,7 @@ class PhoneCalendarSyncer(
         }
         calendars.forEach { newCalendar ->
             if (existingCalendars.none { it.platformId == newCalendar.platformId }) {
-                calendarDao.insertOrReplace(newCalendar.copy(enabled = shouldCalendarBeEnabled(newCalendar)))
+                calendarDao.insertOrReplace(newCalendar)
             }
         }
 
@@ -121,14 +122,9 @@ class PhoneCalendarSyncer(
         }
         if (pinsToDelete.isNotEmpty()) {
             anyChanges = true
-            timelinePinDao.deletePins(pinsToDelete)
+            timelinePinDao.setSyncActionForPins(pinsToDelete.map { it.itemId }, NextSyncAction.Delete)
         }
         Logging.d("Synced ${allCalendars.size} calendars to DB, changes: $anyChanges, total pins: ${timelinePinDao.getPinsForWatchapp(calendarWatchappId).size}")
         return anyChanges
-    }
-
-    private suspend fun shouldCalendarBeEnabled(calendar: Calendar): Boolean {
-        //TODO
-        return true
     }
 }

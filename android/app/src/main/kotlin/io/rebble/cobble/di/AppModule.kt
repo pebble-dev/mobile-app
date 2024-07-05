@@ -7,6 +7,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import io.rebble.cobble.errors.GlobalExceptionHandler
+import io.rebble.cobble.shared.database.dao.CalendarDao
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.datastore.createDataStore
 import io.rebble.cobble.shared.domain.calendar.CalendarSync

@@ -189,6 +189,19 @@ class NotifChannelPigeon {
   bool? delete;
 }
 
+class CalendarPigeon {
+  int id;
+  String name;
+  int color;
+  bool enabled;
+  CalendarPigeon(this.id, this.name, this.color, this.enabled);
+}
+
+@FlutterApi()
+abstract class CalendarCallbacks {
+  void onCalendarListUpdated(List<CalendarPigeon> calendars);
+}
+
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
@@ -413,6 +426,10 @@ abstract class CalendarControl {
   bool getCalendarSyncEnabled();
   @async
   void deleteAllCalendarPins();
+  @async
+  List<CalendarPigeon> getCalendars();
+  @async
+  void setCalendarEnabled(int id, bool enabled);
 }
 
 @HostApi()

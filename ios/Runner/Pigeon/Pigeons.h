@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class AppLogEntry;
 @class OAuthResult;
 @class NotifChannelPigeon;
+@class CalendarPigeon;
 
 /// Pigeon only supports classes as return/receive type.
 /// That is why we must wrap primitive types into wrapper
@@ -326,6 +327,27 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, nullable) NSNumber * delete;
 @end
 
+@interface CalendarPigeon : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)makeWithId:(NSNumber *)id
+    name:(NSString *)name
+    color:(NSNumber *)color
+    enabled:(NSNumber *)enabled;
+@property(nonatomic, strong) NSNumber * id;
+@property(nonatomic, copy) NSString * name;
+@property(nonatomic, strong) NSNumber * color;
+@property(nonatomic, strong) NSNumber * enabled;
+@end
+
+/// The codec used by CalendarCallbacks.
+NSObject<FlutterMessageCodec> *CalendarCallbacksGetCodec(void);
+
+@interface CalendarCallbacks : NSObject
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
+- (void)onCalendarListUpdatedCalendars:(NSArray<CalendarPigeon *> *)calendars completion:(void (^)(FlutterError *_Nullable))completion;
+@end
+
 /// The codec used by ScanCallbacks.
 NSObject<FlutterMessageCodec> *ScanCallbacksGetCodec(void);
 
@@ -583,6 +605,8 @@ NSObject<FlutterMessageCodec> *CalendarControlGetCodec(void);
 - (void)setCalendarSyncEnabledEnabled:(NSNumber *)enabled completion:(void (^)(FlutterError *_Nullable))completion;
 - (void)getCalendarSyncEnabledWithCompletion:(void (^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
 - (void)deleteAllCalendarPinsWithCompletion:(void (^)(FlutterError *_Nullable))completion;
+- (void)getCalendarsWithCompletion:(void (^)(NSArray<CalendarPigeon *> *_Nullable, FlutterError *_Nullable))completion;
+- (void)setCalendarEnabledId:(NSNumber *)id enabled:(NSNumber *)enabled completion:(void (^)(FlutterError *_Nullable))completion;
 @end
 
 extern void CalendarControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<CalendarControl> *_Nullable api);
