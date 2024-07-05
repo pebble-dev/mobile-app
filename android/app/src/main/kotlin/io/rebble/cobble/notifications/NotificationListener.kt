@@ -113,12 +113,13 @@ class NotificationListener : NotificationListenerService() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 tagId = sbn.notification.channelId
             }
-            val title = sbn.notification.extras[Notification.EXTRA_TITLE] as? String
-                    ?: sbn.notification.extras[Notification.EXTRA_CONVERSATION_TITLE] as? String
+            val title = sbn.notification.extras.getString(Notification.EXTRA_TITLE)
+                    ?: sbn.notification.extras.getString(Notification.EXTRA_CONVERSATION_TITLE)
                     ?: ""
 
-            val text = sbn.notification.extras[Notification.EXTRA_TEXT] as? String
-                    ?: sbn.notification.extras[Notification.EXTRA_BIG_TEXT] as? String ?: ""
+            val text = sbn.notification.extras.getString(Notification.EXTRA_TEXT)
+                    ?: sbn.notification.extras.getString(Notification.EXTRA_BIG_TEXT)
+                    ?: ""
 
             val actions = sbn.notification.actions?.map {
                 NotificationAction(it.title.toString(), !it.remoteInputs.isNullOrEmpty())
