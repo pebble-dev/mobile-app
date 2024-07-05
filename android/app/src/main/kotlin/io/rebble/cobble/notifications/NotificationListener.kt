@@ -4,6 +4,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.content.ComponentName
 import android.content.Context
+import android.icu.text.UnicodeSet
 import android.os.Build
 import android.os.UserHandle
 import android.service.notification.NotificationListenerService
@@ -85,20 +86,18 @@ class NotificationListener : NotificationListenerService() {
                 // Do not notify for media notifications
                 return
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                try {
-                    val channels = getNotificationChannels(sbn.packageName, sbn.user)
-                    channels?.forEach {
-                        notificationBridge.updateChannel(it.id, sbn.packageName, false, (it.name
-                                ?: it.id).toString(), it.description ?: "")
-                    }
-                } catch (e: Exception) {
-                    Timber.w(e, "Failed to get notif channels from ${sbn.packageName}")
+            try {
+                val channels = getNotificationChannels(sbn.packageName, sbn.user)
+                channels?.forEach {
+                    notificationBridge.updateChannel(it.id, sbn.packageName, false, (it.name
+                            ?: it.id).toString(), it.description ?: "")
                 }
+            } catch (e: Exception) {
+                Timber.w(e, "Failed to get notif channels from ${sbn.packageName}")
             }
             if (NotificationCompat.getLocalOnly(sbn.notification)) return // ignore local notifications TODO: respect user preference
             if (sbn.notification.flags and Notification.FLAG_ONGOING_EVENT != 0) return // ignore ongoing notifications
-            //if (sbn.notification.group != null && !NotificationCompat.isGroupSummary(sbn.notification)) return
+            if (sbn.notification.group != null && !NotificationCompat.isGroupSummary(sbn.notification)) return
             if (mutedPackages.contains(sbn.packageName)) return // ignore muted packages
 
 
@@ -109,30 +108,49 @@ class NotificationListener : NotificationListenerService() {
                 }
             }
 
-            var tagId: String? = null
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                tagId = sbn.notification.channelId
-            }
+            val tagId = sbn.notification.channelId
             val title = sbn.notification.extras.getString(Notification.EXTRA_TITLE)
                     ?: sbn.notification.extras.getString(Notification.EXTRA_CONVERSATION_TITLE)
                     ?: ""
 
-            val text = sbn.notification.extras.getString(Notification.EXTRA_TEXT)
+            var text = sbn.notification.extras.getString(Notification.EXTRA_TEXT)
                     ?: sbn.notification.extras.getString(Notification.EXTRA_BIG_TEXT)
                     ?: ""
+
+            // If the text is empty, try to get it from the text lines
+            if (text.isBlank()) {
+                val textLines = sbn.notification.extras.getCharSequenceArray(Notification.EXTRA_TEXT_LINES)
+                textLines?.let {
+                    text = textLines.joinToString("\n")
+                }
+            }
+            // If the text is still empty, try to get it from the info text
+            if (text.isBlank()) {
+                val infoText = sbn.notification.extras.getString(Notification.EXTRA_INFO_TEXT)
+                infoText?.let {
+                    text = it
+                }
+            }
+            // All else fails, try to get it from the ticker text
+            if (text.isBlank()) {
+                val tickerText = sbn.notification.tickerText
+                tickerText?.let {
+                    text = it.toString()
+                }
+            }
+
+            text = text.replace('\u2009', ' ') // Replace thin space with normal space (watch doesn't support it)
 
             val actions = sbn.notification.actions?.map {
                 NotificationAction(it.title.toString(), !it.remoteInputs.isNullOrEmpty())
             } ?: listOf()
 
             var messages: List<NotificationMessage>? = null
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                val messagesArr = sbn.notification.extras.getParcelableArray(Notification.EXTRA_MESSAGES)
-                if (messagesArr != null) {
-                    val msgstyle = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(sbn.notification)
-                    messages = msgstyle?.messages?.map {
-                        NotificationMessage(it.person?.name.toString(), it.text.toString(), it.timestamp)
-                    }
+            val messagesArr = sbn.notification.extras.getParcelableArray(Notification.EXTRA_MESSAGES)
+            if (messagesArr != null) {
+                val msgstyle = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(sbn.notification)
+                messages = msgstyle?.messages?.map {
+                    NotificationMessage(it.person?.name.toString(), it.text.toString(), it.timestamp)
                 }
             }
 
