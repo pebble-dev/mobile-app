@@ -97,7 +97,7 @@ class NotificationListener : NotificationListenerService() {
             }
             if (NotificationCompat.getLocalOnly(sbn.notification)) return // ignore local notifications TODO: respect user preference
             if (sbn.notification.flags and Notification.FLAG_ONGOING_EVENT != 0) return // ignore ongoing notifications
-            if (sbn.notification.group != null && !NotificationCompat.isGroupSummary(sbn.notification)) return
+            //if (sbn.notification.group != null && !NotificationCompat.isGroupSummary(sbn.notification)) return
             if (mutedPackages.contains(sbn.packageName)) return // ignore muted packages
 
 
