@@ -167,13 +167,6 @@ class ConnectionUiFlutterBridge @Inject constructor(
             }
         }
 
-        if (activity.context.hasNotificationAccessPermission()) {
-            Timber.d("Requesting rebind of notification listener")
-            NotificationListenerService.requestRebind(
-                    NotificationListener.getComponentName(activity.context)
-            )
-        }
-
         openConnectionToWatch(address)
     }
 

@@ -15,6 +15,7 @@ import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bridges.background.NotificationsFlutterBridge
 import io.rebble.cobble.data.NotificationAction
 import io.rebble.cobble.data.NotificationMessage
+import io.rebble.cobble.data.toNotificationGroup
 import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.state.ConnectionState
@@ -79,6 +80,10 @@ class NotificationListener : NotificationListenerService() {
         Timber.d("NotificationListener disconnected")
     }
 
+    private fun getNotificationGroup(sbn: StatusBarNotification): List<StatusBarNotification> {
+        return this.activeNotifications.filter { it.groupKey == sbn.groupKey }
+    }
+
     @OptIn(ExperimentalStdlibApi::class)
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         if (isListening && areNotificationsEnabled) {
@@ -99,17 +104,22 @@ class NotificationListener : NotificationListenerService() {
             }
             if (NotificationCompat.getLocalOnly(sbn.notification)) return // ignore local notifications TODO: respect user preference
             if (sbn.notification.flags and Notification.FLAG_ONGOING_EVENT != 0) return // ignore ongoing notifications
-            //if (sbn.notification.group != null && !NotificationCompat.isGroupSummary(sbn.notification)) return
             if (mutedPackages.contains(sbn.packageName)) return // ignore muted packages
 
             coroutineScope.launch {
                 if (prefs.sensitiveDataLoggingEnabled.firstOrNull() == true) {
                     Timber.d("Notification posted: ${sbn.packageName}")
+                    Timber.d("This listener instance is: ${this.hashCode()}")
                     Timber.d("Notification: ${sbn.notification}\n${sbn.notification.extras}")
                 }
             }
 
-            notificationProcessor.processNotification(sbn)
+            if (sbn.groupKey != null) {
+                val group = getNotificationGroup(sbn)
+                notificationProcessor.processGroupNotification(group.toNotificationGroup())
+            } else {
+                notificationProcessor.processNotification(sbn)
+            }
         }
     }
 
