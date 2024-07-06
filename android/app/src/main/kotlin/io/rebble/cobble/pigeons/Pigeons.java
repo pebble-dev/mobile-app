@@ -2831,6 +2831,79 @@ public class Pigeons {
     }
   }
 
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class NotifyingPackage {
+    private @NonNull String packageId;
+
+    public @NonNull String getPackageId() {
+      return packageId;
+    }
+
+    public void setPackageId(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"packageId\" is null.");
+      }
+      this.packageId = setterArg;
+    }
+
+    private @NonNull String packageName;
+
+    public @NonNull String getPackageName() {
+      return packageName;
+    }
+
+    public void setPackageName(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"packageName\" is null.");
+      }
+      this.packageName = setterArg;
+    }
+
+    /** Constructor is non-public to enforce null safety; use Builder. */
+    NotifyingPackage() {}
+
+    public static final class Builder {
+
+      private @Nullable String packageId;
+
+      public @NonNull Builder setPackageId(@NonNull String setterArg) {
+        this.packageId = setterArg;
+        return this;
+      }
+
+      private @Nullable String packageName;
+
+      public @NonNull Builder setPackageName(@NonNull String setterArg) {
+        this.packageName = setterArg;
+        return this;
+      }
+
+      public @NonNull NotifyingPackage build() {
+        NotifyingPackage pigeonReturn = new NotifyingPackage();
+        pigeonReturn.setPackageId(packageId);
+        pigeonReturn.setPackageName(packageName);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(2);
+      toListResult.add(packageId);
+      toListResult.add(packageName);
+      return toListResult;
+    }
+
+    static @NonNull NotifyingPackage fromList(@NonNull ArrayList<Object> list) {
+      NotifyingPackage pigeonResult = new NotifyingPackage();
+      Object packageId = list.get(0);
+      pigeonResult.setPackageId((String) packageId);
+      Object packageName = list.get(1);
+      pigeonResult.setPackageName((String) packageName);
+      return pigeonResult;
+    }
+  }
+
   public interface Result<T> {
     @SuppressWarnings("UnknownNullness")
     void success(T result);
@@ -4061,14 +4134,43 @@ public class Pigeons {
       }
     }
   }
+
+  private static class NotificationsControlCodec extends StandardMessageCodec {
+    public static final NotificationsControlCodec INSTANCE = new NotificationsControlCodec();
+
+    private NotificationsControlCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return NotifyingPackage.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof NotifyingPackage) {
+        stream.write(128);
+        writeValue(stream, ((NotifyingPackage) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
   /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
   public interface NotificationsControl {
 
     void sendTestNotification();
 
+    void getNotificationPackages(@NonNull Result<List<NotifyingPackage>> result);
+
     /** The codec used by NotificationsControl. */
     static @NonNull MessageCodec<Object> getCodec() {
-      return new StandardMessageCodec();
+      return NotificationsControlCodec.INSTANCE;
     }
     /**Sets up an instance of `NotificationsControl` to handle messages through the `binaryMessenger`. */
     static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable NotificationsControl api) {
@@ -4089,6 +4191,33 @@ public class Pigeons {
                   wrapped = wrappedError;
                 }
                 reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.NotificationsControl.getNotificationPackages", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                Result<List<NotifyingPackage>> resultCallback =
+                    new Result<List<NotifyingPackage>>() {
+                      public void success(List<NotifyingPackage> result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.getNotificationPackages(resultCallback);
               });
         } else {
           channel.setMessageHandler(null);

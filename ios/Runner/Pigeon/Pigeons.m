@@ -159,6 +159,12 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 - (NSArray *)toList;
 @end
 
+@interface NotifyingPackage ()
++ (NotifyingPackage *)fromList:(NSArray *)list;
++ (nullable NotifyingPackage *)nullableFromList:(NSArray *)list;
+- (NSArray *)toList;
+@end
+
 @implementation BooleanWrapper
 + (instancetype)makeWithValue:(nullable NSNumber *)value {
   BooleanWrapper* pigeonResult = [[BooleanWrapper alloc] init];
@@ -980,6 +986,33 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
     (self.channelName ?: [NSNull null]),
     (self.channelDesc ?: [NSNull null]),
     (self.delete ?: [NSNull null]),
+  ];
+}
+@end
+
+@implementation NotifyingPackage
++ (instancetype)makeWithPackageId:(NSString *)packageId
+    packageName:(NSString *)packageName {
+  NotifyingPackage* pigeonResult = [[NotifyingPackage alloc] init];
+  pigeonResult.packageId = packageId;
+  pigeonResult.packageName = packageName;
+  return pigeonResult;
+}
++ (NotifyingPackage *)fromList:(NSArray *)list {
+  NotifyingPackage *pigeonResult = [[NotifyingPackage alloc] init];
+  pigeonResult.packageId = GetNullableObjectAtIndex(list, 0);
+  NSAssert(pigeonResult.packageId != nil, @"");
+  pigeonResult.packageName = GetNullableObjectAtIndex(list, 1);
+  NSAssert(pigeonResult.packageName != nil, @"");
+  return pigeonResult;
+}
++ (nullable NotifyingPackage *)nullableFromList:(NSArray *)list {
+  return (list) ? [NotifyingPackage fromList:list] : nil;
+}
+- (NSArray *)toList {
+  return @[
+    (self.packageId ?: [NSNull null]),
+    (self.packageName ?: [NSNull null]),
   ];
 }
 @end
@@ -2320,9 +2353,50 @@ void UiConnectionControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObje
     }
   }
 }
+@interface NotificationsControlCodecReader : FlutterStandardReader
+@end
+@implementation NotificationsControlCodecReader
+- (nullable id)readValueOfType:(UInt8)type {
+  switch (type) {
+    case 128: 
+      return [NotifyingPackage fromList:[self readValue]];
+    default:
+      return [super readValueOfType:type];
+  }
+}
+@end
+
+@interface NotificationsControlCodecWriter : FlutterStandardWriter
+@end
+@implementation NotificationsControlCodecWriter
+- (void)writeValue:(id)value {
+  if ([value isKindOfClass:[NotifyingPackage class]]) {
+    [self writeByte:128];
+    [self writeValue:[value toList]];
+  } else {
+    [super writeValue:value];
+  }
+}
+@end
+
+@interface NotificationsControlCodecReaderWriter : FlutterStandardReaderWriter
+@end
+@implementation NotificationsControlCodecReaderWriter
+- (FlutterStandardWriter *)writerWithData:(NSMutableData *)data {
+  return [[NotificationsControlCodecWriter alloc] initWithData:data];
+}
+- (FlutterStandardReader *)readerWithData:(NSData *)data {
+  return [[NotificationsControlCodecReader alloc] initWithData:data];
+}
+@end
+
 NSObject<FlutterMessageCodec> *NotificationsControlGetCodec(void) {
   static FlutterStandardMessageCodec *sSharedObject = nil;
-  sSharedObject = [FlutterStandardMessageCodec sharedInstance];
+  static dispatch_once_t sPred = 0;
+  dispatch_once(&sPred, ^{
+    NotificationsControlCodecReaderWriter *readerWriter = [[NotificationsControlCodecReaderWriter alloc] init];
+    sSharedObject = [FlutterStandardMessageCodec codecWithReaderWriter:readerWriter];
+  });
   return sSharedObject;
 }
 
@@ -2339,6 +2413,23 @@ void NotificationsControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObj
         FlutterError *error;
         [api sendTestNotificationWithError:&error];
         callback(wrapResult(nil, error));
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.NotificationsControl.getNotificationPackages"
+        binaryMessenger:binaryMessenger
+        codec:NotificationsControlGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(getNotificationPackagesWithCompletion:)], @"NotificationsControl api (%@) doesn't respond to @selector(getNotificationPackagesWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api getNotificationPackagesWithCompletion:^(NSArray<NotifyingPackage *> *_Nullable output, FlutterError *_Nullable error) {
+          callback(wrapResult(output, error));
+        }];
       }];
     } else {
       [channel setMessageHandler:nil];

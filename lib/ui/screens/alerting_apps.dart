@@ -27,16 +27,43 @@ class AlertingApp {
 }
 
 class AlertingApps extends HookConsumerWidget implements CobbleScreen {
+  final notificationsControl = NotificationsControl();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final packageDetails = ref.watch(packageDetailsProvider).getPackageList();
+    var packageDetailsP = ref.watch(packageDetailsProvider);
+    final notifyingPackagesF = useMemoized(() => notificationsControl.getNotificationPackages());
+    final packageDetailsF = useMemoized(() => packageDetailsP.getPackageList());
+    final notifyingPackages = useFuture(notifyingPackagesF);
+    final packageDetails = useFuture(packageDetailsF);
 
     final random = Random();
     final filter = useState(SheetOnChanged.initial);
 
     final sheet = CobbleSheet.useInline();
     final mutedPackages = ref.watch(notificationsMutedPackagesProvider);
+
+    List<AlertingApp> apps = [];
+    if (packageDetails.hasData && packageDetails.data != null) {
+      for (int i = 0; i < packageDetails.data!.packageId!.length; i++) {
+        final enabled = (mutedPackages.value ?? []).firstWhereOrNull(
+              (element) => element == packageDetails.data!.packageId![i],
+        ) == null;
+        if (notifyingPackages.hasData &&
+            notifyingPackages.data!.firstWhereOrNull((element) => element!
+                .packageId == packageDetails.data!.packageId![i]) != null) {
+          apps.add(AlertingApp(packageDetails.data!.appName![i] as String, enabled,
+              packageDetails.data!.packageId![i] as String));
+        }
+      }
+    }
+
+    List filteredApps = apps.where(
+          (app) =>
+          app.name.toLowerCase().contains(
+            filter.value.query?.toLowerCase() ?? '',
+          ),
+    ).toList();
 
     return CobbleScaffold.tab(
         title: tr.alertingApps.title,
@@ -73,47 +100,26 @@ class AlertingApps extends HookConsumerWidget implements CobbleScreen {
             ),
           ),
         ],
-        child: FutureBuilder(
-            future: packageDetails,
-            builder: (BuildContext context,
-                AsyncSnapshot<AppEntriesPigeon> snapshot) {
-              if (snapshot.hasData && snapshot.data != null) {
-                List<AlertingApp> apps = [];
-                for (int i = 0; i < snapshot.data!.packageId!.length; i++) {
-                  final enabled = (mutedPackages.value ?? []).firstWhereOrNull(
-                          (element) => element == snapshot.data!.packageId![i],
-                  ) == null;
-                  apps.add(AlertingApp(snapshot.data!.appName![i] as String, enabled,
-                      snapshot.data!.packageId![i] as String));
-                }
-
-                List filteredApps = apps.where(
-                  (app) => app.name.toLowerCase().contains(
-                    filter.value.query?.toLowerCase() ?? '',
-                  ),
-                ).toList();
-
-                return ListView.builder(
-                  itemCount: filteredApps.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    AlertingApp app = filteredApps[index];
-                    return CobbleTile.appNavigation(
-                      leading: Svg('images/temp_alerting_app.svg'),
-                      title: app.name,
-                      subtitle: app.enabled
-                          ? tr.alertingApps.alertedToday(
-                        alerted: random.nextInt(8).toString(),
-                      )
-                          : tr.alertingApps.mutedToday(
-                        muted: random.nextInt(8).toString(),
-                      ),
-                      navigateTo: AlertingAppDetails(app),
-                    );
-                  },
-                );
-              } else {
-                return CircularProgressIndicator();
-              }
-            }));
+        child: packageDetails.hasData && notifyingPackages.hasData ? ListView.builder(
+          itemCount: filteredApps.length,
+          itemBuilder: (BuildContext context, int index) {
+            AlertingApp app = filteredApps[index];
+            return CobbleTile.appNavigation(
+              leading: Svg('images/temp_alerting_app.svg'),
+              title: app.name,
+              subtitle: app.enabled
+                  ? tr.alertingApps.alertedToday(
+                alerted: random.nextInt(8).toString(),
+              )
+                  : tr.alertingApps.mutedToday(
+                muted: random.nextInt(8).toString(),
+              ),
+              navigateTo: AlertingAppDetails(app),
+            );
+          },
+        ) : const Center(
+          child: CircularProgressIndicator(),
+        )
+    );
   }
 }

@@ -8,6 +8,7 @@ import dagger.Module
 import dagger.Provides
 import io.rebble.cobble.errors.GlobalExceptionHandler
 import io.rebble.cobble.shared.database.AppDatabase
+import io.rebble.cobble.shared.database.dao.CachedPackageInfoDao
 import io.rebble.cobble.shared.database.dao.PersistedNotificationDao
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.datastore.createDataStore
@@ -49,6 +50,10 @@ abstract class AppModule {
         @Provides
         fun providePersistedNotificationDao(context: Context): PersistedNotificationDao {
             return AppDatabase.instance().persistedNotificationDao()
+        }
+        @Provides
+        fun provideCachedPackageInfoDao(context: Context): CachedPackageInfoDao {
+            return AppDatabase.instance().cachedPackageInfoDao()
         }
     }
 }

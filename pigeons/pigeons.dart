@@ -189,6 +189,12 @@ class NotifChannelPigeon {
   bool? delete;
 }
 
+class NotifyingPackage {
+  String packageId;
+  String packageName;
+  NotifyingPackage(this.packageId, this.packageName);
+}
+
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
@@ -315,6 +321,8 @@ abstract class UiConnectionControl {
 @HostApi()
 abstract class NotificationsControl {
   void sendTestNotification();
+  @async
+  List<NotifyingPackage> getNotificationPackages();
 }
 
 @HostApi()

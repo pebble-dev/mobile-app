@@ -454,6 +454,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  freezed_annotation:
+    dependency: transitive
+    description:
+      name: freezed_annotation
+      sha256: c3fd9336eb55a38cc1bbd79ab17573113a8deccd0ecbbf926cca3c62803b5c2d
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.1"
   frontend_server_client:
     dependency: transitive
     description:
@@ -654,6 +662,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.0"
+  noob:
+    dependency: "direct main"
+    description:
+      name: noob
+      sha256: c955aff8242224d27c4addce50483b9ac4132425d7ad97bc20974117ce97931b
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.8"
   octo_image:
     dependency: transitive
     description:

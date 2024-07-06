@@ -13,4 +13,7 @@ interface CachedPackageInfoDao {
 
     @Query("SELECT * FROM CachedPackageInfo WHERE id = :packageId")
     suspend fun getPackageInfo(packageId: String): CachedPackageInfo?
+
+    @Query("SELECT * FROM CachedPackageInfo")
+    suspend fun getAll(): List<CachedPackageInfo>
 }

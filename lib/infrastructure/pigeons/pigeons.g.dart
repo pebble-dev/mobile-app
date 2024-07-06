@@ -912,6 +912,32 @@ class NotifChannelPigeon {
   }
 }
 
+class NotifyingPackage {
+  NotifyingPackage({
+    required this.packageId,
+    required this.packageName,
+  });
+
+  String packageId;
+
+  String packageName;
+
+  Object encode() {
+    return <Object?>[
+      packageId,
+      packageName,
+    ];
+  }
+
+  static NotifyingPackage decode(Object result) {
+    result as List<Object?>;
+    return NotifyingPackage(
+      packageId: result[0]! as String,
+      packageName: result[1]! as String,
+    );
+  }
+}
+
 class _ScanCallbacksCodec extends StandardMessageCodec {
   const _ScanCallbacksCodec();
   @override
@@ -2135,6 +2161,29 @@ class UiConnectionControl {
   }
 }
 
+class _NotificationsControlCodec extends StandardMessageCodec {
+  const _NotificationsControlCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is NotifyingPackage) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128: 
+        return NotifyingPackage.decode(readValue(buffer)!);
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
 class NotificationsControl {
   /// Constructor for [NotificationsControl].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
@@ -2143,7 +2192,7 @@ class NotificationsControl {
       : _binaryMessenger = binaryMessenger;
   final BinaryMessenger? _binaryMessenger;
 
-  static const MessageCodec<Object?> codec = StandardMessageCodec();
+  static const MessageCodec<Object?> codec = _NotificationsControlCodec();
 
   Future<void> sendTestNotification() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
@@ -2164,6 +2213,33 @@ class NotificationsControl {
       );
     } else {
       return;
+    }
+  }
+
+  Future<List<NotifyingPackage?>> getNotificationPackages() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.NotificationsControl.getNotificationPackages', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(null) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else if (replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyList[0] as List<Object?>?)!.cast<NotifyingPackage?>();
     }
   }
 }

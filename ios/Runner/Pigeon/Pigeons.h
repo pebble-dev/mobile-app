@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class AppLogEntry;
 @class OAuthResult;
 @class NotifChannelPigeon;
+@class NotifyingPackage;
 
 /// Pigeon only supports classes as return/receive type.
 /// That is why we must wrap primitive types into wrapper
@@ -326,6 +327,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, nullable) NSNumber * delete;
 @end
 
+@interface NotifyingPackage : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)makeWithPackageId:(NSString *)packageId
+    packageName:(NSString *)packageName;
+@property(nonatomic, copy) NSString * packageId;
+@property(nonatomic, copy) NSString * packageName;
+@end
+
 /// The codec used by ScanCallbacks.
 NSObject<FlutterMessageCodec> *ScanCallbacksGetCodec(void);
 
@@ -486,6 +496,7 @@ NSObject<FlutterMessageCodec> *NotificationsControlGetCodec(void);
 
 @protocol NotificationsControl
 - (void)sendTestNotificationWithError:(FlutterError *_Nullable *_Nonnull)error;
+- (void)getNotificationPackagesWithCompletion:(void (^)(NSArray<NotifyingPackage *> *_Nullable, FlutterError *_Nullable))completion;
 @end
 
 extern void NotificationsControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<NotificationsControl> *_Nullable api);
