@@ -29,6 +29,7 @@ class NotificationListener : NotificationListenerService() {
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var connectionLooper: ConnectionLooper
     private lateinit var flutterPreferences: FlutterPreferences
+    private lateinit var notificationProcessor: NotificationProcessor
 
     private var isListening = false
     private var areNotificationsEnabled = true
@@ -50,6 +51,7 @@ class NotificationListener : NotificationListenerService() {
         notificationBridge = injectionComponent.createNotificationsFlutterBridge()
         flutterPreferences = injectionComponent.createFlutterPreferences()
         prefs = injectionComponent.createKMPPrefs()
+        notificationProcessor = injectionComponent.createNotificationProcessor()
 
         super.onCreate()
         _isActive.value = true
@@ -100,7 +102,6 @@ class NotificationListener : NotificationListenerService() {
             //if (sbn.notification.group != null && !NotificationCompat.isGroupSummary(sbn.notification)) return
             if (mutedPackages.contains(sbn.packageName)) return // ignore muted packages
 
-
             coroutineScope.launch {
                 if (prefs.sensitiveDataLoggingEnabled.firstOrNull() == true) {
                     Timber.d("Notification posted: ${sbn.packageName}")
@@ -108,66 +109,7 @@ class NotificationListener : NotificationListenerService() {
                 }
             }
 
-            val tagId = sbn.notification.channelId
-            val title = sbn.notification.extras.getString(Notification.EXTRA_TITLE)
-                    ?: sbn.notification.extras.getString(Notification.EXTRA_CONVERSATION_TITLE)
-                    ?: ""
-
-            var text = sbn.notification.extras.getString(Notification.EXTRA_TEXT)
-                    ?: sbn.notification.extras.getString(Notification.EXTRA_BIG_TEXT)
-                    ?: ""
-
-            // If the text is empty, try to get it from the text lines
-            if (text.isBlank()) {
-                val textLines = sbn.notification.extras.getCharSequenceArray(Notification.EXTRA_TEXT_LINES)
-                textLines?.let {
-                    text = textLines.joinToString("\n")
-                }
-            }
-            // If the text is still empty, try to get it from the info text
-            if (text.isBlank()) {
-                val infoText = sbn.notification.extras.getString(Notification.EXTRA_INFO_TEXT)
-                infoText?.let {
-                    text = it
-                }
-            }
-            // All else fails, try to get it from the ticker text
-            if (text.isBlank()) {
-                val tickerText = sbn.notification.tickerText
-                tickerText?.let {
-                    text = it.toString()
-                }
-            }
-
-            text = text.replace('\u2009', ' ') // Replace thin space with normal space (watch doesn't support it)
-
-            val actions = sbn.notification.actions?.map {
-                NotificationAction(it.title.toString(), !it.remoteInputs.isNullOrEmpty())
-            } ?: listOf()
-
-            var messages: List<NotificationMessage>? = null
-            val messagesArr = sbn.notification.extras.getParcelableArray(Notification.EXTRA_MESSAGES)
-            if (messagesArr != null) {
-                val msgstyle = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(sbn.notification)
-                messages = msgstyle?.messages?.map {
-                    NotificationMessage(it.person?.name.toString(), it.text.toString(), it.timestamp)
-                }
-            }
-
-            coroutineScope.launch(Dispatchers.Main) {
-                var result: Pair<TimelineItem, BlobResponse.BlobStatus>? = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, title, text, sbn.notification.category
-                        ?: "", sbn.notification.color, messages ?: listOf(), actions)
-                        ?: return@launch
-
-                while (result!!.second == BlobResponse.BlobStatus.TryLater) {
-                    delay(1000)
-                    result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, title, text, sbn.notification.category
-                            ?: "", sbn.notification.color, messages ?: listOf(), actions)
-                            ?: return@launch
-                }
-                Timber.d(result.second.toString())
-                notificationBridge.activeNotifs[result.first.itemId.get()] = sbn
-            }
+            notificationProcessor.processNotification(sbn)
         }
     }
 
