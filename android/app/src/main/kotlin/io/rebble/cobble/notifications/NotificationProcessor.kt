@@ -1,6 +1,8 @@
 package io.rebble.cobble.notifications
 
 import android.app.Notification
+import android.content.Context
+import android.content.pm.ApplicationInfo
 import android.service.notification.StatusBarNotification
 import android.text.SpannableString
 import androidx.core.app.NotificationCompat
@@ -24,7 +26,8 @@ import kotlin.time.Duration.Companion.hours
 class NotificationProcessor @Inject constructor(
         exceptionHandler: CoroutineExceptionHandler,
         private val notificationBridge: NotificationsFlutterBridge,
-        private val persistedNotifDao: PersistedNotificationDao
+        private val persistedNotifDao: PersistedNotificationDao,
+        private val context: Context
 ) {
     val coroutineScope = CoroutineScope(
             SupervisorJob() + exceptionHandler
@@ -46,6 +49,11 @@ class NotificationProcessor @Inject constructor(
 
             if (persistedNotifDao.getDuplicates(sbn.key, sbn.packageName, title, text).isNotEmpty()) {
                 Timber.d("Ignoring duplicate notification ${sbn.key}")
+                continue
+            }
+            val resolvedPackage = sbn.queryPackage(context)
+            if (resolvedPackage == null) {
+                Timber.d("Ignoring system/unknown notification ${sbn.key}")
                 continue
             }
             persistedNotifDao.insert(PersistedNotification(

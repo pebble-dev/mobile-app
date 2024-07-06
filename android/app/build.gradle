@@ -135,6 +135,7 @@ dependencies {
     implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
     implementation "com.squareup.okio:okio:$okioVersion"
     implementation libs.androidx.room.runtime
+    implementation libs.kotlinx.datetime
 
     implementation libs.dagger
     implementation project(':pebble_bt_transport')

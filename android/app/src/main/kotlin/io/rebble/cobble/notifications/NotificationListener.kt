@@ -105,7 +105,6 @@ class NotificationListener : NotificationListenerService() {
             if (NotificationCompat.getLocalOnly(sbn.notification)) return // ignore local notifications TODO: respect user preference
             if (sbn.notification.flags and Notification.FLAG_ONGOING_EVENT != 0) return // ignore ongoing notifications
             if (mutedPackages.contains(sbn.packageName)) return // ignore muted packages
-
             coroutineScope.launch {
                 if (prefs.sensitiveDataLoggingEnabled.firstOrNull() == true) {
                     Timber.d("Notification posted: ${sbn.packageName}")
