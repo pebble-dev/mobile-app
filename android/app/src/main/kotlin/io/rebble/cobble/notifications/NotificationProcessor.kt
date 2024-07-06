@@ -52,8 +52,8 @@ class NotificationProcessor @Inject constructor(
     }
 
     private fun extractBody(notification: Notification): String {
-        var text = notification.extras.getString(Notification.EXTRA_TEXT)
-                ?: notification.extras.getString(Notification.EXTRA_BIG_TEXT)
+        var text = notification.extras.getString(Notification.EXTRA_BIG_TEXT)
+                ?: notification.extras.getString(Notification.EXTRA_TEXT)
                 ?: ""
 
         // If the text is empty, try to get it from the text lines
