@@ -10,6 +10,7 @@ import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/screens/alerting_app_details.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
@@ -79,10 +80,9 @@ class AlertingApps extends HookConsumerWidget implements CobbleScreen {
               if (snapshot.hasData && snapshot.data != null) {
                 List<AlertingApp> apps = [];
                 for (int i = 0; i < snapshot.data!.packageId!.length; i++) {
-                  final enabled = (mutedPackages.value ?? []).firstWhere(
+                  final enabled = (mutedPackages.value ?? []).firstWhereOrNull(
                           (element) => element == snapshot.data!.packageId![i],
-                          orElse: () => null) ==
-                      null;
+                  ) == null;
                   apps.add(AlertingApp(snapshot.data!.appName![i] as String, enabled,
                       snapshot.data!.packageId![i] as String));
                 }
