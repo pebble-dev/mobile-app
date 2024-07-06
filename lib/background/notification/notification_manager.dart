@@ -78,6 +78,12 @@ class NotificationManager {
   }
 
   Future<TimelinePin> handleNotification(NotificationPigeon notif) async {
+    final prefs = Preferences(await _preferencesFuture);
+    if (prefs.getDefaultMutedPackagesVersion() != defaultMutedPackagesVersion) {
+      final current = prefs.getNotificationsMutedPackages();
+      await prefs.setNotificationsMutedPackages((current + defaultMutedPackages).toSet().toList());
+    }
+
     NotificationChannel? channel = await _notificationChannelDao.getNotifChannelByIds(notif.tagId!, notif.packageId!);
     if (channel == null) {
       _notificationChannelDao.insertOrUpdateNotificationChannel(NotificationChannel(notif.packageId!, notif.tagId!, true));
