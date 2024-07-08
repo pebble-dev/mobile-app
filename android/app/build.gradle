@@ -113,7 +113,7 @@ flutter {
 
 def libpebblecommon_version = '0.1.17'
 def coroutinesVersion = "1.8.1"
-def lifecycleVersion = "2.8.2"
+def lifecycleVersion = "2.8.3"
 def timberVersion = "5.0.1"
 def androidxCoreVersion = '1.13.1'
 def daggerVersion = '2.51.1'
