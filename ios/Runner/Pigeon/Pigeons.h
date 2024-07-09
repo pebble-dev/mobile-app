@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class AppLogEntry;
 @class OAuthResult;
 @class NotifChannelPigeon;
+@class NotifyingPackage;
 @class CalendarPigeon;
 
 /// Pigeon only supports classes as return/receive type.
@@ -327,6 +328,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, nullable) NSNumber * delete;
 @end
 
+@interface NotifyingPackage : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)makeWithPackageId:(NSString *)packageId
+    packageName:(NSString *)packageName;
+@property(nonatomic, copy) NSString * packageId;
+@property(nonatomic, copy) NSString * packageName;
+@end
+
 @interface CalendarPigeon : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
@@ -508,6 +518,7 @@ NSObject<FlutterMessageCodec> *NotificationsControlGetCodec(void);
 
 @protocol NotificationsControl
 - (void)sendTestNotificationWithError:(FlutterError *_Nullable *_Nonnull)error;
+- (void)getNotificationPackagesWithCompletion:(void (^)(NSArray<NotifyingPackage *> *_Nullable, FlutterError *_Nullable))completion;
 @end
 
 extern void NotificationsControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<NotificationsControl> *_Nullable api);
@@ -528,6 +539,8 @@ NSObject<FlutterMessageCodec> *DebugControlGetCodec(void);
 
 @protocol DebugControl
 - (void)collectLogsRwsId:(NSString *)rwsId error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)getSensitiveLoggingEnabledWithCompletion:(void (^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
+- (void)setSensitiveLoggingEnabledEnabled:(NSNumber *)enabled completion:(void (^)(FlutterError *_Nullable))completion;
 @end
 
 extern void DebugControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DebugControl> *_Nullable api);

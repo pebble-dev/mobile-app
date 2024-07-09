@@ -1,4 +1,5 @@
 
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:cobble/background/main_background.dart';
@@ -18,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:noob/noob.dart';
 
 import 'domain/permissions.dart';
 import 'infrastructure/datasources/paired_storage.dart';
@@ -37,6 +39,16 @@ void main() {
       debugPrint(record.error.toString());
     }
   });
+
+  /*if (kDebugMode) {
+    TrackingBuildOwnerWidgetsFlutterBinding.ensureInitialized();
+
+    // initialize `BuildTracker`
+    final tracker = BuildTracker(printBuildFrameIncludeRebuildDirtyWidget: false);
+
+    // print top 10 stacks leading to rebuilds every 10 seconds
+    Timer.periodic(const Duration(seconds: 10), (_) => tracker.printTopScheduleBuildForStacks());
+  }*/
 
   runApp(ProviderScope(child: MyApp()));
   initBackground();

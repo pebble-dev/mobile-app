@@ -60,6 +60,7 @@ dependencies:
   crypto: ^3.0.3
   cached_network_image: ^3.0.0
   device_info_plus: ^9.0.0
+  noob: ^0.0.8
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1

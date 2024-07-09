@@ -4,6 +4,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.content.ComponentName
 import android.content.Context
+import android.icu.text.UnicodeSet
 import android.os.Build
 import android.os.UserHandle
 import android.service.notification.NotificationListenerService
@@ -14,22 +15,22 @@ import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bridges.background.NotificationsFlutterBridge
 import io.rebble.cobble.data.NotificationAction
 import io.rebble.cobble.data.NotificationMessage
+import io.rebble.cobble.data.toNotificationGroup
 import io.rebble.cobble.datasources.FlutterPreferences
+import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
 import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
 
 class NotificationListener : NotificationListenerService() {
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var connectionLooper: ConnectionLooper
     private lateinit var flutterPreferences: FlutterPreferences
+    private lateinit var notificationProcessor: NotificationProcessor
 
     private var isListening = false
     private var areNotificationsEnabled = true
@@ -37,6 +38,7 @@ class NotificationListener : NotificationListenerService() {
 
     private lateinit var notificationService: NotificationService
     private lateinit var notificationBridge: NotificationsFlutterBridge
+    private lateinit var prefs: KMPPrefs
 
     override fun onCreate() {
         val injectionComponent = (applicationContext as CobbleApplication).component
@@ -49,6 +51,8 @@ class NotificationListener : NotificationListenerService() {
         notificationService = injectionComponent.createNotificationService()
         notificationBridge = injectionComponent.createNotificationsFlutterBridge()
         flutterPreferences = injectionComponent.createFlutterPreferences()
+        prefs = injectionComponent.createKMPPrefs()
+        notificationProcessor = injectionComponent.createNotificationProcessor()
 
         super.onCreate()
         _isActive.value = true
@@ -76,6 +80,10 @@ class NotificationListener : NotificationListenerService() {
         Timber.d("NotificationListener disconnected")
     }
 
+    private fun getNotificationGroup(sbn: StatusBarNotification): List<StatusBarNotification> {
+        return this.activeNotifications.filter { it.groupKey == sbn.groupKey }
+    }
+
     @OptIn(ExperimentalStdlibApi::class)
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         if (isListening && areNotificationsEnabled) {
@@ -85,61 +93,31 @@ class NotificationListener : NotificationListenerService() {
                 // Do not notify for media notifications
                 return
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                try {
-                    val channels = getNotificationChannels(sbn.packageName, sbn.user)
-                    channels?.forEach {
-                        notificationBridge.updateChannel(it.id, sbn.packageName, false, (it.name
-                                ?: it.id).toString(), it.description ?: "")
-                    }
-                } catch (e: Exception) {
-                    Timber.w(e, "Failed to get notif channels from ${sbn.packageName}")
+            try {
+                val channels = getNotificationChannels(sbn.packageName, sbn.user)
+                channels?.forEach {
+                    notificationBridge.updateChannel(it.id, sbn.packageName, false, (it.name
+                            ?: it.id).toString(), it.description ?: "")
                 }
+            } catch (e: Exception) {
+                Timber.w(e, "Failed to get notif channels from ${sbn.packageName}")
             }
             if (NotificationCompat.getLocalOnly(sbn.notification)) return // ignore local notifications TODO: respect user preference
             if (sbn.notification.flags and Notification.FLAG_ONGOING_EVENT != 0) return // ignore ongoing notifications
-            //if (sbn.notification.group != null && !NotificationCompat.isGroupSummary(sbn.notification)) return
             if (mutedPackages.contains(sbn.packageName)) return // ignore muted packages
-
-            var tagId: String? = null
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                tagId = sbn.notification.channelId
-            }
-            val title = sbn.notification.extras[Notification.EXTRA_TITLE] as? String
-                    ?: sbn.notification.extras[Notification.EXTRA_CONVERSATION_TITLE] as? String
-                    ?: ""
-
-            val text = sbn.notification.extras[Notification.EXTRA_TEXT] as? String
-                    ?: sbn.notification.extras[Notification.EXTRA_BIG_TEXT] as? String ?: ""
-
-            val actions = sbn.notification.actions?.map {
-                NotificationAction(it.title.toString(), !it.remoteInputs.isNullOrEmpty())
-            } ?: listOf()
-
-            var messages: List<NotificationMessage>? = null
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                val messagesArr = sbn.notification.extras.getParcelableArray(Notification.EXTRA_MESSAGES)
-                if (messagesArr != null) {
-                    val msgstyle = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(sbn.notification)
-                    messages = msgstyle?.messages?.map {
-                        NotificationMessage(it.person?.name.toString(), it.text.toString(), it.timestamp)
-                    }
+            coroutineScope.launch {
+                if (prefs.sensitiveDataLoggingEnabled.firstOrNull() == true) {
+                    Timber.d("Notification posted: ${sbn.packageName}")
+                    Timber.d("This listener instance is: ${this.hashCode()}")
+                    Timber.d("Notification: ${sbn.notification}\n${sbn.notification.extras}")
                 }
             }
 
-            coroutineScope.launch(Dispatchers.Main) {
-                var result: Pair<TimelineItem, BlobResponse.BlobStatus>? = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, title, text, sbn.notification.category
-                        ?: "", sbn.notification.color, messages ?: listOf(), actions)
-                        ?: return@launch
-
-                while (result!!.second == BlobResponse.BlobStatus.TryLater) {
-                    delay(1000)
-                    result = notificationBridge.handleNotification(sbn.packageName, sbn.id.toLong(), tagId, title, text, sbn.notification.category
-                            ?: "", sbn.notification.color, messages ?: listOf(), actions)
-                            ?: return@launch
-                }
-                Timber.d(result.second.toString())
-                notificationBridge.activeNotifs[result.first.itemId.get()] = sbn
+            if (sbn.groupKey != null) {
+                val group = getNotificationGroup(sbn)
+                notificationProcessor.processGroupNotification(group.toNotificationGroup())
+            } else {
+                notificationProcessor.processNotification(sbn)
             }
         }
     }

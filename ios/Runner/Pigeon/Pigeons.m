@@ -159,6 +159,12 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 - (NSArray *)toList;
 @end
 
+@interface NotifyingPackage ()
++ (NotifyingPackage *)fromList:(NSArray *)list;
++ (nullable NotifyingPackage *)nullableFromList:(NSArray *)list;
+- (NSArray *)toList;
+@end
+
 @interface CalendarPigeon ()
 + (CalendarPigeon *)fromList:(NSArray *)list;
 + (nullable CalendarPigeon *)nullableFromList:(NSArray *)list;
@@ -1032,7 +1038,7 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 @implementation CalendarCallbacksCodecReader
 - (nullable id)readValueOfType:(UInt8)type {
   switch (type) {
-    case 128: 
+    case 128:
       return [CalendarPigeon fromList:[self readValue]];
     default:
       return [super readValueOfType:type];
@@ -1096,6 +1102,33 @@ NSObject<FlutterMessageCodec> *CalendarCallbacksGetCodec(void) {
   [channel sendMessage:@[arg_calendars ?: [NSNull null]] reply:^(id reply) {
     completion(nil);
   }];
+}
+@end
+
+@implementation NotifyingPackage
++ (instancetype)makeWithPackageId:(NSString *)packageId
+    packageName:(NSString *)packageName {
+  NotifyingPackage* pigeonResult = [[NotifyingPackage alloc] init];
+  pigeonResult.packageId = packageId;
+  pigeonResult.packageName = packageName;
+  return pigeonResult;
+}
++ (NotifyingPackage *)fromList:(NSArray *)list {
+  NotifyingPackage *pigeonResult = [[NotifyingPackage alloc] init];
+  pigeonResult.packageId = GetNullableObjectAtIndex(list, 0);
+  NSAssert(pigeonResult.packageId != nil, @"");
+  pigeonResult.packageName = GetNullableObjectAtIndex(list, 1);
+  NSAssert(pigeonResult.packageName != nil, @"");
+  return pigeonResult;
+}
++ (nullable NotifyingPackage *)nullableFromList:(NSArray *)list {
+  return (list) ? [NotifyingPackage fromList:list] : nil;
+}
+- (NSArray *)toList {
+  return @[
+    (self.packageId ?: [NSNull null]),
+    (self.packageName ?: [NSNull null]),
+  ];
 }
 @end
 
@@ -2435,9 +2468,50 @@ void UiConnectionControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObje
     }
   }
 }
+@interface NotificationsControlCodecReader : FlutterStandardReader
+@end
+@implementation NotificationsControlCodecReader
+- (nullable id)readValueOfType:(UInt8)type {
+  switch (type) {
+    case 128:
+      return [NotifyingPackage fromList:[self readValue]];
+    default:
+      return [super readValueOfType:type];
+  }
+}
+@end
+
+@interface NotificationsControlCodecWriter : FlutterStandardWriter
+@end
+@implementation NotificationsControlCodecWriter
+- (void)writeValue:(id)value {
+  if ([value isKindOfClass:[NotifyingPackage class]]) {
+    [self writeByte:128];
+    [self writeValue:[value toList]];
+  } else {
+    [super writeValue:value];
+  }
+}
+@end
+
+@interface NotificationsControlCodecReaderWriter : FlutterStandardReaderWriter
+@end
+@implementation NotificationsControlCodecReaderWriter
+- (FlutterStandardWriter *)writerWithData:(NSMutableData *)data {
+  return [[NotificationsControlCodecWriter alloc] initWithData:data];
+}
+- (FlutterStandardReader *)readerWithData:(NSData *)data {
+  return [[NotificationsControlCodecReader alloc] initWithData:data];
+}
+@end
+
 NSObject<FlutterMessageCodec> *NotificationsControlGetCodec(void) {
   static FlutterStandardMessageCodec *sSharedObject = nil;
-  sSharedObject = [FlutterStandardMessageCodec sharedInstance];
+  static dispatch_once_t sPred = 0;
+  dispatch_once(&sPred, ^{
+    NotificationsControlCodecReaderWriter *readerWriter = [[NotificationsControlCodecReaderWriter alloc] init];
+    sSharedObject = [FlutterStandardMessageCodec codecWithReaderWriter:readerWriter];
+  });
   return sSharedObject;
 }
 
@@ -2454,6 +2528,23 @@ void NotificationsControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObj
         FlutterError *error;
         [api sendTestNotificationWithError:&error];
         callback(wrapResult(nil, error));
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.NotificationsControl.getNotificationPackages"
+        binaryMessenger:binaryMessenger
+        codec:NotificationsControlGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(getNotificationPackagesWithCompletion:)], @"NotificationsControl api (%@) doesn't respond to @selector(getNotificationPackagesWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api getNotificationPackagesWithCompletion:^(NSArray<NotifyingPackage *> *_Nullable output, FlutterError *_Nullable error) {
+          callback(wrapResult(output, error));
+        }];
       }];
     } else {
       [channel setMessageHandler:nil];
@@ -2581,6 +2672,42 @@ void DebugControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Debu
         FlutterError *error;
         [api collectLogsRwsId:arg_rwsId error:&error];
         callback(wrapResult(nil, error));
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.DebugControl.getSensitiveLoggingEnabled"
+        binaryMessenger:binaryMessenger
+        codec:DebugControlGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(getSensitiveLoggingEnabledWithCompletion:)], @"DebugControl api (%@) doesn't respond to @selector(getSensitiveLoggingEnabledWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api getSensitiveLoggingEnabledWithCompletion:^(NSNumber *_Nullable output, FlutterError *_Nullable error) {
+          callback(wrapResult(output, error));
+        }];
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.DebugControl.setSensitiveLoggingEnabled"
+        binaryMessenger:binaryMessenger
+        codec:DebugControlGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(setSensitiveLoggingEnabledEnabled:completion:)], @"DebugControl api (%@) doesn't respond to @selector(setSensitiveLoggingEnabledEnabled:completion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        NSNumber *arg_enabled = GetNullableObjectAtIndex(args, 0);
+        [api setSensitiveLoggingEnabledEnabled:arg_enabled completion:^(FlutterError *_Nullable error) {
+          callback(wrapResult(nil, error));
+        }];
       }];
     } else {
       [channel setMessageHandler:nil];
@@ -3145,7 +3272,7 @@ void PermissionControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject
 @implementation CalendarControlCodecReader
 - (nullable id)readValueOfType:(UInt8)type {
   switch (type) {
-    case 128: 
+    case 128:
       return [CalendarPigeon fromList:[self readValue]];
     default:
       return [super readValueOfType:type];

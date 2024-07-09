@@ -12,7 +12,9 @@ import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.datasources.PairedStorage
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.errors.GlobalExceptionHandler
+import io.rebble.cobble.notifications.NotificationProcessor
 import io.rebble.cobble.service.ServiceLifecycleControl
+import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.calendar.CalendarSync
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.PhoneControlService
@@ -40,6 +42,7 @@ interface AppComponent {
     fun createPairedStorage(): PairedStorage
     fun createTimelineSyncFlutterBridge(): BackgroundTimelineFlutterBridge
     fun createNotificationsFlutterBridge(): NotificationsFlutterBridge
+    fun createNotificationProcessor(): NotificationProcessor
     fun createFlutterPreferences(): FlutterPreferences
     fun initServiceLifecycleControl(): ServiceLifecycleControl
     fun initNotificationChannels(): NotificationChannelManager
@@ -51,6 +54,7 @@ interface AppComponent {
 
     //TODO: Unify DI under Koin
     fun createKMPCalendarSync(): CalendarSync
+    fun createKMPPrefs(): KMPPrefs
 
     @Component.Factory
     interface Factory {

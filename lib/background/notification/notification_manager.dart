@@ -78,6 +78,12 @@ class NotificationManager {
   }
 
   Future<TimelinePin> handleNotification(NotificationPigeon notif) async {
+    final prefs = Preferences(await _preferencesFuture);
+    if (prefs.getDefaultMutedPackagesVersion() != defaultMutedPackagesVersion) {
+      final current = prefs.getNotificationsMutedPackages();
+      await prefs.setNotificationsMutedPackages((current + defaultMutedPackages).toSet().toList());
+    }
+
     NotificationChannel? channel = await _notificationChannelDao.getNotifChannelByIds(notif.tagId!, notif.packageId!);
     if (channel == null) {
       _notificationChannelDao.insertOrUpdateNotificationChannel(NotificationChannel(notif.packageId!, notif.tagId!, true));
@@ -97,7 +103,7 @@ class NotificationManager {
     TimelineAttribute subtitle = TimelineAttribute.subtitle(notif.title!.trim());
     TimelineAttribute content = TimelineAttribute.body(notif.text!.trim());
 
-    if ((notif.messagesJson?.isNotEmpty ?? false) && jsonDecode(notif.messagesJson!).isNotEmpty) {
+    if (jsonDecode(notif.messagesJson ?? "[]").isNotEmpty) {
       List<Map<String, dynamic>> messages = List<Map<String, dynamic>>.from(jsonDecode(notif.messagesJson!));
       content = TimelineAttribute.body(NotificationMessage.fromJson(messages.last).text!.trim());
     }
@@ -110,14 +116,12 @@ class NotificationManager {
     //TODO: change to use preferences datasource
     List<String>? disabledActionPkgs = (await _preferencesFuture).getStringList(disabledActionPackagesKey);
     if (disabledActionPkgs == null || !disabledActionPkgs.contains(notif.packageId)) {
-      List<Map<String, dynamic>> notifActions = List<Map<String, dynamic>>.from(jsonDecode(notif.actionsJson!));
-      if (notifActions != null) {
-        for (int i=0; i<notifActions.length; i++) {
-          NotificationAction action = NotificationAction.fromJson(notifActions[i]);
-          actions.add(TimelineAction((META_ACTION_LENGTH)+i, action.isResponse! ? actionTypeResponse : actionTypeGeneric, [
-            TimelineAttribute.title(action.title)
-          ]));
-        }
+      List<Map<String, dynamic> > notifActions = List<Map<String, dynamic>>.from(jsonDecode(notif.actionsJson!));
+      for (int i=0; i<notifActions.length; i++) {
+        NotificationAction action = NotificationAction.fromJson(notifActions[i]);
+        actions.add(TimelineAction((META_ACTION_LENGTH)+i, action.isResponse! ? actionTypeResponse : actionTypeGeneric, [
+          TimelineAttribute.title(action.title)
+        ]));
       }
     }
     attributes.add(subtitle);

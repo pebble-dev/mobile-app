@@ -144,11 +144,11 @@ class MainActivity : FlutterActivity() {
         startService(inCallServiceIntent)
 
 
-        if (context.hasNotificationAccessPermission()) {
+        /*if (context.hasNotificationAccessPermission()) {
             NotificationListenerService.requestRebind(
                     NotificationListener.getComponentName(context)
             )
-        }
+        }*/
     }
 
     override fun onNewIntent(intent: Intent) {

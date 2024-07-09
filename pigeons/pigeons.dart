@@ -189,6 +189,12 @@ class NotifChannelPigeon {
   bool? delete;
 }
 
+class NotifyingPackage {
+  String packageId;
+  String packageName;
+  NotifyingPackage(this.packageId, this.packageName);
+}
+
 class CalendarPigeon {
   int id;
   String name;
@@ -328,6 +334,8 @@ abstract class UiConnectionControl {
 @HostApi()
 abstract class NotificationsControl {
   void sendTestNotification();
+  @async
+  List<NotifyingPackage> getNotificationPackages();
 }
 
 @HostApi()
@@ -343,6 +351,10 @@ abstract class IntentControl {
 @HostApi()
 abstract class DebugControl {
   void collectLogs(String rwsId);
+  @async
+  bool getSensitiveLoggingEnabled();
+  @async
+  void setSensitiveLoggingEnabled(bool enabled);
 }
 
 @HostApi()
