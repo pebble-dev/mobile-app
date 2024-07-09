@@ -99,7 +99,7 @@ android {
     }
 }
 dependencies {
-    implementation("com.google.firebase:protolite-well-known-types:18.0.0")
+    implementation(libs.protolite.wellknowntypes)
     add("kspCommonMainMetadata", libs.androidx.room.compiler)
     add("kspAndroid", libs.androidx.room.compiler)
 }

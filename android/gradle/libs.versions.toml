@@ -14,9 +14,11 @@ libpebblecommonVersion = "0.1.24"
 errorproneVersion = "2.26.1"
 spotbugsVersion = "4.8.6"
 
+protoliteWellKnownTypes = "18.0.0"
 room = "2.7.0-alpha08"
 room-sqlite = "2.5.0-alpha08"
 datastore = "1.1.1"
+androidxTest = "1.6.1"
 uuidVersion = "0.8.4"
 compose-lib = "1.7.0-beta02"
 compose-nav = "2.7.0-alpha07"
@@ -41,6 +43,9 @@ jetbrains-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", versi
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidxTest" }
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTest" }
+androidx-test-monitor = { module = "androidx.test:monitor", version.ref = "androidxTest" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "daggerVersion" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "daggerVersion" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
@@ -66,6 +71,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationJson" }
 libpebblecommon = { module = "io.rebble.libpebblecommon:libpebblecommon", version.ref = "libpebblecommonVersion" }
 uuid = { module = "com.benasher44:uuid", version.ref = "uuidVersion" }
+protolite-wellknowntypes = { module = "com.google.firebase:protolite-well-known-types", version.ref = "protoliteWellKnownTypes" }
 
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorVersion" }
 ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktorVersion" }
