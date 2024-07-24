@@ -17,8 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'actions/master_action_handler.dart';
-
 void main_background() {
   WidgetsFlutterBinding.ensureInitialized();
   DartPluginRegistrant.ensureInitialized();
@@ -26,14 +24,13 @@ void main_background() {
   BackgroundReceiver();
 }
 
-class BackgroundReceiver implements TimelineCallbacks {
+class BackgroundReceiver {
   final container = ProviderContainer();
 
   late NotificationsBackground notificationsBackground;
   late AppsBackground appsBackground;
 
   late Future<Preferences> preferences;
-  late MasterActionHandler masterActionHandler;
 
   late ProviderSubscription<WatchConnectionState> connectionSubscription;
   late BackgroundRpc foregroundRpc;
@@ -50,8 +47,6 @@ class BackgroundReceiver implements TimelineCallbacks {
 
     await BackgroundControl().notifyFlutterBackgroundStarted();
 
-    masterActionHandler = container.read(masterActionHandlerProvider);
-
     connectionSubscription = container.listen<WatchConnectionState>(
       connectionStateProvider, (previous, sub) {
         final currentConnectedWatch = sub.currentConnectedWatch;
@@ -67,8 +62,6 @@ class BackgroundReceiver implements TimelineCallbacks {
 
       return asyncValue.value!;
     });
-
-    TimelineCallbacks.setup(this);
 
     notificationsBackground = NotificationsBackground(this.container);
     notificationsBackground.init();
@@ -130,10 +123,5 @@ class BackgroundReceiver implements TimelineCallbacks {
 
   bool? isConnectedToWatch() {
     return connectionSubscription.read().isConnected;
-  }
-
-  @override
-  Future<ActionResponsePigeon> handleTimelineAction(ActionTrigger arg) async {
-    return (await masterActionHandler.handleTimelineAction(arg))!.toPigeon();
   }
 }

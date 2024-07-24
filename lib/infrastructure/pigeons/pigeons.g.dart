@@ -380,63 +380,6 @@ class TimelinePinPigeon {
   }
 }
 
-class ActionTrigger {
-  ActionTrigger({
-    this.itemId,
-    this.actionId,
-    this.attributesJson,
-  });
-
-  String? itemId;
-
-  int? actionId;
-
-  String? attributesJson;
-
-  Object encode() {
-    return <Object?>[
-      itemId,
-      actionId,
-      attributesJson,
-    ];
-  }
-
-  static ActionTrigger decode(Object result) {
-    result as List<Object?>;
-    return ActionTrigger(
-      itemId: result[0] as String?,
-      actionId: result[1] as int?,
-      attributesJson: result[2] as String?,
-    );
-  }
-}
-
-class ActionResponsePigeon {
-  ActionResponsePigeon({
-    this.success,
-    this.attributesJson,
-  });
-
-  bool? success;
-
-  String? attributesJson;
-
-  Object encode() {
-    return <Object?>[
-      success,
-      attributesJson,
-    ];
-  }
-
-  static ActionResponsePigeon decode(Object result) {
-    result as List<Object?>;
-    return ActionResponsePigeon(
-      success: result[0] as bool?,
-      attributesJson: result[1] as String?,
-    );
-  }
-}
-
 class NotifActionExecuteReq {
   NotifActionExecuteReq({
     this.itemId,
@@ -989,7 +932,7 @@ class _CalendarCallbacksCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128:
+      case 128: 
         return CalendarPigeon.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -1266,62 +1209,6 @@ abstract class PairCallbacks {
               'Argument for dev.flutter.pigeon.PairCallbacks.onWatchPairComplete was null, expected non-null StringWrapper.');
           api.onWatchPairComplete(arg_address!);
           return;
-        });
-      }
-    }
-  }
-}
-
-class _TimelineCallbacksCodec extends StandardMessageCodec {
-  const _TimelineCallbacksCodec();
-  @override
-  void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is ActionResponsePigeon) {
-      buffer.putUint8(128);
-      writeValue(buffer, value.encode());
-    } else if (value is ActionTrigger) {
-      buffer.putUint8(129);
-      writeValue(buffer, value.encode());
-    } else {
-      super.writeValue(buffer, value);
-    }
-  }
-
-  @override
-  Object? readValueOfType(int type, ReadBuffer buffer) {
-    switch (type) {
-      case 128: 
-        return ActionResponsePigeon.decode(readValue(buffer)!);
-      case 129: 
-        return ActionTrigger.decode(readValue(buffer)!);
-      default:
-        return super.readValueOfType(type, buffer);
-    }
-  }
-}
-
-abstract class TimelineCallbacks {
-  static const MessageCodec<Object?> codec = _TimelineCallbacksCodec();
-
-  Future<ActionResponsePigeon> handleTimelineAction(ActionTrigger actionTrigger);
-
-  static void setup(TimelineCallbacks? api, {BinaryMessenger? binaryMessenger}) {
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.TimelineCallbacks.handleTimelineAction', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-          'Argument for dev.flutter.pigeon.TimelineCallbacks.handleTimelineAction was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final ActionTrigger? arg_actionTrigger = (args[0] as ActionTrigger?);
-          assert(arg_actionTrigger != null,
-              'Argument for dev.flutter.pigeon.TimelineCallbacks.handleTimelineAction was null, expected non-null ActionTrigger.');
-          final ActionResponsePigeon output = await api.handleTimelineAction(arg_actionTrigger!);
-          return output;
         });
       }
     }
@@ -2263,7 +2150,7 @@ class _NotificationsControlCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128:
+      case 128: 
         return NotifyingPackage.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -3150,7 +3037,7 @@ class _CalendarControlCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128:
+      case 128: 
         return CalendarPigeon.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);

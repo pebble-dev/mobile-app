@@ -234,12 +234,6 @@ abstract class PairCallbacks {
 }
 
 @FlutterApi()
-abstract class TimelineCallbacks {
-  @async
-  ActionResponsePigeon handleTimelineAction(ActionTrigger actionTrigger);
-}
-
-@FlutterApi()
 abstract class IntentCallbacks {
   void openUri(StringWrapper uri);
 }

@@ -43,4 +43,7 @@ interface TimelinePinDao {
 
     @Query("DELETE FROM TimelinePin WHERE parentId = :parentId")
     suspend fun deletePinsForWatchapp(parentId: Uuid)
+
+    @Query("SELECT * FROM TimelinePin WHERE itemId = :itemId")
+    suspend fun get(itemId: Uuid): TimelinePin?
 }

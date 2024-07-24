@@ -9,7 +9,7 @@ kotlin = "2.0.20-Beta1"
 kotlinxDatetime = "0.6.0"
 kotlinxSerializationJson = "1.7.1"
 ksp = "2.0.20-Beta1-1.0.22"
-libpebblecommonVersion = "0.1.20"
+libpebblecommonVersion = "0.1.21"
 
 room = "2.7.0-alpha04"
 room-sqlite = "2.5.0-alpha04"

@@ -19,8 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class PebbleScanDevicePigeon;
 @class WatchConnectionStatePigeon;
 @class TimelinePinPigeon;
-@class ActionTrigger;
-@class ActionResponsePigeon;
 @class NotifActionExecuteReq;
 @class NotificationPigeon;
 @class AppEntriesPigeon;
@@ -153,22 +151,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, nullable) NSNumber * layout;
 @property(nonatomic, copy, nullable) NSString * attributesJson;
 @property(nonatomic, copy, nullable) NSString * actionsJson;
-@end
-
-@interface ActionTrigger : NSObject
-+ (instancetype)makeWithItemId:(nullable NSString *)itemId
-    actionId:(nullable NSNumber *)actionId
-    attributesJson:(nullable NSString *)attributesJson;
-@property(nonatomic, copy, nullable) NSString * itemId;
-@property(nonatomic, strong, nullable) NSNumber * actionId;
-@property(nonatomic, copy, nullable) NSString * attributesJson;
-@end
-
-@interface ActionResponsePigeon : NSObject
-+ (instancetype)makeWithSuccess:(nullable NSNumber *)success
-    attributesJson:(nullable NSString *)attributesJson;
-@property(nonatomic, strong, nullable) NSNumber * success;
-@property(nonatomic, copy, nullable) NSString * attributesJson;
 @end
 
 @interface NotifActionExecuteReq : NSObject
@@ -391,14 +373,6 @@ NSObject<FlutterMessageCodec> *PairCallbacksGetCodec(void);
 @interface PairCallbacks : NSObject
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
 - (void)onWatchPairCompleteAddress:(StringWrapper *)address completion:(void (^)(FlutterError *_Nullable))completion;
-@end
-
-/// The codec used by TimelineCallbacks.
-NSObject<FlutterMessageCodec> *TimelineCallbacksGetCodec(void);
-
-@interface TimelineCallbacks : NSObject
-- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
-- (void)handleTimelineActionActionTrigger:(ActionTrigger *)actionTrigger completion:(void (^)(ActionResponsePigeon *_Nullable, FlutterError *_Nullable))completion;
 @end
 
 /// The codec used by IntentCallbacks.

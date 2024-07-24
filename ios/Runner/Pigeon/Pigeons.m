@@ -75,18 +75,6 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 - (NSArray *)toList;
 @end
 
-@interface ActionTrigger ()
-+ (ActionTrigger *)fromList:(NSArray *)list;
-+ (nullable ActionTrigger *)nullableFromList:(NSArray *)list;
-- (NSArray *)toList;
-@end
-
-@interface ActionResponsePigeon ()
-+ (ActionResponsePigeon *)fromList:(NSArray *)list;
-+ (nullable ActionResponsePigeon *)nullableFromList:(NSArray *)list;
-- (NSArray *)toList;
-@end
-
 @interface NotifActionExecuteReq ()
 + (NotifActionExecuteReq *)fromList:(NSArray *)list;
 + (nullable NotifActionExecuteReq *)nullableFromList:(NSArray *)list;
@@ -498,60 +486,6 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
     (self.layout ?: [NSNull null]),
     (self.attributesJson ?: [NSNull null]),
     (self.actionsJson ?: [NSNull null]),
-  ];
-}
-@end
-
-@implementation ActionTrigger
-+ (instancetype)makeWithItemId:(nullable NSString *)itemId
-    actionId:(nullable NSNumber *)actionId
-    attributesJson:(nullable NSString *)attributesJson {
-  ActionTrigger* pigeonResult = [[ActionTrigger alloc] init];
-  pigeonResult.itemId = itemId;
-  pigeonResult.actionId = actionId;
-  pigeonResult.attributesJson = attributesJson;
-  return pigeonResult;
-}
-+ (ActionTrigger *)fromList:(NSArray *)list {
-  ActionTrigger *pigeonResult = [[ActionTrigger alloc] init];
-  pigeonResult.itemId = GetNullableObjectAtIndex(list, 0);
-  pigeonResult.actionId = GetNullableObjectAtIndex(list, 1);
-  pigeonResult.attributesJson = GetNullableObjectAtIndex(list, 2);
-  return pigeonResult;
-}
-+ (nullable ActionTrigger *)nullableFromList:(NSArray *)list {
-  return (list) ? [ActionTrigger fromList:list] : nil;
-}
-- (NSArray *)toList {
-  return @[
-    (self.itemId ?: [NSNull null]),
-    (self.actionId ?: [NSNull null]),
-    (self.attributesJson ?: [NSNull null]),
-  ];
-}
-@end
-
-@implementation ActionResponsePigeon
-+ (instancetype)makeWithSuccess:(nullable NSNumber *)success
-    attributesJson:(nullable NSString *)attributesJson {
-  ActionResponsePigeon* pigeonResult = [[ActionResponsePigeon alloc] init];
-  pigeonResult.success = success;
-  pigeonResult.attributesJson = attributesJson;
-  return pigeonResult;
-}
-+ (ActionResponsePigeon *)fromList:(NSArray *)list {
-  ActionResponsePigeon *pigeonResult = [[ActionResponsePigeon alloc] init];
-  pigeonResult.success = GetNullableObjectAtIndex(list, 0);
-  pigeonResult.attributesJson = GetNullableObjectAtIndex(list, 1);
-  return pigeonResult;
-}
-+ (nullable ActionResponsePigeon *)nullableFromList:(NSArray *)list {
-  return (list) ? [ActionResponsePigeon fromList:list] : nil;
-}
-- (NSArray *)toList {
-  return @[
-    (self.success ?: [NSNull null]),
-    (self.attributesJson ?: [NSNull null]),
   ];
 }
 @end
@@ -996,6 +930,33 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 }
 @end
 
+@implementation NotifyingPackage
++ (instancetype)makeWithPackageId:(NSString *)packageId
+    packageName:(NSString *)packageName {
+  NotifyingPackage* pigeonResult = [[NotifyingPackage alloc] init];
+  pigeonResult.packageId = packageId;
+  pigeonResult.packageName = packageName;
+  return pigeonResult;
+}
++ (NotifyingPackage *)fromList:(NSArray *)list {
+  NotifyingPackage *pigeonResult = [[NotifyingPackage alloc] init];
+  pigeonResult.packageId = GetNullableObjectAtIndex(list, 0);
+  NSAssert(pigeonResult.packageId != nil, @"");
+  pigeonResult.packageName = GetNullableObjectAtIndex(list, 1);
+  NSAssert(pigeonResult.packageName != nil, @"");
+  return pigeonResult;
+}
++ (nullable NotifyingPackage *)nullableFromList:(NSArray *)list {
+  return (list) ? [NotifyingPackage fromList:list] : nil;
+}
+- (NSArray *)toList {
+  return @[
+    (self.packageId ?: [NSNull null]),
+    (self.packageName ?: [NSNull null]),
+  ];
+}
+@end
+
 @implementation CalendarPigeon
 + (instancetype)makeWithId:(NSNumber *)id
     name:(NSString *)name
@@ -1038,7 +999,7 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 @implementation CalendarCallbacksCodecReader
 - (nullable id)readValueOfType:(UInt8)type {
   switch (type) {
-    case 128:
+    case 128: 
       return [CalendarPigeon fromList:[self readValue]];
     default:
       return [super readValueOfType:type];
@@ -1102,33 +1063,6 @@ NSObject<FlutterMessageCodec> *CalendarCallbacksGetCodec(void) {
   [channel sendMessage:@[arg_calendars ?: [NSNull null]] reply:^(id reply) {
     completion(nil);
   }];
-}
-@end
-
-@implementation NotifyingPackage
-+ (instancetype)makeWithPackageId:(NSString *)packageId
-    packageName:(NSString *)packageName {
-  NotifyingPackage* pigeonResult = [[NotifyingPackage alloc] init];
-  pigeonResult.packageId = packageId;
-  pigeonResult.packageName = packageName;
-  return pigeonResult;
-}
-+ (NotifyingPackage *)fromList:(NSArray *)list {
-  NotifyingPackage *pigeonResult = [[NotifyingPackage alloc] init];
-  pigeonResult.packageId = GetNullableObjectAtIndex(list, 0);
-  NSAssert(pigeonResult.packageId != nil, @"");
-  pigeonResult.packageName = GetNullableObjectAtIndex(list, 1);
-  NSAssert(pigeonResult.packageName != nil, @"");
-  return pigeonResult;
-}
-+ (nullable NotifyingPackage *)nullableFromList:(NSArray *)list {
-  return (list) ? [NotifyingPackage fromList:list] : nil;
-}
-- (NSArray *)toList {
-  return @[
-    (self.packageId ?: [NSNull null]),
-    (self.packageName ?: [NSNull null]),
-  ];
 }
 @end
 
@@ -1446,84 +1380,6 @@ NSObject<FlutterMessageCodec> *PairCallbacksGetCodec(void) {
       codec:PairCallbacksGetCodec()];
   [channel sendMessage:@[arg_address ?: [NSNull null]] reply:^(id reply) {
     completion(nil);
-  }];
-}
-@end
-
-@interface TimelineCallbacksCodecReader : FlutterStandardReader
-@end
-@implementation TimelineCallbacksCodecReader
-- (nullable id)readValueOfType:(UInt8)type {
-  switch (type) {
-    case 128: 
-      return [ActionResponsePigeon fromList:[self readValue]];
-    case 129: 
-      return [ActionTrigger fromList:[self readValue]];
-    default:
-      return [super readValueOfType:type];
-  }
-}
-@end
-
-@interface TimelineCallbacksCodecWriter : FlutterStandardWriter
-@end
-@implementation TimelineCallbacksCodecWriter
-- (void)writeValue:(id)value {
-  if ([value isKindOfClass:[ActionResponsePigeon class]]) {
-    [self writeByte:128];
-    [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[ActionTrigger class]]) {
-    [self writeByte:129];
-    [self writeValue:[value toList]];
-  } else {
-    [super writeValue:value];
-  }
-}
-@end
-
-@interface TimelineCallbacksCodecReaderWriter : FlutterStandardReaderWriter
-@end
-@implementation TimelineCallbacksCodecReaderWriter
-- (FlutterStandardWriter *)writerWithData:(NSMutableData *)data {
-  return [[TimelineCallbacksCodecWriter alloc] initWithData:data];
-}
-- (FlutterStandardReader *)readerWithData:(NSData *)data {
-  return [[TimelineCallbacksCodecReader alloc] initWithData:data];
-}
-@end
-
-NSObject<FlutterMessageCodec> *TimelineCallbacksGetCodec(void) {
-  static FlutterStandardMessageCodec *sSharedObject = nil;
-  static dispatch_once_t sPred = 0;
-  dispatch_once(&sPred, ^{
-    TimelineCallbacksCodecReaderWriter *readerWriter = [[TimelineCallbacksCodecReaderWriter alloc] init];
-    sSharedObject = [FlutterStandardMessageCodec codecWithReaderWriter:readerWriter];
-  });
-  return sSharedObject;
-}
-
-@interface TimelineCallbacks ()
-@property(nonatomic, strong) NSObject<FlutterBinaryMessenger> *binaryMessenger;
-@end
-
-@implementation TimelineCallbacks
-
-- (instancetype)initWithBinaryMessenger:(NSObject<FlutterBinaryMessenger> *)binaryMessenger {
-  self = [super init];
-  if (self) {
-    _binaryMessenger = binaryMessenger;
-  }
-  return self;
-}
-- (void)handleTimelineActionActionTrigger:(ActionTrigger *)arg_actionTrigger completion:(void (^)(ActionResponsePigeon *_Nullable, FlutterError *_Nullable))completion {
-  FlutterBasicMessageChannel *channel =
-    [FlutterBasicMessageChannel
-      messageChannelWithName:@"dev.flutter.pigeon.TimelineCallbacks.handleTimelineAction"
-      binaryMessenger:self.binaryMessenger
-      codec:TimelineCallbacksGetCodec()];
-  [channel sendMessage:@[arg_actionTrigger ?: [NSNull null]] reply:^(id reply) {
-    ActionResponsePigeon *output = reply;
-    completion(output, nil);
   }];
 }
 @end
@@ -2473,7 +2329,7 @@ void UiConnectionControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObje
 @implementation NotificationsControlCodecReader
 - (nullable id)readValueOfType:(UInt8)type {
   switch (type) {
-    case 128:
+    case 128: 
       return [NotifyingPackage fromList:[self readValue]];
     default:
       return [super readValueOfType:type];
@@ -3272,7 +3128,7 @@ void PermissionControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject
 @implementation CalendarControlCodecReader
 - (nullable id)readValueOfType:(UInt8)type {
   switch (type) {
-    case 128:
+    case 128: 
       return [CalendarPigeon fromList:[self readValue]];
     default:
       return [super readValueOfType:type];

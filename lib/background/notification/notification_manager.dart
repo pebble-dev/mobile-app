@@ -14,7 +14,6 @@ import 'package:cobble/domain/notification/notification_category_android.dart';
 import 'package:cobble/domain/notification/notification_message.dart';
 import 'package:cobble/domain/preferences.dart';
 import 'package:cobble/domain/timeline/timeline_action.dart';
-import 'package:cobble/domain/timeline/timeline_action_response.dart';
 import 'package:cobble/domain/timeline/timeline_attribute.dart';
 import 'package:cobble/domain/timeline/timeline_icon.dart';
 import 'package:cobble/domain/timeline/timeline_serializer.dart';
@@ -163,7 +162,7 @@ class NotificationManager {
     );
   }
 
-  Future<TimelineActionResponse?> handleNotifAction(ActionTrigger trigger) async {
+  /*Future<TimelineActionResponse?> handleNotifAction(ActionTrigger trigger) async {
     Preferences prefs = Preferences(await _preferencesFuture);
     
     TimelineActionResponse? ret;
@@ -228,7 +227,7 @@ class NotificationManager {
         break;
     }
     return ret;
-  }
+  }*/
 
   void dismissNotification(Uuid itemId) {
     _notificationUtils.dismissNotification(StringWrapper()..value=itemId.toString());

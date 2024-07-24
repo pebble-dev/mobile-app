@@ -107,8 +107,7 @@ private fun CalendarEvent.makeAttributes(calendar: Calendar): List<TimelineAttri
 private fun CalendarEvent.makeActions(): List<TimelineAction> {
     val selfAttendee = attendees.find { it.isCurrentUser }
     return buildList {
-        //TODO: Implement action handling on KMP
-        /*if (selfAttendee != null) {
+        if (selfAttendee != null) {
             if (selfAttendee.attendanceStatus != EventAttendee.AttendanceStatus.Accepted) {
                 add(TimelineAction(
                         CalendarTimelineActionId.AcceptEvent.id,
@@ -154,7 +153,7 @@ private fun CalendarEvent.makeActions(): List<TimelineAction> {
                 listOf(
                         TimelineAttribute.title("Mute Calendar")
                 )
-        ))*/
+        ))
     }
 }
 
