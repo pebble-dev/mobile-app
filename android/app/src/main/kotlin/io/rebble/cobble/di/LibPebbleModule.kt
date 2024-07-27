@@ -4,6 +4,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoSet
+import io.rebble.cobble.shared.database.AppDatabase
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.ProtocolHandlerImpl
 import io.rebble.libpebblecommon.services.*
@@ -12,6 +13,7 @@ import io.rebble.libpebblecommon.services.appmessage.AppMessageService
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import io.rebble.libpebblecommon.services.blobdb.TimelineService
 import io.rebble.libpebblecommon.services.notification.NotificationService
+import org.koin.mp.KoinPlatformTools
 import javax.inject.Singleton
 
 @Module
@@ -20,7 +22,7 @@ abstract class LibPebbleModule {
     companion object {
         @Provides
         @Singleton
-        fun provideProtocolHandler(): ProtocolHandler = ProtocolHandlerImpl()
+        fun provideProtocolHandler(): ProtocolHandler = KoinPlatformTools.defaultContext().get().get<ProtocolHandler>()
 
         @Provides
         @Singleton
@@ -60,9 +62,7 @@ abstract class LibPebbleModule {
 
         @Provides
         @Singleton
-        fun provideTimelineService(
-                protocolHandler: ProtocolHandler
-        ) = TimelineService(protocolHandler)
+        fun provideTimelineService() = KoinPlatformTools.defaultContext().get().get<TimelineService>()
 
         @Provides
         @Singleton

@@ -1,5 +1,6 @@
 package io.rebble.cobble.bluetooth
 
+import io.rebble.cobble.shared.BuildConfig
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import kotlinx.coroutines.Dispatchers
@@ -43,7 +44,9 @@ class ProtocolIO(
                 /* READ PACKET CONTENT */
                 inputStream.readFully(buf, 4, length.toInt())
 
-                Timber.d("Got packet: EP ${ProtocolEndpoint.getByValue(endpoint.toUShort())} | Length ${length.toUShort()}")
+                if (BuildConfig.VERBOSE_BT) {
+                    Timber.d("Got packet: EP ${ProtocolEndpoint.getByValue(endpoint.toUShort())} | Length ${length.toUShort()}")
+                }
 
                 buf.rewind()
                 val packet = ByteArray(length.toInt() + 2 * (Short.SIZE_BYTES))

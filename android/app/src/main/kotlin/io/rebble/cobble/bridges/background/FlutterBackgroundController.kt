@@ -14,6 +14,7 @@ import io.rebble.cobble.util.launchPigeonResult
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -109,14 +110,17 @@ class FlutterBackgroundController @Inject constructor(
 
         if (callbackToStart != null) {
             // We are starting the engine from scratch. Register all plugins and begin its run
-            flutterEngine.dartExecutor.executeDartCallback(callbackToStart)
-            GeneratedPluginRegister.registerGeneratedPlugins(flutterEngine)
+            try {
+                flutterEngine.dartExecutor.executeDartCallback(callbackToStart)
+                GeneratedPluginRegister.registerGeneratedPlugins(flutterEngine)
+            } catch (e: NullPointerException) {
+                Timber.w(e, "Failed to start Flutter engine")
+            }
         }
 
         flutterSideReadyCompletable.join()
 
         component.createCommonBridges()
-        component.createBackgroundBridges()
 
         androidSideReadyCompletable.complete(Unit)
 

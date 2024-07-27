@@ -16,7 +16,7 @@ class GlobalExceptionHandler @Inject constructor() : CoroutineExceptionHandler {
         }
 
         // TODO properly handle exceptions (logging?)
-        Timber.e(exception, "Coroutine exception")
+        Timber.e(exception, "Coroutine exception - context: $context")
     }
 
     override val key: CoroutineContext.Key<*>

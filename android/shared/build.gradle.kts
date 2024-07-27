@@ -73,6 +73,7 @@ android {
     compileSdk = libs.versions.android.targetSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
+        buildConfigField("Boolean", "VERBOSE_BT", "false") // Will spam logs and slow down bluetooth
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

@@ -8,7 +8,6 @@ import io.rebble.cobble.shared.database.dao.TimelinePinDao
 import io.rebble.libpebblecommon.packets.blobdb.TimelineAction
 import io.rebble.libpebblecommon.services.blobdb.TimelineService
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow

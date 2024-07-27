@@ -12,6 +12,7 @@ import io.rebble.cobble.shared.database.dao.CachedPackageInfoDao
 import io.rebble.cobble.shared.database.dao.PersistedNotificationDao
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.calendar.CalendarSync
+import io.rebble.cobble.shared.handlers.CalendarActionHandler
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -41,6 +42,13 @@ abstract class AppModule {
         @Singleton
         fun provideCalendarSync(exceptionHandler: CoroutineExceptionHandler, blobDBService: BlobDBService): CalendarSync {
             return CalendarSync(CoroutineScope(Dispatchers.Default) + exceptionHandler, blobDBService)
+        }
+        @Provides
+        @Singleton
+        fun provideCalendarActionHandler(
+                exceptionHandler: CoroutineExceptionHandler
+        ): CalendarActionHandler {
+            return CalendarActionHandler(CoroutineScope(Dispatchers.Default) + exceptionHandler)
         }
         @Provides
         fun provideKMPPrefs(context: Context): KMPPrefs {

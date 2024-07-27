@@ -12,7 +12,8 @@ fun initKoin(context: Context) {
             stateModule,
             databaseModule,
             dataStoreModule,
-            androidModule
+            androidModule,
+            libpebbleModule
         )
     }
 }
