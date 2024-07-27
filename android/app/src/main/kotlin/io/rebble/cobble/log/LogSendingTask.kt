@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.service.notification.NotificationListenerService
 import androidx.core.content.FileProvider
+import io.rebble.cobble.BuildConfig
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.util.hasNotificationAccessPermission
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
@@ -28,6 +29,8 @@ import java.util.zip.ZipOutputStream
 
 
 private fun generateDebugInfo(context: Context, rwsId: String): String {
+    val commitHash = BuildConfig.COMMIT_HASH
+    val branchName = BuildConfig.BRANCH_NAME
     val sdkVersion = Build.VERSION.SDK_INT
     val device = Build.DEVICE
     val model = Build.MODEL
@@ -58,6 +61,8 @@ private fun generateDebugInfo(context: Context, rwsId: String): String {
                 it to (context.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED)
             }
     return """
+    Commit Hash: $commitHash
+    Branch Name: $branchName
     SDK Version: $sdkVersion
     Device: $device
     Model: $model
