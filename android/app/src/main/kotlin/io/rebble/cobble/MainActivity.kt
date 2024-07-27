@@ -1,27 +1,23 @@
 package io.rebble.cobble
 
 import android.app.AlertDialog
-import android.content.ComponentName
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
-import android.service.notification.NotificationListenerService
-import android.text.TextUtils
 import android.widget.Toast
 import androidx.collection.ArrayMap
 import androidx.lifecycle.lifecycleScope
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.rebble.cobble.bridges.FlutterBridge
+import io.rebble.cobble.bridges.ui.REQUEST_CODE_NOTIFICATIONS_POST
 import io.rebble.cobble.datasources.PermissionChangeBus
-import io.rebble.cobble.notifications.NotificationListener
 import io.rebble.cobble.service.CompanionDeviceService
 import io.rebble.cobble.service.InCallService
 import io.rebble.cobble.shared.database.closeDatabase
-import io.rebble.cobble.util.hasNotificationAccessPermission
+import io.rebble.cobble.util.hasNotificationPostingPermission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.plus
 import java.net.URI
@@ -121,6 +117,12 @@ class MainActivity : FlutterActivity() {
                 activityComponent.createUiBridges()
 
         startAdditionalServices()
+
+        if (!hasNotificationPostingPermission()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), REQUEST_CODE_NOTIFICATIONS_POST)
+            }
+        }
 
         handleIntent(intent)
     }

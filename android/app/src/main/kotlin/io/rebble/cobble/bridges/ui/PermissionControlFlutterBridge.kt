@@ -226,3 +226,4 @@ private const val REQUEST_CODE_SETTINGS = 127
 private const val REQUEST_CODE_BT = 128
 private const val REQUEST_CODE_PHONE_STATE = 129
 private const val REQUEST_CODE_CONTACTS = 130
+const val REQUEST_CODE_NOTIFICATIONS_POST = 1000

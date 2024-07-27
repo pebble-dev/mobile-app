@@ -25,3 +25,11 @@ fun Context.hasCallsPermission() =
 
 fun Context.hasContactsPermission() =
         checkSelfPermission(android.Manifest.permission.READ_CONTACTS) == android.content.pm.PackageManager.PERMISSION_GRANTED
+
+fun Context.hasNotificationPostingPermission(): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) == android.content.pm.PackageManager.PERMISSION_GRANTED
+    } else {
+        true
+    }
+}
