@@ -4,6 +4,7 @@ import android.content.Context
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.middleware.PutBytesController
 import io.rebble.cobble.middleware.getBestVariant
+import io.rebble.cobble.shared.handlers.CobbleHandler
 import io.rebble.cobble.util.getAppPbwFile
 import io.rebble.cobble.util.requirePbwAppInfo
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform

@@ -7,6 +7,8 @@ import dagger.multibindings.IntoSet
 import io.rebble.cobble.handlers.*
 import io.rebble.cobble.handlers.music.MusicHandler
 import io.rebble.cobble.service.WatchService
+import io.rebble.cobble.shared.handlers.CalendarActionHandler
+import io.rebble.cobble.shared.handlers.CobbleHandler
 import kotlinx.coroutines.CoroutineScope
 import javax.inject.Named
 
@@ -44,8 +46,8 @@ abstract class ServiceModule {
     @Binds
     @IntoSet
     @Named("normal")
-    abstract fun bindTimelineHandlerIntoSet(
-            timelineHandler: TimelineHandler
+    abstract fun bindCalendarActionHandlerIntoSet(
+            calendarActionHandler: CalendarActionHandler
     ): CobbleHandler
 
     @Binds

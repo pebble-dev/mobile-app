@@ -4,11 +4,11 @@ import io.rebble.cobble.shared.domain.common.Color
 import io.rebble.cobble.shared.domain.common.toProtocolNumber
 import io.rebble.cobble.shared.domain.timeline.TimelineGameState
 import io.rebble.cobble.shared.domain.timeline.TimelineIcon
-import io.rebble.cobble.shared.util.encodeToByteArrayTrimmed
 import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
 import io.rebble.libpebblecommon.structmapper.SUInt
 import io.rebble.libpebblecommon.structmapper.StructMapper
 import io.rebble.libpebblecommon.util.DataBuffer
+import io.rebble.libpebblecommon.util.encodeToByteArrayTrimmed
 import kotlinx.serialization.Serializable
 
 @Serializable

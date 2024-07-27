@@ -1,6 +1,7 @@
 package io.rebble.cobble.handlers
 
 import io.rebble.cobble.datasources.WatchMetadataStore
+import io.rebble.cobble.shared.handlers.CobbleHandler
 import io.rebble.libpebblecommon.packets.AppRunStateMessage
 import io.rebble.libpebblecommon.services.app.AppRunStateService
 import kotlinx.coroutines.CoroutineScope

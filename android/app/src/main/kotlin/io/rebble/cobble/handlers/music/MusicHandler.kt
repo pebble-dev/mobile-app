@@ -11,7 +11,7 @@ import android.view.KeyEvent
 import androidx.lifecycle.asFlow
 import io.rebble.cobble.datasources.PermissionChangeBus
 import io.rebble.cobble.datasources.notificationPermissionFlow
-import io.rebble.cobble.handlers.CobbleHandler
+import io.rebble.cobble.shared.handlers.CobbleHandler
 import io.rebble.cobble.util.Debouncer
 import io.rebble.libpebblecommon.packets.MusicControl
 import io.rebble.libpebblecommon.services.MusicService

@@ -1,6 +1,7 @@
 package io.rebble.cobble.handlers
 
 import io.rebble.cobble.bridges.background.FlutterBackgroundController
+import io.rebble.cobble.shared.handlers.CobbleHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

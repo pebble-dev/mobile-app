@@ -12,8 +12,7 @@ import io.rebble.cobble.*
 import io.rebble.cobble.bluetooth.BluetoothPebbleDevice
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.EmulatedPebbleDevice
-import io.rebble.cobble.handlers.CobbleHandler
-import io.rebble.cobble.shared.di.initKoin
+import io.rebble.cobble.shared.handlers.CobbleHandler
 import io.rebble.cobble.shared.domain.calendar.CalendarSync
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.libpebblecommon.ProtocolHandler

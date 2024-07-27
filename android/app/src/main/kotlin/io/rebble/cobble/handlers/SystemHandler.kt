@@ -12,6 +12,7 @@ import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.domain.state.watchOrNull
+import io.rebble.cobble.shared.handlers.CobbleHandler
 import io.rebble.cobble.util.coroutines.asFlow
 import io.rebble.libpebblecommon.PacketPriority
 import io.rebble.libpebblecommon.packets.PhoneAppVersion

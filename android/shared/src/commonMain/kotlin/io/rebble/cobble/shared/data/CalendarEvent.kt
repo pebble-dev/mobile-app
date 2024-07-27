@@ -7,8 +7,8 @@ import io.rebble.cobble.shared.database.entity.Calendar
 import io.rebble.cobble.shared.database.entity.TimelinePin
 import io.rebble.cobble.shared.domain.calendar.CalendarTimelineActionId
 import io.rebble.cobble.shared.domain.timeline.TimelineIcon
-import io.rebble.cobble.shared.util.trimWithEllipsis
 import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
+import io.rebble.libpebblecommon.util.trimWithEllipsis
 import kotlinx.datetime.Instant
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
