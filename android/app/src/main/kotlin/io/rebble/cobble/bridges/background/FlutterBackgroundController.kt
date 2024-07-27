@@ -114,7 +114,9 @@ class FlutterBackgroundController @Inject constructor(
                 flutterEngine.dartExecutor.executeDartCallback(callbackToStart)
                 GeneratedPluginRegister.registerGeneratedPlugins(flutterEngine)
             } catch (e: NullPointerException) {
+                //XXX: Bodge for now until we get rid of bg
                 Timber.w(e, "Failed to start Flutter engine")
+                return@coroutineScope
             }
         }
 
