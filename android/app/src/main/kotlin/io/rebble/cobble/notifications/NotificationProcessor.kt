@@ -36,6 +36,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.milliseconds
 
 @Singleton
 class NotificationProcessor @Inject constructor(
@@ -146,7 +147,6 @@ class NotificationProcessor @Inject constructor(
             val attributes = mutableListOf(
                     TimelineAttributeFactory.tinyIcon(determineIcon(packageId, category)),
                     TimelineAttributeFactory.title(title.trim()),
-                    TimelineAttributeFactory.subtitle(title.trim()),
                     if (messages.isNotEmpty()) {
                         TimelineAttributeFactory.body(messages.last().text.trim())
                     } else {
@@ -172,7 +172,7 @@ class NotificationProcessor @Inject constructor(
                         )
                 )
                 actions.forEachIndexed { index, action ->
-                    val isReply = action.remoteInputs.any { it.allowFreeFormInput && it.allowedDataTypes?.contains("text/plain") != false }
+                    val isReply = action.remoteInputs?.any { it.allowFreeFormInput && it.allowedDataTypes?.contains("text/plain") != false } == true
                     add(
                             TimelineItem.Action(
                                     (MetaNotificationAction.metaActionLength + index).toUByte(),
@@ -208,7 +208,7 @@ class NotificationProcessor @Inject constructor(
             val notificationItem = TimelineItem(
                     itemId,
                     notificationsWatchappId,
-                    sbn.postTime.toUInt(),
+                    sbn.postTime.milliseconds.inWholeSeconds.toUInt(),
                     0u,
                     TimelineItem.Type.Notification,
                     TimelineItem.Flag.makeFlags(listOf(
@@ -263,7 +263,7 @@ class NotificationProcessor @Inject constructor(
     private fun getNewGroupItems(notificationGroup: NotificationGroup): List<StatusBarNotification> {
         val newItems = notificationGroup.children.filter { notif ->
             // Notification is functionally equal to an active notification
-            notificationBridge.activeNotifs.values.find {
+            activeNotifsState.value.values.find {
                 it.groupKey == notificationGroup.groupKey &&
                         it.packageName == notif.packageName &&
                         it.id == notif.id &&
@@ -285,10 +285,6 @@ class NotificationProcessor @Inject constructor(
 
         val messages: List<NotificationMessage>? = extractMessages(notification)
 
-        val actions = notification.actions?.map {
-            MetaNotificationAction(it.title.toString(), !it.remoteInputs.isNullOrEmpty())
-        } ?: listOf()
-
         val result = displayActor.trySend(DisplayActorArgs(
                 sbn.packageName,
                 sbn.id.toLong(),
@@ -298,7 +294,7 @@ class NotificationProcessor @Inject constructor(
                 notification.category ?: "",
                 notification.color,
                 messages ?: listOf(),
-                actions,
+                notification.actions?.toList() ?: listOf(),
                 sbn
         ))
         if (result.isFailure) {

@@ -12,7 +12,6 @@ import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.data.NotificationAction
 import io.rebble.cobble.data.NotificationMessage
 import io.rebble.cobble.data.toNotificationGroup
 import io.rebble.cobble.datasources.FlutterPreferences
