@@ -6,6 +6,7 @@ import io.rebble.cobble.shared.database.NextSyncAction
 import io.rebble.cobble.shared.database.entity.Calendar
 import io.rebble.cobble.shared.database.entity.TimelinePin
 import io.rebble.cobble.shared.domain.calendar.CalendarTimelineActionId
+import io.rebble.cobble.shared.domain.common.SystemAppIDs.calendarWatchappId
 import io.rebble.cobble.shared.domain.timeline.TimelineIcon
 import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
 import io.rebble.libpebblecommon.util.trimWithEllipsis
@@ -43,8 +44,6 @@ data class CalendarEvent(
         Tentative,
     }
 }
-
-val calendarWatchappId = uuidFrom("6c6c6fc2-1912-4d25-8396-3547d1dfac5b")
 
 private fun transformDescription(rawDescription: String): String {
     val regex = Regex("<[^>]*>", setOf(RegexOption.MULTILINE))

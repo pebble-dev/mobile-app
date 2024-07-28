@@ -14,6 +14,7 @@ import io.rebble.cobble.shared.database.entity.PersistedNotification
 import io.rebble.cobble.shared.datastore.DEFAULT_MUTED_PACKAGES_VERSION
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.datastore.defaultMutedPackages
+import io.rebble.cobble.shared.domain.common.SystemAppIDs.notificationsWatchappId
 import io.rebble.cobble.shared.domain.notifications.MetaNotificationAction
 import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
@@ -51,10 +52,6 @@ class NotificationProcessor @Inject constructor(
     val coroutineScope = CoroutineScope(
             SupervisorJob() + exceptionHandler
     )
-
-    companion object {
-        private val notificationsWatchappId = UUID.fromString("B2CAE818-10F8-46DF-AD2B-98AD2254A3C1")
-    }
 
     private val activeGroups = mutableMapOf<String, NotificationGroup>()
 
@@ -132,8 +129,8 @@ class NotificationProcessor @Inject constructor(
                     NotificationChannel(
                             sbn.packageName,
                             sbn.notification.channelId,
-                            notificationChannelDao.get(sbn.packageName, sbn.notification.channelId)?.name ?: null,
-                            notificationChannelDao.get(sbn.packageName, sbn.notification.channelId)?.description ?: null,
+                            notificationChannelDao.get(sbn.packageName, sbn.notification.channelId)?.name,
+                            notificationChannelDao.get(sbn.packageName, sbn.notification.channelId)?.description,
                             notificationChannelDao.get(sbn.packageName, sbn.notification.channelId)?.shouldNotify ?: true
                     )
             )
