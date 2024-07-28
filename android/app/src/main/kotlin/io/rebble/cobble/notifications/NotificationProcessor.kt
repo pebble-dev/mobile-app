@@ -2,36 +2,58 @@ package io.rebble.cobble.notifications
 
 import android.app.Notification
 import android.content.Context
-import android.content.pm.ApplicationInfo
+import android.graphics.Color
 import android.service.notification.StatusBarNotification
-import android.text.SpannableString
 import androidx.core.app.NotificationCompat
-import io.rebble.cobble.bridges.background.NotificationsFlutterBridge
-import io.rebble.cobble.data.NotificationAction
 import io.rebble.cobble.data.NotificationGroup
 import io.rebble.cobble.data.NotificationMessage
+import io.rebble.cobble.shared.database.dao.NotificationChannelDao
 import io.rebble.cobble.shared.database.dao.PersistedNotificationDao
+import io.rebble.cobble.shared.database.entity.NotificationChannel
 import io.rebble.cobble.shared.database.entity.PersistedNotification
+import io.rebble.cobble.shared.datastore.DEFAULT_MUTED_PACKAGES_VERSION
+import io.rebble.cobble.shared.datastore.KMPPrefs
+import io.rebble.cobble.shared.datastore.defaultMutedPackages
+import io.rebble.cobble.shared.domain.notifications.MetaNotificationAction
+import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
+import io.rebble.libpebblecommon.packets.blobdb.TimelineIcon
 import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
+import io.rebble.libpebblecommon.services.blobdb.BlobDBService
+import io.rebble.libpebblecommon.structmapper.SUUID
+import io.rebble.libpebblecommon.structmapper.StructMapper
+import io.rebble.libpebblecommon.util.PebbleColor
+import io.rebble.libpebblecommon.util.TimelineAttributeFactory
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.datetime.Instant
 import timber.log.Timber
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.random.Random
 import kotlin.time.Duration.Companion.hours
 
 @Singleton
 class NotificationProcessor @Inject constructor(
         exceptionHandler: CoroutineExceptionHandler,
-        private val notificationBridge: NotificationsFlutterBridge,
         private val persistedNotifDao: PersistedNotificationDao,
-        private val context: Context
+        private val blobDBService: BlobDBService,
+        private val notificationChannelDao: NotificationChannelDao,
+        private val context: Context,
+        private val activeNotifsState: MutableStateFlow<Map<UUID, StatusBarNotification>>,
+        private val prefs: KMPPrefs,
 ) {
     val coroutineScope = CoroutineScope(
             SupervisorJob() + exceptionHandler
     )
+
+    companion object {
+        private val notificationsWatchappId = UUID.fromString("B2CAE818-10F8-46DF-AD2B-98AD2254A3C1")
+    }
 
     private val activeGroups = mutableMapOf<String, NotificationGroup>()
 
@@ -39,9 +61,49 @@ class NotificationProcessor @Inject constructor(
             val packageId: String,
             val notifId: Long, val tagId: String?, val title: String,
             val text: String, val category: String, val color: Int, val messages: List<NotificationMessage>,
-            val actions: List<NotificationAction>,
+            val actions: List<Notification.Action>,
             val sbn: StatusBarNotification
     )
+
+    private fun determineIcon(packageId: String, category: String) = when(packageId) {
+        "com.google.android.gm.lite", "com.google.android.gm" -> TimelineIcon.NotificationGmail
+        "com.microsoft.office.outlook" -> TimelineIcon.NotificationOutlook
+        "com.Slack" -> TimelineIcon.NotificationSlack
+        "com.snapchat.android" -> TimelineIcon.NotificationSnapchat
+        "com.twitter.android", "com.twitter.android.lite" -> TimelineIcon.NotificationTwitter
+        "org.telegram.messenger" -> TimelineIcon.NotificationTelegram
+        "com.facebook.katana", "com.facebook.lite" -> TimelineIcon.NotificationFacebook
+        "com.facebook.orca" -> TimelineIcon.NotificationFacebookMessenger
+        "com.whatsapp" -> TimelineIcon.NotificationWhatsapp
+
+        else -> when (category) {
+            Notification.CATEGORY_EMAIL -> TimelineIcon.GenericEmail
+            Notification.CATEGORY_MESSAGE -> TimelineIcon.GenericSms
+            Notification.CATEGORY_EVENT -> TimelineIcon.TimelineCalendar
+            Notification.CATEGORY_PROMO -> TimelineIcon.PayBill
+            Notification.CATEGORY_ALARM -> TimelineIcon.AlarmClock
+            Notification.CATEGORY_ERROR -> TimelineIcon.GenericWarning
+            Notification.CATEGORY_TRANSPORT -> TimelineIcon.AudioCassette
+            Notification.CATEGORY_SYSTEM -> TimelineIcon.Settings
+            Notification.CATEGORY_REMINDER -> TimelineIcon.NotificationReminder
+            Notification.CATEGORY_WORKOUT -> TimelineIcon.Activity
+            Notification.CATEGORY_MISSED_CALL -> TimelineIcon.TimelineMissedCall
+            Notification.CATEGORY_CALL -> TimelineIcon.IncomingPhoneCall
+            Notification.CATEGORY_NAVIGATION, Notification.CATEGORY_LOCATION_SHARING -> TimelineIcon.Location
+            Notification.CATEGORY_SOCIAL, Notification.CATEGORY_RECOMMENDATION -> TimelineIcon.NewsEvent
+            else -> TimelineIcon.NotificationGeneric
+        }
+    }
+
+    private suspend fun shouldNotify(packageId: String, channelId: String): Boolean {
+        val mutedPackages = prefs.mutedPackages.first()
+        if (mutedPackages.contains(packageId)) {
+            return false
+        }
+
+        val channel = notificationChannelDao.get(packageId, channelId)
+        return channel?.shouldNotify ?: true
+    }
 
     private val displayActor = coroutineScope.actor<DisplayActorArgs>(capacity = Channel.UNLIMITED) {
         for (notification in channel) {
@@ -60,26 +122,122 @@ class NotificationProcessor @Inject constructor(
                     sbn.key, sbn.packageName, sbn.postTime, title, text, sbn.groupKey
             ))
 
-            var result = withContext(Dispatchers.Main) {
-                notificationBridge.handleNotification(
-                        packageId, notifId, tagId, title, text, category, color, messages, actions
-                )
-            } ?: continue
+            if (prefs.defaultMutedPackagesVersion.first() != DEFAULT_MUTED_PACKAGES_VERSION) {
+                val current = prefs.mutedPackages.first()
+                prefs.setMutedPackages(current + defaultMutedPackages)
+            }
 
-            while (result.second == BlobResponse.BlobStatus.TryLater) {
+            notificationChannelDao.insert(
+                    NotificationChannel(
+                            sbn.packageName,
+                            sbn.notification.channelId,
+                            notificationChannelDao.get(sbn.packageName, sbn.notification.channelId)?.name ?: null,
+                            notificationChannelDao.get(sbn.packageName, sbn.notification.channelId)?.description ?: null,
+                            notificationChannelDao.get(sbn.packageName, sbn.notification.channelId)?.shouldNotify ?: true
+                    )
+            )
+
+            if (!shouldNotify(sbn.packageName, sbn.notification.channelId)) {
+                Timber.v("Ignoring notification from muted channel/package ${sbn.key}")
+                continue
+            }
+
+            val itemId = UUID.randomUUID()
+            val attributes = mutableListOf(
+                    TimelineAttributeFactory.tinyIcon(determineIcon(packageId, category)),
+                    TimelineAttributeFactory.title(title.trim()),
+                    TimelineAttributeFactory.subtitle(title.trim()),
+                    if (messages.isNotEmpty()) {
+                        TimelineAttributeFactory.body(messages.last().text.trim())
+                    } else {
+                        TimelineAttributeFactory.body(text.trim())
+                    }
+            )
+
+            if (color > 1) {
+                attributes.add(TimelineAttributeFactory.primaryColor(PebbleColor(
+                        Color.alpha(color).toUByte(),
+                        Color.red(color).toUByte(),
+                        Color.green(color).toUByte(),
+                        Color.blue(color).toUByte()
+                )))
+            }
+
+            val pebbleActions = buildList {
+                add(
+                        TimelineItem.Action(
+                            MetaNotificationAction.Dismiss.ordinal.toUByte(),
+                            TimelineItem.Action.Type.Dismiss,
+                            listOf(TimelineAttributeFactory.title("Dismiss"))
+                        )
+                )
+                actions.forEachIndexed { index, action ->
+                    val isReply = action.remoteInputs.any { it.allowFreeFormInput && it.allowedDataTypes?.contains("text/plain") != false }
+                    add(
+                            TimelineItem.Action(
+                                    (MetaNotificationAction.metaActionLength + index).toUByte(),
+                                    if (isReply) TimelineItem.Action.Type.Response else TimelineItem.Action.Type.Generic,
+                                    listOf(TimelineAttributeFactory.title(action.title.toString()))
+                            )
+                    )
+                }
+                add(
+                        TimelineItem.Action(
+                                MetaNotificationAction.Open.ordinal.toUByte(),
+                                TimelineItem.Action.Type.Generic,
+                                listOf(TimelineAttributeFactory.title("Open on phone"))
+                        )
+                )
+                add(
+                        TimelineItem.Action(
+                                MetaNotificationAction.MutePackage.ordinal.toUByte(),
+                                TimelineItem.Action.Type.Generic,
+                                listOf(TimelineAttributeFactory.title("Mute app"))
+                        )
+                )
+                add(
+                        TimelineItem.Action(
+                                MetaNotificationAction.MuteChannel.ordinal.toUByte(),
+                                TimelineItem.Action.Type.Generic,
+                                listOf(TimelineAttributeFactory.title("Mute channel\n'${tagId ?: ""}'"))
+                        )
+                )
+            }
+            activeNotifsState.value += (itemId to sbn)
+
+            val notificationItem = TimelineItem(
+                    itemId,
+                    notificationsWatchappId,
+                    sbn.postTime.toUInt(),
+                    0u,
+                    TimelineItem.Type.Notification,
+                    TimelineItem.Flag.makeFlags(listOf(
+                            TimelineItem.Flag.IS_VISIBLE
+                    )),
+                    attributes = attributes,
+                    layout = TimelineItem.Layout.GenericNotification,
+                    actions = pebbleActions,
+            )
+
+            val packet = BlobCommand.InsertCommand(
+                    Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
+                    BlobCommand.BlobDatabase.Notification,
+                    SUUID(StructMapper(), itemId).toBytes(),
+                    notificationItem.toBytes(),
+            )
+
+            var result = blobDBService.send(packet)
+
+            while (result.responseValue == BlobResponse.BlobStatus.TryLater) {
                 Timber.w("BlobDB is busy, retrying in 1s")
                 delay(1000)
-                result = withContext(Dispatchers.Main) {
-                    notificationBridge.handleNotification(
-                            packageId, notifId, tagId, title, text, category, color, messages, actions
-                    )
-                } ?: continue
+                result = blobDBService.send(packet)
             }
-            Timber.d(result.second.toString())
+
+            if (result.responseValue != BlobResponse.BlobStatus.Success) {
+                Timber.e("Failed to send notification to Pebble, blobdb returned ${result.responseValue}")
+            }
             persistedNotifDao.deleteOlderThan(System.currentTimeMillis() - 1.hours.inWholeMilliseconds)
-            withContext(Dispatchers.Main) {
-                notificationBridge.activeNotifs[result.first.itemId.get()] = sbn
-            }
             delay(10)
         }
     }
@@ -128,10 +286,10 @@ class NotificationProcessor @Inject constructor(
         val messages: List<NotificationMessage>? = extractMessages(notification)
 
         val actions = notification.actions?.map {
-            NotificationAction(it.title.toString(), !it.remoteInputs.isNullOrEmpty())
+            MetaNotificationAction(it.title.toString(), !it.remoteInputs.isNullOrEmpty())
         } ?: listOf()
 
-        displayActor.trySend(DisplayActorArgs(
+        val result = displayActor.trySend(DisplayActorArgs(
                 sbn.packageName,
                 sbn.id.toLong(),
                 tagId,
@@ -143,6 +301,9 @@ class NotificationProcessor @Inject constructor(
                 actions,
                 sbn
         ))
+        if (result.isFailure) {
+            Timber.e(result.exceptionOrNull(), "Failed to send notification to display actor")
+        }
     }
 
     private fun extractBody(notification: Notification): String {

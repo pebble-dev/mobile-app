@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:cobble/background/modules/apps_background.dart';
-import 'package:cobble/background/modules/notifications_background.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/logging.dart';
@@ -27,7 +26,6 @@ void main_background() {
 class BackgroundReceiver {
   final container = ProviderContainer();
 
-  late NotificationsBackground notificationsBackground;
   late AppsBackground appsBackground;
 
   late Future<Preferences> preferences;
@@ -63,8 +61,6 @@ class BackgroundReceiver {
       return asyncValue.value!;
     });
 
-    notificationsBackground = NotificationsBackground(this.container);
-    notificationsBackground.init();
     appsBackground = AppsBackground(this.container);
     appsBackground.init();
     foregroundRpc = container.read(foregroundRpcProvider);

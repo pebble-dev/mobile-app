@@ -6,14 +6,8 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import io.rebble.cobble.shared.database.dao.CachedPackageInfoDao
-import io.rebble.cobble.shared.database.dao.CalendarDao
-import io.rebble.cobble.shared.database.dao.PersistedNotificationDao
-import io.rebble.cobble.shared.database.dao.TimelinePinDao
-import io.rebble.cobble.shared.database.entity.CachedPackageInfo
-import io.rebble.cobble.shared.database.entity.Calendar
-import io.rebble.cobble.shared.database.entity.PersistedNotification
-import io.rebble.cobble.shared.database.entity.TimelinePin
+import io.rebble.cobble.shared.database.dao.*
+import io.rebble.cobble.shared.database.entity.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -26,12 +20,14 @@ import org.koin.mp.KoinPlatformTools
             Calendar::class,
             TimelinePin::class,
             PersistedNotification::class,
-            CachedPackageInfo::class
+            CachedPackageInfo::class,
+            NotificationChannel::class
                    ],
-        version = 3,
+        version = 4,
         autoMigrations = [
             AutoMigration(1, 2),
-            AutoMigration(2, 3)
+            AutoMigration(2, 3),
+            AutoMigration(3, 4)
         ]
 )
 @TypeConverters(Converters::class)
@@ -40,6 +36,7 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun timelinePinDao(): TimelinePinDao
     abstract fun persistedNotificationDao(): PersistedNotificationDao
     abstract fun cachedPackageInfoDao(): CachedPackageInfoDao
+    abstract fun notificationChannelDao(): NotificationChannelDao
 
     companion object {
         fun instance(): AppDatabase {

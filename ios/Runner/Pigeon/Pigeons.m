@@ -81,12 +81,6 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 - (NSArray *)toList;
 @end
 
-@interface NotificationPigeon ()
-+ (NotificationPigeon *)fromList:(NSArray *)list;
-+ (nullable NotificationPigeon *)nullableFromList:(NSArray *)list;
-- (NSArray *)toList;
-@end
-
 @interface AppEntriesPigeon ()
 + (AppEntriesPigeon *)fromList:(NSArray *)list;
 + (nullable AppEntriesPigeon *)nullableFromList:(NSArray *)list;
@@ -138,12 +132,6 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 @interface OAuthResult ()
 + (OAuthResult *)fromList:(NSArray *)list;
 + (nullable OAuthResult *)nullableFromList:(NSArray *)list;
-- (NSArray *)toList;
-@end
-
-@interface NotifChannelPigeon ()
-+ (NotifChannelPigeon *)fromList:(NSArray *)list;
-+ (nullable NotifChannelPigeon *)nullableFromList:(NSArray *)list;
 - (NSArray *)toList;
 @end
 
@@ -519,63 +507,6 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 }
 @end
 
-@implementation NotificationPigeon
-+ (instancetype)makeWithPackageId:(nullable NSString *)packageId
-    notifId:(nullable NSNumber *)notifId
-    appName:(nullable NSString *)appName
-    tagId:(nullable NSString *)tagId
-    title:(nullable NSString *)title
-    text:(nullable NSString *)text
-    category:(nullable NSString *)category
-    color:(nullable NSNumber *)color
-    messagesJson:(nullable NSString *)messagesJson
-    actionsJson:(nullable NSString *)actionsJson {
-  NotificationPigeon* pigeonResult = [[NotificationPigeon alloc] init];
-  pigeonResult.packageId = packageId;
-  pigeonResult.notifId = notifId;
-  pigeonResult.appName = appName;
-  pigeonResult.tagId = tagId;
-  pigeonResult.title = title;
-  pigeonResult.text = text;
-  pigeonResult.category = category;
-  pigeonResult.color = color;
-  pigeonResult.messagesJson = messagesJson;
-  pigeonResult.actionsJson = actionsJson;
-  return pigeonResult;
-}
-+ (NotificationPigeon *)fromList:(NSArray *)list {
-  NotificationPigeon *pigeonResult = [[NotificationPigeon alloc] init];
-  pigeonResult.packageId = GetNullableObjectAtIndex(list, 0);
-  pigeonResult.notifId = GetNullableObjectAtIndex(list, 1);
-  pigeonResult.appName = GetNullableObjectAtIndex(list, 2);
-  pigeonResult.tagId = GetNullableObjectAtIndex(list, 3);
-  pigeonResult.title = GetNullableObjectAtIndex(list, 4);
-  pigeonResult.text = GetNullableObjectAtIndex(list, 5);
-  pigeonResult.category = GetNullableObjectAtIndex(list, 6);
-  pigeonResult.color = GetNullableObjectAtIndex(list, 7);
-  pigeonResult.messagesJson = GetNullableObjectAtIndex(list, 8);
-  pigeonResult.actionsJson = GetNullableObjectAtIndex(list, 9);
-  return pigeonResult;
-}
-+ (nullable NotificationPigeon *)nullableFromList:(NSArray *)list {
-  return (list) ? [NotificationPigeon fromList:list] : nil;
-}
-- (NSArray *)toList {
-  return @[
-    (self.packageId ?: [NSNull null]),
-    (self.notifId ?: [NSNull null]),
-    (self.appName ?: [NSNull null]),
-    (self.tagId ?: [NSNull null]),
-    (self.title ?: [NSNull null]),
-    (self.text ?: [NSNull null]),
-    (self.category ?: [NSNull null]),
-    (self.color ?: [NSNull null]),
-    (self.messagesJson ?: [NSNull null]),
-    (self.actionsJson ?: [NSNull null]),
-  ];
-}
-@end
-
 @implementation AppEntriesPigeon
 + (instancetype)makeWithAppName:(nullable NSArray<NSString *> *)appName
     packageId:(nullable NSArray<NSString *> *)packageId {
@@ -889,43 +820,6 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
     (self.code ?: [NSNull null]),
     (self.state ?: [NSNull null]),
     (self.error ?: [NSNull null]),
-  ];
-}
-@end
-
-@implementation NotifChannelPigeon
-+ (instancetype)makeWithPackageId:(nullable NSString *)packageId
-    channelId:(nullable NSString *)channelId
-    channelName:(nullable NSString *)channelName
-    channelDesc:(nullable NSString *)channelDesc
-    delete:(nullable NSNumber *)delete {
-  NotifChannelPigeon* pigeonResult = [[NotifChannelPigeon alloc] init];
-  pigeonResult.packageId = packageId;
-  pigeonResult.channelId = channelId;
-  pigeonResult.channelName = channelName;
-  pigeonResult.channelDesc = channelDesc;
-  pigeonResult.delete = delete;
-  return pigeonResult;
-}
-+ (NotifChannelPigeon *)fromList:(NSArray *)list {
-  NotifChannelPigeon *pigeonResult = [[NotifChannelPigeon alloc] init];
-  pigeonResult.packageId = GetNullableObjectAtIndex(list, 0);
-  pigeonResult.channelId = GetNullableObjectAtIndex(list, 1);
-  pigeonResult.channelName = GetNullableObjectAtIndex(list, 2);
-  pigeonResult.channelDesc = GetNullableObjectAtIndex(list, 3);
-  pigeonResult.delete = GetNullableObjectAtIndex(list, 4);
-  return pigeonResult;
-}
-+ (nullable NotifChannelPigeon *)nullableFromList:(NSArray *)list {
-  return (list) ? [NotifChannelPigeon fromList:list] : nil;
-}
-- (NSArray *)toList {
-  return @[
-    (self.packageId ?: [NSNull null]),
-    (self.channelId ?: [NSNull null]),
-    (self.channelName ?: [NSNull null]),
-    (self.channelDesc ?: [NSNull null]),
-    (self.delete ?: [NSNull null]),
   ];
 }
 @end
@@ -1625,130 +1519,6 @@ NSObject<FlutterMessageCodec> *AppInstallStatusCallbacksGetCodec(void) {
       binaryMessenger:self.binaryMessenger
       codec:AppInstallStatusCallbacksGetCodec()];
   [channel sendMessage:@[arg_status ?: [NSNull null]] reply:^(id reply) {
-    completion(nil);
-  }];
-}
-@end
-
-@interface NotificationListeningCodecReader : FlutterStandardReader
-@end
-@implementation NotificationListeningCodecReader
-- (nullable id)readValueOfType:(UInt8)type {
-  switch (type) {
-    case 128: 
-      return [BooleanWrapper fromList:[self readValue]];
-    case 129: 
-      return [NotifChannelPigeon fromList:[self readValue]];
-    case 130: 
-      return [NotificationPigeon fromList:[self readValue]];
-    case 131: 
-      return [StringWrapper fromList:[self readValue]];
-    case 132: 
-      return [TimelinePinPigeon fromList:[self readValue]];
-    default:
-      return [super readValueOfType:type];
-  }
-}
-@end
-
-@interface NotificationListeningCodecWriter : FlutterStandardWriter
-@end
-@implementation NotificationListeningCodecWriter
-- (void)writeValue:(id)value {
-  if ([value isKindOfClass:[BooleanWrapper class]]) {
-    [self writeByte:128];
-    [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[NotifChannelPigeon class]]) {
-    [self writeByte:129];
-    [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[NotificationPigeon class]]) {
-    [self writeByte:130];
-    [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[StringWrapper class]]) {
-    [self writeByte:131];
-    [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[TimelinePinPigeon class]]) {
-    [self writeByte:132];
-    [self writeValue:[value toList]];
-  } else {
-    [super writeValue:value];
-  }
-}
-@end
-
-@interface NotificationListeningCodecReaderWriter : FlutterStandardReaderWriter
-@end
-@implementation NotificationListeningCodecReaderWriter
-- (FlutterStandardWriter *)writerWithData:(NSMutableData *)data {
-  return [[NotificationListeningCodecWriter alloc] initWithData:data];
-}
-- (FlutterStandardReader *)readerWithData:(NSData *)data {
-  return [[NotificationListeningCodecReader alloc] initWithData:data];
-}
-@end
-
-NSObject<FlutterMessageCodec> *NotificationListeningGetCodec(void) {
-  static FlutterStandardMessageCodec *sSharedObject = nil;
-  static dispatch_once_t sPred = 0;
-  dispatch_once(&sPred, ^{
-    NotificationListeningCodecReaderWriter *readerWriter = [[NotificationListeningCodecReaderWriter alloc] init];
-    sSharedObject = [FlutterStandardMessageCodec codecWithReaderWriter:readerWriter];
-  });
-  return sSharedObject;
-}
-
-@interface NotificationListening ()
-@property(nonatomic, strong) NSObject<FlutterBinaryMessenger> *binaryMessenger;
-@end
-
-@implementation NotificationListening
-
-- (instancetype)initWithBinaryMessenger:(NSObject<FlutterBinaryMessenger> *)binaryMessenger {
-  self = [super init];
-  if (self) {
-    _binaryMessenger = binaryMessenger;
-  }
-  return self;
-}
-- (void)handleNotificationNotification:(NotificationPigeon *)arg_notification completion:(void (^)(TimelinePinPigeon *_Nullable, FlutterError *_Nullable))completion {
-  FlutterBasicMessageChannel *channel =
-    [FlutterBasicMessageChannel
-      messageChannelWithName:@"dev.flutter.pigeon.NotificationListening.handleNotification"
-      binaryMessenger:self.binaryMessenger
-      codec:NotificationListeningGetCodec()];
-  [channel sendMessage:@[arg_notification ?: [NSNull null]] reply:^(id reply) {
-    TimelinePinPigeon *output = reply;
-    completion(output, nil);
-  }];
-}
-- (void)dismissNotificationItemId:(StringWrapper *)arg_itemId completion:(void (^)(FlutterError *_Nullable))completion {
-  FlutterBasicMessageChannel *channel =
-    [FlutterBasicMessageChannel
-      messageChannelWithName:@"dev.flutter.pigeon.NotificationListening.dismissNotification"
-      binaryMessenger:self.binaryMessenger
-      codec:NotificationListeningGetCodec()];
-  [channel sendMessage:@[arg_itemId ?: [NSNull null]] reply:^(id reply) {
-    completion(nil);
-  }];
-}
-- (void)shouldNotifyChannel:(NotifChannelPigeon *)arg_channel completion:(void (^)(BooleanWrapper *_Nullable, FlutterError *_Nullable))completion {
-  FlutterBasicMessageChannel *channel =
-    [FlutterBasicMessageChannel
-      messageChannelWithName:@"dev.flutter.pigeon.NotificationListening.shouldNotify"
-      binaryMessenger:self.binaryMessenger
-      codec:NotificationListeningGetCodec()];
-  [channel sendMessage:@[arg_channel ?: [NSNull null]] reply:^(id reply) {
-    BooleanWrapper *output = reply;
-    completion(output, nil);
-  }];
-}
-- (void)updateChannelChannel:(NotifChannelPigeon *)arg_channel completion:(void (^)(FlutterError *_Nullable))completion {
-  FlutterBasicMessageChannel *channel =
-    [FlutterBasicMessageChannel
-      messageChannelWithName:@"dev.flutter.pigeon.NotificationListening.updateChannel"
-      binaryMessenger:self.binaryMessenger
-      codec:NotificationListeningGetCodec()];
-  [channel sendMessage:@[arg_channel ?: [NSNull null]] reply:^(id reply) {
     completion(nil);
   }];
 }

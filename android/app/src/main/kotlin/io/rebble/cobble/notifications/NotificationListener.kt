@@ -12,7 +12,6 @@ import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.bridges.background.NotificationsFlutterBridge
 import io.rebble.cobble.data.NotificationAction
 import io.rebble.cobble.data.NotificationMessage
 import io.rebble.cobble.data.toNotificationGroup
@@ -37,7 +36,6 @@ class NotificationListener : NotificationListenerService() {
     private var mutedPackages = listOf<String>()
 
     private lateinit var notificationService: NotificationService
-    private lateinit var notificationBridge: NotificationsFlutterBridge
     private lateinit var prefs: KMPPrefs
 
     override fun onCreate() {
@@ -49,7 +47,6 @@ class NotificationListener : NotificationListenerService() {
 
         connectionLooper = injectionComponent.createConnectionLooper()
         notificationService = injectionComponent.createNotificationService()
-        notificationBridge = injectionComponent.createNotificationsFlutterBridge()
         flutterPreferences = injectionComponent.createFlutterPreferences()
         prefs = injectionComponent.createKMPPrefs()
         notificationProcessor = injectionComponent.createNotificationProcessor()
@@ -95,10 +92,11 @@ class NotificationListener : NotificationListenerService() {
             }
             try {
                 val channels = getNotificationChannels(sbn.packageName, sbn.user)
-                channels?.forEach {
+                //TODO: Update channel info in kmp
+                /*channels?.forEach {
                     notificationBridge.updateChannel(it.id, sbn.packageName, false, (it.name
                             ?: it.id).toString(), it.description ?: "")
-                }
+                }*/
             } catch (e: Exception) {
                 Timber.w(e, "Failed to get notif channels from ${sbn.packageName}")
             }
@@ -126,38 +124,24 @@ class NotificationListener : NotificationListenerService() {
         if (isListening) {
             Timber.d("Notification removed: ${sbn.packageName}")
 
+            //TODO: Dismiss notification in kmp
+            /*
             val notif = notificationBridge.activeNotifs.toList().firstOrNull { it.second.id == sbn.id && it.second.packageName == sbn.packageName }?.first
             if (notif != null) {
                 notificationBridge.dismiss(notif)
-            }
+            }*/
         }
     }
 
     override fun onNotificationChannelModified(pkg: String?, user: UserHandle?, channel: NotificationChannel?, modificationType: Int) {
         if (pkg != null && channel != null) {
-            val channelId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                channel.id
-            } else {
-                "miscellaneous"
-            }
-
+            val channelId = channel.id
             val packageId = pkg
-            val delete = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                modificationType == NOTIFICATION_CHANNEL_OR_GROUP_DELETED
-            } else {
-                false
-            }
-            val channelDesc = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                channel.description ?: ""
-            } else {
-                ""
-            }
-            val channelName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                channel.name.toString()
-            } else {
-                "Miscellaneous"
-            }
-            notificationBridge.updateChannel(channelId, packageId, delete, channelName, channelDesc)
+            val delete = modificationType == NOTIFICATION_CHANNEL_OR_GROUP_DELETED
+            val channelDesc = channel.description ?: ""
+            val channelName = channel.name.toString()
+            //TODO: Update channel info in kmp
+            //notificationBridge.updateChannel(channelId, packageId, delete, channelName, channelDesc)
         }
     }
 
@@ -210,9 +194,8 @@ class NotificationListener : NotificationListenerService() {
 
     private fun observeMutedPackages() {
         coroutineScope.launch(Dispatchers.Main.immediate) {
-            flutterPreferences.mutedNotifPackages.collect {
-                Timber.d("${it}")
-                mutedPackages = it ?: listOf()
+            prefs.mutedPackages.collect {
+                mutedPackages = it.toList()
             }
         }
     }

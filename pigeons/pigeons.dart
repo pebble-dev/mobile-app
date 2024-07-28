@@ -252,7 +252,7 @@ abstract class AppInstallStatusCallbacks {
   void onStatusUpdated(AppInstallStatus status);
 }
 
-@FlutterApi()
+/*@FlutterApi()
 abstract class NotificationListening {
   @async
   TimelinePinPigeon handleNotification(NotificationPigeon notification);
@@ -261,7 +261,7 @@ abstract class NotificationListening {
   @async
   BooleanWrapper shouldNotify(NotifChannelPigeon channel);
   void updateChannel(NotifChannelPigeon channel);
-}
+}*/
 
 @FlutterApi()
 abstract class AppLogCallbacks {

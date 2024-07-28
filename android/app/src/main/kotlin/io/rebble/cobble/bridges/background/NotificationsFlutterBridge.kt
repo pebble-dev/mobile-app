@@ -31,7 +31,7 @@ import java.util.UUID
 import javax.inject.Inject
 import kotlin.random.Random
 
-
+/*
 class NotificationsFlutterBridge @Inject constructor(
         private val context: Context,
         private val flutterBackgroundController: FlutterBackgroundController,
@@ -197,3 +197,4 @@ class NotificationsFlutterBridge @Inject constructor(
         notifListening?.updateChannel(pigeon) {}
     }
 }
+*/

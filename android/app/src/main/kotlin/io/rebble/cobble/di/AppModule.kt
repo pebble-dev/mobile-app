@@ -3,12 +3,14 @@ package io.rebble.cobble.di
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
+import android.service.notification.StatusBarNotification
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import io.rebble.cobble.errors.GlobalExceptionHandler
 import io.rebble.cobble.shared.database.AppDatabase
 import io.rebble.cobble.shared.database.dao.CachedPackageInfoDao
+import io.rebble.cobble.shared.database.dao.NotificationChannelDao
 import io.rebble.cobble.shared.database.dao.PersistedNotificationDao
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.calendar.CalendarSync
@@ -17,7 +19,10 @@ import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.plus
+import java.util.UUID
 import javax.inject.Singleton
 
 @Module(
@@ -61,6 +66,16 @@ abstract class AppModule {
         @Provides
         fun provideCachedPackageInfoDao(context: Context): CachedPackageInfoDao {
             return AppDatabase.instance().cachedPackageInfoDao()
+        }
+        @Provides
+        fun provideNotificationChannelDao(context: Context): NotificationChannelDao {
+            return AppDatabase.instance().notificationChannelDao()
+        }
+
+        @Provides
+        @Singleton
+        fun provideActiveNotifsState(): MutableStateFlow<Map<UUID, StatusBarNotification>> {
+            return MutableStateFlow(emptyMap())
         }
     }
 }

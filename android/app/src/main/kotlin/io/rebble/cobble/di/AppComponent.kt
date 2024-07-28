@@ -6,7 +6,6 @@ import dagger.Component
 import io.rebble.cobble.NotificationChannelManager
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.DeviceTransport
-import io.rebble.cobble.bridges.background.NotificationsFlutterBridge
 import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.datasources.PairedStorage
 import io.rebble.cobble.datasources.WatchMetadataStore
@@ -39,7 +38,6 @@ interface AppComponent {
     fun createConnectionLooper(): ConnectionLooper
     fun createWatchMetadataStore(): WatchMetadataStore
     fun createPairedStorage(): PairedStorage
-    fun createNotificationsFlutterBridge(): NotificationsFlutterBridge
     fun createNotificationProcessor(): NotificationProcessor
     fun createFlutterPreferences(): FlutterPreferences
     fun initServiceLifecycleControl(): ServiceLifecycleControl

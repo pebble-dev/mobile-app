@@ -20,7 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class WatchConnectionStatePigeon;
 @class TimelinePinPigeon;
 @class NotifActionExecuteReq;
-@class NotificationPigeon;
 @class AppEntriesPigeon;
 @class PbwAppInfo;
 @class WatchappInfo;
@@ -30,7 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class ScreenshotResult;
 @class AppLogEntry;
 @class OAuthResult;
-@class NotifChannelPigeon;
 @class NotifyingPackage;
 @class CalendarPigeon;
 
@@ -162,29 +160,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy, nullable) NSString * responseText;
 @end
 
-@interface NotificationPigeon : NSObject
-+ (instancetype)makeWithPackageId:(nullable NSString *)packageId
-    notifId:(nullable NSNumber *)notifId
-    appName:(nullable NSString *)appName
-    tagId:(nullable NSString *)tagId
-    title:(nullable NSString *)title
-    text:(nullable NSString *)text
-    category:(nullable NSString *)category
-    color:(nullable NSNumber *)color
-    messagesJson:(nullable NSString *)messagesJson
-    actionsJson:(nullable NSString *)actionsJson;
-@property(nonatomic, copy, nullable) NSString * packageId;
-@property(nonatomic, strong, nullable) NSNumber * notifId;
-@property(nonatomic, copy, nullable) NSString * appName;
-@property(nonatomic, copy, nullable) NSString * tagId;
-@property(nonatomic, copy, nullable) NSString * title;
-@property(nonatomic, copy, nullable) NSString * text;
-@property(nonatomic, copy, nullable) NSString * category;
-@property(nonatomic, strong, nullable) NSNumber * color;
-@property(nonatomic, copy, nullable) NSString * messagesJson;
-@property(nonatomic, copy, nullable) NSString * actionsJson;
-@end
-
 @interface AppEntriesPigeon : NSObject
 + (instancetype)makeWithAppName:(nullable NSArray<NSString *> *)appName
     packageId:(nullable NSArray<NSString *> *)packageId;
@@ -297,19 +272,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy, nullable) NSString * error;
 @end
 
-@interface NotifChannelPigeon : NSObject
-+ (instancetype)makeWithPackageId:(nullable NSString *)packageId
-    channelId:(nullable NSString *)channelId
-    channelName:(nullable NSString *)channelName
-    channelDesc:(nullable NSString *)channelDesc
-    delete:(nullable NSNumber *)delete;
-@property(nonatomic, copy, nullable) NSString * packageId;
-@property(nonatomic, copy, nullable) NSString * channelId;
-@property(nonatomic, copy, nullable) NSString * channelName;
-@property(nonatomic, copy, nullable) NSString * channelDesc;
-@property(nonatomic, strong, nullable) NSNumber * delete;
-@end
-
 @interface NotifyingPackage : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
@@ -398,17 +360,6 @@ NSObject<FlutterMessageCodec> *AppInstallStatusCallbacksGetCodec(void);
 @interface AppInstallStatusCallbacks : NSObject
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
 - (void)onStatusUpdatedStatus:(AppInstallStatus *)status completion:(void (^)(FlutterError *_Nullable))completion;
-@end
-
-/// The codec used by NotificationListening.
-NSObject<FlutterMessageCodec> *NotificationListeningGetCodec(void);
-
-@interface NotificationListening : NSObject
-- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
-- (void)handleNotificationNotification:(NotificationPigeon *)notification completion:(void (^)(TimelinePinPigeon *_Nullable, FlutterError *_Nullable))completion;
-- (void)dismissNotificationItemId:(StringWrapper *)itemId completion:(void (^)(FlutterError *_Nullable))completion;
-- (void)shouldNotifyChannel:(NotifChannelPigeon *)channel completion:(void (^)(BooleanWrapper *_Nullable, FlutterError *_Nullable))completion;
-- (void)updateChannelChannel:(NotifChannelPigeon *)channel completion:(void (^)(FlutterError *_Nullable))completion;
 @end
 
 /// The codec used by AppLogCallbacks.
