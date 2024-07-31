@@ -21,7 +21,7 @@ val flutterRoot = localProperties.getProperty("flutter.sdk")
 
 val flutterVersionCode = localProperties.getProperty("flutter.versionCode") ?: "1"
 val flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "1.0"
-
+//apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 apply(from = "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle")
 
 android {
