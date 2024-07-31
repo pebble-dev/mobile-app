@@ -14,9 +14,9 @@ class CobbleTheme {
     final materialScheme = brightness == Brightness.dark
         ? ColorScheme(
             primary: scheme.primary,
-            primaryVariant: scheme.primary,
+            //primaryVariant: scheme.primary,
             secondary: scheme.primary,
-            secondaryVariant: scheme.primary,
+            //secondaryVariant: scheme.primary,
             surface: scheme.surface,
             background: scheme.background,
             error: scheme.danger,
@@ -29,9 +29,9 @@ class CobbleTheme {
           )
         : ColorScheme(
             primary: scheme.primary,
-            primaryVariant: scheme.primary,
+            //primaryVariant: scheme.primary,
             secondary: scheme.primary,
-            secondaryVariant: scheme.primary,
+            //secondaryVariant: scheme.primary,
             surface: scheme.surface,
             background: scheme.background,
             error: scheme.danger,
@@ -47,30 +47,24 @@ class CobbleTheme {
     /// try to use these presets and modify them with `.copyWith` instead of
     /// creating your own
     final textTheme = TextTheme(
-      headline6: TextStyle(
+      headlineMedium: TextStyle(
         color: materialScheme.onSurface,
         fontSize: 16,
         height: 1.17,
         fontWeight: FontWeight.w500,
       ),
-      bodyText2: TextStyle(
+      bodyMedium: TextStyle(
         color: materialScheme.onSurface,
         fontSize: 14,
         height: 1.17,
         fontWeight: FontWeight.w400,
       ),
-      headline1: TextStyle(
+      headlineLarge: TextStyle(
         color: materialScheme.onSurface,
         fontSize: 24,
         height: 1.17,
         fontWeight: FontWeight.w500,
-      ),
-      button: TextStyle(
-        color: materialScheme.primary,
-        fontSize: 14,
-        height: 1.17,
-        fontWeight: FontWeight.w500,
-      ),
+      )
     );
 
     final buttonTheme = ButtonStyle(
@@ -82,7 +76,12 @@ class CobbleTheme {
           horizontal: 8,
         ),
       ),
-      textStyle: MaterialStateProperty.all(textTheme.button),
+      textStyle: WidgetStateProperty.all(TextStyle(
+        color: materialScheme.primary,
+        fontSize: 14,
+        height: 1.17,
+        fontWeight: FontWeight.w500,
+      )),
       foregroundColor: simpleMaterialStateProperty(
         materialScheme.primary,
         materialScheme.onSurface.withOpacity(0.12),
@@ -103,10 +102,6 @@ class CobbleTheme {
       brightness: brightness,
       visualDensity: VisualDensity.adaptivePlatformDensity,
       primaryColor: materialScheme.primary,
-      primaryColorBrightness: invertedBrightness,
-      accentColor: materialScheme.secondary,
-      backgroundColor: materialScheme.background,
-      colorScheme: materialScheme,
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: materialScheme.primary,
         foregroundColor: materialScheme.onPrimary,
@@ -130,17 +125,11 @@ class CobbleTheme {
       appBarTheme: AppBarTheme(
         color: materialScheme.surface,
         centerTitle: true,
-        textTheme: TextTheme(
-          headline6: textTheme.headline6!.copyWith(
-            fontSize: 16,
-          ),
-        ),
         iconTheme: IconThemeData(
           color: materialScheme.primary,
           size: 25,
         ),
       ),
-      toggleableActiveColor: materialScheme.primary,
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: materialScheme.surface,
       ),
@@ -156,14 +145,14 @@ class CobbleTheme {
         ),
       ),
       tabBarTheme: TabBarTheme(
-        labelStyle: textTheme.bodyText2!.copyWith(
+        labelStyle: textTheme.bodyMedium!.copyWith(
           fontSize: 16,
         ),
         labelColor: scheme.text,
-        unselectedLabelStyle: textTheme.bodyText2!.copyWith(
+        unselectedLabelStyle: textTheme.bodyMedium!.copyWith(
           fontSize: 16,
         ),
-        labelPadding: EdgeInsets.only(top: 5, bottom: 4),
+        labelPadding: const EdgeInsets.only(top: 5, bottom: 4),
         unselectedLabelColor: scheme.muted,
         // TODO: Indicator should be rounded and not straight, implement that later
         indicator: UnderlineTabIndicator(
@@ -172,7 +161,30 @@ class CobbleTheme {
             color: scheme.primary,
           ),
         ),
-      ),
+      ), checkboxTheme: CheckboxThemeData(
+ fillColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+ if (states.contains(MaterialState.disabled)) { return null; }
+ if (states.contains(MaterialState.selected)) { return materialScheme.primary; }
+ return null;
+ }),
+ ), radioTheme: RadioThemeData(
+ fillColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+ if (states.contains(MaterialState.disabled)) { return null; }
+ if (states.contains(MaterialState.selected)) { return materialScheme.primary; }
+ return null;
+ }),
+ ), switchTheme: SwitchThemeData(
+ thumbColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+ if (states.contains(MaterialState.disabled)) { return null; }
+ if (states.contains(MaterialState.selected)) { return materialScheme.primary; }
+ return null;
+ }),
+ trackColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+ if (states.contains(MaterialState.disabled)) { return null; }
+ if (states.contains(MaterialState.selected)) { return materialScheme.primary; }
+ return null;
+ }),
+ ), colorScheme: materialScheme.copyWith(background: materialScheme.background).copyWith(secondary: materialScheme.secondary),
     );
   }
 }

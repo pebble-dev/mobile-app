@@ -117,26 +117,26 @@ packages:
     dependency: "direct main"
     description:
       name: cached_network_image
-      sha256: fd3d0dc1d451f9a252b32d95d3f0c3c487bc41a75eba2e6097cb0b9c71491b15
+      sha256: "28ea9690a8207179c319965c13cd8df184d5ee721ae2ce60f398ced1219cea1f"
       url: "https://pub.dev"
     source: hosted
-    version: "3.2.3"
+    version: "3.3.1"
   cached_network_image_platform_interface:
     dependency: transitive
     description:
       name: cached_network_image_platform_interface
-      sha256: bb2b8403b4ccdc60ef5f25c70dead1f3d32d24b9d6117cfc087f496b178594a7
+      sha256: "9e90e78ae72caa874a323d78fa6301b3fb8fa7ea76a8f96dc5b5bf79f283bf2f"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "4.0.0"
   cached_network_image_web:
     dependency: transitive
     description:
       name: cached_network_image_web
-      sha256: b8eb814ebfcb4dea049680f8c1ffb2df399e4d03bf7a352c775e26fa06e02fa0
+      sha256: "205d6a9f1862de34b93184f22b9d2d94586b2f05c581d546695e3d8f6a805cd7"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.2"
+    version: "1.2.0"
   characters:
     dependency: transitive
     description:
@@ -245,18 +245,18 @@ packages:
     dependency: "direct main"
     description:
       name: device_info_plus
-      sha256: "77f757b789ff68e4eaf9c56d1752309bd9f7ad557cb105b938a7f8eb89e59110"
+      sha256: "93429694c9253d2871b3af80cf11b3cbb5c65660d402ed7bf69854ce4a089f82"
       url: "https://pub.dev"
     source: hosted
-    version: "9.1.2"
+    version: "10.1.1"
   device_info_plus_platform_interface:
     dependency: transitive
     description:
       name: device_info_plus_platform_interface
-      sha256: d3b01d5868b50ae571cd1dc6e502fc94d956b665756180f7b16ead09e836fd64
+      sha256: "282d3cf731045a2feb66abfe61bbc40870ae50a3ed10a4d3d217556c35c8c2ba"
       url: "https://pub.dev"
     source: hosted
-    version: "7.0.0"
+    version: "7.0.1"
   fake_async:
     dependency: transitive
     description:
@@ -294,14 +294,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_blurhash:
-    dependency: transitive
-    description:
-      name: flutter_blurhash
-      sha256: "05001537bd3fac7644fa6558b09ec8c0a3f2eba78c0765f88912882b1331a5c6"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.7.0"
   flutter_cache_manager:
     dependency: transitive
     description:
@@ -445,14 +437,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  freezed_annotation:
-    dependency: transitive
-    description:
-      name: freezed_annotation
-      sha256: c3fd9336eb55a38cc1bbd79ab17573113a8deccd0ecbbf926cca3c62803b5c2d
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.4.1"
   frontend_server_client:
     dependency: transitive
     description:
@@ -653,22 +637,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.4"
-  noob:
-    dependency: "direct main"
-    description:
-      name: noob
-      sha256: c955aff8242224d27c4addce50483b9ac4132425d7ad97bc20974117ce97931b
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.8"
   octo_image:
     dependency: transitive
     description:
       name: octo_image
-      sha256: "107f3ed1330006a3bea63615e81cf637433f5135a52466c7caa0e7152bca9143"
+      sha256: "45b40f99622f11901238e18d48f5f12ea36426d8eced9f4cbf58479c7aa2430d"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.2"
+    version: "2.0.0"
   package_config:
     dependency: transitive
     description:
@@ -1234,6 +1210,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.2"
+  web:
+    dependency: transitive
+    description:
+      name: web
+      sha256: d43c1d6b787bf0afad444700ae7f4db8827f701bc61c255ac8d328c6f4d52062
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   web_socket_channel:
     dependency: transitive
     description:
@@ -1315,5 +1299,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.3.0 <4.0.0"
+  dart: ">=3.4.0 <4.0.0"
   flutter: ">=3.18.0-18.0.pre.54"

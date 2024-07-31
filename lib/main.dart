@@ -19,7 +19,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:noob/noob.dart';
 
 import 'domain/permissions.dart';
 import 'infrastructure/datasources/paired_storage.dart';

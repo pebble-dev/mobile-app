@@ -52,13 +52,13 @@ class FacesPreview extends StatelessWidget {
           SizedBox(height: 8),
           Text(
             face.longName + (extended ? " ${face.version}" : ""),
-            style: context.textTheme.headline6,
+            style: context.textTheme.headlineMedium,
           ),
           SizedBox(height: 4),
           Text(
             face.company,
-            style: context.textTheme.bodyText2!.copyWith(
-              color: context.textTheme.bodyText2!.color!.withOpacity(
+            style: context.textTheme.bodyMedium!.copyWith(
+              color: context.textTheme.bodyMedium!.color!.withOpacity(
                 context.scheme!.muted.opacity,
               ),
             ),

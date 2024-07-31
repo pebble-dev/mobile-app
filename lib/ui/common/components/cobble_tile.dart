@@ -251,21 +251,21 @@ class CobbleTile extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: context.textTheme.headline6,
+                    style: context.textTheme.headlineMedium,
                   ),
                   if (body is String) ...[
                     SizedBox(height: 4),
                     Text(
                       body!,
-                      style: context.textTheme.bodyText2,
+                      style: context.textTheme.bodyMedium,
                     ),
                   ],
                   if (subtitle is String) ...[
                     SizedBox(height: 4),
                     Text(
                       subtitle!,
-                      style: context.textTheme.bodyText2!.copyWith(
-                        color: context.textTheme.bodyText2!.color!.withOpacity(
+                      style: context.textTheme.bodyMedium!.copyWith(
+                        color: context.textTheme.bodyMedium!.color!.withOpacity(
                           context.scheme!.muted.opacity,
                         ),
                       ),
@@ -312,10 +312,10 @@ class CobbleTile extends StatelessWidget {
             color: intent,
           ),
           textTheme: context.textTheme.copyWith(
-            bodyText2: context.textTheme.bodyText2!.copyWith(
+            bodyMedium: context.textTheme.bodyMedium!.copyWith(
               color: intent,
             ),
-            headline6: context.textTheme.headline6!.copyWith(
+            headlineMedium: context.textTheme.headlineMedium!.copyWith(
               color: intent,
             ),
           ),

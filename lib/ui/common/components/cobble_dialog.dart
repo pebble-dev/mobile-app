@@ -83,7 +83,7 @@ class CobbleDialog extends StatelessWidget {
             if (title is String)
               Text(
                 title!,
-                style: context.textTheme.headline6!.copyWith(
+                style: context.textTheme.headlineMedium!.copyWith(
                   color: scheme.text,
                 ),
               ),
@@ -91,7 +91,7 @@ class CobbleDialog extends StatelessWidget {
             if (content is String)
               Text(
                 content!,
-                style: context.textTheme.bodyText2!.copyWith(
+                style: context.textTheme.bodyMedium!.copyWith(
                   color: scheme.text,
                 ),
               ),

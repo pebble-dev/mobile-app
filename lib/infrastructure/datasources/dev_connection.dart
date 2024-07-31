@@ -6,7 +6,6 @@ import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/domain/connection/raw_incoming_packets_provider.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:network_info_plus/network_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
 final ConnectionControl connectionControl = ConnectionControl();
@@ -124,7 +123,8 @@ class DevConnection extends StateNotifier<DevConnState> {
   }
 
   Future<void> start() async {
-    _localIp = await (NetworkInfo().getWifiIP()) ?? "";
+    //_localIp = await (NetworkInfo().getWifiIP()) ?? "";
+    _localIp = "";
 
     final server = await HttpServer.bind(
       InternetAddress.anyIPv4,

@@ -108,7 +108,7 @@ class CobbleSheet {
   /// }
   /// ```
   static InlineCobbleSheet useInline() {
-    final _controller = useState<PersistentBottomSheetController<void>?>(null);
+    final _controller = useState<PersistentBottomSheetController?>(null);
     final _sheet = useMemoized(() => InlineCobbleSheet(_controller));
     return _sheet;
   }
@@ -124,11 +124,11 @@ class CobbleSheet {
 /// * [CobbleSheet.useInline]
 /// * [InlineCobbleSheet.show]
 class InlineCobbleSheet {
-  final ValueNotifier<PersistentBottomSheetController<void>?> _controller;
+  final ValueNotifier<PersistentBottomSheetController?> _controller;
 
   InlineCobbleSheet(this._controller);
 
-  set _ctr(PersistentBottomSheetController<void> controller) {
+  set _ctr(PersistentBottomSheetController controller) {
     _controller.value = controller;
     if (controller != null) {
       _shown = true;
