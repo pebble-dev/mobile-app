@@ -23,11 +23,12 @@ import org.koin.mp.KoinPlatformTools
             CachedPackageInfo::class,
             NotificationChannel::class
                    ],
-        version = 4,
+        version = 5,
         autoMigrations = [
             AutoMigration(1, 2),
             AutoMigration(2, 3),
-            AutoMigration(3, 4)
+            AutoMigration(3, 4),
+            AutoMigration(4, 5)
         ]
 )
 @TypeConverters(Converters::class)

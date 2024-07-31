@@ -138,6 +138,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.kotlinx.datetime)
     implementation(libs.dagger)
+    implementation(libs.uuid)
     implementation(project(":pebble_bt_transport"))
     implementation(project(":shared"))
     kapt(libs.dagger.compiler)

@@ -14,7 +14,7 @@ fun List<StatusBarNotification>.toNotificationGroup(): NotificationGroup {
     val summary = mutable.firstOrNull { NotificationCompat.isGroupSummary(it.notification) }
     summary?.let { mutable.remove(it) }
 
-    val groupKey = summary?.groupKey ?: mutable.first().groupKey
+    val groupKey = summary?.groupKey ?: mutable.firstOrNull()?.groupKey
             ?: throw IllegalArgumentException("Notification is not part of a group")
 
     return NotificationGroup(

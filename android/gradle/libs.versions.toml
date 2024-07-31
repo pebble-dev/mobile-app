@@ -14,6 +14,7 @@ libpebblecommonVersion = "0.1.21"
 room = "2.7.0-alpha04"
 room-sqlite = "2.5.0-alpha04"
 datastore = "1.1.1"
+uuidVersion = "0.8.4"
 
 [plugins]
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -47,3 +48,4 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationJson" }
 libpebblecommon = { module = "io.rebble.libpebblecommon:libpebblecommon", version.ref = "libpebblecommonVersion" }
+uuid = { module = "com.benasher44:uuid", version.ref = "uuidVersion" }

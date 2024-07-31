@@ -9,7 +9,6 @@ plugins {
     alias(libs.plugins.serialization)
 }
 
-val uuidVersion = "0.8.4"
 val roomSqliteVersion = "2.5.0-alpha04"
 val timberVersion = "5.0.1"
 val androidxVersion = "1.13.1"
@@ -43,7 +42,7 @@ kotlin {
             api(libs.koin.core)
             api(libs.kotlinx.serialization.core)
 
-            implementation("com.benasher44:uuid:$uuidVersion")
+            implementation(libs.uuid)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
             implementation(libs.androidx.room.runtime)

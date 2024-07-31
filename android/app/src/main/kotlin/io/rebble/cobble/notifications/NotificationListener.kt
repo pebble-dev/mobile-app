@@ -10,11 +10,13 @@ import android.os.UserHandle
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
+import com.benasher44.uuid.Uuid
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.data.NotificationMessage
 import io.rebble.cobble.data.toNotificationGroup
 import io.rebble.cobble.datasources.FlutterPreferences
+import io.rebble.cobble.shared.database.dao.NotificationChannelDao
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
@@ -29,6 +31,8 @@ class NotificationListener : NotificationListenerService() {
     private lateinit var connectionLooper: ConnectionLooper
     private lateinit var flutterPreferences: FlutterPreferences
     private lateinit var notificationProcessor: NotificationProcessor
+    private lateinit var activeNotifsState: MutableStateFlow<Map<Uuid, StatusBarNotification>>
+    private lateinit var notificationChannelDao: NotificationChannelDao
 
     private var isListening = false
     private var areNotificationsEnabled = true
@@ -49,6 +53,8 @@ class NotificationListener : NotificationListenerService() {
         flutterPreferences = injectionComponent.createFlutterPreferences()
         prefs = injectionComponent.createKMPPrefs()
         notificationProcessor = injectionComponent.createNotificationProcessor()
+        activeNotifsState = injectionComponent.createActiveNotifsState()
+        notificationChannelDao = injectionComponent.createNotificationChannelDao()
 
         super.onCreate()
         _isActive.value = true
@@ -89,32 +95,57 @@ class NotificationListener : NotificationListenerService() {
                 // Do not notify for media notifications
                 return
             }
-            try {
-                val channels = getNotificationChannels(sbn.packageName, sbn.user)
-                //TODO: Update channel info in kmp
-                /*channels?.forEach {
-                    notificationBridge.updateChannel(it.id, sbn.packageName, false, (it.name
-                            ?: it.id).toString(), it.description ?: "")
-                }*/
-            } catch (e: Exception) {
-                Timber.w(e, "Failed to get notif channels from ${sbn.packageName}")
-            }
-            if (NotificationCompat.getLocalOnly(sbn.notification)) return // ignore local notifications TODO: respect user preference
-            if (sbn.notification.flags and Notification.FLAG_ONGOING_EVENT != 0) return // ignore ongoing notifications
-            if (mutedPackages.contains(sbn.packageName)) return // ignore muted packages
             coroutineScope.launch {
-                if (prefs.sensitiveDataLoggingEnabled.firstOrNull() == true) {
+                val sensitiveLogging = prefs.sensitiveDataLoggingEnabled.firstOrNull() == true
+                try {
+                    val channels = getNotificationChannels(sbn.packageName, sbn.user)
+                    /*if (sensitiveLogging) {
+                        channels.forEach {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                Timber.v("Channel: ${it.id}, ${it.name}, ${it.description} ${it.conversationId}")
+                            } else {
+                                Timber.v("Channel: ${it.id}, ${it.name}, ${it.description} (no conversationId as old android)")
+                            }
+                        }
+                    }*/
+                    notificationChannelDao.insertAllIfNotExists(
+                            channels.map {
+                                io.rebble.cobble.shared.database.entity.NotificationChannel(
+                                        sbn.packageName,
+                                        it.id,
+                                        it.name.toString(),
+                                        it.description,
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                            it.conversationId
+                                        } else {
+                                            null
+                                        },
+                                        true
+                                )
+                            }
+                    )
+                } catch (e: Exception) {
+                    Timber.w(e, "Failed to get notif channels from ${sbn.packageName}")
+                }
+                if (NotificationCompat.getLocalOnly(sbn.notification)) return@launch // ignore local notifications TODO: respect user preference
+                if (sbn.notification.flags and Notification.FLAG_ONGOING_EVENT != 0) return@launch // ignore ongoing notifications
+                if (mutedPackages.contains(sbn.packageName)) return@launch // ignore muted packages
+                if (sensitiveLogging) {
                     Timber.d("Notification posted: ${sbn.packageName}")
                     Timber.d("This listener instance is: ${this.hashCode()}")
                     Timber.d("Notification: ${sbn.notification}\n${sbn.notification.extras}")
                 }
-            }
 
-            if (sbn.groupKey != null) {
-                val group = getNotificationGroup(sbn)
-                notificationProcessor.processGroupNotification(group.toNotificationGroup())
-            } else {
-                notificationProcessor.processNotification(sbn)
+                if (sbn.groupKey != null) {
+                    try {
+                        val group = getNotificationGroup(sbn).toNotificationGroup()
+                        notificationProcessor.processGroupNotification(group)
+                    } catch (_: IllegalArgumentException) {
+                        notificationProcessor.processNotification(sbn)
+                    }
+                } else {
+                    notificationProcessor.processNotification(sbn)
+                }
             }
         }
     }
@@ -124,6 +155,7 @@ class NotificationListener : NotificationListenerService() {
             Timber.d("Notification removed: ${sbn.packageName}")
 
             //TODO: Dismiss notification in kmp
+            val notif = activeNotifications
             /*
             val notif = notificationBridge.activeNotifs.toList().firstOrNull { it.second.id == sbn.id && it.second.packageName == sbn.packageName }?.first
             if (notif != null) {
@@ -134,13 +166,31 @@ class NotificationListener : NotificationListenerService() {
 
     override fun onNotificationChannelModified(pkg: String?, user: UserHandle?, channel: NotificationChannel?, modificationType: Int) {
         if (pkg != null && channel != null) {
-            val channelId = channel.id
-            val packageId = pkg
-            val delete = modificationType == NOTIFICATION_CHANNEL_OR_GROUP_DELETED
-            val channelDesc = channel.description ?: ""
-            val channelName = channel.name.toString()
-            //TODO: Update channel info in kmp
-            //notificationBridge.updateChannel(channelId, packageId, delete, channelName, channelDesc)
+            coroutineScope.launch {
+                val channelId = channel.id
+                val packageId = pkg
+                val delete = modificationType == NOTIFICATION_CHANNEL_OR_GROUP_DELETED
+                val channelDesc = channel.description ?: ""
+                val channelName = channel.name.toString()
+                val conversation = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    channel.conversationId
+                } else {
+                    null
+                }
+
+                val existing = notificationChannelDao.get(packageId, channelId)
+                if (existing != null) {
+                    if (delete) {
+                        notificationChannelDao.delete(existing)
+                    } else {
+                        notificationChannelDao.update(existing.copy(
+                                name = channelName,
+                                description = channelDesc,
+                                conversationId = conversation
+                        ))
+                    }
+                }
+            }
         }
     }
 

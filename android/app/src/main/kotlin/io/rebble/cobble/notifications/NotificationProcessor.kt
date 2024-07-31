@@ -1,10 +1,14 @@
 package io.rebble.cobble.notifications
 
 import android.app.Notification
+import android.app.Notification.Action
 import android.content.Context
 import android.graphics.Color
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
+import com.benasher44.uuid.uuid4
+import com.benasher44.uuid.uuidFrom
+import com.benasher44.uuid.uuidOf
 import io.rebble.cobble.data.NotificationGroup
 import io.rebble.cobble.data.NotificationMessage
 import io.rebble.cobble.shared.database.dao.NotificationChannelDao
@@ -15,7 +19,7 @@ import io.rebble.cobble.shared.datastore.DEFAULT_MUTED_PACKAGES_VERSION
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.datastore.defaultMutedPackages
 import io.rebble.cobble.shared.domain.common.SystemAppIDs.notificationsWatchappId
-import io.rebble.cobble.shared.domain.notifications.MetaNotificationAction
+import io.rebble.cobble.shared.domain.notifications.*
 import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
 import io.rebble.libpebblecommon.packets.blobdb.TimelineIcon
@@ -30,7 +34,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.datetime.Instant
 import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
@@ -103,9 +106,68 @@ class NotificationProcessor @Inject constructor(
         return channel?.shouldNotify ?: true
     }
 
+    private fun buildPebbleAttributes(packageId: String, category: String, title: String, text: String, messages: List<NotificationMessage>, color: Int) = buildList {
+        add(TimelineAttributeFactory.tinyIcon(determineIcon(packageId, category)))
+        add(TimelineAttributeFactory.title(title.trim()))
+        if (messages.isNotEmpty()) {
+            add(TimelineAttributeFactory.body(messages.last().text.trim()))
+        } else {
+            add(TimelineAttributeFactory.body(text.trim()))
+        }
+        add(TimelineAttributeFactory.primaryColor(PebbleColor(
+                Color.alpha(color).toUByte(),
+                Color.red(color).toUByte(),
+                Color.green(color).toUByte(),
+                Color.blue(color).toUByte()
+        )))
+    }
+
+    private fun buildPebbleActions(actions: List<Action>, channel: String?, conversation: Boolean) = buildList {
+        add(
+                TimelineItem.Action(
+                        MetaNotificationAction.Dismiss.ordinal.toUByte(),
+                        TimelineItem.Action.Type.Dismiss,
+                        listOf(TimelineAttributeFactory.title("Dismiss"))
+                )
+        )
+        actions.forEachIndexed { index, action ->
+            add(
+                    TimelineItem.Action(
+                            (MetaNotificationAction.metaActionLength + index).toUByte(),
+                            if (action.isReply) TimelineItem.Action.Type.Response else TimelineItem.Action.Type.Generic,
+                            listOf(TimelineAttributeFactory.title(action.title.toString()))
+                    )
+            )
+        }
+        add(
+                TimelineItem.Action(
+                        MetaNotificationAction.Open.ordinal.toUByte(),
+                        TimelineItem.Action.Type.Generic,
+                        listOf(TimelineAttributeFactory.title("Open on phone"))
+                )
+        )
+        add(
+                TimelineItem.Action(
+                        MetaNotificationAction.MutePackage.ordinal.toUByte(),
+                        TimelineItem.Action.Type.Generic,
+                        listOf(TimelineAttributeFactory.title("Mute app"))
+                )
+        )
+        val muteChannelText = "Mute ${if (conversation) "conversation" else "channel"})" +
+                if (conversation) "" else "\n'$channel'"
+        add(
+                TimelineItem.Action(
+                        MetaNotificationAction.MuteChannel.ordinal.toUByte(),
+                        TimelineItem.Action.Type.Generic,
+                        listOf(TimelineAttributeFactory.title(muteChannelText))
+                )
+        )
+    }
+
     private val displayActor = coroutineScope.actor<DisplayActorArgs>(capacity = Channel.UNLIMITED) {
         for (notification in channel) {
             val (packageId, notifId, tagId, title, text, category, color, messages, actions, sbn) = notification
+            val conversationId = tagId?.let { notificationChannelDao.getConversationId(sbn.packageName, it) }
 
             if (persistedNotifDao.getDuplicates(sbn.key, sbn.packageName, title, text).isNotEmpty()) {
                 Timber.d("Ignoring duplicate notification ${sbn.key}")
@@ -125,81 +187,15 @@ class NotificationProcessor @Inject constructor(
                 prefs.setMutedPackages(current + defaultMutedPackages)
             }
 
-            notificationChannelDao.insert(
-                    NotificationChannel(
-                            sbn.packageName,
-                            sbn.notification.channelId,
-                            notificationChannelDao.get(sbn.packageName, sbn.notification.channelId)?.name,
-                            notificationChannelDao.get(sbn.packageName, sbn.notification.channelId)?.description,
-                            notificationChannelDao.get(sbn.packageName, sbn.notification.channelId)?.shouldNotify ?: true
-                    )
-            )
-
+            // Channel should be added to db before this point, by listener
             if (!shouldNotify(sbn.packageName, sbn.notification.channelId)) {
                 Timber.v("Ignoring notification from muted channel/package ${sbn.key}")
                 continue
             }
 
-            val itemId = UUID.randomUUID()
-            val attributes = mutableListOf(
-                    TimelineAttributeFactory.tinyIcon(determineIcon(packageId, category)),
-                    TimelineAttributeFactory.title(title.trim()),
-                    if (messages.isNotEmpty()) {
-                        TimelineAttributeFactory.body(messages.last().text.trim())
-                    } else {
-                        TimelineAttributeFactory.body(text.trim())
-                    }
-            )
-
-            if (color > 1) {
-                attributes.add(TimelineAttributeFactory.primaryColor(PebbleColor(
-                        Color.alpha(color).toUByte(),
-                        Color.red(color).toUByte(),
-                        Color.green(color).toUByte(),
-                        Color.blue(color).toUByte()
-                )))
-            }
-
-            val pebbleActions = buildList {
-                add(
-                        TimelineItem.Action(
-                            MetaNotificationAction.Dismiss.ordinal.toUByte(),
-                            TimelineItem.Action.Type.Dismiss,
-                            listOf(TimelineAttributeFactory.title("Dismiss"))
-                        )
-                )
-                actions.forEachIndexed { index, action ->
-                    val isReply = action.remoteInputs?.any { it.allowFreeFormInput && it.allowedDataTypes?.contains("text/plain") != false } == true
-                    add(
-                            TimelineItem.Action(
-                                    (MetaNotificationAction.metaActionLength + index).toUByte(),
-                                    if (isReply) TimelineItem.Action.Type.Response else TimelineItem.Action.Type.Generic,
-                                    listOf(TimelineAttributeFactory.title(action.title.toString()))
-                            )
-                    )
-                }
-                add(
-                        TimelineItem.Action(
-                                MetaNotificationAction.Open.ordinal.toUByte(),
-                                TimelineItem.Action.Type.Generic,
-                                listOf(TimelineAttributeFactory.title("Open on phone"))
-                        )
-                )
-                add(
-                        TimelineItem.Action(
-                                MetaNotificationAction.MutePackage.ordinal.toUByte(),
-                                TimelineItem.Action.Type.Generic,
-                                listOf(TimelineAttributeFactory.title("Mute app"))
-                        )
-                )
-                add(
-                        TimelineItem.Action(
-                                MetaNotificationAction.MuteChannel.ordinal.toUByte(),
-                                TimelineItem.Action.Type.Generic,
-                                listOf(TimelineAttributeFactory.title("Mute channel\n'${tagId ?: ""}'"))
-                        )
-                )
-            }
+            val itemId = uuidFrom(NotificationActionHandler.notificationUuidPrefix + (uuid4().toString()).substring(NotificationActionHandler.notificationUuidPrefix.length))
+            val attributes = buildPebbleAttributes(packageId, category, title, text, messages, color)
+            val pebbleActions = buildPebbleActions(actions, tagId, conversationId != null)
             activeNotifsState.value += (itemId to sbn)
 
             val notificationItem = TimelineItem(
@@ -265,7 +261,11 @@ class NotificationProcessor @Inject constructor(
                         it.packageName == notif.packageName &&
                         it.id == notif.id &&
                         NotificationCompat.getShowWhen(it.notification) == NotificationCompat.getShowWhen(notif.notification) &&
-                        it.notification.extras.keySet() == notif.notification.extras.keySet()
+                        it.notification.extras.keySet() == notif.notification.extras.keySet() &&
+                        it.notification.extras.getCharSequence(Notification.EXTRA_TITLE) == notif.notification.extras.getCharSequence(Notification.EXTRA_TITLE) &&
+                        it.notification.extras.getCharSequence(Notification.EXTRA_TEXT) == notif.notification.extras.getCharSequence(Notification.EXTRA_TEXT) &&
+                        it.notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT) == notif.notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT) &&
+                        it.notification.extras.getParcelableArray(Notification.EXTRA_MESSAGES)?.size == notif.notification.extras.getParcelableArray(Notification.EXTRA_MESSAGES)?.size
             } == null
         }
         return newItems

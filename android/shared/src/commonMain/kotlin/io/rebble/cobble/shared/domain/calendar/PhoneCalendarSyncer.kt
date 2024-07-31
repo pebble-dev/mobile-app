@@ -4,7 +4,6 @@ import com.benasher44.uuid.Uuid
 import com.benasher44.uuid.uuid4
 import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.PlatformContext
-import io.rebble.cobble.shared.data.calendarWatchappId
 import io.rebble.cobble.shared.data.toTimelinePin
 import io.rebble.cobble.shared.database.NextSyncAction
 import io.rebble.cobble.shared.database.dao.CalendarDao
@@ -12,6 +11,7 @@ import io.rebble.cobble.shared.database.dao.TimelinePinDao
 import io.rebble.cobble.shared.database.entity.Calendar
 import io.rebble.cobble.shared.database.entity.isInPast
 import io.rebble.cobble.shared.datastore.KMPPrefs
+import io.rebble.cobble.shared.domain.common.SystemAppIDs.calendarWatchappId
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone

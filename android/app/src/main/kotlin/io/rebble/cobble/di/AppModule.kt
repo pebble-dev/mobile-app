@@ -22,6 +22,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.plus
+import org.koin.core.qualifier.named
+import org.koin.mp.KoinPlatformTools
 import java.util.UUID
 import javax.inject.Singleton
 
@@ -75,7 +77,7 @@ abstract class AppModule {
         @Provides
         @Singleton
         fun provideActiveNotifsState(): MutableStateFlow<Map<UUID, StatusBarNotification>> {
-            return MutableStateFlow(emptyMap())
+            return KoinPlatformTools.defaultContext().get().get(named("activeNotifsState"))
         }
     }
 }

@@ -7,6 +7,7 @@ import dagger.multibindings.IntoSet
 import io.rebble.cobble.handlers.*
 import io.rebble.cobble.handlers.music.MusicHandler
 import io.rebble.cobble.service.WatchService
+import io.rebble.cobble.shared.domain.notifications.NotificationActionHandler
 import io.rebble.cobble.shared.handlers.CalendarActionHandler
 import io.rebble.cobble.shared.handlers.CobbleHandler
 import kotlinx.coroutines.CoroutineScope
@@ -19,6 +20,10 @@ abstract class ServiceModule {
         @Provides
         fun provideCoroutineScope(watchService: WatchService): CoroutineScope {
             return watchService.watchConnectionScope
+        }
+        @Provides
+        fun provideNotificationActionHandler(scope: CoroutineScope): NotificationActionHandler {
+            return NotificationActionHandler(scope)
         }
     }
 
@@ -41,6 +46,12 @@ abstract class ServiceModule {
     @Named("normal")
     abstract fun bindCalendarHandlerIntoSet(
             calendarHandler: CalendarHandler
+    ): CobbleHandler
+    @Binds
+    @IntoSet
+    @Named("normal")
+    abstract fun bindNotificationActionHandlerIntoSet(
+            notificationHandler: NotificationActionHandler
     ): CobbleHandler
 
     @Binds

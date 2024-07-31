@@ -2,13 +2,13 @@ package io.rebble.cobble.shared.domain.calendar
 
 import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.PlatformContext
-import io.rebble.cobble.shared.data.calendarWatchappId
 import io.rebble.cobble.shared.database.NextSyncAction
 import io.rebble.cobble.shared.database.dao.CalendarDao
 import io.rebble.cobble.shared.database.dao.TimelinePinDao
 import io.rebble.cobble.shared.database.entity.Calendar
 import io.rebble.cobble.shared.database.getDatabase
 import io.rebble.cobble.shared.domain.common.PebbleDevice
+import io.rebble.cobble.shared.domain.common.SystemAppIDs.calendarWatchappId
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.timeline.WatchTimelineSyncer
 import io.rebble.libpebblecommon.packets.WatchVersion
