@@ -108,11 +108,11 @@ class NotificationProcessor @Inject constructor(
 
     private fun buildPebbleAttributes(packageId: String, category: String, title: String, text: String, messages: List<NotificationMessage>, color: Int) = buildList {
         add(TimelineAttributeFactory.tinyIcon(determineIcon(packageId, category)))
-        add(TimelineAttributeFactory.title(title.trim()))
+        add(TimelineAttributeFactory.title(replaceSpecialChars(title.trim())))
         if (messages.isNotEmpty()) {
-            add(TimelineAttributeFactory.body(messages.last().text.trim()))
+            add(TimelineAttributeFactory.body(replaceSpecialChars(messages.last().text.trim())))
         } else {
-            add(TimelineAttributeFactory.body(text.trim()))
+            add(TimelineAttributeFactory.body(replaceSpecialChars(text.trim())))
         }
         add(TimelineAttributeFactory.primaryColor(PebbleColor(
                 Color.alpha(color).toUByte(),
@@ -325,9 +325,11 @@ class NotificationProcessor @Inject constructor(
                 text = it.toString()
             }
         }
-
-        text = text.replace('\u2009', ' ') // Replace thin space with normal space (watch doesn't support it)
         return text
+    }
+
+    private fun replaceSpecialChars(text: String): String {
+        return text.replace('\u2009', ' ')
     }
 
     private fun extractMessages(notification: Notification): List<NotificationMessage>? {
