@@ -20,6 +20,7 @@ import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.datastore.defaultMutedPackages
 import io.rebble.cobble.shared.domain.common.SystemAppIDs.notificationsWatchappId
 import io.rebble.cobble.shared.domain.notifications.*
+import io.rebble.libpebblecommon.PacketPriority
 import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
 import io.rebble.libpebblecommon.packets.blobdb.TimelineIcon
@@ -339,6 +340,19 @@ class NotificationProcessor @Inject constructor(
                     ?.messages?.map {
                         NotificationMessage(it.person?.name.toString(), it.text.toString(), it.timestamp)
                     }
+        }
+    }
+
+    suspend fun processDismissed(sbn: StatusBarNotification) {
+        val existing = activeNotifsState.value.entries.firstOrNull { it.value.id == sbn.id }
+        if (existing != null) {
+            activeNotifsState.value -= existing.key
+            val packet = BlobCommand.DeleteCommand(
+                    Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
+                    BlobCommand.BlobDatabase.Notification,
+                    SUUID(StructMapper(), existing.key).toBytes()
+            )
+            blobDBService.send(packet, PacketPriority.LOW)
         }
     }
 }

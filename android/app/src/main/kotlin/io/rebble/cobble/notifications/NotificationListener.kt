@@ -153,14 +153,9 @@ class NotificationListener : NotificationListenerService() {
     override fun onNotificationRemoved(sbn: StatusBarNotification) {
         if (isListening) {
             Timber.d("Notification removed: ${sbn.packageName}")
-
-            //TODO: Dismiss notification in kmp
-            val notif = activeNotifications
-            /*
-            val notif = notificationBridge.activeNotifs.toList().firstOrNull { it.second.id == sbn.id && it.second.packageName == sbn.packageName }?.first
-            if (notif != null) {
-                notificationBridge.dismiss(notif)
-            }*/
+            coroutineScope.launch {
+                notificationProcessor.processDismissed(sbn)
+            }
         }
     }
 
