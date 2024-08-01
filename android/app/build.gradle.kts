@@ -139,6 +139,8 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.dagger)
     implementation(libs.uuid)
+    implementation(libs.errorprone.annotations)
+    implementation(libs.spotbugs.annotations)
     implementation(project(":pebble_bt_transport"))
     implementation(project(":shared"))
     kapt(libs.dagger.compiler)

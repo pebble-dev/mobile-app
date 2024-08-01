@@ -10,6 +10,8 @@ kotlinxDatetime = "0.6.0"
 kotlinxSerializationJson = "1.7.1"
 ksp = "2.0.20-Beta2-1.0.23"
 libpebblecommonVersion = "0.1.21"
+errorproneVersion = "2.26.1"
+spotbugsVersion = "4.8.6"
 
 room = "2.7.0-alpha05"
 room-sqlite = "2.5.0-alpha05"
@@ -32,6 +34,8 @@ dagger = { module = "com.google.dagger:dagger", version.ref = "daggerVersion" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "daggerVersion" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 kgp = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+errorprone-annotations = { module = "com.google.errorprone:error_prone_annotations", version.ref = "errorproneVersion" }
+spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version.ref = "spotbugsVersion" }
 
 androidx-sqlite = { module = "androidx.sqlite:sqlite", version.ref = "room-sqlite" }
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "room-sqlite" }

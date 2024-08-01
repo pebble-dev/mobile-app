@@ -128,7 +128,9 @@ class ActiveMediaSessionProvider @Inject constructor(private val context: Contex
 
     private fun setReportedController(mediaController: MediaController?) {
         if (mediaController !== value) {
-            value = mediaController
+            mediaController?.let {
+                value = it
+            }
         }
     }
 
