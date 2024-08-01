@@ -11,7 +11,7 @@ import android.os.Build
 import android.provider.Settings
 import androidx.core.content.getSystemService
 import androidx.lifecycle.Lifecycle
-import io.rebble.cobble.MainActivity
+import io.rebble.cobble.FlutterMainActivity
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.datasources.PermissionChangeBus
 import io.rebble.cobble.notifications.NotificationListener
@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class PermissionControlFlutterBridge @Inject constructor(
-        private val activity: MainActivity,
+        private val activity: FlutterMainActivity,
         private val activityLifecycle: Lifecycle,
         private val coroutineScope: CoroutineScope,
         bridgeLifecycleController: BridgeLifecycleController

@@ -17,6 +17,7 @@ import android.content.IntentSender
 import android.os.Build
 import android.service.notification.NotificationListenerService
 import io.rebble.cobble.BuildConfig
+import io.rebble.cobble.FlutterMainActivity
 import io.rebble.cobble.MainActivity
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bridges.FlutterBridge
@@ -35,7 +36,7 @@ class ConnectionUiFlutterBridge @Inject constructor(
         bridgeLifecycleController: BridgeLifecycleController,
         private val connectionLooper: ConnectionLooper,
         coroutineScope: CoroutineScope,
-        private val activity: MainActivity
+        private val activity: FlutterMainActivity
 ) : FlutterBridge, Pigeons.UiConnectionControl {
     private val pairCallbacks = bridgeLifecycleController
             .createCallbacks(Pigeons::PairCallbacks)

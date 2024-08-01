@@ -1,11 +1,12 @@
 [versions]
+activityCompose = "1.9.1"
 android-minSdk = "29"
 android-targetSdk = "34"
 coroutinesVersion = "1.8.1"
 daggerVersion = "2.51.1"
 gradle = "8.5.1"
 koinVersion = "3.2.0"
-kotlin = "2.0.20-Beta1"
+kotlin = "2.0.20-Beta2"
 kotlinxDatetime = "0.6.0"
 kotlinxSerializationJson = "1.7.1"
 ksp = "2.0.20-Beta2-1.0.23"
@@ -17,6 +18,9 @@ room = "2.7.0-alpha05"
 room-sqlite = "2.5.0-alpha05"
 datastore = "1.1.1"
 uuidVersion = "0.8.4"
+compose-lib = "1.6.11"
+appcompat = "1.7.0"
+material3Android = "1.2.1"
 
 ktorVersion = "2.3.12"
 
@@ -30,8 +34,10 @@ androidx-room = { id = "androidx.room", version.ref = "room" }
 android-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "gradle" }
 android-application = { id = "com.android.application", version.ref = "gradle" }
+jetbrains-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 [libraries]
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "daggerVersion" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "daggerVersion" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
@@ -61,3 +67,11 @@ ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktorVer
 ktor-client-contentnegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorVersion" }
 ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorVersion" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktorVersion" }
+
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-lib" }
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-lib" }
+compose-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose-lib" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-lib" }
+compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-lib" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }

@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.androidx.room)
     alias(libs.plugins.ksp)
     alias(libs.plugins.serialization)
+    alias(libs.plugins.jetbrains.compose)
 }
 
 val roomSqliteVersion = "2.5.0-alpha04"
@@ -38,6 +39,11 @@ kotlin {
     }
 
     sourceSets {
+        all {
+            languageSettings {
+                optIn("org.jetbrains.compose.resources.ExperimentalResourceApi")
+            }
+        }
         commonMain.dependencies {
             api(libs.koin.core)
             api(libs.kotlinx.serialization.core)
@@ -54,6 +60,11 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.contentnegotiation)
             implementation(libs.ktor.serialization.json)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.material)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.components.resources)
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)

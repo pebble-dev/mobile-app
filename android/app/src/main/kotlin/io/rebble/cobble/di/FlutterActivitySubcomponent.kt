@@ -14,15 +14,20 @@ import javax.inject.Scope
 @PerActivity
 @Subcomponent(
         modules = [
-            ActivityModule::class,
+            FlutterActivityModule::class,
+            CommonBridgesModule::class,
+            UiBridgesModule::class,
         ]
 )
-interface ActivitySubcomponent {
+interface FlutterActivitySubcomponent {
+    @CommonBridge
+    fun createCommonBridges(): Set<FlutterBridge>
+
+    @UiBridge
+    fun createUiBridges(): Set<FlutterBridge>
+
     @Subcomponent.Factory
     interface Factory {
-        fun create(@BindsInstance mainActivity: MainActivity): ActivitySubcomponent
+        fun create(@BindsInstance mainActivity: FlutterMainActivity): FlutterActivitySubcomponent
     }
 }
-
-@Scope
-annotation class PerActivity

@@ -22,6 +22,7 @@ plugins {
     alias(libs.plugins.kapt) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.serialization) apply false
+    alias(libs.plugins.jetbrains.compose) apply false
 }
 
 allprojects {
@@ -31,6 +32,7 @@ allprojects {
         maven {
             url = uri("https://jitpack.io")
         }
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 
         maven {
             url = uri("https://maven.pkg.github.com/pebble-dev/libpebblecommon")

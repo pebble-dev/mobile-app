@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.serialization)
     alias(libs.plugins.android.kotlin)
     alias(libs.plugins.android.application)
+    alias(libs.plugins.jetbrains.compose)
 }
 
 val localProperties = Properties()
@@ -123,6 +124,8 @@ val junitVersion = "4.13.2"
 val androidxTestVersion = "1.5.0"
 
 dependencies {
+    implementation(libs.androidx.appcompat)
+    api(libs.androidx.activity.compose)
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)

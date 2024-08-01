@@ -57,6 +57,7 @@ interface AppComponent {
     fun initLibPebbleCommonServices(): Set<ProtocolService>
 
     fun createActivitySubcomponentFactory(): ActivitySubcomponent.Factory
+    fun createFlutterActivitySubcomponentFactory(): FlutterActivitySubcomponent.Factory
     fun createServiceSubcomponentFactory(): ServiceSubcomponent.Factory
 
     //TODO: Unify DI under Koin
