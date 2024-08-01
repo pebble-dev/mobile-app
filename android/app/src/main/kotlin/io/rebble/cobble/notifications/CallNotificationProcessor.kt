@@ -18,7 +18,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.random.Random
 import io.rebble.cobble.bluetooth.ConnectionLooper
+import javax.inject.Singleton
 
+@Singleton
 class CallNotificationProcessor @Inject constructor(
         exceptionHandler: GlobalExceptionHandler,
         private val prefs: KMPPrefs,
@@ -73,53 +75,6 @@ class CallNotificationProcessor @Inject constructor(
             previousState = state
         }.launchIn(coroutineScope)
 
-        phoneControl.receivedMessages.receiveAsFlow().onEach {
-            if (connectionLooper.connectionState.value !is ConnectionState.Connected) {
-                Logging.w("Ignoring phone control message because watch is not connected")
-                return@onEach
-            }
-            when (it) {
-                is PhoneControl.Answer -> {
-                    synchronized(this@CallNotificationProcessor) {
-                        val state = callState.value as? CallState.RINGING ?: return@onEach
-                        if (it.cookie.get() == state.cookie) {
-                            Logging.d("Answering call")
-                            state.notification.answer?.send() ?: run {
-                                callState.value = CallState.IDLE
-                                return@synchronized
-                            }
-                            callState.value = CallState.ONGOING(state.notification, state.cookie)
-                        }
-                    }
-                }
-
-                is PhoneControl.Hangup -> {
-                    synchronized(this@CallNotificationProcessor) {
-                        when (val state = callState.value) {
-                            is CallState.RINGING -> {
-                                if (it.cookie.get() == state.cookie) {
-                                    Logging.d("Rejecting ringing call")
-                                    state.notification.decline?.send()
-                                    callState.value = CallState.IDLE
-                                }
-                            }
-                            is CallState.ONGOING -> {
-                                    if (it.cookie.get() == state.cookie) {
-                                        Logging.d("Disconnecting call")
-                                        state.notification.hangUp?.send()
-                                        callState.value = CallState.IDLE
-                                    }
-                            }
-                        }
-                    }
-                }
-
-                else -> {
-                    Logging.w("Unhandled phone control message: $it")
-                }
-            }
-        }.launchIn(coroutineScope)
-
     }
 
     companion object {
@@ -130,6 +85,9 @@ class CallNotificationProcessor @Inject constructor(
     }
 
     fun processCallNotification(sbn: StatusBarNotification) {
+        if (sbn.packageName == "com.google.android.dialer" || sbn.packageName == "com.android.server.telecom") {
+            return // Ignore system call notifications, we handle those with InCallService
+        }
         val interpreter = callPackages[sbn.packageName] ?: run {
             Logging.d("Call notification from ${sbn.packageName} does not have an interpreter")
             return
@@ -182,6 +140,53 @@ class CallNotificationProcessor @Inject constructor(
                     (state is CallState.ONGOING && state.notification.packageName == sbn.packageName)
             ) {
                 callState.value = CallState.IDLE
+            }
+        }
+    }
+
+    fun handleCallAction(action: PhoneControl) {
+        if (connectionLooper.connectionState.value !is ConnectionState.Connected) {
+            Logging.w("Ignoring phone control message because watch is not connected")
+            return
+        }
+        when (action) {
+            is PhoneControl.Answer -> {
+                synchronized(this@CallNotificationProcessor) {
+                    val state = callState.value as? CallState.RINGING ?: return
+                    if (action.cookie.get() == state.cookie) {
+                        Logging.d("Answering call")
+                        state.notification.answer?.send() ?: run {
+                            callState.value = CallState.IDLE
+                            return@synchronized
+                        }
+                        callState.value = CallState.ONGOING(state.notification, state.cookie)
+                    }
+                }
+            }
+
+            is PhoneControl.Hangup -> {
+                synchronized(this@CallNotificationProcessor) {
+                    when (val state = callState.value) {
+                        is CallState.RINGING -> {
+                            if (action.cookie.get() == state.cookie) {
+                                Logging.d("Rejecting ringing call")
+                                state.notification.decline?.send()
+                                callState.value = CallState.IDLE
+                            }
+                        }
+                        is CallState.ONGOING -> {
+                            if (action.cookie.get() == state.cookie) {
+                                Logging.d("Disconnecting call")
+                                state.notification.hangUp?.send()
+                                callState.value = CallState.IDLE
+                            }
+                        }
+                    }
+                }
+            }
+
+            else -> {
+                Logging.w("Unhandled phone control message: $action")
             }
         }
     }

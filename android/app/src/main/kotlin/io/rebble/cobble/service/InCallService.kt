@@ -9,6 +9,7 @@ import android.telecom.InCallService
 import android.telecom.VideoProfile
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
+import io.rebble.cobble.notifications.CallNotificationProcessor
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.libpebblecommon.packets.PhoneControl
 import io.rebble.libpebblecommon.services.PhoneControlService
@@ -24,6 +25,7 @@ class InCallService : InCallService() {
     private lateinit var phoneControlService: PhoneControlService
     private lateinit var connectionLooper: ConnectionLooper
     private lateinit var contentResolver: ContentResolver
+    private lateinit var callNotificationProcessor: CallNotificationProcessor
 
     private var lastCookie: UInt? = null
     private var lastCall: Call? = null
@@ -37,6 +39,7 @@ class InCallService : InCallService() {
         coroutineScope = CoroutineScope(
                 SupervisorJob() + injectionComponent.createExceptionHandler()
         )
+        callNotificationProcessor = injectionComponent.createCallNotificationProcessor()
         contentResolver = applicationContext.contentResolver
         listenForPhoneControlMessages()
     }
@@ -52,6 +55,8 @@ class InCallService : InCallService() {
                     synchronized(this@InCallService) {
                         if (it.cookie.get() == lastCookie) {
                             lastCall?.answer(VideoProfile.STATE_AUDIO_ONLY) // Answering from watch probably means a headset or something
+                        } else {
+                            callNotificationProcessor.handleCallAction(it)
                         }
                     }
                 }
@@ -69,6 +74,8 @@ class InCallService : InCallService() {
                                     call.disconnect()
                                 }
                             }
+                        } else {
+                            callNotificationProcessor.handleCallAction(it)
                         }
                     }
                 }
