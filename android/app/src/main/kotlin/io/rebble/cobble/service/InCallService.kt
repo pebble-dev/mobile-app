@@ -105,7 +105,7 @@ class InCallService : InCallService() {
                 }
                 lastCall = call
             }
-            val cookie = Random.nextInt().toUInt()
+            val cookie = Random.nextInt().toUInt() or 0xCAu // Magic number for phone call to differentiate from third-party calls
             synchronized(this@InCallService) {
                 lastCookie = cookie
             }

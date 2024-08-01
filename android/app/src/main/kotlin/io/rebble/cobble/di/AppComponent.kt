@@ -12,6 +12,7 @@ import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.datasources.PairedStorage
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.errors.GlobalExceptionHandler
+import io.rebble.cobble.notifications.CallNotificationProcessor
 import io.rebble.cobble.notifications.NotificationProcessor
 import io.rebble.cobble.service.ServiceLifecycleControl
 import io.rebble.cobble.shared.database.dao.NotificationChannelDao
@@ -43,6 +44,7 @@ interface AppComponent {
     fun createWatchMetadataStore(): WatchMetadataStore
     fun createPairedStorage(): PairedStorage
     fun createNotificationProcessor(): NotificationProcessor
+    fun createCallNotificationProcessor(): CallNotificationProcessor
     fun createFlutterPreferences(): FlutterPreferences
     fun initServiceLifecycleControl(): ServiceLifecycleControl
     fun initNotificationChannels(): NotificationChannelManager

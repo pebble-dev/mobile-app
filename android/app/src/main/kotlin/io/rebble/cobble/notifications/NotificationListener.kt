@@ -31,6 +31,7 @@ class NotificationListener : NotificationListenerService() {
     private lateinit var connectionLooper: ConnectionLooper
     private lateinit var flutterPreferences: FlutterPreferences
     private lateinit var notificationProcessor: NotificationProcessor
+    private lateinit var callNotificationProcessor: CallNotificationProcessor
     private lateinit var activeNotifsState: MutableStateFlow<Map<Uuid, StatusBarNotification>>
     private lateinit var notificationChannelDao: NotificationChannelDao
 
@@ -55,6 +56,7 @@ class NotificationListener : NotificationListenerService() {
         notificationProcessor = injectionComponent.createNotificationProcessor()
         activeNotifsState = injectionComponent.createActiveNotifsState()
         notificationChannelDao = injectionComponent.createNotificationChannelDao()
+        callNotificationProcessor = injectionComponent.createCallNotificationProcessor()
 
         super.onCreate()
         _isActive.value = true
@@ -127,6 +129,12 @@ class NotificationListener : NotificationListenerService() {
                 } catch (e: Exception) {
                     Timber.w(e, "Failed to get notif channels from ${sbn.packageName}")
                 }
+
+                if (NotificationCompat.getCategory(sbn.notification) == Notification.CATEGORY_CALL) {
+                    callNotificationProcessor.processCallNotification(sbn)
+                    return@launch
+                }
+
                 if (NotificationCompat.getLocalOnly(sbn.notification)) return@launch // ignore local notifications TODO: respect user preference
                 if (sbn.notification.flags and Notification.FLAG_ONGOING_EVENT != 0) return@launch // ignore ongoing notifications
                 if (mutedPackages.contains(sbn.packageName)) return@launch // ignore muted packages
@@ -153,8 +161,12 @@ class NotificationListener : NotificationListenerService() {
     override fun onNotificationRemoved(sbn: StatusBarNotification) {
         if (isListening) {
             Timber.d("Notification removed: ${sbn.packageName}")
-            coroutineScope.launch {
-                notificationProcessor.processDismissed(sbn)
+            if (NotificationCompat.getCategory(sbn.notification) == Notification.CATEGORY_CALL) {
+                callNotificationProcessor.processCallNotificationDismissal(sbn)
+            } else {
+                coroutineScope.launch {
+                    notificationProcessor.processDismissed(sbn)
+                }
             }
         }
     }
