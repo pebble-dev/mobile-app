@@ -11,6 +11,8 @@ import io.rebble.cobble.shared.domain.timeline.TimelineIcon
 import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
 import io.rebble.libpebblecommon.util.trimWithEllipsis
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.format.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.time.DurationUnit
@@ -29,6 +31,7 @@ data class CalendarEvent(
         val reminders: List<EventReminder>,
         val availability: Availability,
         val status: Status,
+        val baseEventId: Long,
 ) {
     enum class Availability {
         Free,
@@ -177,3 +180,18 @@ fun CalendarEvent.toTimelinePin(calendar: Calendar): TimelinePin {
 
 
 private fun CalendarEvent.generateCompositeBackingId() = "${calendarId}T${id}T${startTime}"
+
+data class CompositeBackingId(
+        val calendarId: Long,
+        val eventId: Long,
+        val startTime: String
+)
+
+fun String.toCompositeBackingId(): CompositeBackingId {
+    val parts = split("T")
+    return CompositeBackingId(
+            calendarId = parts[0].toLong(),
+            eventId = parts[1].toLong(),
+            startTime = parts[2]
+    )
+}

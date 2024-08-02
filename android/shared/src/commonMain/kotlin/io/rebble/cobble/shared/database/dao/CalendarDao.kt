@@ -29,4 +29,7 @@ interface CalendarDao {
 
     @Query("SELECT * FROM Calendar")
     fun getFlow(): Flow<List<Calendar>>
+
+    @Query("SELECT * FROM Calendar WHERE id = :calendarId")
+    suspend fun get(calendarId: Long): Calendar?
 }

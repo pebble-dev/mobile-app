@@ -5,8 +5,10 @@ import com.benasher44.uuid.Uuid
 import io.rebble.cobble.shared.AndroidPlatformContext
 import io.rebble.cobble.shared.PlatformContext
 import io.rebble.cobble.shared.datastore.createDataStore
+import io.rebble.cobble.shared.domain.calendar.PlatformCalendarActionExecutor
 import io.rebble.cobble.shared.domain.notifications.PlatformNotificationActionExecutor
 import io.rebble.cobble.shared.domain.notifications.AndroidNotificationActionExecutor
+import io.rebble.cobble.shared.domain.calendar.AndroidCalendarActionExecutor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.dsl.module
@@ -25,4 +27,5 @@ val androidModule = module {
         MutableStateFlow<Map<Uuid, StatusBarNotification>>(emptyMap())
     } bind StateFlow::class
     singleOf<PlatformNotificationActionExecutor>(::AndroidNotificationActionExecutor)
+    singleOf<PlatformCalendarActionExecutor>(::AndroidCalendarActionExecutor)
 }

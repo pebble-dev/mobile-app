@@ -187,6 +187,11 @@ class WatchTimelineSyncer(
                 BlobCommand.BlobDatabase.Pin
         )).responseValue
     }
+
+    suspend fun deleteThenIgnore(pin: TimelinePin) {
+        timelinePinDao.updatePin(pin.copy(nextSyncAction = NextSyncAction.DeleteThenIgnore))
+        syncPinDatabaseWithWatch()
+    }
 }
 
 expect fun displayWatchFullWarning(context: PlatformContext)

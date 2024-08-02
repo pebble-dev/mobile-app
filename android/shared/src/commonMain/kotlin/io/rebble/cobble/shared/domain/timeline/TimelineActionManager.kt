@@ -8,15 +8,15 @@ import io.rebble.cobble.shared.database.dao.TimelinePinDao
 import io.rebble.libpebblecommon.packets.blobdb.TimelineAction
 import io.rebble.libpebblecommon.services.blobdb.TimelineService
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.*
 
 class TimelineActionManager: KoinComponent {
     private val timelineDao: TimelinePinDao by inject()
     private val timelineService: TimelineService by inject()
+    private val scope = CoroutineScope(Dispatchers.Default) //todo: Exception handler
 
     val actionFlow = callbackFlow {
         timelineService.actionHandler = {
@@ -27,7 +27,7 @@ class TimelineActionManager: KoinComponent {
         awaitClose {
             timelineService.actionHandler = null
         }
-    }.buffer()
+    }.shareIn(scope, SharingStarted.Lazily).buffer()
 
     fun actionFlowForApp(appId: Uuid):
             Flow<Pair<TimelineAction.InvokeAction, CompletableDeferred<TimelineService.ActionResponse>>> {
