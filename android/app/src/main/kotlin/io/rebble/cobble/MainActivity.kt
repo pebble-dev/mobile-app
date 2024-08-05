@@ -127,11 +127,6 @@ class MainActivity : FlutterActivity() {
         handleIntent(intent)
     }
 
-    override fun onDestroy() {
-        closeDatabase()
-        super.onDestroy()
-    }
-
     /**
      * Start the CompanionDeviceService and InCallService
      */
