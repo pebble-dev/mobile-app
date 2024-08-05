@@ -54,7 +54,7 @@ class NotificationProcessor @Inject constructor(
         private val prefs: KMPPrefs,
 ) {
     val coroutineScope = CoroutineScope(
-            SupervisorJob() + exceptionHandler
+            SupervisorJob() + exceptionHandler + CoroutineName("NotificationProcessor")
     )
 
     private val activeGroups = mutableMapOf<String, NotificationGroup>()

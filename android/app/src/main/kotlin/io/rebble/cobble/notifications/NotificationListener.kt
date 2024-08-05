@@ -46,7 +46,7 @@ class NotificationListener : NotificationListenerService() {
         val injectionComponent = (applicationContext as CobbleApplication).component
 
         coroutineScope = CoroutineScope(
-                SupervisorJob() + injectionComponent.createExceptionHandler()
+                SupervisorJob() + injectionComponent.createExceptionHandler() + CoroutineName("NotificationListener")
         )
 
         connectionLooper = injectionComponent.createConnectionLooper()
