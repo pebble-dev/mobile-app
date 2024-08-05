@@ -19,6 +19,7 @@ room-sqlite = "2.5.0-alpha05"
 datastore = "1.1.1"
 uuidVersion = "0.8.4"
 compose-lib = "1.6.11"
+compose-nav = "2.7.0-alpha07"
 appcompat = "1.7.0"
 material3Android = "1.2.1"
 
@@ -72,6 +73,7 @@ compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.re
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-lib" }
 compose-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose-lib" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-lib" }
+compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "compose-nav" }
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-lib" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }

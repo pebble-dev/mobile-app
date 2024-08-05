@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
@@ -22,21 +23,14 @@ fun HomeScaffold(modifier: Modifier = Modifier, topBarWindowInsets: WindowInsets
                     windowInsets = WindowInsets.navigationBars
             ) {
                 BottomNavigationItem(
-                    selected = true,
-                    onClick = { },
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    label = { Text("Home") }
-                )
-
-                BottomNavigationItem(
                     selected = false,
                     onClick = { },
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    label = { Text("Home") }
+                    icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
+                    label = { Text("Settings") }
                 )
             }
         },
     ) {
-        Text("Hello, Cobble!")
+
     }
 }

@@ -64,6 +64,7 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.material)
             implementation(libs.compose.foundation)
+            implementation(libs.compose.navigation)
             implementation(libs.compose.components.resources)
         }
         androidMain.dependencies {
