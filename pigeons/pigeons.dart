@@ -197,10 +197,11 @@ class NotifyingPackage {
 
 class CalendarPigeon {
   int id;
+  String account;
   String name;
   int color;
   bool enabled;
-  CalendarPigeon(this.id, this.name, this.color, this.enabled);
+  CalendarPigeon(this.id, this.account, this.name, this.color, this.enabled);
 }
 
 @FlutterApi()

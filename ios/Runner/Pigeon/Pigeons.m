@@ -853,11 +853,13 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 
 @implementation CalendarPigeon
 + (instancetype)makeWithId:(NSNumber *)id
+    account:(NSString *)account
     name:(NSString *)name
     color:(NSNumber *)color
     enabled:(NSNumber *)enabled {
   CalendarPigeon* pigeonResult = [[CalendarPigeon alloc] init];
   pigeonResult.id = id;
+  pigeonResult.account = account;
   pigeonResult.name = name;
   pigeonResult.color = color;
   pigeonResult.enabled = enabled;
@@ -867,11 +869,13 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
   CalendarPigeon *pigeonResult = [[CalendarPigeon alloc] init];
   pigeonResult.id = GetNullableObjectAtIndex(list, 0);
   NSAssert(pigeonResult.id != nil, @"");
-  pigeonResult.name = GetNullableObjectAtIndex(list, 1);
+  pigeonResult.account = GetNullableObjectAtIndex(list, 1);
+  NSAssert(pigeonResult.account != nil, @"");
+  pigeonResult.name = GetNullableObjectAtIndex(list, 2);
   NSAssert(pigeonResult.name != nil, @"");
-  pigeonResult.color = GetNullableObjectAtIndex(list, 2);
+  pigeonResult.color = GetNullableObjectAtIndex(list, 3);
   NSAssert(pigeonResult.color != nil, @"");
-  pigeonResult.enabled = GetNullableObjectAtIndex(list, 3);
+  pigeonResult.enabled = GetNullableObjectAtIndex(list, 4);
   NSAssert(pigeonResult.enabled != nil, @"");
   return pigeonResult;
 }
@@ -881,6 +885,7 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 - (NSArray *)toList {
   return @[
     (self.id ?: [NSNull null]),
+    (self.account ?: [NSNull null]),
     (self.name ?: [NSNull null]),
     (self.color ?: [NSNull null]),
     (self.enabled ?: [NSNull null]),

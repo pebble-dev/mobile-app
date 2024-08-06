@@ -9,6 +9,7 @@ import 'package:cobble/ui/common/components/cobble_tile.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -49,6 +50,28 @@ class Calendar extends HookConsumerWidget implements CobbleScreen {
       }
     }
 
+    final calendarElements = groupBy(calendarList, (e) => e.account).entries.map((grp) {
+      return <CobbleTile>[
+        CobbleTile.sectionTitle(key: ValueKey("head${grp.key}"), title: grp.key),
+        ...grp.value.map((c) {
+          return CobbleTile.setting(
+            key: ValueKey(c.id),
+            leading: BoxDecoration(
+              color: Color(c.color).withOpacity(1),
+              shape: BoxShape.circle,
+            ),
+            title: c.name,
+            child: Checkbox(
+              value: c.enabled,
+              onChanged: (enabled) {
+                calendarControl.setCalendarEnabled(c.id, enabled!);
+              },
+            ),
+          );
+        })
+      ];
+    }).toList();
+
     return CobbleScaffold.tab(
       title: tr.calendar.title,
       child: ListView(
@@ -69,22 +92,7 @@ class Calendar extends HookConsumerWidget implements CobbleScreen {
             CobbleTile.title(
               title: tr.calendar.choose,
             ),
-            ...calendarList.map((e) {
-              return CobbleTile.setting(
-                key: ValueKey(e.id),
-                leading: BoxDecoration(
-                  color: Color(e.color).withOpacity(1),
-                  shape: BoxShape.circle,
-                ),
-                title: e.name,
-                child: Checkbox(
-                  value: e.enabled,
-                  onChanged: (enabled) {
-                    calendarControl.setCalendarEnabled(e.id, enabled!);
-                  },
-                ),
-              );
-            }).toList(),
+            ...calendarElements.flattened,
           ],
         ],
       ),

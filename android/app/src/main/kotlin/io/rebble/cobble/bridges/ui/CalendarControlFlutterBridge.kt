@@ -84,6 +84,7 @@ class CalendarControlFlutterBridge @Inject constructor(
             result.success(calendars.map {
                 Pigeons.CalendarPigeon.Builder()
                         .setId(it.id.toLong())
+                        .setAccount(it.ownerName)
                         .setName(it.name)
                         .setColor(it.color.toLong())
                         .setEnabled(it.enabled)

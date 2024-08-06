@@ -2411,6 +2411,19 @@ public class Pigeons {
       this.id = setterArg;
     }
 
+    private @NonNull String account;
+
+    public @NonNull String getAccount() {
+      return account;
+    }
+
+    public void setAccount(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"account\" is null.");
+      }
+      this.account = setterArg;
+    }
+
     private @NonNull String name;
 
     public @NonNull String getName() {
@@ -2462,6 +2475,13 @@ public class Pigeons {
         return this;
       }
 
+      private @Nullable String account;
+
+      public @NonNull Builder setAccount(@NonNull String setterArg) {
+        this.account = setterArg;
+        return this;
+      }
+
       private @Nullable String name;
 
       public @NonNull Builder setName(@NonNull String setterArg) {
@@ -2486,6 +2506,7 @@ public class Pigeons {
       public @NonNull CalendarPigeon build() {
         CalendarPigeon pigeonReturn = new CalendarPigeon();
         pigeonReturn.setId(id);
+        pigeonReturn.setAccount(account);
         pigeonReturn.setName(name);
         pigeonReturn.setColor(color);
         pigeonReturn.setEnabled(enabled);
@@ -2495,8 +2516,9 @@ public class Pigeons {
 
     @NonNull
     ArrayList<Object> toList() {
-      ArrayList<Object> toListResult = new ArrayList<Object>(4);
+      ArrayList<Object> toListResult = new ArrayList<Object>(5);
       toListResult.add(id);
+      toListResult.add(account);
       toListResult.add(name);
       toListResult.add(color);
       toListResult.add(enabled);
@@ -2507,11 +2529,13 @@ public class Pigeons {
       CalendarPigeon pigeonResult = new CalendarPigeon();
       Object id = list.get(0);
       pigeonResult.setId((id == null) ? null : ((id instanceof Integer) ? (Integer) id : (Long) id));
-      Object name = list.get(1);
+      Object account = list.get(1);
+      pigeonResult.setAccount((String) account);
+      Object name = list.get(2);
       pigeonResult.setName((String) name);
-      Object color = list.get(2);
+      Object color = list.get(3);
       pigeonResult.setColor((color == null) ? null : ((color instanceof Integer) ? (Integer) color : (Long) color));
-      Object enabled = list.get(3);
+      Object enabled = list.get(4);
       pigeonResult.setEnabled((Boolean) enabled);
       return pigeonResult;
     }

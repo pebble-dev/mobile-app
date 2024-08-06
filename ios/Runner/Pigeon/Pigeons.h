@@ -285,10 +285,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithId:(NSNumber *)id
+    account:(NSString *)account
     name:(NSString *)name
     color:(NSNumber *)color
     enabled:(NSNumber *)enabled;
 @property(nonatomic, strong) NSNumber * id;
+@property(nonatomic, copy) NSString * account;
 @property(nonatomic, copy) NSString * name;
 @property(nonatomic, strong) NSNumber * color;
 @property(nonatomic, strong) NSNumber * enabled;

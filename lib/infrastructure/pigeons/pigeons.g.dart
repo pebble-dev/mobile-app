@@ -777,12 +777,15 @@ class NotifyingPackage {
 class CalendarPigeon {
   CalendarPigeon({
     required this.id,
+    required this.account,
     required this.name,
     required this.color,
     required this.enabled,
   });
 
   int id;
+
+  String account;
 
   String name;
 
@@ -793,6 +796,7 @@ class CalendarPigeon {
   Object encode() {
     return <Object?>[
       id,
+      account,
       name,
       color,
       enabled,
@@ -803,9 +807,10 @@ class CalendarPigeon {
     result as List<Object?>;
     return CalendarPigeon(
       id: result[0]! as int,
-      name: result[1]! as String,
-      color: result[2]! as int,
-      enabled: result[3]! as bool,
+      account: result[1]! as String,
+      name: result[2]! as String,
+      color: result[3]! as int,
+      enabled: result[4]! as bool,
     );
   }
 }
