@@ -40,7 +40,7 @@ import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.random.Random
-import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
 
 @Singleton
@@ -231,7 +231,10 @@ class NotificationProcessor @Inject constructor(
             if (result.responseValue != BlobResponse.BlobStatus.Success) {
                 Timber.e("Failed to send notification to Pebble, blobdb returned ${result.responseValue}")
             }
-            persistedNotifDao.deleteOlderThan(System.currentTimeMillis() - 1.hours.inWholeMilliseconds)
+            val deleted = persistedNotifDao.deleteOlderThan(System.currentTimeMillis() - 7.days.inWholeMilliseconds)
+            if (deleted > 0) {
+                Timber.w("Deleted $deleted old notifications that were never deleted on dismissal")
+            }
             delay(10)
         }
     }
@@ -354,5 +357,6 @@ class NotificationProcessor @Inject constructor(
             )
             blobDBService.send(packet, PacketPriority.LOW)
         }
+        persistedNotifDao.delete(sbn.key)
     }
 }
