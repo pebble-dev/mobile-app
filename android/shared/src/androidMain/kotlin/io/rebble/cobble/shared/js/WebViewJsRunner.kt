@@ -24,7 +24,7 @@ class WebViewJsRunner(val context: Context, private val scope: CoroutineScope, a
 
     private var webView: WebView? = null
     private val initializedLock = Object()
-    private val publicJsInterface = WebViewPKJSInterface()
+    private val publicJsInterface = WebViewPKJSInterface(this)
     private val privateJsInterface = WebViewPrivatePKJSInterface(this, scope)
     private val interfaces = setOf(
             Pair(API_NAMESPACE, publicJsInterface),
@@ -194,6 +194,10 @@ class WebViewJsRunner(val context: Context, private val scope: CoroutineScope, a
         synchronized(initializedLock) {
             webView = null
         }
+    }
+
+    override fun loadUrl(url: String) {
+        TODO()
     }
 
     private suspend fun loadApp(url: String) {
