@@ -10,6 +10,7 @@ import io.rebble.cobble.shared.domain.calendar.CalendarSync
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.util.Debouncer
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -29,10 +30,12 @@ class CalendarControlFlutterBridge @Inject constructor(
 
     init {
         bridgeLifecycleController.setupControl(Pigeons.CalendarControl::setup, this)
-        calendarSync.getUpdatesFlow().onEach { calendars ->
+        calendarSync.getUpdatesFlow().debounce(50).onEach { calendars ->
+            Timber.d("Calendar list updated: %d", calendars.size)
             calendarCallbacks.onCalendarListUpdated(calendars.map {
                 Pigeons.CalendarPigeon.Builder()
                         .setId(it.id.toLong())
+                        .setAccount(it.ownerName)
                         .setName(it.name)
                         .setColor(it.color.toLong())
                         .setEnabled(it.enabled)

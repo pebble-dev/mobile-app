@@ -14,6 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../infrastructure/pigeons/pigeons.g.dart';
+
 class Calendar extends HookConsumerWidget implements CobbleScreen {
   const Calendar({super.key});
 
@@ -51,24 +53,15 @@ class Calendar extends HookConsumerWidget implements CobbleScreen {
     }
 
     final calendarElements = groupBy(calendarList, (e) => e.account).entries.map((grp) {
-      return <CobbleTile>[
+      return [
         CobbleTile.sectionTitle(key: ValueKey("head${grp.key}"), title: grp.key),
-        ...grp.value.map((c) {
-          return CobbleTile.setting(
-            key: ValueKey(c.id),
-            leading: BoxDecoration(
-              color: Color(c.color).withOpacity(1),
-              shape: BoxShape.circle,
-            ),
-            title: c.name,
-            child: Checkbox(
-              value: c.enabled,
-              onChanged: (enabled) {
-                calendarControl.setCalendarEnabled(c.id, enabled!);
-              },
-            ),
-          );
-        })
+        ...grp.value.map(
+                (c) => _CalendarSettings(
+                    key: ValueKey(c.id),
+                    calendarPigeon: c,
+                    calendarControl: calendarControl,
+                ),
+        ),
       ];
     }).toList();
 
@@ -95,6 +88,30 @@ class Calendar extends HookConsumerWidget implements CobbleScreen {
             ...calendarElements.flattened,
           ],
         ],
+      ),
+    );
+  }
+}
+
+
+class _CalendarSettings extends StatelessWidget {
+  final CalendarPigeon calendarPigeon;
+  final CalendarControl calendarControl;
+  const _CalendarSettings({Key? key, required this.calendarPigeon, required this.calendarControl}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return CobbleTile.setting(
+      leading: BoxDecoration(
+        color: Color(calendarPigeon.color).withOpacity(1),
+        shape: BoxShape.circle,
+      ),
+      title: calendarPigeon.name,
+      child: Checkbox(
+        value: calendarPigeon.enabled,
+        onChanged: (enabled) {
+          calendarControl.setCalendarEnabled(calendarPigeon.id, enabled!);
+        },
       ),
     );
   }

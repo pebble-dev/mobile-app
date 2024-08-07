@@ -28,6 +28,7 @@ class CalendarSync(
     private val metadataFlow: Flow<WatchVersion.WatchVersionResponse> by inject(named("connectedWatchMetadata"))
     private val timelinePinDao: TimelinePinDao by inject()
     private val calendarDao: CalendarDao by inject()
+    private val calendarEnableChangeFlow: MutableSharedFlow<List<Calendar>> = MutableSharedFlow()
 
     init {
         Logging.d("CalendarSync init")
