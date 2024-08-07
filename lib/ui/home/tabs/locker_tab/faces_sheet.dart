@@ -13,6 +13,8 @@ import 'package:share_plus/share_plus.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
 
+import '../../../../domain/logging.dart';
+
 class FacesPreview extends StatelessWidget {
   FacesPreview({
     required this.face,
@@ -35,36 +37,51 @@ class FacesPreview extends StatelessWidget {
         face.supportedHardware[0] == WatchType.chalk;
     circleWatchface =
         compatible && (circleConnected ?? false) || !compatible && circleOnly;
-    return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          ClipRRect(
-            child: Image(
-              image: (listUrl != null ? CachedNetworkImageProvider(listUrl!) : Svg('images/temp_watch_face.svg')) as ImageProvider,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        ClipRRect(
+          borderRadius: BorderRadius.circular(circleWatchface ? 46.0 : 6.0),
+          child: listUrl == null ?
+          Image(
+            image: const Svg('images/temp_watch_face.svg'),
+            width: 92,
+            height: circleWatchface ? 92 : 108,
+            alignment: Alignment.center,
+            fit: BoxFit.cover,
+          ) : CachedNetworkImage(
+            imageUrl: listUrl!,
+            width: 92,
+            height: circleWatchface ? 92 : 108,
+            alignment: Alignment.center,
+            fit: BoxFit.cover,
+            errorListener: (e) {
+              Log.e("Error loading face image: $e");
+            },
+            placeholder: (context, url) => Image(
+              image: const Svg('images/temp_watch_face.svg'),
               width: 92,
               height: circleWatchface ? 92 : 108,
-              alignment: AlignmentDirectional.center,
+              alignment: Alignment.center,
               fit: BoxFit.cover,
             ),
-            borderRadius: BorderRadius.circular(circleWatchface ? 46.0 : 6.0),
           ),
-          SizedBox(height: 8),
-          Text(
-            face.longName + (extended ? " ${face.version}" : ""),
-            style: context.textTheme.headlineMedium,
-          ),
-          SizedBox(height: 4),
-          Text(
-            face.company,
-            style: context.textTheme.bodyMedium!.copyWith(
-              color: context.textTheme.bodyMedium!.color!.withOpacity(
-                context.scheme!.muted.opacity,
-              ),
+        ),
+        SizedBox(height: 8),
+        Text(
+          face.longName + (extended ? " ${face.version}" : ""),
+          style: context.textTheme.headlineMedium,
+        ),
+        SizedBox(height: 4),
+        Text(
+          face.company,
+          style: context.textTheme.bodyMedium!.copyWith(
+            color: context.textTheme.bodyMedium!.color!.withOpacity(
+              context.scheme!.muted.opacity,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

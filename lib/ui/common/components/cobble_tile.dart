@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cobble/ui/common/components/cobble_accordion.dart';
 import 'package:cobble/ui/common/icons/back_comp_icon.dart';
 import 'package:cobble/ui/common/icons/system_app_icon.dart';
@@ -353,7 +354,7 @@ class CobbleTile extends StatelessWidget {
 
   /// Will change IconData or ImageProvider to Widget
   static Widget _leadingToWidget(Object? leading, {double size = 25}) {
-    assert(leading == null || leading is IconData || leading is ImageProvider || leading is BackCompIcon || leading is SystemAppIcon || leading is Decoration);
+    assert(leading == null || leading is IconData || leading is ImageProvider || leading is BackCompIcon || leading is SystemAppIcon || leading is Decoration || leading is CachedNetworkImage);
     if (leading is IconData && leading == reservedIconSpace)
       return SizedBox(width: size + 16.0);
     if (leading is IconData && leading != reservedIconSpace)
@@ -374,6 +375,12 @@ class CobbleTile extends StatelessWidget {
         width: 32.0,
         height: 32.0,
         decoration: leading,
+      );
+    if (leading is CachedNetworkImage)
+      return SizedBox(
+        width: size,
+        height: size,
+        child: leading,
       );
     return Container();
   }

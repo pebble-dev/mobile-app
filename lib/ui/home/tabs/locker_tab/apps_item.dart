@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cobble/domain/db/models/app.dart';
 import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
+import 'package:cobble/domain/logging.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/components/cobble_tile.dart';
 import 'package:cobble/ui/common/icons/system_app_icon.dart';
@@ -51,7 +52,11 @@ class AppsItem extends ConsumerWidget {
             SizedBox(width: 57),
           Expanded(
             child: CobbleTile.app(
-              leading: iconUrl != null ? CachedNetworkImageProvider(iconUrl!) : SystemAppIcon(app.uuid),
+              leading: iconUrl != null ? CachedNetworkImage(imageUrl: iconUrl!, errorListener: (e) {
+                Log.e("Error loading app image: $e");
+              },
+                placeholder: (context, url) => SystemAppIcon(app.uuid),
+              ): SystemAppIcon(app.uuid),
               title: app.longName,
               subtitle: app.company,
               onTap: () => AppsSheet.showModal(
