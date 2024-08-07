@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:cobble/background/main_background.dart';
+import 'package:cobble/domain/logging.dart';
 import 'package:cobble/infrastructure/backgroundcomm/BackgroundReceiver.dart';
 import 'package:cobble/infrastructure/backgroundcomm/BackgroundRpc.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
@@ -32,13 +33,6 @@ void main() {
     Logger.root.level = Level.FINER;
   }
 
-  Logger.root.onRecord.listen((record) {
-    debugPrint('${record.time} [${record.loggerName}] ${record.message}');
-    if (record.error != null) {
-      debugPrint(record.error.toString());
-    }
-  });
-
   /*if (kDebugMode) {
     TrackingBuildOwnerWidgetsFlutterBinding.ensureInitialized();
 
@@ -48,6 +42,30 @@ void main() {
     // print top 10 stacks leading to rebuilds every 10 seconds
     Timer.periodic(const Duration(seconds: 10), (_) => tracker.printTopScheduleBuildForStacks());
   }*/
+
+  Logger.root.onRecord.listen((record) { // Makes sure we send logs to native logger so they're stored
+    //debugPrint('${record.time} [${record.loggerName}] ${record.message}');
+
+    // I hate that this can't be a switch statement
+    if (record.level == Level.SEVERE) {
+      Log.e(record.message);
+    } else if (record.level == Level.WARNING) {
+      Log.w(record.message);
+    } else if (record.level == Level.INFO) {
+      Log.i(record.message);
+    } else if (record.level == Level.FINE) {
+      Log.d(record.message);
+    } else if (record.level == Level.FINER) {
+      Log.v(record.message);
+    } else if (record.level == Level.FINEST) {
+      Log.v(record.message);
+    } else if (record.level == Level.SHOUT) {
+      Log.e(record.message);
+    }
+    if (record.error != null) {
+      Log.e(record.error.toString());
+    }
+  });
 
   runApp(ProviderScope(child: MyApp()));
   initBackground();
