@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cobble/domain/apps/app_compatibility.dart';
 import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
@@ -101,6 +103,7 @@ class LockerTab extends HookConsumerWidget implements CobbleScreen {
                           ),
                           delegate: SliverChildListDelegate(
                             compatibleFaces
+                              .take(50)
                               .map<Widget>(
                                 (face) => FacesCard(
                                   listUrl: snap.data![face.appstoreId]?.getPlatformListImage(currentWatch?.runningFirmware.hardwarePlatform.getWatchType().name ?? ""),
@@ -137,6 +140,7 @@ class LockerTab extends HookConsumerWidget implements CobbleScreen {
                           ),
                           delegate: SliverChildListDelegate(
                             incompatibleFaces
+                              .take(50)
                               .map<Widget>(
                                 (face) => FacesCard(
                                   listUrl: snap.data![face.appstoreId]?.getPlatformListImage(currentWatch?.runningFirmware.hardwarePlatform.getWatchType().name ?? ""),
@@ -164,7 +168,7 @@ class LockerTab extends HookConsumerWidget implements CobbleScreen {
                             key: ValueKey(compatibleApps[index].uuid),
                           );
                         },
-                        itemCount: compatibleApps.length,
+                        itemCount: min(50, compatibleApps.length),
                         onReorder: (int fromIndex, int toIndex) {
                           if (toIndex > fromIndex) {
                             toIndex -= 1;
@@ -197,6 +201,7 @@ class LockerTab extends HookConsumerWidget implements CobbleScreen {
                       SliverList(
                         delegate: SliverChildListDelegate(
                           incompatibleApps
+                              .take(50)
                               .map<Widget>(
                                 (app) => AppsItem(
                               app: app,
