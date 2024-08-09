@@ -4,6 +4,7 @@ import 'package:cobble/domain/api/appstore/locker_entry.dart';
 import 'package:cobble/domain/api/no_token_exception.dart';
 import 'package:cobble/domain/db/dao/locker_cache_dao.dart';
 import 'package:cobble/domain/db/models/locker_app.dart';
+import 'package:cobble/domain/logging.dart';
 import 'package:cobble/infrastructure/datasources/web_services/appstore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -39,6 +40,9 @@ class LockerSync extends StateNotifier<List<LockerEntry>?> {
       await Future.forEach(locker.map(LockerApp.fromApi), lockerCacheDao.insertOrUpdate);
       if (mounted) {
         state = locker;
+        Log.i("Locker updated: ${locker.length} entries");
+      } else {
+        Log.w("Locker not updated: not mounted");
       }
     } on NoTokenException {
       if (kDebugMode) {

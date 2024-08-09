@@ -38,18 +38,18 @@ class AppsItem extends ConsumerWidget {
         children: [
           if (compatible)
             ReorderableDragStartListener(
+              index: index ?? 0,
               child: Padding(
-                padding: EdgeInsets.only(left: 16),
+                padding: const EdgeInsets.only(left: 16),
                 child: Icon(
                   RebbleIcons.drag_handle,
                   size: 25.0,
                   color: context.scheme!.muted,
                 ),
               ),
-              index: index ?? 0,
             )
           else
-            SizedBox(width: 57),
+            const SizedBox(width: 57),
           Expanded(
             child: CobbleTile.app(
               leading: iconUrl != null ? CachedNetworkImage(imageUrl: iconUrl!, errorListener: (e) {

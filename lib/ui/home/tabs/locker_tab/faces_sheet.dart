@@ -67,12 +67,12 @@ class FacesPreview extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Text(
           face.longName + (extended ? " ${face.version}" : ""),
           style: context.textTheme.headlineMedium,
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         Text(
           face.company,
           style: context.textTheme.bodyMedium!.copyWith(
@@ -100,7 +100,7 @@ class FacesSheet {
       context: context,
       builder: (context) => Column(
         children: [
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           FacesPreview(
             listUrl: listUrl,
             face: face,
@@ -108,7 +108,7 @@ class FacesSheet {
             extended: true,
             circleConnected: (circleConnected ?? false),
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           // TODO: Implement getting metadata from the store (including the preview)
           if (face.appstoreId != null)
             Row(
@@ -119,14 +119,14 @@ class FacesSheet {
                   icon: RebbleIcons.rebble_store,
                   onPressed: () {},
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 CobbleButton(
                   outlined: false,
                   icon: RebbleIcons.health_heart,
                   label: "0",
                   onPressed: () {},
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 CobbleButton(
                   outlined: false,
                   icon: RebbleIcons.share,
@@ -136,7 +136,7 @@ class FacesSheet {
                 ),
               ],
             ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           CobbleDivider(),
           if (compatible)
             Container(

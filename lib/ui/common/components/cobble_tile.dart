@@ -60,7 +60,7 @@ class CobbleTile extends StatelessWidget {
   }) =>
       CobbleTile._(
         key: key,
-        padding: EdgeInsets.fromLTRB(16, 24, 16, 8),
+        padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
         title: title,
         body: body,
       );
@@ -78,7 +78,7 @@ class CobbleTile extends StatelessWidget {
   }) =>
       CobbleTile._(
         key: key,
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         leading: _leadingToWidget(leading),
         title: title,
         subtitle: body,
@@ -98,7 +98,7 @@ class CobbleTile extends StatelessWidget {
   }) =>
       CobbleTile._(
         key: key,
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         leading: _leadingToWidget(leading),
         trailing: Icon(
           trailing,
@@ -122,7 +122,7 @@ class CobbleTile extends StatelessWidget {
   }) =>
       CobbleTile._(
         key: key,
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         leading: _leadingToWidget(leading),
         trailing: trailing != null
             ? Icon(
@@ -147,7 +147,7 @@ class CobbleTile extends StatelessWidget {
   }) =>
       CobbleTile._(
         key: key,
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         leading: _leadingToWidget(leading),
         title: title,
         subtitle: subtitle,
@@ -165,7 +165,7 @@ class CobbleTile extends StatelessWidget {
   }) =>
       CobbleTile._(
         key: key,
-        padding: EdgeInsets.all(0),
+        padding: const EdgeInsets.all(0),
         leading: _leadingToWidget(leading),
         title: title,
         subtitle: subtitle,
@@ -180,13 +180,13 @@ class CobbleTile extends StatelessWidget {
   }) =>
       CobbleAccordion(
         headerBuilder: (onTap, heightFactor) => CobbleTile._(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           title: title,
           onTap: onTap,
           leading: _leadingToWidget(leading),
           trailing: Transform.rotate(
             angle: heightFactor * pi,
-            child: Icon(RebbleIcons.caret_down),
+            child: const Icon(RebbleIcons.caret_down),
           ),
         ),
         child: Column(
@@ -205,7 +205,7 @@ class CobbleTile extends StatelessWidget {
   }) =>
       CobbleTile._(
         key: key,
-        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         leading: _leadingToWidget(leading, size: 48),
         title: title,
         subtitle: subtitle,
@@ -222,9 +222,9 @@ class CobbleTile extends StatelessWidget {
   }) =>
       CobbleTile._(
         key: key,
-        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         leading: _leadingToWidget(leading, size: 48),
-        trailing: Icon(RebbleIcons.caret_right),
+        trailing: const Icon(RebbleIcons.caret_right),
         title: title,
         subtitle: subtitle,
         navigateTo: navigateTo,
@@ -244,7 +244,7 @@ class CobbleTile extends StatelessWidget {
           children: [
             if (leading != null) ...[
               leading!,
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
             ],
             Expanded(
               child: Column(
@@ -255,14 +255,14 @@ class CobbleTile extends StatelessWidget {
                     style: context.textTheme.headlineMedium,
                   ),
                   if (body is String) ...[
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       body!,
                       style: context.textTheme.bodyMedium,
                     ),
                   ],
                   if (subtitle is String) ...[
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       subtitle!,
                       style: context.textTheme.bodyMedium!.copyWith(

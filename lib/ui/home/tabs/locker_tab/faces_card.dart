@@ -31,7 +31,7 @@ class FacesCard extends ConsumerWidget {
     return Card(
       key: key,
       child: Container(
-        margin: EdgeInsets.all(8),
+        margin: const EdgeInsets.all(8),
         child: Row(
           children: <Widget>[
             Expanded(

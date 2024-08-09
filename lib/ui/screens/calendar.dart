@@ -42,6 +42,7 @@ class Calendar extends HookConsumerWidget implements CobbleScreen {
       calendarControl.getCalendarSyncEnabled().then((value) {
         calendarSyncEnabled.value = value;
       });
+      return null;
     }, [calendarSyncEnabled]);
 
     Future<void> setCalendarSyncEnabled(bool value) async {
