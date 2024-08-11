@@ -194,6 +194,9 @@ class CallNotificationProcessor @Inject constructor(
                                 callState.value = CallState.IDLE
                             }
                         }
+                        else -> {
+                            Logging.w("Phone control message out of sync with call state")
+                        }
                     }
                 }
             }
