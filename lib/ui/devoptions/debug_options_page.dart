@@ -53,7 +53,7 @@ class DebugOptionsPage extends HookConsumerWidget implements CobbleScreen {
           children: ListTile.divideTiles(
         context: context,
         tiles: <Widget>[
-          ListTile(
+          const ListTile(
               contentPadding:
                   EdgeInsets.symmetric(vertical: 10, horizontal: 15),
               title: Text(
@@ -61,8 +61,8 @@ class DebugOptionsPage extends HookConsumerWidget implements CobbleScreen {
                 style: TextStyle(fontSize: 25),
               )),
           ListTile(
-            contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            title: Text("URL"),
+            contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            title: const Text("URL"),
             subtitle: TextField(
               controller: bootUrlController,
               readOnly: true,
@@ -70,15 +70,15 @@ class DebugOptionsPage extends HookConsumerWidget implements CobbleScreen {
           ),
           SwitchListTile(
               value: shouldOverrideBoot,
-              title: Text("Override boot URL"),
-              subtitle: Text("If enabled, will use the override boot URL instead of the main boot URL"),
+              title: const Text("Override boot URL"),
+              subtitle: const Text("If enabled, will use the override boot URL instead of the main boot URL"),
               onChanged: (value) {
                 preferences
                     .whenData((prefs) => prefs.setShouldOverrideBoot(value));
               }),
           ListTile(
-            contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            title: Text("Stage2 Override"),
+            contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            title: const Text("Stage2 Override"),
             subtitle: Column(
               children: <Widget>[
                 TextField(
@@ -89,7 +89,7 @@ class DebugOptionsPage extends HookConsumerWidget implements CobbleScreen {
                 Container(
                     alignment: Alignment.centerRight,
                     child: ElevatedButton(
-                      child: Text("Save"),
+                      child: const Text("Save"),
                       onPressed: () {
                         preferences.whenData((prefs) =>
                             prefs.setOverrideBootValue(
