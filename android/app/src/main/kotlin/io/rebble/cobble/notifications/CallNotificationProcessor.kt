@@ -59,6 +59,7 @@ class CallNotificationProcessor @Inject constructor(
             }
             if (state is CallState.RINGING && previousState is CallState.IDLE) {
                 state.cookie?.let {
+                    Logging.d("Sending incoming call notification")
                     phoneControl.send(
                             PhoneControl.IncomingCall(
                                     it,
@@ -66,10 +67,14 @@ class CallNotificationProcessor @Inject constructor(
                                     state.notification.contactName ?: ""
                             )
                     )
+                } ?: run {
+                    Logging.e("Ringing call state does not have a cookie")
                 }
             } else if (state is CallState.IDLE && (previousState is CallState.ONGOING || previousState is CallState.RINGING)) {
                 previousState.cookie?.let {
                     phoneControl.send(PhoneControl.End(it))
+                } ?: run {
+                    Logging.d("Previous call state does not have a cookie, not sending end call notification")
                 }
             }
             previousState = state
@@ -134,6 +139,7 @@ class CallNotificationProcessor @Inject constructor(
         synchronized(this@CallNotificationProcessor) {
             val state = callState.value
             val callNotification = interpreter.processCallNotification(sbn) ?: return
+            Logging.d("Call notification dismissal from ${sbn.packageName}")
             callNotification.answer?.intentSender
             if (
                     (state is CallState.RINGING && state.notification.packageName == sbn.packageName) ||

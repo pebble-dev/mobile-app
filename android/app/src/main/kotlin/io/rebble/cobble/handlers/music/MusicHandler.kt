@@ -109,6 +109,10 @@ class MusicHandler @Inject constructor(
 
     private fun sendCurrentTrackUpdate(metadata: MediaMetadata?) {
         Timber.d("Send track %s", metadata?.keySet()?.toList())
+        Timber.d("Artist present: %s, Album present: %s, Title present: %s",
+                metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST) != null,
+                metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM) != null,
+                metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) != null)
 
         val updateTrackObject = when {
             !hasPermission -> {
@@ -131,6 +135,7 @@ class MusicHandler @Inject constructor(
             }
 
             else -> {
+                Timber.d("No metadata")
                 MusicControl.UpdateCurrentTrack(
                         "",
                         "",
@@ -186,7 +191,7 @@ class MusicHandler @Inject constructor(
 
         val playbackSpeed = playbackState?.playbackSpeed ?: 1f
         playStateDebouncer.executeDebouncing {
-            Timber.d("Transmit play state")
+            Timber.d("Transmit play state $state")
             musicService.send(MusicControl.UpdatePlayStateInfo(
                     state,
                     position.toUInt(),
