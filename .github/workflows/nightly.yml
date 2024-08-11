@@ -18,6 +18,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.android/build-cache
+            ~/fvm
+          key: ${{ runner.os }}-pub-gradle-android-fvm-${{ hashFiles('**/pubspec.lock', '**/*.gradle', '**/pom.xml', '**/.fvmrc') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-gradle-android-fvm-
+
       - uses: dart-lang/setup-dart@v1.4
       - uses: actions/setup-java@v4
         with:
