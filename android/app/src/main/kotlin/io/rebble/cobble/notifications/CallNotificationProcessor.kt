@@ -70,6 +70,13 @@ class CallNotificationProcessor @Inject constructor(
                 } ?: run {
                     Logging.e("Ringing call state does not have a cookie")
                 }
+            } else if (state is CallState.ONGOING && (previousState is CallState.RINGING || previousState is CallState.IDLE)) {
+                state.cookie?.let {
+                    Logging.d("Sending start call")
+                    phoneControl.send(PhoneControl.Start(it))
+                } ?: run {
+                    Logging.e("Ongoing call state does not have a cookie")
+                }
             } else if (state is CallState.IDLE && (previousState is CallState.ONGOING || previousState is CallState.RINGING)) {
                 previousState.cookie?.let {
                     phoneControl.send(PhoneControl.End(it))
