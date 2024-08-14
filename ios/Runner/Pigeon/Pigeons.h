@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OAuthResult;
 @class NotifyingPackage;
 @class CalendarPigeon;
+@class LockerAppPigeon;
 
 /// Pigeon only supports classes as return/receive type.
 /// That is why we must wrap primitive types into wrapper
@@ -296,6 +297,44 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong) NSNumber * enabled;
 @end
 
+@interface LockerAppPigeon : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)makeWithUuid:(NSString *)uuid
+    shortName:(NSString *)shortName
+    longName:(NSString *)longName
+    company:(NSString *)company
+    appstoreId:(nullable NSString *)appstoreId
+    version:(NSString *)version
+    isWatchface:(NSNumber *)isWatchface
+    isSystem:(NSNumber *)isSystem
+    supportedHardware:(NSArray<NSString *> *)supportedHardware
+    processInfoFlags:(NSDictionary<NSString *, NumberWrapper *> *)processInfoFlags
+    sdkVersions:(NSDictionary<NSString *, NSString *> *)sdkVersions;
+/// UUID of the app
+@property(nonatomic, copy) NSString * uuid;
+/// Short name of the app (as displayed on the watch)
+@property(nonatomic, copy) NSString * shortName;
+/// Full name of the app
+@property(nonatomic, copy) NSString * longName;
+/// Company that made the app
+@property(nonatomic, copy) NSString * company;
+/// ID of the app store entry, if app was downloaded from the app store.
+/// Null otherwise.
+@property(nonatomic, copy, nullable) NSString * appstoreId;
+/// Version of the app
+@property(nonatomic, copy) NSString * version;
+/// Whether app is a watchapp or a watchface.
+@property(nonatomic, strong) NSNumber * isWatchface;
+/// Whether app is a system app that cannot be uninstalled
+@property(nonatomic, strong) NSNumber * isSystem;
+/// List of supported hardware codenames
+/// (see WatchType enum for list of all entries)
+@property(nonatomic, strong) NSArray<NSString *> * supportedHardware;
+@property(nonatomic, strong) NSDictionary<NSString *, NumberWrapper *> * processInfoFlags;
+@property(nonatomic, strong) NSDictionary<NSString *, NSString *> * sdkVersions;
+@end
+
 /// The codec used by CalendarCallbacks.
 NSObject<FlutterMessageCodec> *CalendarCallbacksGetCodec(void);
 
@@ -354,6 +393,7 @@ NSObject<FlutterMessageCodec> *BackgroundAppInstallCallbacksGetCodec(void);
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
 - (void)beginAppInstallInstallData:(InstallData *)installData completion:(void (^)(FlutterError *_Nullable))completion;
 - (void)deleteAppUuid:(StringWrapper *)uuid completion:(void (^)(FlutterError *_Nullable))completion;
+- (void)downloadPbwUuid:(NSString *)uuid completion:(void (^)(NSString *_Nullable, FlutterError *_Nullable))completion;
 @end
 
 /// The codec used by AppInstallStatusCallbacks.
@@ -592,7 +632,7 @@ NSObject<FlutterMessageCodec> *AppInstallControlGetCodec(void);
 - (void)beginAppDeletionUuid:(StringWrapper *)uuid completion:(void (^)(BooleanWrapper *_Nullable, FlutterError *_Nullable))completion;
 /// Read header from pbw file already in Cobble's storage and send it to
 /// BlobDB on the watch
-- (void)insertAppIntoBlobDbUuidString:(StringWrapper *)uuidString completion:(void (^)(NumberWrapper *_Nullable, FlutterError *_Nullable))completion;
+- (void)insertAppIntoBlobDbApp:(LockerAppPigeon *)app completion:(void (^)(NumberWrapper *_Nullable, FlutterError *_Nullable))completion;
 - (void)removeAppFromBlobDbAppUuidString:(StringWrapper *)appUuidString completion:(void (^)(NumberWrapper *_Nullable, FlutterError *_Nullable))completion;
 - (void)removeAllAppsWithCompletion:(void (^)(NumberWrapper *_Nullable, FlutterError *_Nullable))completion;
 - (void)subscribeToAppStatusWithError:(FlutterError *_Nullable *_Nonnull)error;

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cobble/domain/api/auth/oauth.dart';
 import 'package:cobble/domain/api/auth/oauth_token.dart';
 import 'package:cobble/domain/api/auth/user.dart';
+import 'package:cobble/domain/logging.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/datasources/web_services/service.dart';
 
@@ -21,13 +22,16 @@ class AuthService extends Service {
 
   Future<User> get user async {
     final tokenCreationDate = _prefs.getOAuthTokenCreationDate();
-    if (tokenCreationDate == null) {
-      throw StateError("token creation date null when token exists");
-    }
     if (_cachedUser == null || _cacheAge == null ||
         DateTime.now().difference(_cacheAge!) >= _cacheLifetime) {
       _cacheAge = DateTime.now();
-      final token = await _oauth.ensureNotStale(_token, tokenCreationDate);
+      final OAuthToken token;
+      if (tokenCreationDate != null) {
+        token = await _oauth.ensureNotStale(_token, tokenCreationDate);
+      } else {
+        Log.w("No token creation date found, using current token without ensuring it's not stale");
+        token = _token;
+      }
       User user = await client.getSerialized(User.fromJson, "me",
           token: token.accessToken);
       _cachedUser = user;

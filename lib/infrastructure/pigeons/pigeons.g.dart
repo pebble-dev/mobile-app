@@ -815,6 +815,88 @@ class CalendarPigeon {
   }
 }
 
+class LockerAppPigeon {
+  LockerAppPigeon({
+    required this.uuid,
+    required this.shortName,
+    required this.longName,
+    required this.company,
+    this.appstoreId,
+    required this.version,
+    required this.isWatchface,
+    required this.isSystem,
+    required this.supportedHardware,
+    required this.processInfoFlags,
+    required this.sdkVersions,
+  });
+
+  /// UUID of the app
+  String uuid;
+
+  /// Short name of the app (as displayed on the watch)
+  String shortName;
+
+  /// Full name of the app
+  String longName;
+
+  /// Company that made the app
+  String company;
+
+  /// ID of the app store entry, if app was downloaded from the app store.
+  /// Null otherwise.
+  String? appstoreId;
+
+  /// Version of the app
+  String version;
+
+  /// Whether app is a watchapp or a watchface.
+  bool isWatchface;
+
+  /// Whether app is a system app that cannot be uninstalled
+  bool isSystem;
+
+  /// List of supported hardware codenames
+  /// (see WatchType enum for list of all entries)
+  List<String?> supportedHardware;
+
+  Map<String?, NumberWrapper?> processInfoFlags;
+
+  Map<String?, String?> sdkVersions;
+
+  Object encode() {
+    return <Object?>[
+      uuid,
+      shortName,
+      longName,
+      company,
+      appstoreId,
+      version,
+      isWatchface,
+      isSystem,
+      supportedHardware,
+      processInfoFlags,
+      sdkVersions,
+    ];
+  }
+
+  static LockerAppPigeon decode(Object result) {
+    result as List<Object?>;
+    return LockerAppPigeon(
+      uuid: result[0]! as String,
+      shortName: result[1]! as String,
+      longName: result[2]! as String,
+      company: result[3]! as String,
+      appstoreId: result[4] as String?,
+      version: result[5]! as String,
+      isWatchface: result[6]! as bool,
+      isSystem: result[7]! as bool,
+      supportedHardware: (result[8] as List<Object?>?)!.cast<String?>(),
+      processInfoFlags: (result[9] as Map<Object?, Object?>?)!.cast<String?, NumberWrapper?>(),
+      sdkVersions: (result[10] as Map<Object?, Object?>?)!.cast<String?, String?>(),
+    );
+  }
+}
+
 class _CalendarCallbacksCodec extends StandardMessageCodec {
   const _CalendarCallbacksCodec();
   @override
@@ -1214,6 +1296,8 @@ abstract class BackgroundAppInstallCallbacks {
 
   Future<void> deleteApp(StringWrapper uuid);
 
+  Future<String?> downloadPbw(String uuid);
+
   static void setup(BackgroundAppInstallCallbacks? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
@@ -1250,6 +1334,25 @@ abstract class BackgroundAppInstallCallbacks {
               'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.deleteApp was null, expected non-null StringWrapper.');
           await api.deleteApp(arg_uuid!);
           return;
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.BackgroundAppInstallCallbacks.downloadPbw', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.downloadPbw was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final String? arg_uuid = (args[0] as String?);
+          assert(arg_uuid != null,
+              'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.downloadPbw was null, expected non-null String.');
+          final String? output = await api.downloadPbw(arg_uuid!);
+          return output;
         });
       }
     }
@@ -3213,20 +3316,23 @@ class _AppInstallControlCodec extends StandardMessageCodec {
     } else if (value is ListWrapper) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    } else if (value is NumberWrapper) {
+    } else if (value is LockerAppPigeon) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
-    } else if (value is PbwAppInfo) {
+    } else if (value is NumberWrapper) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
-    } else if (value is StringWrapper) {
+    } else if (value is PbwAppInfo) {
       buffer.putUint8(133);
       writeValue(buffer, value.encode());
-    } else if (value is WatchResource) {
+    } else if (value is StringWrapper) {
       buffer.putUint8(134);
       writeValue(buffer, value.encode());
-    } else if (value is WatchappInfo) {
+    } else if (value is WatchResource) {
       buffer.putUint8(135);
+      writeValue(buffer, value.encode());
+    } else if (value is WatchappInfo) {
+      buffer.putUint8(136);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -3243,14 +3349,16 @@ class _AppInstallControlCodec extends StandardMessageCodec {
       case 130: 
         return ListWrapper.decode(readValue(buffer)!);
       case 131: 
-        return NumberWrapper.decode(readValue(buffer)!);
+        return LockerAppPigeon.decode(readValue(buffer)!);
       case 132: 
-        return PbwAppInfo.decode(readValue(buffer)!);
+        return NumberWrapper.decode(readValue(buffer)!);
       case 133: 
-        return StringWrapper.decode(readValue(buffer)!);
+        return PbwAppInfo.decode(readValue(buffer)!);
       case 134: 
-        return WatchResource.decode(readValue(buffer)!);
+        return StringWrapper.decode(readValue(buffer)!);
       case 135: 
+        return WatchResource.decode(readValue(buffer)!);
+      case 136: 
         return WatchappInfo.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -3351,12 +3459,12 @@ class AppInstallControl {
 
   /// Read header from pbw file already in Cobble's storage and send it to
   /// BlobDB on the watch
-  Future<NumberWrapper> insertAppIntoBlobDb(StringWrapper arg_uuidString) async {
+  Future<NumberWrapper> insertAppIntoBlobDb(LockerAppPigeon arg_app) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.AppInstallControl.insertAppIntoBlobDb', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_uuidString]) as List<Object?>?;
+        await channel.send(<Object?>[arg_app]) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',

@@ -41,12 +41,15 @@ Future<void> _add_system_app(AppDao dao, String uuid, String name) async {
 
   await dao.insertOrUpdatePackage(
     App(
+        url: null,
         uuid: Uuid.parse(uuid),
         shortName: name,
         longName: name,
         company: "Pebble",
         appstoreId: null,
         version: "1.0.0",
+        processInfoFlags: "{}",
+        sdkVersions: "{}",
         isWatchface: false,
         isSystem: true,
         supportedHardware: ["aplite", "basalt", "chalk", "diorite", "emery"],

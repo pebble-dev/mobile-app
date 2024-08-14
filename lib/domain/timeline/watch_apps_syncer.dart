@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:cobble/domain/apps/app_compatibility.dart';
@@ -8,6 +10,7 @@ import 'package:cobble/domain/entities/hardware_platform.dart';
 import 'package:cobble/domain/timeline/blob_status.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -91,18 +94,45 @@ class WatchAppsSyncer {
         final StringWrapper uuidWrapper = StringWrapper();
         uuidWrapper.value = appToSync.uuid.toString();
         Log.d('Inserting app');
-        final res = await appInstallControl.insertAppIntoBlobDb(uuidWrapper);
+        final processInfoFlags = <String, NumberWrapper>{};
+        jsonDecode(appToSync.processInfoFlags).forEach((key, value) {
+          processInfoFlags[key] = NumberWrapper()..value = value as int?;
+        });
+        final sdkVersions = <String, String>{};
+        jsonDecode(appToSync.sdkVersions).forEach((key, value) {
+          sdkVersions[key] = value as String;
+        });
+        try {
+           final res = await appInstallControl.insertAppIntoBlobDb(LockerAppPigeon(
+              uuid: appToSync.uuid.toString(),
+              shortName: appToSync.shortName,
+              longName: appToSync.longName,
+              company: appToSync.company,
+              appstoreId: appToSync.appstoreId,
+              version: appToSync.version,
+              isWatchface: appToSync.isWatchface,
+              isSystem: appToSync.isSystem,
+              processInfoFlags: processInfoFlags,
+              sdkVersions: sdkVersions,
+              supportedHardware: appToSync.supportedHardware
+           ));
+           if (res.value != statusSuccess) {
+             return res.value;
+           }
 
-        if (res.value != statusSuccess) {
-          return res.value;
+           await appDao.setSyncAction(
+             appToSync.uuid,
+             NextSyncAction.Nothing,
+           );
+        } on PlatformException catch (e) {
+          Log.e("Error inserting app: $e");
+          continue;
         }
 
-        await appDao.setSyncAction(
-          appToSync.uuid,
-          NextSyncAction.Nothing,
-        );
+
       }
     } catch (e) {
+      rethrow;
       Log.e(e.toString());
       // Log error to native
       return statusInvalidData;

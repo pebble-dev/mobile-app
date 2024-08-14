@@ -13,20 +13,24 @@ import io.rebble.cobble.middleware.getBestVariant
 import io.rebble.cobble.pigeons.BooleanWrapper
 import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.pigeons.Pigeons.NumberWrapper
 import io.rebble.cobble.util.*
 import io.rebble.libpebblecommon.disk.PbwBinHeader
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
 import io.rebble.libpebblecommon.metadata.pbw.appinfo.PbwAppInfo
 import io.rebble.libpebblecommon.packets.AppOrderResultCode
 import io.rebble.libpebblecommon.packets.AppReorderRequest
+import io.rebble.libpebblecommon.packets.blobdb.AppMetadata
 import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
 import io.rebble.libpebblecommon.services.AppReorderService
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
+import io.rebble.libpebblecommon.structmapper.SUInt
 import io.rebble.libpebblecommon.structmapper.SUUID
 import io.rebble.libpebblecommon.structmapper.StructMapper
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import okio.buffer
@@ -143,17 +147,10 @@ class AppInstallFlutterBridge @Inject constructor(
         }
     }
 
-    override fun insertAppIntoBlobDb(arg: Pigeons.StringWrapper, result: Pigeons.Result<Pigeons.NumberWrapper>) {
+    override fun insertAppIntoBlobDb(app: Pigeons.LockerAppPigeon, result: Pigeons.Result<NumberWrapper>) {
         coroutineScope.launchPigeonResult(result, Dispatchers.IO) {
-            NumberWrapper(try {
-                val appUuid = arg.value!!
-
-                val appFile = getAppPbwFile(context, appUuid)
-                if (!appFile.exists()) {
-                    error("PBW file ${appFile.absolutePath} missing")
-                }
-                Timber.d("Len: ${appFile.length()}")
-
+            val resp = try {
+                val appUuid = app.uuid
 
                 // Wait some time for metadata to become available in case this has been called
                 // Right after watch has been connected
@@ -170,38 +167,55 @@ class AppInstallFlutterBridge @Inject constructor(
                         ?.watchType
                         ?: error("Unknown hardware platform $hardwarePlatformNumber")
 
-                val appInfo = requirePbwAppInfo(appFile)
-
-                val targetWatchType = getBestVariant(connectedWatchType, appInfo.targetPlatforms)
+                val targetWatchType = getBestVariant(connectedWatchType, app.supportedHardware)
                         ?: error("Watch $connectedWatchType is not compatible with app $appUuid. " +
-                                "Compatible apps: ${appInfo.targetPlatforms}")
+                                "Compatible apps: ${app.supportedHardware}")
 
+                val flags = app.processInfoFlags[connectedWatchType.codename]?.value ?: 0L
 
-                val manifest = requirePbwManifest(appFile, targetWatchType)
+                val appVersionMajor = try {
+                    app.version.split(".")?.getOrNull(0)?.toUByte() ?: 0u
+                } catch (e: NumberFormatException) {
+                    0u
+                }
+                val appVersionMinor = try {
+                    app.version.split(".")?.getOrNull(1)?.toUByte() ?: 0u
+                } catch (e: NumberFormatException) {
+                    0u
+                }
 
-                Timber.d("Manifest %s", manifest)
-
-                val appBlob = requirePbwBinaryBlob(appFile, targetWatchType, manifest.application.name)
-
-                val headerData = appBlob
-                        .buffer().use { it.readByteArray(PbwBinHeader.SIZE.toLong()) }
-
-                val parsedHeader = PbwBinHeader.parseFileHeader(headerData.toUByteArray())
+                val sdkVersionMajor = app.sdkVersions[connectedWatchType.codename]?.split(".")?.get(0)?.toUByte() ?: 0u
+                val sdkVersionMinor = app.sdkVersions[connectedWatchType.codename]?.split(".")?.getOrNull(1)?.toUByte() ?: 0u
 
                 val insertResult = blobDBService.send(
                         BlobCommand.InsertCommand(
                                 Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
                                 BlobCommand.BlobDatabase.App,
-                                parsedHeader.uuid.toBytes(),
-                                parsedHeader.toBlobDbApp().toBytes()
+                                SUUID(StructMapper(), UUID.fromString(appUuid)).toBytes(),
+                                AppMetadata().also {
+                                    it.uuid.set(UUID.fromString(appUuid))
+                                    it.flags.set(flags.toString().toUInt())
+                                    it.icon.set(0u)
+                                    it.appVersionMajor.set(appVersionMajor)
+                                    it.appVersionMinor.set(appVersionMinor)
+                                    it.sdkVersionMajor.set(sdkVersionMajor)
+                                    it.sdkVersionMinor.set(sdkVersionMinor)
+                                    it.appName.set(app.shortName)
+                                }.toBytes()
                         )
                 )
 
-                insertResult.responseValue.value.toInt()
+                insertResult.responseValue.value.toLong()
             } catch (e: Exception) {
+                if (e is SerializationException) {
+                    throw e
+                }
                 Timber.e(e, "Failed to send PBW file to the BlobDB")
-                BlobResponse.BlobStatus.GeneralFailure.value.toInt()
-            })
+                BlobResponse.BlobStatus.GeneralFailure.value.toLong()
+            }
+            NumberWrapper.Builder()
+                    .setValue(resp)
+                    .build()
         }
     }
 
@@ -209,8 +223,10 @@ class AppInstallFlutterBridge @Inject constructor(
                                   result: Pigeons.Result<Pigeons.BooleanWrapper>) {
         coroutineScope.launchPigeonResult(result) {
             getAppPbwFile(context, arg.value!!).delete()
-
-            BooleanWrapper(backgroundAppInstallBridge.deleteApp(arg))
+            val resp = withContext(Dispatchers.Main) {
+                backgroundAppInstallBridge.deleteApp(arg)
+            }
+            BooleanWrapper(resp)
         }
     }
 

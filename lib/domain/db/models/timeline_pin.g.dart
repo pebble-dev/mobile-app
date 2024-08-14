@@ -248,23 +248,26 @@ TimelinePin _$TimelinePinFromJson(Map<String, dynamic> json) => TimelinePin(
       itemId: const UuidConverter().fromJson(json['itemId'] as String?),
       parentId: const UuidConverter().fromJson(json['parentId'] as String?),
       backingId: json['backingId'] as String?,
-      timestamp:
-          const NumberDateTimeConverter().fromJson(json['timestamp'] as int?),
-      duration: json['duration'] as int?,
+      timestamp: const NumberDateTimeConverter()
+          .fromJson((json['timestamp'] as num?)?.toInt()),
+      duration: (json['duration'] as num?)?.toInt(),
       type: $enumDecodeNullable(_$TimelinePinTypeEnumMap, json['type']),
       isVisible: json['isVisible'] == null
           ? true
-          : const BooleanNumberConverter().fromJson(json['isVisible'] as int),
+          : const BooleanNumberConverter()
+              .fromJson((json['isVisible'] as num).toInt()),
       isFloating: json['isFloating'] == null
           ? false
-          : const BooleanNumberConverter().fromJson(json['isFloating'] as int),
+          : const BooleanNumberConverter()
+              .fromJson((json['isFloating'] as num).toInt()),
       isAllDay: json['isAllDay'] == null
           ? false
-          : const BooleanNumberConverter().fromJson(json['isAllDay'] as int),
+          : const BooleanNumberConverter()
+              .fromJson((json['isAllDay'] as num).toInt()),
       persistQuickView: json['persistQuickView'] == null
           ? false
           : const BooleanNumberConverter()
-              .fromJson(json['persistQuickView'] as int),
+              .fromJson((json['persistQuickView'] as num).toInt()),
       layout: $enumDecodeNullable(_$TimelinePinLayoutEnumMap, json['layout']),
       attributesJson: json['attributesJson'] as String?,
       actionsJson: json['actionsJson'] as String?,

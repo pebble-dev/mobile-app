@@ -204,6 +204,54 @@ class CalendarPigeon {
   CalendarPigeon(this.id, this.account, this.name, this.color, this.enabled);
 }
 
+class LockerAppPigeon {
+  /// UUID of the app
+  final String uuid;
+
+  /// Short name of the app (as displayed on the watch)
+  final String shortName;
+
+  /// Full name of the app
+  final String longName;
+
+  /// Company that made the app
+  final String company;
+
+  /// ID of the app store entry, if app was downloaded from the app store.
+  /// Null otherwise.
+  final String? appstoreId;
+
+  /// Version of the app
+  final String version;
+
+  /// Whether app is a watchapp or a watchface.
+  final bool isWatchface;
+
+  /// Whether app is a system app that cannot be uninstalled
+  final bool isSystem;
+
+  /// List of supported hardware codenames
+  /// (see WatchType enum for list of all entries)
+  final List<String?> supportedHardware;
+
+  final Map<String?, NumberWrapper?> processInfoFlags;
+
+  final Map<String?, String?> sdkVersions;
+
+  LockerAppPigeon(
+      {required this.uuid,
+      required this.shortName,
+      required this.longName,
+      required this.company,
+      required this.appstoreId,
+      required this.version,
+      required this.isWatchface,
+      required this.isSystem,
+      required this.processInfoFlags,
+      required this.sdkVersions,
+      required this.supportedHardware});
+}
+
 @FlutterApi()
 abstract class CalendarCallbacks {
   void onCalendarListUpdated(List<CalendarPigeon> calendars);
@@ -246,6 +294,9 @@ abstract class BackgroundAppInstallCallbacks {
 
   @async
   void deleteApp(StringWrapper uuid);
+
+  @async
+  String? downloadPbw(String uuid);
 }
 
 @FlutterApi()
@@ -483,7 +534,7 @@ abstract class AppInstallControl {
   /// Read header from pbw file already in Cobble's storage and send it to
   /// BlobDB on the watch
   @async
-  NumberWrapper insertAppIntoBlobDb(StringWrapper uuidString);
+  NumberWrapper insertAppIntoBlobDb(LockerAppPigeon app);
 
   @async
   NumberWrapper removeAppFromBlobDb(StringWrapper appUuidString);

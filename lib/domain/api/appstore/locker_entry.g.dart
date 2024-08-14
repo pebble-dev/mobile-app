@@ -14,7 +14,7 @@ LockerEntry _$LockerEntryFromJson(Map<String, dynamic> json) => LockerEntry(
       type: json['type'] as String,
       category: json['category'] as String,
       version: json['version'] as String?,
-      hearts: json['hearts'] as int,
+      hearts: (json['hearts'] as num).toInt(),
       isConfigurable: json['is_configurable'] as bool,
       isTimelineEnabled: json['is_timeline_enabled'] as bool,
       links: LockerEntryLinks.fromJson(json['links'] as Map<String, dynamic>),
@@ -90,7 +90,7 @@ Map<String, dynamic> _$LockerEntryDeveloperToJson(
 LockerEntryPlatform _$LockerEntryPlatformFromJson(Map<String, dynamic> json) =>
     LockerEntryPlatform(
       json['sdk_version'] as String,
-      json['pebble_process_info_flags'] as int,
+      (json['pebble_process_info_flags'] as num).toInt(),
       json['name'] as String,
       json['description'] as String,
       LockerEntryPlatformImages.fromJson(
@@ -159,7 +159,7 @@ LockerEntryCompatibilityPhonePlatformDetails
             Map<String, dynamic> json) =>
         LockerEntryCompatibilityPhonePlatformDetails(
           json['supported'] as bool,
-          json['min_js_version'] as int?,
+          (json['min_js_version'] as num?)?.toInt(),
         );
 
 Map<String, dynamic> _$LockerEntryCompatibilityPhonePlatformDetailsToJson(
@@ -188,9 +188,9 @@ Map<String, dynamic> _$LockerEntryCompatibilityWatchPlatformDetailsToJson(
 LockerEntryFirmwareVersion _$LockerEntryFirmwareVersionFromJson(
         Map<String, dynamic> json) =>
     LockerEntryFirmwareVersion(
-      major: json['major'] as int,
-      minor: json['minor'] as int?,
-      patch: json['patch'] as int?,
+      major: (json['major'] as num).toInt(),
+      minor: (json['minor'] as num?)?.toInt(),
+      patch: (json['patch'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$LockerEntryFirmwareVersionToJson(
@@ -204,7 +204,7 @@ Map<String, dynamic> _$LockerEntryFirmwareVersionToJson(
 LockerEntryCompanionApp _$LockerEntryCompanionAppFromJson(
         Map<String, dynamic> json) =>
     LockerEntryCompanionApp(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['icon'] as String,
       json['name'] as String,
       json['url'] as String,
@@ -226,7 +226,7 @@ Map<String, dynamic> _$LockerEntryCompanionAppToJson(
 LockerEntryPBW _$LockerEntryPBWFromJson(Map<String, dynamic> json) =>
     LockerEntryPBW(
       json['file'] as String,
-      json['icon_resource_id'] as int,
+      (json['icon_resource_id'] as num).toInt(),
       json['release_id'] as String,
     );
 

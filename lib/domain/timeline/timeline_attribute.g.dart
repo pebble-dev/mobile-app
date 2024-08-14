@@ -8,14 +8,14 @@ part of 'timeline_attribute.dart';
 
 TimelineAttribute _$TimelineAttributeFromJson(Map<String, dynamic> json) =>
     TimelineAttribute(
-      id: json['id'] as int?,
+      id: (json['id'] as num?)?.toInt(),
       string: json['string'] as String?,
       listOfString: (json['listOfString'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
-      uint8: json['uint8'] as int?,
-      uint32: json['uint32'] as int?,
-      maxLength: json['maxLength'] as int?,
+      uint8: (json['uint8'] as num?)?.toInt(),
+      uint32: (json['uint32'] as num?)?.toInt(),
+      maxLength: (json['maxLength'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$TimelineAttributeToJson(TimelineAttribute instance) {

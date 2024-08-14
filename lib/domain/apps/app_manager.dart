@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cobble/domain/api/appstore/locker_entry.dart';
@@ -5,11 +6,13 @@ import 'package:cobble/domain/api/appstore/locker_sync.dart';
 import 'package:cobble/domain/api/status_exception.dart';
 import 'package:cobble/domain/apps/requests/force_refresh_request.dart';
 import 'package:cobble/domain/db/dao/app_dao.dart';
+import 'package:cobble/domain/db/dao/locker_cache_dao.dart';
 import 'package:cobble/domain/db/models/next_sync_action.dart';
 import 'package:cobble/domain/entities/pbw_app_info_extension.dart';
 import 'package:cobble/infrastructure/backgroundcomm/BackgroundRpc.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/util/async_value_extensions.dart';
+import 'package:collection/collection.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid_type/uuid_type.dart';
@@ -42,13 +45,15 @@ class AppManager extends StateNotifier<List<App>> {
     final updatedApps = locker.where((lockerApp) => apps.indexWhere((localApp) => lockerApp.id == localApp.appstoreId && lockerApp.version != localApp.version) != -1);
     final newApps = locker.where((lockerApp) => apps.indexWhere((localApp) => lockerApp.id == localApp.appstoreId) == -1);
     final goneApps = apps.where((localApp) => localApp.appstoreId != null && locker!.indexWhere((lockerApp) => lockerApp.id == localApp.appstoreId) == -1);
-
+    final precacheApps = newApps.length < 20;
     for (var app in newApps) {
       if (app.pbw?.file != null) {
-        _logger.fine("New app ${app.title}");
+        if (newApps.length < 40) {
+          _logger.fine("New app ${app.title}");
+        }
         try {
-          final uri = await downloadPbw(app.pbw!.file, app.uuid.toLowerCase());
-          await addOrUpdateLockerAppOffloaded(app, uri);
+          final uri = precacheApps ? await downloadPbw(app.pbw!.file, app.uuid.toLowerCase()) : null;
+          await addOrUpdateLockerAppOffloaded(app, uri, app.pbw!.file);
         } on StatusException catch(e) {
           if (e.statusCode == 404) {
             _logger.warning("Failed to download ${app.title}, skipping", e);
@@ -57,6 +62,10 @@ class AppManager extends StateNotifier<List<App>> {
           }
         }
       }
+    }
+
+    if (newApps.length >= 40) {
+      _logger.fine("New apps: ${newApps.length}");
     }
 
     for (var app in goneApps) {
@@ -101,26 +110,65 @@ class AppManager extends StateNotifier<List<App>> {
     return file.uri;
   }
 
-  Future<void> addOrUpdateLockerAppOffloaded(LockerEntry app, Uri uri) async {
+  Future<void> addOrUpdateLockerAppOffloaded(LockerEntry app, Uri? uri, String? url) async {
     final appInfoRequestWrapper = StringWrapper();
     appInfoRequestWrapper.value = uri.toString();
-    final appInfo = await appInstallControl.getAppInfo(appInfoRequestWrapper);
+    final appInfo = uri != null ? await appInstallControl.getAppInfo(appInfoRequestWrapper) : null;
 
-    final wrapper = InstallData(uri: uri.toString(), appInfo: appInfo, stayOffloaded: true);
-    await appInstallControl.beginAppInstall(wrapper);
+    if (uri != null) { // if uri provided, we have the pbw file already
+      final wrapper = InstallData(uri: uri.toString(), appInfo: appInfo!, stayOffloaded: true);
+      await appInstallControl.beginAppInstall(wrapper);
+    }
+
+    final compat = <String>[];
+    final sdkVersions = <String, String>{};
+
+    if (app.compatibility.aplite.supported) {
+      compat.add("aplite");
+      final ver = app.hardwarePlatforms.firstWhereOrNull((e) => e.name == "aplite")?.sdkVersion;
+      sdkVersions["aplite"] = ver ?? "5.86";
+    }
+    if (app.compatibility.basalt.supported) {
+      compat.add("basalt");
+      final ver = app.hardwarePlatforms.firstWhereOrNull((e) => e.name == "basalt")?.sdkVersion;
+      sdkVersions["basalt"] = ver ?? "5.86";
+    }
+    if (app.compatibility.chalk.supported) {
+      compat.add("chalk");
+      final ver = app.hardwarePlatforms.firstWhereOrNull((e) => e.name == "chalk")?.sdkVersion;
+      sdkVersions["chalk"] = ver ?? "5.86";
+    }
+    if (app.compatibility.diorite.supported) {
+      compat.add("diorite");
+      final ver = app.hardwarePlatforms.firstWhereOrNull((e) => e.name == "diorite")?.sdkVersion;
+      sdkVersions["diorite"] = ver ?? "5.86";
+    }
+    if (app.compatibility.emery.supported) {
+      compat.add("emery");
+      final ver = app.hardwarePlatforms.firstWhereOrNull((e) => e.name == "emery")?.sdkVersion;
+      sdkVersions["emery"] = ver ?? "5.86";
+    }
+
+    final processInfo = <String, int>{};
+    for (var e in app.hardwarePlatforms) {
+      processInfo[e.name] = e.pebbleProcessInfoFlags;
+    }
 
     final newApp = App(
-        uuid: Uuid.tryParse(appInfo.uuid ?? "") ?? Uuid.parse(app.uuid),
-        shortName: appInfo.shortName ?? "??",
-        longName: appInfo.longName ?? "??",
-        company: appInfo.companyName ?? "??",
+        uuid: Uuid.parse(app.uuid),
+        shortName: appInfo?.shortName ?? app.title,
+        longName: appInfo?.longName ?? app.title,
+        company: appInfo?.companyName ?? app.developer.name,
         appstoreId: app.id.toString(),
-        version: app.version!,
-        isWatchface: appInfo.watchapp!.watchface!,
+        version: app.version ?? "??",
+        isWatchface: app.type == "watchface",
         isSystem: false,
-        supportedHardware: appInfo.targetPlatformsCast(),
+        supportedHardware: compat,
+        processInfoFlags: jsonEncode(processInfo),
+        sdkVersions: jsonEncode(sdkVersions),
         nextSyncAction: NextSyncAction.Upload,
-        appOrder: appInfo.watchapp!.watchface! ? -1 : await appDao.getNumberOfAllInstalledApps());
+        url: url,
+        appOrder: app.type == "watchface" ? -1 : await appDao.getNumberOfAllInstalledApps());
 
     await appDao.insertOrUpdatePackage(newApp);
   }
@@ -172,6 +220,12 @@ class AppManager extends StateNotifier<List<App>> {
     final result = await backgroundRpc.triggerMethod(request);
     result.resultOrThrow();
 
+    await refresh();
+  }
+
+  Future<void> resetLocker() async {
+    await appDao.deleteAll();
+    await appInstallControl.removeAllApps();
     await refresh();
   }
 }

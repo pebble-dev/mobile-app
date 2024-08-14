@@ -147,6 +147,12 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 - (NSArray *)toList;
 @end
 
+@interface LockerAppPigeon ()
++ (LockerAppPigeon *)fromList:(NSArray *)list;
++ (nullable LockerAppPigeon *)nullableFromList:(NSArray *)list;
+- (NSArray *)toList;
+@end
+
 @implementation BooleanWrapper
 + (instancetype)makeWithValue:(nullable NSNumber *)value {
   BooleanWrapper* pigeonResult = [[BooleanWrapper alloc] init];
@@ -893,6 +899,77 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 }
 @end
 
+@implementation LockerAppPigeon
++ (instancetype)makeWithUuid:(NSString *)uuid
+    shortName:(NSString *)shortName
+    longName:(NSString *)longName
+    company:(NSString *)company
+    appstoreId:(nullable NSString *)appstoreId
+    version:(NSString *)version
+    isWatchface:(NSNumber *)isWatchface
+    isSystem:(NSNumber *)isSystem
+    supportedHardware:(NSArray<NSString *> *)supportedHardware
+    processInfoFlags:(NSDictionary<NSString *, NumberWrapper *> *)processInfoFlags
+    sdkVersions:(NSDictionary<NSString *, NSString *> *)sdkVersions {
+  LockerAppPigeon* pigeonResult = [[LockerAppPigeon alloc] init];
+  pigeonResult.uuid = uuid;
+  pigeonResult.shortName = shortName;
+  pigeonResult.longName = longName;
+  pigeonResult.company = company;
+  pigeonResult.appstoreId = appstoreId;
+  pigeonResult.version = version;
+  pigeonResult.isWatchface = isWatchface;
+  pigeonResult.isSystem = isSystem;
+  pigeonResult.supportedHardware = supportedHardware;
+  pigeonResult.processInfoFlags = processInfoFlags;
+  pigeonResult.sdkVersions = sdkVersions;
+  return pigeonResult;
+}
++ (LockerAppPigeon *)fromList:(NSArray *)list {
+  LockerAppPigeon *pigeonResult = [[LockerAppPigeon alloc] init];
+  pigeonResult.uuid = GetNullableObjectAtIndex(list, 0);
+  NSAssert(pigeonResult.uuid != nil, @"");
+  pigeonResult.shortName = GetNullableObjectAtIndex(list, 1);
+  NSAssert(pigeonResult.shortName != nil, @"");
+  pigeonResult.longName = GetNullableObjectAtIndex(list, 2);
+  NSAssert(pigeonResult.longName != nil, @"");
+  pigeonResult.company = GetNullableObjectAtIndex(list, 3);
+  NSAssert(pigeonResult.company != nil, @"");
+  pigeonResult.appstoreId = GetNullableObjectAtIndex(list, 4);
+  pigeonResult.version = GetNullableObjectAtIndex(list, 5);
+  NSAssert(pigeonResult.version != nil, @"");
+  pigeonResult.isWatchface = GetNullableObjectAtIndex(list, 6);
+  NSAssert(pigeonResult.isWatchface != nil, @"");
+  pigeonResult.isSystem = GetNullableObjectAtIndex(list, 7);
+  NSAssert(pigeonResult.isSystem != nil, @"");
+  pigeonResult.supportedHardware = GetNullableObjectAtIndex(list, 8);
+  NSAssert(pigeonResult.supportedHardware != nil, @"");
+  pigeonResult.processInfoFlags = GetNullableObjectAtIndex(list, 9);
+  NSAssert(pigeonResult.processInfoFlags != nil, @"");
+  pigeonResult.sdkVersions = GetNullableObjectAtIndex(list, 10);
+  NSAssert(pigeonResult.sdkVersions != nil, @"");
+  return pigeonResult;
+}
++ (nullable LockerAppPigeon *)nullableFromList:(NSArray *)list {
+  return (list) ? [LockerAppPigeon fromList:list] : nil;
+}
+- (NSArray *)toList {
+  return @[
+    (self.uuid ?: [NSNull null]),
+    (self.shortName ?: [NSNull null]),
+    (self.longName ?: [NSNull null]),
+    (self.company ?: [NSNull null]),
+    (self.appstoreId ?: [NSNull null]),
+    (self.version ?: [NSNull null]),
+    (self.isWatchface ?: [NSNull null]),
+    (self.isSystem ?: [NSNull null]),
+    (self.supportedHardware ?: [NSNull null]),
+    (self.processInfoFlags ?: [NSNull null]),
+    (self.sdkVersions ?: [NSNull null]),
+  ];
+}
+@end
+
 @interface CalendarCallbacksCodecReader : FlutterStandardReader
 @end
 @implementation CalendarCallbacksCodecReader
@@ -1453,6 +1530,17 @@ NSObject<FlutterMessageCodec> *BackgroundAppInstallCallbacksGetCodec(void) {
       codec:BackgroundAppInstallCallbacksGetCodec()];
   [channel sendMessage:@[arg_uuid ?: [NSNull null]] reply:^(id reply) {
     completion(nil);
+  }];
+}
+- (void)downloadPbwUuid:(NSString *)arg_uuid completion:(void (^)(NSString *_Nullable, FlutterError *_Nullable))completion {
+  FlutterBasicMessageChannel *channel =
+    [FlutterBasicMessageChannel
+      messageChannelWithName:@"dev.flutter.pigeon.BackgroundAppInstallCallbacks.downloadPbw"
+      binaryMessenger:self.binaryMessenger
+      codec:BackgroundAppInstallCallbacksGetCodec()];
+  [channel sendMessage:@[arg_uuid ?: [NSNull null]] reply:^(id reply) {
+    NSString *output = reply;
+    completion(output, nil);
   }];
 }
 @end
@@ -3303,14 +3391,16 @@ void WorkaroundsControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObjec
     case 130: 
       return [ListWrapper fromList:[self readValue]];
     case 131: 
-      return [NumberWrapper fromList:[self readValue]];
+      return [LockerAppPigeon fromList:[self readValue]];
     case 132: 
-      return [PbwAppInfo fromList:[self readValue]];
+      return [NumberWrapper fromList:[self readValue]];
     case 133: 
-      return [StringWrapper fromList:[self readValue]];
+      return [PbwAppInfo fromList:[self readValue]];
     case 134: 
-      return [WatchResource fromList:[self readValue]];
+      return [StringWrapper fromList:[self readValue]];
     case 135: 
+      return [WatchResource fromList:[self readValue]];
+    case 136: 
       return [WatchappInfo fromList:[self readValue]];
     default:
       return [super readValueOfType:type];
@@ -3331,20 +3421,23 @@ void WorkaroundsControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObjec
   } else if ([value isKindOfClass:[ListWrapper class]]) {
     [self writeByte:130];
     [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[NumberWrapper class]]) {
+  } else if ([value isKindOfClass:[LockerAppPigeon class]]) {
     [self writeByte:131];
     [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[PbwAppInfo class]]) {
+  } else if ([value isKindOfClass:[NumberWrapper class]]) {
     [self writeByte:132];
     [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[StringWrapper class]]) {
+  } else if ([value isKindOfClass:[PbwAppInfo class]]) {
     [self writeByte:133];
     [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[WatchResource class]]) {
+  } else if ([value isKindOfClass:[StringWrapper class]]) {
     [self writeByte:134];
     [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[WatchappInfo class]]) {
+  } else if ([value isKindOfClass:[WatchResource class]]) {
     [self writeByte:135];
+    [self writeValue:[value toList]];
+  } else if ([value isKindOfClass:[WatchappInfo class]]) {
+    [self writeByte:136];
     [self writeValue:[value toList]];
   } else {
     [super writeValue:value];
@@ -3440,11 +3533,11 @@ void AppInstallControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject
         binaryMessenger:binaryMessenger
         codec:AppInstallControlGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(insertAppIntoBlobDbUuidString:completion:)], @"AppInstallControl api (%@) doesn't respond to @selector(insertAppIntoBlobDbUuidString:completion:)", api);
+      NSCAssert([api respondsToSelector:@selector(insertAppIntoBlobDbApp:completion:)], @"AppInstallControl api (%@) doesn't respond to @selector(insertAppIntoBlobDbApp:completion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
-        StringWrapper *arg_uuidString = GetNullableObjectAtIndex(args, 0);
-        [api insertAppIntoBlobDbUuidString:arg_uuidString completion:^(NumberWrapper *_Nullable output, FlutterError *_Nullable error) {
+        LockerAppPigeon *arg_app = GetNullableObjectAtIndex(args, 0);
+        [api insertAppIntoBlobDbApp:arg_app completion:^(NumberWrapper *_Nullable output, FlutterError *_Nullable error) {
           callback(wrapResult(output, error));
         }];
       }];

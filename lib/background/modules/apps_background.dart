@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:cobble/domain/apps/app_lifecycle_manager.dart';
+import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/domain/apps/requests/app_reorder_request.dart';
 import 'package:cobble/domain/apps/requests/force_refresh_request.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
@@ -21,6 +24,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
   late AppDao appDao;
   late AppLifecycleManager appLifecycleManager;
   late Future<Preferences> preferences;
+  late AppManager appManager;
 
   late ProviderSubscription<WatchConnectionState> connectionSubscription;
 
@@ -31,6 +35,7 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
     appDao = container.listen<AppDao>(appDaoProvider, (previous, value) {}).read();
     appLifecycleManager = container.listen<AppLifecycleManager>(appLifecycleManagerProvider, (previous, value) {}).read();
     preferences = container.listen<Future<Preferences>>(preferencesProvider.future, (previous, value) {}).read();
+    appManager = container.listen<AppManager>(appManagerProvider.notifier, (previous, value) {}).read();
 
     BackgroundAppInstallCallbacks.setup(this);
 
@@ -102,7 +107,10 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
         isWatchface: appInfo.watchapp!.watchface!,
         isSystem: false,
         supportedHardware: appInfo.targetPlatformsCast(),
+        processInfoFlags: existingApp?.processInfoFlags ?? "{}",
+        sdkVersions: existingApp?.sdkVersions ?? "{}",
         nextSyncAction: NextSyncAction.Upload,
+        url: existingApp?.url,
         appOrder: newAppOrder);
 
     await appDao.insertOrUpdatePackage(newApp);
@@ -135,5 +143,14 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
     await watchAppsSyncer.syncAppDatabaseWithWatch();
 
     return true;
+  }
+
+  @override
+  Future<String?> downloadPbw(String uuid) async {
+    final app = await appDao.getPackage(Uuid.parse(uuid));
+    if (app?.url == null) {
+      return null;
+    }
+    return appManager.downloadPbw(app!.url!, uuid).then((value) => value.toString());
   }
 }

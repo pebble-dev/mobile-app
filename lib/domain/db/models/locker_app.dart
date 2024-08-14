@@ -48,7 +48,7 @@ class LockerApp {
     return LockerApp(
       id: entry.id,
       uuid: Uuid.parse(entry.uuid),
-      version: entry.version!,
+      version: entry.version ?? "",
       apliteIcon: entry.hardwarePlatforms.firstWhereOrNull((element) => element.name == "aplite")?.images.icon,
       basaltIcon: entry.hardwarePlatforms.firstWhereOrNull((element) => element.name == "basalt")?.images.icon,
       chalkIcon: entry.hardwarePlatforms.firstWhereOrNull((element) => element.name == "chalk")?.images.icon,

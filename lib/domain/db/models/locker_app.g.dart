@@ -21,7 +21,7 @@ LockerApp _$LockerAppFromJson(Map<String, dynamic> json) => LockerApp(
       markedForDeletion: json['markedForDeletion'] == null
           ? false
           : const BooleanNumberConverter()
-              .fromJson(json['markedForDeletion'] as int),
+              .fromJson((json['markedForDeletion'] as num).toInt()),
     );
 
 Map<String, dynamic> _$LockerAppToJson(LockerApp instance) => <String, dynamic>{

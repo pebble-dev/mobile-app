@@ -11,7 +11,10 @@ import okio.Source
 import okio.buffer
 import java.io.File
 
-private val json = Json { ignoreUnknownKeys = true }
+private val json = Json {
+    ignoreUnknownKeys = true
+    isLenient = true
+}
 
 fun getAppPbwFile(context: Context, appUuid: String): File {
     val appsDir = File(context.filesDir, "apps")

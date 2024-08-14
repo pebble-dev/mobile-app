@@ -7,7 +7,7 @@ part of 'RpcResult.dart';
 // **************************************************************************
 
 RpcResult _$RpcResultFromJson(Map<String, dynamic> json) => RpcResult(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['successResult'] as String?,
       json['errorResult'] as String?,
       json['errorStacktrace'] as String?,

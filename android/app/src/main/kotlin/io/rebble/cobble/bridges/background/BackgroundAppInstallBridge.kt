@@ -36,6 +36,14 @@ class BackgroundAppInstallBridge @Inject constructor(
         return true
     }
 
+    suspend fun downloadPbw(uuid: String): String? {
+        val appInstallCallbacks = getAppInstallCallbacks() ?: error("No app install callbacks")
+
+        return awaitPigeonMethod { reply ->
+            appInstallCallbacks.downloadPbw(uuid, reply)
+        }
+    }
+
     private suspend fun getAppInstallCallbacks(): Pigeons.BackgroundAppInstallCallbacks? {
         val cachedAppInstallCallbacks = cachedAppInstallCallbacks
         if (cachedAppInstallCallbacks != null) {

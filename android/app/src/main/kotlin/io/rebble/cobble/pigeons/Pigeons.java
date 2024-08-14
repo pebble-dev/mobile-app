@@ -2541,6 +2541,307 @@ public class Pigeons {
     }
   }
 
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class LockerAppPigeon {
+    /** UUID of the app */
+    private @NonNull String uuid;
+
+    public @NonNull String getUuid() {
+      return uuid;
+    }
+
+    public void setUuid(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"uuid\" is null.");
+      }
+      this.uuid = setterArg;
+    }
+
+    /** Short name of the app (as displayed on the watch) */
+    private @NonNull String shortName;
+
+    public @NonNull String getShortName() {
+      return shortName;
+    }
+
+    public void setShortName(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"shortName\" is null.");
+      }
+      this.shortName = setterArg;
+    }
+
+    /** Full name of the app */
+    private @NonNull String longName;
+
+    public @NonNull String getLongName() {
+      return longName;
+    }
+
+    public void setLongName(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"longName\" is null.");
+      }
+      this.longName = setterArg;
+    }
+
+    /** Company that made the app */
+    private @NonNull String company;
+
+    public @NonNull String getCompany() {
+      return company;
+    }
+
+    public void setCompany(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"company\" is null.");
+      }
+      this.company = setterArg;
+    }
+
+    /**
+     * ID of the app store entry, if app was downloaded from the app store.
+     * Null otherwise.
+     */
+    private @Nullable String appstoreId;
+
+    public @Nullable String getAppstoreId() {
+      return appstoreId;
+    }
+
+    public void setAppstoreId(@Nullable String setterArg) {
+      this.appstoreId = setterArg;
+    }
+
+    /** Version of the app */
+    private @NonNull String version;
+
+    public @NonNull String getVersion() {
+      return version;
+    }
+
+    public void setVersion(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"version\" is null.");
+      }
+      this.version = setterArg;
+    }
+
+    /** Whether app is a watchapp or a watchface. */
+    private @NonNull Boolean isWatchface;
+
+    public @NonNull Boolean getIsWatchface() {
+      return isWatchface;
+    }
+
+    public void setIsWatchface(@NonNull Boolean setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"isWatchface\" is null.");
+      }
+      this.isWatchface = setterArg;
+    }
+
+    /** Whether app is a system app that cannot be uninstalled */
+    private @NonNull Boolean isSystem;
+
+    public @NonNull Boolean getIsSystem() {
+      return isSystem;
+    }
+
+    public void setIsSystem(@NonNull Boolean setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"isSystem\" is null.");
+      }
+      this.isSystem = setterArg;
+    }
+
+    /**
+     * List of supported hardware codenames
+     * (see WatchType enum for list of all entries)
+     */
+    private @NonNull List<String> supportedHardware;
+
+    public @NonNull List<String> getSupportedHardware() {
+      return supportedHardware;
+    }
+
+    public void setSupportedHardware(@NonNull List<String> setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"supportedHardware\" is null.");
+      }
+      this.supportedHardware = setterArg;
+    }
+
+    private @NonNull Map<String, NumberWrapper> processInfoFlags;
+
+    public @NonNull Map<String, NumberWrapper> getProcessInfoFlags() {
+      return processInfoFlags;
+    }
+
+    public void setProcessInfoFlags(@NonNull Map<String, NumberWrapper> setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"processInfoFlags\" is null.");
+      }
+      this.processInfoFlags = setterArg;
+    }
+
+    private @NonNull Map<String, String> sdkVersions;
+
+    public @NonNull Map<String, String> getSdkVersions() {
+      return sdkVersions;
+    }
+
+    public void setSdkVersions(@NonNull Map<String, String> setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"sdkVersions\" is null.");
+      }
+      this.sdkVersions = setterArg;
+    }
+
+    /** Constructor is non-public to enforce null safety; use Builder. */
+    LockerAppPigeon() {}
+
+    public static final class Builder {
+
+      private @Nullable String uuid;
+
+      public @NonNull Builder setUuid(@NonNull String setterArg) {
+        this.uuid = setterArg;
+        return this;
+      }
+
+      private @Nullable String shortName;
+
+      public @NonNull Builder setShortName(@NonNull String setterArg) {
+        this.shortName = setterArg;
+        return this;
+      }
+
+      private @Nullable String longName;
+
+      public @NonNull Builder setLongName(@NonNull String setterArg) {
+        this.longName = setterArg;
+        return this;
+      }
+
+      private @Nullable String company;
+
+      public @NonNull Builder setCompany(@NonNull String setterArg) {
+        this.company = setterArg;
+        return this;
+      }
+
+      private @Nullable String appstoreId;
+
+      public @NonNull Builder setAppstoreId(@Nullable String setterArg) {
+        this.appstoreId = setterArg;
+        return this;
+      }
+
+      private @Nullable String version;
+
+      public @NonNull Builder setVersion(@NonNull String setterArg) {
+        this.version = setterArg;
+        return this;
+      }
+
+      private @Nullable Boolean isWatchface;
+
+      public @NonNull Builder setIsWatchface(@NonNull Boolean setterArg) {
+        this.isWatchface = setterArg;
+        return this;
+      }
+
+      private @Nullable Boolean isSystem;
+
+      public @NonNull Builder setIsSystem(@NonNull Boolean setterArg) {
+        this.isSystem = setterArg;
+        return this;
+      }
+
+      private @Nullable List<String> supportedHardware;
+
+      public @NonNull Builder setSupportedHardware(@NonNull List<String> setterArg) {
+        this.supportedHardware = setterArg;
+        return this;
+      }
+
+      private @Nullable Map<String, NumberWrapper> processInfoFlags;
+
+      public @NonNull Builder setProcessInfoFlags(@NonNull Map<String, NumberWrapper> setterArg) {
+        this.processInfoFlags = setterArg;
+        return this;
+      }
+
+      private @Nullable Map<String, String> sdkVersions;
+
+      public @NonNull Builder setSdkVersions(@NonNull Map<String, String> setterArg) {
+        this.sdkVersions = setterArg;
+        return this;
+      }
+
+      public @NonNull LockerAppPigeon build() {
+        LockerAppPigeon pigeonReturn = new LockerAppPigeon();
+        pigeonReturn.setUuid(uuid);
+        pigeonReturn.setShortName(shortName);
+        pigeonReturn.setLongName(longName);
+        pigeonReturn.setCompany(company);
+        pigeonReturn.setAppstoreId(appstoreId);
+        pigeonReturn.setVersion(version);
+        pigeonReturn.setIsWatchface(isWatchface);
+        pigeonReturn.setIsSystem(isSystem);
+        pigeonReturn.setSupportedHardware(supportedHardware);
+        pigeonReturn.setProcessInfoFlags(processInfoFlags);
+        pigeonReturn.setSdkVersions(sdkVersions);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(11);
+      toListResult.add(uuid);
+      toListResult.add(shortName);
+      toListResult.add(longName);
+      toListResult.add(company);
+      toListResult.add(appstoreId);
+      toListResult.add(version);
+      toListResult.add(isWatchface);
+      toListResult.add(isSystem);
+      toListResult.add(supportedHardware);
+      toListResult.add(processInfoFlags);
+      toListResult.add(sdkVersions);
+      return toListResult;
+    }
+
+    static @NonNull LockerAppPigeon fromList(@NonNull ArrayList<Object> list) {
+      LockerAppPigeon pigeonResult = new LockerAppPigeon();
+      Object uuid = list.get(0);
+      pigeonResult.setUuid((String) uuid);
+      Object shortName = list.get(1);
+      pigeonResult.setShortName((String) shortName);
+      Object longName = list.get(2);
+      pigeonResult.setLongName((String) longName);
+      Object company = list.get(3);
+      pigeonResult.setCompany((String) company);
+      Object appstoreId = list.get(4);
+      pigeonResult.setAppstoreId((String) appstoreId);
+      Object version = list.get(5);
+      pigeonResult.setVersion((String) version);
+      Object isWatchface = list.get(6);
+      pigeonResult.setIsWatchface((Boolean) isWatchface);
+      Object isSystem = list.get(7);
+      pigeonResult.setIsSystem((Boolean) isSystem);
+      Object supportedHardware = list.get(8);
+      pigeonResult.setSupportedHardware((List<String>) supportedHardware);
+      Object processInfoFlags = list.get(9);
+      pigeonResult.setProcessInfoFlags((Map<String, NumberWrapper>) processInfoFlags);
+      Object sdkVersions = list.get(10);
+      pigeonResult.setSdkVersions((Map<String, String>) sdkVersions);
+      return pigeonResult;
+    }
+  }
+
   public interface Result<T> {
     @SuppressWarnings("UnknownNullness")
     void success(T result);
@@ -2971,6 +3272,18 @@ public class Pigeons {
       channel.send(
           new ArrayList<Object>(Collections.singletonList(uuidArg)),
           channelReply -> callback.reply(null));
+    }
+    public void downloadPbw(@NonNull String uuidArg, @NonNull Reply<String> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger, "dev.flutter.pigeon.BackgroundAppInstallCallbacks.downloadPbw", getCodec());
+      channel.send(
+          new ArrayList<Object>(Collections.singletonList(uuidArg)),
+          channelReply -> {
+            @SuppressWarnings("ConstantConditions")
+            String output = (String) channelReply;
+            callback.reply(output);
+          });
     }
   }
 
@@ -5130,14 +5443,16 @@ public class Pigeons {
         case (byte) 130:
           return ListWrapper.fromList((ArrayList<Object>) readValue(buffer));
         case (byte) 131:
-          return NumberWrapper.fromList((ArrayList<Object>) readValue(buffer));
+          return LockerAppPigeon.fromList((ArrayList<Object>) readValue(buffer));
         case (byte) 132:
-          return PbwAppInfo.fromList((ArrayList<Object>) readValue(buffer));
+          return NumberWrapper.fromList((ArrayList<Object>) readValue(buffer));
         case (byte) 133:
-          return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
+          return PbwAppInfo.fromList((ArrayList<Object>) readValue(buffer));
         case (byte) 134:
-          return WatchResource.fromList((ArrayList<Object>) readValue(buffer));
+          return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
         case (byte) 135:
+          return WatchResource.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 136:
           return WatchappInfo.fromList((ArrayList<Object>) readValue(buffer));
         default:
           return super.readValueOfType(type, buffer);
@@ -5155,20 +5470,23 @@ public class Pigeons {
       } else if (value instanceof ListWrapper) {
         stream.write(130);
         writeValue(stream, ((ListWrapper) value).toList());
-      } else if (value instanceof NumberWrapper) {
+      } else if (value instanceof LockerAppPigeon) {
         stream.write(131);
+        writeValue(stream, ((LockerAppPigeon) value).toList());
+      } else if (value instanceof NumberWrapper) {
+        stream.write(132);
         writeValue(stream, ((NumberWrapper) value).toList());
       } else if (value instanceof PbwAppInfo) {
-        stream.write(132);
+        stream.write(133);
         writeValue(stream, ((PbwAppInfo) value).toList());
       } else if (value instanceof StringWrapper) {
-        stream.write(133);
+        stream.write(134);
         writeValue(stream, ((StringWrapper) value).toList());
       } else if (value instanceof WatchResource) {
-        stream.write(134);
+        stream.write(135);
         writeValue(stream, ((WatchResource) value).toList());
       } else if (value instanceof WatchappInfo) {
-        stream.write(135);
+        stream.write(136);
         writeValue(stream, ((WatchappInfo) value).toList());
       } else {
         super.writeValue(stream, value);
@@ -5188,7 +5506,7 @@ public class Pigeons {
      * Read header from pbw file already in Cobble's storage and send it to
      * BlobDB on the watch
      */
-    void insertAppIntoBlobDb(@NonNull StringWrapper uuidString, @NonNull Result<NumberWrapper> result);
+    void insertAppIntoBlobDb(@NonNull LockerAppPigeon app, @NonNull Result<NumberWrapper> result);
 
     void removeAppFromBlobDb(@NonNull StringWrapper appUuidString, @NonNull Result<NumberWrapper> result);
 
@@ -5302,7 +5620,7 @@ public class Pigeons {
               (message, reply) -> {
                 ArrayList<Object> wrapped = new ArrayList<Object>();
                 ArrayList<Object> args = (ArrayList<Object>) message;
-                StringWrapper uuidStringArg = (StringWrapper) args.get(0);
+                LockerAppPigeon appArg = (LockerAppPigeon) args.get(0);
                 Result<NumberWrapper> resultCallback =
                     new Result<NumberWrapper>() {
                       public void success(NumberWrapper result) {
@@ -5316,7 +5634,7 @@ public class Pigeons {
                       }
                     };
 
-                api.insertAppIntoBlobDb(uuidStringArg, resultCallback);
+                api.insertAppIntoBlobDb(appArg, resultCallback);
               });
         } else {
           channel.setMessageHandler(null);

@@ -1,6 +1,7 @@
 import 'package:cobble/domain/api/appstore/locker_entry.dart';
 import 'package:cobble/domain/api/auth/oauth.dart';
 import 'package:cobble/domain/api/auth/oauth_token.dart';
+import 'package:cobble/domain/logging.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/datasources/web_services/service.dart';
 
@@ -14,7 +15,13 @@ class AppstoreService extends Service {
 
   Future<List<LockerEntry>> get locker async {
     final tokenCreationDate = _prefs.getOAuthTokenCreationDate();
-    final token = await _oauth.ensureNotStale(_token, tokenCreationDate?? DateTime.utc(0));
+    final OAuthToken token;
+    if (tokenCreationDate != null) {
+      token = await _oauth.ensureNotStale(_token, tokenCreationDate);
+    } else {
+      Log.w("No token creation date found, using current token without ensuring it's not stale");
+      token = _token;
+    }
     List<LockerEntry> entries = await client.getSerialized(
       (body) => (body["applications"] as List<dynamic>)
         .map((e) => e as Map<String, dynamic>)
@@ -28,7 +35,13 @@ class AppstoreService extends Service {
 
   Future<void> addToLocker(String uuid) async {
     final tokenCreationDate = _prefs.getOAuthTokenCreationDate();
-    final token = await _oauth.ensureNotStale(_token, tokenCreationDate ?? DateTime.utc(0));
+    final OAuthToken token;
+    if (tokenCreationDate != null) {
+      token = await _oauth.ensureNotStale(_token, tokenCreationDate);
+    } else {
+      Log.w("No token creation date found, using current token without ensuring it's not stale");
+      token = _token;
+    }
     await client.request(
       path: "locker/$uuid",
       method: "PUT",
@@ -38,7 +51,13 @@ class AppstoreService extends Service {
 
   Future<void> removeFromLocker(String uuid) async {
     final tokenCreationDate = _prefs.getOAuthTokenCreationDate();
-    final token = await _oauth.ensureNotStale(_token, tokenCreationDate ?? DateTime.utc(0));
+    final OAuthToken token;
+    if (tokenCreationDate != null) {
+      token = await _oauth.ensureNotStale(_token, tokenCreationDate);
+    } else {
+      Log.w("No token creation date found, using current token without ensuring it's not stale");
+      token = _token;
+    }
     await client.request(
       path: "locker/$uuid",
       method: "DELETE",

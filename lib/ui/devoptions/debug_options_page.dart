@@ -1,7 +1,11 @@
 import 'package:cobble/domain/api/auth/auth.dart';
+import 'package:cobble/domain/api/auth/oauth_token.dart';
 import 'package:cobble/domain/api/auth/user.dart';
 import 'package:cobble/domain/api/no_token_exception.dart';
+import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/domain/calendar/device_calendar_plugin_provider.dart';
+import 'package:cobble/domain/db/dao/app_dao.dart';
+import 'package:cobble/domain/db/dao/locker_cache_dao.dart';
 import 'package:cobble/domain/logging.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/datasources/secure_storage.dart';
@@ -99,6 +103,45 @@ class DebugOptionsPage extends HookConsumerWidget implements CobbleScreen {
               ],
             ),
           ),
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            title: const Text("Set token"),
+            subtitle: const Text("Manually set a token for testing purposes"),
+            onTap: () async {
+              final controller = TextEditingController();
+              final newToken = await showDialog<String>(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text("Set token"),
+                    content: TextField(
+                      controller: controller,
+                      decoration: const InputDecoration(
+                        labelText: "Token",
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("Cancel"),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(controller.text);
+                        },
+                        child: const Text("Set"),
+                      ),
+                    ],
+                  );
+                },
+              );
+              if (newToken != null) {
+                await ref.read(secureStorageProvider).setToken(OAuthToken(accessToken: newToken, expiresIn: const Duration(days: 365).inSeconds, tokenType: "", scope: "", refreshToken: ""));
+              }
+            },
+          ),
           SwitchListTile(
             contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
             value: sensitiveLoggingEnabled.value,
@@ -140,6 +183,14 @@ Timeline TTL: $timelineTtl
                 label: "Force calendar resync",
                 onPressed: () async {
                   calendarControl.requestCalendarSync(true);
+                },
+              ),
+              const SizedBox(height: 20),
+              CobbleButton(
+                label: "Reset local locker",
+                onPressed: () async {
+                  await ref.read(appManagerProvider.notifier).resetLocker();
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Locker cache cleared"), duration: Duration(seconds: 2)));
                 },
               ),
               const SizedBox(height: 20),

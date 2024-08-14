@@ -13,8 +13,8 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
       name: json['name'] as String,
       scopes:
           (json['scopes'] as List<dynamic>).map((e) => e as String).toList(),
-      timelineTtl: json['timeline_ttl'] as int,
-      uid: json['uid'] as int,
+      timelineTtl: (json['timeline_ttl'] as num).toInt(),
+      uid: (json['uid'] as num).toInt(),
       bootOverrides: json['boot_overrides'] as Map<String, dynamic>?,
     );
 

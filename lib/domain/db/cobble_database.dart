@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cobble/domain/apps/default_apps.dart';
 import 'package:cobble/domain/db/dao/active_notification_dao.dart';
@@ -66,6 +67,9 @@ Future<void> createAppsTable(Database db) async {
       version TEXT NOT NULL,
       appOrder INTEGER NOT NULL,
       supportedHardware TEXT NOT NULL,
+      url TEXT,
+      processInfoFlags TEXT NOT NULL,
+      sdkVersions TEXT NOT NULL,
       nextSyncAction TEXT NOT NULL
     )
   """);
@@ -133,6 +137,15 @@ void _upgradeDb(Database db, int oldVersion, int newVersion) async {
   if (oldVersion < 6) {
     createLockerCacheTable(db);
   }
+  if (oldVersion < 7) {
+    await db.execute("ALTER TABLE $tableApps ADD COLUMN url TEXT;");
+  }
+  if (oldVersion < 8) {
+    await db.execute("ALTER TABLE $tableApps ADD COLUMN processInfoFlags TEXT;");
+  }
+  if (oldVersion < 9) {
+    await db.execute("ALTER TABLE $tableApps ADD COLUMN sdkVersions TEXT;");
+  }
 }
 
 final AutoDisposeFutureProvider<Database> databaseProvider =
@@ -141,7 +154,7 @@ final AutoDisposeFutureProvider<Database> databaseProvider =
   final dbPath = join(dbFolder, "cobble.db");
 
   final db = await openDatabase(dbPath,
-      version: 6,
+      version: 9,
       onCreate: (db, name) {
         _createDb(db);
       },
@@ -150,6 +163,5 @@ final AutoDisposeFutureProvider<Database> databaseProvider =
 
   // Note: DB is never closed because closing will cause errors in background
   // code. See https://github.com/tekartik/sqflite/issues/558.
-
   return db;
 });

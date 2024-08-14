@@ -1,9 +1,13 @@
 package io.rebble.cobble.handlers
 
 import android.content.Context
+import android.net.Uri
+import androidx.core.net.toFile
+import io.rebble.cobble.bridges.background.BackgroundAppInstallBridge
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.middleware.PutBytesController
 import io.rebble.cobble.middleware.getBestVariant
+import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.shared.handlers.CobbleHandler
 import io.rebble.cobble.util.getAppPbwFile
 import io.rebble.cobble.util.requirePbwAppInfo
@@ -12,11 +16,13 @@ import io.rebble.libpebblecommon.packets.AppFetchRequest
 import io.rebble.libpebblecommon.packets.AppFetchResponse
 import io.rebble.libpebblecommon.packets.AppFetchResponseStatus
 import io.rebble.libpebblecommon.services.AppFetchService
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
 
 class AppInstallHandler @Inject constructor(
@@ -24,7 +30,8 @@ class AppInstallHandler @Inject constructor(
         private val context: Context,
         private val appFetchService: AppFetchService,
         private val putBytesController: PutBytesController,
-        private val watchMetadataStore: WatchMetadataStore
+        private val watchMetadataStore: WatchMetadataStore,
+        private val backgroundInstallBridge: BackgroundAppInstallBridge
 ) : CobbleHandler {
     init {
         coroutineScope.launch {
@@ -39,12 +46,21 @@ class AppInstallHandler @Inject constructor(
     private suspend fun onNewAppFetchRequest(message: AppFetchRequest) {
         try {
             val appUuid = message.uuid.get().toString()
-            val appFile = getAppPbwFile(context, appUuid)
+            var appFile = getAppPbwFile(context, appUuid)
 
             if (!appFile.exists()) {
-                respondFetchRequest(AppFetchResponseStatus.INVALID_UUID)
-                Timber.e("Watch requested nonexistent app data (%s)", appUuid)
-                return
+                val uri = backgroundInstallBridge.downloadPbw(appUuid)?.let { Uri.parse(it) }
+                if (uri == null) {
+                    Timber.e("Failed to download app %s", appUuid)
+                    respondFetchRequest(AppFetchResponseStatus.NO_DATA)
+                    return
+                }
+                appFile = uri.toFile()
+                if (!appFile.exists()) {
+                    Timber.e("Downloaded app file does not exist")
+                    respondFetchRequest(AppFetchResponseStatus.NO_DATA)
+                    return
+                }
             }
 
             if (putBytesController.status.value.state != PutBytesController.State.IDLE) {

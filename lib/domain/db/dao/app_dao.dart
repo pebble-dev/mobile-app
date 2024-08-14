@@ -211,6 +211,11 @@ class AppDao {
       currentIndex++;
     }
   }
+
+  Future<void> deleteAll() async {
+    final db = await _dbFuture;
+    await db.delete(tableApps);
+  }
 }
 
 final AutoDisposeProvider<AppDao> appDaoProvider = Provider.autoDispose<AppDao>((ref) {
