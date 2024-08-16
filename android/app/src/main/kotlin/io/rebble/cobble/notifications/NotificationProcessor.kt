@@ -35,6 +35,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import okio.Timeout
 import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
@@ -42,6 +43,7 @@ import javax.inject.Singleton
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @Singleton
 class NotificationProcessor @Inject constructor(
@@ -53,6 +55,9 @@ class NotificationProcessor @Inject constructor(
         private val activeNotifsState: MutableStateFlow<Map<UUID, StatusBarNotification>>,
         private val prefs: KMPPrefs,
 ) {
+    companion object {
+        private val notificationProcessingTimeout = 10.seconds
+    }
     val coroutineScope = CoroutineScope(
             SupervisorJob() + exceptionHandler + CoroutineName("NotificationProcessor")
     )
@@ -167,73 +172,79 @@ class NotificationProcessor @Inject constructor(
 
     private val displayActor = coroutineScope.actor<DisplayActorArgs>(capacity = Channel.UNLIMITED) {
         for (notification in channel) {
-            val (packageId, notifId, tagId, title, text, category, color, messages, actions, sbn) = notification
-            val conversationId = tagId?.let { notificationChannelDao.getConversationId(sbn.packageName, it) }
+            try {
+                withTimeout(notificationProcessingTimeout) {
+                    val (packageId, notifId, tagId, title, text, category, color, messages, actions, sbn) = notification
+                    val conversationId = tagId?.let { notificationChannelDao.getConversationId(sbn.packageName, it) }
 
-            if (persistedNotifDao.getDuplicates(sbn.key, sbn.packageName, title, text).isNotEmpty()) {
-                Timber.d("Ignoring duplicate notification ${sbn.key}")
-                continue
-            }
-            val resolvedPackage = sbn.queryPackage(context)
-            if (resolvedPackage == null) {
-                Timber.d("Ignoring system/unknown notification ${sbn.key}")
-                continue
-            }
-            persistedNotifDao.insert(PersistedNotification(
-                    sbn.key, sbn.packageName, sbn.postTime, title, text, sbn.groupKey
-            ))
+                    if (persistedNotifDao.getDuplicates(sbn.key, sbn.packageName, title, text).isNotEmpty()) {
+                        Timber.d("Ignoring duplicate notification ${sbn.key}")
+                        continue
+                    }
+                    val resolvedPackage = sbn.queryPackage(context)
+                    if (resolvedPackage == null) {
+                        Timber.d("Ignoring system/unknown notification ${sbn.key}")
+                        continue
+                    }
+                    persistedNotifDao.insert(PersistedNotification(
+                            sbn.key, sbn.packageName, sbn.postTime, title, text, sbn.groupKey
+                    ))
 
-            if (prefs.defaultMutedPackagesVersion.first() != DEFAULT_MUTED_PACKAGES_VERSION) {
-                val current = prefs.mutedPackages.first()
-                prefs.setMutedPackages(current + defaultMutedPackages)
-            }
+                    if (prefs.defaultMutedPackagesVersion.first() != DEFAULT_MUTED_PACKAGES_VERSION) {
+                        val current = prefs.mutedPackages.first()
+                        prefs.setMutedPackages(current + defaultMutedPackages)
+                    }
 
-            // Channel should be added to db before this point, by listener
-            if (!shouldNotify(sbn.packageName, sbn.notification.channelId)) {
-                Timber.v("Ignoring notification from muted channel/package ${sbn.key}")
-                continue
-            }
+                    // Channel should be added to db before this point, by listener
+                    if (!shouldNotify(sbn.packageName, sbn.notification.channelId)) {
+                        Timber.v("Ignoring notification from muted channel/package ${sbn.key}")
+                        continue
+                    }
 
-            val itemId = uuidFrom(NotificationActionHandler.notificationUuidPrefix + (uuid4().toString()).substring(NotificationActionHandler.notificationUuidPrefix.length))
-            val attributes = buildPebbleAttributes(packageId, category, title, text, messages, color)
-            val pebbleActions = buildPebbleActions(actions, tagId, conversationId != null)
-            activeNotifsState.value += (itemId to sbn)
+                    val itemId = uuidFrom(NotificationActionHandler.notificationUuidPrefix + (uuid4().toString()).substring(NotificationActionHandler.notificationUuidPrefix.length))
+                    val attributes = buildPebbleAttributes(packageId, category, title, text, messages, color)
+                    val pebbleActions = buildPebbleActions(actions, tagId, conversationId != null)
+                    activeNotifsState.value += (itemId to sbn)
 
-            val notificationItem = TimelineItem(
-                    itemId,
-                    notificationsWatchappId,
-                    sbn.postTime.milliseconds.inWholeSeconds.toUInt(),
-                    0u,
-                    TimelineItem.Type.Notification,
-                    TimelineItem.Flag.makeFlags(listOf(
-                            TimelineItem.Flag.IS_VISIBLE
-                    )),
-                    attributes = attributes,
-                    layout = TimelineItem.Layout.GenericNotification,
-                    actions = pebbleActions,
-            )
+                    val notificationItem = TimelineItem(
+                            itemId,
+                            notificationsWatchappId,
+                            sbn.postTime.milliseconds.inWholeSeconds.toUInt(),
+                            0u,
+                            TimelineItem.Type.Notification,
+                            TimelineItem.Flag.makeFlags(listOf(
+                                    TimelineItem.Flag.IS_VISIBLE
+                            )),
+                            attributes = attributes,
+                            layout = TimelineItem.Layout.GenericNotification,
+                            actions = pebbleActions,
+                    )
 
-            val packet = BlobCommand.InsertCommand(
-                    Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
-                    BlobCommand.BlobDatabase.Notification,
-                    SUUID(StructMapper(), itemId).toBytes(),
-                    notificationItem.toBytes(),
-            )
+                    val packet = BlobCommand.InsertCommand(
+                            Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
+                            BlobCommand.BlobDatabase.Notification,
+                            SUUID(StructMapper(), itemId).toBytes(),
+                            notificationItem.toBytes(),
+                    )
 
-            var result = blobDBService.send(packet)
+                    var result = blobDBService.send(packet)
 
-            while (result.responseValue == BlobResponse.BlobStatus.TryLater) {
-                Timber.w("BlobDB is busy, retrying in 1s")
-                delay(1000)
-                result = blobDBService.send(packet)
-            }
+                    while (result.responseValue == BlobResponse.BlobStatus.TryLater) {
+                        Timber.w("BlobDB is busy, retrying in 1s")
+                        delay(1000)
+                        result = blobDBService.send(packet)
+                    }
 
-            if (result.responseValue != BlobResponse.BlobStatus.Success) {
-                Timber.e("Failed to send notification to Pebble, blobdb returned ${result.responseValue}")
-            }
-            val deleted = persistedNotifDao.deleteOlderThan(System.currentTimeMillis() - 7.days.inWholeMilliseconds)
-            if (deleted > 0) {
-                Timber.w("Deleted $deleted old notifications that were never deleted on dismissal")
+                    if (result.responseValue != BlobResponse.BlobStatus.Success) {
+                        Timber.e("Failed to send notification to Pebble, blobdb returned ${result.responseValue}")
+                    }
+                    val deleted = persistedNotifDao.deleteOlderThan(System.currentTimeMillis() - 7.days.inWholeMilliseconds)
+                    if (deleted > 0) {
+                        Timber.w("Deleted $deleted old notifications that were never deleted on dismissal")
+                    }
+                }
+            } catch (e: TimeoutCancellationException) {
+                Timber.e(e, "Notification processing timed out (package: ${notification.packageId} id: ${notification.notifId})")
             }
             delay(10)
         }
@@ -299,7 +310,7 @@ class NotificationProcessor @Inject constructor(
                 sbn
         ))
         if (result.isFailure) {
-            Timber.e(result.exceptionOrNull(), "Failed to send notification to display actor")
+            Timber.e(result.exceptionOrNull(), "Failed to send notification to display actor, isClosedForSend: ${displayActor.isClosedForSend}")
         }
     }
 
