@@ -179,12 +179,12 @@ class NotificationProcessor @Inject constructor(
 
                     if (persistedNotifDao.getDuplicates(sbn.key, sbn.packageName, title, text).isNotEmpty()) {
                         Timber.d("Ignoring duplicate notification ${sbn.key}")
-                        continue
+                        return@withTimeout
                     }
                     val resolvedPackage = sbn.queryPackage(context)
                     if (resolvedPackage == null) {
                         Timber.d("Ignoring system/unknown notification ${sbn.key}")
-                        continue
+                        return@withTimeout
                     }
                     persistedNotifDao.insert(PersistedNotification(
                             sbn.key, sbn.packageName, sbn.postTime, title, text, sbn.groupKey
@@ -198,7 +198,7 @@ class NotificationProcessor @Inject constructor(
                     // Channel should be added to db before this point, by listener
                     if (!shouldNotify(sbn.packageName, sbn.notification.channelId)) {
                         Timber.v("Ignoring notification from muted channel/package ${sbn.key}")
-                        continue
+                        return@withTimeout
                     }
 
                     val itemId = uuidFrom(NotificationActionHandler.notificationUuidPrefix + (uuid4().toString()).substring(NotificationActionHandler.notificationUuidPrefix.length))
