@@ -15,12 +15,9 @@ import io.rebble.cobble.shared.handlers.CobbleHandler
 import io.rebble.cobble.util.Debouncer
 import io.rebble.libpebblecommon.packets.MusicControl
 import io.rebble.libpebblecommon.services.MusicService
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.actor
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -35,23 +32,28 @@ class MusicHandler @Inject constructor(
     private var currentMediaController: MediaController? = null
     private var hasPermission: Boolean = false
 
-    private val playStateDebouncer = Debouncer(
-            debouncingTimeMs = 500L,
-            triggerFirstImmediately = true,
-            scope = coroutineScope
-    )
+    private val musicControl = MutableSharedFlow<MusicControl>(4)
 
-    private val trackDebouncer = Debouncer(
-            debouncingTimeMs = 500L,
-            triggerFirstImmediately = true,
-            scope = coroutineScope
-    )
+    init {
+        musicControl.filterIsInstance<MusicControl.UpdateCurrentTrack>().debounce(200).onEach {
+            Timber.d("Update current track %s %s %s %s", it.title.get(), it.artist.get(), it.album.get(), it.trackLength.get())
+            musicService.send(it)
+        }.launchIn(coroutineScope)
 
-    private val volumDebouncer = Debouncer(
-            debouncingTimeMs = 500L,
-            triggerFirstImmediately = true,
-            scope = coroutineScope
-    )
+        musicControl.filterIsInstance<MusicControl.UpdatePlayStateInfo>().debounce(200).onEach {
+            Timber.d("Update play state %s %s %s", it.state.get(), it.trackPosition.get(), it.playRate.get())
+            musicService.send(it)
+        }.launchIn(coroutineScope)
+
+        musicControl.filterIsInstance<MusicControl.UpdateVolumeInfo>().debounce(200).onEach {
+            Timber.d("Update volume %s", it.volumePercent.get())
+            musicService.send(it)
+        }.launchIn(coroutineScope)
+        musicControl.filterIsInstance<MusicControl.UpdatePlayerInfo>().debounce(200).onEach {
+            Timber.d("Update player info %s %s", it.name.get(), it.pkg.get())
+            musicService.send(it)
+        }.launchIn(coroutineScope)
+    }
 
     private fun onMediaPlayerChanged(newPlayer: MediaController?) {
         Timber.d("New Player %s %s", newPlayer?.packageName, newPlayer.hashCode())
@@ -65,21 +67,21 @@ class MusicHandler @Inject constructor(
 
         newPlayer.registerCallback(callback)
 
-        coroutineScope.launch(Dispatchers.Main.immediate) {
-            val name = packageManager
-                    .getPackageInfo(newPlayer.packageName, 0)
-                    .applicationInfo
-                    .loadLabel(packageManager)
-                    .toString()
+        sendPlayerInfoUpdate(newPlayer)
+        sendCurrentTrackUpdate(newPlayer.metadata)
+        sendPlayStateUpdate(newPlayer.playbackState)
+        newPlayer.playbackInfo?.let { sendVolumeUpdate(it) }
+    }
 
-            musicService.send(MusicControl.UpdatePlayerInfo(
-                    newPlayer.packageName,
-                    name
-            ))
+    private fun sendPlayerInfoUpdate(mediaController: MediaController) {
+        val name = packageManager
+                .getPackageInfo(mediaController.packageName, 0)
+                .applicationInfo
+                .loadLabel(packageManager)
+                .toString()
 
-            sendCurrentTrackUpdate(newPlayer.metadata)
-            sendPlayStateUpdate(newPlayer.playbackState)
-            newPlayer.playbackInfo?.let { sendVolumeUpdate(it) }
+        if (!musicControl.tryEmit(MusicControl.UpdatePlayerInfo(name, mediaController.packageName))) {
+            Timber.w("Failed to emit player info")
         }
     }
 
@@ -144,24 +146,22 @@ class MusicHandler @Inject constructor(
             }
         }
 
-        trackDebouncer.executeDebouncing {
-            Timber.d("transmit track")
-            musicService.send(updateTrackObject)
+        if (!musicControl.tryEmit(updateTrackObject)) {
+            Timber.w("Failed to emit track update")
         }
     }
 
 
     private fun sendVolumeUpdate(playbackInfo: MediaController.PlaybackInfo) {
         Timber.d("Send volume update %s", playbackInfo)
-        volumDebouncer.executeDebouncing {
-            Timber.d("Transmit volume")
-            musicService.send(MusicControl.UpdateVolumeInfo(
-                    (100f * playbackInfo.currentVolume / playbackInfo.maxVolume)
-                            .roundToInt()
-                            .toUByte()
-            ))
+        val packet = MusicControl.UpdateVolumeInfo(
+                (100f * playbackInfo.currentVolume / playbackInfo.maxVolume)
+                        .roundToInt()
+                        .toUByte()
+        )
+        if (!musicControl.tryEmit(packet)) {
+            Timber.w("Failed to emit volume update")
         }
-
     }
 
     private fun sendPlayStateUpdate(playbackState: PlaybackState?) {
@@ -190,15 +190,15 @@ class MusicHandler @Inject constructor(
         val position = (playbackState?.position ?: 0) + timeSinceLastPositionUpdate
 
         val playbackSpeed = playbackState?.playbackSpeed ?: 1f
-        playStateDebouncer.executeDebouncing {
-            Timber.d("Transmit play state $state")
-            musicService.send(MusicControl.UpdatePlayStateInfo(
-                    state,
-                    position.toUInt(),
-                    (playbackSpeed * 100f).roundToInt().toUInt(),
-                    MusicControl.ShuffleState.Unknown,
-                    MusicControl.RepeatState.Unknown
-            ))
+        val packet = MusicControl.UpdatePlayStateInfo(
+                state,
+                position.toUInt(),
+                (playbackSpeed * 100f).roundToInt().toUInt(),
+                MusicControl.ShuffleState.Unknown,
+                MusicControl.RepeatState.Unknown
+        )
+        if (!musicControl.tryEmit(packet)) {
+            Timber.w("Failed to emit play state update")
         }
     }
 
@@ -261,14 +261,16 @@ class MusicHandler @Inject constructor(
                     }
 
                     MusicControl.Message.GetCurrentTrack -> {
+                        Timber.d("Watch requested playback info")
+                        currentMediaController?.let { sendPlayerInfoUpdate(it) }
+                        sendPlayStateUpdate(currentMediaController?.playbackState)
+                        currentMediaController?.playbackInfo?.let { sendVolumeUpdate(it) }
                         sendCurrentTrackUpdate(currentMediaController?.metadata)
                     }
 
-                    MusicControl.Message.UpdateCurrentTrack,
-                    MusicControl.Message.UpdatePlayStateInfo,
-                    MusicControl.Message.UpdateVolumeInfo,
-                    MusicControl.Message.UpdatePlayerInfo,
-                    -> Unit
+                    else -> {
+                        Timber.w("Unknown message %s", msg.message)
+                    }
                 }
             }
         }
