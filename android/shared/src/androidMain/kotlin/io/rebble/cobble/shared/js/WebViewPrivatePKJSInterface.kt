@@ -37,4 +37,31 @@ class WebViewPrivatePKJSInterface(private val jsRunner: WebViewJsRunner, private
             jsRunner.loadAppJs(params)
         }
     }
+
+    @JavascriptInterface
+    fun privateFnLocalStorageWrite(key: String, value: String) {
+        TODO("Not yet implemented")
+    }
+
+    @JavascriptInterface
+    fun privateFnLocalStorageRead(key: String): String {
+        TODO("Not yet implemented")
+    }
+
+    @JavascriptInterface
+    fun privateFnLocalStorageReadAll(): String {
+        return "{}"
+    }
+
+    @JavascriptInterface
+    fun privateFnLocalStorageReadAll_AtPreregistrationStage(baseUriReference: String): String {
+        return privateFnLocalStorageReadAll()
+    }
+
+    @JavascriptInterface
+    fun signalAppScriptLoadedByBootstrap() {
+        scope.launch {
+            jsRunner.signalReady()
+        }
+    }
 }

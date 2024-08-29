@@ -12,9 +12,13 @@ import io.rebble.cobble.shared.Logging
 import io.rebble.libpebblecommon.metadata.pbw.appinfo.PbwAppInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
-class WebViewJsRunner(val context: Context, private val scope: CoroutineScope, appInfo: PbwAppInfo, jsPath: String): JsRunner(appInfo, jsPath) {
+class WebViewJsRunner(val context: Context, private val connectedAddress: StateFlow<String?>, private val scope: CoroutineScope, appInfo: PbwAppInfo, jsPath: String): JsRunner(appInfo, jsPath) {
 
     companion object {
         const val API_NAMESPACE = "Pebble"
@@ -213,12 +217,31 @@ class WebViewJsRunner(val context: Context, private val scope: CoroutineScope, a
     }
 
     suspend fun loadAppJs(params: String?) {
-        check(webView != null) { "WebView not initialized" }
-        if (params == null) {
-            Logging.e("No params passed to loadAppJs")
-            return
-        }
+        webView?.let { webView ->
+            if (params == null) {
+                Logging.e("No params passed to loadAppJs")
+                return
+            }
 
-        
+            val paramsDecoded = Uri.decode(params)
+            val paramsJson = Json.decodeFromString<Map<String, String>>(paramsDecoded)
+            val jsUrl = paramsJson["loadUrl"]
+            if (jsUrl.isNullOrBlank() || !jsUrl.endsWith(".js")) {
+                Logging.e("loadUrl passed to loadAppJs empty or invalid")
+                return
+            }
+
+            withContext(Dispatchers.Main) {
+                webView.loadUrl("javascript:loadScript('$jsUrl')")
+            }
+        } ?: error("WebView not initialized")
+    }
+
+    suspend fun signalReady() {
+        val readyDeviceIds = listOf(connectedAddress.value ?: return)
+        val readyJson = Json.encodeToString(readyDeviceIds)
+        withContext(Dispatchers.Main) {
+            webView?.loadUrl("javascript:signalReady(${Uri.encode(readyJson)})")
+        }
     }
 }
