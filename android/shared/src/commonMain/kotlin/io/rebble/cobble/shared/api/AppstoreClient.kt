@@ -2,6 +2,7 @@ package io.rebble.cobble.shared.api
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.*
 import io.ktor.http.HttpHeaders
@@ -10,10 +11,15 @@ import io.rebble.cobble.shared.domain.api.appstore.LockerEntry
 
 class AppstoreClient(
         val baseUrl: String,
-        private val token: String
+        private val token: String,
+        engine: HttpClientEngine? = null,
 ) {
     private val version = "v1"
-    private val client = HttpClient {
+    private val client = engine?.let { HttpClient(it) {
+        install(ContentNegotiation) {
+            json()
+        }
+    }} ?: HttpClient {
         install(ContentNegotiation) {
             json()
         }
