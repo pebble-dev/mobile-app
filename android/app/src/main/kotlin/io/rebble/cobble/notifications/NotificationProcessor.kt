@@ -159,7 +159,7 @@ class NotificationProcessor @Inject constructor(
                         listOf(TimelineAttributeFactory.title("Mute app"))
                 )
         )
-        val muteChannelText = "Mute ${if (conversation) "conversation" else "channel"})" +
+        val muteChannelText = "Mute ${if (conversation) "conversation" else "channel"}" +
                 if (conversation) "" else "\n'$channel'"
         add(
                 TimelineItem.Action(
@@ -175,7 +175,7 @@ class NotificationProcessor @Inject constructor(
             try {
                 withTimeout(notificationProcessingTimeout) {
                     val (packageId, notifId, tagId, title, text, category, color, messages, actions, sbn) = notification
-                    val conversationId = tagId?.let { notificationChannelDao.getConversationId(sbn.packageName, it) }
+                    val channel = tagId?.let { notificationChannelDao.get(packageId, it) }
 
                     if (persistedNotifDao.getDuplicates(sbn.key, sbn.packageName, title, text).isNotEmpty()) {
                         Timber.d("Ignoring duplicate notification ${sbn.key}")
@@ -203,7 +203,7 @@ class NotificationProcessor @Inject constructor(
 
                     val itemId = uuidFrom(NotificationActionHandler.notificationUuidPrefix + (uuid4().toString()).substring(NotificationActionHandler.notificationUuidPrefix.length))
                     val attributes = buildPebbleAttributes(packageId, category, title, text, messages, color)
-                    val pebbleActions = buildPebbleActions(actions, tagId, conversationId != null)
+                    val pebbleActions = buildPebbleActions(actions, channel?.name ?: tagId, channel?.conversationId != null)
                     activeNotifsState.value += (itemId to sbn)
 
                     val notificationItem = TimelineItem(
