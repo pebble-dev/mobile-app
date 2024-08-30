@@ -4066,3 +4066,71 @@ void KeepUnusedHackSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Ke
     }
   }
 }
+@interface KMPApiCodecReader : FlutterStandardReader
+@end
+@implementation KMPApiCodecReader
+- (nullable id)readValueOfType:(UInt8)type {
+  switch (type) {
+    case 128: 
+      return [StringWrapper fromList:[self readValue]];
+    default:
+      return [super readValueOfType:type];
+  }
+}
+@end
+
+@interface KMPApiCodecWriter : FlutterStandardWriter
+@end
+@implementation KMPApiCodecWriter
+- (void)writeValue:(id)value {
+  if ([value isKindOfClass:[StringWrapper class]]) {
+    [self writeByte:128];
+    [self writeValue:[value toList]];
+  } else {
+    [super writeValue:value];
+  }
+}
+@end
+
+@interface KMPApiCodecReaderWriter : FlutterStandardReaderWriter
+@end
+@implementation KMPApiCodecReaderWriter
+- (FlutterStandardWriter *)writerWithData:(NSMutableData *)data {
+  return [[KMPApiCodecWriter alloc] initWithData:data];
+}
+- (FlutterStandardReader *)readerWithData:(NSData *)data {
+  return [[KMPApiCodecReader alloc] initWithData:data];
+}
+@end
+
+NSObject<FlutterMessageCodec> *KMPApiGetCodec(void) {
+  static FlutterStandardMessageCodec *sSharedObject = nil;
+  static dispatch_once_t sPred = 0;
+  dispatch_once(&sPred, ^{
+    KMPApiCodecReaderWriter *readerWriter = [[KMPApiCodecReaderWriter alloc] init];
+    sSharedObject = [FlutterStandardMessageCodec codecWithReaderWriter:readerWriter];
+  });
+  return sSharedObject;
+}
+
+void KMPApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<KMPApi> *api) {
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.KMPApi.updateToken"
+        binaryMessenger:binaryMessenger
+        codec:KMPApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(updateTokenToken:error:)], @"KMPApi api (%@) doesn't respond to @selector(updateTokenToken:error:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        StringWrapper *arg_token = GetNullableObjectAtIndex(args, 0);
+        FlutterError *error;
+        [api updateTokenToken:arg_token error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+}

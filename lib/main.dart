@@ -7,6 +7,7 @@ import 'package:cobble/domain/logging.dart';
 import 'package:cobble/infrastructure/backgroundcomm/BackgroundReceiver.dart';
 import 'package:cobble/infrastructure/backgroundcomm/BackgroundRpc.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
+import 'package:cobble/infrastructure/datasources/secure_storage.dart';
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/localization/localization_delegate.dart';
 import 'package:cobble/localization/model/model_generator.model.dart';
@@ -113,6 +114,11 @@ class MyApp extends HookConsumerWidget {
           if (!(await permissionCheck.hasCallsPermissions()).value!) {
             permissionControl.requestCallsPermissions();
           }
+        }
+
+        final token = await ref.read(secureStorageProvider).getToken();
+        if (token != null && token.accessToken.isNotEmpty) {
+            await KMPApi().updateToken(StringWrapper(value: token.accessToken));
         }
       });
       return null;

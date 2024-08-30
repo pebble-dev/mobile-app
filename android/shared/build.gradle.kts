@@ -51,8 +51,12 @@ kotlin {
             implementation(libs.androidx.sqlite.bundled)
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.contentnegotiation)
+            implementation(libs.ktor.serialization.json)
         }
         androidMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
             implementation("io.insert-koin:koin-android:$koinVersion")
             implementation("androidx.core:core-ktx:$androidxVersion")
             implementation("com.jakewharton.timber:timber:$timberVersion")

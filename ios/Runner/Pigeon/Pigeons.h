@@ -703,4 +703,13 @@ NSObject<FlutterMessageCodec> *KeepUnusedHackGetCodec(void);
 
 extern void KeepUnusedHackSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<KeepUnusedHack> *_Nullable api);
 
+/// The codec used by KMPApi.
+NSObject<FlutterMessageCodec> *KMPApiGetCodec(void);
+
+@protocol KMPApi
+- (void)updateTokenToken:(StringWrapper *)token error:(FlutterError *_Nullable *_Nonnull)error;
+@end
+
+extern void KMPApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<KMPApi> *_Nullable api);
+
 NS_ASSUME_NONNULL_END

@@ -6240,4 +6240,68 @@ public class Pigeons {
       }
     }
   }
+
+  private static class KMPApiCodec extends StandardMessageCodec {
+    public static final KMPApiCodec INSTANCE = new KMPApiCodec();
+
+    private KMPApiCodec() {}
+
+    @Override
+    protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
+      switch (type) {
+        case (byte) 128:
+          return StringWrapper.fromList((ArrayList<Object>) readValue(buffer));
+        default:
+          return super.readValueOfType(type, buffer);
+      }
+    }
+
+    @Override
+    protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
+      if (value instanceof StringWrapper) {
+        stream.write(128);
+        writeValue(stream, ((StringWrapper) value).toList());
+      } else {
+        super.writeValue(stream, value);
+      }
+    }
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface KMPApi {
+
+    void updateToken(@NonNull StringWrapper token);
+
+    /** The codec used by KMPApi. */
+    static @NonNull MessageCodec<Object> getCodec() {
+      return KMPApiCodec.INSTANCE;
+    }
+    /**Sets up an instance of `KMPApi` to handle messages through the `binaryMessenger`. */
+    static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable KMPApi api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.KMPApi.updateToken", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                StringWrapper tokenArg = (StringWrapper) args.get(0);
+                try {
+                  api.updateToken(tokenArg);
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
 }

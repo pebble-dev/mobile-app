@@ -88,6 +88,13 @@ abstract class CommonBridgesModule {
     abstract fun bindIncomingPacketsBridge(
             packetsBridge: RawIncomingPacketsBridge
     ): FlutterBridge
+
+    @Binds
+    @IntoSet
+    @CommonBridge
+    abstract fun bindKmpApiBridge(
+            kmpApiBridge: KMPApiBridge
+    ): FlutterBridge
 }
 
 @Qualifier

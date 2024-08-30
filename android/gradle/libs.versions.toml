@@ -18,6 +18,8 @@ room-sqlite = "2.5.0-alpha05"
 datastore = "1.1.1"
 uuidVersion = "0.8.4"
 
+ktorVersion = "2.3.12"
+
 [plugins]
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
@@ -53,3 +55,8 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationJson" }
 libpebblecommon = { module = "io.rebble.libpebblecommon:libpebblecommon", version.ref = "libpebblecommonVersion" }
 uuid = { module = "com.benasher44:uuid", version.ref = "uuidVersion" }
+
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorVersion" }
+ktor-client-contentnegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorVersion" }
+ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorVersion" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktorVersion" }

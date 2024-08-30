@@ -591,3 +591,9 @@ abstract class KeepUnusedHack {
 
   void keepWatchResource(WatchResource cls);
 }
+
+//TODO: Move all api use to KMP so we don't need this
+@HostApi()
+abstract class KMPApi {
+    void updateToken(StringWrapper token);
+}

@@ -1,6 +1,7 @@
 package io.rebble.cobble.shared.di
 
 import io.rebble.cobble.shared.domain.state.ConnectionState
+import io.rebble.cobble.shared.domain.state.CurrentToken
 import io.rebble.cobble.shared.domain.state.watchOrNull
 import kotlinx.coroutines.flow.*
 import org.koin.core.qualifier.named
@@ -16,4 +17,8 @@ val stateModule = module {
                 .flatMapLatest { it.watchOrNull?.metadata?.take(1) ?: flowOf(null) }
                 .filterNotNull()
     }
+
+    single(named("currentToken")) {
+        MutableStateFlow<CurrentToken>(CurrentToken.LoggedOut)
+    } bind StateFlow::class
 }
