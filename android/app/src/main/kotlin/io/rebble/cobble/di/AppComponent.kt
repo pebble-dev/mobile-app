@@ -18,6 +18,7 @@ import io.rebble.cobble.service.ServiceLifecycleControl
 import io.rebble.cobble.shared.database.dao.NotificationChannelDao
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.calendar.CalendarSync
+import io.rebble.cobble.shared.jobs.AndroidJobScheduler
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.PhoneControlService
 import io.rebble.libpebblecommon.services.ProtocolService
@@ -59,6 +60,7 @@ interface AppComponent {
     fun createKMPPrefs(): KMPPrefs
     fun createActiveNotifsState(): MutableStateFlow<Map<Uuid, StatusBarNotification>>
     fun createNotificationChannelDao(): NotificationChannelDao
+    fun createAndroidJobScheduler(): AndroidJobScheduler
 
     @Component.Factory
     interface Factory {

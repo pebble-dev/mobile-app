@@ -9,6 +9,7 @@ import io.rebble.cobble.shared.domain.calendar.PlatformCalendarActionExecutor
 import io.rebble.cobble.shared.domain.notifications.PlatformNotificationActionExecutor
 import io.rebble.cobble.shared.domain.notifications.AndroidNotificationActionExecutor
 import io.rebble.cobble.shared.domain.calendar.AndroidCalendarActionExecutor
+import io.rebble.cobble.shared.jobs.AndroidJobScheduler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.dsl.module
@@ -26,6 +27,7 @@ val androidModule = module {
     single(named("activeNotifsState")) {
         MutableStateFlow<Map<Uuid, StatusBarNotification>>(emptyMap())
     } bind StateFlow::class
+    single { AndroidJobScheduler() }
     singleOf<PlatformNotificationActionExecutor>(::AndroidNotificationActionExecutor)
     singleOf<PlatformCalendarActionExecutor>(::AndroidCalendarActionExecutor)
 }

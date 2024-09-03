@@ -165,6 +165,9 @@
                 <action android:name="android.telecom.InCallService" />
             </intent-filter>
         </service>
+        <service android:name=".shared.jobs.AndroidLockerSyncJob"
+            android:label="Locker Sync Job"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <receiver
             android:name=".receivers.AppStartReceiver"

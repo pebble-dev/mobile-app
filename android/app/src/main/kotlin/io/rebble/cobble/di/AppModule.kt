@@ -16,6 +16,7 @@ import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.calendar.CalendarSync
 import io.rebble.cobble.shared.domain.state.CurrentToken
 import io.rebble.cobble.shared.handlers.CalendarActionHandler
+import io.rebble.cobble.shared.jobs.AndroidJobScheduler
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -77,6 +78,12 @@ abstract class AppModule {
         @Provides
         fun provideNotificationChannelDao(context: Context): NotificationChannelDao {
             return AppDatabase.instance().notificationChannelDao()
+        }
+
+        @Provides
+        @Singleton
+        fun proviceAndroidJobScheduler(context: Context): AndroidJobScheduler {
+            return KoinPlatformTools.defaultContext().get().get()
         }
 
         @Provides

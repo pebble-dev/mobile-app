@@ -1,5 +1,9 @@
 package io.rebble.cobble.shared.domain.api.appstore
 
+import io.rebble.cobble.shared.database.NextSyncAction
+import io.rebble.cobble.shared.database.entity.SyncedLockerEntry
+import io.rebble.cobble.shared.database.entity.SyncedLockerEntryPlatform
+import io.rebble.cobble.shared.database.entity.SyncedLockerEntryWithPlatforms
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
 
@@ -99,3 +103,40 @@ data class LockerEntryPBW(
         @SerialName("icon_resource_id") val iconResourceId: Int,
         @SerialName("release_id") val releaseId: String
 )
+
+fun LockerEntry.toEntity(): SyncedLockerEntryWithPlatforms {
+    check(hardwarePlatforms.isNotEmpty()) { "Hardware platforms are empty" }
+    return SyncedLockerEntryWithPlatforms(
+            entry = SyncedLockerEntry(
+                    id = id,
+                    uuid = uuid,
+                    version = version ?: error("Version is null"),
+                    title = title,
+                    type = type,
+                    hearts = hearts,
+                    developerName = developer.name,
+                    configurable = isConfigurable,
+                    timelineEnabled = isTimelineEnabled,
+                    removeLink = links.remove,
+                    shareLink = links.share,
+                    pbwLink = pbw?.file ?: error("PBW is null"),
+                    pbwReleaseId = pbw.releaseId,
+                    nextSyncAction = NextSyncAction.Upload
+            ),
+            platforms = hardwarePlatforms.map {
+                it.toEntity(id)
+            },
+    )
+}
+
+fun LockerEntryPlatform.toEntity(lockerEntryId: String): SyncedLockerEntryPlatform {
+    return SyncedLockerEntryPlatform(
+            platformEntryId = 0,
+            lockerEntryId = lockerEntryId,
+            sdkVersion = sdkVersion,
+            processInfoFlags = pebbleProcessInfoFlags,
+            name = name,
+            description = description,
+            icon = images.icon
+    )
+}

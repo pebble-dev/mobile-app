@@ -124,6 +124,9 @@ class MainActivity : FlutterActivity() {
             }
         }
 
+        val jobScheduler = injectionComponent.createAndroidJobScheduler()
+        jobScheduler.scheduleStartupJobs()
+
         handleIntent(intent)
     }
 
