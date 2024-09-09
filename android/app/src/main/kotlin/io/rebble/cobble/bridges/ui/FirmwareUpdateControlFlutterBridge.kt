@@ -1,6 +1,8 @@
 package io.rebble.cobble.bridges.ui
 
+import android.content.Context
 import android.net.Uri
+import androidx.core.net.toFile
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.middleware.PutBytesController
@@ -24,6 +26,7 @@ import kotlinx.serialization.json.decodeFromStream
 import okio.buffer
 import timber.log.Timber
 import java.io.File
+import java.io.InputStream
 import java.util.TimeZone
 import javax.inject.Inject
 
@@ -33,6 +36,7 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
         private val watchMetadataStore: WatchMetadataStore,
         private val systemService: SystemService,
         private val putBytesController: PutBytesController,
+        private val context: Context
 ) : FlutterBridge, Pigeons.FirmwareUpdateControl {
     init {
         bridgeLifecycleController.setupControl(Pigeons.FirmwareUpdateControl::setup, this)
@@ -42,15 +46,22 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
 
     override fun checkFirmwareCompatible(fwUri: Pigeons.StringWrapper, result: Pigeons.Result<Pigeons.BooleanWrapper>) {
         coroutineScope.launchPigeonResult(result) {
-            val pbzFile = File(Uri.parse(fwUri.value).path!!)
-            val manifestFile = pbzFile.zippedSource("manifest.json")
-                    ?.buffer()
-                    ?: error("manifest.json missing from app $pbzFile")
-
-            val manifest: PbzManifest = manifestFile.use {
-                Json.decodeFromStream(it.inputStream())
+            val uri = Uri.parse(fwUri.value)
+            val pbzStream = if (uri.scheme == "file" || uri.scheme == "content") {
+                context.applicationContext.contentResolver.openInputStream(uri)
+            } else {
+                uri.toFile().inputStream()
+            } ?: error("Failed to open input stream for $uri")
+            val manifest = pbzStream.use {
+                val manifestFile = pbzStream.zippedSource("manifest.json")
+                        ?.buffer()
+                        ?: error("manifest.json missing from app $uri")
+                val manifest: PbzManifest = manifestFile.use {
+                    Json.decodeFromStream(it.inputStream())
+                }
+                require(manifest.type == "firmware") { "PBZ is not a firmware update" }
+                return@use manifest
             }
-            require(manifest.type == "firmware") { "PBZ is not a firmware update" }
 
             val hardwarePlatformNumber = withTimeoutOrNull(2_000) {
                 watchMetadataStore.lastConnectedWatchMetadata.first { it != null }
@@ -68,9 +79,9 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
         }
     }
 
-    private fun openZippedFile(file: File, path: String) = file.zippedSource(path)
+    private fun openZippedFile(stream: InputStream, path: String) = stream.zippedSource(path)
             ?.buffer()
-            ?: error("$path missing from $file")
+            ?: error("$path missing from $stream")
 
     private suspend fun sendTime() {
         val timezone = TimeZone.getDefault()
@@ -88,8 +99,9 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
     override fun beginFirmwareUpdate(fwUri: Pigeons.StringWrapper, result: Pigeons.Result<Pigeons.BooleanWrapper>) {
         coroutineScope.launchPigeonResult(result) {
             Timber.d("Begin firmware update")
-            val pbzFile = File(Uri.parse(fwUri.value).path!!)
-            val manifestFile = openZippedFile(pbzFile, "manifest.json")
+            val uri = Uri.parse(fwUri.value)
+
+            val manifestFile = openZippedFile(context.applicationContext.contentResolver.openInputStream(uri) ?: error("Couldn't open stream"), "manifest.json")
 
             val manifest: PbzManifest = manifestFile.use {
                 Json.decodeFromStream(it.inputStream())
@@ -97,8 +109,8 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
 
             require(manifest.type == "firmware") { "PBZ is not a firmware update" }
 
-            val firmwareBin = openZippedFile(pbzFile, manifest.firmware.name).use { it.readByteArray() }
-            val systemResources = manifest.resources?.let { res -> openZippedFile(pbzFile, res.name).use { it.readByteArray() } }
+            val firmwareBin = openZippedFile(context.applicationContext.contentResolver.openInputStream(uri) ?: error("Couldn't open stream"), manifest.firmware.name).use { it.readByteArray() }
+            val systemResources = manifest.resources?.let { res -> openZippedFile(context.applicationContext.contentResolver.openInputStream(uri) ?: error("Couldn't open stream"), res.name).use { it.readByteArray() } }
 
             val calculatedFwCRC32 = Crc32Calculator().apply {
                 addBytes(firmwareBin.asUByteArray())

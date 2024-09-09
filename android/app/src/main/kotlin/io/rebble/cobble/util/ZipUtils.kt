@@ -3,6 +3,7 @@ package io.rebble.cobble.util
 import okio.Source
 import okio.source
 import java.io.File
+import java.io.InputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -39,6 +40,14 @@ fun ZipInputStream.findFile(fileName: String): ZipEntry? {
  */
 fun File.zippedSource(fileName: String): Source? {
     val zipInputStream = ZipInputStream(inputStream())
+
+    zipInputStream.findFile(fileName) ?: return null
+
+    return zipInputStream.source()
+}
+
+fun InputStream.zippedSource(fileName: String): Source? {
+    val zipInputStream = ZipInputStream(this)
 
     zipInputStream.findFile(fileName) ?: return null
 

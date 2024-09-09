@@ -8,6 +8,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import io.rebble.cobble.errors.GlobalExceptionHandler
+import io.rebble.cobble.middleware.DeviceLogController
 import io.rebble.cobble.shared.database.AppDatabase
 import io.rebble.cobble.shared.database.dao.CachedPackageInfoDao
 import io.rebble.cobble.shared.database.dao.NotificationChannelDao
@@ -17,6 +18,7 @@ import io.rebble.cobble.shared.domain.calendar.CalendarSync
 import io.rebble.cobble.shared.domain.state.CurrentToken
 import io.rebble.cobble.shared.handlers.CalendarActionHandler
 import io.rebble.cobble.shared.jobs.AndroidJobScheduler
+import io.rebble.libpebblecommon.services.LogDumpService
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
