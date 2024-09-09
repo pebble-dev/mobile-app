@@ -99,6 +99,12 @@ abstract class LibPebbleModule {
         fun provideAppLogService(
                 protocolHandler: ProtocolHandler
         ) = AppLogService(protocolHandler)
+
+        @Provides
+        @Singleton
+        fun provideLogDumpService(
+                protocolHandler: ProtocolHandler
+        ) = LogDumpService(protocolHandler)
     }
 
     @Binds
@@ -154,4 +160,8 @@ abstract class LibPebbleModule {
     @Binds
     @IntoSet
     abstract fun bindAppLogServiceIntoSet(service: AppLogService): ProtocolService
+
+    @Binds
+    @IntoSet
+    abstract fun bindLogDumpServiceIntoSet(service: LogDumpService): ProtocolService
 }

@@ -50,7 +50,7 @@ void main() {
     // I hate that this can't be a switch statement
     if (record.level == Level.SEVERE) {
       Log.e(record.message);
-    } else if (record.level == Level.WARNING) {
+    } else if (record.level   == Level.WARNING) {
       Log.w(record.message);
     } else if (record.level == Level.INFO) {
       Log.i(record.message);

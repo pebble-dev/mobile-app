@@ -91,5 +91,13 @@ abstract class AppModule {
         fun provideActiveNotifsState(): MutableStateFlow<Map<UUID, StatusBarNotification>> {
             return KoinPlatformTools.defaultContext().get().get(named("activeNotifsState"))
         }
+
+        @Provides
+        @Singleton
+        fun provideDeviceLogController(
+                logDumpService: LogDumpService,
+        ): DeviceLogController {
+            return DeviceLogController(logDumpService)
+        }
     }
 }

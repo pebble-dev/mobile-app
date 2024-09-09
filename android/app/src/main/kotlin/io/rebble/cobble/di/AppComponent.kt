@@ -12,6 +12,8 @@ import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.datasources.PairedStorage
 import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.errors.GlobalExceptionHandler
+import io.rebble.cobble.middleware.AppLogController
+import io.rebble.cobble.middleware.DeviceLogController
 import io.rebble.cobble.notifications.CallNotificationProcessor
 import io.rebble.cobble.notifications.NotificationProcessor
 import io.rebble.cobble.service.ServiceLifecycleControl
@@ -47,8 +49,10 @@ interface AppComponent {
     fun createNotificationProcessor(): NotificationProcessor
     fun createCallNotificationProcessor(): CallNotificationProcessor
     fun createFlutterPreferences(): FlutterPreferences
+    fun createAppLogController(): AppLogController
     fun initServiceLifecycleControl(): ServiceLifecycleControl
     fun initNotificationChannels(): NotificationChannelManager
+    fun createDeviceLogController(): DeviceLogController
 
     fun initLibPebbleCommonServices(): Set<ProtocolService>
 

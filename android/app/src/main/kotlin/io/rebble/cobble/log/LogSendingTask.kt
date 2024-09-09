@@ -10,10 +10,13 @@ import android.service.notification.NotificationListenerService
 import androidx.core.content.FileProvider
 import io.rebble.cobble.BuildConfig
 import io.rebble.cobble.CobbleApplication
+import io.rebble.cobble.middleware.DeviceLogController
 import io.rebble.cobble.util.hasNotificationAccessPermission
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
+import io.rebble.libpebblecommon.packets.LogDump
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -81,6 +84,21 @@ private fun generateDebugInfo(context: Context, rwsId: String): String {
     """.trimIndent()
 }
 
+private suspend fun getDeviceLogs(deviceLogController: DeviceLogController): List<String>? {
+    val flow = deviceLogController.requestLogDump()
+    if (flow.first() is LogDump.NoLogs) {
+        Timber.d("No logs available")
+        return null
+    }
+    return flow.filterIsInstance<LogDump.LogLine>()
+            .onEach {
+                Timber.d("Log line: ${it.timestamp.get()} ${it.filename.get()}:${it.line.get()} ${it.level.get()} ${it.messageText.get()}")
+            }
+            .map {
+                "${it.timestamp.get()} ${it.filename.get()}:${it.line.get()} ${it.level.get()} ${it.messageText.get()}"
+            }.toList()
+}
+
 /**
  * This should be eventually moved to flutter. Written it in Kotlin for now so we can use it while
  * testing other things.
@@ -92,6 +110,8 @@ fun collectAndShareLogs(context: Context, rwsId: String) = GlobalScope.launch(Di
 
     var zipOutputStream: ZipOutputStream? = null
     val debugInfo = generateDebugInfo(context, rwsId)
+    val deviceLogController = (context.applicationContext as CobbleApplication).component.createDeviceLogController()
+    val deviceLogs = getDeviceLogs(deviceLogController)
     try {
         zipOutputStream = ZipOutputStream(FileOutputStream(targetFile))
         for (file in logsFolder.listFiles() ?: emptyArray()) {
@@ -112,6 +132,11 @@ fun collectAndShareLogs(context: Context, rwsId: String) = GlobalScope.launch(Di
         zipOutputStream.putNextEntry(ZipEntry("debug_info.txt"))
         zipOutputStream.write(debugInfo.toByteArray())
         zipOutputStream.closeEntry()
+        deviceLogs?.let {
+            zipOutputStream.putNextEntry(ZipEntry("device_logs.txt"))
+            zipOutputStream.write(it.joinToString("\n").toByteArray())
+            zipOutputStream.closeEntry()
+        }
     } catch (e: Exception) {
         Timber.e(e, "Zip writing error")
     } finally {
