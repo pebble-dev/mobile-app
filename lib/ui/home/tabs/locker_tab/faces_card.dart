@@ -1,4 +1,3 @@
-import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/domain/db/models/app.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
@@ -11,7 +10,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class FacesCard extends ConsumerWidget {
   final App face;
   final bool compatible;
-  final AppManager appManager;
+  //final AppManager appManager;
   final PebbleWatchLine? lineConnected;
   final bool? circleConnected;
   final String? listUrl;
@@ -19,7 +18,7 @@ class FacesCard extends ConsumerWidget {
   const FacesCard({
     required this.face,
     this.compatible = false,
-    required this.appManager,
+    //required this.appManager,
     this.lineConnected,
     this.circleConnected,
     this.listUrl,
@@ -50,7 +49,8 @@ class FacesCard extends ConsumerWidget {
                           outlined: false,
                           icon: RebbleIcons.send_to_watch_unchecked,
                           onPressed: () {
-                            AppLifecycleControl().openAppOnTheWatch(StringWrapper(value: face.uuid.toString()));
+                            AppLifecycleControl().openAppOnTheWatch(
+                                StringWrapper(value: face.uuid.toString()));
                           },
                         )
                       : Container(),
@@ -72,7 +72,7 @@ class FacesCard extends ConsumerWidget {
                       context: context,
                       face: face,
                       compatible: compatible,
-                      appManager: appManager,
+                      //appManager: appManager,
                       lineConnected: lineConnected,
                       circleConnected: circleConnected,
                     ),

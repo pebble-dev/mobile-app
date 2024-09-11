@@ -15,7 +15,7 @@ object RWS: KoinComponent {
     private val scope = CoroutineScope(Dispatchers.Default)
 
     private val _appstoreClient = token.map {
-        it.tokenOrNull?.let { t -> AppstoreClient("https://appstore-api.$domainSuffix", t) }
+        it.tokenOrNull?.let { t -> AppstoreClient("https://appstore-api.$domainSuffix/api", t) }
     }.stateIn(scope, SharingStarted.Eagerly, null)
     val appstoreClient: AppstoreClient?
         get() = _appstoreClient.value

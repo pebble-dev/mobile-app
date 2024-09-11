@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cobble/domain/db/models/app.dart';
 import 'package:flutter/material.dart';
-import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/icons/system_app_icon.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
@@ -17,7 +16,7 @@ class AppsSheet {
     required BuildContext context,
     required App app,
     bool compatible = false,
-    required AppManager appManager,
+    //required AppManager appManager,
     PebbleWatchLine? lineConnected,
     String? iconUrl,
   }) {
@@ -26,7 +25,9 @@ class AppsSheet {
       builder: (context) => Column(
         children: [
           CobbleTile.app(
-            leading: iconUrl != null ? CachedNetworkImageProvider(iconUrl) : SystemAppIcon(app.uuid),
+            leading: iconUrl != null
+                ? CachedNetworkImageProvider(iconUrl)
+                : SystemAppIcon(app.uuid),
             title: "${app.longName} ${app.version}",
             subtitle: app.company,
           ),
@@ -84,7 +85,7 @@ class AppsSheet {
             leading: RebbleIcons.delete_trash,
             title: tr.lockerPage.delete,
             onTap: () {
-              appManager.deleteApp(app.uuid);
+              //appManager.deleteApp(app.uuid);
               Navigator.pop(context);
             },
           ),

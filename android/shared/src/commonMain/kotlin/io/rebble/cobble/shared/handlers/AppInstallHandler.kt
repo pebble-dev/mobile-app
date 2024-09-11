@@ -1,38 +1,41 @@
-package io.rebble.cobble.handlers
+package io.rebble.cobble.shared.handlers
 
-import android.content.Context
-import android.net.Uri
-import androidx.core.net.toFile
-import io.rebble.cobble.bridges.background.BackgroundAppInstallBridge
-import io.rebble.cobble.datasources.WatchMetadataStore
-import io.rebble.cobble.middleware.PutBytesController
-import io.rebble.cobble.middleware.getBestVariant
-import io.rebble.cobble.pigeons.Pigeons
-import io.rebble.cobble.shared.handlers.CobbleHandler
-import io.rebble.cobble.util.getAppPbwFile
-import io.rebble.cobble.util.requirePbwAppInfo
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsChannel
+import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.read
+import io.rebble.cobble.shared.Logging
+import io.rebble.cobble.shared.PlatformContext
+import io.rebble.cobble.shared.api.RWS
+import io.rebble.cobble.shared.database.dao.LockerDao
+import io.rebble.cobble.shared.domain.state.ConnectionStateManager
+import io.rebble.cobble.shared.middleware.PutBytesController
+import io.rebble.cobble.shared.util.AppCompatibility.getBestVariant
+import io.rebble.cobble.shared.util.File
+import io.rebble.cobble.shared.util.requirePbwAppInfo
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
 import io.rebble.libpebblecommon.packets.AppFetchRequest
 import io.rebble.libpebblecommon.packets.AppFetchResponse
 import io.rebble.libpebblecommon.packets.AppFetchResponseStatus
 import io.rebble.libpebblecommon.services.AppFetchService
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
-import timber.log.Timber
-import java.io.File
-import javax.inject.Inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class AppInstallHandler @Inject constructor(
-        coroutineScope: CoroutineScope,
-        private val context: Context,
-        private val appFetchService: AppFetchService,
-        private val putBytesController: PutBytesController,
-        private val watchMetadataStore: WatchMetadataStore,
-        private val backgroundInstallBridge: BackgroundAppInstallBridge
-) : CobbleHandler {
+class AppInstallHandler(
+        coroutineScope: CoroutineScope
+): CobbleHandler, KoinComponent {
+    private val lockerDao: LockerDao by inject()
+    private val platformContext: PlatformContext by inject()
+    private val appFetchService: AppFetchService by inject()
+    private val httpClient: HttpClient by inject()
+    private val putBytesController: PutBytesController by inject()
+
     init {
         coroutineScope.launch {
             for (message in appFetchService.receivedMessages) {
@@ -43,28 +46,46 @@ class AppInstallHandler @Inject constructor(
         }
     }
 
+    private suspend fun downloadPbw(appUuid: String): String? {
+        val row = lockerDao.getEntryByUuid(appUuid)
+        val url = row?.entry?.pbwLink ?: run {
+            Logging.e("App URL for $appUuid not found in locker")
+            return null
+        }
+
+        val response = httpClient.get(url)
+        if (response.status.value != 200) {
+            Logging.e("Failed to download app $appUuid: ${response.status}")
+            return null
+        } else {
+            return savePbwFile(platformContext, appUuid, response.bodyAsChannel())
+        }
+    }
+
+
+
     private suspend fun onNewAppFetchRequest(message: AppFetchRequest) {
         try {
             val appUuid = message.uuid.get().toString()
-            var appFile = getAppPbwFile(context, appUuid)
+            var appFile = getAppPbwFile(platformContext, appUuid)
 
             if (!appFile.exists()) {
-                val uri = backgroundInstallBridge.downloadPbw(appUuid)?.let { Uri.parse(it) }
+                val uri = downloadPbw(appUuid)
                 if (uri == null) {
-                    Timber.e("Failed to download app %s", appUuid)
+                    Logging.e("Failed to download app $appUuid")
                     respondFetchRequest(AppFetchResponseStatus.NO_DATA)
                     return
                 }
-                appFile = uri.toFile()
+                appFile = File(uri)
                 if (!appFile.exists()) {
-                    Timber.e("Downloaded app file does not exist")
+                    Logging.e("Downloaded app file does not exist")
                     respondFetchRequest(AppFetchResponseStatus.NO_DATA)
                     return
                 }
             }
 
             if (putBytesController.status.value.state != PutBytesController.State.IDLE) {
-                Timber.e("Watch requested new app data PutBytes is busy")
+                Logging.e("Watch requested new app data PutBytes is busy")
                 respondFetchRequest(AppFetchResponseStatus.BUSY)
                 return
             }
@@ -72,14 +93,14 @@ class AppInstallHandler @Inject constructor(
             // Wait some time for metadata to become available in case this has been called
             // Right after watch has been connected
             val hardwarePlatformNumber = withTimeoutOrNull(2_000) {
-                watchMetadataStore.lastConnectedWatchMetadata.first { it != null }
+                ConnectionStateManager.connectedWatchMetadata.first()
             }
                     ?.running
                     ?.hardwarePlatform
                     ?.get()
 
             if (hardwarePlatformNumber == null) {
-                Timber.e("No watch metadata available. Cannot deduce watch type.")
+                Logging.e("No watch metadata available. Cannot deduce watch type.")
                 respondFetchRequest(AppFetchResponseStatus.NO_DATA)
                 return
             }
@@ -90,7 +111,7 @@ class AppInstallHandler @Inject constructor(
                     ?.watchType
 
             if (connectedWatchType == null) {
-                Timber.e("Unknown hardware platform %s", hardwarePlatformNumber)
+                Logging.e("Unknown hardware platform $hardwarePlatformNumber")
                 respondFetchRequest(AppFetchResponseStatus.NO_DATA)
                 return
             }
@@ -99,11 +120,7 @@ class AppInstallHandler @Inject constructor(
 
             val targetWatchType = getBestVariant(connectedWatchType, appInfo.targetPlatforms)
             if (targetWatchType == null) {
-                Timber.e("Watch %s is not compatible with app %s Compatible apps: %s",
-                        targetWatchType,
-                        appUuid,
-                        appInfo.targetPlatforms
-                )
+                Logging.e("Watch $targetWatchType is not compatible with app $appUuid Compatible apps: ${appInfo.targetPlatforms}")
                 respondFetchRequest(AppFetchResponseStatus.NO_DATA)
                 return
             }
@@ -112,7 +129,7 @@ class AppInstallHandler @Inject constructor(
             respondFetchRequest(AppFetchResponseStatus.START)
             putBytesController.startAppInstall(message.appId.get(), appFile, targetWatchType)
         } catch (e: Exception) {
-            Timber.e(e, "AppFetch fail")
+            Logging.e("AppFetch fail", e)
             respondFetchRequest(AppFetchResponseStatus.NO_DATA)
 
         }
@@ -122,3 +139,5 @@ class AppInstallHandler @Inject constructor(
         appFetchService.send(AppFetchResponse(status))
     }
 }
+expect fun getAppPbwFile(context: PlatformContext, appUuid: String): File
+expect suspend fun savePbwFile(context: PlatformContext, appUuid: String, byteReadChannel: ByteReadChannel): String

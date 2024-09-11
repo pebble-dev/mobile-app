@@ -79,6 +79,9 @@ class ConnectionLooper @Inject constructor(
     @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     fun connectToWatch(macAddress: String) {
         coroutineScope.launch {
+            if (currentConnection != null) {
+                Timber.d("ConnectionLooper already targeting watch, will cancel.")
+            }
             lastConnectedWatch = macAddress
 
             try {

@@ -104,28 +104,22 @@ data class LockerEntryPBW(
         @SerialName("release_id") val releaseId: String
 )
 
-fun LockerEntry.toEntity(): SyncedLockerEntryWithPlatforms {
-    check(hardwarePlatforms.isNotEmpty()) { "Hardware platforms are empty" }
-    return SyncedLockerEntryWithPlatforms(
-            entry = SyncedLockerEntry(
-                    id = id,
-                    uuid = uuid,
-                    version = version ?: error("Version is null"),
-                    title = title,
-                    type = type,
-                    hearts = hearts,
-                    developerName = developer.name,
-                    configurable = isConfigurable,
-                    timelineEnabled = isTimelineEnabled,
-                    removeLink = links.remove,
-                    shareLink = links.share,
-                    pbwLink = pbw?.file ?: error("PBW is null"),
-                    pbwReleaseId = pbw.releaseId,
-                    nextSyncAction = NextSyncAction.Upload
-            ),
-            platforms = hardwarePlatforms.map {
-                it.toEntity(id)
-            },
+fun LockerEntry.toEntity(): SyncedLockerEntry {
+    return SyncedLockerEntry(
+            id = id,
+            uuid = uuid,
+            version = version ?: "",
+            title = title,
+            type = type,
+            hearts = hearts,
+            developerName = developer.name,
+            configurable = isConfigurable,
+            timelineEnabled = isTimelineEnabled,
+            removeLink = links.remove,
+            shareLink = links.share,
+            pbwLink = pbw?.file ?: error("PBW is null"),
+            pbwReleaseId = pbw.releaseId,
+            nextSyncAction = NextSyncAction.Upload
     )
 }
 

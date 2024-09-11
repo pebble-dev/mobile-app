@@ -9,4 +9,5 @@ val databaseModule = module {
     single { getDatabase() }
     single { get<AppDatabase>().calendarDao() }
     single { get<AppDatabase>().timelinePinDao() }
+    single { get<AppDatabase>().lockerDao() }
 }

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/domain/connection/raw_incoming_packets_provider.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -14,14 +13,15 @@ class DevConnection extends StateNotifier<DevConnState> {
   HttpServer? _server;
   WebSocket? _connectedSocket;
   StreamSubscription<Uint8List>? _incomingWatchPacketsSubscription;
-  final AppManager _appManager;
 
   final Stream<Uint8List> _pebbleIncomingPacketStream;
 
   String _localIp = "";
 
-  DevConnection(this._pebbleIncomingPacketStream, this._appManager)
-      : super(DevConnState(false, false, ""));
+  DevConnection(
+    this._pebbleIncomingPacketStream,
+    /* this._appManager*/
+  ) : super(DevConnState(false, false, ""));
 
   void close() {
     disconnect();
@@ -105,7 +105,9 @@ class DevConnection extends StateNotifier<DevConnState> {
     await tempPbwFile.writeAsBytes(pbwData, flush: true);
 
     final uri = tempPbwFile.uri.toString();
-    final success = await _appManager.getAppInfoAndBeginAppInstall(uri);
+    //TODO
+    final success =
+        false; //await _appManager.getAppInfoAndBeginAppInstall(uri);
 
     int status;
     if (success) {
@@ -158,10 +160,11 @@ class DevConnState {
   DevConnState(this.running, this.connected, this.localIp);
 }
 
-final devConnectionProvider = StateNotifierProvider<DevConnection, DevConnState>((ref) {
+final devConnectionProvider =
+    StateNotifierProvider<DevConnection, DevConnState>((ref) {
   final incomingPacketsStream = ref.read(rawPacketStreamProvider);
-  final appManager = ref.read(appManagerProvider.notifier);
-  return DevConnection(incomingPacketsStream, appManager);
+  //final appManager = ref.read(appManagerProvider.notifier);
+  return DevConnection(incomingPacketsStream /*, appManager*/);
 });
 
 final _packetFromWebsocketRelayToWatch = 0x01;

@@ -288,18 +288,6 @@ abstract class IntentCallbacks {
 }
 
 @FlutterApi()
-abstract class BackgroundAppInstallCallbacks {
-  @async
-  void beginAppInstall(InstallData installData);
-
-  @async
-  void deleteApp(StringWrapper uuid);
-
-  @async
-  String? downloadPbw(String uuid);
-}
-
-@FlutterApi()
 abstract class AppInstallStatusCallbacks {
   void onStatusUpdated(AppInstallStatus status);
 }
@@ -416,17 +404,6 @@ abstract class TimelineControl {
 }
 
 @HostApi()
-abstract class BackgroundSetupControl {
-  void setupBackground(NumberWrapper callbackHandle);
-}
-
-@HostApi()
-abstract class BackgroundControl {
-  @async
-  NumberWrapper notifyFlutterBackgroundStarted();
-}
-
-@HostApi()
 abstract class PermissionCheck {
   BooleanWrapper hasLocationPermission();
 
@@ -519,29 +496,6 @@ abstract class AppInstallControl {
   @async
   PbwAppInfo getAppInfo(StringWrapper localPbwUri);
 
-  // Just relay method that triggers copies the app into local storage and
-  // begins install on the background flutter side
-  @async
-  BooleanWrapper beginAppInstall(InstallData installData);
-
-  // Just relay method that deletes app from the local store and triggers
-  // deleteApp on background flutter side
-  // Return BooleanWrapper as a
-  // workaround for https://github.com/flutter/flutter/issues/78536
-  @async
-  BooleanWrapper beginAppDeletion(StringWrapper uuid);
-
-  /// Read header from pbw file already in Cobble's storage and send it to
-  /// BlobDB on the watch
-  @async
-  NumberWrapper insertAppIntoBlobDb(LockerAppPigeon app);
-
-  @async
-  NumberWrapper removeAppFromBlobDb(StringWrapper appUuidString);
-
-  @async
-  NumberWrapper removeAllApps();
-
   void subscribeToAppStatus();
 
   void unsubscribeFromAppStatus();
@@ -595,5 +549,5 @@ abstract class KeepUnusedHack {
 //TODO: Move all api use to KMP so we don't need this
 @HostApi()
 abstract class KMPApi {
-    void updateToken(StringWrapper token);
+  void updateToken(StringWrapper token);
 }

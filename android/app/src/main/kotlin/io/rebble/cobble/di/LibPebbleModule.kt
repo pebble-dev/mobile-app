@@ -74,13 +74,13 @@ abstract class LibPebbleModule {
         @Singleton
         fun provideAppFetchService(
                 protocolHandler: ProtocolHandler
-        ) = AppFetchService(protocolHandler)
+        ) = KoinPlatformTools.defaultContext().get().get<AppFetchService>()
 
         @Provides
         @Singleton
         fun providePutBytesService(
                 protocolHandler: ProtocolHandler
-        ) = PutBytesService(protocolHandler)
+        ) = KoinPlatformTools.defaultContext().get().get<PutBytesService>()
 
         @Provides
         @Singleton

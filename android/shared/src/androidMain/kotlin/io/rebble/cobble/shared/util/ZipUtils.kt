@@ -1,4 +1,4 @@
-package io.rebble.cobble.util
+package io.rebble.cobble.shared.util
 
 import okio.Source
 import okio.source
@@ -45,6 +45,8 @@ fun File.zippedSource(fileName: String): Source? {
 
     return zipInputStream.source()
 }
+
+fun io.rebble.cobble.shared.util.File.zippedSource(fileName: String): Source? = this.file.zippedSource(fileName)
 
 fun InputStream.zippedSource(fileName: String): Source? {
     val zipInputStream = ZipInputStream(this)

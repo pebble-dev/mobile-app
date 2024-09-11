@@ -105,12 +105,6 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 - (NSArray *)toList;
 @end
 
-@interface InstallData ()
-+ (InstallData *)fromList:(NSArray *)list;
-+ (nullable InstallData *)nullableFromList:(NSArray *)list;
-- (NSArray *)toList;
-@end
-
 @interface AppInstallStatus ()
 + (AppInstallStatus *)fromList:(NSArray *)list;
 + (nullable AppInstallStatus *)nullableFromList:(NSArray *)list;
@@ -144,12 +138,6 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 @interface CalendarPigeon ()
 + (CalendarPigeon *)fromList:(NSArray *)list;
 + (nullable CalendarPigeon *)nullableFromList:(NSArray *)list;
-- (NSArray *)toList;
-@end
-
-@interface LockerAppPigeon ()
-+ (LockerAppPigeon *)fromList:(NSArray *)list;
-+ (nullable LockerAppPigeon *)nullableFromList:(NSArray *)list;
 - (NSArray *)toList;
 @end
 
@@ -669,38 +657,6 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
 }
 @end
 
-@implementation InstallData
-+ (instancetype)makeWithUri:(NSString *)uri
-    appInfo:(PbwAppInfo *)appInfo
-    stayOffloaded:(NSNumber *)stayOffloaded {
-  InstallData* pigeonResult = [[InstallData alloc] init];
-  pigeonResult.uri = uri;
-  pigeonResult.appInfo = appInfo;
-  pigeonResult.stayOffloaded = stayOffloaded;
-  return pigeonResult;
-}
-+ (InstallData *)fromList:(NSArray *)list {
-  InstallData *pigeonResult = [[InstallData alloc] init];
-  pigeonResult.uri = GetNullableObjectAtIndex(list, 0);
-  NSAssert(pigeonResult.uri != nil, @"");
-  pigeonResult.appInfo = [PbwAppInfo nullableFromList:(GetNullableObjectAtIndex(list, 1))];
-  NSAssert(pigeonResult.appInfo != nil, @"");
-  pigeonResult.stayOffloaded = GetNullableObjectAtIndex(list, 2);
-  NSAssert(pigeonResult.stayOffloaded != nil, @"");
-  return pigeonResult;
-}
-+ (nullable InstallData *)nullableFromList:(NSArray *)list {
-  return (list) ? [InstallData fromList:list] : nil;
-}
-- (NSArray *)toList {
-  return @[
-    (self.uri ?: [NSNull null]),
-    (self.appInfo ? [self.appInfo toList] : [NSNull null]),
-    (self.stayOffloaded ?: [NSNull null]),
-  ];
-}
-@end
-
 @implementation AppInstallStatus
 + (instancetype)makeWithProgress:(NSNumber *)progress
     isInstalling:(NSNumber *)isInstalling {
@@ -895,77 +851,6 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
     (self.name ?: [NSNull null]),
     (self.color ?: [NSNull null]),
     (self.enabled ?: [NSNull null]),
-  ];
-}
-@end
-
-@implementation LockerAppPigeon
-+ (instancetype)makeWithUuid:(NSString *)uuid
-    shortName:(NSString *)shortName
-    longName:(NSString *)longName
-    company:(NSString *)company
-    appstoreId:(nullable NSString *)appstoreId
-    version:(NSString *)version
-    isWatchface:(NSNumber *)isWatchface
-    isSystem:(NSNumber *)isSystem
-    supportedHardware:(NSArray<NSString *> *)supportedHardware
-    processInfoFlags:(NSDictionary<NSString *, NumberWrapper *> *)processInfoFlags
-    sdkVersions:(NSDictionary<NSString *, NSString *> *)sdkVersions {
-  LockerAppPigeon* pigeonResult = [[LockerAppPigeon alloc] init];
-  pigeonResult.uuid = uuid;
-  pigeonResult.shortName = shortName;
-  pigeonResult.longName = longName;
-  pigeonResult.company = company;
-  pigeonResult.appstoreId = appstoreId;
-  pigeonResult.version = version;
-  pigeonResult.isWatchface = isWatchface;
-  pigeonResult.isSystem = isSystem;
-  pigeonResult.supportedHardware = supportedHardware;
-  pigeonResult.processInfoFlags = processInfoFlags;
-  pigeonResult.sdkVersions = sdkVersions;
-  return pigeonResult;
-}
-+ (LockerAppPigeon *)fromList:(NSArray *)list {
-  LockerAppPigeon *pigeonResult = [[LockerAppPigeon alloc] init];
-  pigeonResult.uuid = GetNullableObjectAtIndex(list, 0);
-  NSAssert(pigeonResult.uuid != nil, @"");
-  pigeonResult.shortName = GetNullableObjectAtIndex(list, 1);
-  NSAssert(pigeonResult.shortName != nil, @"");
-  pigeonResult.longName = GetNullableObjectAtIndex(list, 2);
-  NSAssert(pigeonResult.longName != nil, @"");
-  pigeonResult.company = GetNullableObjectAtIndex(list, 3);
-  NSAssert(pigeonResult.company != nil, @"");
-  pigeonResult.appstoreId = GetNullableObjectAtIndex(list, 4);
-  pigeonResult.version = GetNullableObjectAtIndex(list, 5);
-  NSAssert(pigeonResult.version != nil, @"");
-  pigeonResult.isWatchface = GetNullableObjectAtIndex(list, 6);
-  NSAssert(pigeonResult.isWatchface != nil, @"");
-  pigeonResult.isSystem = GetNullableObjectAtIndex(list, 7);
-  NSAssert(pigeonResult.isSystem != nil, @"");
-  pigeonResult.supportedHardware = GetNullableObjectAtIndex(list, 8);
-  NSAssert(pigeonResult.supportedHardware != nil, @"");
-  pigeonResult.processInfoFlags = GetNullableObjectAtIndex(list, 9);
-  NSAssert(pigeonResult.processInfoFlags != nil, @"");
-  pigeonResult.sdkVersions = GetNullableObjectAtIndex(list, 10);
-  NSAssert(pigeonResult.sdkVersions != nil, @"");
-  return pigeonResult;
-}
-+ (nullable LockerAppPigeon *)nullableFromList:(NSArray *)list {
-  return (list) ? [LockerAppPigeon fromList:list] : nil;
-}
-- (NSArray *)toList {
-  return @[
-    (self.uuid ?: [NSNull null]),
-    (self.shortName ?: [NSNull null]),
-    (self.longName ?: [NSNull null]),
-    (self.company ?: [NSNull null]),
-    (self.appstoreId ?: [NSNull null]),
-    (self.version ?: [NSNull null]),
-    (self.isWatchface ?: [NSNull null]),
-    (self.isSystem ?: [NSNull null]),
-    (self.supportedHardware ?: [NSNull null]),
-    (self.processInfoFlags ?: [NSNull null]),
-    (self.sdkVersions ?: [NSNull null]),
   ];
 }
 @end
@@ -1428,119 +1313,6 @@ NSObject<FlutterMessageCodec> *IntentCallbacksGetCodec(void) {
       codec:IntentCallbacksGetCodec()];
   [channel sendMessage:@[arg_uri ?: [NSNull null]] reply:^(id reply) {
     completion(nil);
-  }];
-}
-@end
-
-@interface BackgroundAppInstallCallbacksCodecReader : FlutterStandardReader
-@end
-@implementation BackgroundAppInstallCallbacksCodecReader
-- (nullable id)readValueOfType:(UInt8)type {
-  switch (type) {
-    case 128: 
-      return [InstallData fromList:[self readValue]];
-    case 129: 
-      return [PbwAppInfo fromList:[self readValue]];
-    case 130: 
-      return [StringWrapper fromList:[self readValue]];
-    case 131: 
-      return [WatchResource fromList:[self readValue]];
-    case 132: 
-      return [WatchappInfo fromList:[self readValue]];
-    default:
-      return [super readValueOfType:type];
-  }
-}
-@end
-
-@interface BackgroundAppInstallCallbacksCodecWriter : FlutterStandardWriter
-@end
-@implementation BackgroundAppInstallCallbacksCodecWriter
-- (void)writeValue:(id)value {
-  if ([value isKindOfClass:[InstallData class]]) {
-    [self writeByte:128];
-    [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[PbwAppInfo class]]) {
-    [self writeByte:129];
-    [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[StringWrapper class]]) {
-    [self writeByte:130];
-    [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[WatchResource class]]) {
-    [self writeByte:131];
-    [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[WatchappInfo class]]) {
-    [self writeByte:132];
-    [self writeValue:[value toList]];
-  } else {
-    [super writeValue:value];
-  }
-}
-@end
-
-@interface BackgroundAppInstallCallbacksCodecReaderWriter : FlutterStandardReaderWriter
-@end
-@implementation BackgroundAppInstallCallbacksCodecReaderWriter
-- (FlutterStandardWriter *)writerWithData:(NSMutableData *)data {
-  return [[BackgroundAppInstallCallbacksCodecWriter alloc] initWithData:data];
-}
-- (FlutterStandardReader *)readerWithData:(NSData *)data {
-  return [[BackgroundAppInstallCallbacksCodecReader alloc] initWithData:data];
-}
-@end
-
-NSObject<FlutterMessageCodec> *BackgroundAppInstallCallbacksGetCodec(void) {
-  static FlutterStandardMessageCodec *sSharedObject = nil;
-  static dispatch_once_t sPred = 0;
-  dispatch_once(&sPred, ^{
-    BackgroundAppInstallCallbacksCodecReaderWriter *readerWriter = [[BackgroundAppInstallCallbacksCodecReaderWriter alloc] init];
-    sSharedObject = [FlutterStandardMessageCodec codecWithReaderWriter:readerWriter];
-  });
-  return sSharedObject;
-}
-
-@interface BackgroundAppInstallCallbacks ()
-@property(nonatomic, strong) NSObject<FlutterBinaryMessenger> *binaryMessenger;
-@end
-
-@implementation BackgroundAppInstallCallbacks
-
-- (instancetype)initWithBinaryMessenger:(NSObject<FlutterBinaryMessenger> *)binaryMessenger {
-  self = [super init];
-  if (self) {
-    _binaryMessenger = binaryMessenger;
-  }
-  return self;
-}
-- (void)beginAppInstallInstallData:(InstallData *)arg_installData completion:(void (^)(FlutterError *_Nullable))completion {
-  FlutterBasicMessageChannel *channel =
-    [FlutterBasicMessageChannel
-      messageChannelWithName:@"dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall"
-      binaryMessenger:self.binaryMessenger
-      codec:BackgroundAppInstallCallbacksGetCodec()];
-  [channel sendMessage:@[arg_installData ?: [NSNull null]] reply:^(id reply) {
-    completion(nil);
-  }];
-}
-- (void)deleteAppUuid:(StringWrapper *)arg_uuid completion:(void (^)(FlutterError *_Nullable))completion {
-  FlutterBasicMessageChannel *channel =
-    [FlutterBasicMessageChannel
-      messageChannelWithName:@"dev.flutter.pigeon.BackgroundAppInstallCallbacks.deleteApp"
-      binaryMessenger:self.binaryMessenger
-      codec:BackgroundAppInstallCallbacksGetCodec()];
-  [channel sendMessage:@[arg_uuid ?: [NSNull null]] reply:^(id reply) {
-    completion(nil);
-  }];
-}
-- (void)downloadPbwUuid:(NSString *)arg_uuid completion:(void (^)(NSString *_Nullable, FlutterError *_Nullable))completion {
-  FlutterBasicMessageChannel *channel =
-    [FlutterBasicMessageChannel
-      messageChannelWithName:@"dev.flutter.pigeon.BackgroundAppInstallCallbacks.downloadPbw"
-      binaryMessenger:self.binaryMessenger
-      codec:BackgroundAppInstallCallbacksGetCodec()];
-  [channel sendMessage:@[arg_uuid ?: [NSNull null]] reply:^(id reply) {
-    NSString *output = reply;
-    completion(output, nil);
   }];
 }
 @end
@@ -2547,140 +2319,6 @@ void TimelineControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<T
     }
   }
 }
-@interface BackgroundSetupControlCodecReader : FlutterStandardReader
-@end
-@implementation BackgroundSetupControlCodecReader
-- (nullable id)readValueOfType:(UInt8)type {
-  switch (type) {
-    case 128: 
-      return [NumberWrapper fromList:[self readValue]];
-    default:
-      return [super readValueOfType:type];
-  }
-}
-@end
-
-@interface BackgroundSetupControlCodecWriter : FlutterStandardWriter
-@end
-@implementation BackgroundSetupControlCodecWriter
-- (void)writeValue:(id)value {
-  if ([value isKindOfClass:[NumberWrapper class]]) {
-    [self writeByte:128];
-    [self writeValue:[value toList]];
-  } else {
-    [super writeValue:value];
-  }
-}
-@end
-
-@interface BackgroundSetupControlCodecReaderWriter : FlutterStandardReaderWriter
-@end
-@implementation BackgroundSetupControlCodecReaderWriter
-- (FlutterStandardWriter *)writerWithData:(NSMutableData *)data {
-  return [[BackgroundSetupControlCodecWriter alloc] initWithData:data];
-}
-- (FlutterStandardReader *)readerWithData:(NSData *)data {
-  return [[BackgroundSetupControlCodecReader alloc] initWithData:data];
-}
-@end
-
-NSObject<FlutterMessageCodec> *BackgroundSetupControlGetCodec(void) {
-  static FlutterStandardMessageCodec *sSharedObject = nil;
-  static dispatch_once_t sPred = 0;
-  dispatch_once(&sPred, ^{
-    BackgroundSetupControlCodecReaderWriter *readerWriter = [[BackgroundSetupControlCodecReaderWriter alloc] init];
-    sSharedObject = [FlutterStandardMessageCodec codecWithReaderWriter:readerWriter];
-  });
-  return sSharedObject;
-}
-
-void BackgroundSetupControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<BackgroundSetupControl> *api) {
-  {
-    FlutterBasicMessageChannel *channel =
-      [[FlutterBasicMessageChannel alloc]
-        initWithName:@"dev.flutter.pigeon.BackgroundSetupControl.setupBackground"
-        binaryMessenger:binaryMessenger
-        codec:BackgroundSetupControlGetCodec()];
-    if (api) {
-      NSCAssert([api respondsToSelector:@selector(setupBackgroundCallbackHandle:error:)], @"BackgroundSetupControl api (%@) doesn't respond to @selector(setupBackgroundCallbackHandle:error:)", api);
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        NSArray *args = message;
-        NumberWrapper *arg_callbackHandle = GetNullableObjectAtIndex(args, 0);
-        FlutterError *error;
-        [api setupBackgroundCallbackHandle:arg_callbackHandle error:&error];
-        callback(wrapResult(nil, error));
-      }];
-    } else {
-      [channel setMessageHandler:nil];
-    }
-  }
-}
-@interface BackgroundControlCodecReader : FlutterStandardReader
-@end
-@implementation BackgroundControlCodecReader
-- (nullable id)readValueOfType:(UInt8)type {
-  switch (type) {
-    case 128: 
-      return [NumberWrapper fromList:[self readValue]];
-    default:
-      return [super readValueOfType:type];
-  }
-}
-@end
-
-@interface BackgroundControlCodecWriter : FlutterStandardWriter
-@end
-@implementation BackgroundControlCodecWriter
-- (void)writeValue:(id)value {
-  if ([value isKindOfClass:[NumberWrapper class]]) {
-    [self writeByte:128];
-    [self writeValue:[value toList]];
-  } else {
-    [super writeValue:value];
-  }
-}
-@end
-
-@interface BackgroundControlCodecReaderWriter : FlutterStandardReaderWriter
-@end
-@implementation BackgroundControlCodecReaderWriter
-- (FlutterStandardWriter *)writerWithData:(NSMutableData *)data {
-  return [[BackgroundControlCodecWriter alloc] initWithData:data];
-}
-- (FlutterStandardReader *)readerWithData:(NSData *)data {
-  return [[BackgroundControlCodecReader alloc] initWithData:data];
-}
-@end
-
-NSObject<FlutterMessageCodec> *BackgroundControlGetCodec(void) {
-  static FlutterStandardMessageCodec *sSharedObject = nil;
-  static dispatch_once_t sPred = 0;
-  dispatch_once(&sPred, ^{
-    BackgroundControlCodecReaderWriter *readerWriter = [[BackgroundControlCodecReaderWriter alloc] init];
-    sSharedObject = [FlutterStandardMessageCodec codecWithReaderWriter:readerWriter];
-  });
-  return sSharedObject;
-}
-
-void BackgroundControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<BackgroundControl> *api) {
-  {
-    FlutterBasicMessageChannel *channel =
-      [[FlutterBasicMessageChannel alloc]
-        initWithName:@"dev.flutter.pigeon.BackgroundControl.notifyFlutterBackgroundStarted"
-        binaryMessenger:binaryMessenger
-        codec:BackgroundControlGetCodec()];
-    if (api) {
-      NSCAssert([api respondsToSelector:@selector(notifyFlutterBackgroundStartedWithCompletion:)], @"BackgroundControl api (%@) doesn't respond to @selector(notifyFlutterBackgroundStartedWithCompletion:)", api);
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        [api notifyFlutterBackgroundStartedWithCompletion:^(NumberWrapper *_Nullable output, FlutterError *_Nullable error) {
-          callback(wrapResult(output, error));
-        }];
-      }];
-    } else {
-      [channel setMessageHandler:nil];
-    }
-  }
-}
 @interface PermissionCheckCodecReader : FlutterStandardReader
 @end
 @implementation PermissionCheckCodecReader
@@ -3385,22 +3023,16 @@ void WorkaroundsControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObjec
 - (nullable id)readValueOfType:(UInt8)type {
   switch (type) {
     case 128: 
-      return [BooleanWrapper fromList:[self readValue]];
-    case 129: 
-      return [InstallData fromList:[self readValue]];
-    case 130: 
       return [ListWrapper fromList:[self readValue]];
-    case 131: 
-      return [LockerAppPigeon fromList:[self readValue]];
-    case 132: 
+    case 129: 
       return [NumberWrapper fromList:[self readValue]];
-    case 133: 
+    case 130: 
       return [PbwAppInfo fromList:[self readValue]];
-    case 134: 
+    case 131: 
       return [StringWrapper fromList:[self readValue]];
-    case 135: 
+    case 132: 
       return [WatchResource fromList:[self readValue]];
-    case 136: 
+    case 133: 
       return [WatchappInfo fromList:[self readValue]];
     default:
       return [super readValueOfType:type];
@@ -3412,32 +3044,23 @@ void WorkaroundsControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObjec
 @end
 @implementation AppInstallControlCodecWriter
 - (void)writeValue:(id)value {
-  if ([value isKindOfClass:[BooleanWrapper class]]) {
+  if ([value isKindOfClass:[ListWrapper class]]) {
     [self writeByte:128];
     [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[InstallData class]]) {
+  } else if ([value isKindOfClass:[NumberWrapper class]]) {
     [self writeByte:129];
     [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[ListWrapper class]]) {
+  } else if ([value isKindOfClass:[PbwAppInfo class]]) {
     [self writeByte:130];
     [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[LockerAppPigeon class]]) {
+  } else if ([value isKindOfClass:[StringWrapper class]]) {
     [self writeByte:131];
     [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[NumberWrapper class]]) {
+  } else if ([value isKindOfClass:[WatchResource class]]) {
     [self writeByte:132];
     [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[PbwAppInfo class]]) {
-    [self writeByte:133];
-    [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[StringWrapper class]]) {
-    [self writeByte:134];
-    [self writeValue:[value toList]];
-  } else if ([value isKindOfClass:[WatchResource class]]) {
-    [self writeByte:135];
-    [self writeValue:[value toList]];
   } else if ([value isKindOfClass:[WatchappInfo class]]) {
-    [self writeByte:136];
+    [self writeByte:133];
     [self writeValue:[value toList]];
   } else {
     [super writeValue:value];
@@ -3479,101 +3102,6 @@ void AppInstallControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject
         NSArray *args = message;
         StringWrapper *arg_localPbwUri = GetNullableObjectAtIndex(args, 0);
         [api getAppInfoLocalPbwUri:arg_localPbwUri completion:^(PbwAppInfo *_Nullable output, FlutterError *_Nullable error) {
-          callback(wrapResult(output, error));
-        }];
-      }];
-    } else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [[FlutterBasicMessageChannel alloc]
-        initWithName:@"dev.flutter.pigeon.AppInstallControl.beginAppInstall"
-        binaryMessenger:binaryMessenger
-        codec:AppInstallControlGetCodec()];
-    if (api) {
-      NSCAssert([api respondsToSelector:@selector(beginAppInstallInstallData:completion:)], @"AppInstallControl api (%@) doesn't respond to @selector(beginAppInstallInstallData:completion:)", api);
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        NSArray *args = message;
-        InstallData *arg_installData = GetNullableObjectAtIndex(args, 0);
-        [api beginAppInstallInstallData:arg_installData completion:^(BooleanWrapper *_Nullable output, FlutterError *_Nullable error) {
-          callback(wrapResult(output, error));
-        }];
-      }];
-    } else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [[FlutterBasicMessageChannel alloc]
-        initWithName:@"dev.flutter.pigeon.AppInstallControl.beginAppDeletion"
-        binaryMessenger:binaryMessenger
-        codec:AppInstallControlGetCodec()];
-    if (api) {
-      NSCAssert([api respondsToSelector:@selector(beginAppDeletionUuid:completion:)], @"AppInstallControl api (%@) doesn't respond to @selector(beginAppDeletionUuid:completion:)", api);
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        NSArray *args = message;
-        StringWrapper *arg_uuid = GetNullableObjectAtIndex(args, 0);
-        [api beginAppDeletionUuid:arg_uuid completion:^(BooleanWrapper *_Nullable output, FlutterError *_Nullable error) {
-          callback(wrapResult(output, error));
-        }];
-      }];
-    } else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  /// Read header from pbw file already in Cobble's storage and send it to
-  /// BlobDB on the watch
-  {
-    FlutterBasicMessageChannel *channel =
-      [[FlutterBasicMessageChannel alloc]
-        initWithName:@"dev.flutter.pigeon.AppInstallControl.insertAppIntoBlobDb"
-        binaryMessenger:binaryMessenger
-        codec:AppInstallControlGetCodec()];
-    if (api) {
-      NSCAssert([api respondsToSelector:@selector(insertAppIntoBlobDbApp:completion:)], @"AppInstallControl api (%@) doesn't respond to @selector(insertAppIntoBlobDbApp:completion:)", api);
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        NSArray *args = message;
-        LockerAppPigeon *arg_app = GetNullableObjectAtIndex(args, 0);
-        [api insertAppIntoBlobDbApp:arg_app completion:^(NumberWrapper *_Nullable output, FlutterError *_Nullable error) {
-          callback(wrapResult(output, error));
-        }];
-      }];
-    } else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [[FlutterBasicMessageChannel alloc]
-        initWithName:@"dev.flutter.pigeon.AppInstallControl.removeAppFromBlobDb"
-        binaryMessenger:binaryMessenger
-        codec:AppInstallControlGetCodec()];
-    if (api) {
-      NSCAssert([api respondsToSelector:@selector(removeAppFromBlobDbAppUuidString:completion:)], @"AppInstallControl api (%@) doesn't respond to @selector(removeAppFromBlobDbAppUuidString:completion:)", api);
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        NSArray *args = message;
-        StringWrapper *arg_appUuidString = GetNullableObjectAtIndex(args, 0);
-        [api removeAppFromBlobDbAppUuidString:arg_appUuidString completion:^(NumberWrapper *_Nullable output, FlutterError *_Nullable error) {
-          callback(wrapResult(output, error));
-        }];
-      }];
-    } else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [[FlutterBasicMessageChannel alloc]
-        initWithName:@"dev.flutter.pigeon.AppInstallControl.removeAllApps"
-        binaryMessenger:binaryMessenger
-        codec:AppInstallControlGetCodec()];
-    if (api) {
-      NSCAssert([api respondsToSelector:@selector(removeAllAppsWithCompletion:)], @"AppInstallControl api (%@) doesn't respond to @selector(removeAllAppsWithCompletion:)", api);
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        [api removeAllAppsWithCompletion:^(NumberWrapper *_Nullable output, FlutterError *_Nullable error) {
           callback(wrapResult(output, error));
         }];
       }];

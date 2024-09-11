@@ -4,52 +4,31 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.net.toFile
 import io.rebble.cobble.bridges.FlutterBridge
-import io.rebble.cobble.bridges.background.BackgroundAppInstallBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.data.pbw.appinfo.toPigeon
-import io.rebble.cobble.datasources.WatchMetadataStore
-import io.rebble.cobble.middleware.PutBytesController
-import io.rebble.cobble.middleware.getBestVariant
-import io.rebble.cobble.pigeons.BooleanWrapper
+import io.rebble.cobble.shared.middleware.PutBytesController
 import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons
-import io.rebble.cobble.pigeons.Pigeons.NumberWrapper
-import io.rebble.cobble.util.*
-import io.rebble.libpebblecommon.disk.PbwBinHeader
-import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
+import io.rebble.cobble.shared.util.findFile
+import io.rebble.cobble.util.launchPigeonResult
 import io.rebble.libpebblecommon.metadata.pbw.appinfo.PbwAppInfo
 import io.rebble.libpebblecommon.packets.AppOrderResultCode
 import io.rebble.libpebblecommon.packets.AppReorderRequest
-import io.rebble.libpebblecommon.packets.blobdb.AppMetadata
-import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
 import io.rebble.libpebblecommon.services.AppReorderService
-import io.rebble.libpebblecommon.services.blobdb.BlobDBService
-import io.rebble.libpebblecommon.structmapper.SUInt
-import io.rebble.libpebblecommon.structmapper.SUUID
-import io.rebble.libpebblecommon.structmapper.StructMapper
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.first
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
-import okio.buffer
-import okio.sink
-import okio.source
 import timber.log.Timber
 import java.io.InputStream
 import java.util.UUID
 import java.util.zip.ZipInputStream
 import javax.inject.Inject
-import kotlin.random.Random
 
 @Suppress("BlockingMethodInNonBlockingContext")
 class AppInstallFlutterBridge @Inject constructor(
         private val context: Context,
         private val coroutineScope: CoroutineScope,
-        private val backgroundAppInstallBridge: BackgroundAppInstallBridge,
-        private val watchMetadataStore: WatchMetadataStore,
-        private val blobDBService: BlobDBService,
         private val reorderService: AppReorderService,
         private val putBytesController: PutBytesController,
         bridgeLifecycleController: BridgeLifecycleController
@@ -102,151 +81,6 @@ class AppInstallFlutterBridge @Inject constructor(
         }
     }
 
-
-    override fun beginAppInstall(
-            installData: Pigeons.InstallData,
-            result: Pigeons.Result<Pigeons.BooleanWrapper>
-    ) {
-        coroutineScope.launchPigeonResult(result) {
-            // Copy pbw file to the app's folder
-            val appUuid = installData.appInfo.uuid!!
-            val targetFileName = getAppPbwFile(context, appUuid)
-
-            val success = if (!installData.stayOffloaded) {
-                withContext(Dispatchers.IO) {
-                    val openInputStream = openUriStream(installData.uri)
-
-                    if (openInputStream == null) {
-                        Timber.e("Unknown URI '%s'. This should have been filtered before it reached beginAppInstall. Aborting.", installData.uri)
-                        return@withContext false
-                    }
-
-                    val source = openInputStream
-                            .source()
-                            .buffer()
-
-                    val sink = targetFileName.sink().buffer()
-
-                    source.use {
-                        sink.use {
-                            sink.writeAll(source)
-                        }
-                    }
-
-                    true
-                }
-            } else {
-                true
-            }
-
-            if (success && !installData.stayOffloaded) {
-                backgroundAppInstallBridge.installAppNow(installData.uri, installData.appInfo)
-            }
-
-            BooleanWrapper(true)
-        }
-    }
-
-    override fun insertAppIntoBlobDb(app: Pigeons.LockerAppPigeon, result: Pigeons.Result<NumberWrapper>) {
-        coroutineScope.launchPigeonResult(result, Dispatchers.IO) {
-            val resp = try {
-                val appUuid = app.uuid
-
-                // Wait some time for metadata to become available in case this has been called
-                // Right after watch has been connected
-                val hardwarePlatformNumber = withTimeoutOrNull(2_000) {
-                    watchMetadataStore.lastConnectedWatchMetadata.first { it != null }
-                }
-                        ?.running
-                        ?.hardwarePlatform
-                        ?.get()
-                        ?: error("Watch not connected")
-
-                val connectedWatchType = WatchHardwarePlatform
-                        .fromProtocolNumber(hardwarePlatformNumber)
-                        ?.watchType
-                        ?: error("Unknown hardware platform $hardwarePlatformNumber")
-
-                val targetWatchType = getBestVariant(connectedWatchType, app.supportedHardware)
-                        ?: error("Watch $connectedWatchType is not compatible with app $appUuid. " +
-                                "Compatible apps: ${app.supportedHardware}")
-
-                val flags = app.processInfoFlags[connectedWatchType.codename]?.value ?: 0L
-
-                val appVersionMajor = try {
-                    app.version.split(".")?.getOrNull(0)?.toUByte() ?: 0u
-                } catch (e: NumberFormatException) {
-                    0u
-                }
-                val appVersionMinor = try {
-                    app.version.split(".")?.getOrNull(1)?.toUByte() ?: 0u
-                } catch (e: NumberFormatException) {
-                    0u
-                }
-
-                val sdkVersionMajor = app.sdkVersions[connectedWatchType.codename]?.split(".")?.get(0)?.toUByte() ?: 0u
-                val sdkVersionMinor = app.sdkVersions[connectedWatchType.codename]?.split(".")?.getOrNull(1)?.toUByte() ?: 0u
-
-                val insertResult = blobDBService.send(
-                        BlobCommand.InsertCommand(
-                                Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
-                                BlobCommand.BlobDatabase.App,
-                                SUUID(StructMapper(), UUID.fromString(appUuid)).toBytes(),
-                                AppMetadata().also {
-                                    it.uuid.set(UUID.fromString(appUuid))
-                                    it.flags.set(flags.toString().toUInt())
-                                    it.icon.set(0u)
-                                    it.appVersionMajor.set(appVersionMajor)
-                                    it.appVersionMinor.set(appVersionMinor)
-                                    it.sdkVersionMajor.set(sdkVersionMajor)
-                                    it.sdkVersionMinor.set(sdkVersionMinor)
-                                    it.appName.set(app.shortName)
-                                }.toBytes()
-                        )
-                )
-
-                insertResult.responseValue.value.toLong()
-            } catch (e: Exception) {
-                if (e is SerializationException) {
-                    throw e
-                }
-                Timber.e(e, "Failed to send PBW file to the BlobDB")
-                BlobResponse.BlobStatus.GeneralFailure.value.toLong()
-            }
-            NumberWrapper.Builder()
-                    .setValue(resp)
-                    .build()
-        }
-    }
-
-    override fun beginAppDeletion(arg: Pigeons.StringWrapper,
-                                  result: Pigeons.Result<Pigeons.BooleanWrapper>) {
-        coroutineScope.launchPigeonResult(result) {
-            getAppPbwFile(context, arg.value!!).delete()
-            val resp = withContext(Dispatchers.Main) {
-                backgroundAppInstallBridge.deleteApp(arg)
-            }
-            BooleanWrapper(resp)
-        }
-    }
-
-    override fun removeAppFromBlobDb(
-            arg: Pigeons.StringWrapper,
-            result: Pigeons.Result<Pigeons.NumberWrapper>
-    ) {
-        coroutineScope.launchPigeonResult(result) {
-            val blobDbResult = blobDBService.send(
-                    BlobCommand.DeleteCommand(
-                            Random.nextInt().toUShort(),
-                            BlobCommand.BlobDatabase.App,
-                            SUUID(StructMapper(), UUID.fromString(arg.value)).toBytes()
-                    )
-            )
-
-            NumberWrapper(blobDbResult.response.valueNumber)
-        }
-    }
-
     override fun sendAppOrderToWatch(
             arg: Pigeons.ListWrapper,
             result: Pigeons.Result<Pigeons.NumberWrapper>
@@ -268,17 +102,6 @@ class AppInstallFlutterBridge @Inject constructor(
             }
         }
 
-    }
-
-    override fun removeAllApps(result: Pigeons.Result<Pigeons.NumberWrapper>) {
-        coroutineScope.launchPigeonResult(result) {
-            NumberWrapper(
-                    blobDBService.send(BlobCommand.ClearCommand(
-                            Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
-                            BlobCommand.BlobDatabase.App
-                    )).response.get().toInt()
-            )
-        }
     }
 
     override fun subscribeToAppStatus() {

@@ -1,9 +1,11 @@
-package io.rebble.cobble.middleware
+package io.rebble.cobble.shared.middleware
 
-import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.datasources.WatchMetadataStore
-import io.rebble.cobble.util.requirePbwBinaryBlob
-import io.rebble.cobble.util.requirePbwManifest
+import io.rebble.cobble.shared.Logging
+import io.rebble.cobble.shared.domain.state.ConnectionStateManager
+import io.rebble.cobble.shared.domain.state.watchOrNull
+import io.rebble.cobble.shared.util.File
+import io.rebble.cobble.shared.util.requirePbwBinaryBlob
+import io.rebble.cobble.shared.util.requirePbwManifest
 import io.rebble.libpebblecommon.metadata.WatchType
 import io.rebble.libpebblecommon.metadata.pbw.manifest.PbwBlob
 import io.rebble.libpebblecommon.metadata.pbz.manifest.PbzManifest
@@ -13,19 +15,18 @@ import io.rebble.libpebblecommon.services.PutBytesService
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okio.buffer
-import timber.log.Timber
-import java.io.File
-import javax.inject.Inject
-import javax.inject.Singleton
+import okio.use
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-@Singleton
-class PutBytesController @Inject constructor(
-        private val connectionLooper: ConnectionLooper,
-        private val putBytesService: PutBytesService,
-        private val metadataStore: WatchMetadataStore
-) {
+class PutBytesController: KoinComponent {
+    private val putBytesService: PutBytesService by inject()
+
     private val _status: MutableStateFlow<Status> = MutableStateFlow(Status(State.IDLE))
+    private val statusMutex = Mutex()
     val status: StateFlow<Status> get() = _status
 
     private var lastCookie: UInt? = null
@@ -98,7 +99,7 @@ class PutBytesController @Inject constructor(
             resources?.let {
                 putBytesService.sendFirmwarePart(
                         it,
-                        metadataStore.lastConnectedWatchMetadata.value!!,
+                        ConnectionStateManager.connectionState.value.watchOrNull?.metadata?.value!!,
                         manifest.resources!!.crc,
                         manifest.resources!!.size.toUInt(),
                         0u,
@@ -107,7 +108,7 @@ class PutBytesController @Inject constructor(
             }
             putBytesService.sendFirmwarePart(
                     firmware,
-                    metadataStore.lastConnectedWatchMetadata.value!!,
+                    ConnectionStateManager.connectionState.value.watchOrNull?.metadata?.value!!,
                     manifest.firmware.crc,
                     manifest.firmware.size.toUInt(),
                     when {
@@ -134,15 +135,14 @@ class PutBytesController @Inject constructor(
             type: ObjectType,
             progressMultiplier: Double
     ) {
-        Timber.d("Send app part %s %s %s %s %s %f",
-                watchType, appId, manifestEntry, type, type.value, progressMultiplier)
+        Logging.d("Send app part $watchType, $appId, $manifestEntry, $type, ${type.value}, $progressMultiplier")
         val source = requirePbwBinaryBlob(pbwFile, watchType, manifestEntry.name)
         source.buffer().use {
             putBytesService.sendAppPart(
                     appId,
                     it.readByteArray(),
                     watchType,
-                    metadataStore.lastConnectedWatchMetadata.value!!,
+                    ConnectionStateManager.connectionState.value.watchOrNull?.metadata?.value!!,
                     manifestEntry,
                     type
             )
@@ -150,20 +150,19 @@ class PutBytesController @Inject constructor(
     }
 
     private fun launchNewPutBytesSession(block: suspend CoroutineScope.() -> Unit): Job {
-        synchronized(_status) {
-            if (_status.value.state != State.IDLE) {
-                throw IllegalStateException("Put bytes operation already in progress")
+        return ConnectionStateManager.connectionScope.value.launch {
+            statusMutex.withLock {
+                if (_status.value.state != State.IDLE) {
+                    throw IllegalStateException("Put bytes operation already in progress")
+                }
+
+                _status.value = Status(State.SENDING)
             }
-
-            _status.value = Status(State.SENDING)
-        }
-
-        return connectionLooper.getWatchConnectedScope().launch {
             try {
                 block()
             } catch (e: Exception) {
                 val cookie = lastCookie
-                Timber.e(e, "PutBytes error")
+                Logging.e("PutBytes error", e)
 
                 if (cookie != null) {
                     putBytesService.send(PutBytesAbort(cookie))

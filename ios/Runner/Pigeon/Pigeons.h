@@ -24,14 +24,12 @@ NS_ASSUME_NONNULL_BEGIN
 @class PbwAppInfo;
 @class WatchappInfo;
 @class WatchResource;
-@class InstallData;
 @class AppInstallStatus;
 @class ScreenshotResult;
 @class AppLogEntry;
 @class OAuthResult;
 @class NotifyingPackage;
 @class CalendarPigeon;
-@class LockerAppPigeon;
 
 /// Pigeon only supports classes as return/receive type.
 /// That is why we must wrap primitive types into wrapper
@@ -217,17 +215,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy, nullable) NSString * type;
 @end
 
-@interface InstallData : NSObject
-/// `init` unavailable to enforce nonnull fields, see the `make` class method.
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)makeWithUri:(NSString *)uri
-    appInfo:(PbwAppInfo *)appInfo
-    stayOffloaded:(NSNumber *)stayOffloaded;
-@property(nonatomic, copy) NSString * uri;
-@property(nonatomic, strong) PbwAppInfo * appInfo;
-@property(nonatomic, strong) NSNumber * stayOffloaded;
-@end
-
 @interface AppInstallStatus : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
@@ -297,44 +284,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong) NSNumber * enabled;
 @end
 
-@interface LockerAppPigeon : NSObject
-/// `init` unavailable to enforce nonnull fields, see the `make` class method.
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)makeWithUuid:(NSString *)uuid
-    shortName:(NSString *)shortName
-    longName:(NSString *)longName
-    company:(NSString *)company
-    appstoreId:(nullable NSString *)appstoreId
-    version:(NSString *)version
-    isWatchface:(NSNumber *)isWatchface
-    isSystem:(NSNumber *)isSystem
-    supportedHardware:(NSArray<NSString *> *)supportedHardware
-    processInfoFlags:(NSDictionary<NSString *, NumberWrapper *> *)processInfoFlags
-    sdkVersions:(NSDictionary<NSString *, NSString *> *)sdkVersions;
-/// UUID of the app
-@property(nonatomic, copy) NSString * uuid;
-/// Short name of the app (as displayed on the watch)
-@property(nonatomic, copy) NSString * shortName;
-/// Full name of the app
-@property(nonatomic, copy) NSString * longName;
-/// Company that made the app
-@property(nonatomic, copy) NSString * company;
-/// ID of the app store entry, if app was downloaded from the app store.
-/// Null otherwise.
-@property(nonatomic, copy, nullable) NSString * appstoreId;
-/// Version of the app
-@property(nonatomic, copy) NSString * version;
-/// Whether app is a watchapp or a watchface.
-@property(nonatomic, strong) NSNumber * isWatchface;
-/// Whether app is a system app that cannot be uninstalled
-@property(nonatomic, strong) NSNumber * isSystem;
-/// List of supported hardware codenames
-/// (see WatchType enum for list of all entries)
-@property(nonatomic, strong) NSArray<NSString *> * supportedHardware;
-@property(nonatomic, strong) NSDictionary<NSString *, NumberWrapper *> * processInfoFlags;
-@property(nonatomic, strong) NSDictionary<NSString *, NSString *> * sdkVersions;
-@end
-
 /// The codec used by CalendarCallbacks.
 NSObject<FlutterMessageCodec> *CalendarCallbacksGetCodec(void);
 
@@ -384,16 +333,6 @@ NSObject<FlutterMessageCodec> *IntentCallbacksGetCodec(void);
 @interface IntentCallbacks : NSObject
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
 - (void)openUriUri:(StringWrapper *)uri completion:(void (^)(FlutterError *_Nullable))completion;
-@end
-
-/// The codec used by BackgroundAppInstallCallbacks.
-NSObject<FlutterMessageCodec> *BackgroundAppInstallCallbacksGetCodec(void);
-
-@interface BackgroundAppInstallCallbacks : NSObject
-- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
-- (void)beginAppInstallInstallData:(InstallData *)installData completion:(void (^)(FlutterError *_Nullable))completion;
-- (void)deleteAppUuid:(StringWrapper *)uuid completion:(void (^)(FlutterError *_Nullable))completion;
-- (void)downloadPbwUuid:(NSString *)uuid completion:(void (^)(NSString *_Nullable, FlutterError *_Nullable))completion;
 @end
 
 /// The codec used by AppInstallStatusCallbacks.
@@ -523,24 +462,6 @@ NSObject<FlutterMessageCodec> *TimelineControlGetCodec(void);
 
 extern void TimelineControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<TimelineControl> *_Nullable api);
 
-/// The codec used by BackgroundSetupControl.
-NSObject<FlutterMessageCodec> *BackgroundSetupControlGetCodec(void);
-
-@protocol BackgroundSetupControl
-- (void)setupBackgroundCallbackHandle:(NumberWrapper *)callbackHandle error:(FlutterError *_Nullable *_Nonnull)error;
-@end
-
-extern void BackgroundSetupControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<BackgroundSetupControl> *_Nullable api);
-
-/// The codec used by BackgroundControl.
-NSObject<FlutterMessageCodec> *BackgroundControlGetCodec(void);
-
-@protocol BackgroundControl
-- (void)notifyFlutterBackgroundStartedWithCompletion:(void (^)(NumberWrapper *_Nullable, FlutterError *_Nullable))completion;
-@end
-
-extern void BackgroundControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<BackgroundControl> *_Nullable api);
-
 /// The codec used by PermissionCheck.
 NSObject<FlutterMessageCodec> *PermissionCheckGetCodec(void);
 
@@ -628,13 +549,6 @@ NSObject<FlutterMessageCodec> *AppInstallControlGetCodec(void);
 
 @protocol AppInstallControl
 - (void)getAppInfoLocalPbwUri:(StringWrapper *)localPbwUri completion:(void (^)(PbwAppInfo *_Nullable, FlutterError *_Nullable))completion;
-- (void)beginAppInstallInstallData:(InstallData *)installData completion:(void (^)(BooleanWrapper *_Nullable, FlutterError *_Nullable))completion;
-- (void)beginAppDeletionUuid:(StringWrapper *)uuid completion:(void (^)(BooleanWrapper *_Nullable, FlutterError *_Nullable))completion;
-/// Read header from pbw file already in Cobble's storage and send it to
-/// BlobDB on the watch
-- (void)insertAppIntoBlobDbApp:(LockerAppPigeon *)app completion:(void (^)(NumberWrapper *_Nullable, FlutterError *_Nullable))completion;
-- (void)removeAppFromBlobDbAppUuidString:(StringWrapper *)appUuidString completion:(void (^)(NumberWrapper *_Nullable, FlutterError *_Nullable))completion;
-- (void)removeAllAppsWithCompletion:(void (^)(NumberWrapper *_Nullable, FlutterError *_Nullable))completion;
 - (void)subscribeToAppStatusWithError:(FlutterError *_Nullable *_Nonnull)error;
 - (void)unsubscribeFromAppStatusWithError:(FlutterError *_Nullable *_Nonnull)error;
 - (void)sendAppOrderToWatchUuidStringList:(ListWrapper *)uuidStringList completion:(void (^)(NumberWrapper *_Nullable, FlutterError *_Nullable))completion;

@@ -5,11 +5,11 @@ import android.net.Uri
 import androidx.core.net.toFile
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.datasources.WatchMetadataStore
-import io.rebble.cobble.middleware.PutBytesController
+import io.rebble.cobble.shared.middleware.PutBytesController
 import io.rebble.cobble.pigeons.BooleanWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.launchPigeonResult
-import io.rebble.cobble.util.zippedSource
+import io.rebble.cobble.shared.util.zippedSource
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
 import io.rebble.libpebblecommon.metadata.pbz.manifest.PbzManifest
 import io.rebble.libpebblecommon.packets.SystemMessage
@@ -25,18 +25,17 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import okio.buffer
 import timber.log.Timber
-import java.io.File
 import java.io.InputStream
 import java.util.TimeZone
 import javax.inject.Inject
 
 class FirmwareUpdateControlFlutterBridge @Inject constructor(
-        bridgeLifecycleController: BridgeLifecycleController,
-        private val coroutineScope: CoroutineScope,
-        private val watchMetadataStore: WatchMetadataStore,
-        private val systemService: SystemService,
-        private val putBytesController: PutBytesController,
-        private val context: Context
+    bridgeLifecycleController: BridgeLifecycleController,
+    private val coroutineScope: CoroutineScope,
+    private val watchMetadataStore: WatchMetadataStore,
+    private val systemService: SystemService,
+    private val putBytesController: PutBytesController,
+    private val context: Context
 ) : FlutterBridge, Pigeons.FirmwareUpdateControl {
     init {
         bridgeLifecycleController.setupControl(Pigeons.FirmwareUpdateControl::setup, this)

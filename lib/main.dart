@@ -1,8 +1,6 @@
-
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:cobble/background/main_background.dart';
 import 'package:cobble/domain/logging.dart';
 import 'package:cobble/infrastructure/backgroundcomm/BackgroundReceiver.dart';
 import 'package:cobble/infrastructure/backgroundcomm/BackgroundRpc.dart';
@@ -44,13 +42,14 @@ void main() {
     Timer.periodic(const Duration(seconds: 10), (_) => tracker.printTopScheduleBuildForStacks());
   }*/
 
-  Logger.root.onRecord.listen((record) { // Makes sure we send logs to native logger so they're stored
+  Logger.root.onRecord.listen((record) {
+    // Makes sure we send logs to native logger so they're stored
     //debugPrint('${record.time} [${record.loggerName}] ${record.message}');
 
     // I hate that this can't be a switch statement
     if (record.level == Level.SEVERE) {
       Log.e(record.message);
-    } else if (record.level   == Level.WARNING) {
+    } else if (record.level == Level.WARNING) {
       Log.w(record.message);
     } else if (record.level == Level.INFO) {
       Log.i(record.message);
@@ -69,15 +68,6 @@ void main() {
   });
 
   runApp(ProviderScope(child: MyApp()));
-  initBackground();
-}
-
-void initBackground() {
-  final CallbackHandle backgroundCallbackHandle =
-      PluginUtilities.getCallbackHandle(main_background)!;
-  final wrapper = NumberWrapper();
-  wrapper.value = backgroundCallbackHandle.toRawHandle();
-  BackgroundSetupControl().setupBackground(wrapper);
 }
 
 class MyApp extends HookConsumerWidget {
@@ -118,7 +108,7 @@ class MyApp extends HookConsumerWidget {
 
         final token = await ref.read(secureStorageProvider).getToken();
         if (token != null && token.accessToken.isNotEmpty) {
-            await KMPApi().updateToken(StringWrapper(value: token.accessToken));
+          await KMPApi().updateToken(StringWrapper(value: token.accessToken));
         }
       });
       return null;

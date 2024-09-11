@@ -2,6 +2,7 @@ package io.rebble.cobble.shared.domain.state
 
 import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.libpebblecommon.packets.WatchVersion
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -30,6 +31,7 @@ val ConnectionState.watchOrNull: PebbleDevice?
 
 object ConnectionStateManager: KoinComponent {
     val connectionState: MutableStateFlow<ConnectionState> by inject(named("connectionState"))
+    val connectionScope: MutableStateFlow<CoroutineScope> by inject(named("connectionScope"))
 
     /**
      * Flow of the currently connected watch's metadata. This flow only emits when a watch is connected and will not emit if negotiation never completes.

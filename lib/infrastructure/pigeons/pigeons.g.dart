@@ -587,37 +587,6 @@ class WatchResource {
   }
 }
 
-class InstallData {
-  InstallData({
-    required this.uri,
-    required this.appInfo,
-    required this.stayOffloaded,
-  });
-
-  String uri;
-
-  PbwAppInfo appInfo;
-
-  bool stayOffloaded;
-
-  Object encode() {
-    return <Object?>[
-      uri,
-      appInfo.encode(),
-      stayOffloaded,
-    ];
-  }
-
-  static InstallData decode(Object result) {
-    result as List<Object?>;
-    return InstallData(
-      uri: result[0]! as String,
-      appInfo: PbwAppInfo.decode(result[1]! as List<Object?>),
-      stayOffloaded: result[2]! as bool,
-    );
-  }
-}
-
 class AppInstallStatus {
   AppInstallStatus({
     required this.progress,
@@ -811,88 +780,6 @@ class CalendarPigeon {
       name: result[2]! as String,
       color: result[3]! as int,
       enabled: result[4]! as bool,
-    );
-  }
-}
-
-class LockerAppPigeon {
-  LockerAppPigeon({
-    required this.uuid,
-    required this.shortName,
-    required this.longName,
-    required this.company,
-    this.appstoreId,
-    required this.version,
-    required this.isWatchface,
-    required this.isSystem,
-    required this.supportedHardware,
-    required this.processInfoFlags,
-    required this.sdkVersions,
-  });
-
-  /// UUID of the app
-  String uuid;
-
-  /// Short name of the app (as displayed on the watch)
-  String shortName;
-
-  /// Full name of the app
-  String longName;
-
-  /// Company that made the app
-  String company;
-
-  /// ID of the app store entry, if app was downloaded from the app store.
-  /// Null otherwise.
-  String? appstoreId;
-
-  /// Version of the app
-  String version;
-
-  /// Whether app is a watchapp or a watchface.
-  bool isWatchface;
-
-  /// Whether app is a system app that cannot be uninstalled
-  bool isSystem;
-
-  /// List of supported hardware codenames
-  /// (see WatchType enum for list of all entries)
-  List<String?> supportedHardware;
-
-  Map<String?, NumberWrapper?> processInfoFlags;
-
-  Map<String?, String?> sdkVersions;
-
-  Object encode() {
-    return <Object?>[
-      uuid,
-      shortName,
-      longName,
-      company,
-      appstoreId,
-      version,
-      isWatchface,
-      isSystem,
-      supportedHardware,
-      processInfoFlags,
-      sdkVersions,
-    ];
-  }
-
-  static LockerAppPigeon decode(Object result) {
-    result as List<Object?>;
-    return LockerAppPigeon(
-      uuid: result[0]! as String,
-      shortName: result[1]! as String,
-      longName: result[2]! as String,
-      company: result[3]! as String,
-      appstoreId: result[4] as String?,
-      version: result[5]! as String,
-      isWatchface: result[6]! as bool,
-      isSystem: result[7]! as bool,
-      supportedHardware: (result[8] as List<Object?>?)!.cast<String?>(),
-      processInfoFlags: (result[9] as Map<Object?, Object?>?)!.cast<String?, NumberWrapper?>(),
-      sdkVersions: (result[10] as Map<Object?, Object?>?)!.cast<String?, String?>(),
     );
   }
 }
@@ -1240,119 +1127,6 @@ abstract class IntentCallbacks {
               'Argument for dev.flutter.pigeon.IntentCallbacks.openUri was null, expected non-null StringWrapper.');
           api.openUri(arg_uri!);
           return;
-        });
-      }
-    }
-  }
-}
-
-class _BackgroundAppInstallCallbacksCodec extends StandardMessageCodec {
-  const _BackgroundAppInstallCallbacksCodec();
-  @override
-  void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is InstallData) {
-      buffer.putUint8(128);
-      writeValue(buffer, value.encode());
-    } else if (value is PbwAppInfo) {
-      buffer.putUint8(129);
-      writeValue(buffer, value.encode());
-    } else if (value is StringWrapper) {
-      buffer.putUint8(130);
-      writeValue(buffer, value.encode());
-    } else if (value is WatchResource) {
-      buffer.putUint8(131);
-      writeValue(buffer, value.encode());
-    } else if (value is WatchappInfo) {
-      buffer.putUint8(132);
-      writeValue(buffer, value.encode());
-    } else {
-      super.writeValue(buffer, value);
-    }
-  }
-
-  @override
-  Object? readValueOfType(int type, ReadBuffer buffer) {
-    switch (type) {
-      case 128: 
-        return InstallData.decode(readValue(buffer)!);
-      case 129: 
-        return PbwAppInfo.decode(readValue(buffer)!);
-      case 130: 
-        return StringWrapper.decode(readValue(buffer)!);
-      case 131: 
-        return WatchResource.decode(readValue(buffer)!);
-      case 132: 
-        return WatchappInfo.decode(readValue(buffer)!);
-      default:
-        return super.readValueOfType(type, buffer);
-    }
-  }
-}
-
-abstract class BackgroundAppInstallCallbacks {
-  static const MessageCodec<Object?> codec = _BackgroundAppInstallCallbacksCodec();
-
-  Future<void> beginAppInstall(InstallData installData);
-
-  Future<void> deleteApp(StringWrapper uuid);
-
-  Future<String?> downloadPbw(String uuid);
-
-  static void setup(BackgroundAppInstallCallbacks? api, {BinaryMessenger? binaryMessenger}) {
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-          'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final InstallData? arg_installData = (args[0] as InstallData?);
-          assert(arg_installData != null,
-              'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall was null, expected non-null InstallData.');
-          await api.beginAppInstall(arg_installData!);
-          return;
-        });
-      }
-    }
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.BackgroundAppInstallCallbacks.deleteApp', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-          'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.deleteApp was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final StringWrapper? arg_uuid = (args[0] as StringWrapper?);
-          assert(arg_uuid != null,
-              'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.deleteApp was null, expected non-null StringWrapper.');
-          await api.deleteApp(arg_uuid!);
-          return;
-        });
-      }
-    }
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.BackgroundAppInstallCallbacks.downloadPbw', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-          'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.downloadPbw was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final String? arg_uuid = (args[0] as String?);
-          assert(arg_uuid != null,
-              'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.downloadPbw was null, expected non-null String.');
-          final String? output = await api.downloadPbw(arg_uuid!);
-          return output;
         });
       }
     }
@@ -2397,123 +2171,6 @@ class TimelineControl {
   }
 }
 
-class _BackgroundSetupControlCodec extends StandardMessageCodec {
-  const _BackgroundSetupControlCodec();
-  @override
-  void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is NumberWrapper) {
-      buffer.putUint8(128);
-      writeValue(buffer, value.encode());
-    } else {
-      super.writeValue(buffer, value);
-    }
-  }
-
-  @override
-  Object? readValueOfType(int type, ReadBuffer buffer) {
-    switch (type) {
-      case 128: 
-        return NumberWrapper.decode(readValue(buffer)!);
-      default:
-        return super.readValueOfType(type, buffer);
-    }
-  }
-}
-
-class BackgroundSetupControl {
-  /// Constructor for [BackgroundSetupControl].  The [binaryMessenger] named argument is
-  /// available for dependency injection.  If it is left null, the default
-  /// BinaryMessenger will be used which routes to the host platform.
-  BackgroundSetupControl({BinaryMessenger? binaryMessenger})
-      : _binaryMessenger = binaryMessenger;
-  final BinaryMessenger? _binaryMessenger;
-
-  static const MessageCodec<Object?> codec = _BackgroundSetupControlCodec();
-
-  Future<void> setupBackground(NumberWrapper arg_callbackHandle) async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.BackgroundSetupControl.setupBackground', codec,
-        binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_callbackHandle]) as List<Object?>?;
-    if (replyList == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyList.length > 1) {
-      throw PlatformException(
-        code: replyList[0]! as String,
-        message: replyList[1] as String?,
-        details: replyList[2],
-      );
-    } else {
-      return;
-    }
-  }
-}
-
-class _BackgroundControlCodec extends StandardMessageCodec {
-  const _BackgroundControlCodec();
-  @override
-  void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is NumberWrapper) {
-      buffer.putUint8(128);
-      writeValue(buffer, value.encode());
-    } else {
-      super.writeValue(buffer, value);
-    }
-  }
-
-  @override
-  Object? readValueOfType(int type, ReadBuffer buffer) {
-    switch (type) {
-      case 128: 
-        return NumberWrapper.decode(readValue(buffer)!);
-      default:
-        return super.readValueOfType(type, buffer);
-    }
-  }
-}
-
-class BackgroundControl {
-  /// Constructor for [BackgroundControl].  The [binaryMessenger] named argument is
-  /// available for dependency injection.  If it is left null, the default
-  /// BinaryMessenger will be used which routes to the host platform.
-  BackgroundControl({BinaryMessenger? binaryMessenger})
-      : _binaryMessenger = binaryMessenger;
-  final BinaryMessenger? _binaryMessenger;
-
-  static const MessageCodec<Object?> codec = _BackgroundControlCodec();
-
-  Future<NumberWrapper> notifyFlutterBackgroundStarted() async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.BackgroundControl.notifyFlutterBackgroundStarted', codec,
-        binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(null) as List<Object?>?;
-    if (replyList == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyList.length > 1) {
-      throw PlatformException(
-        code: replyList[0]! as String,
-        message: replyList[1] as String?,
-        details: replyList[2],
-      );
-    } else if (replyList[0] == null) {
-      throw PlatformException(
-        code: 'null-error',
-        message: 'Host platform returned null value for non-null return value.',
-      );
-    } else {
-      return (replyList[0] as NumberWrapper?)!;
-    }
-  }
-}
-
 class _PermissionCheckCodec extends StandardMessageCodec {
   const _PermissionCheckCodec();
   @override
@@ -3307,32 +2964,23 @@ class _AppInstallControlCodec extends StandardMessageCodec {
   const _AppInstallControlCodec();
   @override
   void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is BooleanWrapper) {
+    if (value is ListWrapper) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else if (value is InstallData) {
+    } else if (value is NumberWrapper) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    } else if (value is ListWrapper) {
+    } else if (value is PbwAppInfo) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    } else if (value is LockerAppPigeon) {
+    } else if (value is StringWrapper) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
-    } else if (value is NumberWrapper) {
+    } else if (value is WatchResource) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
-    } else if (value is PbwAppInfo) {
-      buffer.putUint8(133);
-      writeValue(buffer, value.encode());
-    } else if (value is StringWrapper) {
-      buffer.putUint8(134);
-      writeValue(buffer, value.encode());
-    } else if (value is WatchResource) {
-      buffer.putUint8(135);
-      writeValue(buffer, value.encode());
     } else if (value is WatchappInfo) {
-      buffer.putUint8(136);
+      buffer.putUint8(133);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -3343,22 +2991,16 @@ class _AppInstallControlCodec extends StandardMessageCodec {
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case 128: 
-        return BooleanWrapper.decode(readValue(buffer)!);
-      case 129: 
-        return InstallData.decode(readValue(buffer)!);
-      case 130: 
         return ListWrapper.decode(readValue(buffer)!);
-      case 131: 
-        return LockerAppPigeon.decode(readValue(buffer)!);
-      case 132: 
+      case 129: 
         return NumberWrapper.decode(readValue(buffer)!);
-      case 133: 
+      case 130: 
         return PbwAppInfo.decode(readValue(buffer)!);
-      case 134: 
+      case 131: 
         return StringWrapper.decode(readValue(buffer)!);
-      case 135: 
+      case 132: 
         return WatchResource.decode(readValue(buffer)!);
-      case 136: 
+      case 133: 
         return WatchappInfo.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -3400,143 +3042,6 @@ class AppInstallControl {
       );
     } else {
       return (replyList[0] as PbwAppInfo?)!;
-    }
-  }
-
-  Future<BooleanWrapper> beginAppInstall(InstallData arg_installData) async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.AppInstallControl.beginAppInstall', codec,
-        binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_installData]) as List<Object?>?;
-    if (replyList == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyList.length > 1) {
-      throw PlatformException(
-        code: replyList[0]! as String,
-        message: replyList[1] as String?,
-        details: replyList[2],
-      );
-    } else if (replyList[0] == null) {
-      throw PlatformException(
-        code: 'null-error',
-        message: 'Host platform returned null value for non-null return value.',
-      );
-    } else {
-      return (replyList[0] as BooleanWrapper?)!;
-    }
-  }
-
-  Future<BooleanWrapper> beginAppDeletion(StringWrapper arg_uuid) async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.AppInstallControl.beginAppDeletion', codec,
-        binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_uuid]) as List<Object?>?;
-    if (replyList == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyList.length > 1) {
-      throw PlatformException(
-        code: replyList[0]! as String,
-        message: replyList[1] as String?,
-        details: replyList[2],
-      );
-    } else if (replyList[0] == null) {
-      throw PlatformException(
-        code: 'null-error',
-        message: 'Host platform returned null value for non-null return value.',
-      );
-    } else {
-      return (replyList[0] as BooleanWrapper?)!;
-    }
-  }
-
-  /// Read header from pbw file already in Cobble's storage and send it to
-  /// BlobDB on the watch
-  Future<NumberWrapper> insertAppIntoBlobDb(LockerAppPigeon arg_app) async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.AppInstallControl.insertAppIntoBlobDb', codec,
-        binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_app]) as List<Object?>?;
-    if (replyList == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyList.length > 1) {
-      throw PlatformException(
-        code: replyList[0]! as String,
-        message: replyList[1] as String?,
-        details: replyList[2],
-      );
-    } else if (replyList[0] == null) {
-      throw PlatformException(
-        code: 'null-error',
-        message: 'Host platform returned null value for non-null return value.',
-      );
-    } else {
-      return (replyList[0] as NumberWrapper?)!;
-    }
-  }
-
-  Future<NumberWrapper> removeAppFromBlobDb(StringWrapper arg_appUuidString) async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.AppInstallControl.removeAppFromBlobDb', codec,
-        binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_appUuidString]) as List<Object?>?;
-    if (replyList == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyList.length > 1) {
-      throw PlatformException(
-        code: replyList[0]! as String,
-        message: replyList[1] as String?,
-        details: replyList[2],
-      );
-    } else if (replyList[0] == null) {
-      throw PlatformException(
-        code: 'null-error',
-        message: 'Host platform returned null value for non-null return value.',
-      );
-    } else {
-      return (replyList[0] as NumberWrapper?)!;
-    }
-  }
-
-  Future<NumberWrapper> removeAllApps() async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.AppInstallControl.removeAllApps', codec,
-        binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(null) as List<Object?>?;
-    if (replyList == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyList.length > 1) {
-      throw PlatformException(
-        code: replyList[0]! as String,
-        message: replyList[1] as String?,
-        details: replyList[2],
-      );
-    } else if (replyList[0] == null) {
-      throw PlatformException(
-        code: 'null-error',
-        message: 'Host platform returned null value for non-null return value.',
-      );
-    } else {
-      return (replyList[0] as NumberWrapper?)!;
     }
   }
 

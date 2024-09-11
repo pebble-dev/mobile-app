@@ -41,6 +41,7 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun persistedNotificationDao(): PersistedNotificationDao
     abstract fun cachedPackageInfoDao(): CachedPackageInfoDao
     abstract fun notificationChannelDao(): NotificationChannelDao
+    abstract fun lockerDao(): LockerDao
 
     companion object {
         fun instance(): AppDatabase {

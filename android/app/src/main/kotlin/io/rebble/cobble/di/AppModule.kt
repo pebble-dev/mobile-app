@@ -18,6 +18,7 @@ import io.rebble.cobble.shared.domain.calendar.CalendarSync
 import io.rebble.cobble.shared.domain.state.CurrentToken
 import io.rebble.cobble.shared.handlers.CalendarActionHandler
 import io.rebble.cobble.shared.jobs.AndroidJobScheduler
+import io.rebble.cobble.shared.middleware.PutBytesController
 import io.rebble.libpebblecommon.services.LogDumpService
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -31,9 +32,7 @@ import org.koin.mp.KoinPlatformTools
 import java.util.UUID
 import javax.inject.Singleton
 
-@Module(
-        subcomponents = [BackgroundFlutterSubcomponent::class]
-)
+@Module
 abstract class AppModule {
     @Binds
     abstract fun bindContext(application: Application): Context
@@ -85,6 +84,12 @@ abstract class AppModule {
         @Provides
         @Singleton
         fun proviceAndroidJobScheduler(context: Context): AndroidJobScheduler {
+            return KoinPlatformTools.defaultContext().get().get()
+        }
+
+        @Provides
+        @Singleton
+        fun providePutBytesController(): PutBytesController {
             return KoinPlatformTools.defaultContext().get().get()
         }
 

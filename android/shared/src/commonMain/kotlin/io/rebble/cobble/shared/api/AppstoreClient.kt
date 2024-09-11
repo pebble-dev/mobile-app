@@ -8,39 +8,43 @@ import io.ktor.client.request.*
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import io.rebble.cobble.shared.domain.api.appstore.LockerEntry
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class AppstoreClient(
         val baseUrl: String,
         private val token: String,
         engine: HttpClientEngine? = null,
-) {
+): KoinComponent {
     private val version = "v1"
-    private val client = engine?.let { HttpClient(it) {
-        install(ContentNegotiation) {
-            json()
-        }
-    }} ?: HttpClient {
-        install(ContentNegotiation) {
-            json()
-        }
-    }
+    private val client: HttpClient by inject()
 
     suspend fun getLocker(): List<LockerEntry> {
-        val body: Map<String, List<LockerEntry>> = client.get("$baseUrl/$version/locker") {
+        val res = client.get("$baseUrl/$version/locker") {
             headers {
                 append(HttpHeaders.Accept, "application/json")
                 append(HttpHeaders.Authorization, "Bearer $token")
             }
-        }.body()
+        }
+
+        if (res.status.value != 200) {
+            error("Failed to get locker: ${res.status}")
+        }
+
+        val body: Map<String, List<LockerEntry>> = res.body() ?: emptyMap()
         return body["applications"] ?: emptyList()
     }
 
     suspend fun addToLocker(uuid: String) {
-        client.put("$baseUrl/$version/locker/$uuid") {
+        val res = client.put("$baseUrl/$version/locker/$uuid") {
             headers {
                 append(HttpHeaders.Accept, "application/json")
                 append(HttpHeaders.Authorization, "Bearer $token")
             }
+        }
+
+        if (res.status.value != 200) {
+            error("Failed to add to locker: ${res.status}")
         }
     }
 

@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cobble/domain/db/models/app.dart';
 import 'package:flutter/material.dart';
-import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/common/components/cobble_divider.dart';
@@ -16,13 +15,12 @@ import 'package:cobble/domain/entities/hardware_platform.dart';
 import '../../../../domain/logging.dart';
 
 class FacesPreview extends StatelessWidget {
-  FacesPreview({
-    required this.face,
-    this.compatible = false,
-    this.extended = false,
-    this.circleConnected,
-    this.listUrl
-  });
+  FacesPreview(
+      {required this.face,
+      this.compatible = false,
+      this.extended = false,
+      this.circleConnected,
+      this.listUrl});
 
   final App face;
   final bool compatible;
@@ -42,30 +40,31 @@ class FacesPreview extends StatelessWidget {
       children: <Widget>[
         ClipRRect(
           borderRadius: BorderRadius.circular(circleWatchface ? 46.0 : 6.0),
-          child: listUrl == null ?
-          Image(
-            image: const Svg('images/temp_watch_face.svg'),
-            width: 92,
-            height: circleWatchface ? 92 : 108,
-            alignment: Alignment.center,
-            fit: BoxFit.cover,
-          ) : CachedNetworkImage(
-            imageUrl: listUrl!,
-            width: 92,
-            height: circleWatchface ? 92 : 108,
-            alignment: Alignment.center,
-            fit: BoxFit.cover,
-            errorListener: (e) {
-              Log.e("Error loading face image: $e");
-            },
-            placeholder: (context, url) => Image(
-              image: const Svg('images/temp_watch_face.svg'),
-              width: 92,
-              height: circleWatchface ? 92 : 108,
-              alignment: Alignment.center,
-              fit: BoxFit.cover,
-            ),
-          ),
+          child: listUrl == null
+              ? Image(
+                  image: const Svg('images/temp_watch_face.svg'),
+                  width: 92,
+                  height: circleWatchface ? 92 : 108,
+                  alignment: Alignment.center,
+                  fit: BoxFit.cover,
+                )
+              : CachedNetworkImage(
+                  imageUrl: listUrl!,
+                  width: 92,
+                  height: circleWatchface ? 92 : 108,
+                  alignment: Alignment.center,
+                  fit: BoxFit.cover,
+                  errorListener: (e) {
+                    Log.e("Error loading face image: $e");
+                  },
+                  placeholder: (context, url) => Image(
+                    image: const Svg('images/temp_watch_face.svg'),
+                    width: 92,
+                    height: circleWatchface ? 92 : 108,
+                    alignment: Alignment.center,
+                    fit: BoxFit.cover,
+                  ),
+                ),
         ),
         const SizedBox(height: 8),
         Text(
@@ -91,7 +90,7 @@ class FacesSheet {
     required BuildContext context,
     required App face,
     bool compatible = false,
-    required AppManager appManager,
+    //required AppManager appManager,
     PebbleWatchLine? lineConnected,
     bool? circleConnected,
     String? listUrl,
@@ -176,7 +175,9 @@ class FacesSheet {
           CobbleTile.action(
             leading: RebbleIcons.delete_trash,
             title: tr.lockerPage.delete,
-            onTap: () => appManager.deleteApp(face.uuid),
+            onTap: () {
+              //appManager.deleteApp(face.uuid);
+            },
           ),
         ],
       ),
