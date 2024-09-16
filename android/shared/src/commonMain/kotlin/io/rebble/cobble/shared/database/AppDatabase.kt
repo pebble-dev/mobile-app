@@ -1,9 +1,6 @@
 package io.rebble.cobble.shared.database
 
-import androidx.room.AutoMigration
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
+import androidx.room.*
 import androidx.room.migration.Migration
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import io.rebble.cobble.shared.database.dao.*
@@ -25,16 +22,18 @@ import org.koin.mp.KoinPlatformTools
             SyncedLockerEntry::class,
             SyncedLockerEntryPlatform::class
                    ],
-        version = 6,
+        version = 7,
         autoMigrations = [
             AutoMigration(1, 2),
             AutoMigration(2, 3),
             AutoMigration(3, 4),
             AutoMigration(4, 5),
-            AutoMigration(5, 6)
+            AutoMigration(5, 6),
+            AutoMigration(6, 7)
         ]
 )
 @TypeConverters(Converters::class)
+@ConstructedBy(AppDatabaseCtor::class)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun calendarDao(): CalendarDao
     abstract fun timelinePinDao(): TimelinePinDao
@@ -62,3 +61,5 @@ fun getDatabase(ioDispatcher: CoroutineDispatcher = Dispatchers.IO): AppDatabase
 fun closeDatabase() {
     KoinPlatformTools.defaultContext().get().get<AppDatabase>().close()
 }
+
+expect object AppDatabaseCtor: RoomDatabaseConstructor<AppDatabase>

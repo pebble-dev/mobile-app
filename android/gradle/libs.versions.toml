@@ -1,11 +1,11 @@
 [versions]
-activityCompose = "1.9.1"
+activityCompose = "1.9.2"
 android-minSdk = "29"
 android-targetSdk = "34"
 coroutinesVersion = "1.8.1"
 daggerVersion = "2.51.1"
 gradle = "8.5.1"
-koinVersion = "3.2.0"
+koinVersion = "4.0.0-RC2"
 kotlin = "2.0.20-Beta2"
 kotlinxDatetime = "0.6.0"
 kotlinxSerializationJson = "1.7.1"
@@ -14,14 +14,17 @@ libpebblecommonVersion = "0.1.22"
 errorproneVersion = "2.26.1"
 spotbugsVersion = "4.8.6"
 
-room = "2.7.0-alpha05"
-room-sqlite = "2.5.0-alpha05"
+room = "2.7.0-alpha07"
+room-sqlite = "2.5.0-alpha07"
 datastore = "1.1.1"
 uuidVersion = "0.8.4"
 compose-lib = "1.6.11"
 compose-nav = "2.7.0-alpha07"
+compose-material3 = "1.3.0"
+reorderable = "2.3.3"
+
 appcompat = "1.7.0"
-material3Android = "1.2.1"
+material3Android = "1.3.0"
 
 ktorVersion = "2.3.12"
 
@@ -35,7 +38,8 @@ androidx-room = { id = "androidx.room", version.ref = "room" }
 android-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "gradle" }
 android-application = { id = "com.android.application", version.ref = "gradle" }
-jetbrains-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-lib" }
+jetbrains-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -53,6 +57,8 @@ androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref =
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinVersion" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinVersion" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinVersion" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutinesVersion" }
 kotlinx-coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "coroutinesVersion" }
@@ -71,9 +77,10 @@ ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "kto
 
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-lib" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-lib" }
-compose-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose-lib" }
+compose-material = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-material3" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-lib" }
 compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "compose-nav" }
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-lib" }
+compose-components-reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
+
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }

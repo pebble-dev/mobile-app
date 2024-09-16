@@ -119,7 +119,8 @@ fun LockerEntry.toEntity(): SyncedLockerEntry {
             shareLink = links.share,
             pbwLink = pbw?.file ?: error("PBW is null"),
             pbwReleaseId = pbw.releaseId,
-            nextSyncAction = NextSyncAction.Upload
+            nextSyncAction = NextSyncAction.Upload,
+            order = -1
     )
 }
 

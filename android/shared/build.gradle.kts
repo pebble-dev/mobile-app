@@ -8,12 +8,12 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.serialization)
     alias(libs.plugins.jetbrains.compose)
+    alias(libs.plugins.jetbrains.compose.compiler)
 }
 
 val roomSqliteVersion = "2.5.0-alpha04"
 val timberVersion = "5.0.1"
 val androidxVersion = "1.13.1"
-val koinVersion = "3.2.0"
 val rruleVersion = "1.0.3"
 
 kotlin {
@@ -48,6 +48,7 @@ kotlin {
             api(libs.koin.core)
             api(libs.kotlinx.serialization.core)
 
+            implementation(libs.koin.compose)
             implementation(libs.uuid)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
@@ -66,10 +67,11 @@ kotlin {
             implementation(libs.compose.foundation)
             implementation(libs.compose.navigation)
             implementation(libs.compose.components.resources)
+            implementation(libs.compose.components.reorderable)
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
-            implementation("io.insert-koin:koin-android:$koinVersion")
+            implementation(libs.koin.android)
             implementation("androidx.core:core-ktx:$androidxVersion")
             implementation("com.jakewharton.timber:timber:$timberVersion")
             implementation("com.github.PhilJay:RRule:$rruleVersion")

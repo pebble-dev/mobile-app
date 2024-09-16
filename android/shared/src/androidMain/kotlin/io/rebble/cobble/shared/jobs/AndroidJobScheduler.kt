@@ -43,7 +43,7 @@ class AndroidJobScheduler: KoinComponent {
                 jobInfo.setUserInitiated(true)
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                jobInfo.setPriority(JobInfo.PRIORITY_HIGH)
+                jobInfo.setPriority(JobInfo.PRIORITY_MAX)
             }
         }
         jobScheduler.schedule(jobInfo.build())

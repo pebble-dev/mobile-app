@@ -23,7 +23,9 @@ data class SyncedLockerEntry(
         val shareLink: String,
         val pbwLink: String,
         val pbwReleaseId: String,
-        val nextSyncAction: NextSyncAction
+        val nextSyncAction: NextSyncAction,
+        @ColumnInfo(defaultValue = "-1")
+        val order: Int,
 )
 
 data class SyncedLockerEntryWithPlatforms(

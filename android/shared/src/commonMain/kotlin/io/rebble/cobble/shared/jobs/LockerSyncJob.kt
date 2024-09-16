@@ -2,6 +2,7 @@ package io.rebble.cobble.shared.jobs
 
 import com.benasher44.uuid.uuidFrom
 import io.rebble.cobble.shared.Logging
+import io.rebble.cobble.shared.PlatformContext
 import io.rebble.cobble.shared.api.RWS
 import io.rebble.cobble.shared.database.NextSyncAction
 import io.rebble.cobble.shared.database.dao.LockerDao
@@ -134,4 +135,12 @@ class LockerSyncJob: KoinComponent {
         }
         return true
     }
+
+    companion object {
+        fun schedule(context: PlatformContext) {
+            scheduleLockerSyncJob(context)
+        }
+    }
 }
+
+expect fun scheduleLockerSyncJob(context: PlatformContext)

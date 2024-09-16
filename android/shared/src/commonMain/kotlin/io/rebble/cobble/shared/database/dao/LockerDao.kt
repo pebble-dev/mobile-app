@@ -25,7 +25,7 @@ interface LockerDao {
     suspend fun getEntry(id: String): SyncedLockerEntryWithPlatforms?
 
     @Transaction
-    @Query("SELECT * FROM SyncedLockerEntry")
+    @Query("SELECT * FROM SyncedLockerEntry ORDER BY `order`")
     suspend fun getAllEntries(): List<SyncedLockerEntryWithPlatforms>
 
     @Query("DELETE FROM SyncedLockerEntryPlatform WHERE lockerEntryId = :entryId")
@@ -37,9 +37,14 @@ interface LockerDao {
     @Query("UPDATE SyncedLockerEntry SET nextSyncAction = :action WHERE id IN (:ids)")
     suspend fun setNextSyncAction(ids: Set<String>, action: NextSyncAction)
 
+    @Transaction
     @Query("SELECT * FROM SyncedLockerEntry WHERE nextSyncAction in (1, 2)")
     suspend fun getEntriesForSync(): List<SyncedLockerEntryWithPlatforms>
 
+    @Transaction
     @Query("SELECT * FROM SyncedLockerEntry WHERE uuid = :uuid")
     suspend fun getEntryByUuid(uuid: String): SyncedLockerEntryWithPlatforms?
+
+    @Query("UPDATE SyncedLockerEntry SET `order` = :order WHERE id = :id")
+    suspend fun updateOrder(id: String, order: Int)
 }
