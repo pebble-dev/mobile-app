@@ -5479,6 +5479,8 @@ public class Pigeons {
 
     void updateToken(@NonNull StringWrapper token);
 
+    void openLockerView();
+
     /** The codec used by KMPApi. */
     static @NonNull MessageCodec<Object> getCodec() {
       return KMPApiCodec.INSTANCE;
@@ -5497,6 +5499,28 @@ public class Pigeons {
                 StringWrapper tokenArg = (StringWrapper) args.get(0);
                 try {
                   api.updateToken(tokenArg);
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.KMPApi.openLockerView", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  api.openLockerView();
                   wrapped.add(0, null);
                 }
  catch (Throwable exception) {

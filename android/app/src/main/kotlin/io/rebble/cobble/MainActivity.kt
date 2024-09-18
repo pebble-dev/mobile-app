@@ -1,17 +1,24 @@
 package io.rebble.cobble
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import io.rebble.cobble.shared.ui.view.MainView
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 
 class MainActivity : AppCompatActivity() {
     lateinit var coroutineScope: CoroutineScope
+    var navHostController: NavHostController? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -26,7 +33,15 @@ class MainActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
-            MainView()
+            navHostController = rememberNavController()
+            MainView(navHostController!!)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        if (intent.hasExtra("navigationPath")) {
+            navHostController?.navigate(intent.getStringExtra("navigationPath")!!)
         }
     }
 }

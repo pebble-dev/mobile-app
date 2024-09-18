@@ -5,6 +5,7 @@ import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -16,8 +17,7 @@ import io.rebble.cobble.shared.ui.view.home.HomeScaffold
 import org.koin.compose.KoinContext
 
 @Composable
-fun MainView() {
-    val navController = rememberNavController()
+fun MainView(navController: NavHostController = rememberNavController()) {
     KoinContext {
         DisableSelection {
             val theme = if (isSystemInDarkTheme()) Theme.dark else Theme.light
