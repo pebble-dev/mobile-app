@@ -29,6 +29,7 @@ class LockerSyncJob: KoinComponent {
     private val blobDBService: BlobDBService by inject()
     suspend fun beginSync(): Boolean {
         val locker = RWS.appstoreClient?.getLocker() ?: return false
+        lockerDao.clearAll()
         val storedLocker = lockerDao.getAllEntries()
 
         val changedEntries = locker.filter { new ->
@@ -45,6 +46,9 @@ class LockerSyncJob: KoinComponent {
             lockerDao.clearPlatformsFor(it.id)
         }
         lockerDao.insertOrReplaceAll(changedEntries.map { it.toEntity() })
+        lockerDao.insertOrReplaceAllPlatforms(newEntries.flatMap { new ->
+            new.hardwarePlatforms.map { it.toEntity(new.id) }
+        })
         lockerDao.insertOrReplaceAllPlatforms(changedEntries.flatMap { new ->
             new.hardwarePlatforms.map { it.toEntity(new.id) }
         })

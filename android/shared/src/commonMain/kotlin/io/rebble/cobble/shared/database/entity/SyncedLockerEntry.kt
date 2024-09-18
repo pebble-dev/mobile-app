@@ -59,7 +59,14 @@ data class SyncedLockerEntryPlatform(
         val processInfoFlags: Int,
         val name: String,
         val description: String,
-        val icon: String,
+        @Embedded
+        val images: SyncedLockerEntryPlatformImages,
+)
+
+data class SyncedLockerEntryPlatformImages(
+        val icon: String?,
+        val list: String?,
+        val screenshot: String?,
 )
 
 /**
@@ -81,5 +88,7 @@ fun SyncedLockerEntryPlatform.dataEqualTo(other: SyncedLockerEntryPlatform): Boo
             processInfoFlags == other.processInfoFlags &&
             name == other.name &&
             description == other.description &&
-            icon == other.icon
+            images.icon == other.images.icon &&
+            images.list == other.images.list &&
+            images.screenshot == other.images.screenshot
 }

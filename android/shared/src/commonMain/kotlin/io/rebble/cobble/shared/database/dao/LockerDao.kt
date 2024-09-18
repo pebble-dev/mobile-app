@@ -5,6 +5,7 @@ import io.rebble.cobble.shared.database.NextSyncAction
 import io.rebble.cobble.shared.database.entity.SyncedLockerEntry
 import io.rebble.cobble.shared.database.entity.SyncedLockerEntryPlatform
 import io.rebble.cobble.shared.database.entity.SyncedLockerEntryWithPlatforms
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LockerDao {
@@ -28,6 +29,10 @@ interface LockerDao {
     @Query("SELECT * FROM SyncedLockerEntry ORDER BY `order`")
     suspend fun getAllEntries(): List<SyncedLockerEntryWithPlatforms>
 
+    @Transaction
+    @Query("SELECT * FROM SyncedLockerEntry ORDER BY `order`")
+    fun getAllEntriesFlow(): Flow<List<SyncedLockerEntryWithPlatforms>>
+
     @Query("DELETE FROM SyncedLockerEntryPlatform WHERE lockerEntryId = :entryId")
     suspend fun clearPlatformsFor(entryId: String)
 
@@ -47,4 +52,7 @@ interface LockerDao {
 
     @Query("UPDATE SyncedLockerEntry SET `order` = :order WHERE id = :id")
     suspend fun updateOrder(id: String, order: Int)
+
+    @Query("DELETE FROM SyncedLockerEntry")
+    suspend fun clearAll()
 }

@@ -3,6 +3,7 @@ package io.rebble.cobble.shared.domain.api.appstore
 import io.rebble.cobble.shared.database.NextSyncAction
 import io.rebble.cobble.shared.database.entity.SyncedLockerEntry
 import io.rebble.cobble.shared.database.entity.SyncedLockerEntryPlatform
+import io.rebble.cobble.shared.database.entity.SyncedLockerEntryPlatformImages
 import io.rebble.cobble.shared.database.entity.SyncedLockerEntryWithPlatforms
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -132,6 +133,10 @@ fun LockerEntryPlatform.toEntity(lockerEntryId: String): SyncedLockerEntryPlatfo
             processInfoFlags = pebbleProcessInfoFlags,
             name = name,
             description = description,
-            icon = images.icon
+            SyncedLockerEntryPlatformImages(
+                    icon = images.icon,
+                    list = images.list,
+                    screenshot = images.screenshot
+            )
     )
 }

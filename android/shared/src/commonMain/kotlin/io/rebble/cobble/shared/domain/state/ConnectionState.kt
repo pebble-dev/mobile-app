@@ -36,5 +36,5 @@ object ConnectionStateManager: KoinComponent {
     /**
      * Flow of the currently connected watch's metadata. This flow only emits when a watch is connected and will not emit if negotiation never completes.
      */
-    val connectedWatchMetadata: Flow<WatchVersion.WatchVersionResponse> by inject(named("connectedWatchMetadata"))
+    val connectedWatchMetadata: StateFlow<WatchVersion.WatchVersionResponse?> by inject(named("connectedWatchMetadata"))
 }

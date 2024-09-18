@@ -4,6 +4,7 @@ import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.CurrentToken
 import io.rebble.cobble.shared.domain.state.watchOrNull
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
@@ -18,6 +19,7 @@ val stateModule = module {
         get<StateFlow<ConnectionState>>(named("connectionState"))
                 .flatMapLatest { it.watchOrNull?.metadata?.take(1) ?: flowOf(null) }
                 .filterNotNull()
+                .stateIn(CoroutineScope(Dispatchers.Default), SharingStarted.WhileSubscribed(), null)
     }
     single(named("connectionScope")) {
         MutableStateFlow<CoroutineScope>(CoroutineScope(EmptyCoroutineContext))

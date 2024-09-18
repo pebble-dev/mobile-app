@@ -2,8 +2,11 @@ package io.rebble.cobble.shared.ui.common
 
 import android.shared.generated.resources.RebbleIcons
 import android.shared.generated.resources.Res
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.Font
 
 
@@ -12,291 +15,291 @@ object RebbleIcons {
     fun font() = FontFamily(Font(Res.font.RebbleIcons))
 
     @Composable
-    fun floppyDiskHealthDatabase() = TextIcon(font(), Char(0xe800))
+    fun floppyDiskHealthDatabase(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe800), modifier = modifier)
     @Composable
-    fun floppyDisk() = TextIcon(font(), Char(0xe801))
+    fun floppyDisk(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe801), modifier = modifier)
     @Composable
-    fun silencePhone() = TextIcon(font(), Char(0xe802))
+    fun silencePhone(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe802), modifier = modifier)
     @Composable
-    fun vibratingWatch() = TextIcon(font(), Char(0xe803))
+    fun vibratingWatch(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe803), modifier = modifier)
     @Composable
-    fun watchApps() = TextIcon(font(), Char(0xe804))
+    fun watchApps(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe804), modifier = modifier)
     @Composable
-    fun watchFaces() = TextIcon(font(), Char(0xe805))
+    fun watchFaces(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe805), modifier = modifier)
     @Composable
-    fun healthJournal() = TextIcon(font(), Char(0xe806))
+    fun healthJournal(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe806), modifier = modifier)
     @Composable
-    fun healthHeart() = TextIcon(font(), Char(0xe807))
+    fun healthHeart(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe807), modifier = modifier)
     @Composable
-    fun healthSleep() = TextIcon(font(), Char(0xe808))
+    fun healthSleep(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe808), modifier = modifier)
     @Composable
-    fun healthSteps() = TextIcon(font(), Char(0xe809))
+    fun healthSteps(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe809), modifier = modifier)
     @Composable
-    fun analytics() = TextIcon(font(), Char(0xe80a))
+    fun analytics(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe80a), modifier = modifier)
     @Composable
-    fun developerSettings() = TextIcon(font(), Char(0xe80b))
+    fun developerSettings(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe80b), modifier = modifier)
     @Composable
-    fun smsMessages() = TextIcon(font(), Char(0xe80c))
+    fun smsMessages(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe80c), modifier = modifier)
     @Composable
-    fun rocket() = TextIcon(font(), Char(0xe80d))
+    fun rocket(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe80d), modifier = modifier)
     @Composable
-    fun unpairFromWatch() = TextIcon(font(), Char(0xe80e))
+    fun unpairFromWatch(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe80e), modifier = modifier)
     @Composable
-    fun applyUpdate() = TextIcon(font(), Char(0xe80f))
+    fun applyUpdate(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe80f), modifier = modifier)
     @Composable
-    fun checkForUpdates() = TextIcon(font(), Char(0xe810))
+    fun checkForUpdates(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe810), modifier = modifier)
     @Composable
-    fun disconnectFromWatch() = TextIcon(font(), Char(0xe811))
+    fun disconnectFromWatch(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe811), modifier = modifier)
     @Composable
-    fun connectToWatch() = TextIcon(font(), Char(0xe812))
+    fun connectToWatch(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe812), modifier = modifier)
     @Composable
-    fun devices() = TextIcon(font(), Char(0xe813))
+    fun devices(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe813), modifier = modifier)
     @Composable
-    fun plusAdd() = TextIcon(font(), Char(0xe814))
+    fun plusAdd(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe814), modifier = modifier)
     @Composable
-    fun search() = TextIcon(font(), Char(0xe815))
+    fun search(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe815), modifier = modifier)
     @Composable
-    fun dictationMicrophone() = TextIcon(font(), Char(0xe816))
+    fun dictationMicrophone(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe816), modifier = modifier)
     @Composable
-    fun systemLanguage() = TextIcon(font(), Char(0xe817))
+    fun systemLanguage(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe817), modifier = modifier)
     @Composable
-    fun aboutApp() = TextIcon(font(), Char(0xe818))
+    fun aboutApp(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe818), modifier = modifier)
     @Composable
-    fun share() = TextIcon(font(), Char(0xe819))
+    fun share(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe819), modifier = modifier)
     @Composable
-    fun developerConnectionConsole() = TextIcon(font(), Char(0xe81a))
+    fun developerConnectionConsole(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe81a), modifier = modifier)
     @Composable
-    fun rebbleStore() = TextIcon(font(), Char(0xe81b))
+    fun rebbleStore(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe81b), modifier = modifier)
     @Composable
-    fun settings() = TextIcon(font(), Char(0xe81c))
+    fun settings(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe81c), modifier = modifier)
     @Composable
-    fun notification() = TextIcon(font(), Char(0xe81d))
+    fun notification(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe81d), "Notification", modifier = modifier)
     @Composable
-    fun unknownApp() = TextIcon(font(), Char(0xe81e))
+    fun unknownApp(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe81e), "Unknown app", modifier = modifier)
     @Composable
-    fun locker() = TextIcon(font(), Char(0xe81f))
+    fun locker(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe81f), "Locker", modifier = modifier)
     @Composable
-    fun sendToWatchChecked() = TextIcon(font(), Char(0xe821))
+    fun sendToWatchChecked(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe821), modifier = modifier)
     @Composable
-    fun timelinePin() = TextIcon(font(), Char(0xe822))
+    fun timelinePin(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe822), modifier = modifier)
     @Composable
-    fun menuHorizontal() = TextIcon(font(), Char(0xe823))
+    fun menuHorizontal(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe823), modifier = modifier)
     @Composable
-    fun menuVertical() = TextIcon(font(), Char(0xe824))
+    fun menuVertical(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe824), modifier = modifier)
     @Composable
-    fun checkDone() = TextIcon(font(), Char(0xe825))
+    fun checkDone(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe825), modifier = modifier)
     @Composable
-    fun xClose() = TextIcon(font(), Char(0xe826))
+    fun xClose(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe826), modifier = modifier)
     @Composable
-    fun caretUp() = TextIcon(font(), Char(0xe827))
+    fun caretUp(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe827), modifier = modifier)
     @Composable
-    fun caretDown() = TextIcon(font(), Char(0xe828))
+    fun caretDown(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe828), modifier = modifier)
     @Composable
-    fun caretLeft() = TextIcon(font(), Char(0xe829))
+    fun caretLeft(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe829), modifier = modifier)
     @Composable
-    fun caretRight() = TextIcon(font(), Char(0xe82a))
+    fun caretRight(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe82a), modifier = modifier)
     @Composable
-    fun dragHandle() = TextIcon(font(), Char(0xe82b))
+    fun dragHandle(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe82b), "Drag handle", modifier = modifier)
     @Composable
-    fun deleteTrash() = TextIcon(font(), Char(0xe82c))
+    fun deleteTrash(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe82c), modifier = modifier)
     @Composable
-    fun sendToWatchUnchecked() = TextIcon(font(), Char(0xe82d))
+    fun sendToWatchUnchecked(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe82d), modifier = modifier)
     @Composable
-    fun appsCrate() = TextIcon(font(), Char(0xe82e))
+    fun appsCrate(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe82e), modifier = modifier)
     @Composable
-    fun appsCrateBackground() = TextIcon(font(), Char(0xe82f))
+    fun appsCrateBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe82f), modifier = modifier)
     @Composable
-    fun checkForUpdatesBackground() = TextIcon(font(), Char(0xe830))
+    fun checkForUpdatesBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe830), modifier = modifier)
     @Composable
-    fun connectToWatchBackground() = TextIcon(font(), Char(0xe831))
+    fun connectToWatchBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe831), modifier = modifier)
     @Composable
-    fun customizeNavbar() = TextIcon(font(), Char(0xe832))
+    fun customizeNavbar(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe832), modifier = modifier)
     @Composable
-    fun customizeNavbarBackground() = TextIcon(font(), Char(0xe833))
+    fun customizeNavbarBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe833), modifier = modifier)
     @Composable
-    fun devicesBackground() = TextIcon(font(), Char(0xe834))
+    fun devicesBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe834), modifier = modifier)
     @Composable
-    fun disconnectFromWatchBackground() = TextIcon(font(), Char(0xe835))
+    fun disconnectFromWatchBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe835), modifier = modifier)
     @Composable
-    fun discord() = TextIcon(font(), Char(0xe836))
+    fun discord(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe836), modifier = modifier)
     @Composable
-    fun discordBackground() = TextIcon(font(), Char(0xe837))
+    fun discordBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe837), modifier = modifier)
     @Composable
-    fun lockerBackground() = TextIcon(font(), Char(0xe838))
+    fun lockerBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe838), modifier = modifier)
     @Composable
-    fun location() = TextIcon(font(), Char(0xe839))
+    fun location(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe839), modifier = modifier)
     @Composable
-    fun locationBackground() = TextIcon(font(), Char(0xe83a))
+    fun locationBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe83a), modifier = modifier)
     @Composable
-    fun musicBoombox() = TextIcon(font(), Char(0xe83b))
+    fun musicBoombox(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe83b), modifier = modifier)
     @Composable
-    fun musicBoomboxBackground() = TextIcon(font(), Char(0xe83c))
+    fun musicBoomboxBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe83c), modifier = modifier)
     @Composable
-    fun musicDisk() = TextIcon(font(), Char(0xe83d))
+    fun musicDisk(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe83d), modifier = modifier)
     @Composable
-    fun musicDiskBackground() = TextIcon(font(), Char(0xe83e))
+    fun musicDiskBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe83e), modifier = modifier)
     @Composable
-    fun musicHeadphones() = TextIcon(font(), Char(0xe83f))
+    fun musicHeadphones(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe83f), modifier = modifier)
     @Composable
-    fun musicHeadphonesBackground() = TextIcon(font(), Char(0xe840))
+    fun musicHeadphonesBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe840), modifier = modifier)
     @Composable
-    fun musicNote() = TextIcon(font(), Char(0xe841))
+    fun musicNote(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe841), modifier = modifier)
     @Composable
-    fun musicNoteBackground() = TextIcon(font(), Char(0xe842))
+    fun musicNoteBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe842), modifier = modifier)
     @Composable
-    fun musicRadio() = TextIcon(font(), Char(0xe843))
+    fun musicRadio(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe843), modifier = modifier)
     @Composable
-    fun musicRadioBackground() = TextIcon(font(), Char(0xe844))
+    fun musicRadioBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe844), modifier = modifier)
     @Composable
-    fun musicTurntable() = TextIcon(font(), Char(0xe845))
+    fun musicTurntable(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe845), modifier = modifier)
     @Composable
-    fun musicTurntableBackground() = TextIcon(font(), Char(0xe846))
+    fun musicTurntableBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe846), modifier = modifier)
     @Composable
-    fun notificationEmail() = TextIcon(font(), Char(0xe847))
+    fun notificationEmail(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe847), modifier = modifier)
     @Composable
-    fun notificationEmailBackground() = TextIcon(font(), Char(0xe848))
+    fun notificationEmailBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe848), modifier = modifier)
     @Composable
-    fun notificationMailbox() = TextIcon(font(), Char(0xe849))
+    fun notificationMailbox(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe849), modifier = modifier)
     @Composable
-    fun notificationMailboxBackground() = TextIcon(font(), Char(0xe84a))
+    fun notificationMailboxBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe84a), modifier = modifier)
     @Composable
-    fun notificationMegaphone() = TextIcon(font(), Char(0xe84b))
+    fun notificationMegaphone(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe84b), modifier = modifier)
     @Composable
-    fun notificationMegaphoneBackground() = TextIcon(font(), Char(0xe84c))
+    fun notificationMegaphoneBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe84c), modifier = modifier)
     @Composable
-    fun rebbleShoppingBagOld() = TextIcon(font(), Char(0xe84d))
+    fun rebbleShoppingBagOld(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe84d), modifier = modifier)
     @Composable
-    fun rebbleShoppingBagOldBackground() = TextIcon(font(), Char(0xe84e))
+    fun rebbleShoppingBagOldBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe84e), modifier = modifier)
     @Composable
-    fun rocketBackground() = TextIcon(font(), Char(0xe84f))
+    fun rocketBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe84f), modifier = modifier)
     @Composable
-    fun searchBackground() = TextIcon(font(), Char(0xe850))
+    fun searchBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe850), modifier = modifier)
     @Composable
-    fun settingsSliders() = TextIcon(font(), Char(0xe851))
+    fun settingsSliders(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe851), modifier = modifier)
     @Composable
-    fun settingsSlidersBackground() = TextIcon(font(), Char(0xe852))
+    fun settingsSlidersBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe852), modifier = modifier)
     @Composable
-    fun settingsBackground() = TextIcon(font(), Char(0xe853))
+    fun settingsBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe853), modifier = modifier)
     @Composable
-    fun timelinePinBackground() = TextIcon(font(), Char(0xe854))
+    fun timelinePinBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe854), modifier = modifier)
     @Composable
-    fun floppyDiskBackground() = TextIcon(font(), Char(0xe855))
+    fun floppyDiskBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe855), modifier = modifier)
     @Composable
-    fun floppyDiskHealthDatabaseBackground() = TextIcon(font(), Char(0xe856))
+    fun floppyDiskHealthDatabaseBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe856), modifier = modifier)
     @Composable
-    fun healthJournalBackground() = TextIcon(font(), Char(0xe857))
+    fun healthJournalBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe857), modifier = modifier)
     @Composable
-    fun silencePhoneBackground() = TextIcon(font(), Char(0xe858))
+    fun silencePhoneBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe858), modifier = modifier)
     @Composable
-    fun vibratingWatchBackground() = TextIcon(font(), Char(0xe859))
+    fun vibratingWatchBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe859), modifier = modifier)
     @Composable
-    fun healthHeartBackground() = TextIcon(font(), Char(0xe85a))
+    fun healthHeartBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe85a), modifier = modifier)
     @Composable
-    fun watchAppsBackground() = TextIcon(font(), Char(0xe85b))
+    fun watchAppsBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe85b), modifier = modifier)
     @Composable
-    fun watchFacesBackground() = TextIcon(font(), Char(0xe85c))
+    fun watchFacesBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe85c), modifier = modifier)
     @Composable
-    fun healthSleepBackground() = TextIcon(font(), Char(0xe85d))
+    fun healthSleepBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe85d), modifier = modifier)
     @Composable
-    fun healthStepsBackground() = TextIcon(font(), Char(0xe85e))
+    fun healthStepsBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe85e), modifier = modifier)
     @Composable
-    fun analyticsBackground() = TextIcon(font(), Char(0xe85f))
+    fun analyticsBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe85f), modifier = modifier)
     @Composable
-    fun developerSettingsBackground() = TextIcon(font(), Char(0xe860))
+    fun developerSettingsBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe860), modifier = modifier)
     @Composable
-    fun smsMessagesBackground() = TextIcon(font(), Char(0xe861))
+    fun smsMessagesBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe861), modifier = modifier)
     @Composable
-    fun unpairFromWatchBackground() = TextIcon(font(), Char(0xe862))
+    fun unpairFromWatchBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe862), modifier = modifier)
     @Composable
-    fun applyUpdateBackground() = TextIcon(font(), Char(0xe863))
+    fun applyUpdateBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe863), modifier = modifier)
     @Composable
-    fun dictationMicrophoneBackground() = TextIcon(font(), Char(0xe864))
+    fun dictationMicrophoneBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe864), modifier = modifier)
     @Composable
-    fun aboutAppBackground() = TextIcon(font(), Char(0xe865))
+    fun aboutAppBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe865), modifier = modifier)
     @Composable
-    fun shareBackground() = TextIcon(font(), Char(0xe866))
+    fun shareBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe866), modifier = modifier)
     @Composable
-    fun developerConnectionConsoleBackground() = TextIcon(font(), Char(0xe868))
+    fun developerConnectionConsoleBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe868), modifier = modifier)
     @Composable
-    fun rebbleStoreBackground() = TextIcon(font(), Char(0xe869))
+    fun rebbleStoreBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe869), modifier = modifier)
     @Composable
-    fun notificationBackground() = TextIcon(font(), Char(0xe86a))
+    fun notificationBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe86a), modifier = modifier)
     @Composable
-    fun unknownAppBackground() = TextIcon(font(), Char(0xe86b))
+    fun unknownAppBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe86b), modifier = modifier)
     @Composable
-    fun sendToWatchCheckedBackground() = TextIcon(font(), Char(0xe86c))
+    fun sendToWatchCheckedBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe86c), modifier = modifier)
     @Composable
-    fun deleteTrashBackground() = TextIcon(font(), Char(0xe86d))
+    fun deleteTrashBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe86d), modifier = modifier)
     @Composable
-    fun sendToWatchUncheckedBackground() = TextIcon(font(), Char(0xe86e))
+    fun sendToWatchUncheckedBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe86e), modifier = modifier)
     @Composable
-    fun rebbleAppstore50() = TextIcon(font(), Char(0xe86f))
+    fun rebbleAppstore50(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe86f), modifier = modifier)
     @Composable
-    fun rebbleAppstore50Background() = TextIcon(font(), Char(0xe870))
+    fun rebbleAppstore50Background(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe870), modifier = modifier)
     @Composable
-    fun deadWatchGhost80() = TextIcon(font(), Char(0xe871))
+    fun deadWatchGhost80(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe871), modifier = modifier)
     @Composable
-    fun deadWatchGhost80Background() = TextIcon(font(), Char(0xe872))
+    fun deadWatchGhost80Background(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe872), modifier = modifier)
     @Composable
-    fun rebbleAppstoreBoxClosed80() = TextIcon(font(), Char(0xe873))
+    fun rebbleAppstoreBoxClosed80(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe873), modifier = modifier)
     @Composable
-    fun rebbleAppstoreBoxClosed80Background() = TextIcon(font(), Char(0xe874))
+    fun rebbleAppstoreBoxClosed80Background(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe874), modifier = modifier)
     @Composable
-    fun rebbleAppstore80() = TextIcon(font(), Char(0xe875))
+    fun rebbleAppstore80(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe875), modifier = modifier)
     @Composable
-    fun rebbleAppstore80Background() = TextIcon(font(), Char(0xe876))
+    fun rebbleAppstore80Background(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe876), modifier = modifier)
     @Composable
-    fun rocketLaunchpad80() = TextIcon(font(), Char(0xe877))
+    fun rocketLaunchpad80(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe877), modifier = modifier)
     @Composable
-    fun rocketLaunchpad80Background() = TextIcon(font(), Char(0xe878))
+    fun rocketLaunchpad80Background(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe878), modifier = modifier)
     @Composable
-    fun rocket80() = TextIcon(font(), Char(0xe879))
+    fun rocket80(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe879), modifier = modifier)
     @Composable
-    fun rocket80Background() = TextIcon(font(), Char(0xe87a))
+    fun rocket80Background(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe87a), modifier = modifier)
     @Composable
-    fun timeline() = TextIcon(font(), Char(0xe87b))
+    fun timeline(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe87b), "Timeline", modifier = modifier)
     @Composable
-    fun timelineBackground() = TextIcon(font(), Char(0xe87c))
+    fun timelineBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe87c), modifier = modifier)
     @Composable
-    fun twitter() = TextIcon(font(), Char(0xe87d))
+    fun twitter(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe87d), modifier = modifier)
     @Composable
-    fun twitterBackground() = TextIcon(font(), Char(0xe87e))
+    fun twitterBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe87e), modifier = modifier)
     @Composable
-    fun warning() = TextIcon(font(), Char(0xe87f))
+    fun warning(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe87f), modifier = modifier)
     @Composable
-    fun warningBackground() = TextIcon(font(), Char(0xe880))
+    fun warningBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe880), modifier = modifier)
     @Composable
-    fun dropdown() = TextIcon(font(), Char(0xe881))
+    fun dropdown(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe881), modifier = modifier)
     @Composable
-    fun permissions() = TextIcon(font(), Char(0xe882))
+    fun permissions(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe882), "Permissions", modifier = modifier)
     @Composable
-    fun permissionsBackground() = TextIcon(font(), Char(0xe883))
+    fun permissionsBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe883), modifier = modifier)
     @Composable
-    fun unpairPhone() = TextIcon(font(), Char(0xe884))
+    fun unpairPhone(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe884), modifier = modifier)
     @Composable
-    fun unpairPhoneBackground() = TextIcon(font(), Char(0xe885))
+    fun unpairPhoneBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe885), modifier = modifier)
     @Composable
-    fun screenshotCamera() = TextIcon(font(), Char(0xe886))
+    fun screenshotCamera(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe886), modifier = modifier)
     @Composable
-    fun screenshotCameraBackground() = TextIcon(font(), Char(0xe887))
+    fun screenshotCameraBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe887), modifier = modifier)
     @Composable
-    fun weatherCloud() = TextIcon(font(), Char(0xe888))
+    fun weatherCloud(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe888), modifier = modifier)
     @Composable
-    fun weatherCloudBackground() = TextIcon(font(), Char(0xe889))
+    fun weatherCloudBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe889), modifier = modifier)
     @Composable
-    fun genericFloppyDisk() = TextIcon(font(), Char(0xe88a))
+    fun genericFloppyDisk(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe88a), modifier = modifier)
     @Composable
-    fun genericFloppyDiskBackground() = TextIcon(font(), Char(0xe88b))
+    fun genericFloppyDiskBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe88b), modifier = modifier)
     @Composable
-    fun calendar() = TextIcon(font(), Char(0xe88c))
+    fun calendar(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe88c), "Calendar", modifier = modifier)
     @Composable
-    fun calendarBackground() = TextIcon(font(), Char(0xe88d))
+    fun calendarBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe88d), modifier = modifier)
     @Composable
-    fun reddit() = TextIcon(font(), Char(0xe88e))
+    fun reddit(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe88e), modifier = modifier)
     @Composable
-    fun redditBackground() = TextIcon(font(), Char(0xe88f))
+    fun redditBackground(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe88f), modifier = modifier)
     @Composable
-    fun heartFilled() = TextIcon(font(), Char(0xe890))
+    fun heartFilled(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe890), modifier = modifier)
     @Composable
-    fun heartEmpty() = TextIcon(font(), Char(0xe891))
+    fun heartEmpty(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe891), modifier = modifier)
 }

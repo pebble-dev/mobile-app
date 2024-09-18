@@ -25,7 +25,7 @@ class CalendarSync(
 ): AutoCloseable, KoinComponent {
     private val calendarSyncer: PhoneCalendarSyncer by inject()
     private val watchTimelineSyncer = WatchTimelineSyncer(blobDBService)
-    private val metadataFlow: Flow<WatchVersion.WatchVersionResponse> by inject(named("connectedWatchMetadata"))
+    private val metadataFlow: StateFlow<WatchVersion.WatchVersionResponse?> by inject(named("connectedWatchMetadata"))
     private val timelinePinDao: TimelinePinDao by inject()
     private val calendarDao: CalendarDao by inject()
     private val calendarEnableChangeFlow: MutableSharedFlow<List<Calendar>> = MutableSharedFlow()
@@ -34,7 +34,7 @@ class CalendarSync(
         Logging.d("CalendarSync init")
     }
 
-    private val watchConnectedListener = metadataFlow.onEach {
+    private val watchConnectedListener = metadataFlow.filterNotNull().onEach {
         Logging.d("Watch connected, syncing calendar pins")
         val res = onWatchConnected(it.isUnfaithful.get() ?: false)
         Logging.d("Calendar sync result: $res")

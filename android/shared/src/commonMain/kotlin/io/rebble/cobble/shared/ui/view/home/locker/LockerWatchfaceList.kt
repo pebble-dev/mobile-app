@@ -20,7 +20,6 @@ fun LockerWatchfaceList(viewModel: LockerViewModel) {
 
     LazyVerticalGrid(
             columns = GridCells.Fixed(2),
-            modifier = Modifier.verticalScroll(rememberScrollState())
     ) {
         items(entries.size) { i ->
             LockerWatchfaceItem(entries[i])

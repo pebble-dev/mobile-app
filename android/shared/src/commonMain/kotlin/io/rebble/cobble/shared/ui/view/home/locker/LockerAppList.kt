@@ -15,6 +15,7 @@ import io.rebble.cobble.shared.database.dao.LockerDao
 import io.rebble.cobble.shared.database.entity.SyncedLockerEntryWithPlatforms
 import io.rebble.cobble.shared.jobs.LockerSyncJob
 import io.rebble.cobble.shared.ui.common.RebbleIcons
+import io.rebble.cobble.shared.ui.viewmodel.LockerItemViewModel
 import io.rebble.cobble.shared.ui.viewmodel.LockerViewModel
 import kotlinx.coroutines.Job
 import org.koin.compose.getKoin
@@ -39,7 +40,7 @@ fun LockerAppList(viewModel: LockerViewModel) {
     LazyColumn(state = lazyListState, modifier = Modifier.fillMaxSize()) {
         items(entries.size, key = { i -> entries[i].entry.id }) { i ->
             ReorderableItem(state = reorderableLazyListState, key = entries[i].entry.id) { isDragging ->
-                LockerListItem(entries[i].entry, trailingContent = {
+                LockerListItem(koin.get(), entries[i], trailingContent = {
                     IconButton(
                             modifier = Modifier.draggableHandle(),
                             content = { RebbleIcons.dragHandle() },
