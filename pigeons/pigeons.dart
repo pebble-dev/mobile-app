@@ -550,4 +550,5 @@ abstract class KeepUnusedHack {
 @HostApi()
 abstract class KMPApi {
   void updateToken(StringWrapper token);
+  void openLockerView();
 }

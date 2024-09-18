@@ -3661,4 +3661,21 @@ void KMPApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<KMPApi> *a
       [channel setMessageHandler:nil];
     }
   }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.KMPApi.openLockerView"
+        binaryMessenger:binaryMessenger
+        codec:KMPApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(openLockerViewWithError:)], @"KMPApi api (%@) doesn't respond to @selector(openLockerViewWithError:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FlutterError *error;
+        [api openLockerViewWithError:&error];
+        callback(wrapResult(nil, error));
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
 }

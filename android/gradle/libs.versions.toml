@@ -20,6 +20,7 @@ datastore = "1.1.1"
 uuidVersion = "0.8.4"
 compose-lib = "1.6.11"
 compose-nav = "2.7.0-alpha07"
+compose-viewmodel = "2.8.0"
 compose-material3 = "1.3.0"
 reorderable = "2.3.3"
 
@@ -80,6 +81,7 @@ compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-li
 compose-material = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-material3" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-lib" }
 compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "compose-nav" }
+compose-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "compose-viewmodel" }
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-lib" }
 compose-components-reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 

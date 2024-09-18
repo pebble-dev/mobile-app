@@ -1,19 +1,15 @@
 package io.rebble.cobble.shared.ui.view.home.locker
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.rebble.cobble.shared.database.dao.LockerDao
 import io.rebble.cobble.shared.database.entity.SyncedLockerEntryWithPlatforms
+import io.rebble.cobble.shared.ui.viewmodel.LockerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
@@ -25,21 +21,13 @@ enum class LockerTabs(val label: String) {
 }
 
 @Composable
-fun Locker(lockerDao: LockerDao = getKoin().get()) {
-    val scope = rememberCoroutineScope()
-    val (entries, setEntries) = remember { mutableStateOf<List<SyncedLockerEntryWithPlatforms>?>(null) }
+fun Locker(lockerDao: LockerDao = getKoin().get(), viewModel: LockerViewModel = viewModel { LockerViewModel(lockerDao) }) {
+    val entriesState: LockerViewModel.LockerEntriesState by viewModel.entriesState.collectAsState()
     val tab = remember { mutableStateOf(LockerTabs.Apps) }
 
-    scope.launch(Dispatchers.IO) {
-        val entries = lockerDao.getAllEntries()
-        setEntries(entries)
-    }
-
     Column {
-        Surface(
-            modifier = Modifier.fillMaxWidth().height(100.dp)
-        ) {
-            Row {
+        Surface {
+            Row(modifier = Modifier.fillMaxWidth().height(64.dp)) {
                 LockerTabs.entries.forEachIndexed { index, it ->
                     NavigationBarItem(
                             selected = tab.value == it,
@@ -50,17 +38,17 @@ fun Locker(lockerDao: LockerDao = getKoin().get()) {
             }
         }
 
-        entries?.let {
+        if (entriesState is LockerViewModel.LockerEntriesState.Loaded) {
             when (tab.value) {
                 LockerTabs.Apps -> {
-                    LockerAppList(it.filter { it.entry.type == "watchapp" })
+                    LockerAppList(viewModel)
                 }
 
                 LockerTabs.Watchfaces -> {
-                    TODO()
+                    LockerWatchfaceList(viewModel)
                 }
             }
-        } ?: run {
+        } else {
             CircularProgressIndicator(modifier = Modifier.align(CenterHorizontally))
         }
     }
