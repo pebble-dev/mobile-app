@@ -101,7 +101,7 @@ object RebbleIcons {
     @Composable
     fun dragHandle(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe82b), "Drag handle", modifier = modifier)
     @Composable
-    fun deleteTrash(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe82c), modifier = modifier)
+    fun deleteTrash(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe82c), "Delete", modifier = modifier)
     @Composable
     fun sendToWatchUnchecked(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe82d), modifier = modifier)
     @Composable

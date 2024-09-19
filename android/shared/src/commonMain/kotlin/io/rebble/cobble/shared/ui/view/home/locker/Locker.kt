@@ -9,29 +9,31 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.rebble.cobble.shared.database.dao.LockerDao
 import io.rebble.cobble.shared.database.entity.SyncedLockerEntryWithPlatforms
+import io.rebble.cobble.shared.ui.nav.Routes
+import io.rebble.cobble.shared.ui.viewmodel.LockerItemViewModel
 import io.rebble.cobble.shared.ui.viewmodel.LockerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import org.koin.compose.getKoin
 
-enum class LockerTabs(val label: String) {
-    Apps("Apps"),
-    Watchfaces("Watchfaces"),
+enum class LockerTabs(val label: String, val navRoute: String) {
+    Watchfaces("My watch faces", Routes.Home.LOCKER_WATCHFACES),
+    Apps("My apps", Routes.Home.LOCKER_APPS),
 }
 
 @Composable
-fun Locker(lockerDao: LockerDao = getKoin().get(), viewModel: LockerViewModel = viewModel { LockerViewModel(lockerDao) }) {
+fun Locker(page: LockerTabs, lockerDao: LockerDao = getKoin().get(), viewModel: LockerViewModel = viewModel { LockerViewModel(lockerDao) }, onTabChanged: (LockerTabs) -> Unit) {
     val entriesState: LockerViewModel.LockerEntriesState by viewModel.entriesState.collectAsState()
-    val tab = remember { mutableStateOf(LockerTabs.Apps) }
+    val modalSheetState by viewModel.modalSheetState.collectAsState()
 
     Column {
         Surface {
             Row(modifier = Modifier.fillMaxWidth().height(64.dp)) {
                 LockerTabs.entries.forEachIndexed { index, it ->
                     NavigationBarItem(
-                            selected = tab.value == it,
-                            onClick = { tab.value = it },
+                            selected = page == it,
+                            onClick = { onTabChanged(it) },
                             icon = { Text(it.label) },
                     )
                 }
@@ -39,17 +41,21 @@ fun Locker(lockerDao: LockerDao = getKoin().get(), viewModel: LockerViewModel = 
         }
 
         if (entriesState is LockerViewModel.LockerEntriesState.Loaded) {
-            when (tab.value) {
+            when (page) {
                 LockerTabs.Apps -> {
-                    LockerAppList(viewModel)
+                    LockerAppList(viewModel, onOpenModalSheet = { viewModel.openModalSheet(it) })
                 }
 
                 LockerTabs.Watchfaces -> {
-                    LockerWatchfaceList(viewModel)
+                    LockerWatchfaceList(viewModel, onOpenModalSheet = { viewModel.openModalSheet(it) })
                 }
             }
         } else {
             CircularProgressIndicator(modifier = Modifier.align(CenterHorizontally))
         }
+    }
+    if (modalSheetState is LockerViewModel.ModalSheetState.Open) {
+        val sheetViewModel = (modalSheetState as LockerViewModel.ModalSheetState.Open).viewModel
+        LockerItemSheet(onDismissRequest = { viewModel.closeModalSheet() }, viewModel = sheetViewModel)
     }
 }

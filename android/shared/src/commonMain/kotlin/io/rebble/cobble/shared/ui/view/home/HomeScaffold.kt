@@ -6,29 +6,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.rebble.cobble.shared.ui.common.RebbleIcons
+import io.rebble.cobble.shared.ui.nav.Routes
 import io.rebble.cobble.shared.ui.view.home.locker.Locker
+import io.rebble.cobble.shared.ui.view.home.locker.LockerTabs
 
-enum class HomePages {
-    Locker
+open class HomePage {
+    class Locker(val tab: LockerTabs) : HomePage()
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScaffold(page: HomePages) {
+fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
     Scaffold(
-        topBar = {
+        /*topBar = {
             TopAppBar(
                 windowInsets = WindowInsets.statusBars,
                 title = { Text("Cobble") },
             )
-        },
+        },*/
         bottomBar = {
             NavigationBar(
                     windowInsets = WindowInsets.navigationBars
             ) {
                 NavigationBarItem(
-                    selected = page == HomePages.Locker,
-                    onClick = { },
+                    selected = page is HomePage.Locker,
+                    onClick = { onNavChange(Routes.Home.LOCKER_WATCHFACES) },
                     icon = { RebbleIcons.locker() },
                     label = { Text("Locker") }
                 )
@@ -37,8 +38,10 @@ fun HomeScaffold(page: HomePages) {
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             when (page) {
-                HomePages.Locker -> {
-                    Locker()
+                is HomePage.Locker -> {
+                    Locker(page.tab, onTabChanged = {
+                        onNavChange(it.navRoute)
+                    })
                 }
             }
         }

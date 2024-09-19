@@ -31,7 +31,7 @@ class KMPApiBridge @Inject constructor(
         activity?.let {
             Timber.d("Opening locker view")
             val intent = Intent(activity.context, MainActivity::class.java)
-            intent.putExtra("navigationPath", Routes.Home.LOCKER)
+            intent.putExtra("navigationPath", Routes.Home.LOCKER_WATCHFACES)
             activity.startActivity(intent)
         }
     }

@@ -12,8 +12,9 @@ import androidx.navigation.compose.rememberNavController
 import io.rebble.cobble.shared.ui.LocalTheme
 import io.rebble.cobble.shared.ui.Theme
 import io.rebble.cobble.shared.ui.nav.Routes
-import io.rebble.cobble.shared.ui.view.home.HomePages
+import io.rebble.cobble.shared.ui.view.home.HomePage
 import io.rebble.cobble.shared.ui.view.home.HomeScaffold
+import io.rebble.cobble.shared.ui.view.home.locker.LockerTabs
 import org.koin.compose.KoinContext
 
 @Composable
@@ -28,9 +29,12 @@ fun MainView(navController: NavHostController = rememberNavController()) {
                 MaterialTheme(
                         colorScheme = theme.materialColors
                 ) {
-                    NavHost(navController = navController, startDestination = Routes.Home.LOCKER) {
-                        composable(Routes.Home.LOCKER) {
-                            HomeScaffold(HomePages.Locker)
+                    NavHost(navController = navController, startDestination = Routes.Home.LOCKER_WATCHFACES) {
+                        composable(Routes.Home.LOCKER_WATCHFACES) {
+                            HomeScaffold(HomePage.Locker(LockerTabs.Watchfaces), onNavChange = navController::navigate)
+                        }
+                        composable(Routes.Home.LOCKER_APPS) {
+                            HomeScaffold(HomePage.Locker(LockerTabs.Apps), onNavChange = navController::navigate)
                         }
                     }
                 }

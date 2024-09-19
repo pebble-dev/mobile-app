@@ -29,7 +29,6 @@ class LockerSyncJob: KoinComponent {
     private val blobDBService: BlobDBService by inject()
     suspend fun beginSync(): Boolean {
         val locker = RWS.appstoreClient?.getLocker() ?: return false
-        lockerDao.clearAll()
         val storedLocker = lockerDao.getAllEntries()
 
         val changedEntries = locker.filter { new ->

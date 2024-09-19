@@ -24,7 +24,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun LockerAppList(viewModel: LockerViewModel) {
+fun LockerAppList(viewModel: LockerViewModel, onOpenModalSheet: (LockerItemViewModel) -> Unit) {
     val lazyListState = rememberLazyListState()
     val koin = getKoin()
     val entriesState by viewModel.entriesState.collectAsState()
@@ -40,7 +40,7 @@ fun LockerAppList(viewModel: LockerViewModel) {
     LazyColumn(state = lazyListState, modifier = Modifier.fillMaxSize()) {
         items(entries.size, key = { i -> entries[i].entry.id }) { i ->
             ReorderableItem(state = reorderableLazyListState, key = entries[i].entry.id) { isDragging ->
-                LockerListItem(koin.get(), entries[i], trailingContent = {
+                LockerListItem(koin.get(), entries[i], onOpenModalSheet = onOpenModalSheet, dragHandle = {
                     IconButton(
                             modifier = Modifier.draggableHandle(),
                             content = { RebbleIcons.dragHandle() },

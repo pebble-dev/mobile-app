@@ -35,6 +35,15 @@ class LockerItemViewModel(private val httpClient: HttpClient, val entry: SyncedL
     val circleWatchface: Boolean
         get() = entry.platforms.any { it.name == "chalk" } && entry.platforms.size == 1 //TODO: also display when chalk connected
 
+    val hasSettings: Boolean
+        get() = entry.entry.configurable
+
+    val version: String
+        get() = entry.entry.version
+
+    val hearts: Int
+        get() = entry.entry.hearts
+
     init {
         ConnectionStateManager.connectedWatchMetadata.onEach {
             val platform = it?.running?.hardwarePlatform?.get()?.let { platformId ->
