@@ -26,10 +26,11 @@ import io.rebble.cobble.shared.ui.viewmodel.LockerItemViewModel
 import org.koin.compose.getKoin
 
 @Composable
-fun LockerWatchfaceItem(entry: SyncedLockerEntryWithPlatforms, onOpenModalSheet: (LockerItemViewModel) -> Unit) {
+fun LockerWatchfaceItem(entry: SyncedLockerEntryWithPlatforms, watchConnected: Boolean, onOpenModalSheet: (LockerItemViewModel) -> Unit) {
     val koin = getKoin()
     val viewModel: LockerItemViewModel = viewModel(key = "locker-watchface-${entry.entry.id}") { LockerItemViewModel(koin.get(), entry) }
     val imageState: LockerItemViewModel.ImageState by viewModel.imageState.collectAsState()
+    val supportedState: Boolean by viewModel.supportedState.collectAsState()
     Surface(tonalElevation = 1.dp, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp)) {
         Row(Modifier.padding(8.dp)) {
             Column(modifier = Modifier.fillMaxSize().padding(8.dp).weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -67,7 +68,7 @@ fun LockerWatchfaceItem(entry: SyncedLockerEntryWithPlatforms, onOpenModalSheet:
                     modifier = Modifier.fillMaxHeight(),
                     verticalArrangement = Arrangement.SpaceBetween
             ) {
-                IconButton(onClick = {}, colors = IconButtonDefaults.iconButtonColors(contentColor = AppTheme.materialColors.primary)) {
+                IconButton(onClick = {viewModel.applyWatchface()}, enabled = watchConnected && supportedState, colors = IconButtonDefaults.iconButtonColors(contentColor = AppTheme.materialColors.primary)) {
                     RebbleIcons.sendToWatchUnchecked()
                 }
                 IconButton(onClick = {}, colors = IconButtonDefaults.iconButtonColors(contentColor = AppTheme.materialColors.primary)) {

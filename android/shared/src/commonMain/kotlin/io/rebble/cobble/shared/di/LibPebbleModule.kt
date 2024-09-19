@@ -5,10 +5,12 @@ import io.rebble.libpebblecommon.ProtocolHandlerImpl
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.AppFetchService
 import io.rebble.libpebblecommon.services.PutBytesService
+import io.rebble.libpebblecommon.services.app.AppRunStateService
 import org.koin.dsl.module
 import io.rebble.libpebblecommon.services.blobdb.TimelineService
 
 val libpebbleModule = module {
+    //TODO: Move away from global protocol handler and singleton services
     single<ProtocolHandler> {
         ProtocolHandlerImpl()
     }
@@ -24,5 +26,9 @@ val libpebbleModule = module {
 
     single {
         PutBytesController()
+    }
+
+    factory { params ->
+        AppRunStateService(params.get())
     }
 }

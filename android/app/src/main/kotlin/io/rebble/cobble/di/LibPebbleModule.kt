@@ -50,12 +50,6 @@ abstract class LibPebbleModule {
 
         @Provides
         @Singleton
-        fun provideAppRunStateService(
-                protocolHandler: ProtocolHandler
-        ) = AppRunStateService(protocolHandler)
-
-        @Provides
-        @Singleton
         fun provideSystemService(
                 protocolHandler: ProtocolHandler
         ) = SystemService(protocolHandler)
@@ -122,12 +116,6 @@ abstract class LibPebbleModule {
     @Binds
     @IntoSet
     abstract fun bindAppMessageServiceIntoSet(appMessageService: AppMessageService): ProtocolService
-
-    @Binds
-    @IntoSet
-    abstract fun bindAppRunStateServiceIntoSet(
-            appRunStateService: AppRunStateService
-    ): ProtocolService
 
     @Binds
     @IntoSet

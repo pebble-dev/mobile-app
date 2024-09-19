@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.rebble.cobble.shared.database.dao.LockerDao
 import io.rebble.cobble.shared.database.entity.SyncedLockerEntryWithPlatforms
+import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
@@ -26,6 +27,7 @@ class LockerViewModel(private val lockerDao: LockerDao): ViewModel() {
     private var lastJob: Job? = null
     private val _modalSheetState = MutableStateFlow<ModalSheetState>(ModalSheetState.Closed)
     val modalSheetState: StateFlow<ModalSheetState> = _modalSheetState
+    val watchIsConnected = ConnectionStateManager.isConnected
 
     suspend fun updateOrder(entries: List<SyncedLockerEntryWithPlatforms>) {
         lastJob?.cancel()

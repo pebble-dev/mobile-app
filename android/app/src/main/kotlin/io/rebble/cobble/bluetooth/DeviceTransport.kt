@@ -56,10 +56,10 @@ class DeviceTransport @Inject constructor(
         lastMacAddress = macAddress
 
         val bluetoothDevice = if (BuildConfig.DEBUG && !macAddress.contains(":")) {
-            EmulatedPebbleDevice(macAddress)
+            EmulatedPebbleDevice(macAddress, protocolHandler)
         } else {
             val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-            BluetoothPebbleDevice(bluetoothAdapter.getRemoteDevice(macAddress), macAddress)
+            BluetoothPebbleDevice(bluetoothAdapter.getRemoteDevice(macAddress), protocolHandler, macAddress)
         }
 
         val driver = getTargetTransport(bluetoothDevice)

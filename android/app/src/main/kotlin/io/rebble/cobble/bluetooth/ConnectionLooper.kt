@@ -106,9 +106,7 @@ class ConnectionLooper @Inject constructor(
                         if (BluetoothAdapter.getDefaultAdapter()?.isEnabled != true) {
                             Timber.d("Bluetooth is off. Waiting until it is on Cancel connection attempt.")
 
-                            _connectionState.value = ConnectionState.WaitingForTransport(
-                                    BluetoothAdapter.getDefaultAdapter()?.getRemoteDevice(macAddress)?.let { BluetoothPebbleDevice(it, it.address) }
-                            )
+                            _connectionState.value = ConnectionState.WaitingForTransport(macAddress)
 
                             getBluetoothStatus(context).first { bluetoothOn -> bluetoothOn }
                         }

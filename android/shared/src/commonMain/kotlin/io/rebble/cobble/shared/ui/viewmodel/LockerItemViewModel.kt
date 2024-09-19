@@ -3,6 +3,7 @@ package io.rebble.cobble.shared.ui.viewmodel
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.benasher44.uuid.uuidFrom
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -10,10 +11,12 @@ import io.ktor.http.HttpStatusCode
 import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.database.entity.SyncedLockerEntryWithPlatforms
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
+import io.rebble.cobble.shared.domain.state.watchOrNull
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.decodeToImageBitmap
 
@@ -25,6 +28,12 @@ class LockerItemViewModel(private val httpClient: HttpClient, val entry: SyncedL
     }
     private var _imageState = MutableStateFlow<ImageState>(ImageState.Loading)
     val imageState = _imageState.asStateFlow()
+    val supportedState = ConnectionStateManager.connectedWatchMetadata.map {
+        it?.running?.let { running ->
+            val platform = WatchHardwarePlatform.fromProtocolNumber(running.hardwarePlatform.get())
+            entry.platforms.any { it.name == platform?.watchType?.codename }
+        } ?: true
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), true)
 
     val title: String
         get() = entry.entry.title
@@ -43,6 +52,14 @@ class LockerItemViewModel(private val httpClient: HttpClient, val entry: SyncedL
 
     val hearts: Int
         get() = entry.entry.hearts
+
+    fun applyWatchface() {
+        check(entry.entry.type == "watchface") { "Only watchfaces can be applied" }
+        val watch = ConnectionStateManager.connectionState.value.watchOrNull
+        viewModelScope.launch(Dispatchers.IO) {
+            watch?.appRunStateService?.startApp(uuidFrom(entry.entry.uuid))
+        }
+    }
 
     init {
         ConnectionStateManager.connectedWatchMetadata.onEach {

@@ -32,12 +32,15 @@ abstract class ServiceModule {
         }
     }
 
+    //TODO: Move to per-protocol handler services
+    /*
     @Binds
     @IntoSet
     @Named("normal")
     abstract fun bindAppMessageHandlerIntoSet(
             appMessageHandler: AppMessageHandler
     ): CobbleHandler
+    */
 
     @Binds
     @IntoSet
@@ -78,12 +81,5 @@ abstract class ServiceModule {
     @Named("normal")
     abstract fun bindAppInstallHandlerIntoSet(
             appInstallHandler: AppInstallHandler
-    ): CobbleHandler
-
-    @Binds
-    @IntoSet
-    @Named("normal")
-    abstract fun bindAppRunStateHandler(
-            appRunStateHandler: AppRunStateHandler
     ): CobbleHandler
 }

@@ -21,6 +21,11 @@ val stateModule = module {
                 .filterNotNull()
                 .stateIn(CoroutineScope(Dispatchers.Default), SharingStarted.WhileSubscribed(), null)
     }
+    factory(named("isConnected")) {
+        get<StateFlow<ConnectionState>>(named("connectionState"))
+                .map { it is ConnectionState.Connected }
+                .stateIn(CoroutineScope(Dispatchers.Default), SharingStarted.WhileSubscribed(), false)
+    }
     single(named("connectionScope")) {
         MutableStateFlow<CoroutineScope>(CoroutineScope(EmptyCoroutineContext))
     } bind StateFlow::class

@@ -10,7 +10,7 @@ import org.koin.core.qualifier.named
 
 open class ConnectionState {
     object Disconnected : ConnectionState()
-    data class WaitingForTransport(val watch: PebbleDevice?) : ConnectionState()
+    data class WaitingForTransport(val address: String) : ConnectionState()
     data class WaitingForReconnect(val watch: PebbleDevice?) : ConnectionState()
     data class Connecting(val watch: PebbleDevice?) : ConnectionState()
     data class Negotiating(val watch: PebbleDevice?) : ConnectionState()
@@ -20,7 +20,6 @@ open class ConnectionState {
 
 val ConnectionState.watchOrNull: PebbleDevice?
     get() = when (this) {
-        is ConnectionState.WaitingForTransport -> watch
         is ConnectionState.WaitingForReconnect -> watch
         is ConnectionState.Connecting -> watch
         is ConnectionState.Negotiating -> watch
@@ -37,4 +36,6 @@ object ConnectionStateManager: KoinComponent {
      * Flow of the currently connected watch's metadata. This flow only emits when a watch is connected and will not emit if negotiation never completes.
      */
     val connectedWatchMetadata: StateFlow<WatchVersion.WatchVersionResponse?> by inject(named("connectedWatchMetadata"))
+
+    val isConnected: StateFlow<Boolean> by inject(named("isConnected"))
 }

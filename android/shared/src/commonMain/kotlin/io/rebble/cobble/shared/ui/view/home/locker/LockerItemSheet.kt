@@ -2,6 +2,7 @@ package io.rebble.cobble.shared.ui.view.home.locker
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -24,7 +25,7 @@ import io.rebble.cobble.shared.ui.viewmodel.LockerItemViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LockerItemSheet(onDismissRequest: () -> Unit, viewModel: LockerItemViewModel) {
+fun LockerItemSheet(onDismissRequest: () -> Unit, watchIsConnected: Boolean, viewModel: LockerItemViewModel) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
             onDismissRequest = onDismissRequest,
@@ -32,6 +33,7 @@ fun LockerItemSheet(onDismissRequest: () -> Unit, viewModel: LockerItemViewModel
             containerColor = AppTheme.materialColors.surface,
     ) {
         val imageState: LockerItemViewModel.ImageState by viewModel.imageState.collectAsState()
+        val supportedState: Boolean by viewModel.supportedState.collectAsState()
         Column(
                 modifier = Modifier
                         .fillMaxWidth()
@@ -127,9 +129,18 @@ fun LockerItemSheet(onDismissRequest: () -> Unit, viewModel: LockerItemViewModel
             }
             HorizontalDivider(thickness = 2.dp)
             if (viewModel.entry.entry.type == "watchface") {
+                val color = if (watchIsConnected && supportedState) {ListItemDefaults.contentColor} else {ListItemDefaults.contentColor.copy(alpha = 0.38f)}
                 ListItem(
-                        leadingContent = { RebbleIcons.sendToWatchUnchecked() },
-                        headlineContent = { Text("Apply on watch") },
+                    colors = ListItemDefaults.colors(
+                            leadingIconColor = color,
+                            headlineColor = color,
+                            trailingIconColor = color,
+                    ),
+                    modifier = Modifier.clickable(enabled = watchIsConnected && supportedState) {
+                        viewModel.applyWatchface()
+                    },
+                    leadingContent = { RebbleIcons.sendToWatchUnchecked() },
+                    headlineContent = { Text("Apply on watch") },
                 )
                 HorizontalDivider(thickness = 2.dp)
             }

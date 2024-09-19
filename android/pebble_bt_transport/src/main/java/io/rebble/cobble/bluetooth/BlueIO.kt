@@ -4,6 +4,7 @@ import android.Manifest
 import android.bluetooth.BluetoothDevice
 import androidx.annotation.RequiresPermission
 import io.rebble.cobble.shared.domain.common.PebbleDevice
+import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 
@@ -15,8 +16,9 @@ interface BlueIO {
 
 class BluetoothPebbleDevice(
         val bluetoothDevice: BluetoothDevice,
+        protocolHandler: ProtocolHandler,
         address: String
-) : PebbleDevice(null, address){
+) : PebbleDevice(null, protocolHandler, address){
 
     override fun toString(): String {
         val start = "< BluetoothPebbleDevice, address=$address, bluetoothDevice=< BluetoothDevice address=${bluetoothDevice.address}"

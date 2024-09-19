@@ -26,6 +26,7 @@ enum class LockerTabs(val label: String, val navRoute: String) {
 fun Locker(page: LockerTabs, lockerDao: LockerDao = getKoin().get(), viewModel: LockerViewModel = viewModel { LockerViewModel(lockerDao) }, onTabChanged: (LockerTabs) -> Unit) {
     val entriesState: LockerViewModel.LockerEntriesState by viewModel.entriesState.collectAsState()
     val modalSheetState by viewModel.modalSheetState.collectAsState()
+    val watchIsConnected by viewModel.watchIsConnected.collectAsState()
 
     Column {
         Surface {
@@ -56,6 +57,6 @@ fun Locker(page: LockerTabs, lockerDao: LockerDao = getKoin().get(), viewModel: 
     }
     if (modalSheetState is LockerViewModel.ModalSheetState.Open) {
         val sheetViewModel = (modalSheetState as LockerViewModel.ModalSheetState.Open).viewModel
-        LockerItemSheet(onDismissRequest = { viewModel.closeModalSheet() }, viewModel = sheetViewModel)
+        LockerItemSheet(onDismissRequest = { viewModel.closeModalSheet() }, watchIsConnected = watchIsConnected, viewModel = sheetViewModel)
     }
 }
