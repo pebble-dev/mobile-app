@@ -94,7 +94,7 @@ class LockerSyncJob: KoinComponent {
                                             AppMetadata().also { meta ->
                                                 meta.uuid.set(uuidFrom(entry.uuid))
                                                 meta.flags.set(platform.processInfoFlags.toUInt())
-                                                meta.icon.set(0u)
+                                                meta.icon.set(entry.pbwIconResourceId.toUInt())
                                                 meta.appVersionMajor.set(appVersionMajor)
                                                 meta.appVersionMinor.set(appVersionMinor)
                                                 meta.sdkVersionMajor.set(sdkVersionMajor)
