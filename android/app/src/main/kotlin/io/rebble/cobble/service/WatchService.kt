@@ -31,8 +31,6 @@ class WatchService : LifecycleService() {
 
     private lateinit var protocolHandler: ProtocolHandler
     private lateinit var connectionLooper: ConnectionLooper
-    lateinit var notificationService: NotificationService
-        private set
 
     private lateinit var calendarSync: CalendarSync
 
@@ -50,7 +48,6 @@ class WatchService : LifecycleService() {
                 .create(this)
 
         coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
-        notificationService = injectionComponent.createNotificationService()
         protocolHandler = injectionComponent.createProtocolHandler()
         connectionLooper = injectionComponent.createConnectionLooper()
 

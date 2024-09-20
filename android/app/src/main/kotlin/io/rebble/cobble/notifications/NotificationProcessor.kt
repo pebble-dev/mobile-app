@@ -20,6 +20,8 @@ import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.datastore.defaultMutedPackages
 import io.rebble.cobble.shared.domain.common.SystemAppIDs.notificationsWatchappId
 import io.rebble.cobble.shared.domain.notifications.*
+import io.rebble.cobble.shared.domain.state.ConnectionState
+import io.rebble.cobble.shared.domain.state.watchOrNull
 import io.rebble.libpebblecommon.PacketPriority
 import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
@@ -34,8 +36,11 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import okio.Timeout
+import org.koin.core.qualifier.named
+import org.koin.mp.KoinPlatformTools
 import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
@@ -49,18 +54,21 @@ import kotlin.time.Duration.Companion.seconds
 class NotificationProcessor @Inject constructor(
         exceptionHandler: CoroutineExceptionHandler,
         private val persistedNotifDao: PersistedNotificationDao,
-        private val blobDBService: BlobDBService,
         private val notificationChannelDao: NotificationChannelDao,
         private val context: Context,
         private val activeNotifsState: MutableStateFlow<Map<UUID, StatusBarNotification>>,
         private val prefs: KMPPrefs,
 ) {
+    //TODO: Use Koin for DI
+    private val connectionState: StateFlow<ConnectionState> = KoinPlatformTools.defaultContext().get().get(named("connectionState"))
     companion object {
         private val notificationProcessingTimeout = 10.seconds
     }
     val coroutineScope = CoroutineScope(
             SupervisorJob() + exceptionHandler + CoroutineName("NotificationProcessor")
     )
+
+    private val blobDBService: BlobDBService? get() = connectionState.value.watchOrNull?.blobDBService
 
     private val activeGroups = mutableMapOf<String, NotificationGroup>()
 
@@ -227,12 +235,12 @@ class NotificationProcessor @Inject constructor(
                             notificationItem.toBytes(),
                     )
 
-                    var result = blobDBService.send(packet)
+                    var result = blobDBService?.send(packet) ?: BlobResponse(BlobResponse.BlobStatus.WatchDisconnected)
 
                     while (result.responseValue == BlobResponse.BlobStatus.TryLater) {
                         Timber.w("BlobDB is busy, retrying in 1s")
                         delay(1000)
-                        result = blobDBService.send(packet)
+                        result = blobDBService?.send(packet) ?: BlobResponse(BlobResponse.BlobStatus.WatchDisconnected)
                     }
 
                     if (result.responseValue != BlobResponse.BlobStatus.Success) {
@@ -366,7 +374,7 @@ class NotificationProcessor @Inject constructor(
                     BlobCommand.BlobDatabase.Notification,
                     SUUID(StructMapper(), existing.key).toBytes()
             )
-            blobDBService.send(packet, PacketPriority.LOW)
+            blobDBService?.send(packet, PacketPriority.LOW)
         }
         persistedNotifDao.delete(sbn.key)
     }

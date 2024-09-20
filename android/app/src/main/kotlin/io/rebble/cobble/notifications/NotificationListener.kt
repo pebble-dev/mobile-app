@@ -39,7 +39,6 @@ class NotificationListener : NotificationListenerService() {
     private var areNotificationsEnabled = true
     private var mutedPackages = listOf<String>()
 
-    private lateinit var notificationService: NotificationService
     private lateinit var prefs: KMPPrefs
 
     override fun onCreate() {
@@ -50,7 +49,6 @@ class NotificationListener : NotificationListenerService() {
         )
 
         connectionLooper = injectionComponent.createConnectionLooper()
-        notificationService = injectionComponent.createNotificationService()
         flutterPreferences = injectionComponent.createFlutterPreferences()
         prefs = injectionComponent.createKMPPrefs()
         notificationProcessor = injectionComponent.createNotificationProcessor()

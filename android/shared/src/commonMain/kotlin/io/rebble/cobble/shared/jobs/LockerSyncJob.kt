@@ -26,7 +26,6 @@ import kotlin.random.Random
 
 class LockerSyncJob: KoinComponent {
     private val lockerDao: LockerDao by inject()
-    private val blobDBService: BlobDBService by inject()
     suspend fun beginSync(): Boolean {
         val locker = RWS.appstoreClient?.getLocker() ?: return false
         val storedLocker = lockerDao.getAllEntries()
@@ -64,6 +63,7 @@ class LockerSyncJob: KoinComponent {
             val connectedWatchType = WatchHardwarePlatform
                     .fromProtocolNumber(connectedWatch.metadata.value?.running?.hardwarePlatform?.get() ?: 0u)
             connectedWatchType?.let {
+                val blobDBService = connectedWatch.blobDBService
                 entries.forEach { row ->
                     val entry = row.entry
                     val platformName = AppCompatibility.getBestVariant(

@@ -12,21 +12,11 @@ import javax.inject.Inject
 
 class NotificationsFlutterBridge @Inject constructor(
         bridgeLifecycleController: BridgeLifecycleController,
-        private val notificationService: NotificationService,
         private val coroutineScope: CoroutineScope,
         private val cachedPackageInfoDao: CachedPackageInfoDao,
 ) : FlutterBridge, Pigeons.NotificationsControl {
     init {
         bridgeLifecycleController.setupControl(Pigeons.NotificationsControl::setup, this)
-    }
-
-    override fun sendTestNotification() {
-        coroutineScope.launch {
-            notificationService.send(PushNotification(
-                    "Test Notification"
-
-            ))
-        }
     }
 
     override fun getNotificationPackages(result: Pigeons.Result<MutableList<Pigeons.NotifyingPackage>>) {

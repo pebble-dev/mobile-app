@@ -3509,8 +3509,6 @@ public class Pigeons {
   /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
   public interface NotificationsControl {
 
-    void sendTestNotification();
-
     void getNotificationPackages(@NonNull Result<List<NotifyingPackage>> result);
 
     /** The codec used by NotificationsControl. */
@@ -3519,28 +3517,6 @@ public class Pigeons {
     }
     /**Sets up an instance of `NotificationsControl` to handle messages through the `binaryMessenger`. */
     static void setup(@NonNull BinaryMessenger binaryMessenger, @Nullable NotificationsControl api) {
-      {
-        BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(
-                binaryMessenger, "dev.flutter.pigeon.NotificationsControl.sendTestNotification", getCodec());
-        if (api != null) {
-          channel.setMessageHandler(
-              (message, reply) -> {
-                ArrayList<Object> wrapped = new ArrayList<Object>();
-                try {
-                  api.sendTestNotification();
-                  wrapped.add(0, null);
-                }
- catch (Throwable exception) {
-                  ArrayList<Object> wrappedError = wrapError(exception);
-                  wrapped = wrappedError;
-                }
-                reply.reply(wrapped);
-              });
-        } else {
-          channel.setMessageHandler(null);
-        }
-      }
       {
         BasicMessageChannel<Object> channel =
             new BasicMessageChannel<>(

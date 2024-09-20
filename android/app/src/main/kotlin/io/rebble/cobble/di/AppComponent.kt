@@ -35,13 +35,10 @@ import javax.inject.Singleton
     LibPebbleModule::class
 ])
 interface AppComponent {
-    fun createNotificationService(): NotificationService
     fun createPhoneControlService(): PhoneControlService
     fun createBlueCommon(): DeviceTransport
 
     fun createProtocolHandler(): ProtocolHandler
-    fun createBlobDBService(): BlobDBService
-
     fun createExceptionHandler(): GlobalExceptionHandler
     fun createConnectionLooper(): ConnectionLooper
     fun createWatchMetadataStore(): WatchMetadataStore

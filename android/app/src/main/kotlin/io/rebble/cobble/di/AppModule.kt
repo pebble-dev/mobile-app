@@ -15,6 +15,8 @@ import io.rebble.cobble.shared.database.dao.NotificationChannelDao
 import io.rebble.cobble.shared.database.dao.PersistedNotificationDao
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.calendar.CalendarSync
+import io.rebble.cobble.shared.domain.common.PebbleDevice
+import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.CurrentToken
 import io.rebble.cobble.shared.handlers.CalendarActionHandler
 import io.rebble.cobble.shared.jobs.AndroidJobScheduler
@@ -50,8 +52,8 @@ abstract class AppModule {
         }
         @Provides
         @Singleton
-        fun provideCalendarSync(exceptionHandler: CoroutineExceptionHandler, blobDBService: BlobDBService): CalendarSync {
-            return CalendarSync(CoroutineScope(Dispatchers.Default) + exceptionHandler, blobDBService)
+        fun provideCalendarSync(exceptionHandler: CoroutineExceptionHandler): CalendarSync {
+            return CalendarSync(CoroutineScope(Dispatchers.Default) + exceptionHandler)
         }
         @Provides
         @Singleton

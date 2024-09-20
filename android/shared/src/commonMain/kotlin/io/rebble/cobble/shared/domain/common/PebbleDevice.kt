@@ -4,6 +4,7 @@ import io.ktor.http.parametersOf
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.packets.WatchVersion
 import io.rebble.libpebblecommon.services.app.AppRunStateService
+import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -20,5 +21,5 @@ open class PebbleDevice(
 
     //TODO: Move to per-protocol handler services, so we can have multiple PebbleDevices, this is the first of many
     val appRunStateService: AppRunStateService by inject {parametersOf(protocolHandler)}
-
+    val blobDBService: BlobDBService by inject {parametersOf(protocolHandler)}
 }

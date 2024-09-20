@@ -6,6 +6,7 @@ import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.AppFetchService
 import io.rebble.libpebblecommon.services.PutBytesService
 import io.rebble.libpebblecommon.services.app.AppRunStateService
+import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import org.koin.dsl.module
 import io.rebble.libpebblecommon.services.blobdb.TimelineService
 
@@ -30,5 +31,9 @@ val libpebbleModule = module {
 
     factory { params ->
         AppRunStateService(params.get())
+    }
+
+    factory { params ->
+        BlobDBService(params.get())
     }
 }

@@ -26,18 +26,6 @@ abstract class LibPebbleModule {
 
         @Provides
         @Singleton
-        fun provideBlobDbService(
-                protocolHandler: ProtocolHandler
-        ) = BlobDBService(protocolHandler)
-
-        @Provides
-        @Singleton
-        fun provideNotificationService(
-                blobDBService: BlobDBService
-        ) = NotificationService(blobDBService)
-
-        @Provides
-        @Singleton
         fun providePhoneControlService(
                 protocolHandler: ProtocolHandler
         ) = PhoneControlService(protocolHandler)
@@ -100,14 +88,6 @@ abstract class LibPebbleModule {
                 protocolHandler: ProtocolHandler
         ) = LogDumpService(protocolHandler)
     }
-
-    @Binds
-    @IntoSet
-    abstract fun bindBlobDbServiceIntoSet(blobDBService: BlobDBService): ProtocolService
-
-    @Binds
-    @IntoSet
-    abstract fun bindNotificationService(notificationService: NotificationService): ProtocolService
 
     @Binds
     @IntoSet
