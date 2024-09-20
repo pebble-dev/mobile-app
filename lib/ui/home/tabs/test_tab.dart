@@ -30,10 +30,10 @@ class TestTab extends HookConsumerWidget implements CobbleScreen {
 
     final preferences = ref.watch(preferencesProvider);
     final neededWorkarounds = ref.watch(neededWorkaroundsProvider).when(
-      data: (data) => data,
-      loading: () => List<Workaround>.empty(),
-      error: (e, s) => List<Workaround>.empty(),
-    );
+          data: (data) => data,
+          loading: () => List<Workaround>.empty(),
+          error: (e, s) => List<Workaround>.empty(),
+        );
 
     useEffect(() {
       Future.microtask(() async {
@@ -61,10 +61,6 @@ class TestTab extends HookConsumerWidget implements CobbleScreen {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              CobbleButton(
-                onPressed: () => notifications.sendTestNotification(),
-                label: "Test Notification",
-              ),
               CobbleButton(
                 onPressed: () {
                   ListWrapper l = ListWrapper();

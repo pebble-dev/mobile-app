@@ -19,7 +19,10 @@ import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import io.rebble.libpebblecommon.structmapper.SUUID
 import io.rebble.libpebblecommon.structmapper.StructMapper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.random.Random
@@ -27,8 +30,12 @@ import kotlin.random.Random
 class LockerSyncJob: KoinComponent {
     private val lockerDao: LockerDao by inject()
     suspend fun beginSync(): Boolean {
-        val locker = RWS.appstoreClient?.getLocker() ?: return false
-        val storedLocker = lockerDao.getAllEntries()
+        val locker = withContext(Dispatchers.IO) {
+            RWS.appstoreClient?.getLocker()
+        } ?: return false
+        val storedLocker = withContext(Dispatchers.IO) {
+            lockerDao.getAllEntries()
+        }
 
         val changedEntries = locker.filter { new ->
                 val newPlat = new.hardwarePlatforms.map { it.toEntity(new.id) }
@@ -64,69 +71,72 @@ class LockerSyncJob: KoinComponent {
                     .fromProtocolNumber(connectedWatch.metadata.value?.running?.hardwarePlatform?.get() ?: 0u)
             connectedWatchType?.let {
                 val blobDBService = connectedWatch.blobDBService
-                entries.forEach { row ->
-                    val entry = row.entry
-                    val platformName = AppCompatibility.getBestVariant(
-                            connectedWatchType.watchType,
-                            row.platforms.map { plt -> plt.name }
-                    )?.codename
-                    val platform = row.platforms.firstOrNull { plt -> plt.name == platformName }
-                    val res = platform?.let {
-                        when (entry.nextSyncAction) {
-                            NextSyncAction.Upload -> {
-                                val appVersionMajor = entry.version.split(".").getOrNull(0)?.toUByte() ?: 0u
-                                val appVersionMinor = entry.version.split(".").getOrNull(1)?.toUByte() ?: 0u
-                                val sdkVersionMajor = platform.sdkVersion.split(".")[0].toUByte()
-                                val sdkVersionMinor = platform.sdkVersion.split(".")[1].toUByte()
-                                return@let blobDBService.send(
-                                        BlobCommand.InsertCommand(
-                                                Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
-                                                BlobCommand.BlobDatabase.App,
-                                                SUUID(StructMapper(), uuidFrom(entry.uuid)).toBytes(),
-                                                AppMetadata().also { meta ->
-                                                    meta.uuid.set(uuidFrom(entry.uuid))
-                                                    meta.flags.set(platform.processInfoFlags.toUInt())
-                                                    meta.icon.set(0u)
-                                                    meta.appVersionMajor.set(appVersionMajor)
-                                                    meta.appVersionMinor.set(appVersionMinor)
-                                                    meta.sdkVersionMajor.set(sdkVersionMajor)
-                                                    meta.sdkVersionMinor.set(sdkVersionMinor)
-                                                    meta.appName.set(entry.title)
-                                                }.toBytes()
-                                        )
-                                )
+                return withContext(Dispatchers.IO) {
+                    entries.forEach { row ->
+                        val entry = row.entry
+                        val platformName = AppCompatibility.getBestVariant(
+                                connectedWatchType.watchType,
+                                row.platforms.map { plt -> plt.name }
+                        )?.codename
+                        val platform = row.platforms.firstOrNull { plt -> plt.name == platformName }
+                        val res = platform?.let {
+                            when (entry.nextSyncAction) {
+                                NextSyncAction.Upload -> {
+                                    val versionCode = Regex("""\d+\.\d+""").find(entry.version)?.value ?: "0.0"
+                                    val appVersionMajor = versionCode.split(".")[0].toUByte()
+                                    val appVersionMinor = versionCode.split(".")[1].toUByte()
+                                    val sdkVersionMajor = platform.sdkVersion.split(".")[0].toUByte()
+                                    val sdkVersionMinor = platform.sdkVersion.split(".")[1].toUByte()
+                                    val packet = BlobCommand.InsertCommand(
+                                            Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
+                                            BlobCommand.BlobDatabase.App,
+                                            SUUID(StructMapper(), uuidFrom(entry.uuid)).toBytes(),
+                                            AppMetadata().also { meta ->
+                                                meta.uuid.set(uuidFrom(entry.uuid))
+                                                meta.flags.set(platform.processInfoFlags.toUInt())
+                                                meta.icon.set(0u)
+                                                meta.appVersionMajor.set(appVersionMajor)
+                                                meta.appVersionMinor.set(appVersionMinor)
+                                                meta.sdkVersionMajor.set(sdkVersionMajor)
+                                                meta.sdkVersionMinor.set(sdkVersionMinor)
+                                                meta.appName.set(entry.title)
+                                            }.toBytes()
+                                    )
+                                    return@let blobDBService.send(packet)
+                                }
+                                NextSyncAction.Delete -> {
+                                    return@let blobDBService.send(
+                                            BlobCommand.DeleteCommand(
+                                                    Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
+                                                    BlobCommand.BlobDatabase.App,
+                                                    SUUID(StructMapper(), uuidFrom(entry.uuid)).toBytes()
+                                            )
+                                    )
+                                }
+                                else -> {
+                                    Logging.w("Unknown next sync action ${entry.nextSyncAction}")
+                                    return@let null
+                                }
                             }
-                            NextSyncAction.Delete -> {
-                                return@let blobDBService.send(
-                                        BlobCommand.DeleteCommand(
-                                                Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
-                                                BlobCommand.BlobDatabase.App,
-                                                SUUID(StructMapper(), uuidFrom(entry.uuid)).toBytes()
-                                        )
-                                )
+                        }
+                        when (res?.responseValue) {
+                            BlobResponse.BlobStatus.Success -> {
+                                lockerDao.setNextSyncAction(entry.id, NextSyncAction.Nothing)
+                            }
+                            BlobResponse.BlobStatus.DatabaseFull -> {
+                                Logging.w("Database full, stopping sync")
+                                return@withContext true
+                            }
+                            BlobResponse.BlobStatus.WatchDisconnected -> {
+                                Logging.w("Watch disconnected, stopping sync")
+                                return@withContext false
                             }
                             else -> {
-                                Logging.w("Unknown next sync action ${entry.nextSyncAction}")
-                                return@let null
+                                Logging.w("Failed to sync app ${entry.id}: ${res?.responseValue}")
                             }
                         }
                     }
-                    when (res?.responseValue) {
-                        BlobResponse.BlobStatus.Success -> {
-                            lockerDao.setNextSyncAction(entry.id, NextSyncAction.Nothing)
-                        }
-                        BlobResponse.BlobStatus.DatabaseFull -> {
-                            Logging.w("Database full, stopping sync")
-                            return true
-                        }
-                        BlobResponse.BlobStatus.WatchDisconnected -> {
-                            Logging.w("Watch disconnected, stopping sync")
-                            return false
-                        }
-                        else -> {
-                            Logging.w("Failed to sync app ${entry.id}: ${res?.responseValue}")
-                        }
-                    }
+                    return@withContext true
                 }
             } ?: run {
                 Logging.w("Unknown watch type")
@@ -136,7 +146,6 @@ class LockerSyncJob: KoinComponent {
             Logging.w("No connected watch to sync to")
             return false
         }
-        return true
     }
 
     companion object {

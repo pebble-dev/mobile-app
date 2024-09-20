@@ -15,6 +15,7 @@ import io.rebble.cobble.bluetooth.EmulatedPebbleDevice
 import io.rebble.cobble.shared.handlers.CobbleHandler
 import io.rebble.cobble.shared.domain.calendar.CalendarSync
 import io.rebble.cobble.shared.domain.state.ConnectionState
+import io.rebble.cobble.shared.util.NotificationId
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.*
@@ -37,11 +38,11 @@ class WatchService : LifecycleService() {
     private lateinit var mainNotifBuilder: NotificationCompat.Builder
 
     override fun onCreate() {
-        mainNotifBuilder = createBaseNotificationBuilder(NOTIFICATION_CHANNEL_WATCH_CONNECTING)
+        mainNotifBuilder = createBaseNotificationBuilder(NotificationId.NOTIFICATION_CHANNEL_WATCH_CONNECTING)
                 .setContentTitle("Waiting to connect")
                 .setContentText(null)
                 .setSmallIcon(R.drawable.ic_notification_disconnected)
-        startForeground(1, mainNotifBuilder.build())
+        startForeground(NotificationId.WATCH_CONNECTION, mainNotifBuilder.build())
 
         val injectionComponent = (applicationContext as CobbleApplication).component
         val serviceComponent = injectionComponent.createServiceSubcomponentFactory()
@@ -92,28 +93,28 @@ class WatchService : LifecycleService() {
                         icon = R.drawable.ic_notification_disconnected
                         titleText = "Connecting"
                         deviceName = null
-                        channel = NOTIFICATION_CHANNEL_WATCH_CONNECTING
+                        channel = NotificationId.NOTIFICATION_CHANNEL_WATCH_CONNECTING
                     }
 
                     is ConnectionState.WaitingForTransport -> {
                         icon = R.drawable.ic_notification_disconnected
                         titleText = getString(R.string.bluetooth_off)
                         deviceName = null
-                        channel = NOTIFICATION_CHANNEL_WATCH_CONNECTING
+                        channel = NotificationId.NOTIFICATION_CHANNEL_WATCH_CONNECTING
                     }
 
                     is ConnectionState.Connected -> {
                         icon = R.drawable.ic_notification_connected
                         titleText = "Connected to device"
                         deviceName = if (it.watch is EmulatedPebbleDevice) "[EMU] ${it.watch.address}" else if (it.watch is BluetoothPebbleDevice) (it.watch as BluetoothPebbleDevice).bluetoothDevice.name!! else it.watch.address
-                        channel = NOTIFICATION_CHANNEL_WATCH_CONNECTED
+                        channel = NotificationId.NOTIFICATION_CHANNEL_WATCH_CONNECTED
                     }
 
                     is ConnectionState.RecoveryMode -> {
                         icon = R.drawable.ic_notification_connected
                         titleText = "Connected to device (Recovery Mode)"
                         deviceName = if (it.watch is EmulatedPebbleDevice) "[EMU] ${it.watch.address}" else if (it.watch is BluetoothPebbleDevice) (it.watch as BluetoothPebbleDevice).bluetoothDevice.name!! else it.watch.address
-                        channel = NOTIFICATION_CHANNEL_WATCH_CONNECTED
+                        channel = NotificationId.NOTIFICATION_CHANNEL_WATCH_CONNECTED
                     }
                     else -> error("Unhandled connection state")
                 }

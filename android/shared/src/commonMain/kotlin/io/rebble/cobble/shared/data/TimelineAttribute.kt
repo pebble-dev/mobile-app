@@ -8,6 +8,7 @@ import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
 import io.rebble.libpebblecommon.structmapper.SUInt
 import io.rebble.libpebblecommon.structmapper.StructMapper
 import io.rebble.libpebblecommon.util.DataBuffer
+import io.rebble.libpebblecommon.util.Endian
 import io.rebble.libpebblecommon.util.encodeToByteArrayTrimmed
 import kotlinx.serialization.Serializable
 
@@ -38,7 +39,7 @@ data class TimelineAttribute(
             }
 
             uint32 != null -> {
-                SUInt(StructMapper(), uint32.toUInt(), '<').toBytes()
+                SUInt(StructMapper(), uint32.toUInt(), Endian.Little).toBytes()
             }
 
             else -> throw IllegalArgumentException("Received empty timeline attribute: $this")

@@ -43,7 +43,7 @@ interface LockerDao {
     suspend fun setNextSyncAction(ids: Set<String>, action: NextSyncAction)
 
     @Transaction
-    @Query("SELECT * FROM SyncedLockerEntry WHERE nextSyncAction in (1, 2)")
+    @Query("SELECT * FROM SyncedLockerEntry WHERE nextSyncAction in ('Upload', 'Delete')")
     suspend fun getEntriesForSync(): List<SyncedLockerEntryWithPlatforms>
 
     @Transaction

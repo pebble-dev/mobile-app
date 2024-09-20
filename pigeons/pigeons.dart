@@ -367,7 +367,6 @@ abstract class UiConnectionControl {
 
 @HostApi()
 abstract class NotificationsControl {
-  void sendTestNotification();
   @async
   List<NotifyingPackage> getNotificationPackages();
 }

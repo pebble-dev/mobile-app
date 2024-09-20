@@ -423,7 +423,6 @@ extern void UiConnectionControlSetup(id<FlutterBinaryMessenger> binaryMessenger,
 NSObject<FlutterMessageCodec> *NotificationsControlGetCodec(void);
 
 @protocol NotificationsControl
-- (void)sendTestNotificationWithError:(FlutterError *_Nullable *_Nonnull)error;
 - (void)getNotificationPackagesWithCompletion:(void (^)(NSArray<NotifyingPackage *> *_Nullable, FlutterError *_Nullable))completion;
 @end
 

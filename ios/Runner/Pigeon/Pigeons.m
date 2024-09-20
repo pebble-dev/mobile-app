@@ -2010,23 +2010,6 @@ void NotificationsControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObj
   {
     FlutterBasicMessageChannel *channel =
       [[FlutterBasicMessageChannel alloc]
-        initWithName:@"dev.flutter.pigeon.NotificationsControl.sendTestNotification"
-        binaryMessenger:binaryMessenger
-        codec:NotificationsControlGetCodec()];
-    if (api) {
-      NSCAssert([api respondsToSelector:@selector(sendTestNotificationWithError:)], @"NotificationsControl api (%@) doesn't respond to @selector(sendTestNotificationWithError:)", api);
-      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        [api sendTestNotificationWithError:&error];
-        callback(wrapResult(nil, error));
-      }];
-    } else {
-      [channel setMessageHandler:nil];
-    }
-  }
-  {
-    FlutterBasicMessageChannel *channel =
-      [[FlutterBasicMessageChannel alloc]
         initWithName:@"dev.flutter.pigeon.NotificationsControl.getNotificationPackages"
         binaryMessenger:binaryMessenger
         codec:NotificationsControlGetCodec()];

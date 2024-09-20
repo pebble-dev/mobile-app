@@ -36,6 +36,9 @@ fun MainView(navController: NavHostController = rememberNavController()) {
                         composable(Routes.Home.LOCKER_APPS) {
                             HomeScaffold(HomePage.Locker(LockerTabs.Apps), onNavChange = navController::navigate)
                         }
+                        composable(Routes.Home.TEST_PAGE) {
+                            HomeScaffold(HomePage.TestPage, onNavChange = navController::navigate)
+                        }
                     }
                 }
             }

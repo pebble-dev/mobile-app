@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import androidx.core.content.getSystemService
+import io.rebble.cobble.shared.util.NotificationId
 import javax.inject.Inject
 
 class NotificationChannelManager @Inject constructor(context: Context) {
@@ -14,7 +15,7 @@ class NotificationChannelManager @Inject constructor(context: Context) {
 
             notificationManager.createNotificationChannel(
                     NotificationChannel(
-                            NOTIFICATION_CHANNEL_WATCH_CONNECTED,
+                            NotificationId.NOTIFICATION_CHANNEL_WATCH_CONNECTED,
                             context.getString(R.string.connected),
                             NotificationManager.IMPORTANCE_LOW
                     )
@@ -22,7 +23,7 @@ class NotificationChannelManager @Inject constructor(context: Context) {
 
             notificationManager.createNotificationChannel(
                     NotificationChannel(
-                            NOTIFICATION_CHANNEL_WATCH_CONNECTING,
+                            NotificationId.NOTIFICATION_CHANNEL_WATCH_CONNECTING,
                             context.getString(R.string.connecting),
                             NotificationManager.IMPORTANCE_LOW
                     )
@@ -30,15 +31,19 @@ class NotificationChannelManager @Inject constructor(context: Context) {
 
             notificationManager.createNotificationChannel(
                     NotificationChannel(
-                            NOTIFICATION_CHANNEL_WARNINGS,
+                            NotificationId.NOTIFICATION_CHANNEL_WARNINGS,
                             context.getString(R.string.warnings),
                             NotificationManager.IMPORTANCE_DEFAULT
+                    )
+            )
+
+            notificationManager.createNotificationChannel(
+                    NotificationChannel(
+                            NotificationId.NOTIFICATION_CHANNEL_JOBS,
+                            context.getString(R.string.jobs),
+                            NotificationManager.IMPORTANCE_MIN
                     )
             )
         }
     }
 }
-
-val NOTIFICATION_CHANNEL_WATCH_CONNECTED = "WATCH_CONNECTED"
-val NOTIFICATION_CHANNEL_WATCH_CONNECTING = "WATCH_CONNECTING"
-val NOTIFICATION_CHANNEL_WARNINGS = "WARNINGS"
