@@ -91,9 +91,6 @@ private suspend fun getDeviceLogs(deviceLogController: DeviceLogController): Lis
         return null
     }
     return flow.filterIsInstance<LogDump.LogLine>()
-            .onEach {
-                Timber.d("Log line: ${it.timestamp.get()} ${it.filename.get()}:${it.line.get()} ${it.level.get()} ${it.messageText.get()}")
-            }
             .map {
                 "${it.timestamp.get()} ${it.filename.get()}:${it.line.get()} ${it.level.get()} ${it.messageText.get()}"
             }.toList()
