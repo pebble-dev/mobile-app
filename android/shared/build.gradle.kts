@@ -11,7 +11,6 @@ plugins {
     alias(libs.plugins.jetbrains.compose.compiler)
 }
 
-val roomSqliteVersion = "2.5.0-alpha04"
 val timberVersion = "5.0.1"
 val androidxVersion = "1.13.1"
 val rruleVersion = "1.0.3"
