@@ -1,11 +1,15 @@
 package io.rebble.cobble.shared.util
 
+import com.benasher44.uuid.Uuid
+import io.rebble.cobble.shared.AndroidPlatformContext
+import io.rebble.cobble.shared.PlatformContext
 import io.rebble.libpebblecommon.metadata.WatchType
 import io.rebble.libpebblecommon.metadata.pbw.appinfo.PbwAppInfo
 import io.rebble.libpebblecommon.metadata.pbw.manifest.PbwManifest
 import kotlinx.serialization.json.decodeFromStream
 import okio.Source
 import okio.buffer
+import okio.source
 
 actual fun getPbwManifest(
     pbwFile: File,
@@ -56,5 +60,23 @@ actual fun requirePbwAppInfo(pbwFile: File): PbwAppInfo {
  */
 actual fun requirePbwBinaryBlob(pbwFile: File, watchType: WatchType, blobName: String): Source {
     return pbwFile.zippedPlatformSource(watchType, blobName)
-            ?: error("Blob ${blobName} missing from app $pbwFile")
+            ?: error("Blob $blobName missing from app $pbwFile")
+}
+
+actual fun getPbwJsFilePath(context: PlatformContext, pbwAppInfo: PbwAppInfo, pbwFile: File): String? {
+    context as AndroidPlatformContext
+    val cache = context.applicationContext.cacheDir.resolve("js")
+    cache.mkdirs()
+    val cachedJsFile = cache.resolve("${pbwAppInfo.uuid}-${pbwAppInfo.versionCode}.js")
+    if (cachedJsFile.exists()) {
+        return cachedJsFile.absolutePath
+    }
+    val jsFile = pbwFile.zippedSource("pebble-js-app.js")
+            ?: return null
+
+    cachedJsFile.bufferedWriter().use {
+        it.write(jsFile.buffer().readUtf8())
+    }
+
+    return cachedJsFile.absolutePath
 }

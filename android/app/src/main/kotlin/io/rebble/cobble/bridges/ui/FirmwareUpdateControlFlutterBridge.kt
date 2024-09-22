@@ -4,10 +4,10 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.net.toFile
 import io.rebble.cobble.bridges.FlutterBridge
-import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.shared.middleware.PutBytesController
 import io.rebble.cobble.pigeons.BooleanWrapper
 import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.util.launchPigeonResult
 import io.rebble.cobble.shared.util.zippedSource
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
@@ -32,7 +32,6 @@ import javax.inject.Inject
 class FirmwareUpdateControlFlutterBridge @Inject constructor(
     bridgeLifecycleController: BridgeLifecycleController,
     private val coroutineScope: CoroutineScope,
-    private val watchMetadataStore: WatchMetadataStore,
     private val systemService: SystemService,
     private val putBytesController: PutBytesController,
     private val context: Context
@@ -63,7 +62,7 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
             }
 
             val hardwarePlatformNumber = withTimeoutOrNull(2_000) {
-                watchMetadataStore.lastConnectedWatchMetadata.first { it != null }
+                ConnectionStateManager.connectedWatchMetadata.first { it != null }
             }
                     ?.running
                     ?.hardwarePlatform
@@ -129,7 +128,7 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
             }
 
             val lastConnectedWatch = withTimeoutOrNull(2_000) {
-                watchMetadataStore.lastConnectedWatchMetadata.first { it != null }
+                ConnectionStateManager.connectedWatchMetadata.first { it != null }
             }
                     ?: error("Watch not connected")
 

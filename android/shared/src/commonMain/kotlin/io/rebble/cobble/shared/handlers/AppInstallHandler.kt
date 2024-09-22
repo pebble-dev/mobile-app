@@ -10,6 +10,7 @@ import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.PlatformContext
 import io.rebble.cobble.shared.api.RWS
 import io.rebble.cobble.shared.database.dao.LockerDao
+import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.middleware.PutBytesController
 import io.rebble.cobble.shared.util.AppCompatibility.getBestVariant
@@ -21,6 +22,8 @@ import io.rebble.libpebblecommon.packets.AppFetchResponse
 import io.rebble.libpebblecommon.packets.AppFetchResponseStatus
 import io.rebble.libpebblecommon.services.AppFetchService
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
@@ -28,7 +31,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class AppInstallHandler(
-        coroutineScope: CoroutineScope
+        pebbleDevice: PebbleDevice
 ): CobbleHandler, KoinComponent {
     private val lockerDao: LockerDao by inject()
     private val platformContext: PlatformContext by inject()
@@ -37,10 +40,13 @@ class AppInstallHandler(
     private val putBytesController: PutBytesController by inject()
 
     init {
-        coroutineScope.launch {
-            for (message in appFetchService.receivedMessages) {
-                when (message) {
-                    is AppFetchRequest -> onNewAppFetchRequest(message)
+        pebbleDevice.negotiationScope.launch {
+            val deviceScope = pebbleDevice.connectionScope.filterNotNull().first()
+            deviceScope.launch {
+                for (message in appFetchService.receivedMessages) {
+                    when (message) {
+                        is AppFetchRequest -> onNewAppFetchRequest(message)
+                    }
                 }
             }
         }

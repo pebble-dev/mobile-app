@@ -24,7 +24,7 @@ fun TestPage(onShowSnackbar: (String) -> Unit) {
     val koin = getKoin()
     Column {
         OutlinedButton(onClick = {
-            ConnectionStateManager.connectionScope.value.launch {
+            watchConnection.watchOrNull?.connectionScope?.value?.launch {
                 val res = watchConnection.watchOrNull?.blobDBService?.send(
                         BlobCommand.ClearCommand(
                                 token = Random.nextInt().toUShort(),

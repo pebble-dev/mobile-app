@@ -18,7 +18,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-class WebViewJsRunner(val context: Context, private val connectedAddress: StateFlow<String?>, private val scope: CoroutineScope, appInfo: PbwAppInfo, jsPath: String): JsRunner(appInfo, jsPath) {
+class WebViewJsRunner(val context: Context, private val connectedAddress: String, private val scope: CoroutineScope, appInfo: PbwAppInfo, jsPath: String): JsRunner(appInfo, jsPath) {
 
     companion object {
         const val API_NAMESPACE = "Pebble"
@@ -238,7 +238,7 @@ class WebViewJsRunner(val context: Context, private val connectedAddress: StateF
     }
 
     suspend fun signalReady() {
-        val readyDeviceIds = listOf(connectedAddress.value ?: return)
+        val readyDeviceIds = listOf(connectedAddress)
         val readyJson = Json.encodeToString(readyDeviceIds)
         withContext(Dispatchers.Main) {
             webView?.loadUrl("javascript:signalReady(${Uri.encode(readyJson)})")

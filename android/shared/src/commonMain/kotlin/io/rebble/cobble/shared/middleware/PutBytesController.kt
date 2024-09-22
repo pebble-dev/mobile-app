@@ -150,7 +150,7 @@ class PutBytesController: KoinComponent {
     }
 
     private fun launchNewPutBytesSession(block: suspend CoroutineScope.() -> Unit): Job {
-        return ConnectionStateManager.connectionScope.value.launch {
+        return ConnectionStateManager.connectionState.value.watchOrNull?.connectionScope?.value!!.launch {
             statusMutex.withLock {
                 if (_status.value.state != State.IDLE) {
                     throw IllegalStateException("Put bytes operation already in progress")

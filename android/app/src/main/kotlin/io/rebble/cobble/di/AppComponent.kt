@@ -10,7 +10,6 @@ import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.DeviceTransport
 import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.datasources.PairedStorage
-import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.errors.GlobalExceptionHandler
 import io.rebble.cobble.middleware.AppLogController
 import io.rebble.cobble.middleware.DeviceLogController
@@ -41,7 +40,6 @@ interface AppComponent {
     fun createProtocolHandler(): ProtocolHandler
     fun createExceptionHandler(): GlobalExceptionHandler
     fun createConnectionLooper(): ConnectionLooper
-    fun createWatchMetadataStore(): WatchMetadataStore
     fun createPairedStorage(): PairedStorage
     fun createNotificationProcessor(): NotificationProcessor
     fun createCallNotificationProcessor(): CallNotificationProcessor

@@ -1,5 +1,7 @@
 package io.rebble.cobble.shared.util
 
+import com.benasher44.uuid.Uuid
+import io.rebble.cobble.shared.PlatformContext
 import io.rebble.libpebblecommon.metadata.WatchType
 import io.rebble.libpebblecommon.metadata.pbw.appinfo.PbwAppInfo
 import io.rebble.libpebblecommon.metadata.pbw.manifest.PbwManifest
@@ -29,3 +31,12 @@ expect fun requirePbwAppInfo(pbwFile: File): PbwAppInfo
  * @throws IllegalStateException if pbw does not contain manifest with that watch type
  */
 expect fun requirePbwBinaryBlob(pbwFile: File, watchType: WatchType, blobName: String): Source
+
+expect fun getPbwJsFilePath(context: PlatformContext, pbwAppInfo: PbwAppInfo, pbwFile: File): String?
+
+/**
+ * @throws IllegalStateException if pbw does not contain js file
+ */
+fun requirePbwJsFilePath(context: PlatformContext, pbwAppInfo: PbwAppInfo, pbwFile: File): String {
+    return getPbwJsFilePath(context, pbwAppInfo, pbwFile) ?: error("JS file not found in PBW")
+}

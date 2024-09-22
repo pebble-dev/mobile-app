@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.component.KoinComponent
 
 actual object JsRunnerFactory: KoinComponent {
-    actual fun createJsRunner(scope: CoroutineScope, connectedAddress: StateFlow<String?>, appInfo: PbwAppInfo, jsPath: String): JsRunner = TODO()
+    actual fun createJsRunner(scope: CoroutineScope, connectedAddress: String, appInfo: PbwAppInfo, jsPath: String): JsRunner = TODO()
 }

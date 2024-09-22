@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.IntentFilter
 import androidx.annotation.RequiresPermission
 import io.rebble.cobble.bluetooth.ScannedPebbleDevice
-import io.rebble.cobble.util.coroutines.asFlow
+import io.rebble.cobble.shared.util.coroutines.asFlow
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview

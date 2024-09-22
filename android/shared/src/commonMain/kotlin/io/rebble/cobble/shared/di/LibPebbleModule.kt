@@ -4,8 +4,11 @@ import io.rebble.cobble.shared.middleware.PutBytesController
 import io.rebble.libpebblecommon.ProtocolHandlerImpl
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.services.AppFetchService
+import io.rebble.libpebblecommon.services.MusicService
 import io.rebble.libpebblecommon.services.PutBytesService
+import io.rebble.libpebblecommon.services.SystemService
 import io.rebble.libpebblecommon.services.app.AppRunStateService
+import io.rebble.libpebblecommon.services.appmessage.AppMessageService
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import org.koin.dsl.module
 import io.rebble.libpebblecommon.services.blobdb.TimelineService
@@ -24,7 +27,6 @@ val libpebbleModule = module {
     single {
         AppFetchService(get())
     }
-
     single {
         PutBytesController()
     }
@@ -35,5 +37,17 @@ val libpebbleModule = module {
 
     factory { params ->
         BlobDBService(params.get())
+    }
+
+    factory { params ->
+        AppMessageService(params.get())
+    }
+
+    factory { params ->
+        MusicService(params.get())
+    }
+
+    factory { params ->
+        SystemService(params.get())
     }
 }

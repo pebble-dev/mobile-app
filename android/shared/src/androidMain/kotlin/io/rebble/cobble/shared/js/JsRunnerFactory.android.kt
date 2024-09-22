@@ -11,7 +11,7 @@ actual object JsRunnerFactory: KoinComponent {
     private val context: Context by inject()
     actual fun createJsRunner(
             scope: CoroutineScope,
-            connectedAddress: StateFlow<String?>,
+            connectedAddress: String,
             appInfo: PbwAppInfo,
             jsPath: String
     ): JsRunner = WebViewJsRunner(context, connectedAddress, scope, appInfo, jsPath)

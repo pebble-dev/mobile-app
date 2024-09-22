@@ -9,6 +9,9 @@ import io.rebble.cobble.shared.domain.calendar.PlatformCalendarActionExecutor
 import io.rebble.cobble.shared.domain.notifications.PlatformNotificationActionExecutor
 import io.rebble.cobble.shared.domain.notifications.AndroidNotificationActionExecutor
 import io.rebble.cobble.shared.domain.calendar.AndroidCalendarActionExecutor
+import io.rebble.cobble.shared.handlers.CalendarHandler
+import io.rebble.cobble.shared.handlers.CobbleHandler
+import io.rebble.cobble.shared.handlers.music.MusicHandler
 import io.rebble.cobble.shared.jobs.AndroidJobScheduler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,4 +33,12 @@ val androidModule = module {
     single { AndroidJobScheduler() }
     singleOf<PlatformNotificationActionExecutor>(::AndroidNotificationActionExecutor)
     singleOf<PlatformCalendarActionExecutor>(::AndroidCalendarActionExecutor)
+
+    factory<Set<CobbleHandler>>(named("deviceHandlers")) { params ->
+        inject(named("commonDeviceHandlers")).value +
+                setOf(
+                        CalendarHandler(params.get()),
+                        MusicHandler(params.get())
+                )
+    }
 }

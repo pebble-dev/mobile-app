@@ -39,22 +39,6 @@ class ConnectionLooper @Inject constructor(
     private var lastConnectedWatch: String? = null
     private var delayJob: Job? = null
 
-    fun negotiationsComplete(watch: PebbleDevice) {
-        if (connectionState.value is ConnectionState.Negotiating) {
-            _connectionState.value = ConnectionState.Connected(watch)
-        } else {
-            Timber.w("negotiationsComplete state mismatch!")
-        }
-    }
-
-    fun recoveryMode(watch: PebbleDevice) {
-        if (connectionState.value is ConnectionState.Connected || connectionState.value is ConnectionState.Negotiating) {
-            _connectionState.value = ConnectionState.RecoveryMode(watch)
-        } else {
-            Timber.w("recoveryMode state mismatch!")
-        }
-    }
-
     fun signalWatchPresence(macAddress: String) {
         _watchPresenceState.value = macAddress
         if (lastConnectedWatch == macAddress) {
@@ -110,7 +94,7 @@ class ConnectionLooper @Inject constructor(
 
                             getBluetoothStatus(context).first { bluetoothOn -> bluetoothOn }
                         }
-
+                        val connectionScope = CoroutineScope(SupervisorJob() + errorHandler + Dispatchers.IO) + CoroutineName("ConnectionScope-$macAddress")
                         try {
                             blueCommon.startSingleWatchConnection(macAddress).collect {
                                 if (it is SingleConnectionStatus.Connected && connectionState.value !is ConnectionState.Connected && connectionState.value !is ConnectionState.RecoveryMode) {
@@ -123,12 +107,15 @@ class ConnectionLooper @Inject constructor(
                                 if (it is SingleConnectionStatus.Connected) {
                                     retryTime = HALF_OF_INITAL_RETRY_TIME
                                     retries = 0
+                                    _connectionState.value.watchOrNull?.connectionScope?.value = connectionScope
                                 }
                             }
                         } catch (_: CancellationException) {
                             // Do nothing. Cancellation is OK
                         } catch (e: Exception) {
                             Timber.e(e, "Watch connection error")
+                        } finally {
+                            connectionScope.cancel("Connection ended")
                         }
 
                         if (isActive) {
@@ -183,28 +170,6 @@ class ConnectionLooper @Inject constructor(
             }
         }
         currentConnection?.cancel()
-    }
-
-    /**
-     * Get [CoroutineScope] that is active while watch is connected and cancelled if watch
-     * disconnects.
-     */
-    fun getWatchConnectedScope(
-            context: CoroutineContext = EmptyCoroutineContext
-    ): CoroutineScope {
-        val scope = CoroutineScope(SupervisorJob() + errorHandler + context)
-
-        scope.launch(Dispatchers.Unconfined) {
-            connectionState.collect {
-                if (it !is ConnectionState.Connected &&
-                        it !is ConnectionState.Negotiating &&
-                        it !is ConnectionState.RecoveryMode) {
-                    scope.cancel()
-                }
-            }
-        }
-
-        return scope
     }
 }
 

@@ -1,17 +1,19 @@
-package io.rebble.cobble.handlers.music
+package io.rebble.cobble.shared.handlers.music
 
 import android.content.Context
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
 import io.rebble.cobble.notifications.NotificationListener
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 import javax.inject.Inject
 
-class ActiveMediaSessionProvider @Inject constructor(private val context: Context) :
+class ActiveMediaSessionProvider :
         androidx.lifecycle.LiveData<MediaController>(),
-        MediaSessionManager.OnActiveSessionsChangedListener {
-
+        MediaSessionManager.OnActiveSessionsChangedListener, KoinComponent {
+    private val context: Context by inject()
     private val mediaSessionManager: MediaSessionManager = context.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
     var currentController: MediaController? = null
 

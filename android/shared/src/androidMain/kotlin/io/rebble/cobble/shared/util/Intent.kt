@@ -1,4 +1,4 @@
-package io.rebble.cobble.util
+package io.rebble.cobble.shared.util
 
 import android.content.Intent
 

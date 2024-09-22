@@ -26,9 +26,6 @@ val stateModule = module {
                 .map { it is ConnectionState.Connected }
                 .stateIn(CoroutineScope(Dispatchers.Default), SharingStarted.WhileSubscribed(), false)
     }
-    single(named("connectionScope")) {
-        MutableStateFlow<CoroutineScope>(CoroutineScope(EmptyCoroutineContext))
-    } bind StateFlow::class
 
     single(named("currentToken")) {
         MutableStateFlow<CurrentToken>(CurrentToken.LoggedOut)

@@ -2,6 +2,7 @@
 activityCompose = "1.9.2"
 android-minSdk = "29"
 android-targetSdk = "34"
+androidxVersion = "1.13.1"
 coroutinesVersion = "1.8.1"
 daggerVersion = "2.51.1"
 gradle = "8.5.1"
@@ -12,6 +13,7 @@ kotlinxSerializationJson = "1.7.1"
 ksp = "2.0.20-Beta2-1.0.23"
 libpebblecommonVersion = "0.1.24"
 errorproneVersion = "2.26.1"
+rruleVersion = "1.0.3"
 spotbugsVersion = "4.8.6"
 
 protoliteWellKnownTypes = "18.0.0"
@@ -19,6 +21,7 @@ room = "2.7.0-alpha08"
 room-sqlite = "2.5.0-alpha08"
 datastore = "1.1.1"
 androidxTest = "1.6.1"
+timberVersion = "5.0.1"
 uuidVersion = "0.8.4"
 compose-lib = "1.7.0-beta02"
 compose-nav = "2.7.0-alpha07"
@@ -27,6 +30,7 @@ reorderable = "2.3.3"
 
 appcompat = "1.7.0"
 ktorVersion = "2.3.12"
+workManagerVersion = "2.9.0"
 
 [plugins]
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -43,14 +47,17 @@ jetbrains-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", versi
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxVersion" }
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidxTest" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTest" }
 androidx-test-monitor = { module = "androidx.test:monitor", version.ref = "androidxTest" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workManagerVersion" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "daggerVersion" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "daggerVersion" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 kgp = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 errorprone-annotations = { module = "com.google.errorprone:error_prone_annotations", version.ref = "errorproneVersion" }
+rrule = { module = "com.github.PhilJay:RRule", version.ref = "rruleVersion" }
 spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version.ref = "spotbugsVersion" }
 
 androidx-sqlite = { module = "androidx.sqlite:sqlite", version.ref = "room-sqlite" }
@@ -70,6 +77,7 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationJson" }
 libpebblecommon = { module = "io.rebble.libpebblecommon:libpebblecommon", version.ref = "libpebblecommonVersion" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timberVersion" }
 uuid = { module = "com.benasher44:uuid", version.ref = "uuidVersion" }
 protolite-wellknowntypes = { module = "com.google.firebase:protolite-well-known-types", version.ref = "protoliteWellKnownTypes" }
 

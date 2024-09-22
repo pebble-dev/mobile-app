@@ -1,4 +1,4 @@
-package io.rebble.cobble.middleware
+package io.rebble.cobble.shared.util
 
 import com.getpebble.android.kit.util.PebbleDictionary
 import com.getpebble.android.kit.util.PebbleTuple

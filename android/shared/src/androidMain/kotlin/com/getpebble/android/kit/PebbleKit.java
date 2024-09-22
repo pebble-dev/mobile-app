@@ -9,48 +9,11 @@ import android.graphics.Bitmap;
 import android.util.Base64;
 import android.util.Log;
 
-import com.getpebble.android.kit.Constants.PebbleAppType;
-import com.getpebble.android.kit.Constants.PebbleDataType;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
 import org.json.JSONException;
 
 import java.util.UUID;
-
-import static com.getpebble.android.kit.Constants.APP_UUID;
-import static com.getpebble.android.kit.Constants.CUST_APP_TYPE;
-import static com.getpebble.android.kit.Constants.CUST_ICON;
-import static com.getpebble.android.kit.Constants.CUST_NAME;
-import static com.getpebble.android.kit.Constants.DATA_LOG_TAG;
-import static com.getpebble.android.kit.Constants.DATA_LOG_TIMESTAMP;
-import static com.getpebble.android.kit.Constants.DATA_LOG_UUID;
-import static com.getpebble.android.kit.Constants.INTENT_APP_ACK;
-import static com.getpebble.android.kit.Constants.INTENT_APP_CUSTOMIZE;
-import static com.getpebble.android.kit.Constants.INTENT_APP_NACK;
-import static com.getpebble.android.kit.Constants.INTENT_APP_RECEIVE;
-import static com.getpebble.android.kit.Constants.INTENT_APP_RECEIVE_ACK;
-import static com.getpebble.android.kit.Constants.INTENT_APP_RECEIVE_NACK;
-import static com.getpebble.android.kit.Constants.INTENT_APP_SEND;
-import static com.getpebble.android.kit.Constants.INTENT_APP_START;
-import static com.getpebble.android.kit.Constants.INTENT_APP_STOP;
-import static com.getpebble.android.kit.Constants.INTENT_DL_ACK_DATA;
-import static com.getpebble.android.kit.Constants.INTENT_DL_FINISH_SESSION;
-import static com.getpebble.android.kit.Constants.INTENT_DL_RECEIVE_DATA;
-import static com.getpebble.android.kit.Constants.INTENT_DL_REQUEST_DATA;
-import static com.getpebble.android.kit.Constants.INTENT_PEBBLE_CONNECTED;
-import static com.getpebble.android.kit.Constants.INTENT_PEBBLE_DISCONNECTED;
-import static com.getpebble.android.kit.Constants.KIT_STATE_COLUMN_APPMSG_SUPPORT;
-import static com.getpebble.android.kit.Constants.KIT_STATE_COLUMN_CONNECTED;
-import static com.getpebble.android.kit.Constants.KIT_STATE_COLUMN_DATALOGGING_SUPPORT;
-import static com.getpebble.android.kit.Constants.KIT_STATE_COLUMN_VERSION_MAJOR;
-import static com.getpebble.android.kit.Constants.KIT_STATE_COLUMN_VERSION_MINOR;
-import static com.getpebble.android.kit.Constants.KIT_STATE_COLUMN_VERSION_POINT;
-import static com.getpebble.android.kit.Constants.KIT_STATE_COLUMN_VERSION_TAG;
-import static com.getpebble.android.kit.Constants.MSG_DATA;
-import static com.getpebble.android.kit.Constants.PBL_DATA_ID;
-import static com.getpebble.android.kit.Constants.PBL_DATA_OBJECT;
-import static com.getpebble.android.kit.Constants.PBL_DATA_TYPE;
-import static com.getpebble.android.kit.Constants.TRANSACTION_ID;
 
 /**
  * A helper class providing methods for interacting with third-party Pebble Smartwatch applications. Pebble-enabled
@@ -85,10 +48,10 @@ public final class PebbleKit {
      * @param name    The custom name to be applied to the watch-app. Names must be less than 32 characters in length.
      * @param icon    The custom icon to be applied to the watch-app. Icons must be black-and-white bitmaps no larger than 32px
      *                in either dimension.
-     * @throws IllegalArgumentException Thrown if the specified name or icon are invalid. {@link PebbleAppType#SPORTS} or {@link
-     *                                  PebbleAppType#GOLF}.
+     * @throws IllegalArgumentException Thrown if the specified name or icon are invalid. {@link Constants.PebbleAppType#SPORTS} or {@link
+     *                                  Constants.PebbleAppType#GOLF}.
      */
-    public static void customizeWatchApp(final Context context, final PebbleAppType appType,
+    public static void customizeWatchApp(final Context context, final Constants.PebbleAppType appType,
                                          final String name, final Bitmap icon) throws IllegalArgumentException {
 
         if (appType == null) {
@@ -106,10 +69,10 @@ public final class PebbleKit {
                     icon.getWidth(), icon.getHeight()));
         }
 
-        final Intent customizeAppIntent = new Intent(INTENT_APP_CUSTOMIZE);
-        customizeAppIntent.putExtra(CUST_APP_TYPE, appType.ord);
-        customizeAppIntent.putExtra(CUST_NAME, name);
-        customizeAppIntent.putExtra(CUST_ICON, icon);
+        final Intent customizeAppIntent = new Intent(Constants.INTENT_APP_CUSTOMIZE);
+        customizeAppIntent.putExtra(Constants.CUST_APP_TYPE, appType.ord);
+        customizeAppIntent.putExtra(Constants.CUST_NAME, name);
+        customizeAppIntent.putExtra(Constants.CUST_ICON, icon);
         context.sendBroadcast(customizeAppIntent);
     }
 
@@ -129,7 +92,7 @@ public final class PebbleKit {
             if (c == null || !c.moveToNext()) {
                 return false;
             }
-            return c.getInt(KIT_STATE_COLUMN_CONNECTED) == 1;
+            return c.getInt(Constants.KIT_STATE_COLUMN_CONNECTED) == 1;
         } finally {
             if (c != null) {
                 c.close();
@@ -154,7 +117,7 @@ public final class PebbleKit {
             if (c == null || !c.moveToNext()) {
                 return false;
             }
-            return c.getInt(KIT_STATE_COLUMN_APPMSG_SUPPORT) == 1;
+            return c.getInt(Constants.KIT_STATE_COLUMN_APPMSG_SUPPORT) == 1;
         } finally {
             if (c != null) {
                 c.close();
@@ -180,10 +143,10 @@ public final class PebbleKit {
                 return null;
             }
 
-            int majorVersion = c.getInt(KIT_STATE_COLUMN_VERSION_MAJOR);
-            int minorVersion = c.getInt(KIT_STATE_COLUMN_VERSION_MINOR);
-            int pointVersion = c.getInt(KIT_STATE_COLUMN_VERSION_POINT);
-            String versionTag = c.getString(KIT_STATE_COLUMN_VERSION_TAG);
+            int majorVersion = c.getInt(Constants.KIT_STATE_COLUMN_VERSION_MAJOR);
+            int minorVersion = c.getInt(Constants.KIT_STATE_COLUMN_VERSION_MINOR);
+            int pointVersion = c.getInt(Constants.KIT_STATE_COLUMN_VERSION_POINT);
+            String versionTag = c.getString(Constants.KIT_STATE_COLUMN_VERSION_TAG);
 
             return new FirmwareVersionInfo(majorVersion, minorVersion, pointVersion, versionTag);
         } finally {
@@ -210,7 +173,7 @@ public final class PebbleKit {
             if (c == null || !c.moveToNext()) {
                 return false;
             }
-            return c.getInt(KIT_STATE_COLUMN_DATALOGGING_SUPPORT) == 1;
+            return c.getInt(Constants.KIT_STATE_COLUMN_DATALOGGING_SUPPORT) == 1;
         } finally {
             if (c != null) {
                 c.close();
@@ -234,8 +197,8 @@ public final class PebbleKit {
             throw new IllegalArgumentException("uuid cannot be null");
         }
 
-        final Intent startAppIntent = new Intent(INTENT_APP_START);
-        startAppIntent.putExtra(APP_UUID, watchappUuid);
+        final Intent startAppIntent = new Intent(Constants.INTENT_APP_START);
+        startAppIntent.putExtra(Constants.APP_UUID, watchappUuid);
         context.sendBroadcast(startAppIntent);
     }
 
@@ -255,8 +218,8 @@ public final class PebbleKit {
             throw new IllegalArgumentException("uuid cannot be null");
         }
 
-        final Intent stopAppIntent = new Intent(INTENT_APP_STOP);
-        stopAppIntent.putExtra(APP_UUID, watchappUuid);
+        final Intent stopAppIntent = new Intent(Constants.INTENT_APP_STOP);
+        stopAppIntent.putExtra(Constants.APP_UUID, watchappUuid);
         context.sendBroadcast(stopAppIntent);
     }
 
@@ -311,10 +274,10 @@ public final class PebbleKit {
             return;
         }
 
-        final Intent sendDataIntent = new Intent(INTENT_APP_SEND);
-        sendDataIntent.putExtra(APP_UUID, watchappUuid);
-        sendDataIntent.putExtra(TRANSACTION_ID, transactionId);
-        sendDataIntent.putExtra(MSG_DATA, data.toJsonString());
+        final Intent sendDataIntent = new Intent(Constants.INTENT_APP_SEND);
+        sendDataIntent.putExtra(Constants.APP_UUID, watchappUuid);
+        sendDataIntent.putExtra(Constants.TRANSACTION_ID, transactionId);
+        sendDataIntent.putExtra(Constants.MSG_DATA, data.toJsonString());
         context.sendBroadcast(sendDataIntent);
     }
 
@@ -335,8 +298,8 @@ public final class PebbleKit {
                     "transaction id must be between (0, 255); got '%d'", transactionId));
         }
 
-        final Intent ackIntent = new Intent(INTENT_APP_ACK);
-        ackIntent.putExtra(TRANSACTION_ID, transactionId);
+        final Intent ackIntent = new Intent(Constants.INTENT_APP_ACK);
+        ackIntent.putExtra(Constants.TRANSACTION_ID, transactionId);
         context.sendBroadcast(ackIntent);
     }
 
@@ -357,8 +320,8 @@ public final class PebbleKit {
                     "transaction id must be between (0, 255); got '%d'", transactionId));
         }
 
-        final Intent nackIntent = new Intent(INTENT_APP_NACK);
-        nackIntent.putExtra(TRANSACTION_ID, transactionId);
+        final Intent nackIntent = new Intent(Constants.INTENT_APP_NACK);
+        nackIntent.putExtra(Constants.TRANSACTION_ID, transactionId);
         context.sendBroadcast(nackIntent);
     }
 
@@ -375,7 +338,7 @@ public final class PebbleKit {
      */
     public static BroadcastReceiver registerPebbleConnectedReceiver(final Context context,
                                                                     final BroadcastReceiver receiver) {
-        return registerBroadcastReceiverInternal(context, INTENT_PEBBLE_CONNECTED, receiver);
+        return registerBroadcastReceiverInternal(context, Constants.INTENT_PEBBLE_CONNECTED, receiver);
     }
 
     /**
@@ -392,7 +355,7 @@ public final class PebbleKit {
      */
     public static BroadcastReceiver registerPebbleDisconnectedReceiver(final Context context,
                                                                        final BroadcastReceiver receiver) {
-        return registerBroadcastReceiverInternal(context, INTENT_PEBBLE_DISCONNECTED, receiver);
+        return registerBroadcastReceiverInternal(context, Constants.INTENT_PEBBLE_DISCONNECTED, receiver);
     }
 
     /**
@@ -408,7 +371,7 @@ public final class PebbleKit {
      */
     public static BroadcastReceiver registerReceivedDataHandler(final Context context,
                                                                 final PebbleDataReceiver receiver) {
-        return registerBroadcastReceiverInternal(context, INTENT_APP_RECEIVE, receiver);
+        return registerBroadcastReceiverInternal(context, Constants.INTENT_APP_RECEIVE, receiver);
     }
 
 
@@ -426,7 +389,7 @@ public final class PebbleKit {
      */
     public static BroadcastReceiver registerReceivedAckHandler(final Context context,
                                                                final PebbleAckReceiver receiver) {
-        return registerBroadcastReceiverInternal(context, INTENT_APP_RECEIVE_ACK, receiver);
+        return registerBroadcastReceiverInternal(context, Constants.INTENT_APP_RECEIVE_ACK, receiver);
     }
 
     /**
@@ -443,7 +406,7 @@ public final class PebbleKit {
      */
     public static BroadcastReceiver registerReceivedNackHandler(final Context context,
                                                                 final PebbleNackReceiver receiver) {
-        return registerBroadcastReceiverInternal(context, INTENT_APP_RECEIVE_NACK, receiver);
+        return registerBroadcastReceiverInternal(context, Constants.INTENT_APP_RECEIVE_NACK, receiver);
     }
 
     /**
@@ -480,8 +443,8 @@ public final class PebbleKit {
     public static BroadcastReceiver registerDataLogReceiver(final Context context,
                                                             final PebbleDataLogReceiver receiver) {
         IntentFilter filter = new IntentFilter();
-        filter.addAction(INTENT_DL_RECEIVE_DATA);
-        filter.addAction(INTENT_DL_FINISH_SESSION);
+        filter.addAction(Constants.INTENT_DL_RECEIVE_DATA);
+        filter.addAction(Constants.INTENT_DL_FINISH_SESSION);
         context.registerReceiver(receiver, filter);
 
         return receiver;
@@ -500,8 +463,8 @@ public final class PebbleKit {
      * @see Constants#INTENT_DL_REQUEST_DATA
      */
     public static void requestDataLogsForApp(final Context context, final UUID appUuid) {
-        final Intent requestIntent = new Intent(INTENT_DL_REQUEST_DATA);
-        requestIntent.putExtra(APP_UUID, appUuid);
+        final Intent requestIntent = new Intent(Constants.INTENT_DL_REQUEST_DATA);
+        requestIntent.putExtra(Constants.APP_UUID, appUuid);
         context.sendBroadcast(requestIntent);
     }
 
@@ -516,7 +479,7 @@ public final class PebbleKit {
         if (c != null) {
             if (c.moveToFirst()) {
                 // If Basalt app is connected, talk to that (return the open cursor)
-                if (c.getInt(KIT_STATE_COLUMN_CONNECTED) == 1) {
+                if (c.getInt(Constants.KIT_STATE_COLUMN_CONNECTED) == 1) {
                     c.moveToPrevious();
                     return c;
                 }
@@ -565,7 +528,7 @@ public final class PebbleKit {
          */
         @Override
         public void onReceive(final Context context, final Intent intent) {
-            final UUID receivedUuid = (UUID) intent.getSerializableExtra(APP_UUID);
+            final UUID receivedUuid = (UUID) intent.getSerializableExtra(Constants.APP_UUID);
 
             // Pebble-enabled apps are expected to be good citizens and only inspect broadcasts
             // containing their UUID
@@ -573,8 +536,8 @@ public final class PebbleKit {
                 return;
             }
 
-            final int transactionId = intent.getIntExtra(TRANSACTION_ID, -1);
-            final String jsonData = intent.getStringExtra(MSG_DATA);
+            final int transactionId = intent.getIntExtra(Constants.TRANSACTION_ID, -1);
+            final String jsonData = intent.getStringExtra(Constants.MSG_DATA);
             if (jsonData == null || jsonData.isEmpty()) {
                 return;
             }
@@ -623,7 +586,7 @@ public final class PebbleKit {
          */
         @Override
         public void onReceive(final Context context, final Intent intent) {
-            final int transactionId = intent.getIntExtra(TRANSACTION_ID, -1);
+            final int transactionId = intent.getIntExtra(Constants.TRANSACTION_ID, -1);
             receiveAck(context, transactionId);
 
         }
@@ -663,7 +626,7 @@ public final class PebbleKit {
          */
         @Override
         public void onReceive(final Context context, final Intent intent) {
-            final int transactionId = intent.getIntExtra(TRANSACTION_ID, -1);
+            final int transactionId = intent.getIntExtra(Constants.TRANSACTION_ID, -1);
             receiveNack(context, transactionId);
 
         }
@@ -757,7 +720,7 @@ public final class PebbleKit {
 
         private void handleReceiveDataIntent(final Context context, final Intent intent, final UUID logUuid,
                                              final Long timestamp, final Long tag) {
-            final int dataId = intent.getIntExtra(PBL_DATA_ID, -1);
+            final int dataId = intent.getIntExtra(Constants.PBL_DATA_ID, -1);
             if (dataId < 0) throw new IllegalArgumentException();
 
             Log.i("pebble", "DataID: " + dataId + " LastDataID: " + lastDataId);
@@ -767,12 +730,12 @@ public final class PebbleKit {
                 return;
             }
 
-            final PebbleDataType type = PebbleDataType.fromByte(intent.getByteExtra(PBL_DATA_TYPE, PebbleDataType.INVALID.ord));
+            final Constants.PebbleDataType type = Constants.PebbleDataType.fromByte(intent.getByteExtra(Constants.PBL_DATA_TYPE, Constants.PebbleDataType.INVALID.ord));
             if (type == null) throw new IllegalArgumentException();
 
             switch (type) {
                 case BYTES:
-                    byte[] bytes = Base64.decode(intent.getStringExtra(PBL_DATA_OBJECT), Base64.NO_WRAP);
+                    byte[] bytes = Base64.decode(intent.getStringExtra(Constants.PBL_DATA_OBJECT), Base64.NO_WRAP);
                     if (bytes == null) {
                         throw new IllegalArgumentException();
                     }
@@ -780,7 +743,7 @@ public final class PebbleKit {
                     receiveData(context, logUuid, timestamp, tag, bytes);
                     break;
                 case UINT:
-                    Long uint = (Long) intent.getSerializableExtra(PBL_DATA_OBJECT);
+                    Long uint = (Long) intent.getSerializableExtra(Constants.PBL_DATA_OBJECT);
                     if (uint == null) {
                         throw new IllegalArgumentException();
                     }
@@ -788,7 +751,7 @@ public final class PebbleKit {
                     receiveData(context, logUuid, timestamp, tag, uint);
                     break;
                 case INT:
-                    Integer i = (Integer) intent.getSerializableExtra(PBL_DATA_OBJECT);
+                    Integer i = (Integer) intent.getSerializableExtra(Constants.PBL_DATA_OBJECT);
                     if (i == null) {
                         throw new IllegalArgumentException();
                     }
@@ -801,9 +764,9 @@ public final class PebbleKit {
 
             lastDataId = dataId;
 
-            final Intent ackIntent = new Intent(INTENT_DL_ACK_DATA);
-            ackIntent.putExtra(DATA_LOG_UUID, logUuid);
-            ackIntent.putExtra(PBL_DATA_ID, dataId);
+            final Intent ackIntent = new Intent(Constants.INTENT_DL_ACK_DATA);
+            ackIntent.putExtra(Constants.DATA_LOG_UUID, logUuid);
+            ackIntent.putExtra(Constants.PBL_DATA_ID, dataId);
             context.sendBroadcast(ackIntent);
         }
 
@@ -817,7 +780,7 @@ public final class PebbleKit {
          */
         @Override
         public void onReceive(final Context context, final Intent intent) {
-            final UUID receivedUuid = (UUID) intent.getSerializableExtra(APP_UUID);
+            final UUID receivedUuid = (UUID) intent.getSerializableExtra(Constants.APP_UUID);
             // Pebble-enabled apps are expected to be good citizens and only inspect broadcasts
             // containing their UUID
             if (!subscribedUuid.equals(receivedUuid)) {
@@ -829,18 +792,18 @@ public final class PebbleKit {
                 final Long timestamp;
                 final Long tag;
 
-                logUuid = (UUID) intent.getSerializableExtra(DATA_LOG_UUID);
+                logUuid = (UUID) intent.getSerializableExtra(Constants.DATA_LOG_UUID);
                 if (logUuid == null) throw new IllegalArgumentException();
 
-                timestamp = (Long) intent.getSerializableExtra(DATA_LOG_TIMESTAMP);
+                timestamp = (Long) intent.getSerializableExtra(Constants.DATA_LOG_TIMESTAMP);
                 if (timestamp == null) throw new IllegalArgumentException();
 
-                tag = (Long) intent.getSerializableExtra(DATA_LOG_TAG);
+                tag = (Long) intent.getSerializableExtra(Constants.DATA_LOG_TAG);
                 if (tag == null) throw new IllegalArgumentException();
 
-                if (intent.getAction() == INTENT_DL_RECEIVE_DATA) {
+                if (intent.getAction() == Constants.INTENT_DL_RECEIVE_DATA) {
                     handleReceiveDataIntent(context, intent, logUuid, timestamp, tag);
-                } else if (intent.getAction() == INTENT_DL_FINISH_SESSION) {
+                } else if (intent.getAction() == Constants.INTENT_DL_FINISH_SESSION) {
                     handleFinishSessionIntent(context, intent, logUuid, timestamp, tag);
                 }
             } catch (IllegalArgumentException e) {

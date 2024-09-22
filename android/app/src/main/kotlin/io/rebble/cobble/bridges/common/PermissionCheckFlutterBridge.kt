@@ -8,10 +8,10 @@ import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.pigeons.BooleanWrapper
 import io.rebble.cobble.pigeons.Pigeons
-import io.rebble.cobble.util.hasBatteryExclusionPermission
-import io.rebble.cobble.util.hasCallsPermission
-import io.rebble.cobble.util.hasContactsPermission
-import io.rebble.cobble.util.hasNotificationAccessPermission
+import io.rebble.cobble.shared.util.hasBatteryExclusionPermission
+import io.rebble.cobble.shared.util.hasCallsPermission
+import io.rebble.cobble.shared.util.hasContactsPermission
+import io.rebble.cobble.shared.util.hasNotificationAccessPermission
 import javax.inject.Inject
 
 class PermissionCheckFlutterBridge @Inject constructor(

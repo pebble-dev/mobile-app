@@ -1,4 +1,4 @@
-package io.rebble.cobble.handlers.music
+package io.rebble.cobble.shared.handlers.music
 
 import android.content.Context
 import android.content.pm.PackageManager
@@ -9,50 +9,54 @@ import android.media.session.PlaybackState
 import android.os.SystemClock
 import android.view.KeyEvent
 import androidx.lifecycle.asFlow
-import io.rebble.cobble.datasources.PermissionChangeBus
-import io.rebble.cobble.datasources.notificationPermissionFlow
+import io.rebble.cobble.shared.domain.PermissionChangeBus
+import io.rebble.cobble.shared.domain.common.PebbleDevice
+import io.rebble.cobble.shared.domain.notificationPermissionFlow
 import io.rebble.cobble.shared.handlers.CobbleHandler
-import io.rebble.cobble.util.Debouncer
 import io.rebble.libpebblecommon.packets.MusicControl
 import io.rebble.libpebblecommon.services.MusicService
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.flow.*
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
-import javax.inject.Inject
 import kotlin.math.roundToInt
 
-class MusicHandler @Inject constructor(
-        private val context: Context,
-        private val coroutineScope: CoroutineScope,
-        private val musicService: MusicService,
-        private val activeMediaSessionProvider: ActiveMediaSessionProvider,
-        private val packageManager: PackageManager
-) : CobbleHandler {
+class MusicHandler(private val pebbleDevice: PebbleDevice): CobbleHandler, KoinComponent {
+    private val context: Context by inject()
+    private val packageManager: PackageManager by inject()
+    private val activeMediaSessionProvider = ActiveMediaSessionProvider()
+    private val musicService = pebbleDevice.musicService
+
     private var currentMediaController: MediaController? = null
     private var hasPermission: Boolean = false
 
     private val musicControl = MutableSharedFlow<MusicControl>(4)
 
     init {
-        musicControl.filterIsInstance<MusicControl.UpdateCurrentTrack>().debounce(200).onEach {
-            Timber.d("Update current track %s %s %s %s", it.title.get(), it.artist.get(), it.album.get(), it.trackLength.get())
-            musicService.send(it)
-        }.launchIn(coroutineScope)
+        pebbleDevice.negotiationScope.launch {
+            val connectionScope = pebbleDevice.connectionScope.filterNotNull().first()
 
-        musicControl.filterIsInstance<MusicControl.UpdatePlayStateInfo>().debounce(200).onEach {
-            Timber.d("Update play state %s %s %s", it.state.get(), it.trackPosition.get(), it.playRate.get())
-            musicService.send(it)
-        }.launchIn(coroutineScope)
+            musicControl.filterIsInstance<MusicControl.UpdateCurrentTrack>().debounce(200).onEach {
+                Timber.d("Update current track %s %s %s %s", it.title.get(), it.artist.get(), it.album.get(), it.trackLength.get())
+                musicService.send(it)
+            }.launchIn(connectionScope)
 
-        musicControl.filterIsInstance<MusicControl.UpdateVolumeInfo>().debounce(200).onEach {
-            Timber.d("Update volume %s", it.volumePercent.get())
-            musicService.send(it)
-        }.launchIn(coroutineScope)
-        musicControl.filterIsInstance<MusicControl.UpdatePlayerInfo>().debounce(200).onEach {
-            Timber.d("Update player info %s %s", it.name.get(), it.pkg.get())
-            musicService.send(it)
-        }.launchIn(coroutineScope)
+            musicControl.filterIsInstance<MusicControl.UpdatePlayStateInfo>().debounce(200).onEach {
+                Timber.d("Update play state %s %s %s", it.state.get(), it.trackPosition.get(), it.playRate.get())
+                musicService.send(it)
+            }.launchIn(connectionScope)
+
+            musicControl.filterIsInstance<MusicControl.UpdateVolumeInfo>().debounce(200).onEach {
+                Timber.d("Update volume %s", it.volumePercent.get())
+                musicService.send(it)
+            }.launchIn(connectionScope)
+            musicControl.filterIsInstance<MusicControl.UpdatePlayerInfo>().debounce(200).onEach {
+                Timber.d("Update player info %s %s", it.name.get(), it.pkg.get())
+                musicService.send(it)
+            }.launchIn(connectionScope)
+        }
     }
 
     private fun onMediaPlayerChanged(newPlayer: MediaController?) {
@@ -202,8 +206,8 @@ class MusicHandler @Inject constructor(
         }
     }
 
-    private fun listenForPlayerChanges() {
-        coroutineScope.launch(Dispatchers.Main.immediate) {
+    private fun listenForPlayerChanges(connectionScope: CoroutineScope) {
+        connectionScope.launch(Dispatchers.Main.immediate) {
             @Suppress("EXPERIMENTAL_API_USAGE")
             PermissionChangeBus.notificationPermissionFlow(context)
                     .flatMapLatest { hasNotificationPermission ->
@@ -221,8 +225,8 @@ class MusicHandler @Inject constructor(
         }
     }
 
-    private fun listenForIncomingMessages() {
-        coroutineScope.launch(Dispatchers.Main.immediate) {
+    private fun listenForIncomingMessages(connectionScope: CoroutineScope) {
+        connectionScope.launch(Dispatchers.Main.immediate) {
             for (msg in musicService.receivedMessages) {
                 Timber.d("Received music packet %s %s", msg.message, currentMediaController?.packageName)
                 when (msg.message) {
@@ -296,11 +300,13 @@ class MusicHandler @Inject constructor(
     }
 
     init {
-        listenForIncomingMessages()
-        listenForPlayerChanges()
-
-        coroutineScope.coroutineContext.job.invokeOnCompletion {
-            disposeCurrentMediaController()
+        pebbleDevice.negotiationScope.launch {
+            val connectionScope = pebbleDevice.connectionScope.filterNotNull().first()
+            listenForIncomingMessages(connectionScope)
+            listenForPlayerChanges(connectionScope)
+            connectionScope.coroutineContext.job.invokeOnCompletion {
+                disposeCurrentMediaController()
+            }
         }
     }
 }

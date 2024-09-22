@@ -6,12 +6,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.service.notification.NotificationListenerService
 import androidx.core.content.FileProvider
 import io.rebble.cobble.BuildConfig
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.middleware.DeviceLogController
-import io.rebble.cobble.util.hasNotificationAccessPermission
+import io.rebble.cobble.shared.util.hasNotificationAccessPermission
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
 import io.rebble.libpebblecommon.packets.LogDump
 import kotlinx.coroutines.Dispatchers

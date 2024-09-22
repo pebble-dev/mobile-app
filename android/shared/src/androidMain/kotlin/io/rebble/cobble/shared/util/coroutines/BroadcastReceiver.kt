@@ -1,4 +1,4 @@
-package io.rebble.cobble.util.coroutines
+package io.rebble.cobble.shared.util.coroutines
 
 import android.content.BroadcastReceiver
 import android.content.Context

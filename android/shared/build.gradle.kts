@@ -72,9 +72,10 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.koin.android)
-            implementation("androidx.core:core-ktx:$androidxVersion")
-            implementation("com.jakewharton.timber:timber:$timberVersion")
-            implementation("com.github.PhilJay:RRule:$rruleVersion")
+            implementation(libs.androidx.work.runtime.ktx)
+            implementation(libs.androidx.core.ktx)
+            implementation(libs.timber)
+            implementation(libs.rrule)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

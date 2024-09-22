@@ -1,10 +1,9 @@
-package io.rebble.cobble.notifications
+package io.rebble.cobble.shared.domain.notifications
 
 import android.app.Notification
 import android.app.NotificationChannel
 import android.content.ComponentName
 import android.content.Context
-import android.icu.text.UnicodeSet
 import android.os.Build
 import android.os.UserHandle
 import android.service.notification.NotificationListenerService
@@ -13,15 +12,11 @@ import androidx.core.app.NotificationCompat
 import com.benasher44.uuid.Uuid
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.data.NotificationMessage
 import io.rebble.cobble.data.toNotificationGroup
 import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.shared.database.dao.NotificationChannelDao
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.state.ConnectionState
-import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
-import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
-import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
@@ -256,7 +251,7 @@ class NotificationListener : NotificationListenerService() {
 
     companion object {
         private val _isActive = MutableStateFlow(false)
-        val isActive: StateFlow<Boolean> by ::_isActive
+        val isActive: StateFlow<Boolean> by Companion::_isActive
 
         fun getComponentName(context: Context): ComponentName {
             return ComponentName(context, NotificationListener::class.java)

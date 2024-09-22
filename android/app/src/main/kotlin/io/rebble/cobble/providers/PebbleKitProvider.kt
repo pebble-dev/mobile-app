@@ -8,8 +8,8 @@ import android.net.Uri
 import com.getpebble.android.kit.Constants
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.datasources.WatchMetadataStore
 import io.rebble.cobble.shared.domain.state.ConnectionState
+import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -20,7 +20,6 @@ class PebbleKitProvider : ContentProvider() {
     private var initialized = false
 
     private lateinit var connectionLooper: ConnectionLooper
-    private lateinit var watchMetadataStore: WatchMetadataStore
 
     override fun onCreate(): Boolean {
         // Do not initialize anything here as this gets called before Application.onCreate
@@ -43,7 +42,6 @@ class PebbleKitProvider : ContentProvider() {
                 .component
 
         connectionLooper = injectionComponent.createConnectionLooper()
-        watchMetadataStore = injectionComponent.createWatchMetadataStore()
 
         GlobalScope.launch(Dispatchers.Main.immediate) {
             connectionLooper.connectionState.collect {
@@ -67,7 +65,7 @@ class PebbleKitProvider : ContentProvider() {
 
         val cursor = MatrixCursor(CURSOR_COLUMN_NAMES)
 
-        val metadata = watchMetadataStore.lastConnectedWatchMetadata.value
+        val metadata = ConnectionStateManager.connectedWatchMetadata.value
 
         if (connectionLooper.connectionState.value is ConnectionState.Connected &&
                 metadata != null) {

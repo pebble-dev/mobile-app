@@ -13,8 +13,8 @@ import androidx.core.content.getSystemService
 import androidx.lifecycle.Lifecycle
 import io.rebble.cobble.FlutterMainActivity
 import io.rebble.cobble.bridges.FlutterBridge
-import io.rebble.cobble.datasources.PermissionChangeBus
-import io.rebble.cobble.notifications.NotificationListener
+import io.rebble.cobble.shared.domain.PermissionChangeBus
+import io.rebble.cobble.shared.domain.notifications.NotificationListener
 import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.asFlow
