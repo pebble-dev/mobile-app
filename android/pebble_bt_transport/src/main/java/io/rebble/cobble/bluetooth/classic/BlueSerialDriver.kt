@@ -3,6 +3,7 @@ package io.rebble.cobble.bluetooth.classic
 import android.Manifest
 import androidx.annotation.RequiresPermission
 import io.rebble.cobble.bluetooth.*
+import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.*
@@ -37,6 +38,7 @@ class BlueSerialDriver(
             device.protocolHandler.startPacketSendingLoop(::sendPacket)
         }
         sendLoop.invokeOnCompletion {
+            Logging.e("Send loop completed", it)
             serialSocket.close()
         }
 
@@ -51,6 +53,7 @@ class BlueSerialDriver(
 
         protocolIO!!.readLoop()
         try {
+            Logging.e("Closing socket post read loop: isConnected = ${serialSocket.isConnected}")
             serialSocket?.close()
         } catch (e: IOException) {
         }
