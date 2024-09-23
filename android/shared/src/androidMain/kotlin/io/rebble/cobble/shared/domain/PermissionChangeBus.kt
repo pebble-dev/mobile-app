@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.*
  * Bus that triggers whenever permissions change
  */
 object PermissionChangeBus {
-    private val _permissionChangeFlow = MutableSharedFlow<Unit>(Channel.CONFLATED)
+    private val _permissionChangeFlow = MutableSharedFlow<Unit>()
     val permissionChangeFlow = _permissionChangeFlow.asSharedFlow()
 
     fun trigger() {

@@ -6,6 +6,8 @@ import android.graphics.Color
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.shared.domain.state.ConnectionStateManager
+import io.rebble.cobble.shared.domain.state.watchOrNull
 import io.rebble.cobble.util.launchPigeonResult
 import io.rebble.libpebblecommon.packets.*
 import io.rebble.libpebblecommon.services.ScreenshotService
@@ -24,8 +26,7 @@ import kotlin.experimental.and
 class ScreenshotsFlutterBridge @Inject constructor(
         private val context: Context,
         bridgeLifecycleController: BridgeLifecycleController,
-        private val coroutineScope: CoroutineScope,
-        private val screenshotService: ScreenshotService
+        private val coroutineScope: CoroutineScope
 ) : FlutterBridge, Pigeons.ScreenshotsControl {
     init {
         bridgeLifecycleController.setupControl(Pigeons.ScreenshotsControl::setup, this)
@@ -35,9 +36,9 @@ class ScreenshotsFlutterBridge @Inject constructor(
         coroutineScope.launchPigeonResult(result) {
 
             try {
-                screenshotService.send(ScreenshotRequest())
+                ConnectionStateManager.connectionState.value.watchOrNull?.screenshotService?.send(ScreenshotRequest()) ?: return@launchPigeonResult Pigeons.ScreenshotResult.Builder().setSuccess(false).build()
 
-                val firstResult = receiveScreenshotResponse()
+                val firstResult = receiveScreenshotResponse() ?: return@launchPigeonResult Pigeons.ScreenshotResult.Builder().setSuccess(false).build()
 
                 val header = ScreenshotHeader().apply {
                     m.fromBytes(DataBuffer(firstResult.data.get()))
@@ -73,7 +74,7 @@ class ScreenshotsFlutterBridge @Inject constructor(
                 buffer.write(header.data.get().asByteArray())
 
                 while (buffer.size < expectedBytes) {
-                    val nextSegment = receiveScreenshotResponse()
+                    val nextSegment = receiveScreenshotResponse() ?: return@launchPigeonResult Pigeons.ScreenshotResult.Builder().setSuccess(false).build()
                     buffer.write(nextSegment.data.get().asByteArray())
                 }
 
@@ -110,9 +111,9 @@ class ScreenshotsFlutterBridge @Inject constructor(
         }
     }
 
-    private suspend fun receiveScreenshotResponse(): ScreenshotResponse {
+    private suspend fun receiveScreenshotResponse(): ScreenshotResponse? {
         return withTimeout(10_000) {
-            screenshotService.receivedMessages.receive()
+            ConnectionStateManager.connectionState.value.watchOrNull?.screenshotService?.receivedMessages?.receive()
         }
     }
 }

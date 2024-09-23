@@ -9,12 +9,14 @@ import android.provider.CalendarContract
 import androidx.core.content.ContextCompat
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.PermissionChangeBus
 import io.rebble.cobble.shared.domain.calendar.CalendarSync
 import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.cobble.shared.jobs.CalendarSyncWorker
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
@@ -33,11 +35,13 @@ class CalendarHandler(private val pebbleDevice: PebbleDevice) : CobbleHandler, K
     private var initialSyncJob: Job? = null
     private var calendarHandlerStarted = false
 
-    private val calendarChangeFlow = MutableSharedFlow<Unit>()
+    private val calendarChangeFlow = MutableSharedFlow<Unit>(extraBufferCapacity = 4, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     private val contentObserver = object : ContentObserver(null) {
         override fun onChange(selfChange: Boolean, uri: Uri?) {
-            calendarChangeFlow.tryEmit(Unit)
+            if (!calendarChangeFlow.tryEmit(Unit)) {
+                Logging.e("Failed to emit calendar change event")
+            }
         }
     }
 

@@ -262,7 +262,7 @@
         </provider>
 
         <provider
-            android:name=".providers.PebbleKitProvider"
+            android:name=".shared.providers.PebbleKitProvider"
             android:authorities="${pebbleKitProviderAuthority}"
             android:exported="true"
             tools:ignore="ExportedContentProvider" />

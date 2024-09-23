@@ -4,11 +4,10 @@ import android.content.Context
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
-import io.rebble.cobble.notifications.NotificationListener
+import io.rebble.cobble.shared.domain.notifications.NotificationListener
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import timber.log.Timber
-import javax.inject.Inject
 
 class ActiveMediaSessionProvider :
         androidx.lifecycle.LiveData<MediaController>(),

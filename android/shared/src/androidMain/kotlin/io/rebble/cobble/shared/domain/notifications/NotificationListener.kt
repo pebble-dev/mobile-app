@@ -10,47 +10,38 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 import com.benasher44.uuid.Uuid
-import io.rebble.cobble.CobbleApplication
-import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.data.toNotificationGroup
-import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.shared.database.dao.NotificationChannelDao
+import io.rebble.cobble.shared.datastore.FlutterPreferences
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.state.ConnectionState
+import io.rebble.cobble.shared.domain.state.ConnectionStateManager
+import io.rebble.cobble.shared.errors.GlobalExceptionHandler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.qualifier.named
 import timber.log.Timber
 
-class NotificationListener : NotificationListenerService() {
-    private lateinit var coroutineScope: CoroutineScope
-    private lateinit var connectionLooper: ConnectionLooper
-    private lateinit var flutterPreferences: FlutterPreferences
-    private lateinit var notificationProcessor: NotificationProcessor
-    private lateinit var callNotificationProcessor: CallNotificationProcessor
-    private lateinit var activeNotifsState: MutableStateFlow<Map<Uuid, StatusBarNotification>>
-    private lateinit var notificationChannelDao: NotificationChannelDao
+class NotificationListener : NotificationListenerService(), KoinComponent {
+    private val globalExceptionHandler: GlobalExceptionHandler by inject()
+    private val coroutineScope: CoroutineScope = CoroutineScope(
+            SupervisorJob() + globalExceptionHandler + CoroutineName("NotificationListener")
+    )
+    private val notificationProcessor: NotificationProcessor by inject()
+    private val callNotificationProcessor: CallNotificationProcessor by inject()
+    private val activeNotifsState: MutableStateFlow<Map<Uuid, StatusBarNotification>> by inject(named("activeNotifsState"))
+    private val notificationChannelDao: NotificationChannelDao by inject()
+    //TODO: switch to main prefs once we switch notif pages to flutter
+    private val flutterPreferences: FlutterPreferences by inject()
+    private val prefs: KMPPrefs by inject()
+
 
     private var isListening = false
     private var areNotificationsEnabled = true
     private var mutedPackages = listOf<String>()
 
-    private lateinit var prefs: KMPPrefs
-
     override fun onCreate() {
-        val injectionComponent = (applicationContext as CobbleApplication).component
-
-        coroutineScope = CoroutineScope(
-                SupervisorJob() + injectionComponent.createExceptionHandler() + CoroutineName("NotificationListener")
-        )
-
-        connectionLooper = injectionComponent.createConnectionLooper()
-        flutterPreferences = injectionComponent.createFlutterPreferences()
-        prefs = injectionComponent.createKMPPrefs()
-        notificationProcessor = injectionComponent.createNotificationProcessor()
-        activeNotifsState = injectionComponent.createActiveNotifsState()
-        notificationChannelDao = injectionComponent.createNotificationChannelDao()
-        callNotificationProcessor = injectionComponent.createCallNotificationProcessor()
-
         super.onCreate()
         _isActive.value = true
         Timber.d("NotificationListener created")
@@ -199,7 +190,7 @@ class NotificationListener : NotificationListenerService() {
             combine(
                     flutterPreferences.mutePhoneNotificationSounds,
                     flutterPreferences.mutePhoneCallSounds,
-                    connectionLooper.connectionState
+                    ConnectionStateManager.connectionState
             ) { mutePhoneNotificationSounds, mutePhoneCallSounds, connectionState ->
                 if (connectionState is ConnectionState.Disconnected) {
                     // Do nothing. Listener will be unbound anyway
@@ -208,24 +199,13 @@ class NotificationListener : NotificationListenerService() {
 
                 val connected = connectionState is ConnectionState.Connected
 
-                val listenerHints = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    var hints = 0
+                var listenerHints = 0
+                if (connected && mutePhoneNotificationSounds) {
+                    listenerHints = listenerHints or HINT_HOST_DISABLE_NOTIFICATION_EFFECTS
+                }
 
-                    if (connected && mutePhoneNotificationSounds) {
-                        hints = hints or HINT_HOST_DISABLE_NOTIFICATION_EFFECTS
-                    }
-
-                    if (connected && mutePhoneCallSounds) {
-                        hints = hints or HINT_HOST_DISABLE_CALL_EFFECTS
-                    }
-
-                    hints
-                } else {
-                    if (connected && (mutePhoneCallSounds || mutePhoneNotificationSounds)) {
-                        HINT_HOST_DISABLE_EFFECTS
-                    } else {
-                        0
-                    }
+                if (connected && mutePhoneCallSounds) {
+                    listenerHints = listenerHints or HINT_HOST_DISABLE_CALL_EFFECTS
                 }
 
                 requestListenerHints(listenerHints)

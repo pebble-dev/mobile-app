@@ -1,20 +1,17 @@
-package io.rebble.cobble.middleware
+package io.rebble.cobble.shared.middleware
 
-import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.shared.domain.state.ConnectionState
-import io.rebble.libpebblecommon.packets.AppLogShippingControlMessage
+import io.rebble.cobble.shared.Logging
+import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.libpebblecommon.packets.LogDump
-import io.rebble.libpebblecommon.services.LogDumpService
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
-import timber.log.Timber
-import javax.inject.Inject
 import kotlin.random.Random
 
-class DeviceLogController @Inject constructor(
-        private val deviceLogsService: LogDumpService
+class DeviceLogController(
+        private val device: PebbleDevice
 ) {
+    private val deviceLogsService = device.logDumpService
     private val scope = CoroutineScope(Dispatchers.IO)
     private val mutex = Mutex()
 
@@ -35,7 +32,7 @@ class DeviceLogController @Inject constructor(
                     it !is LogDump.Done
                 }
                 .onCompletion {
-                    Timber.d("Log dump completed")
+                    Logging.d("Log dump completed")
                     mutex.unlock()
                 }
         deviceLogsService.send(

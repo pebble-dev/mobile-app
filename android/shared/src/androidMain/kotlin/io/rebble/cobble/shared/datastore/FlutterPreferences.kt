@@ -1,26 +1,22 @@
-package io.rebble.cobble.datasources
+package io.rebble.cobble.shared.datastore
 
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Base64
-import dagger.Reusable
-import io.rebble.cobble.bluetooth.workarounds.WorkaroundDescriptor
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
+import io.rebble.cobble.shared.workarounds.WorkaroundDescriptor
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.io.ByteArrayInputStream
 import java.io.ObjectInputStream
-import javax.inject.Inject
 
 /**
  * Read only provider for all shared preferences from flutter
  */
-@Reusable
-class FlutterPreferences @Inject constructor(private val context: Context) {
+class FlutterPreferences: KoinComponent {
+    private val context: Context by inject()
     private val preferences = context.getSharedPreferences(
             "FlutterSharedPreferences",
-            Context.MODE_PRIVATE
+        Context.MODE_PRIVATE
     )
 
     val mutePhoneNotificationSounds = preferences.flow(

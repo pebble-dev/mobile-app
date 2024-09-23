@@ -1,4 +1,4 @@
-package io.rebble.cobble.providers
+package io.rebble.cobble.shared.providers
 
 import android.content.ContentProvider
 import android.content.ContentValues
@@ -6,10 +6,9 @@ import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
 import com.getpebble.android.kit.Constants
-import io.rebble.cobble.CobbleApplication
-import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
+import io.rebble.cobble.shared.domain.state.watchOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -18,8 +17,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalCoroutinesApi::class)
 class PebbleKitProvider : ContentProvider() {
     private var initialized = false
-
-    private lateinit var connectionLooper: ConnectionLooper
 
     override fun onCreate(): Boolean {
         // Do not initialize anything here as this gets called before Application.onCreate
@@ -38,24 +35,19 @@ class PebbleKitProvider : ContentProvider() {
 
         initialized = true
 
-        val injectionComponent = (context as CobbleApplication)
-                .component
-
-        connectionLooper = injectionComponent.createConnectionLooper()
-
         GlobalScope.launch(Dispatchers.Main.immediate) {
-            connectionLooper.connectionState.collect {
+            ConnectionStateManager.connectionState.collect {
                 context.contentResolver.notifyChange(Constants.URI_CONTENT_BASALT, null)
             }
         }
     }
 
     override fun query(
-            uri: Uri,
-            projection: Array<out String>?,
-            selection: String?,
-            selectionArgs: Array<out String>?,
-            sortOrder: String?
+        uri: Uri,
+        projection: Array<out String>?,
+        selection: String?,
+        selectionArgs: Array<out String>?,
+        sortOrder: String?
     ): Cursor? {
         if (uri != Constants.URI_CONTENT_BASALT) {
             return null
@@ -65,9 +57,9 @@ class PebbleKitProvider : ContentProvider() {
 
         val cursor = MatrixCursor(CURSOR_COLUMN_NAMES)
 
-        val metadata = ConnectionStateManager.connectedWatchMetadata.value
+        val metadata = ConnectionStateManager.connectionState.value.watchOrNull?.metadata?.value
 
-        if (connectionLooper.connectionState.value is ConnectionState.Connected &&
+        if (ConnectionStateManager.connectionState.value is ConnectionState.Connected &&
                 metadata != null) {
             val parsedVersion = FIRMWARE_VERSION_REGEX.find(metadata.running.versionTag.get())
             val groupValues = parsedVersion?.groupValues

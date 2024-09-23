@@ -1,22 +1,21 @@
-package io.rebble.cobble.errors
+package io.rebble.cobble.shared.errors
 
+import io.rebble.cobble.shared.Logging
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
-import timber.log.Timber
-import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 /**
  * Global exception handler for all coroutines in the app
  */
-class GlobalExceptionHandler @Inject constructor() : CoroutineExceptionHandler {
+class GlobalExceptionHandler: CoroutineExceptionHandler {
     override fun handleException(context: CoroutineContext, exception: Throwable) {
         if (exception is CancellationException) {
             return
         }
 
         // TODO properly handle exceptions (logging?)
-        Timber.e(exception, "Coroutine exception - context: $context")
+        Logging.e("Coroutine exception - context: $context", exception)
     }
 
     override val key: CoroutineContext.Key<*>

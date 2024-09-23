@@ -1,7 +1,6 @@
-package io.rebble.cobble.notifications
+package io.rebble.cobble.shared.domain.notifications
 
 import android.service.notification.StatusBarNotification
-import io.rebble.cobble.errors.GlobalExceptionHandler
 import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.notifications.calls.CallNotification
@@ -10,23 +9,20 @@ import io.rebble.cobble.shared.domain.notifications.calls.DiscordCallNotificatio
 import io.rebble.cobble.shared.domain.notifications.calls.WhatsAppCallNotificationInterpreter
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.libpebblecommon.packets.PhoneControl
-import io.rebble.libpebblecommon.services.PhoneControlService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 import kotlin.random.Random
-import io.rebble.cobble.bluetooth.ConnectionLooper
-import javax.inject.Singleton
+import io.rebble.cobble.shared.domain.state.ConnectionStateManager
+import io.rebble.cobble.shared.domain.state.watchOrNull
+import io.rebble.cobble.shared.errors.GlobalExceptionHandler
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-@Singleton
-class CallNotificationProcessor @Inject constructor(
-        exceptionHandler: GlobalExceptionHandler,
-        private val prefs: KMPPrefs,
-        private val phoneControl: PhoneControlService,
-        private val connectionLooper: ConnectionLooper
-) {
+class CallNotificationProcessor: KoinComponent {
+    private val exceptionHandler: GlobalExceptionHandler by inject()
+    private val prefs: KMPPrefs by inject()
     val coroutineScope = CoroutineScope(
             SupervisorJob() + exceptionHandler
     )
@@ -57,10 +53,11 @@ class CallNotificationProcessor @Inject constructor(
             } else {
                 Logging.d("Call state changed to ${state::class.simpleName} from ${previousState::class.simpleName}")
             }
+            val phoneControl = ConnectionStateManager.connectionState.value.watchOrNull?.phoneControlService
             if (state is CallState.RINGING && previousState is CallState.IDLE) {
                 state.cookie?.let {
                     Logging.d("Sending incoming call notification")
-                    phoneControl.send(
+                    phoneControl?.send(
                             PhoneControl.IncomingCall(
                                     it,
                                     state.notification.contactHandle ?: "Unknown",
@@ -73,13 +70,13 @@ class CallNotificationProcessor @Inject constructor(
             } else if (state is CallState.ONGOING && (previousState is CallState.RINGING || previousState is CallState.IDLE)) {
                 state.cookie?.let {
                     Logging.d("Sending start call")
-                    phoneControl.send(PhoneControl.Start(it))
+                    phoneControl?.send(PhoneControl.Start(it))
                 } ?: run {
                     Logging.e("Ongoing call state does not have a cookie")
                 }
             } else if (state is CallState.IDLE && (previousState is CallState.ONGOING || previousState is CallState.RINGING)) {
                 previousState.cookie?.let {
-                    phoneControl.send(PhoneControl.End(it))
+                    phoneControl?.send(PhoneControl.End(it))
                 } ?: run {
                     Logging.d("Previous call state does not have a cookie, not sending end call notification")
                 }
@@ -135,7 +132,10 @@ class CallNotificationProcessor @Inject constructor(
                     // Random number that does not end with 0xCA (magic number for phone call)
                     callState.value = CallState.RINGING(callNotification, nwCookie)
                 } else if (callState.value !is CallState.ONGOING && callNotification.type == CallNotificationType.ONGOING) {
-                    callState.value = CallState.ONGOING(callNotification, (callState.value as? CallState.RINGING)?.cookie ?: nwCookie)
+                    callState.value = CallState.ONGOING(
+                        callNotification,
+                        (callState.value as? CallState.RINGING)?.cookie ?: nwCookie
+                    )
                 }
             }
         }
@@ -158,7 +158,7 @@ class CallNotificationProcessor @Inject constructor(
     }
 
     fun handleCallAction(action: PhoneControl) {
-        if (connectionLooper.connectionState.value !is ConnectionState.Connected) {
+        if (ConnectionStateManager.connectionState.value !is ConnectionState.Connected) {
             Logging.w("Ignoring phone control message because watch is not connected")
             return
         }

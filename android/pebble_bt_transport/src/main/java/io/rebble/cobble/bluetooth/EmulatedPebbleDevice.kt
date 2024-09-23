@@ -7,9 +7,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
 
 class EmulatedPebbleDevice(
-        address: String,
-        protocolHandler: ProtocolHandler
-) : PebbleDevice(null, protocolHandler, address){
+        address: String
+) : PebbleDevice(null, address){
 
     override fun toString(): String {
         return "< EmulatedPebbleDevice, address=$address, connectionScopeActive=${connectionScope.value?.isActive} >"

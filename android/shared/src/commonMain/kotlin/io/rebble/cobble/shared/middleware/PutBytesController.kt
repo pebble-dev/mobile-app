@@ -1,6 +1,7 @@
 package io.rebble.cobble.shared.middleware
 
 import io.rebble.cobble.shared.Logging
+import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.domain.state.watchOrNull
 import io.rebble.cobble.shared.util.File
@@ -22,9 +23,8 @@ import okio.use
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class PutBytesController: KoinComponent {
-    private val putBytesService: PutBytesService by inject()
-
+class PutBytesController(pebbleDevice: PebbleDevice): KoinComponent {
+    private val putBytesService = pebbleDevice.putBytesService
     private val _status: MutableStateFlow<Status> = MutableStateFlow(Status(State.IDLE))
     private val statusMutex = Mutex()
     val status: StateFlow<Status> get() = _status

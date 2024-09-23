@@ -1,8 +1,8 @@
-package io.rebble.cobble.bluetooth.workarounds
+package io.rebble.cobble.shared.workarounds
 
 import android.content.Context
 import android.os.Build
-import io.rebble.cobble.bluetooth.workarounds.UnboundWatchBeforeConnecting.isNeeded
+import io.rebble.cobble.shared.workarounds.UnboundWatchBeforeConnecting.isNeeded
 
 /**
  * Workaround for BT stack bug on Android 9 and 10 where phone can't connect to the watch if it was

@@ -1,4 +1,4 @@
-package io.rebble.cobble.notifications
+package io.rebble.cobble.shared.domain.notifications
 
 import android.app.Notification
 import android.app.Notification.Action
@@ -8,20 +8,16 @@ import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 import com.benasher44.uuid.uuid4
 import com.benasher44.uuid.uuidFrom
-import com.benasher44.uuid.uuidOf
-import io.rebble.cobble.data.NotificationGroup
-import io.rebble.cobble.data.NotificationMessage
 import io.rebble.cobble.shared.database.dao.NotificationChannelDao
 import io.rebble.cobble.shared.database.dao.PersistedNotificationDao
-import io.rebble.cobble.shared.database.entity.NotificationChannel
 import io.rebble.cobble.shared.database.entity.PersistedNotification
 import io.rebble.cobble.shared.datastore.DEFAULT_MUTED_PACKAGES_VERSION
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.datastore.defaultMutedPackages
 import io.rebble.cobble.shared.domain.common.SystemAppIDs.notificationsWatchappId
-import io.rebble.cobble.shared.domain.notifications.*
-import io.rebble.cobble.shared.domain.state.ConnectionState
+import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.domain.state.watchOrNull
+import io.rebble.cobble.shared.errors.GlobalExceptionHandler
 import io.rebble.libpebblecommon.PacketPriority
 import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
@@ -36,31 +32,24 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
-import okio.Timeout
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import org.koin.core.qualifier.named
-import org.koin.mp.KoinPlatformTools
 import timber.log.Timber
 import java.util.UUID
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
-@Singleton
-class NotificationProcessor @Inject constructor(
-        exceptionHandler: CoroutineExceptionHandler,
-        private val persistedNotifDao: PersistedNotificationDao,
-        private val notificationChannelDao: NotificationChannelDao,
-        private val context: Context,
-        private val activeNotifsState: MutableStateFlow<Map<UUID, StatusBarNotification>>,
-        private val prefs: KMPPrefs,
-) {
-    //TODO: Use Koin for DI
-    private val connectionState: StateFlow<ConnectionState> = KoinPlatformTools.defaultContext().get().get(named("connectionState"))
+class NotificationProcessor: KoinComponent {
+    private val exceptionHandler: GlobalExceptionHandler by inject()
+    private val persistedNotifDao: PersistedNotificationDao by inject()
+    private val notificationChannelDao: NotificationChannelDao by inject()
+    private val context: Context by inject()
+    private val activeNotifsState: MutableStateFlow<Map<UUID, StatusBarNotification>> by inject(named("activeNotifsState"))
+    private val prefs: KMPPrefs by inject()
     companion object {
         private val notificationProcessingTimeout = 10.seconds
     }
@@ -68,7 +57,7 @@ class NotificationProcessor @Inject constructor(
             SupervisorJob() + exceptionHandler + CoroutineName("NotificationProcessor")
     )
 
-    private val blobDBService: BlobDBService? get() = connectionState.value.watchOrNull?.blobDBService
+    private val blobDBService: BlobDBService? get() = ConnectionStateManager.connectionState.value.watchOrNull?.blobDBService
 
     private val activeGroups = mutableMapOf<String, NotificationGroup>()
 

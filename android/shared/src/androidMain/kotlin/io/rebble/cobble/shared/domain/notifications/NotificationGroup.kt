@@ -1,4 +1,4 @@
-package io.rebble.cobble.data
+package io.rebble.cobble.shared.domain.notifications
 
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat

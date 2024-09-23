@@ -1,34 +1,33 @@
 package io.rebble.cobble.shared.di
 
+import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.cobble.shared.middleware.PutBytesController
 import io.rebble.libpebblecommon.ProtocolHandlerImpl
 import io.rebble.libpebblecommon.ProtocolHandler
-import io.rebble.libpebblecommon.services.AppFetchService
-import io.rebble.libpebblecommon.services.MusicService
-import io.rebble.libpebblecommon.services.PutBytesService
-import io.rebble.libpebblecommon.services.SystemService
+import io.rebble.libpebblecommon.services.*
 import io.rebble.libpebblecommon.services.app.AppRunStateService
 import io.rebble.libpebblecommon.services.appmessage.AppMessageService
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import org.koin.dsl.module
 import io.rebble.libpebblecommon.services.blobdb.TimelineService
+import org.koin.dsl.bind
 
 val libpebbleModule = module {
-    //TODO: Move away from global protocol handler and singleton services
-    single<ProtocolHandler> {
+    factory {
         ProtocolHandlerImpl()
+    } bind ProtocolHandler::class
+
+    factory { params ->
+        TimelineService(params.get())
     }
-    single {
-        TimelineService(get())
+    factory { params ->
+        PutBytesService(params.get())
     }
-    single {
-        PutBytesService(get())
+    factory { params ->
+        AppFetchService(params.get())
     }
-    single {
-        AppFetchService(get())
-    }
-    single {
-        PutBytesController()
+    factory { params ->
+        PutBytesController(params.get())
     }
 
     factory { params ->
@@ -49,5 +48,21 @@ val libpebbleModule = module {
 
     factory { params ->
         SystemService(params.get())
+    }
+
+    factory { params ->
+        PhoneControlService(params.get())
+    }
+
+    factory { params ->
+        AppLogService(params.get())
+    }
+
+    factory { params ->
+        LogDumpService(params.get())
+    }
+
+    factory { params ->
+        ScreenshotService(params.get())
     }
 }

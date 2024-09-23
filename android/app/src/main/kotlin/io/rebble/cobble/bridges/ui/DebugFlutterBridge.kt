@@ -2,7 +2,7 @@ package io.rebble.cobble.bridges.ui
 
 import android.content.Context
 import io.rebble.cobble.bridges.FlutterBridge
-import io.rebble.cobble.errors.GlobalExceptionHandler
+import io.rebble.cobble.shared.errors.GlobalExceptionHandler
 import io.rebble.cobble.log.collectAndShareLogs
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.shared.datastore.KMPPrefs
@@ -14,10 +14,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class DebugFlutterBridge @Inject constructor(
-        private val context: Context,
-        private val prefs: KMPPrefs,
-        private val globalExceptionHandler: GlobalExceptionHandler,
-        bridgeLifecycleController: BridgeLifecycleController
+    private val context: Context,
+    private val prefs: KMPPrefs,
+    private val globalExceptionHandler: GlobalExceptionHandler,
+    bridgeLifecycleController: BridgeLifecycleController
 ) : FlutterBridge, Pigeons.DebugControl {
     private val scope = CoroutineScope(Dispatchers.Main + globalExceptionHandler)
     init {

@@ -31,13 +31,13 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class AppInstallHandler(
-        pebbleDevice: PebbleDevice
+        private val pebbleDevice: PebbleDevice
 ): CobbleHandler, KoinComponent {
     private val lockerDao: LockerDao by inject()
     private val platformContext: PlatformContext by inject()
-    private val appFetchService: AppFetchService by inject()
     private val httpClient: HttpClient by inject()
-    private val putBytesController: PutBytesController by inject()
+    private val putBytesController = pebbleDevice.putBytesController
+    private val appFetchService = pebbleDevice.appFetchService
 
     init {
         pebbleDevice.negotiationScope.launch {
@@ -99,7 +99,7 @@ class AppInstallHandler(
             // Wait some time for metadata to become available in case this has been called
             // Right after watch has been connected
             val hardwarePlatformNumber = withTimeoutOrNull(2_000) {
-                ConnectionStateManager.connectedWatchMetadata.first()
+                pebbleDevice.metadata.first()
             }
                     ?.running
                     ?.hardwarePlatform

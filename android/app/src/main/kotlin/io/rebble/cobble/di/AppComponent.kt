@@ -8,52 +8,32 @@ import dagger.Component
 import io.rebble.cobble.NotificationChannelManager
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.DeviceTransport
-import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.datasources.PairedStorage
-import io.rebble.cobble.errors.GlobalExceptionHandler
-import io.rebble.cobble.middleware.AppLogController
-import io.rebble.cobble.middleware.DeviceLogController
-import io.rebble.cobble.notifications.CallNotificationProcessor
-import io.rebble.cobble.notifications.NotificationProcessor
+import io.rebble.cobble.shared.middleware.DeviceLogController
 import io.rebble.cobble.service.ServiceLifecycleControl
 import io.rebble.cobble.shared.database.dao.NotificationChannelDao
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.calendar.CalendarSync
+import io.rebble.cobble.shared.errors.GlobalExceptionHandler
 import io.rebble.cobble.shared.jobs.AndroidJobScheduler
-import io.rebble.libpebblecommon.ProtocolHandler
-import io.rebble.libpebblecommon.services.PhoneControlService
-import io.rebble.libpebblecommon.services.ProtocolService
-import io.rebble.libpebblecommon.services.blobdb.BlobDBService
-import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Singleton
 
 @Singleton
 @Component(modules = [
-    AppModule::class,
-    LibPebbleModule::class
+    AppModule::class
 ])
 interface AppComponent {
-    fun createPhoneControlService(): PhoneControlService
     fun createBlueCommon(): DeviceTransport
 
-    fun createProtocolHandler(): ProtocolHandler
     fun createExceptionHandler(): GlobalExceptionHandler
     fun createConnectionLooper(): ConnectionLooper
     fun createPairedStorage(): PairedStorage
-    fun createNotificationProcessor(): NotificationProcessor
-    fun createCallNotificationProcessor(): CallNotificationProcessor
-    fun createFlutterPreferences(): FlutterPreferences
-    fun createAppLogController(): AppLogController
     fun initServiceLifecycleControl(): ServiceLifecycleControl
     fun initNotificationChannels(): NotificationChannelManager
-    fun createDeviceLogController(): DeviceLogController
-
-    fun initLibPebbleCommonServices(): Set<ProtocolService>
 
     fun createActivitySubcomponentFactory(): ActivitySubcomponent.Factory
     fun createFlutterActivitySubcomponentFactory(): FlutterActivitySubcomponent.Factory
-    fun createServiceSubcomponentFactory(): ServiceSubcomponent.Factory
 
     //TODO: Unify DI under Koin
     fun createKMPCalendarSync(): CalendarSync

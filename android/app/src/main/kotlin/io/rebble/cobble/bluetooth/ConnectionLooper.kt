@@ -97,7 +97,7 @@ class ConnectionLooper @Inject constructor(
                         val connectionScope = CoroutineScope(SupervisorJob() + errorHandler + Dispatchers.IO) + CoroutineName("ConnectionScope-$macAddress")
                         try {
                             blueCommon.startSingleWatchConnection(macAddress).collect {
-                                if (it is SingleConnectionStatus.Connected && connectionState.value !is ConnectionState.Connected && connectionState.value !is ConnectionState.RecoveryMode) {
+                                if (it is SingleConnectionStatus.Connected /*&& connectionState.value !is ConnectionState.Connected && connectionState.value !is ConnectionState.RecoveryMode*/) {
                                     // initial connection, wait on negotiation
                                     _connectionState.value = ConnectionState.Negotiating(it.watch)
                                 } else {

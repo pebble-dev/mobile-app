@@ -18,9 +18,8 @@ interface BlueIO {
 
 class BluetoothPebbleDevice(
         val bluetoothDevice: BluetoothDevice,
-        protocolHandler: ProtocolHandler,
         address: String
-) : PebbleDevice(null, protocolHandler, address){
+) : PebbleDevice(null, address){
 
     override fun toString(): String {
         val start = "< BluetoothPebbleDevice, address=$address, connectionScopeActive=${connectionScope.value?.isActive}, bluetoothDevice=< BluetoothDevice address=${bluetoothDevice.address}"

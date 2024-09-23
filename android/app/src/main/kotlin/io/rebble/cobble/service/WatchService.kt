@@ -45,11 +45,8 @@ class WatchService : LifecycleService() {
         startForeground(NotificationId.WATCH_CONNECTION, mainNotifBuilder.build())
 
         val injectionComponent = (applicationContext as CobbleApplication).component
-        val serviceComponent = injectionComponent.createServiceSubcomponentFactory()
-                .create(this)
 
         coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
-        protocolHandler = injectionComponent.createProtocolHandler()
         connectionLooper = injectionComponent.createConnectionLooper()
 
         calendarSync = injectionComponent.createKMPCalendarSync()
@@ -61,7 +58,6 @@ class WatchService : LifecycleService() {
         }
 
         startNotificationLoop()
-        startHandlersLoop(serviceComponent.getNegotiationMessageHandlersProvider(), serviceComponent.getNormalMessageHandlersProvider())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -142,20 +138,5 @@ class WatchService : LifecycleService() {
         return NotificationCompat
                 .Builder(this@WatchService, channel)
                 .setContentIntent(mainActivityIntent)
-    }
-
-    private fun startHandlersLoop(negotiationHandlers: Provider<Set<CobbleHandler>>, normalHandlers: Provider<Set<CobbleHandler>>) {
-        coroutineScope.launch {
-            connectionLooper.connectionState
-                    .filter { it is ConnectionState.Connected || it is ConnectionState.Negotiating }
-                    .collect {
-                        watchConnectionScope = connectionLooper
-                                .getWatchConnectedScope(Dispatchers.Main.immediate)
-                        negotiationHandlers.get()
-                        if (it is ConnectionState.Connected) {
-                            normalHandlers.get()
-                        }
-                    }
-        }
     }
 }

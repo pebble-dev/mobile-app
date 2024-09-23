@@ -1,28 +1,27 @@
-package io.rebble.cobble.middleware
+package io.rebble.cobble.shared.middleware
 
-import io.rebble.cobble.bluetooth.ConnectionLooper
+import io.rebble.cobble.shared.Logging
+import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.cobble.shared.domain.state.ConnectionState
+import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.libpebblecommon.packets.AppLogShippingControlMessage
-import io.rebble.libpebblecommon.services.AppLogService
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import javax.inject.Inject
 
-class AppLogController @Inject constructor(
-        connectionLooper: ConnectionLooper,
-        private val appLogsService: AppLogService
+class AppLogController(
+        private val pebbleDevice: PebbleDevice,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    val logs = connectionLooper.connectionState.flatMapLatest {
+    val logs = ConnectionStateManager.connectionState.flatMapLatest {
         if (it is ConnectionState.Connected) {
             flow {
                 toggleAppLogOnWatch(true)
 
-                emitAll(appLogsService.receivedMessages.receiveAsFlow())
+                emitAll(pebbleDevice.appLogsService.receivedMessages.receiveAsFlow())
             }
         } else {
             emptyFlow()
@@ -34,10 +33,10 @@ class AppLogController @Inject constructor(
     private suspend fun toggleAppLogOnWatch(enable: Boolean) {
         try {
             withContext(NonCancellable) {
-                appLogsService.send(AppLogShippingControlMessage(enable))
+                pebbleDevice.appLogsService.send(AppLogShippingControlMessage(enable))
             }
         } catch (e: Exception) {
-            Timber.e(e, "AppLog transmit error")
+            Logging.e("AppLog transmit error", e)
         }
     }
 }

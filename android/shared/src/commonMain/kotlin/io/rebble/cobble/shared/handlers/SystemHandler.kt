@@ -38,7 +38,10 @@ class SystemHandler(
             sendCurrentTime()
         }
 
-        negotiate()
+        negotiationScope.launch {
+            ConnectionStateManager.connectionState.first { it is ConnectionState.Negotiating }
+            negotiate()
+        }
     }
 
     fun negotiationsComplete(watch: PebbleDevice) {
@@ -62,12 +65,12 @@ class SystemHandler(
             ConnectionStateManager.connectionState.first { it is ConnectionState.Negotiating }
             Logging.i("Negotiating with watch")
             refreshWatchMetadata()
-            ConnectionStateManager.connectedWatchMetadata.value?.let {
+            pebbleDevice.metadata.value?.let {
                 if (it.running.isRecovery.get()) {
                     Logging.i("Watch is in recovery mode, switching to recovery state")
-                    ConnectionStateManager.connectionState.value.watchOrNull?.let { it1 -> recoveryMode(it1) }
+                    recoveryMode(pebbleDevice)
                 } else {
-                    ConnectionStateManager.connectionState.value.watchOrNull?.let { it1 -> negotiationsComplete(it1) }
+                    negotiationsComplete(pebbleDevice)
                 }
             }
         }
@@ -80,10 +83,12 @@ class SystemHandler(
                 withTimeout(3000) {
                     val watchInfo = systemService.requestWatchVersion()
                     //FIXME: Possible race condition here
-                    val watch = ConnectionStateManager.connectionState.value.watchOrNull
-                    watch?.metadata?.value = watchInfo
+                    pebbleDevice.metadata.value = watchInfo
                     val watchModel = systemService.requestWatchModel()
-                    watch?.modelId?.value = watchModel
+                    pebbleDevice.modelId.value = watchModel
+                }
+                if (retries > 0) {
+                    Logging.i("Successfully got watch metadata after $retries retries")
                 }
                 break
             } catch (e: TimeoutCancellationException) {
@@ -96,8 +101,7 @@ class SystemHandler(
         }
         if (retries >= 3) {
             Logging.e("Failed to get watch metadata after 3 retries, giving up and reconnecting")
-            //TODO: double check this works
-            negotiationScope.cancel("Failed to get watch metadata")
+            pebbleDevice.close()
         }
     }
 

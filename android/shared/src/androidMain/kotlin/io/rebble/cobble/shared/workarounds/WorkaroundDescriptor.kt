@@ -1,4 +1,4 @@
-package io.rebble.cobble.bluetooth.workarounds
+package io.rebble.cobble.shared.workarounds
 
 import android.content.Context
 

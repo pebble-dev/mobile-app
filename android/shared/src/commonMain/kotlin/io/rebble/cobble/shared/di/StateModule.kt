@@ -15,12 +15,6 @@ val stateModule = module {
     single(named("connectionState")) {
         MutableStateFlow<ConnectionState>(ConnectionState.Disconnected)
     } bind StateFlow::class
-    factory(named("connectedWatchMetadata")) {
-        get<StateFlow<ConnectionState>>(named("connectionState"))
-                .flatMapLatest { it.watchOrNull?.metadata?.take(1) ?: flowOf(null) }
-                .filterNotNull()
-                .stateIn(CoroutineScope(Dispatchers.Default), SharingStarted.WhileSubscribed(), null)
-    }
     factory(named("isConnected")) {
         get<StateFlow<ConnectionState>>(named("connectionState"))
                 .map { it is ConnectionState.Connected }

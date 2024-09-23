@@ -11,13 +11,14 @@ import io.rebble.cobble.shared.domain.state.watchOrNull
 import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 class ConnectionFlutterBridge @Inject constructor(
         bridgeLifecycleController: BridgeLifecycleController,
         private val connectionLooper: ConnectionLooper,
-        private val coroutineScope: CoroutineScope,
-        private val protocolHandler: ProtocolHandler
+        private val coroutineScope: CoroutineScope
 ) : FlutterBridge, Pigeons.ConnectionControl {
     private val connectionCallbacks = bridgeLifecycleController
             .createCallbacks(Pigeons::ConnectionCallbacks)
@@ -41,19 +42,14 @@ class ConnectionFlutterBridge @Inject constructor(
 
     @Suppress("UNCHECKED_CAST")
     override fun sendRawPacket(arg: Pigeons.ListWrapper) {
-        coroutineScope.launch {
-            val byteArray = (arg.value as List<Number>).map { it.toByte().toUByte() }.toUByteArray()
-            protocolHandler.send(byteArray)
-        }
+        error("Deprecated")
     }
 
     override fun observeConnectionChanges() {
         statusObservingJob = coroutineScope.launch(Dispatchers.Main) {
-            combine(
-                    connectionLooper.connectionState,
-                    ConnectionStateManager.connectedWatchMetadata,
-            ) { connectionState, watchMetadata ->
+            ConnectionStateManager.connectionState.map { connectionState ->
                 val bluetoothDevice = connectionState.watchOrNull
+                val watchMetadata = connectionState.watchOrNull?.metadata?.value
                 val model = watchMetadata?.running?.hardwarePlatform?.get()?.toInt()
                 Pigeons.WatchConnectionStatePigeon.Builder()
                         .setIsConnected(connectionState is ConnectionState.Connected ||

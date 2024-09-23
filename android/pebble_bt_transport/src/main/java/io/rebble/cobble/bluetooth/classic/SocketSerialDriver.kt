@@ -22,7 +22,7 @@ import kotlin.coroutines.coroutineContext
  * Used for testing app via a qemu pebble
  */
 class SocketSerialDriver(
-        private val protocolHandler: ProtocolHandler,
+        private val device: PebbleDevice,
         private val incomingPacketsListener: MutableSharedFlow<ByteArray>
 ) : BlueIO {
 
@@ -63,7 +63,7 @@ class SocketSerialDriver(
                 val packet = ByteArray(length.toInt() + 2 * (Short.SIZE_BYTES))
                 buf.get(packet, 0, packet.size)
                 incomingPacketsListener.emit(packet)
-                protocolHandler.receivePacket(packet.toUByteArray())
+                device.protocolHandler.receivePacket(packet.toUByteArray())
             }
         } finally {
             Timber.e("Read loop returning")
@@ -103,7 +103,7 @@ class SocketSerialDriver(
             delay(8000)
 
             val sendLoop = launch {
-                protocolHandler.startPacketSendingLoop(::sendPacket)
+                device.protocolHandler.startPacketSendingLoop(::sendPacket)
             }
 
             inputStream = serialSocket.inputStream

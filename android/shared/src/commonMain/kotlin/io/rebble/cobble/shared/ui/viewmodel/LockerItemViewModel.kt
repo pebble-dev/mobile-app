@@ -10,6 +10,7 @@ import io.ktor.client.request.get
 import io.ktor.http.HttpStatusCode
 import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.database.entity.SyncedLockerEntryWithPlatforms
+import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.domain.state.watchOrNull
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
@@ -28,11 +29,13 @@ class LockerItemViewModel(private val httpClient: HttpClient, val entry: SyncedL
     }
     private var _imageState = MutableStateFlow<ImageState>(ImageState.Loading)
     val imageState = _imageState.asStateFlow()
-    val supportedState = ConnectionStateManager.connectedWatchMetadata.map {
-        it?.running?.let { running ->
-            val platform = WatchHardwarePlatform.fromProtocolNumber(running.hardwarePlatform.get())
-            entry.platforms.any { it.name == platform?.watchType?.codename }
-        } ?: true
+    val supportedState = ConnectionStateManager.connectionState.flatMapConcat {
+        it.watchOrNull?.metadata?.mapNotNull { meta ->
+            meta?.running?.let { running ->
+                val platform = WatchHardwarePlatform.fromProtocolNumber(running.hardwarePlatform.get())
+                entry.platforms.any { it.name == platform?.watchType?.codename }
+            }
+        } ?: flowOf(true)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), true)
 
     val title: String
@@ -62,8 +65,8 @@ class LockerItemViewModel(private val httpClient: HttpClient, val entry: SyncedL
     }
 
     init {
-        ConnectionStateManager.connectedWatchMetadata.onEach {
-            val platform = it?.running?.hardwarePlatform?.get()?.let { platformId ->
+        ConnectionStateManager.connectionState.filterIsInstance<ConnectionState.Connected>().onEach {
+            val platform = it.watch.metadata.value?.running?.hardwarePlatform?.get()?.let { platformId ->
                 WatchHardwarePlatform.fromProtocolNumber(platformId)
             }
             val availablePlatform = platform?.let { entry.platforms.firstOrNull { it.name == platform.watchType.codename } }

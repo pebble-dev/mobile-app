@@ -1,4 +1,4 @@
-package io.rebble.cobble.data
+package io.rebble.cobble.shared.domain.notifications
 
 import kotlinx.serialization.Serializable
 
