@@ -39,5 +39,14 @@ fun TestPage(onShowSnackbar: (String) -> Unit) {
         }) {
             Text("Clear locker")
         }
+
+        OutlinedButton(onClick = {
+            watchConnection.watchOrNull?.connectionScope?.value?.launch {
+                LockerSyncJob.schedule(koin.get())
+                onShowSnackbar("Syncing locker")
+            }
+        }) {
+            Text("Sync locker")
+        }
     }
 }

@@ -11,6 +11,7 @@ import io.rebble.cobble.shared.domain.notifications.PlatformNotificationActionEx
 import io.rebble.cobble.shared.domain.notifications.AndroidNotificationActionExecutor
 import io.rebble.cobble.shared.domain.calendar.AndroidCalendarActionExecutor
 import io.rebble.cobble.shared.domain.common.PebbleDevice
+import io.rebble.cobble.shared.domain.notifications.CallNotificationProcessor
 import io.rebble.cobble.shared.domain.notifications.NotificationProcessor
 import io.rebble.cobble.shared.handlers.*
 import io.rebble.cobble.shared.handlers.music.MusicHandler
@@ -56,4 +57,5 @@ val androidModule = module {
     }
 
     singleOf(::NotificationProcessor)
+    singleOf(::CallNotificationProcessor)
 }
