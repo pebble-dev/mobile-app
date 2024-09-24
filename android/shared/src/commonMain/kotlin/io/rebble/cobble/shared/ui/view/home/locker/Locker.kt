@@ -41,18 +41,29 @@ fun Locker(page: LockerTabs, lockerDao: LockerDao = getKoin().get(), viewModel: 
             }
         }
 
-        if (entriesState is LockerViewModel.LockerEntriesState.Loaded) {
-            when (page) {
-                LockerTabs.Apps -> {
-                    LockerAppList(viewModel, onOpenModalSheet = { viewModel.openModalSheet(it) })
-                }
+        when (entriesState) {
+            is LockerViewModel.LockerEntriesState.Loaded -> {
+                when (page) {
+                    LockerTabs.Apps -> {
+                        LockerAppList(viewModel, onOpenModalSheet = { viewModel.openModalSheet(it) })
+                    }
 
-                LockerTabs.Watchfaces -> {
-                    LockerWatchfaceList(viewModel, onOpenModalSheet = { viewModel.openModalSheet(it) })
+                    LockerTabs.Watchfaces -> {
+                        LockerWatchfaceList(viewModel, onOpenModalSheet = { viewModel.openModalSheet(it) })
+                    }
                 }
             }
-        } else {
-            CircularProgressIndicator(modifier = Modifier.align(CenterHorizontally))
+            is LockerViewModel.LockerEntriesState.Error -> {
+                Text("Error loading locker entries")
+                Button(onClick = {
+                    viewModel.reloadLocker()
+                }) {
+                    Text("Retry")
+                }
+            }
+            is LockerViewModel.LockerEntriesState.Loading -> {
+                CircularProgressIndicator(modifier = Modifier.align(CenterHorizontally))
+            }
         }
     }
     if (modalSheetState is LockerViewModel.ModalSheetState.Open) {

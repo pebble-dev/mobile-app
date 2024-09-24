@@ -2,6 +2,7 @@ package io.rebble.cobble.shared.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.database.dao.LockerDao
 import io.rebble.cobble.shared.database.entity.SyncedLockerEntryWithPlatforms
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
@@ -13,14 +14,20 @@ import kotlinx.coroutines.sync.withLock
 class LockerViewModel(private val lockerDao: LockerDao): ViewModel() {
     open class LockerEntriesState {
         object Loading : LockerEntriesState()
+        object Error : LockerEntriesState()
         data class Loaded(val entries: List<SyncedLockerEntryWithPlatforms>) : LockerEntriesState()
     }
     open class ModalSheetState {
         object Closed : ModalSheetState()
         data class Open(val viewModel: LockerItemViewModel) : ModalSheetState()
     }
-    val entriesState = lockerDao.getAllEntriesFlow().map {
-        LockerEntriesState.Loaded(it)
+    private val entriesFlow = lockerDao.getAllEntriesFlow()
+    private val reloadFlow = MutableStateFlow(Unit)
+    val entriesState: StateFlow<LockerEntriesState> = combine(entriesFlow, reloadFlow) { entries, _ ->
+        LockerEntriesState.Loaded(entries) as LockerEntriesState
+    }.catch {
+        Logging.e("Error loading locker entries", it)
+        emit(LockerEntriesState.Error)
     }.stateIn(viewModelScope + Dispatchers.IO, SharingStarted.Eagerly, LockerEntriesState.Loading)
 
     private var mutex = Mutex()
@@ -48,5 +55,9 @@ class LockerViewModel(private val lockerDao: LockerDao): ViewModel() {
 
     fun closeModalSheet() {
         _modalSheetState.value = ModalSheetState.Closed
+    }
+
+    fun reloadLocker() {
+        reloadFlow.value = Unit
     }
 }
