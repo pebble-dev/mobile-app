@@ -128,7 +128,7 @@ class FlutterMainActivity : FlutterActivity() {
     }
 
     override fun onDestroy() {
-        closeDatabase()
+        //closeDatabase()
         super.onDestroy()
     }
 
