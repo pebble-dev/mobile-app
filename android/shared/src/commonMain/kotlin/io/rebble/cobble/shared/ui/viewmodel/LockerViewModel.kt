@@ -21,14 +21,18 @@ class LockerViewModel(private val lockerDao: LockerDao): ViewModel() {
         object Closed : ModalSheetState()
         data class Open(val viewModel: LockerItemViewModel) : ModalSheetState()
     }
-    private val entriesFlow = lockerDao.getAllEntriesFlow()
-    private val reloadFlow = MutableStateFlow(Unit)
-    val entriesState: StateFlow<LockerEntriesState> = combine(entriesFlow, reloadFlow) { entries, _ ->
-        LockerEntriesState.Loaded(entries) as LockerEntriesState
-    }.catch {
-        Logging.e("Error loading locker entries", it)
-        emit(LockerEntriesState.Error)
-    }.stateIn(viewModelScope + Dispatchers.IO, SharingStarted.Eagerly, LockerEntriesState.Loading)
+
+    val entriesState = MutableStateFlow<LockerEntriesState>(LockerEntriesState.Loading)
+    init {
+        viewModelScope.launch {
+            lockerDao.getAllEntriesFlow().catch {
+                Logging.e("Error loading locker entries", it)
+                entriesState.value = LockerEntriesState.Error
+            }.collect { entries ->
+                entriesState.value = LockerEntriesState.Loaded(entries)
+            }
+        }
+    }
 
     private var mutex = Mutex()
     private var lastJob: Job? = null
@@ -55,9 +59,5 @@ class LockerViewModel(private val lockerDao: LockerDao): ViewModel() {
 
     fun closeModalSheet() {
         _modalSheetState.value = ModalSheetState.Closed
-    }
-
-    fun reloadLocker() {
-        reloadFlow.value = Unit
     }
 }

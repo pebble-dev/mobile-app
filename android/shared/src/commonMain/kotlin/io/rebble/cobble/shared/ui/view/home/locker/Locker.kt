@@ -55,11 +55,6 @@ fun Locker(page: LockerTabs, lockerDao: LockerDao = getKoin().get(), viewModel: 
             }
             is LockerViewModel.LockerEntriesState.Error -> {
                 Text("Error loading locker entries")
-                Button(onClick = {
-                    viewModel.reloadLocker()
-                }) {
-                    Text("Retry")
-                }
             }
             is LockerViewModel.LockerEntriesState.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.align(CenterHorizontally))
