@@ -1,6 +1,6 @@
 package io.rebble.cobble.shared.js
 
-PKimport io.rebble.cobble.shared.domain.common.PebbleDevice
+import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.libpebblecommon.metadata.pbw.appinfo.PbwAppInfo
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
