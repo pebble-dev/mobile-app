@@ -29,6 +29,9 @@ val androidModule = module {
         AndroidPlatformContext(androidContext().applicationContext)
     } bind PlatformContext::class
     single { createDataStore(androidContext()) }
+    factory {
+        androidContext().packageManager
+    }
 
     single(named("activeNotifsState")) {
         MutableStateFlow<Map<Uuid, StatusBarNotification>>(emptyMap())
@@ -45,7 +48,9 @@ val androidModule = module {
                 AppInstallHandler(pebbleDevice),
                 CalendarActionHandler(pebbleDevice),
                 CalendarHandler(pebbleDevice),
-                MusicHandler(pebbleDevice)
+                MusicHandler(pebbleDevice),
+                PKJSLifecycleHandler(pebbleDevice),
+                AppMessageHandler(pebbleDevice),
         )
     }
 
@@ -58,4 +63,5 @@ val androidModule = module {
 
     singleOf(::NotificationProcessor)
     singleOf(::CallNotificationProcessor)
+    singleOf(::AndroidPlatformAppMessageIPC) bind PlatformAppMessageIPC::class
 }

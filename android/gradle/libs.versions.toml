@@ -15,6 +15,7 @@ libpebblecommonVersion = "0.1.24"
 errorproneVersion = "2.26.1"
 rruleVersion = "1.0.3"
 spotbugsVersion = "4.8.6"
+atomicfu = "0.25.0"
 
 protoliteWellKnownTypes = "18.0.0"
 room = "2.7.0-alpha08"
@@ -31,6 +32,10 @@ reorderable = "2.3.3"
 appcompat = "1.7.0"
 ktorVersion = "2.3.12"
 workManagerVersion = "2.9.0"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+material = "1.10.0"
 
 [plugins]
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -44,6 +49,7 @@ android-library = { id = "com.android.library", version.ref = "gradle" }
 android-application = { id = "com.android.application", version.ref = "gradle" }
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-lib" }
 jetbrains-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+jetbrains-kotlinx-atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -80,6 +86,7 @@ libpebblecommon = { module = "io.rebble.libpebblecommon:libpebblecommon", versio
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timberVersion" }
 uuid = { module = "com.benasher44:uuid", version.ref = "uuidVersion" }
 protolite-wellknowntypes = { module = "com.google.firebase:protolite-well-known-types", version.ref = "protoliteWellKnownTypes" }
+jetbrains-kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorVersion" }
 ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktorVersion" }
@@ -93,3 +100,7 @@ compose-components-resources = { module = "org.jetbrains.compose.components:comp
 compose-components-reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }

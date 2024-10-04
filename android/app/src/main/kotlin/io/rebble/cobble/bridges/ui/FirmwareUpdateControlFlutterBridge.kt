@@ -17,11 +17,8 @@ import io.rebble.libpebblecommon.packets.SystemMessage
 import io.rebble.libpebblecommon.packets.TimeMessage
 import io.rebble.libpebblecommon.services.SystemService
 import io.rebble.libpebblecommon.util.Crc32Calculator
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import okio.buffer
@@ -155,7 +152,9 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
             val job = connectionScope.launch {
                 try {
                     updatingDevice.putBytesController.status.collect {
-                        firmwareUpdateCallbacks.onFirmwareUpdateProgress(it.progress) {}
+                        withContext(Dispatchers.Main) {
+                            firmwareUpdateCallbacks.onFirmwareUpdateProgress(it.progress) {}
+                        }
                     }
                 } catch (_: CancellationException) {
                 }

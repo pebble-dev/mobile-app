@@ -68,7 +68,7 @@ class AppMessageHandler(
 ) : KoinComponent, CobbleHandler {
     private val platformAppMessageIPC: PlatformAppMessageIPC by inject()
     private var lastReceivedMessage: AppMessageTimestamp? = null
-    private val outgoingMessages = platformAppMessageIPC.outgoingMessages().buffer()
+    private val outgoingMessages = platformAppMessageIPC.outgoingMessages()
 
     init {
         pebbleDevice.negotiationScope.launch {
@@ -85,6 +85,9 @@ class AppMessageHandler(
     private fun listenForIncomingPackets(deviceScope: CoroutineScope) {
         deviceScope.launch {
             for (message in pebbleDevice.appMessageService.receivedMessages) {
+                if (!pebbleDevice.incomingAppMessages.tryEmit(message)) {
+                    Logging.w("Failed to emit incoming AppMessage")
+                }
                 when (message) {
                     is AppMessage.AppMessagePush -> {
                         lastReceivedMessage = AppMessageTimestamp(message.uuid.get(), Clock.System.now().toEpochMilliseconds())
@@ -104,7 +107,7 @@ class AppMessageHandler(
     }
 
     private fun listenForOutgoingMessages(deviceScope: CoroutineScope) {
-        outgoingMessages.buffer().onEach {
+        pebbleDevice.outgoingAppMessages.onEach {
             when (it) {
                 is OutgoingMessage.Data -> {
                     if (!isAppActive(it.uuid)) {
@@ -130,6 +133,9 @@ class AppMessageHandler(
                     )
                 }
             }
+        }.launchIn(deviceScope)
+        outgoingMessages.onEach {
+            pebbleDevice.outgoingAppMessages.emit(it)
         }.launchIn(deviceScope)
     }
 

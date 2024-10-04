@@ -113,6 +113,7 @@ fun LockerEntry.toEntity(): SyncedLockerEntry {
             title = title,
             type = type,
             hearts = hearts,
+            developerId = developer.id,
             developerName = developer.name,
             configurable = isConfigurable,
             timelineEnabled = isTimelineEnabled,

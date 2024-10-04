@@ -9,16 +9,18 @@ import android.os.Message
 import android.view.View
 import android.webkit.*
 import io.rebble.cobble.shared.Logging
+import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.libpebblecommon.metadata.pbw.appinfo.PbwAppInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-class WebViewJsRunner(val context: Context, private val connectedAddress: String, private val scope: CoroutineScope, appInfo: PbwAppInfo, jsPath: String): JsRunner(appInfo, jsPath) {
+
+class WebViewJsRunner(val context: Context, device: PebbleDevice, private val scope: CoroutineScope, appInfo: PbwAppInfo, jsPath: String): JsRunner(appInfo, jsPath, device) {
 
     companion object {
         const val API_NAMESPACE = "Pebble"
@@ -29,7 +31,7 @@ class WebViewJsRunner(val context: Context, private val connectedAddress: String
     private var webView: WebView? = null
     private val initializedLock = Object()
     private val publicJsInterface = WebViewPKJSInterface(this)
-    private val privateJsInterface = WebViewPrivatePKJSInterface(this, scope)
+    private val privateJsInterface = WebViewPrivatePKJSInterface(this, scope, _outgoingAppMessages)
     private val interfaces = setOf(
             Pair(API_NAMESPACE, publicJsInterface),
             Pair(PRIVATE_API_NAMESPACE, privateJsInterface)
@@ -178,6 +180,7 @@ class WebViewJsRunner(val context: Context, private val connectedAddress: String
             throw e
         }
         check(webView != null) { "WebView not initialized" }
+        Logging.d("WebView initialized")
         loadApp(jsPath)
     }
 
@@ -238,10 +241,31 @@ class WebViewJsRunner(val context: Context, private val connectedAddress: String
     }
 
     suspend fun signalReady() {
-        val readyDeviceIds = listOf(connectedAddress)
+        val readyDeviceIds = listOf(device.address)
         val readyJson = Json.encodeToString(readyDeviceIds)
         withContext(Dispatchers.Main) {
             webView?.loadUrl("javascript:signalReady(${Uri.encode(readyJson)})")
         }
+    }
+
+    override suspend fun signalNewAppMessageData(data: String?): Boolean {
+        withContext(Dispatchers.Main) {
+            webView?.loadUrl("javascript:signalNewAppMessageData(${Uri.encode("'" + (data ?: "null") + "'")})")
+        }
+        return true
+    }
+
+    override suspend fun signalAppMessageAck(data: String?): Boolean {
+        withContext(Dispatchers.Main) {
+            webView?.loadUrl("javascript:signalAppMessageAck(${Uri.encode("'" + (data ?: "null") + "'")})")
+        }
+        return true
+    }
+
+    override suspend fun signalAppMessageNack(data: String?): Boolean {
+        withContext(Dispatchers.Main) {
+            webView?.loadUrl("javascript:signalAppMessageNack(${Uri.encode("'" + (data ?: "null") + "'")})")
+        }
+        return true
     }
 }

@@ -1,6 +1,7 @@
 package io.rebble.cobble.shared.js
 
 import android.content.Context
+import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.libpebblecommon.metadata.pbw.appinfo.PbwAppInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
@@ -11,8 +12,8 @@ actual object JsRunnerFactory: KoinComponent {
     private val context: Context by inject()
     actual fun createJsRunner(
             scope: CoroutineScope,
-            connectedAddress: String,
+            device: PebbleDevice,
             appInfo: PbwAppInfo,
             jsPath: String
-    ): JsRunner = WebViewJsRunner(context, connectedAddress, scope, appInfo, jsPath)
+    ): JsRunner = WebViewJsRunner(context, device, scope, appInfo, jsPath)
 }

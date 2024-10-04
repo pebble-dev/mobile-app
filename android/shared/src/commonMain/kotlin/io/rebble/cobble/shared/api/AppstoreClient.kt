@@ -13,8 +13,7 @@ import org.koin.core.component.inject
 
 class AppstoreClient(
         val baseUrl: String,
-        private val token: String,
-        engine: HttpClientEngine? = null,
+        private val token: String
 ): KoinComponent {
     private val version = "v1"
     private val client: HttpClient by inject()

@@ -1,5 +1,6 @@
 package io.rebble.cobble.shared.di
 
+import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.cobble.shared.middleware.PutBytesController
 import io.rebble.libpebblecommon.ProtocolHandlerImpl

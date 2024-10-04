@@ -1,5 +1,6 @@
 package io.rebble.cobble.shared.handlers
 
+import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.libpebblecommon.packets.AppRunStateMessage
 import kotlinx.coroutines.CoroutineScope
@@ -24,6 +25,7 @@ class AppRunStateHandler(
         for (message in pebbleDevice.appRunStateService.receivedMessages) {
             when (message) {
                 is AppRunStateMessage.AppRunStateStart -> {
+                    Logging.v("App started: ${message.uuid.get()}")
                     pebbleDevice.currentActiveApp.value = message.uuid.get()
                 }
 

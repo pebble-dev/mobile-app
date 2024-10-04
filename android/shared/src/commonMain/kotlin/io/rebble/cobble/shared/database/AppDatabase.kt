@@ -22,7 +22,7 @@ import org.koin.mp.KoinPlatformTools
             SyncedLockerEntry::class,
             SyncedLockerEntryPlatform::class
                    ],
-        version = 9,
+        version = 10,
         autoMigrations = [
             AutoMigration(1, 2),
             AutoMigration(2, 3),
@@ -32,6 +32,7 @@ import org.koin.mp.KoinPlatformTools
             AutoMigration(6, 7),
             AutoMigration(7, 8),
             AutoMigration(8, 9),
+            AutoMigration(9, 10)
         ]
 )
 @TypeConverters(Converters::class)

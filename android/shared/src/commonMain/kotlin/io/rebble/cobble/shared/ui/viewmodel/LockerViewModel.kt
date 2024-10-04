@@ -24,7 +24,7 @@ class LockerViewModel(private val lockerDao: LockerDao): ViewModel() {
 
     val entriesState = MutableStateFlow<LockerEntriesState>(LockerEntriesState.Loading)
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO + CoroutineName("LockerViewModelGet")) {
             lockerDao.getAllEntriesFlow().catch {
                 Logging.e("Error loading locker entries", it)
                 entriesState.value = LockerEntriesState.Error

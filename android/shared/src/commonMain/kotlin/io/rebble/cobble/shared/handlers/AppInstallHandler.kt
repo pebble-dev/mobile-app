@@ -52,31 +52,13 @@ class AppInstallHandler(
         }
     }
 
-    private suspend fun downloadPbw(appUuid: String): String? {
-        val row = lockerDao.getEntryByUuid(appUuid)
-        val url = row?.entry?.pbwLink ?: run {
-            Logging.e("App URL for $appUuid not found in locker")
-            return null
-        }
-
-        val response = httpClient.get(url)
-        if (response.status.value != 200) {
-            Logging.e("Failed to download app $appUuid: ${response.status}")
-            return null
-        } else {
-            return savePbwFile(platformContext, appUuid, response.bodyAsChannel())
-        }
-    }
-
-
-
     private suspend fun onNewAppFetchRequest(message: AppFetchRequest) {
         try {
             val appUuid = message.uuid.get().toString()
             var appFile = getAppPbwFile(platformContext, appUuid)
 
             if (!appFile.exists()) {
-                val uri = downloadPbw(appUuid)
+                val uri = downloadPbw(platformContext, httpClient, lockerDao, appUuid)
                 if (uri == null) {
                     Logging.e("Failed to download app $appUuid")
                     respondFetchRequest(AppFetchResponseStatus.NO_DATA)
@@ -147,3 +129,4 @@ class AppInstallHandler(
 }
 expect fun getAppPbwFile(context: PlatformContext, appUuid: String): File
 expect suspend fun savePbwFile(context: PlatformContext, appUuid: String, byteReadChannel: ByteReadChannel): String
+expect suspend fun downloadPbw(context: PlatformContext, httpClient: HttpClient, lockerDao: LockerDao, appUuid: String): String?

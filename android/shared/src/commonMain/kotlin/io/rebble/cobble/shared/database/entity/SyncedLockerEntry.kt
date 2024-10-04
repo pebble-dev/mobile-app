@@ -17,6 +17,7 @@ data class SyncedLockerEntry(
         val type: String,
         val hearts: Int,
         val developerName: String,
+        val developerId: String?,
         val configurable: Boolean,
         val timelineEnabled: Boolean,
         val removeLink: String,

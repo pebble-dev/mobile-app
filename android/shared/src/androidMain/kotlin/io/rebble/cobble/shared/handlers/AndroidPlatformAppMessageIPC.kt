@@ -10,12 +10,9 @@ import io.rebble.cobble.shared.util.coroutines.asFlow
 import io.rebble.cobble.shared.util.getIntExtraOrNull
 import io.rebble.cobble.shared.util.getPebbleDictionary
 import io.rebble.cobble.shared.util.toPacket
-import io.rebble.libpebblecommon.packets.AppCustomizationSetStockAppTitleMessage
 import io.rebble.libpebblecommon.packets.AppMessage
 import io.rebble.libpebblecommon.packets.AppType
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 
 class AndroidPlatformAppMessageIPC(private val context: Context): PlatformAppMessageIPC {

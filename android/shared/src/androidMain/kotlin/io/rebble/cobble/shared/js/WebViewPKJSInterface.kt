@@ -3,7 +3,10 @@ package io.rebble.cobble.shared.js
 import android.content.Context
 import android.webkit.JavascriptInterface
 import android.widget.Toast
+import com.benasher44.uuid.uuidFrom
 import io.rebble.cobble.shared.Logging
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -17,14 +20,17 @@ class WebViewPKJSInterface(private val jsRunner: JsRunner): PKJSInterface, KoinC
 
     @JavascriptInterface
     override fun getAccountToken(): String {
-        //TODO
-        return ""
+        //XXX: This is a blocking call, but it's fine because it's called from a WebView thread, maybe
+        return runBlocking(Dispatchers.IO) {
+            JsTokenUtil.getAccountToken(uuidFrom(jsRunner.appInfo.uuid)) ?: ""
+        }
     }
 
     @JavascriptInterface
     override fun getWatchToken(): String {
-        //TODO
-        return ""
+        return runBlocking(Dispatchers.IO) {
+            JsTokenUtil.getWatchToken(uuidFrom(jsRunner.appInfo.uuid), jsRunner.device)
+        }
     }
 
     @JavascriptInterface

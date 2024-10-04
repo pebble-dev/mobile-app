@@ -2,6 +2,7 @@ package io.rebble.cobble.shared.js
 
 import android.content.Context
 import androidx.test.platform.app.InstrumentationRegistry
+import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.libpebblecommon.metadata.pbw.appinfo.PbwAppInfo
 import io.rebble.libpebblecommon.util.runBlocking
 import kotlinx.coroutines.CoroutineScope
@@ -77,7 +78,7 @@ class WebViewJsRunnerTest {
             """.trimIndent()
         )
         val printTestPath = assetsToSdcard("print_test.js")
-        val webViewJsRunner = WebViewJsRunner(context, MutableStateFlow("dummy"), coroutineScope, appInfo, printTestPath)
+        val webViewJsRunner = WebViewJsRunner(context, PebbleDevice(null, "dummy"), coroutineScope, appInfo, printTestPath)
         webViewJsRunner.start()
         delay(1000)
         webViewJsRunner.stop()

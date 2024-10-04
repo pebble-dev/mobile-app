@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.serialization)
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.jetbrains.compose.compiler)
+    alias(libs.plugins.jetbrains.kotlinx.atomicfu)
 }
 
 val timberVersion = "5.0.1"
@@ -47,6 +48,8 @@ kotlin {
             api(libs.koin.core)
             api(libs.kotlinx.serialization.core)
 
+            //XXX: Workaround for https://github.com/Kotlin/kotlinx-atomicfu/issues/469
+            implementation(libs.jetbrains.kotlinx.atomicfu)
             implementation(libs.koin.compose)
             implementation(libs.uuid)
             implementation(libs.kotlinx.serialization.json)
@@ -76,6 +79,7 @@ kotlin {
             implementation(libs.androidx.core.ktx)
             implementation(libs.timber)
             implementation(libs.rrule)
+            implementation(project(":pebblekit_android"))
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

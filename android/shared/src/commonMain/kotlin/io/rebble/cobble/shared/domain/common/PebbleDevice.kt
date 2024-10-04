@@ -3,12 +3,15 @@ package io.rebble.cobble.shared.domain.common
 import com.benasher44.uuid.Uuid
 import io.ktor.http.parametersOf
 import io.rebble.cobble.shared.Logging
+import io.rebble.cobble.shared.domain.appmessage.AppMessageTransactionSequence
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.domain.state.watchOrNull
 import io.rebble.cobble.shared.handlers.CobbleHandler
+import io.rebble.cobble.shared.handlers.OutgoingMessage
 import io.rebble.cobble.shared.middleware.PutBytesController
 import io.rebble.libpebblecommon.ProtocolHandler
+import io.rebble.libpebblecommon.packets.AppMessage
 import io.rebble.libpebblecommon.packets.WatchVersion
 import io.rebble.libpebblecommon.services.*
 import io.rebble.libpebblecommon.services.app.AppRunStateService
@@ -16,6 +19,7 @@ import io.rebble.libpebblecommon.services.appmessage.AppMessageService
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import io.rebble.libpebblecommon.services.blobdb.TimelineService
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -37,6 +41,11 @@ open class PebbleDevice(
     val modelId: MutableStateFlow<Int?> = MutableStateFlow(null)
     val connectionScope: MutableStateFlow<CoroutineScope?> = MutableStateFlow(null)
     val currentActiveApp: MutableStateFlow<Uuid?> = MutableStateFlow(null)
+
+    val incomingAppMessages: MutableSharedFlow<AppMessage> = MutableSharedFlow(0, 8)
+    val outgoingAppMessages: MutableSharedFlow<OutgoingMessage> = MutableSharedFlow(0, 8)
+
+    val appMessageTransactionSequence = AppMessageTransactionSequence().iterator()
 
     init {
         // This will init all the handlers by reading the lazy value causing them to be injected
