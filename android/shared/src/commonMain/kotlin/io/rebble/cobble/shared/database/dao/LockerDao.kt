@@ -55,4 +55,10 @@ interface LockerDao {
 
     @Query("DELETE FROM SyncedLockerEntry")
     suspend fun clearAll()
+
+    @Query("SELECT COUNT(*) FROM SyncedLockerEntry WHERE nextSyncAction = :action")
+    suspend fun countEntriesWithNextSyncAction(action: NextSyncAction): Int
+
+    @Query("SELECT * FROM SyncedLockerEntry WHERE nextSyncAction = 'Nothing'")
+    suspend fun getSyncedEntries(): List<SyncedLockerEntry>
 }

@@ -9,19 +9,32 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.http.HttpStatusCode
 import io.rebble.cobble.shared.Logging
+import io.rebble.cobble.shared.database.NextSyncAction
+import io.rebble.cobble.shared.database.dao.LockerDao
 import io.rebble.cobble.shared.database.entity.SyncedLockerEntryWithPlatforms
+import io.rebble.cobble.shared.database.entity.getBestPlatformForDevice
+import io.rebble.cobble.shared.database.entity.getSdkVersion
+import io.rebble.cobble.shared.database.entity.getVersion
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.domain.state.watchOrNull
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
+import io.rebble.libpebblecommon.packets.blobdb.AppMetadata
+import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
+import io.rebble.libpebblecommon.structmapper.SUUID
+import io.rebble.libpebblecommon.structmapper.StructMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.decodeToImageBitmap
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import kotlin.random.Random
 
-class LockerItemViewModel(private val httpClient: HttpClient, val entry: SyncedLockerEntryWithPlatforms): ViewModel() {
+class LockerItemViewModel(private val httpClient: HttpClient, val entry: SyncedLockerEntryWithPlatforms): ViewModel(), KoinComponent {
+    private val lockerDao: LockerDao by inject()
     open class ImageState {
         object Loading : ImageState()
         object Error : ImageState()
@@ -60,6 +73,56 @@ class LockerItemViewModel(private val httpClient: HttpClient, val entry: SyncedL
         check(entry.entry.type == "watchface") { "Only watchfaces can be applied" }
         val watch = ConnectionStateManager.connectionState.value.watchOrNull
         viewModelScope.launch(Dispatchers.IO) {
+            if (entry.entry.nextSyncAction == NextSyncAction.Upload && lockerDao.countEntriesWithNextSyncAction(NextSyncAction.Nothing) >= 99) {
+                Logging.i("Requested watchface isn't in blobdb because there's too many, swapping it out")
+                val oldest = lockerDao.getSyncedEntries().minByOrNull { it.hearts } ?: run {
+                    Logging.e("No watchfaces to drop")
+                    return@launch
+                }
+
+                val blobDBService = watch?.blobDBService ?: run {
+                    Logging.e("No connected watch")
+                    return@launch
+                }
+
+                val watchPlatform = WatchHardwarePlatform
+                        .fromProtocolNumber(watch.metadata.value?.running?.hardwarePlatform?.get() ?: 0u)
+                val platform = entry.getBestPlatformForDevice(watchPlatform?.watchType ?: return@launch) ?: run {
+                    Logging.e("No platform for watch")
+                    return@launch
+                }
+                val (appVersionMajor, appVersionMinor) = entry.getVersion()
+                val (sdkVersionMajor, sdkVersionMinor) = platform.getSdkVersion()
+
+                blobDBService.send(
+                        BlobCommand.DeleteCommand(
+                                Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
+                                BlobCommand.BlobDatabase.App,
+                                SUUID(StructMapper(), uuidFrom(oldest.uuid)).toBytes()
+                        )
+                )
+
+                blobDBService.send(
+                        BlobCommand.InsertCommand(
+                                Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
+                                BlobCommand.BlobDatabase.App,
+                                SUUID(StructMapper(), uuidFrom(entry.entry.uuid)).toBytes(),
+                                AppMetadata().also { meta ->
+                                    meta.uuid.set(uuidFrom(entry.entry.uuid))
+                                    meta.flags.set(platform.processInfoFlags.toUInt())
+                                    meta.icon.set(entry.entry.pbwIconResourceId.toUInt())
+                                    meta.appVersionMajor.set(appVersionMajor)
+                                    meta.appVersionMinor.set(appVersionMinor)
+                                    meta.sdkVersionMajor.set(sdkVersionMajor)
+                                    meta.sdkVersionMinor.set(sdkVersionMinor)
+                                    meta.appName.set(entry.entry.title)
+                                }.toBytes()
+                        )
+                )
+
+                lockerDao.setNextSyncAction(oldest.id, NextSyncAction.Upload)
+                lockerDao.setNextSyncAction(entry.entry.id, NextSyncAction.Nothing)
+            }
             watch?.appRunStateService?.startApp(uuidFrom(entry.entry.uuid))
         }
     }

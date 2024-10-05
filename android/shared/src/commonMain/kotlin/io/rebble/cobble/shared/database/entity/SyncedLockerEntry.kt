@@ -2,6 +2,8 @@ package io.rebble.cobble.shared.database.entity
 
 import androidx.room.*
 import io.rebble.cobble.shared.database.NextSyncAction
+import io.rebble.cobble.shared.util.AppCompatibility
+import io.rebble.libpebblecommon.metadata.WatchType
 
 @Entity(
         indices = [
@@ -41,6 +43,21 @@ data class SyncedLockerEntryWithPlatforms(
         val platforms: List<SyncedLockerEntryPlatform>
 )
 
+fun SyncedLockerEntryWithPlatforms.getBestPlatformForDevice(watchType: WatchType): SyncedLockerEntryPlatform? {
+    val platformName = AppCompatibility.getBestVariant(
+            watchType,
+            this.platforms.map { plt -> plt.name }
+    )?.codename
+    return this.platforms.firstOrNull { plt -> plt.name == platformName }
+}
+
+fun SyncedLockerEntryWithPlatforms.getVersion(): Pair<UByte, UByte> {
+    val versionCode = Regex("""\d+\.\d+""").find(entry.version)?.value ?: "0.0"
+    val appVersionMajor = versionCode.split(".")[0].toUByte()
+    val appVersionMinor = versionCode.split(".")[1].toUByte()
+    return Pair(appVersionMajor, appVersionMinor)
+}
+
 @Entity(
         foreignKeys = [
             androidx.room.ForeignKey(
@@ -65,6 +82,12 @@ data class SyncedLockerEntryPlatform(
         @Embedded
         val images: SyncedLockerEntryPlatformImages,
 )
+
+fun SyncedLockerEntryPlatform.getSdkVersion(): Pair<UByte, UByte> {
+    val sdkVersionMajor = sdkVersion.split(".")[0].toUByte()
+    val sdkVersionMinor = sdkVersion.split(".")[1].toUByte()
+    return Pair(sdkVersionMajor, sdkVersionMinor)
+}
 
 data class SyncedLockerEntryPlatformImages(
         val icon: String?,

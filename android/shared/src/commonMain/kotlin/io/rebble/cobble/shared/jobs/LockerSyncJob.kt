@@ -7,6 +7,9 @@ import io.rebble.cobble.shared.api.RWS
 import io.rebble.cobble.shared.database.NextSyncAction
 import io.rebble.cobble.shared.database.dao.LockerDao
 import io.rebble.cobble.shared.database.entity.dataEqualTo
+import io.rebble.cobble.shared.database.entity.getBestPlatformForDevice
+import io.rebble.cobble.shared.database.entity.getSdkVersion
+import io.rebble.cobble.shared.database.entity.getVersion
 import io.rebble.cobble.shared.domain.api.appstore.toEntity
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
@@ -74,19 +77,12 @@ class LockerSyncJob: KoinComponent {
                 return withContext(Dispatchers.IO) {
                     entries.forEach { row ->
                         val entry = row.entry
-                        val platformName = AppCompatibility.getBestVariant(
-                                connectedWatchType.watchType,
-                                row.platforms.map { plt -> plt.name }
-                        )?.codename
-                        val platform = row.platforms.firstOrNull { plt -> plt.name == platformName }
+                        val platform = row.getBestPlatformForDevice(connectedWatchType.watchType)
                         val res = platform?.let {
                             when (entry.nextSyncAction) {
                                 NextSyncAction.Upload -> {
-                                    val versionCode = Regex("""\d+\.\d+""").find(entry.version)?.value ?: "0.0"
-                                    val appVersionMajor = versionCode.split(".")[0].toUByte()
-                                    val appVersionMinor = versionCode.split(".")[1].toUByte()
-                                    val sdkVersionMajor = platform.sdkVersion.split(".")[0].toUByte()
-                                    val sdkVersionMinor = platform.sdkVersion.split(".")[1].toUByte()
+                                    val (appVersionMajor, appVersionMinor) = row.getVersion()
+                                    val (sdkVersionMajor, sdkVersionMinor) = platform.getSdkVersion()
                                     val packet = BlobCommand.InsertCommand(
                                             Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
                                             BlobCommand.BlobDatabase.App,
