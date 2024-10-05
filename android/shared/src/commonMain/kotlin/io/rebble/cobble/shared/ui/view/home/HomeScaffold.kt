@@ -1,11 +1,14 @@
 package io.rebble.cobble.shared.ui.view.home
 
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import io.rebble.cobble.shared.ui.common.RebbleIcons
 import io.rebble.cobble.shared.ui.nav.Routes
@@ -22,6 +25,7 @@ open class HomePage {
 fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val searchingState = remember { mutableStateOf(false) }
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         /*topBar = {
@@ -48,11 +52,27 @@ fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
                 )
             }
         },
+        floatingActionButton = {
+            when (page) {
+                is HomePage.Locker -> {
+                    FloatingActionButton(
+                            modifier = Modifier
+                                    .padding(16.dp),
+                            onClick = {
+                                searchingState.value = true
+                            },
+                            content = {
+                                RebbleIcons.search()
+                            },
+                    )
+                }
+            }
+        }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             when (page) {
                 is HomePage.Locker -> {
-                    Locker(page.tab, onTabChanged = {
+                    Locker(searchingState, page.tab, onTabChanged = {
                         onNavChange(it.navRoute)
                     })
                 }

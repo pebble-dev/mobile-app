@@ -57,7 +57,7 @@ object RebbleIcons {
     @Composable
     fun plusAdd(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe814), modifier = modifier)
     @Composable
-    fun search(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe815), modifier = modifier)
+    fun search(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe815), modifier = modifier, contentDescription = "Search")
     @Composable
     fun dictationMicrophone(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe816), modifier = modifier)
     @Composable

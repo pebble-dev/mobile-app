@@ -1,20 +1,24 @@
 package io.rebble.cobble.shared.ui.view.home.locker
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.rebble.cobble.shared.database.dao.LockerDao
-import io.rebble.cobble.shared.database.entity.SyncedLockerEntryWithPlatforms
 import io.rebble.cobble.shared.ui.nav.Routes
-import io.rebble.cobble.shared.ui.viewmodel.LockerItemViewModel
 import io.rebble.cobble.shared.ui.viewmodel.LockerViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.launch
 import org.koin.compose.getKoin
 
 enum class LockerTabs(val label: String, val navRoute: String) {
@@ -23,20 +27,49 @@ enum class LockerTabs(val label: String, val navRoute: String) {
 }
 
 @Composable
-fun Locker(page: LockerTabs, lockerDao: LockerDao = getKoin().get(), viewModel: LockerViewModel = viewModel { LockerViewModel(lockerDao) }, onTabChanged: (LockerTabs) -> Unit) {
+fun Locker(searchingState: MutableState<Boolean>, page: LockerTabs, lockerDao: LockerDao = getKoin().get(), viewModel: LockerViewModel = viewModel { LockerViewModel(lockerDao) }, onTabChanged: (LockerTabs) -> Unit) {
     val entriesState: LockerViewModel.LockerEntriesState by viewModel.entriesState.collectAsState()
     val modalSheetState by viewModel.modalSheetState.collectAsState()
     val watchIsConnected by viewModel.watchIsConnected.collectAsState()
+    val searchQuery: String? by viewModel.searchQuery.collectAsState()
+    val focusRequester = remember { FocusRequester() }
+    val (searching, setSearching) = searchingState
 
     Column {
         Surface {
             Row(modifier = Modifier.fillMaxWidth().height(64.dp)) {
-                LockerTabs.entries.forEachIndexed { index, it ->
-                    NavigationBarItem(
-                            selected = page == it,
-                            onClick = { onTabChanged(it) },
-                            icon = { Text(it.label) },
+                if (searching) {
+                    TextField(
+                            value = searchQuery ?: "",
+                            onValueChange = { viewModel.searchQuery.value = it },
+                            label = { Text("Search") },
+                            modifier = Modifier.fillMaxWidth().padding(8.dp)
+                                    .focusRequester(focusRequester)
+                                    .onGloballyPositioned {
+                                        focusRequester.requestFocus()
+                                    },
+                            singleLine = true,
+                            trailingIcon = {
+                                IconButton(
+                                        onClick = {
+                                            viewModel.searchQuery.value = null
+                                            setSearching(false)
+                                        },
+                                        modifier = Modifier.align(CenterVertically),
+                                        content = {
+                                            Icon(Icons.Default.Close, contentDescription = "Clear search")
+                                        },
+                                )
+                            }
                     )
+                } else {
+                    LockerTabs.entries.forEachIndexed { index, it ->
+                        NavigationBarItem(
+                                selected = page == it,
+                                onClick = { onTabChanged(it) },
+                                icon = { Text(it.label) },
+                        )
+                    }
                 }
             }
         }

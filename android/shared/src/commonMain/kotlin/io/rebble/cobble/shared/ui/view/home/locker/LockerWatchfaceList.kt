@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,8 +20,12 @@ import io.rebble.cobble.shared.ui.viewmodel.LockerViewModel
 
 @Composable
 fun LockerWatchfaceList(viewModel: LockerViewModel, onOpenModalSheet: (LockerItemViewModel) -> Unit) {
+    val searchQuery: String? by viewModel.searchQuery.collectAsState()
     val entriesState: LockerViewModel.LockerEntriesState by viewModel.entriesState.collectAsState()
-    val entries = ((entriesState as? LockerViewModel.LockerEntriesState.Loaded)?.entries ?: emptyList()).filter { it.entry.type == "watchface" }
+    val entries = ((entriesState as? LockerViewModel.LockerEntriesState.Loaded)?.entries ?: emptyList())
+            .filter { it.entry.type == "watchface" }
+            .filter { searchQuery == null || it.entry.title.contains(searchQuery!!, ignoreCase = true) || it.entry.developerName.contains(searchQuery!!, ignoreCase = true) }
+            .sortedBy { it.entry.title }
     val connectedState: Boolean by viewModel.watchIsConnected.collectAsState()
 
     LazyVerticalGrid(

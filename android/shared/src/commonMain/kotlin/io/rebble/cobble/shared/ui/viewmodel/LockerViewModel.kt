@@ -39,6 +39,7 @@ class LockerViewModel(private val lockerDao: LockerDao): ViewModel() {
     private val _modalSheetState = MutableStateFlow<ModalSheetState>(ModalSheetState.Closed)
     val modalSheetState: StateFlow<ModalSheetState> = _modalSheetState
     val watchIsConnected = ConnectionStateManager.isConnected
+    val searchQuery = MutableStateFlow<String?>(null)
 
     suspend fun updateOrder(entries: List<SyncedLockerEntryWithPlatforms>) {
         lastJob?.cancel()

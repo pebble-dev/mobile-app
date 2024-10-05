@@ -64,7 +64,7 @@ class LockerSyncJob: KoinComponent {
     }
 
     private suspend fun syncToDevice(): Boolean {
-        val entries = lockerDao.getEntriesForSync()
+        val entries = lockerDao.getEntriesForSync().sortedBy { it.entry.title }
         val connectedWatch = ConnectionStateManager.connectionState.value.watchOrNull
         connectedWatch?.let {
             val connectedWatchType = WatchHardwarePlatform
