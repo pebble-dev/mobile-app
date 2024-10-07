@@ -31,7 +31,10 @@ class LockerSyncJob: KoinComponent {
     suspend fun beginSync(): Boolean {
         val locker = withContext(Dispatchers.IO) {
             RWS.appstoreClient?.getLocker()
-        } ?: return false
+        } ?: run {
+            Logging.w("Failed to fetch locker")
+            return false
+        }
         val storedLocker = withContext(Dispatchers.IO) {
             lockerDao.getAllEntries()
         }
@@ -39,7 +42,7 @@ class LockerSyncJob: KoinComponent {
         val changedEntries = locker.filter { new ->
                 val newPlat = new.hardwarePlatforms.map { it.toEntity(new.id) }
             storedLocker.any { old ->
-                old.entry.id == new.id && (old.entry != new.toEntity() || old.platforms.any { oldPlat -> newPlat.none { newPlat -> oldPlat.dataEqualTo(newPlat) } })
+                old.entry.nextSyncAction != NextSyncAction.Ignore && old.entry.id == new.id && (old.entry != new.toEntity() || old.platforms.any { oldPlat -> newPlat.none { newPlat -> oldPlat.dataEqualTo(newPlat) } })
             }
         }
         val newEntries = locker.filter { new -> storedLocker.none { old -> old.entry.id == new.id } }
@@ -48,6 +51,24 @@ class LockerSyncJob: KoinComponent {
         lockerDao.insertOrReplaceAll(newEntries.map { it.toEntity() })
         changedEntries.forEach {
             lockerDao.clearPlatformsFor(it.id)
+        }
+        changedEntries.forEach {
+            val entity = lockerDao.getEntry(it.id) ?: return@forEach
+            val changed = it.toEntity()
+            lockerDao.update(entity.entry.copy(
+                    title = changed.title,
+                    hearts = changed.hearts,
+                    developerName = changed.developerName,
+                    developerId = changed.developerId,
+                    configurable = changed.configurable,
+                    timelineEnabled = changed.timelineEnabled,
+                    removeLink = changed.removeLink,
+                    shareLink = changed.shareLink,
+                    pbwLink = changed.pbwLink,
+                    pbwReleaseId = changed.pbwReleaseId,
+                    pbwIconResourceId = changed.pbwIconResourceId,
+                    nextSyncAction = changed.nextSyncAction,
+            ))
         }
         lockerDao.insertOrReplaceAll(changedEntries.map { it.toEntity() })
         lockerDao.insertOrReplaceAllPlatforms(newEntries.flatMap { new ->

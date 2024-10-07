@@ -6,11 +6,15 @@ import io.rebble.cobble.shared.database.entity.SyncedLockerEntry
 import io.rebble.cobble.shared.database.entity.SyncedLockerEntryPlatform
 import io.rebble.cobble.shared.database.entity.SyncedLockerEntryWithPlatforms
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.Instant
 
 @Dao
 interface LockerDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplace(entry: SyncedLockerEntry)
+
+    @Update
+    suspend fun update(entry: SyncedLockerEntry)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplacePlatform(platform: SyncedLockerEntryPlatform)
@@ -61,4 +65,7 @@ interface LockerDao {
 
     @Query("SELECT * FROM SyncedLockerEntry WHERE nextSyncAction = 'Nothing'")
     suspend fun getSyncedEntries(): List<SyncedLockerEntry>
+
+    @Query("UPDATE SyncedLockerEntry SET lastOpened = :time WHERE uuid = :uuid")
+    suspend fun updateLastOpened(uuid: String, time: Instant?)
 }

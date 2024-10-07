@@ -4,6 +4,7 @@ import androidx.room.*
 import io.rebble.cobble.shared.database.NextSyncAction
 import io.rebble.cobble.shared.util.AppCompatibility
 import io.rebble.libpebblecommon.metadata.WatchType
+import kotlinx.datetime.Instant
 
 @Entity(
         indices = [
@@ -31,6 +32,7 @@ data class SyncedLockerEntry(
         val nextSyncAction: NextSyncAction,
         @ColumnInfo(defaultValue = "-1")
         val order: Int,
+        val lastOpened: Instant?,
 )
 
 data class SyncedLockerEntryWithPlatforms(

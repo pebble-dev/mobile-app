@@ -121,8 +121,9 @@ fun LockerEntry.toEntity(): SyncedLockerEntry {
             pbwLink = pbw?.file ?: error("PBW is null"),
             pbwReleaseId = pbw.releaseId,
             pbwIconResourceId = pbw.iconResourceId,
-            nextSyncAction = NextSyncAction.Upload,
-            order = -1
+            nextSyncAction = if (type == "watchface") NextSyncAction.Ignore else NextSyncAction.Upload,
+            order = -1,
+            lastOpened = null
     )
 }
 
