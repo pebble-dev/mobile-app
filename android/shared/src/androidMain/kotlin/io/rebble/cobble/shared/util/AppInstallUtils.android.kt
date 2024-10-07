@@ -1,6 +1,5 @@
 package io.rebble.cobble.shared.util
 
-import com.benasher44.uuid.Uuid
 import io.rebble.cobble.shared.AndroidPlatformContext
 import io.rebble.cobble.shared.PlatformContext
 import io.rebble.libpebblecommon.metadata.WatchType
@@ -9,7 +8,6 @@ import io.rebble.libpebblecommon.metadata.pbw.manifest.PbwManifest
 import kotlinx.serialization.json.decodeFromStream
 import okio.Source
 import okio.buffer
-import okio.source
 
 actual fun getPbwManifest(
     pbwFile: File,

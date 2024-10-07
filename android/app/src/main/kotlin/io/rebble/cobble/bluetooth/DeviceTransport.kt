@@ -13,14 +13,12 @@ import io.rebble.cobble.bluetooth.classic.BlueSerialDriver
 import io.rebble.cobble.bluetooth.classic.SocketSerialDriver
 import io.rebble.cobble.bluetooth.scan.BleScanner
 import io.rebble.cobble.bluetooth.scan.ClassicScanner
-import io.rebble.cobble.shared.datastore.FlutterPreferences
 import io.rebble.cobble.datasources.IncomingPacketsListener
+import io.rebble.cobble.shared.datastore.FlutterPreferences
 import io.rebble.cobble.shared.domain.common.PebbleDevice
-import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onCompletion
-import org.koin.mp.KoinPlatformTools
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton

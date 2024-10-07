@@ -2,7 +2,6 @@ package io.rebble.cobble.shared.domain
 
 import android.content.Context
 import io.rebble.cobble.shared.util.hasNotificationAccessPermission
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 
 /**

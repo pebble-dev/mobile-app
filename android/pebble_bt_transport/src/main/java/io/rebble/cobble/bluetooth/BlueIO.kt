@@ -4,8 +4,6 @@ import android.Manifest
 import android.bluetooth.BluetoothDevice
 import androidx.annotation.RequiresPermission
 import io.rebble.cobble.shared.domain.common.PebbleDevice
-import io.rebble.libpebblecommon.ProtocolHandler
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.isActive

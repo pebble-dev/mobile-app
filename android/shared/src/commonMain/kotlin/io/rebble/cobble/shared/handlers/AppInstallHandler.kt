@@ -1,17 +1,11 @@
 package io.rebble.cobble.shared.handlers
 
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.request.get
-import io.ktor.client.statement.bodyAsChannel
 import io.ktor.utils.io.ByteReadChannel
-import io.ktor.utils.io.read
 import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.PlatformContext
-import io.rebble.cobble.shared.api.RWS
 import io.rebble.cobble.shared.database.dao.LockerDao
 import io.rebble.cobble.shared.domain.common.PebbleDevice
-import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.middleware.PutBytesController
 import io.rebble.cobble.shared.util.AppCompatibility.getBestVariant
 import io.rebble.cobble.shared.util.File
@@ -20,9 +14,6 @@ import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
 import io.rebble.libpebblecommon.packets.AppFetchRequest
 import io.rebble.libpebblecommon.packets.AppFetchResponse
 import io.rebble.libpebblecommon.packets.AppFetchResponseStatus
-import io.rebble.libpebblecommon.services.AppFetchService
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch

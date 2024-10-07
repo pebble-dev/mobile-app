@@ -10,7 +10,6 @@ import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.domain.state.watchOrNull
 import io.rebble.cobble.util.launchPigeonResult
 import io.rebble.libpebblecommon.packets.*
-import io.rebble.libpebblecommon.services.ScreenshotService
 import io.rebble.libpebblecommon.util.DataBuffer
 import io.rebble.libpebblecommon.util.ushr
 import kotlinx.coroutines.CoroutineScope

@@ -3,10 +3,8 @@ package io.rebble.cobble.shared.ui.view.home
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.currentCompositionLocalContext
 import androidx.compose.runtime.getValue
 import io.rebble.cobble.shared.database.dao.LockerDao
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager

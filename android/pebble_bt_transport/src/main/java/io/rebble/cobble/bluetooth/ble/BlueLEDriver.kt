@@ -2,10 +2,9 @@ package io.rebble.cobble.bluetooth.ble
 
 import android.content.Context
 import io.rebble.cobble.bluetooth.*
+import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.cobble.shared.workarounds.UnboundWatchBeforeConnecting
 import io.rebble.cobble.shared.workarounds.WorkaroundDescriptor
-import io.rebble.cobble.shared.domain.common.PebbleDevice
-import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber

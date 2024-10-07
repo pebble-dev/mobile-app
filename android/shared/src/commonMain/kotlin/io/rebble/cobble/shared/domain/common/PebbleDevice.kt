@@ -1,12 +1,10 @@
 package io.rebble.cobble.shared.domain.common
 
 import com.benasher44.uuid.Uuid
-import io.ktor.http.parametersOf
 import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.domain.appmessage.AppMessageTransactionSequence
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
-import io.rebble.cobble.shared.domain.state.watchOrNull
 import io.rebble.cobble.shared.handlers.CobbleHandler
 import io.rebble.cobble.shared.handlers.OutgoingMessage
 import io.rebble.cobble.shared.middleware.PutBytesController

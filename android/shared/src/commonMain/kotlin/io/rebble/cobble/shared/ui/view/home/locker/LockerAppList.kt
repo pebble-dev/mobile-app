@@ -1,23 +1,18 @@
 package io.rebble.cobble.shared.ui.view.home.locker
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.IconButton
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import io.rebble.cobble.shared.database.dao.LockerDao
-import io.rebble.cobble.shared.database.entity.SyncedLockerEntryWithPlatforms
 import io.rebble.cobble.shared.jobs.LockerSyncJob
 import io.rebble.cobble.shared.ui.common.RebbleIcons
 import io.rebble.cobble.shared.ui.viewmodel.LockerItemViewModel
 import io.rebble.cobble.shared.ui.viewmodel.LockerViewModel
-import kotlinx.coroutines.Job
 import org.koin.compose.getKoin
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState

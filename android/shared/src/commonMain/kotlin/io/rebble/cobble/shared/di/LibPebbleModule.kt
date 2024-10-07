@@ -1,17 +1,15 @@
 package io.rebble.cobble.shared.di
 
-import io.rebble.cobble.shared.Logging
-import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.cobble.shared.middleware.PutBytesController
-import io.rebble.libpebblecommon.ProtocolHandlerImpl
 import io.rebble.libpebblecommon.ProtocolHandler
+import io.rebble.libpebblecommon.ProtocolHandlerImpl
 import io.rebble.libpebblecommon.services.*
 import io.rebble.libpebblecommon.services.app.AppRunStateService
 import io.rebble.libpebblecommon.services.appmessage.AppMessageService
 import io.rebble.libpebblecommon.services.blobdb.BlobDBService
-import org.koin.dsl.module
 import io.rebble.libpebblecommon.services.blobdb.TimelineService
 import org.koin.dsl.bind
+import org.koin.dsl.module
 
 val libpebbleModule = module {
     factory {

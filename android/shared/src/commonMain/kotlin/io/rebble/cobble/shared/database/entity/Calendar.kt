@@ -1,6 +1,5 @@
 package io.rebble.cobble.shared.database.entity
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey

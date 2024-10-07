@@ -7,8 +7,6 @@ import io.rebble.cobble.shared.database.NextSyncAction
 import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
 

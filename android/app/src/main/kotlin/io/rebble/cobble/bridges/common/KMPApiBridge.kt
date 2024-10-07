@@ -1,6 +1,5 @@
 package io.rebble.cobble.bridges.common
 
-import android.content.Context
 import android.content.Intent
 import io.rebble.cobble.FlutterMainActivity
 import io.rebble.cobble.MainActivity

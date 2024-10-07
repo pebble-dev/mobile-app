@@ -6,8 +6,6 @@ import io.rebble.cobble.shared.PlatformContext
 import io.rebble.cobble.shared.database.dao.LockerDao
 import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.cobble.shared.js.PKJSApp
-import io.rebble.cobble.shared.util.File
-import io.rebble.libpebblecommon.packets.AppFetchResponseStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

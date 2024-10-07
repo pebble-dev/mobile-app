@@ -60,11 +60,11 @@ fun SyncedLockerEntryWithPlatforms.getVersion(): Pair<UByte, UByte> {
 
 @Entity(
         foreignKeys = [
-            androidx.room.ForeignKey(
+            ForeignKey(
                     entity = SyncedLockerEntry::class,
                     parentColumns = ["id"],
                     childColumns = ["lockerEntryId"],
-                    onDelete = androidx.room.ForeignKey.CASCADE
+                    onDelete = ForeignKey.CASCADE
             )
         ],
         indices = [

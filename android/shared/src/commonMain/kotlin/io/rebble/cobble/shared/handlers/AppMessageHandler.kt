@@ -2,15 +2,10 @@ package io.rebble.cobble.shared.handlers
 
 import com.benasher44.uuid.Uuid
 import io.rebble.cobble.shared.Logging
-import io.rebble.cobble.shared.PlatformContext
 import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.libpebblecommon.packets.AppCustomizationSetStockAppTitleMessage
 import io.rebble.libpebblecommon.packets.AppMessage
-import io.rebble.libpebblecommon.packets.AppRunStateMessage
 import io.rebble.libpebblecommon.packets.AppType
-import io.rebble.libpebblecommon.protocolhelpers.PebblePacket
-import io.rebble.libpebblecommon.services.app.AppRunStateService
-import io.rebble.libpebblecommon.services.appmessage.AppMessageService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.*
@@ -18,7 +13,6 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.koin.core.parameter.parametersOf
 import kotlin.time.Duration.Companion.seconds
 
 private data class AppMessageTimestamp(val app: Uuid, val timestamp: Long)

@@ -4,9 +4,8 @@ import io.rebble.cobble.shared.database.NextSyncAction
 import io.rebble.cobble.shared.database.entity.SyncedLockerEntry
 import io.rebble.cobble.shared.database.entity.SyncedLockerEntryPlatform
 import io.rebble.cobble.shared.database.entity.SyncedLockerEntryPlatformImages
-import io.rebble.cobble.shared.database.entity.SyncedLockerEntryWithPlatforms
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class LockerEntry(

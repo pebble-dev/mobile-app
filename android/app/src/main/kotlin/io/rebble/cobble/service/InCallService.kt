@@ -15,7 +15,6 @@ import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.domain.state.watchOrNull
 import io.rebble.libpebblecommon.packets.PhoneControl
-import io.rebble.libpebblecommon.services.PhoneControlService
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber

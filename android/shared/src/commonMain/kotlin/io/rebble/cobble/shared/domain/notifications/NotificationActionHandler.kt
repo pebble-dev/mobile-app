@@ -1,7 +1,6 @@
 package io.rebble.cobble.shared.domain.notifications
 
 import io.rebble.cobble.shared.Logging
-import io.rebble.cobble.shared.domain.common.SystemAppIDs.notificationsWatchappId
 import io.rebble.cobble.shared.domain.timeline.TimelineActionManager
 import io.rebble.cobble.shared.handlers.CobbleHandler
 import io.rebble.libpebblecommon.services.blobdb.TimelineService

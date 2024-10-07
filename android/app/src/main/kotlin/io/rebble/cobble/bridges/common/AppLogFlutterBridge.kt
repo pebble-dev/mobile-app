@@ -2,11 +2,10 @@ package io.rebble.cobble.bridges.common
 
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
-import io.rebble.cobble.shared.middleware.AppLogController
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.domain.state.watchOrNull
-import kotlinx.coroutines.CoroutineScope
+import io.rebble.cobble.shared.middleware.AppLogController
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first

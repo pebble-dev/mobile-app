@@ -4,7 +4,6 @@ import android.content.Context
 import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.libpebblecommon.metadata.pbw.appinfo.PbwAppInfo
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 

@@ -1,9 +1,6 @@
 package io.rebble.cobble.bluetooth
 
-import android.bluetooth.BluetoothDevice
 import io.rebble.cobble.shared.domain.common.PebbleDevice
-import io.rebble.libpebblecommon.ProtocolHandler
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
 
 class EmulatedPebbleDevice(

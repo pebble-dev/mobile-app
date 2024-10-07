@@ -4,7 +4,6 @@ import io.rebble.cobble.shared.IOSPlatformContext
 import io.rebble.cobble.shared.PlatformContext
 import io.rebble.cobble.shared.datastore.createDataStore
 import io.rebble.cobble.shared.handlers.*
-import org.koin.core.module.dsl.factoryOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 

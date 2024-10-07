@@ -1,21 +1,19 @@
 package io.rebble.cobble.shared.domain.calendar
 
 import io.rebble.cobble.shared.Logging
-import io.rebble.cobble.shared.PlatformContext
 import io.rebble.cobble.shared.database.NextSyncAction
 import io.rebble.cobble.shared.database.dao.CalendarDao
 import io.rebble.cobble.shared.database.dao.TimelinePinDao
 import io.rebble.cobble.shared.database.entity.Calendar
-import io.rebble.cobble.shared.database.getDatabase
 import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.cobble.shared.domain.common.SystemAppIDs.calendarWatchappId
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.watchOrNull
 import io.rebble.cobble.shared.domain.timeline.WatchTimelineSyncer
-import io.rebble.libpebblecommon.packets.WatchVersion
-import io.rebble.libpebblecommon.services.blobdb.BlobDBService
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.qualifier.named

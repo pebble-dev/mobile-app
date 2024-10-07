@@ -8,17 +8,17 @@ import io.rebble.cobble.shared.domain.notifications.calls.CallNotificationType
 import io.rebble.cobble.shared.domain.notifications.calls.DiscordCallNotificationInterpreter
 import io.rebble.cobble.shared.domain.notifications.calls.WhatsAppCallNotificationInterpreter
 import io.rebble.cobble.shared.domain.state.ConnectionState
+import io.rebble.cobble.shared.domain.state.ConnectionStateManager
+import io.rebble.cobble.shared.domain.state.watchOrNull
+import io.rebble.cobble.shared.errors.GlobalExceptionHandler
 import io.rebble.libpebblecommon.packets.PhoneControl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlin.random.Random
-import io.rebble.cobble.shared.domain.state.ConnectionStateManager
-import io.rebble.cobble.shared.domain.state.watchOrNull
-import io.rebble.cobble.shared.errors.GlobalExceptionHandler
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import kotlin.random.Random
 
 class CallNotificationProcessor: KoinComponent {
     private val exceptionHandler: GlobalExceptionHandler by inject()

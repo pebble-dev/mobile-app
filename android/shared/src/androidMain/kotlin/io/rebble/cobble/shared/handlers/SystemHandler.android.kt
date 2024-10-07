@@ -10,7 +10,6 @@ import io.rebble.cobble.shared.AndroidPlatformContext
 import io.rebble.cobble.shared.PlatformContext
 import io.rebble.cobble.shared.util.coroutines.asFlow
 import io.rebble.libpebblecommon.packets.PhoneAppVersion
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge

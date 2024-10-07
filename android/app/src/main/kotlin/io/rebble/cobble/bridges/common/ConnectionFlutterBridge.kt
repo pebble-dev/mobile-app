@@ -8,11 +8,11 @@ import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.domain.state.watchOrNull
-import io.rebble.libpebblecommon.ProtocolHandler
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ConnectionFlutterBridge @Inject constructor(

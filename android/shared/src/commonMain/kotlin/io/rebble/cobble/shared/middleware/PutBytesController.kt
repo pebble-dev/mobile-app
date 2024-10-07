@@ -12,7 +12,6 @@ import io.rebble.libpebblecommon.metadata.pbw.manifest.PbwBlob
 import io.rebble.libpebblecommon.metadata.pbz.manifest.PbzManifest
 import io.rebble.libpebblecommon.packets.ObjectType
 import io.rebble.libpebblecommon.packets.PutBytesAbort
-import io.rebble.libpebblecommon.services.PutBytesService
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +20,6 @@ import kotlinx.coroutines.sync.withLock
 import okio.buffer
 import okio.use
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
 class PutBytesController(pebbleDevice: PebbleDevice): KoinComponent {
     private val putBytesService = pebbleDevice.putBytesService

@@ -6,7 +6,6 @@ import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresPermission
 import io.rebble.cobble.bluetooth.classic.ReconnectionSocketServer
-import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.domain.state.watchOrNull
@@ -15,8 +14,6 @@ import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.min
 
 @OptIn(ExperimentalCoroutinesApi::class)

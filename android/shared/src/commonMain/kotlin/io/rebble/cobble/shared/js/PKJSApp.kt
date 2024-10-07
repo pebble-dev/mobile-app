@@ -5,7 +5,6 @@ import com.benasher44.uuid.uuidFrom
 import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.PlatformContext
 import io.rebble.cobble.shared.domain.common.PebbleDevice
-import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.handlers.OutgoingMessage
 import io.rebble.cobble.shared.handlers.getAppPbwFile
 import io.rebble.cobble.shared.util.getPbwJsFilePath
@@ -18,8 +17,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
-import okio.buffer
-import okio.use
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 

@@ -1,6 +1,5 @@
 package io.rebble.cobble.shared.util
 
-import com.benasher44.uuid.Uuid
 import io.rebble.cobble.shared.PlatformContext
 import io.rebble.libpebblecommon.metadata.WatchType
 import io.rebble.libpebblecommon.metadata.pbw.appinfo.PbwAppInfo

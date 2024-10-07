@@ -2,11 +2,11 @@ package io.rebble.cobble.shared.api
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.engine.HttpClientEngine
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.*
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.headers
+import io.ktor.client.request.put
 import io.ktor.http.HttpHeaders
-import io.ktor.serialization.kotlinx.json.json
 import io.rebble.cobble.shared.domain.api.appstore.LockerEntry
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

@@ -8,20 +8,21 @@ import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
-import io.rebble.cobble.*
+import io.rebble.cobble.CobbleApplication
+import io.rebble.cobble.MainActivity
+import io.rebble.cobble.R
 import io.rebble.cobble.bluetooth.BluetoothPebbleDevice
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.EmulatedPebbleDevice
-import io.rebble.cobble.shared.handlers.CobbleHandler
 import io.rebble.cobble.shared.domain.calendar.CalendarSync
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.util.NotificationId
 import io.rebble.libpebblecommon.ProtocolHandler
-import io.rebble.libpebblecommon.services.notification.NotificationService
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import timber.log.Timber
-import javax.inject.Provider
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WatchService : LifecycleService() {

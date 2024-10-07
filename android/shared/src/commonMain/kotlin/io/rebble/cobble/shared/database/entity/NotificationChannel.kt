@@ -1,7 +1,6 @@
 package io.rebble.cobble.shared.database.entity
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
 @Entity(primaryKeys = ["packageId", "channelId"])
 data class NotificationChannel(

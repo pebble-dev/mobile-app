@@ -7,8 +7,6 @@ import android.service.notification.StatusBarNotification
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import io.rebble.cobble.shared.errors.GlobalExceptionHandler
-import io.rebble.cobble.shared.middleware.DeviceLogController
 import io.rebble.cobble.shared.database.AppDatabase
 import io.rebble.cobble.shared.database.dao.CachedPackageInfoDao
 import io.rebble.cobble.shared.database.dao.NotificationChannelDao
@@ -17,16 +15,13 @@ import io.rebble.cobble.shared.datastore.FlutterPreferences
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.calendar.CalendarSync
 import io.rebble.cobble.shared.domain.state.CurrentToken
-import io.rebble.cobble.shared.handlers.CalendarActionHandler
+import io.rebble.cobble.shared.errors.GlobalExceptionHandler
 import io.rebble.cobble.shared.jobs.AndroidJobScheduler
-import io.rebble.cobble.shared.middleware.PutBytesController
-import io.rebble.libpebblecommon.services.LogDumpService
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
-import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import org.koin.mp.KoinPlatformTools
 import java.util.UUID

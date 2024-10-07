@@ -2,7 +2,6 @@ package io.rebble.cobble.shared.handlers
 
 import com.benasher44.uuid.Uuid
 import io.rebble.cobble.shared.Logging
-import io.rebble.cobble.shared.PlatformContext
 import io.rebble.cobble.shared.database.NextSyncAction
 import io.rebble.cobble.shared.database.dao.TimelinePinDao
 import io.rebble.cobble.shared.domain.calendar.CalendarAction
@@ -12,10 +11,8 @@ import io.rebble.cobble.shared.domain.common.SystemAppIDs.calendarWatchappId
 import io.rebble.cobble.shared.domain.timeline.TimelineActionManager
 import io.rebble.cobble.shared.domain.timeline.WatchTimelineSyncer
 import io.rebble.libpebblecommon.packets.blobdb.TimelineIcon
-import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
 import io.rebble.libpebblecommon.services.blobdb.TimelineService
 import io.rebble.libpebblecommon.util.TimelineAttributeFactory
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent

@@ -1,9 +1,8 @@
 package io.rebble.cobble.shared.domain.state
 
 import io.rebble.cobble.shared.domain.common.PebbleDevice
-import io.rebble.libpebblecommon.packets.WatchVersion
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.qualifier.named

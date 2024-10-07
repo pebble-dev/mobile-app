@@ -1,8 +1,10 @@
 package io.rebble.cobble.bluetooth.classic
 
-import io.rebble.cobble.bluetooth.*
+import io.rebble.cobble.bluetooth.BlueIO
+import io.rebble.cobble.bluetooth.EmulatedPebbleDevice
+import io.rebble.cobble.bluetooth.SingleConnectionStatus
+import io.rebble.cobble.bluetooth.readFully
 import io.rebble.cobble.shared.domain.common.PebbleDevice
-import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.packets.QemuPacket
 import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import kotlinx.coroutines.*

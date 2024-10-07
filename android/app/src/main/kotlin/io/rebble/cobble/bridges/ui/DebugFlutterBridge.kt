@@ -2,13 +2,12 @@ package io.rebble.cobble.bridges.ui
 
 import android.content.Context
 import io.rebble.cobble.bridges.FlutterBridge
-import io.rebble.cobble.shared.errors.GlobalExceptionHandler
 import io.rebble.cobble.log.collectAndShareLogs
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.shared.datastore.KMPPrefs
+import io.rebble.cobble.shared.errors.GlobalExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject

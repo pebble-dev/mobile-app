@@ -3,8 +3,6 @@ package io.rebble.cobble.shared.handlers
 import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.libpebblecommon.packets.AppRunStateMessage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch

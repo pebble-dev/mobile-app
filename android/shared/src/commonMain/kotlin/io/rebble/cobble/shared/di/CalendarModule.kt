@@ -2,8 +2,8 @@ package io.rebble.cobble.shared.di
 
 import io.rebble.cobble.shared.domain.calendar.CalendarSync
 import io.rebble.cobble.shared.domain.calendar.PhoneCalendarSyncer
-import io.rebble.cobble.shared.domain.timeline.WatchTimelineSyncer
 import io.rebble.cobble.shared.domain.timeline.TimelineActionManager
+import io.rebble.cobble.shared.domain.timeline.WatchTimelineSyncer
 import io.rebble.cobble.shared.errors.GlobalExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope

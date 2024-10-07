@@ -1,4 +1,3 @@
-import org.gradle.api.tasks.Delete
 import java.util.Properties
 
 buildscript {

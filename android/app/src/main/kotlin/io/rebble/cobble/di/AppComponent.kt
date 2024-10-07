@@ -9,7 +9,6 @@ import io.rebble.cobble.NotificationChannelManager
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.DeviceTransport
 import io.rebble.cobble.datasources.PairedStorage
-import io.rebble.cobble.shared.middleware.DeviceLogController
 import io.rebble.cobble.service.ServiceLifecycleControl
 import io.rebble.cobble.shared.database.dao.NotificationChannelDao
 import io.rebble.cobble.shared.datastore.KMPPrefs
