@@ -64,4 +64,12 @@ val libpebbleModule = module {
     factory { params ->
         ScreenshotService(params.get())
     }
+
+    factory { params ->
+        VoiceService(params.get())
+    }
+
+    factory { params ->
+        AudioStreamService(params.get())
+    }
 }

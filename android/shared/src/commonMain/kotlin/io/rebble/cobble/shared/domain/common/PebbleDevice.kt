@@ -5,6 +5,7 @@ import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.domain.appmessage.AppMessageTransactionSequence
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
+import io.rebble.cobble.shared.domain.voice.VoiceSession
 import io.rebble.cobble.shared.handlers.CobbleHandler
 import io.rebble.cobble.shared.handlers.OutgoingMessage
 import io.rebble.cobble.shared.middleware.PutBytesController
@@ -42,6 +43,7 @@ open class PebbleDevice(
 
     val incomingAppMessages: MutableSharedFlow<AppMessage> = MutableSharedFlow(0, 8)
     val outgoingAppMessages: MutableSharedFlow<OutgoingMessage> = MutableSharedFlow(0, 8)
+    val activeVoiceSession: MutableStateFlow<VoiceSession?> = MutableStateFlow(null)
 
     val appMessageTransactionSequence = AppMessageTransactionSequence().iterator()
 
@@ -74,6 +76,8 @@ open class PebbleDevice(
     val screenshotService: ScreenshotService by inject {parametersOf(protocolHandler)}
     val timelineService: TimelineService by inject {parametersOf(protocolHandler)}
     val appFetchService: AppFetchService by inject {parametersOf(protocolHandler)}
+    val voiceService: VoiceService by inject {parametersOf(protocolHandler)}
+    val audioStreamService: AudioStreamService by inject {parametersOf(protocolHandler)}
 
     val putBytesController: PutBytesController by inject {parametersOf(this)}
 

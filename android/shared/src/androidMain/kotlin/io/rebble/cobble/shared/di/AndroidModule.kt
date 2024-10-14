@@ -51,6 +51,8 @@ val androidModule = module {
                 MusicHandler(pebbleDevice),
                 PKJSLifecycleHandler(pebbleDevice),
                 AppMessageHandler(pebbleDevice),
+                VoiceSessionHandler(pebbleDevice),
+                AudioStreamHandler(pebbleDevice),
         )
     }
 
