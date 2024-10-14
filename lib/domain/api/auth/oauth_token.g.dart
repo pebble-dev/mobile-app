@@ -8,7 +8,7 @@ part of 'oauth_token.dart';
 
 OAuthToken _$OAuthTokenFromJson(Map<String, dynamic> json) => OAuthToken(
       accessToken: json['access_token'] as String,
-      expiresIn: json['expires_in'] as int,
+      expiresIn: (json['expires_in'] as num).toInt(),
       tokenType: json['token_type'] as String,
       scope: json['scope'] as String,
       refreshToken: json['refresh_token'] as String,

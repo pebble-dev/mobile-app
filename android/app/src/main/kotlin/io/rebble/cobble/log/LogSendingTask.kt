@@ -6,13 +6,21 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.service.notification.NotificationListenerService
 import androidx.core.content.FileProvider
+import io.rebble.cobble.BuildConfig
 import io.rebble.cobble.CobbleApplication
-import io.rebble.cobble.util.hasNotificationAccessPermission
+import io.rebble.cobble.shared.domain.state.ConnectionStateManager
+import io.rebble.cobble.shared.domain.state.watchOrNull
+import io.rebble.cobble.shared.middleware.DeviceLogController
+import io.rebble.cobble.shared.util.hasNotificationAccessPermission
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
+import io.rebble.libpebblecommon.packets.LogDump
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -28,6 +36,8 @@ import java.util.zip.ZipOutputStream
 
 
 private fun generateDebugInfo(context: Context, rwsId: String): String {
+    val commitHash = BuildConfig.COMMIT_HASH
+    val branchName = BuildConfig.BRANCH_NAME
     val sdkVersion = Build.VERSION.SDK_INT
     val device = Build.DEVICE
     val model = Build.MODEL
@@ -36,10 +46,9 @@ private fun generateDebugInfo(context: Context, rwsId: String): String {
 
     val inj = (context.applicationContext as CobbleApplication).component
     val connectionLooper = inj.createConnectionLooper()
-    val watchMetadataStore = inj.createWatchMetadataStore()
     val connectionState = connectionLooper.connectionState.value
 
-    val watchMeta = watchMetadataStore.lastConnectedWatchMetadata.value
+    val watchMeta = ConnectionStateManager.connectionState.value.watchOrNull?.metadata?.value
     val watchModel = watchMeta?.running?.hardwarePlatform?.get()?.let {
         WatchHardwarePlatform.fromProtocolNumber(it)
     }
@@ -58,6 +67,8 @@ private fun generateDebugInfo(context: Context, rwsId: String): String {
                 it to (context.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED)
             }
     return """
+    Commit Hash: $commitHash
+    Branch Name: $branchName
     SDK Version: $sdkVersion
     Device: $device
     Model: $model
@@ -76,6 +87,18 @@ private fun generateDebugInfo(context: Context, rwsId: String): String {
     """.trimIndent()
 }
 
+private suspend fun getDeviceLogs(deviceLogController: DeviceLogController): List<String>? {
+    val flow = deviceLogController.requestLogDump()
+    if (flow.first() is LogDump.NoLogs) {
+        Timber.d("No logs available")
+        return null
+    }
+    return flow.filterIsInstance<LogDump.LogLine>()
+            .map {
+                "${it.timestamp.get()} ${it.filename.get()}:${it.line.get()} ${it.level.get()} ${it.messageText.get()}"
+            }.toList()
+}
+
 /**
  * This should be eventually moved to flutter. Written it in Kotlin for now so we can use it while
  * testing other things.
@@ -87,6 +110,9 @@ fun collectAndShareLogs(context: Context, rwsId: String) = GlobalScope.launch(Di
 
     var zipOutputStream: ZipOutputStream? = null
     val debugInfo = generateDebugInfo(context, rwsId)
+    val device = ConnectionStateManager.connectionState.value.watchOrNull
+    val deviceLogController = device?.let {DeviceLogController(it)}
+    val deviceLogs = deviceLogController?.let {getDeviceLogs(it)}
     try {
         zipOutputStream = ZipOutputStream(FileOutputStream(targetFile))
         for (file in logsFolder.listFiles() ?: emptyArray()) {
@@ -107,6 +133,11 @@ fun collectAndShareLogs(context: Context, rwsId: String) = GlobalScope.launch(Di
         zipOutputStream.putNextEntry(ZipEntry("debug_info.txt"))
         zipOutputStream.write(debugInfo.toByteArray())
         zipOutputStream.closeEntry()
+        deviceLogs?.let {
+            zipOutputStream.putNextEntry(ZipEntry("device_logs.txt"))
+            zipOutputStream.write(it.joinToString("\n").toByteArray())
+            zipOutputStream.closeEntry()
+        }
     } catch (e: Exception) {
         Timber.e(e, "Zip writing error")
     } finally {

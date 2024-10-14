@@ -5,6 +5,26 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stream_transform/stream_transform.dart';
 
+// Packages that are muted by default for the crime of spam
+const defaultMutedPackages = [
+  "com.google.android.googlequicksearchbox",
+  "de.itgecko.sharedownloader",
+  "com.android.vending",
+  "com.android.settings",
+  "com.google.android.gms",
+  "com.google.android.music",
+  "com.android.chrome",
+  "com.htc.vowifi",
+  "com.android.providers.downloads",
+  "org.mozilla.firefox",
+  "com.htc.album",
+  "com.dropbox.android",
+  "com.lookout",
+  "com.lastpass.lpandroid"
+];
+
+const defaultMutedPackagesVersion = 1;
+
 class Preferences {
   final SharedPreferences _sharedPrefs;
 
@@ -60,15 +80,6 @@ class Preferences {
     _preferencesUpdateStream.add(this);
   }
 
-  bool? isCalendarSyncEnabled() {
-    return _sharedPrefs.getBool("ENABLE_CALENDAR_SYNC");
-  }
-
-  Future<void> setCalendarSyncEnabled(bool value) async {
-    await _sharedPrefs.setBool("ENABLE_CALENDAR_SYNC", value);
-    _preferencesUpdateStream.add(this);
-  }
-
   bool? isPhoneNotificationMuteEnabled() {
     return _sharedPrefs.getBool("MUTE_PHONE_NOTIFICATIONS");
   }
@@ -106,7 +117,7 @@ class Preferences {
   }
 
   List<String?> getNotificationsMutedPackages() {
-    return _sharedPrefs.getStringList("MUTED_NOTIF_PACKAGES") ?? [];
+    return _sharedPrefs.getStringList("MUTED_NOTIF_PACKAGES") ?? defaultMutedPackages;
   }
 
   Future<void> setNotificationsMutedPackages(List<String?> packages) async {
@@ -159,16 +170,21 @@ class Preferences {
     }
     _preferencesUpdateStream.add(this);
   }
+
+  int? getDefaultMutedPackagesVersion() {
+    return _sharedPrefs.getInt("DEFAULT_MUTED_PACKAGES_VERSION");
+  }
+
+  Future<void> setDefaultMutedPackagesVersion(int value) async {
+    await _sharedPrefs.setInt("DEFAULT_MUTED_PACKAGES_VERSION", value);
+    _preferencesUpdateStream.add(this);
+  }
 }
 
 final preferencesProvider = FutureProvider<Preferences>((ref) async {
   final sharedPreferences = await ref.watch(sharedPreferencesProvider);
   return Preferences(sharedPreferences);
 });
-
-final calendarSyncEnabledProvider = _createPreferenceProvider<bool?>(
-  (preferences) => preferences.isCalendarSyncEnabled(),
-);
 
 final phoneNotificationsMuteProvider = _createPreferenceProvider<bool?>(
   (preferences) => preferences.isPhoneNotificationMuteEnabled(),

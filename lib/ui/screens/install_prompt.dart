@@ -1,6 +1,5 @@
 import 'package:cobble/domain/apps/app_compatibility.dart';
 import 'package:cobble/domain/apps/app_install_status.dart';
-import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
@@ -24,7 +23,7 @@ class InstallPrompt extends HookConsumerWidget implements CobbleScreen {
     final watchUploadHasStarted = useState(false);
 
     final installStatus = ref.watch(appInstallStatusProvider);
-    final appManager = ref.watch(appManagerProvider.notifier);
+    //final appManager = ref.watch(appManagerProvider.notifier);
     final connectionStatus = ref.watch(connectionStateProvider);
 
     final connectedWatch = connectionStatus.currentConnectedWatch;
@@ -42,7 +41,7 @@ class InstallPrompt extends HookConsumerWidget implements CobbleScreen {
       String statusText;
       if (installStatus.isInstalling) {
         final roundedPercentage =
-        (installStatus.progress * 100).round().toInt().toString();
+            (installStatus.progress * 100).round().toInt().toString();
         statusText = "Installing... [" + roundedPercentage + "%]";
       } else {
         statusText = "Installing...";
@@ -54,9 +53,9 @@ class InstallPrompt extends HookConsumerWidget implements CobbleScreen {
         children: [
           Text("Sorry, this is not a valid PBW file"),
           CobbleButton(
-              outlined: false,
-              label: "Go Back",
-              onPressed: () => Navigator.of(context).pop(),
+            outlined: false,
+            label: "Go Back",
+            onPressed: () => Navigator.of(context).pop(),
           ),
         ],
       );
@@ -65,9 +64,9 @@ class InstallPrompt extends HookConsumerWidget implements CobbleScreen {
         children: [
           Text("Watch not connected"),
           CobbleButton(
-              outlined: false,
-              label: "Go Back",
-              onPressed: () => Navigator.of(context).pop(),
+            outlined: false,
+            label: "Go Back",
+            onPressed: () => Navigator.of(context).pop(),
           ),
         ],
       );
@@ -76,9 +75,9 @@ class InstallPrompt extends HookConsumerWidget implements CobbleScreen {
         children: [
           Text("Watch not compatible"),
           CobbleButton(
-              outlined: false,
-              label: "Go Back",
-              onPressed: () => Navigator.of(context).pop(),
+            outlined: false,
+            label: "Go Back",
+            onPressed: () => Navigator.of(context).pop(),
           ),
         ],
       );
@@ -88,17 +87,17 @@ class InstallPrompt extends HookConsumerWidget implements CobbleScreen {
           Text(
               "Do you want to install ${_appInfo.longName} by ${_appInfo.companyName}?"),
           CobbleButton(
-              outlined: false,
-              label: "Yes",
-              onPressed: () { 
-                  appManager.beginAppInstall(_appUri, _appInfo);
-                  userInitiatedInstall.value = true;
-              },
+            outlined: false,
+            label: "Yes",
+            onPressed: () {
+              //appManager.beginAppInstall(_appUri, _appInfo);
+              userInitiatedInstall.value = true;
+            },
           ),
           CobbleButton(
-              outlined: false,
-              label: "No",
-              onPressed: () => Navigator.of(context).pop(),
+            outlined: false,
+            label: "No",
+            onPressed: () => Navigator.of(context).pop(),
           ),
         ],
       );

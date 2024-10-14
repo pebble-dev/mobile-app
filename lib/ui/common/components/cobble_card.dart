@@ -123,7 +123,7 @@ class CobbleCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: context.textTheme.headline6!.copyWith(
+                    style: context.textTheme.headlineMedium!.copyWith(
                       color: scheme.text,
                     ),
                   ),
@@ -131,7 +131,7 @@ class CobbleCard extends StatelessWidget {
                     SizedBox(height: 4),
                     Text(
                       subtitle!,
-                      style: context.textTheme.bodyText2!.copyWith(
+                      style: context.textTheme.bodyMedium!.copyWith(
                         color: scheme.text,
                       ),
                     ),

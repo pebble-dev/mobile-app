@@ -9,7 +9,7 @@ part of 'app_reorder_request.dart';
 AppReorderRequest _$AppReorderRequestFromJson(Map<String, dynamic> json) =>
     AppReorderRequest(
       Uuid.parse(json['uuid'] as String),
-      json['newPosition'] as int,
+      (json['newPosition'] as num).toInt(),
     );
 
 Map<String, dynamic> _$AppReorderRequestToJson(AppReorderRequest instance) =>

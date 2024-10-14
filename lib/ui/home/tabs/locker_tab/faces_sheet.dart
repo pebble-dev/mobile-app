@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cobble/domain/db/models/app.dart';
 import 'package:flutter/material.dart';
-import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/common/components/cobble_divider.dart';
@@ -13,14 +12,15 @@ import 'package:share_plus/share_plus.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
 
+import '../../../../domain/logging.dart';
+
 class FacesPreview extends StatelessWidget {
-  FacesPreview({
-    required this.face,
-    this.compatible = false,
-    this.extended = false,
-    this.circleConnected,
-    this.listUrl
-  });
+  FacesPreview(
+      {required this.face,
+      this.compatible = false,
+      this.extended = false,
+      this.circleConnected,
+      this.listUrl});
 
   final App face;
   final bool compatible;
@@ -35,36 +35,52 @@ class FacesPreview extends StatelessWidget {
         face.supportedHardware[0] == WatchType.chalk;
     circleWatchface =
         compatible && (circleConnected ?? false) || !compatible && circleOnly;
-    return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          ClipRRect(
-            child: Image(
-              image: (listUrl != null ? CachedNetworkImageProvider(listUrl!) : Svg('images/temp_watch_face.svg')) as ImageProvider,
-              width: 92,
-              height: circleWatchface ? 92 : 108,
-              alignment: AlignmentDirectional.center,
-              fit: BoxFit.cover,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        ClipRRect(
+          borderRadius: BorderRadius.circular(circleWatchface ? 46.0 : 6.0),
+          child: listUrl == null
+              ? Image(
+                  image: const Svg('images/temp_watch_face.svg'),
+                  width: 92,
+                  height: circleWatchface ? 92 : 108,
+                  alignment: Alignment.center,
+                  fit: BoxFit.cover,
+                )
+              : CachedNetworkImage(
+                  imageUrl: listUrl!,
+                  width: 92,
+                  height: circleWatchface ? 92 : 108,
+                  alignment: Alignment.center,
+                  fit: BoxFit.cover,
+                  errorListener: (e) {
+                    Log.e("Error loading face image: $e");
+                  },
+                  placeholder: (context, url) => Image(
+                    image: const Svg('images/temp_watch_face.svg'),
+                    width: 92,
+                    height: circleWatchface ? 92 : 108,
+                    alignment: Alignment.center,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          face.longName + (extended ? " ${face.version}" : ""),
+          style: context.textTheme.headlineMedium,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          face.company,
+          style: context.textTheme.bodyMedium!.copyWith(
+            color: context.textTheme.bodyMedium!.color!.withOpacity(
+              context.scheme!.muted.opacity,
             ),
-            borderRadius: BorderRadius.circular(circleWatchface ? 46.0 : 6.0),
           ),
-          SizedBox(height: 8),
-          Text(
-            face.longName + (extended ? " ${face.version}" : ""),
-            style: context.textTheme.headline6,
-          ),
-          SizedBox(height: 4),
-          Text(
-            face.company,
-            style: context.textTheme.bodyText2!.copyWith(
-              color: context.textTheme.bodyText2!.color!.withOpacity(
-                context.scheme!.muted.opacity,
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -74,7 +90,7 @@ class FacesSheet {
     required BuildContext context,
     required App face,
     bool compatible = false,
-    required AppManager appManager,
+    //required AppManager appManager,
     PebbleWatchLine? lineConnected,
     bool? circleConnected,
     String? listUrl,
@@ -83,7 +99,7 @@ class FacesSheet {
       context: context,
       builder: (context) => Column(
         children: [
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           FacesPreview(
             listUrl: listUrl,
             face: face,
@@ -91,7 +107,7 @@ class FacesSheet {
             extended: true,
             circleConnected: (circleConnected ?? false),
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           // TODO: Implement getting metadata from the store (including the preview)
           if (face.appstoreId != null)
             Row(
@@ -102,14 +118,14 @@ class FacesSheet {
                   icon: RebbleIcons.rebble_store,
                   onPressed: () {},
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 CobbleButton(
                   outlined: false,
                   icon: RebbleIcons.health_heart,
                   label: "0",
                   onPressed: () {},
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 CobbleButton(
                   outlined: false,
                   icon: RebbleIcons.share,
@@ -119,7 +135,7 @@ class FacesSheet {
                 ),
               ],
             ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           CobbleDivider(),
           if (compatible)
             Container(
@@ -159,7 +175,9 @@ class FacesSheet {
           CobbleTile.action(
             leading: RebbleIcons.delete_trash,
             title: tr.lockerPage.delete,
-            onTap: () => appManager.deleteApp(face.uuid),
+            onTap: () {
+              //appManager.deleteApp(face.uuid);
+            },
           ),
         ],
       ),

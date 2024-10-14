@@ -1,10 +1,10 @@
 package io.rebble.cobble.bridges.ui
 
 import android.content.Context
-import io.rebble.cobble.bluetooth.workarounds.WorkaroundDescriptor
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.pigeons.ListWrapper
 import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.shared.workarounds.WorkaroundDescriptor
 import javax.inject.Inject
 
 class WorkaroundsFlutterBridge @Inject constructor(

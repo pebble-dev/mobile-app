@@ -19,20 +19,17 @@ NS_ASSUME_NONNULL_BEGIN
 @class PebbleScanDevicePigeon;
 @class WatchConnectionStatePigeon;
 @class TimelinePinPigeon;
-@class ActionTrigger;
-@class ActionResponsePigeon;
 @class NotifActionExecuteReq;
-@class NotificationPigeon;
 @class AppEntriesPigeon;
 @class PbwAppInfo;
 @class WatchappInfo;
 @class WatchResource;
-@class InstallData;
 @class AppInstallStatus;
 @class ScreenshotResult;
 @class AppLogEntry;
 @class OAuthResult;
-@class NotifChannelPigeon;
+@class NotifyingPackage;
+@class CalendarPigeon;
 
 /// Pigeon only supports classes as return/receive type.
 /// That is why we must wrap primitive types into wrapper
@@ -153,22 +150,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy, nullable) NSString * actionsJson;
 @end
 
-@interface ActionTrigger : NSObject
-+ (instancetype)makeWithItemId:(nullable NSString *)itemId
-    actionId:(nullable NSNumber *)actionId
-    attributesJson:(nullable NSString *)attributesJson;
-@property(nonatomic, copy, nullable) NSString * itemId;
-@property(nonatomic, strong, nullable) NSNumber * actionId;
-@property(nonatomic, copy, nullable) NSString * attributesJson;
-@end
-
-@interface ActionResponsePigeon : NSObject
-+ (instancetype)makeWithSuccess:(nullable NSNumber *)success
-    attributesJson:(nullable NSString *)attributesJson;
-@property(nonatomic, strong, nullable) NSNumber * success;
-@property(nonatomic, copy, nullable) NSString * attributesJson;
-@end
-
 @interface NotifActionExecuteReq : NSObject
 + (instancetype)makeWithItemId:(nullable NSString *)itemId
     actionId:(nullable NSNumber *)actionId
@@ -176,29 +157,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy, nullable) NSString * itemId;
 @property(nonatomic, strong, nullable) NSNumber * actionId;
 @property(nonatomic, copy, nullable) NSString * responseText;
-@end
-
-@interface NotificationPigeon : NSObject
-+ (instancetype)makeWithPackageId:(nullable NSString *)packageId
-    notifId:(nullable NSNumber *)notifId
-    appName:(nullable NSString *)appName
-    tagId:(nullable NSString *)tagId
-    title:(nullable NSString *)title
-    text:(nullable NSString *)text
-    category:(nullable NSString *)category
-    color:(nullable NSNumber *)color
-    messagesJson:(nullable NSString *)messagesJson
-    actionsJson:(nullable NSString *)actionsJson;
-@property(nonatomic, copy, nullable) NSString * packageId;
-@property(nonatomic, strong, nullable) NSNumber * notifId;
-@property(nonatomic, copy, nullable) NSString * appName;
-@property(nonatomic, copy, nullable) NSString * tagId;
-@property(nonatomic, copy, nullable) NSString * title;
-@property(nonatomic, copy, nullable) NSString * text;
-@property(nonatomic, copy, nullable) NSString * category;
-@property(nonatomic, strong, nullable) NSNumber * color;
-@property(nonatomic, copy, nullable) NSString * messagesJson;
-@property(nonatomic, copy, nullable) NSString * actionsJson;
 @end
 
 @interface AppEntriesPigeon : NSObject
@@ -257,17 +215,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy, nullable) NSString * type;
 @end
 
-@interface InstallData : NSObject
-/// `init` unavailable to enforce nonnull fields, see the `make` class method.
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)makeWithUri:(NSString *)uri
-    appInfo:(PbwAppInfo *)appInfo
-    stayOffloaded:(NSNumber *)stayOffloaded;
-@property(nonatomic, copy) NSString * uri;
-@property(nonatomic, strong) PbwAppInfo * appInfo;
-@property(nonatomic, strong) NSNumber * stayOffloaded;
-@end
-
 @interface AppInstallStatus : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
@@ -313,17 +260,36 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy, nullable) NSString * error;
 @end
 
-@interface NotifChannelPigeon : NSObject
-+ (instancetype)makeWithPackageId:(nullable NSString *)packageId
-    channelId:(nullable NSString *)channelId
-    channelName:(nullable NSString *)channelName
-    channelDesc:(nullable NSString *)channelDesc
-    delete:(nullable NSNumber *)delete;
-@property(nonatomic, copy, nullable) NSString * packageId;
-@property(nonatomic, copy, nullable) NSString * channelId;
-@property(nonatomic, copy, nullable) NSString * channelName;
-@property(nonatomic, copy, nullable) NSString * channelDesc;
-@property(nonatomic, strong, nullable) NSNumber * delete;
+@interface NotifyingPackage : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)makeWithPackageId:(NSString *)packageId
+    packageName:(NSString *)packageName;
+@property(nonatomic, copy) NSString * packageId;
+@property(nonatomic, copy) NSString * packageName;
+@end
+
+@interface CalendarPigeon : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)makeWithId:(NSNumber *)id
+    account:(NSString *)account
+    name:(NSString *)name
+    color:(NSNumber *)color
+    enabled:(NSNumber *)enabled;
+@property(nonatomic, strong) NSNumber * id;
+@property(nonatomic, copy) NSString * account;
+@property(nonatomic, copy) NSString * name;
+@property(nonatomic, strong) NSNumber * color;
+@property(nonatomic, strong) NSNumber * enabled;
+@end
+
+/// The codec used by CalendarCallbacks.
+NSObject<FlutterMessageCodec> *CalendarCallbacksGetCodec(void);
+
+@interface CalendarCallbacks : NSObject
+- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
+- (void)onCalendarListUpdatedCalendars:(NSArray<CalendarPigeon *> *)calendars completion:(void (^)(FlutterError *_Nullable))completion;
 @end
 
 /// The codec used by ScanCallbacks.
@@ -361,23 +327,6 @@ NSObject<FlutterMessageCodec> *PairCallbacksGetCodec(void);
 - (void)onWatchPairCompleteAddress:(StringWrapper *)address completion:(void (^)(FlutterError *_Nullable))completion;
 @end
 
-/// The codec used by CalendarCallbacks.
-NSObject<FlutterMessageCodec> *CalendarCallbacksGetCodec(void);
-
-@interface CalendarCallbacks : NSObject
-- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
-- (void)doFullCalendarSyncWithCompletion:(void (^)(FlutterError *_Nullable))completion;
-@end
-
-/// The codec used by TimelineCallbacks.
-NSObject<FlutterMessageCodec> *TimelineCallbacksGetCodec(void);
-
-@interface TimelineCallbacks : NSObject
-- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
-- (void)syncTimelineToWatchWithCompletion:(void (^)(FlutterError *_Nullable))completion;
-- (void)handleTimelineActionActionTrigger:(ActionTrigger *)actionTrigger completion:(void (^)(ActionResponsePigeon *_Nullable, FlutterError *_Nullable))completion;
-@end
-
 /// The codec used by IntentCallbacks.
 NSObject<FlutterMessageCodec> *IntentCallbacksGetCodec(void);
 
@@ -386,32 +335,12 @@ NSObject<FlutterMessageCodec> *IntentCallbacksGetCodec(void);
 - (void)openUriUri:(StringWrapper *)uri completion:(void (^)(FlutterError *_Nullable))completion;
 @end
 
-/// The codec used by BackgroundAppInstallCallbacks.
-NSObject<FlutterMessageCodec> *BackgroundAppInstallCallbacksGetCodec(void);
-
-@interface BackgroundAppInstallCallbacks : NSObject
-- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
-- (void)beginAppInstallInstallData:(InstallData *)installData completion:(void (^)(FlutterError *_Nullable))completion;
-- (void)deleteAppUuid:(StringWrapper *)uuid completion:(void (^)(FlutterError *_Nullable))completion;
-@end
-
 /// The codec used by AppInstallStatusCallbacks.
 NSObject<FlutterMessageCodec> *AppInstallStatusCallbacksGetCodec(void);
 
 @interface AppInstallStatusCallbacks : NSObject
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
 - (void)onStatusUpdatedStatus:(AppInstallStatus *)status completion:(void (^)(FlutterError *_Nullable))completion;
-@end
-
-/// The codec used by NotificationListening.
-NSObject<FlutterMessageCodec> *NotificationListeningGetCodec(void);
-
-@interface NotificationListening : NSObject
-- (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
-- (void)handleNotificationNotification:(NotificationPigeon *)notification completion:(void (^)(TimelinePinPigeon *_Nullable, FlutterError *_Nullable))completion;
-- (void)dismissNotificationItemId:(StringWrapper *)itemId completion:(void (^)(FlutterError *_Nullable))completion;
-- (void)shouldNotifyChannel:(NotifChannelPigeon *)channel completion:(void (^)(BooleanWrapper *_Nullable, FlutterError *_Nullable))completion;
-- (void)updateChannelChannel:(NotifChannelPigeon *)channel completion:(void (^)(FlutterError *_Nullable))completion;
 @end
 
 /// The codec used by AppLogCallbacks.
@@ -494,7 +423,7 @@ extern void UiConnectionControlSetup(id<FlutterBinaryMessenger> binaryMessenger,
 NSObject<FlutterMessageCodec> *NotificationsControlGetCodec(void);
 
 @protocol NotificationsControl
-- (void)sendTestNotificationWithError:(FlutterError *_Nullable *_Nonnull)error;
+- (void)getNotificationPackagesWithCompletion:(void (^)(NSArray<NotifyingPackage *> *_Nullable, FlutterError *_Nullable))completion;
 @end
 
 extern void NotificationsControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<NotificationsControl> *_Nullable api);
@@ -515,6 +444,8 @@ NSObject<FlutterMessageCodec> *DebugControlGetCodec(void);
 
 @protocol DebugControl
 - (void)collectLogsRwsId:(NSString *)rwsId error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)getSensitiveLoggingEnabledWithCompletion:(void (^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
+- (void)setSensitiveLoggingEnabledEnabled:(NSNumber *)enabled completion:(void (^)(FlutterError *_Nullable))completion;
 @end
 
 extern void DebugControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DebugControl> *_Nullable api);
@@ -529,24 +460,6 @@ NSObject<FlutterMessageCodec> *TimelineControlGetCodec(void);
 @end
 
 extern void TimelineControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<TimelineControl> *_Nullable api);
-
-/// The codec used by BackgroundSetupControl.
-NSObject<FlutterMessageCodec> *BackgroundSetupControlGetCodec(void);
-
-@protocol BackgroundSetupControl
-- (void)setupBackgroundCallbackHandle:(NumberWrapper *)callbackHandle error:(FlutterError *_Nullable *_Nonnull)error;
-@end
-
-extern void BackgroundSetupControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<BackgroundSetupControl> *_Nullable api);
-
-/// The codec used by BackgroundControl.
-NSObject<FlutterMessageCodec> *BackgroundControlGetCodec(void);
-
-@protocol BackgroundControl
-- (void)notifyFlutterBackgroundStartedWithCompletion:(void (^)(NumberWrapper *_Nullable, FlutterError *_Nullable))completion;
-@end
-
-extern void BackgroundControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<BackgroundControl> *_Nullable api);
 
 /// The codec used by PermissionCheck.
 NSObject<FlutterMessageCodec> *PermissionCheckGetCodec(void);
@@ -588,7 +501,12 @@ extern void PermissionControlSetup(id<FlutterBinaryMessenger> binaryMessenger, N
 NSObject<FlutterMessageCodec> *CalendarControlGetCodec(void);
 
 @protocol CalendarControl
-- (void)requestCalendarSyncWithError:(FlutterError *_Nullable *_Nonnull)error;
+- (void)requestCalendarSyncForceResync:(NSNumber *)forceResync error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setCalendarSyncEnabledEnabled:(NSNumber *)enabled completion:(void (^)(FlutterError *_Nullable))completion;
+- (void)getCalendarSyncEnabledWithCompletion:(void (^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
+- (void)deleteAllCalendarPinsWithCompletion:(void (^)(FlutterError *_Nullable))completion;
+- (void)getCalendarsWithCompletion:(void (^)(NSArray<CalendarPigeon *> *_Nullable, FlutterError *_Nullable))completion;
+- (void)setCalendarEnabledId:(NSNumber *)id enabled:(NSNumber *)enabled completion:(void (^)(FlutterError *_Nullable))completion;
 @end
 
 extern void CalendarControlSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<CalendarControl> *_Nullable api);
@@ -630,13 +548,6 @@ NSObject<FlutterMessageCodec> *AppInstallControlGetCodec(void);
 
 @protocol AppInstallControl
 - (void)getAppInfoLocalPbwUri:(StringWrapper *)localPbwUri completion:(void (^)(PbwAppInfo *_Nullable, FlutterError *_Nullable))completion;
-- (void)beginAppInstallInstallData:(InstallData *)installData completion:(void (^)(BooleanWrapper *_Nullable, FlutterError *_Nullable))completion;
-- (void)beginAppDeletionUuid:(StringWrapper *)uuid completion:(void (^)(BooleanWrapper *_Nullable, FlutterError *_Nullable))completion;
-/// Read header from pbw file already in Cobble's storage and send it to
-/// BlobDB on the watch
-- (void)insertAppIntoBlobDbUuidString:(StringWrapper *)uuidString completion:(void (^)(NumberWrapper *_Nullable, FlutterError *_Nullable))completion;
-- (void)removeAppFromBlobDbAppUuidString:(StringWrapper *)appUuidString completion:(void (^)(NumberWrapper *_Nullable, FlutterError *_Nullable))completion;
-- (void)removeAllAppsWithCompletion:(void (^)(NumberWrapper *_Nullable, FlutterError *_Nullable))completion;
 - (void)subscribeToAppStatusWithError:(FlutterError *_Nullable *_Nonnull)error;
 - (void)unsubscribeFromAppStatusWithError:(FlutterError *_Nullable *_Nonnull)error;
 - (void)sendAppOrderToWatchUuidStringList:(ListWrapper *)uuidStringList completion:(void (^)(NumberWrapper *_Nullable, FlutterError *_Nullable))completion;
@@ -704,5 +615,15 @@ NSObject<FlutterMessageCodec> *KeepUnusedHackGetCodec(void);
 @end
 
 extern void KeepUnusedHackSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<KeepUnusedHack> *_Nullable api);
+
+/// The codec used by KMPApi.
+NSObject<FlutterMessageCodec> *KMPApiGetCodec(void);
+
+@protocol KMPApi
+- (void)updateTokenToken:(StringWrapper *)token error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)openLockerViewWithError:(FlutterError *_Nullable *_Nonnull)error;
+@end
+
+extern void KMPApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<KMPApi> *_Nullable api);
 
 NS_ASSUME_NONNULL_END

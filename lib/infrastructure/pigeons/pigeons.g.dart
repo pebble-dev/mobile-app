@@ -380,63 +380,6 @@ class TimelinePinPigeon {
   }
 }
 
-class ActionTrigger {
-  ActionTrigger({
-    this.itemId,
-    this.actionId,
-    this.attributesJson,
-  });
-
-  String? itemId;
-
-  int? actionId;
-
-  String? attributesJson;
-
-  Object encode() {
-    return <Object?>[
-      itemId,
-      actionId,
-      attributesJson,
-    ];
-  }
-
-  static ActionTrigger decode(Object result) {
-    result as List<Object?>;
-    return ActionTrigger(
-      itemId: result[0] as String?,
-      actionId: result[1] as int?,
-      attributesJson: result[2] as String?,
-    );
-  }
-}
-
-class ActionResponsePigeon {
-  ActionResponsePigeon({
-    this.success,
-    this.attributesJson,
-  });
-
-  bool? success;
-
-  String? attributesJson;
-
-  Object encode() {
-    return <Object?>[
-      success,
-      attributesJson,
-    ];
-  }
-
-  static ActionResponsePigeon decode(Object result) {
-    result as List<Object?>;
-    return ActionResponsePigeon(
-      success: result[0] as bool?,
-      attributesJson: result[1] as String?,
-    );
-  }
-}
-
 class NotifActionExecuteReq {
   NotifActionExecuteReq({
     this.itemId,
@@ -464,72 +407,6 @@ class NotifActionExecuteReq {
       itemId: result[0] as String?,
       actionId: result[1] as int?,
       responseText: result[2] as String?,
-    );
-  }
-}
-
-class NotificationPigeon {
-  NotificationPigeon({
-    this.packageId,
-    this.notifId,
-    this.appName,
-    this.tagId,
-    this.title,
-    this.text,
-    this.category,
-    this.color,
-    this.messagesJson,
-    this.actionsJson,
-  });
-
-  String? packageId;
-
-  int? notifId;
-
-  String? appName;
-
-  String? tagId;
-
-  String? title;
-
-  String? text;
-
-  String? category;
-
-  int? color;
-
-  String? messagesJson;
-
-  String? actionsJson;
-
-  Object encode() {
-    return <Object?>[
-      packageId,
-      notifId,
-      appName,
-      tagId,
-      title,
-      text,
-      category,
-      color,
-      messagesJson,
-      actionsJson,
-    ];
-  }
-
-  static NotificationPigeon decode(Object result) {
-    result as List<Object?>;
-    return NotificationPigeon(
-      packageId: result[0] as String?,
-      notifId: result[1] as int?,
-      appName: result[2] as String?,
-      tagId: result[3] as String?,
-      title: result[4] as String?,
-      text: result[5] as String?,
-      category: result[6] as String?,
-      color: result[7] as int?,
-      messagesJson: result[8] as String?,
-      actionsJson: result[9] as String?,
     );
   }
 }
@@ -710,37 +587,6 @@ class WatchResource {
   }
 }
 
-class InstallData {
-  InstallData({
-    required this.uri,
-    required this.appInfo,
-    required this.stayOffloaded,
-  });
-
-  String uri;
-
-  PbwAppInfo appInfo;
-
-  bool stayOffloaded;
-
-  Object encode() {
-    return <Object?>[
-      uri,
-      appInfo.encode(),
-      stayOffloaded,
-    ];
-  }
-
-  static InstallData decode(Object result) {
-    result as List<Object?>;
-    return InstallData(
-      uri: result[0]! as String,
-      appInfo: PbwAppInfo.decode(result[1]! as List<Object?>),
-      stayOffloaded: result[2]! as bool,
-    );
-  }
-}
-
 class AppInstallStatus {
   AppInstallStatus({
     required this.progress,
@@ -871,44 +717,121 @@ class OAuthResult {
   }
 }
 
-class NotifChannelPigeon {
-  NotifChannelPigeon({
-    this.packageId,
-    this.channelId,
-    this.channelName,
-    this.channelDesc,
-    this.delete,
+class NotifyingPackage {
+  NotifyingPackage({
+    required this.packageId,
+    required this.packageName,
   });
 
-  String? packageId;
+  String packageId;
 
-  String? channelId;
-
-  String? channelName;
-
-  String? channelDesc;
-
-  bool? delete;
+  String packageName;
 
   Object encode() {
     return <Object?>[
       packageId,
-      channelId,
-      channelName,
-      channelDesc,
-      delete,
+      packageName,
     ];
   }
 
-  static NotifChannelPigeon decode(Object result) {
+  static NotifyingPackage decode(Object result) {
     result as List<Object?>;
-    return NotifChannelPigeon(
-      packageId: result[0] as String?,
-      channelId: result[1] as String?,
-      channelName: result[2] as String?,
-      channelDesc: result[3] as String?,
-      delete: result[4] as bool?,
+    return NotifyingPackage(
+      packageId: result[0]! as String,
+      packageName: result[1]! as String,
     );
+  }
+}
+
+class CalendarPigeon {
+  CalendarPigeon({
+    required this.id,
+    required this.account,
+    required this.name,
+    required this.color,
+    required this.enabled,
+  });
+
+  int id;
+
+  String account;
+
+  String name;
+
+  int color;
+
+  bool enabled;
+
+  Object encode() {
+    return <Object?>[
+      id,
+      account,
+      name,
+      color,
+      enabled,
+    ];
+  }
+
+  static CalendarPigeon decode(Object result) {
+    result as List<Object?>;
+    return CalendarPigeon(
+      id: result[0]! as int,
+      account: result[1]! as String,
+      name: result[2]! as String,
+      color: result[3]! as int,
+      enabled: result[4]! as bool,
+    );
+  }
+}
+
+class _CalendarCallbacksCodec extends StandardMessageCodec {
+  const _CalendarCallbacksCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is CalendarPigeon) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128: 
+        return CalendarPigeon.decode(readValue(buffer)!);
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
+abstract class CalendarCallbacks {
+  static const MessageCodec<Object?> codec = _CalendarCallbacksCodec();
+
+  void onCalendarListUpdated(List<CalendarPigeon?> calendars);
+
+  static void setup(CalendarCallbacks? api, {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.CalendarCallbacks.onCalendarListUpdated', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.CalendarCallbacks.onCalendarListUpdated was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final List<CalendarPigeon?>? arg_calendars = (args[0] as List<Object?>?)?.cast<CalendarPigeon?>();
+          assert(arg_calendars != null,
+              'Argument for dev.flutter.pigeon.CalendarCallbacks.onCalendarListUpdated was null, expected non-null List<CalendarPigeon?>.');
+          api.onCalendarListUpdated(arg_calendars!);
+          return;
+        });
+      }
+    }
   }
 }
 
@@ -1159,101 +1082,6 @@ abstract class PairCallbacks {
   }
 }
 
-abstract class CalendarCallbacks {
-  static const MessageCodec<Object?> codec = StandardMessageCodec();
-
-  Future<void> doFullCalendarSync();
-
-  static void setup(CalendarCallbacks? api, {BinaryMessenger? binaryMessenger}) {
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.CalendarCallbacks.doFullCalendarSync', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          // ignore message
-          await api.doFullCalendarSync();
-          return;
-        });
-      }
-    }
-  }
-}
-
-class _TimelineCallbacksCodec extends StandardMessageCodec {
-  const _TimelineCallbacksCodec();
-  @override
-  void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is ActionResponsePigeon) {
-      buffer.putUint8(128);
-      writeValue(buffer, value.encode());
-    } else if (value is ActionTrigger) {
-      buffer.putUint8(129);
-      writeValue(buffer, value.encode());
-    } else {
-      super.writeValue(buffer, value);
-    }
-  }
-
-  @override
-  Object? readValueOfType(int type, ReadBuffer buffer) {
-    switch (type) {
-      case 128: 
-        return ActionResponsePigeon.decode(readValue(buffer)!);
-      case 129: 
-        return ActionTrigger.decode(readValue(buffer)!);
-      default:
-        return super.readValueOfType(type, buffer);
-    }
-  }
-}
-
-abstract class TimelineCallbacks {
-  static const MessageCodec<Object?> codec = _TimelineCallbacksCodec();
-
-  void syncTimelineToWatch();
-
-  Future<ActionResponsePigeon> handleTimelineAction(ActionTrigger actionTrigger);
-
-  static void setup(TimelineCallbacks? api, {BinaryMessenger? binaryMessenger}) {
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.TimelineCallbacks.syncTimelineToWatch', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          // ignore message
-          api.syncTimelineToWatch();
-          return;
-        });
-      }
-    }
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.TimelineCallbacks.handleTimelineAction', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-          'Argument for dev.flutter.pigeon.TimelineCallbacks.handleTimelineAction was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final ActionTrigger? arg_actionTrigger = (args[0] as ActionTrigger?);
-          assert(arg_actionTrigger != null,
-              'Argument for dev.flutter.pigeon.TimelineCallbacks.handleTimelineAction was null, expected non-null ActionTrigger.');
-          final ActionResponsePigeon output = await api.handleTimelineAction(arg_actionTrigger!);
-          return output;
-        });
-      }
-    }
-  }
-}
-
 class _IntentCallbacksCodec extends StandardMessageCodec {
   const _IntentCallbacksCodec();
   @override
@@ -1305,98 +1133,6 @@ abstract class IntentCallbacks {
   }
 }
 
-class _BackgroundAppInstallCallbacksCodec extends StandardMessageCodec {
-  const _BackgroundAppInstallCallbacksCodec();
-  @override
-  void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is InstallData) {
-      buffer.putUint8(128);
-      writeValue(buffer, value.encode());
-    } else if (value is PbwAppInfo) {
-      buffer.putUint8(129);
-      writeValue(buffer, value.encode());
-    } else if (value is StringWrapper) {
-      buffer.putUint8(130);
-      writeValue(buffer, value.encode());
-    } else if (value is WatchResource) {
-      buffer.putUint8(131);
-      writeValue(buffer, value.encode());
-    } else if (value is WatchappInfo) {
-      buffer.putUint8(132);
-      writeValue(buffer, value.encode());
-    } else {
-      super.writeValue(buffer, value);
-    }
-  }
-
-  @override
-  Object? readValueOfType(int type, ReadBuffer buffer) {
-    switch (type) {
-      case 128: 
-        return InstallData.decode(readValue(buffer)!);
-      case 129: 
-        return PbwAppInfo.decode(readValue(buffer)!);
-      case 130: 
-        return StringWrapper.decode(readValue(buffer)!);
-      case 131: 
-        return WatchResource.decode(readValue(buffer)!);
-      case 132: 
-        return WatchappInfo.decode(readValue(buffer)!);
-      default:
-        return super.readValueOfType(type, buffer);
-    }
-  }
-}
-
-abstract class BackgroundAppInstallCallbacks {
-  static const MessageCodec<Object?> codec = _BackgroundAppInstallCallbacksCodec();
-
-  Future<void> beginAppInstall(InstallData installData);
-
-  Future<void> deleteApp(StringWrapper uuid);
-
-  static void setup(BackgroundAppInstallCallbacks? api, {BinaryMessenger? binaryMessenger}) {
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-          'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final InstallData? arg_installData = (args[0] as InstallData?);
-          assert(arg_installData != null,
-              'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.beginAppInstall was null, expected non-null InstallData.');
-          await api.beginAppInstall(arg_installData!);
-          return;
-        });
-      }
-    }
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.BackgroundAppInstallCallbacks.deleteApp', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-          'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.deleteApp was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final StringWrapper? arg_uuid = (args[0] as StringWrapper?);
-          assert(arg_uuid != null,
-              'Argument for dev.flutter.pigeon.BackgroundAppInstallCallbacks.deleteApp was null, expected non-null StringWrapper.');
-          await api.deleteApp(arg_uuid!);
-          return;
-        });
-      }
-    }
-  }
-}
-
 class _AppInstallStatusCallbacksCodec extends StandardMessageCodec {
   const _AppInstallStatusCallbacksCodec();
   @override
@@ -1441,140 +1177,6 @@ abstract class AppInstallStatusCallbacks {
           assert(arg_status != null,
               'Argument for dev.flutter.pigeon.AppInstallStatusCallbacks.onStatusUpdated was null, expected non-null AppInstallStatus.');
           api.onStatusUpdated(arg_status!);
-          return;
-        });
-      }
-    }
-  }
-}
-
-class _NotificationListeningCodec extends StandardMessageCodec {
-  const _NotificationListeningCodec();
-  @override
-  void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is BooleanWrapper) {
-      buffer.putUint8(128);
-      writeValue(buffer, value.encode());
-    } else if (value is NotifChannelPigeon) {
-      buffer.putUint8(129);
-      writeValue(buffer, value.encode());
-    } else if (value is NotificationPigeon) {
-      buffer.putUint8(130);
-      writeValue(buffer, value.encode());
-    } else if (value is StringWrapper) {
-      buffer.putUint8(131);
-      writeValue(buffer, value.encode());
-    } else if (value is TimelinePinPigeon) {
-      buffer.putUint8(132);
-      writeValue(buffer, value.encode());
-    } else {
-      super.writeValue(buffer, value);
-    }
-  }
-
-  @override
-  Object? readValueOfType(int type, ReadBuffer buffer) {
-    switch (type) {
-      case 128: 
-        return BooleanWrapper.decode(readValue(buffer)!);
-      case 129: 
-        return NotifChannelPigeon.decode(readValue(buffer)!);
-      case 130: 
-        return NotificationPigeon.decode(readValue(buffer)!);
-      case 131: 
-        return StringWrapper.decode(readValue(buffer)!);
-      case 132: 
-        return TimelinePinPigeon.decode(readValue(buffer)!);
-      default:
-        return super.readValueOfType(type, buffer);
-    }
-  }
-}
-
-abstract class NotificationListening {
-  static const MessageCodec<Object?> codec = _NotificationListeningCodec();
-
-  Future<TimelinePinPigeon> handleNotification(NotificationPigeon notification);
-
-  void dismissNotification(StringWrapper itemId);
-
-  Future<BooleanWrapper> shouldNotify(NotifChannelPigeon channel);
-
-  void updateChannel(NotifChannelPigeon channel);
-
-  static void setup(NotificationListening? api, {BinaryMessenger? binaryMessenger}) {
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.NotificationListening.handleNotification', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-          'Argument for dev.flutter.pigeon.NotificationListening.handleNotification was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final NotificationPigeon? arg_notification = (args[0] as NotificationPigeon?);
-          assert(arg_notification != null,
-              'Argument for dev.flutter.pigeon.NotificationListening.handleNotification was null, expected non-null NotificationPigeon.');
-          final TimelinePinPigeon output = await api.handleNotification(arg_notification!);
-          return output;
-        });
-      }
-    }
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.NotificationListening.dismissNotification', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-          'Argument for dev.flutter.pigeon.NotificationListening.dismissNotification was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final StringWrapper? arg_itemId = (args[0] as StringWrapper?);
-          assert(arg_itemId != null,
-              'Argument for dev.flutter.pigeon.NotificationListening.dismissNotification was null, expected non-null StringWrapper.');
-          api.dismissNotification(arg_itemId!);
-          return;
-        });
-      }
-    }
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.NotificationListening.shouldNotify', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-          'Argument for dev.flutter.pigeon.NotificationListening.shouldNotify was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final NotifChannelPigeon? arg_channel = (args[0] as NotifChannelPigeon?);
-          assert(arg_channel != null,
-              'Argument for dev.flutter.pigeon.NotificationListening.shouldNotify was null, expected non-null NotifChannelPigeon.');
-          final BooleanWrapper output = await api.shouldNotify(arg_channel!);
-          return output;
-        });
-      }
-    }
-    {
-      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.NotificationListening.updateChannel', codec,
-          binaryMessenger: binaryMessenger);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null,
-          'Argument for dev.flutter.pigeon.NotificationListening.updateChannel was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final NotifChannelPigeon? arg_channel = (args[0] as NotifChannelPigeon?);
-          assert(arg_channel != null,
-              'Argument for dev.flutter.pigeon.NotificationListening.updateChannel was null, expected non-null NotifChannelPigeon.');
-          api.updateChannel(arg_channel!);
           return;
         });
       }
@@ -2174,6 +1776,29 @@ class UiConnectionControl {
   }
 }
 
+class _NotificationsControlCodec extends StandardMessageCodec {
+  const _NotificationsControlCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is NotifyingPackage) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128: 
+        return NotifyingPackage.decode(readValue(buffer)!);
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
 class NotificationsControl {
   /// Constructor for [NotificationsControl].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
@@ -2182,11 +1807,11 @@ class NotificationsControl {
       : _binaryMessenger = binaryMessenger;
   final BinaryMessenger? _binaryMessenger;
 
-  static const MessageCodec<Object?> codec = StandardMessageCodec();
+  static const MessageCodec<Object?> codec = _NotificationsControlCodec();
 
-  Future<void> sendTestNotification() async {
+  Future<List<NotifyingPackage?>> getNotificationPackages() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.NotificationsControl.sendTestNotification', codec,
+        'dev.flutter.pigeon.NotificationsControl.getNotificationPackages', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -2201,8 +1826,13 @@ class NotificationsControl {
         message: replyList[1] as String?,
         details: replyList[2],
       );
+    } else if (replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
     } else {
-      return;
+      return (replyList[0] as List<Object?>?)!.cast<NotifyingPackage?>();
     }
   }
 }
@@ -2343,6 +1973,55 @@ class DebugControl {
       return;
     }
   }
+
+  Future<bool> getSensitiveLoggingEnabled() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.DebugControl.getSensitiveLoggingEnabled', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(null) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else if (replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyList[0] as bool?)!;
+    }
+  }
+
+  Future<void> setSensitiveLoggingEnabled(bool arg_enabled) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.DebugControl.setSensitiveLoggingEnabled', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(<Object?>[arg_enabled]) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
 }
 
 class _TimelineControlCodec extends StandardMessageCodec {
@@ -2445,123 +2124,6 @@ class TimelineControl {
   Future<NumberWrapper> removeAllPins() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.TimelineControl.removeAllPins', codec,
-        binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(null) as List<Object?>?;
-    if (replyList == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyList.length > 1) {
-      throw PlatformException(
-        code: replyList[0]! as String,
-        message: replyList[1] as String?,
-        details: replyList[2],
-      );
-    } else if (replyList[0] == null) {
-      throw PlatformException(
-        code: 'null-error',
-        message: 'Host platform returned null value for non-null return value.',
-      );
-    } else {
-      return (replyList[0] as NumberWrapper?)!;
-    }
-  }
-}
-
-class _BackgroundSetupControlCodec extends StandardMessageCodec {
-  const _BackgroundSetupControlCodec();
-  @override
-  void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is NumberWrapper) {
-      buffer.putUint8(128);
-      writeValue(buffer, value.encode());
-    } else {
-      super.writeValue(buffer, value);
-    }
-  }
-
-  @override
-  Object? readValueOfType(int type, ReadBuffer buffer) {
-    switch (type) {
-      case 128: 
-        return NumberWrapper.decode(readValue(buffer)!);
-      default:
-        return super.readValueOfType(type, buffer);
-    }
-  }
-}
-
-class BackgroundSetupControl {
-  /// Constructor for [BackgroundSetupControl].  The [binaryMessenger] named argument is
-  /// available for dependency injection.  If it is left null, the default
-  /// BinaryMessenger will be used which routes to the host platform.
-  BackgroundSetupControl({BinaryMessenger? binaryMessenger})
-      : _binaryMessenger = binaryMessenger;
-  final BinaryMessenger? _binaryMessenger;
-
-  static const MessageCodec<Object?> codec = _BackgroundSetupControlCodec();
-
-  Future<void> setupBackground(NumberWrapper arg_callbackHandle) async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.BackgroundSetupControl.setupBackground', codec,
-        binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_callbackHandle]) as List<Object?>?;
-    if (replyList == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyList.length > 1) {
-      throw PlatformException(
-        code: replyList[0]! as String,
-        message: replyList[1] as String?,
-        details: replyList[2],
-      );
-    } else {
-      return;
-    }
-  }
-}
-
-class _BackgroundControlCodec extends StandardMessageCodec {
-  const _BackgroundControlCodec();
-  @override
-  void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is NumberWrapper) {
-      buffer.putUint8(128);
-      writeValue(buffer, value.encode());
-    } else {
-      super.writeValue(buffer, value);
-    }
-  }
-
-  @override
-  Object? readValueOfType(int type, ReadBuffer buffer) {
-    switch (type) {
-      case 128: 
-        return NumberWrapper.decode(readValue(buffer)!);
-      default:
-        return super.readValueOfType(type, buffer);
-    }
-  }
-}
-
-class BackgroundControl {
-  /// Constructor for [BackgroundControl].  The [binaryMessenger] named argument is
-  /// available for dependency injection.  If it is left null, the default
-  /// BinaryMessenger will be used which routes to the host platform.
-  BackgroundControl({BinaryMessenger? binaryMessenger})
-      : _binaryMessenger = binaryMessenger;
-  final BinaryMessenger? _binaryMessenger;
-
-  static const MessageCodec<Object?> codec = _BackgroundControlCodec();
-
-  Future<NumberWrapper> notifyFlutterBackgroundStarted() async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.BackgroundControl.notifyFlutterBackgroundStarted', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -2962,6 +2524,29 @@ class PermissionControl {
   }
 }
 
+class _CalendarControlCodec extends StandardMessageCodec {
+  const _CalendarControlCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is CalendarPigeon) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128: 
+        return CalendarPigeon.decode(readValue(buffer)!);
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
 class CalendarControl {
   /// Constructor for [CalendarControl].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
@@ -2970,14 +2555,134 @@ class CalendarControl {
       : _binaryMessenger = binaryMessenger;
   final BinaryMessenger? _binaryMessenger;
 
-  static const MessageCodec<Object?> codec = StandardMessageCodec();
+  static const MessageCodec<Object?> codec = _CalendarControlCodec();
 
-  Future<void> requestCalendarSync() async {
+  Future<void> requestCalendarSync(bool arg_forceResync) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.CalendarControl.requestCalendarSync', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
+        await channel.send(<Object?>[arg_forceResync]) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> setCalendarSyncEnabled(bool arg_enabled) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.CalendarControl.setCalendarSyncEnabled', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(<Object?>[arg_enabled]) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<bool> getCalendarSyncEnabled() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.CalendarControl.getCalendarSyncEnabled', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else if (replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyList[0] as bool?)!;
+    }
+  }
+
+  Future<void> deleteAllCalendarPins() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.CalendarControl.deleteAllCalendarPins', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(null) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<List<CalendarPigeon?>> getCalendars() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.CalendarControl.getCalendars', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(null) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else if (replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyList[0] as List<Object?>?)!.cast<CalendarPigeon?>();
+    }
+  }
+
+  Future<void> setCalendarEnabled(int arg_id, bool arg_enabled) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.CalendarControl.setCalendarEnabled', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(<Object?>[arg_id, arg_enabled]) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -3237,29 +2942,23 @@ class _AppInstallControlCodec extends StandardMessageCodec {
   const _AppInstallControlCodec();
   @override
   void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is BooleanWrapper) {
+    if (value is ListWrapper) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else if (value is InstallData) {
+    } else if (value is NumberWrapper) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    } else if (value is ListWrapper) {
+    } else if (value is PbwAppInfo) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    } else if (value is NumberWrapper) {
+    } else if (value is StringWrapper) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
-    } else if (value is PbwAppInfo) {
+    } else if (value is WatchResource) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
-    } else if (value is StringWrapper) {
-      buffer.putUint8(133);
-      writeValue(buffer, value.encode());
-    } else if (value is WatchResource) {
-      buffer.putUint8(134);
-      writeValue(buffer, value.encode());
     } else if (value is WatchappInfo) {
-      buffer.putUint8(135);
+      buffer.putUint8(133);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -3270,20 +2969,16 @@ class _AppInstallControlCodec extends StandardMessageCodec {
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case 128: 
-        return BooleanWrapper.decode(readValue(buffer)!);
-      case 129: 
-        return InstallData.decode(readValue(buffer)!);
-      case 130: 
         return ListWrapper.decode(readValue(buffer)!);
-      case 131: 
+      case 129: 
         return NumberWrapper.decode(readValue(buffer)!);
-      case 132: 
+      case 130: 
         return PbwAppInfo.decode(readValue(buffer)!);
-      case 133: 
+      case 131: 
         return StringWrapper.decode(readValue(buffer)!);
-      case 134: 
+      case 132: 
         return WatchResource.decode(readValue(buffer)!);
-      case 135: 
+      case 133: 
         return WatchappInfo.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -3325,143 +3020,6 @@ class AppInstallControl {
       );
     } else {
       return (replyList[0] as PbwAppInfo?)!;
-    }
-  }
-
-  Future<BooleanWrapper> beginAppInstall(InstallData arg_installData) async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.AppInstallControl.beginAppInstall', codec,
-        binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_installData]) as List<Object?>?;
-    if (replyList == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyList.length > 1) {
-      throw PlatformException(
-        code: replyList[0]! as String,
-        message: replyList[1] as String?,
-        details: replyList[2],
-      );
-    } else if (replyList[0] == null) {
-      throw PlatformException(
-        code: 'null-error',
-        message: 'Host platform returned null value for non-null return value.',
-      );
-    } else {
-      return (replyList[0] as BooleanWrapper?)!;
-    }
-  }
-
-  Future<BooleanWrapper> beginAppDeletion(StringWrapper arg_uuid) async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.AppInstallControl.beginAppDeletion', codec,
-        binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_uuid]) as List<Object?>?;
-    if (replyList == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyList.length > 1) {
-      throw PlatformException(
-        code: replyList[0]! as String,
-        message: replyList[1] as String?,
-        details: replyList[2],
-      );
-    } else if (replyList[0] == null) {
-      throw PlatformException(
-        code: 'null-error',
-        message: 'Host platform returned null value for non-null return value.',
-      );
-    } else {
-      return (replyList[0] as BooleanWrapper?)!;
-    }
-  }
-
-  /// Read header from pbw file already in Cobble's storage and send it to
-  /// BlobDB on the watch
-  Future<NumberWrapper> insertAppIntoBlobDb(StringWrapper arg_uuidString) async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.AppInstallControl.insertAppIntoBlobDb', codec,
-        binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_uuidString]) as List<Object?>?;
-    if (replyList == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyList.length > 1) {
-      throw PlatformException(
-        code: replyList[0]! as String,
-        message: replyList[1] as String?,
-        details: replyList[2],
-      );
-    } else if (replyList[0] == null) {
-      throw PlatformException(
-        code: 'null-error',
-        message: 'Host platform returned null value for non-null return value.',
-      );
-    } else {
-      return (replyList[0] as NumberWrapper?)!;
-    }
-  }
-
-  Future<NumberWrapper> removeAppFromBlobDb(StringWrapper arg_appUuidString) async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.AppInstallControl.removeAppFromBlobDb', codec,
-        binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_appUuidString]) as List<Object?>?;
-    if (replyList == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyList.length > 1) {
-      throw PlatformException(
-        code: replyList[0]! as String,
-        message: replyList[1] as String?,
-        details: replyList[2],
-      );
-    } else if (replyList[0] == null) {
-      throw PlatformException(
-        code: 'null-error',
-        message: 'Host platform returned null value for non-null return value.',
-      );
-    } else {
-      return (replyList[0] as NumberWrapper?)!;
-    }
-  }
-
-  Future<NumberWrapper> removeAllApps() async {
-    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.AppInstallControl.removeAllApps', codec,
-        binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList =
-        await channel.send(null) as List<Object?>?;
-    if (replyList == null) {
-      throw PlatformException(
-        code: 'channel-error',
-        message: 'Unable to establish connection on channel.',
-      );
-    } else if (replyList.length > 1) {
-      throw PlatformException(
-        code: replyList[0]! as String,
-        message: replyList[1] as String?,
-        details: replyList[2],
-      );
-    } else if (replyList[0] == null) {
-      throw PlatformException(
-        code: 'null-error',
-        message: 'Host platform returned null value for non-null return value.',
-      );
-    } else {
-      return (replyList[0] as NumberWrapper?)!;
     }
   }
 
@@ -3942,6 +3500,84 @@ class KeepUnusedHack {
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_cls]) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+}
+
+class _KMPApiCodec extends StandardMessageCodec {
+  const _KMPApiCodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is StringWrapper) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128: 
+        return StringWrapper.decode(readValue(buffer)!);
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
+class KMPApi {
+  /// Constructor for [KMPApi].  The [binaryMessenger] named argument is
+  /// available for dependency injection.  If it is left null, the default
+  /// BinaryMessenger will be used which routes to the host platform.
+  KMPApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
+  final BinaryMessenger? _binaryMessenger;
+
+  static const MessageCodec<Object?> codec = _KMPApiCodec();
+
+  Future<void> updateToken(StringWrapper arg_token) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.KMPApi.updateToken', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(<Object?>[arg_token]) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> openLockerView() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.KMPApi.openLockerView', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(null) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',

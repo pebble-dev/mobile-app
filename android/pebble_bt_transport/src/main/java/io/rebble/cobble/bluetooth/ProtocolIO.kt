@@ -1,11 +1,12 @@
 package io.rebble.cobble.bluetooth
 
+import io.rebble.cobble.shared.BuildConfig
 import io.rebble.libpebblecommon.ProtocolHandler
 import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.runInterruptible
 import timber.log.Timber
 import java.io.IOException
 import java.io.InputStream
@@ -43,7 +44,9 @@ class ProtocolIO(
                 /* READ PACKET CONTENT */
                 inputStream.readFully(buf, 4, length.toInt())
 
-                Timber.d("Got packet: EP ${ProtocolEndpoint.getByValue(endpoint.toUShort())} | Length ${length.toUShort()}")
+                if (BuildConfig.VERBOSE_BT) {
+                    Timber.d("Got packet: EP ${ProtocolEndpoint.getByValue(endpoint.toUShort())} | Length ${length.toUShort()}")
+                }
 
                 buf.rewind()
                 val packet = ByteArray(length.toInt() + 2 * (Short.SIZE_BYTES))
@@ -52,7 +55,7 @@ class ProtocolIO(
                 protocolHandler.receivePacket(packet.toUByteArray())
             }
         } finally {
-            Timber.e("Read loop returning")
+            Timber.e("Read loop returning: coroutineContext.isActive = ${coroutineContext.isActive}")
             try {
                 inputStream.close()
                 outputStream.close()
@@ -62,7 +65,7 @@ class ProtocolIO(
         }
     }
 
-    suspend fun write(bytes: ByteArray) = withContext(Dispatchers.IO) {
+    suspend fun write(bytes: ByteArray) = runInterruptible(Dispatchers.IO) {
         //Timber.d("Sending packet of EP ${PebblePacket(bytes.toUByteArray()).endpoint}")
         outputStream.write(bytes)
     }

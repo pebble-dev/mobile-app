@@ -2,7 +2,7 @@ package io.rebble.cobble.bridges.ui
 
 import android.content.Intent
 import io.flutter.plugin.common.BinaryMessenger
-import io.rebble.cobble.MainActivity
+import io.rebble.cobble.FlutterMainActivity
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.launchPigeonResult
@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class IntentsFlutterBridge @Inject constructor(
         binaryMessenger: BinaryMessenger,
-        mainActivity: MainActivity,
+        mainActivity: FlutterMainActivity,
         private val coroutineScope: CoroutineScope,
         bridgeLifecycleController: BridgeLifecycleController
 ) : FlutterBridge, Pigeons.IntentControl {

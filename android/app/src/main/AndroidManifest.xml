@@ -62,7 +62,7 @@
     <application
         android:name=".CobbleApplication"
         android:icon="@mipmap/ic_launcher"
-        android:label="Cobble"
+        android:label="Cobble KMP"
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round">
         <activity
@@ -71,8 +71,56 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleTask"
-            android:theme="@style/LaunchTheme"
+            android:theme="@style/Theme.Application"
             android:windowSoftInputMode="adjustResize">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="custom-boot-config-url"
+                    android:scheme="pebble" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="rebble" />
+            </intent-filter>
+
+            <!-- PBW Install -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="content" />
+                <data android:mimeType="application/octet-stream" />
+                <data android:mimeType="application/zip" />
+                <data android:mimeType="binary/octet-stream" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".FlutterMainActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleTask"
+            android:theme="@style/LaunchTheme"
+            android:windowSoftInputMode="adjustResize"
+            android:label="Cobble">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues
@@ -122,9 +170,20 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="content" />
-                <data android:mimeType="application/octet-stream" />
-                <data android:mimeType="application/zip" />
-                <data android:mimeType="binary/octet-stream" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.pbw" />
+            </intent-filter>
+
+            <!-- PBZ Install -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="content" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.pbz" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
@@ -138,7 +197,7 @@
             android:foregroundServiceType="connectedDevice"
             android:permission="android.permission.FOREGROUND_SERVICE" />
         <service
-            android:name=".notifications.NotificationListener"
+            android:name=".shared.domain.notifications.NotificationListener"
             android:exported="true"
             android:foregroundServiceType="specialUse"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
@@ -165,6 +224,9 @@
                 <action android:name="android.telecom.InCallService" />
             </intent-filter>
         </service>
+        <service android:name=".shared.jobs.AndroidLockerSyncJob"
+            android:label="Locker Sync Job"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <receiver
             android:name=".receivers.AppStartReceiver"
@@ -200,7 +262,7 @@
         </provider>
 
         <provider
-            android:name=".providers.PebbleKitProvider"
+            android:name=".shared.providers.PebbleKitProvider"
             android:authorities="${pebbleKitProviderAuthority}"
             android:exported="true"
             tools:ignore="ExportedContentProvider" />

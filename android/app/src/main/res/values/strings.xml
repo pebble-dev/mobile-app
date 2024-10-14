@@ -7,4 +7,5 @@
     <string name="connecting">Watch connecting</string>
     <string name="bluetooth_off">Bluetooth is off</string>
     <string name="warnings">Warnings</string>
+    <string name="jobs">Background Jobs</string>
 </resources>

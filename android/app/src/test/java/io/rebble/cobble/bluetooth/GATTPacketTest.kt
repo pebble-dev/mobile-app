@@ -27,12 +27,12 @@ internal class GATTPacketTest {
     @Test
     fun decodeValidPacket() {
         val expectedType = GATTPacket.PacketType.DATA
-        val expectedSeq = 16U.toUShort()
+        val expectedSeq = 16
         val expectedPayload = payload.serialize().toByteArray()
 
         val gattPacket = GATTPacket(byteArrayOf(0b10000000.toByte()) + expectedPayload)
         assertEquals(expectedSeq, gattPacket.sequence)
         assertEquals(expectedType, gattPacket.type)
-        assertArrayEquals(expectedPayload, gattPacket.data.slice(1..gattPacket.data.size - 1).toByteArray())
+        assertArrayEquals(expectedPayload, gattPacket.data.slice(1..<gattPacket.data.size).toByteArray())
     }
 }

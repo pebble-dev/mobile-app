@@ -1,10 +1,11 @@
-
+import 'dart:async';
 import 'dart:ui';
 
-import 'package:cobble/background/main_background.dart';
+import 'package:cobble/domain/logging.dart';
 import 'package:cobble/infrastructure/backgroundcomm/BackgroundReceiver.dart';
 import 'package:cobble/infrastructure/backgroundcomm/BackgroundRpc.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
+import 'package:cobble/infrastructure/datasources/secure_storage.dart';
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/localization/localization_delegate.dart';
 import 'package:cobble/localization/model/model_generator.model.dart';
@@ -31,23 +32,42 @@ void main() {
     Logger.root.level = Level.FINER;
   }
 
+  /*if (kDebugMode) {
+    TrackingBuildOwnerWidgetsFlutterBinding.ensureInitialized();
+
+    // initialize `BuildTracker`
+    final tracker = BuildTracker(printBuildFrameIncludeRebuildDirtyWidget: false);
+
+    // print top 10 stacks leading to rebuilds every 10 seconds
+    Timer.periodic(const Duration(seconds: 10), (_) => tracker.printTopScheduleBuildForStacks());
+  }*/
+
   Logger.root.onRecord.listen((record) {
-    debugPrint('${record.time} [${record.loggerName}] ${record.message}');
+    // Makes sure we send logs to native logger so they're stored
+    //debugPrint('${record.time} [${record.loggerName}] ${record.message}');
+
+    // I hate that this can't be a switch statement
+    if (record.level == Level.SEVERE) {
+      Log.e(record.message);
+    } else if (record.level == Level.WARNING) {
+      Log.w(record.message);
+    } else if (record.level == Level.INFO) {
+      Log.i(record.message);
+    } else if (record.level == Level.FINE) {
+      Log.d(record.message);
+    } else if (record.level == Level.FINER) {
+      Log.v(record.message);
+    } else if (record.level == Level.FINEST) {
+      Log.v(record.message);
+    } else if (record.level == Level.SHOUT) {
+      Log.e(record.message);
+    }
     if (record.error != null) {
-      debugPrint(record.error.toString());
+      Log.e(record.error.toString());
     }
   });
 
   runApp(ProviderScope(child: MyApp()));
-  initBackground();
-}
-
-void initBackground() {
-  final CallbackHandle backgroundCallbackHandle =
-      PluginUtilities.getCallbackHandle(main_background)!;
-  final wrapper = NumberWrapper();
-  wrapper.value = backgroundCallbackHandle.toRawHandle();
-  BackgroundSetupControl().setupBackground(wrapper);
 }
 
 class MyApp extends HookConsumerWidget {
@@ -84,6 +104,11 @@ class MyApp extends HookConsumerWidget {
           if (!(await permissionCheck.hasCallsPermissions()).value!) {
             permissionControl.requestCallsPermissions();
           }
+        }
+
+        final token = await ref.read(secureStorageProvider).getToken();
+        if (token != null && token.accessToken.isNotEmpty) {
+          await KMPApi().updateToken(StringWrapper(value: token.accessToken));
         }
       });
       return null;

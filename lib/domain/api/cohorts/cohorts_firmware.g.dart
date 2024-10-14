@@ -21,7 +21,7 @@ CohortsFirmware _$CohortsFirmwareFromJson(Map<String, dynamic> json) {
     url: json['url'] as String,
     sha256: json['sha-256'] as String,
     friendlyVersion: json['friendlyVersion'] as String,
-    timestamp: _dateTimeFromJson(json['timestamp'] as int),
+    timestamp: _dateTimeFromJson((json['timestamp'] as num).toInt()),
     notes: json['notes'] as String,
   );
 }

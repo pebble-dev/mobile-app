@@ -3,10 +3,12 @@ package io.rebble.cobble.bluetooth.classic
 import android.bluetooth.BluetoothAdapter
 import androidx.annotation.RequiresPermission
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.isActive
 import timber.log.Timber
+import java.io.IOException
 import java.util.UUID
 import kotlin.coroutines.CoroutineContext
 
@@ -22,8 +24,15 @@ class ReconnectionSocketServer(private val adapter: BluetoothAdapter, private va
         serverSocket.use {
             Timber.d("Starting reconnection socket server")
             while (true) {
-                val socket = runInterruptible {
-                    it.accept()
+                //XXX: This is a blocking call, but runInterruptible doesn't seem to work here
+                val socket = try {
+                    serverSocket.accept(2000)
+                } catch (e: IOException) {
+                    if (currentCoroutineContext().isActive) {
+                        continue
+                    } else {
+                        break
+                    }
                 } ?: break
                 Timber.d("Accepted connection from ${socket.remoteDevice.address}")
                 emit(socket.remoteDevice.address)

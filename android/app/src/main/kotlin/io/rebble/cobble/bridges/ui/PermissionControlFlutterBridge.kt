@@ -11,12 +11,12 @@ import android.os.Build
 import android.provider.Settings
 import androidx.core.content.getSystemService
 import androidx.lifecycle.Lifecycle
-import io.rebble.cobble.MainActivity
+import io.rebble.cobble.FlutterMainActivity
 import io.rebble.cobble.bridges.FlutterBridge
-import io.rebble.cobble.datasources.PermissionChangeBus
-import io.rebble.cobble.notifications.NotificationListener
 import io.rebble.cobble.pigeons.NumberWrapper
 import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.shared.domain.PermissionChangeBus
+import io.rebble.cobble.shared.domain.notifications.NotificationListener
 import io.rebble.cobble.util.asFlow
 import io.rebble.cobble.util.launchPigeonResult
 import kotlinx.coroutines.CompletableDeferred
@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class PermissionControlFlutterBridge @Inject constructor(
-        private val activity: MainActivity,
+        private val activity: FlutterMainActivity,
         private val activityLifecycle: Lifecycle,
         private val coroutineScope: CoroutineScope,
         bridgeLifecycleController: BridgeLifecycleController
@@ -226,3 +226,4 @@ private const val REQUEST_CODE_SETTINGS = 127
 private const val REQUEST_CODE_BT = 128
 private const val REQUEST_CODE_PHONE_STATE = 129
 private const val REQUEST_CODE_CONTACTS = 130
+const val REQUEST_CODE_NOTIFICATIONS_POST = 1000

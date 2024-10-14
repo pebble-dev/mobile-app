@@ -189,6 +189,74 @@ class NotifChannelPigeon {
   bool? delete;
 }
 
+class NotifyingPackage {
+  String packageId;
+  String packageName;
+  NotifyingPackage(this.packageId, this.packageName);
+}
+
+class CalendarPigeon {
+  int id;
+  String account;
+  String name;
+  int color;
+  bool enabled;
+  CalendarPigeon(this.id, this.account, this.name, this.color, this.enabled);
+}
+
+class LockerAppPigeon {
+  /// UUID of the app
+  final String uuid;
+
+  /// Short name of the app (as displayed on the watch)
+  final String shortName;
+
+  /// Full name of the app
+  final String longName;
+
+  /// Company that made the app
+  final String company;
+
+  /// ID of the app store entry, if app was downloaded from the app store.
+  /// Null otherwise.
+  final String? appstoreId;
+
+  /// Version of the app
+  final String version;
+
+  /// Whether app is a watchapp or a watchface.
+  final bool isWatchface;
+
+  /// Whether app is a system app that cannot be uninstalled
+  final bool isSystem;
+
+  /// List of supported hardware codenames
+  /// (see WatchType enum for list of all entries)
+  final List<String?> supportedHardware;
+
+  final Map<String?, NumberWrapper?> processInfoFlags;
+
+  final Map<String?, String?> sdkVersions;
+
+  LockerAppPigeon(
+      {required this.uuid,
+      required this.shortName,
+      required this.longName,
+      required this.company,
+      required this.appstoreId,
+      required this.version,
+      required this.isWatchface,
+      required this.isSystem,
+      required this.processInfoFlags,
+      required this.sdkVersions,
+      required this.supportedHardware});
+}
+
+@FlutterApi()
+abstract class CalendarCallbacks {
+  void onCalendarListUpdated(List<CalendarPigeon> calendars);
+}
+
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
@@ -215,31 +283,8 @@ abstract class PairCallbacks {
 }
 
 @FlutterApi()
-abstract class CalendarCallbacks {
-  @async
-  void doFullCalendarSync();
-}
-
-@FlutterApi()
-abstract class TimelineCallbacks {
-  void syncTimelineToWatch();
-
-  @async
-  ActionResponsePigeon handleTimelineAction(ActionTrigger actionTrigger);
-}
-
-@FlutterApi()
 abstract class IntentCallbacks {
   void openUri(StringWrapper uri);
-}
-
-@FlutterApi()
-abstract class BackgroundAppInstallCallbacks {
-  @async
-  void beginAppInstall(InstallData installData);
-
-  @async
-  void deleteApp(StringWrapper uuid);
 }
 
 @FlutterApi()
@@ -247,7 +292,7 @@ abstract class AppInstallStatusCallbacks {
   void onStatusUpdated(AppInstallStatus status);
 }
 
-@FlutterApi()
+/*@FlutterApi()
 abstract class NotificationListening {
   @async
   TimelinePinPigeon handleNotification(NotificationPigeon notification);
@@ -256,7 +301,7 @@ abstract class NotificationListening {
   @async
   BooleanWrapper shouldNotify(NotifChannelPigeon channel);
   void updateChannel(NotifChannelPigeon channel);
-}
+}*/
 
 @FlutterApi()
 abstract class AppLogCallbacks {
@@ -322,7 +367,8 @@ abstract class UiConnectionControl {
 
 @HostApi()
 abstract class NotificationsControl {
-  void sendTestNotification();
+  @async
+  List<NotifyingPackage> getNotificationPackages();
 }
 
 @HostApi()
@@ -338,6 +384,10 @@ abstract class IntentControl {
 @HostApi()
 abstract class DebugControl {
   void collectLogs(String rwsId);
+  @async
+  bool getSensitiveLoggingEnabled();
+  @async
+  void setSensitiveLoggingEnabled(bool enabled);
 }
 
 @HostApi()
@@ -350,17 +400,6 @@ abstract class TimelineControl {
 
   @async
   NumberWrapper removeAllPins();
-}
-
-@HostApi()
-abstract class BackgroundSetupControl {
-  void setupBackground(NumberWrapper callbackHandle);
-}
-
-@HostApi()
-abstract class BackgroundControl {
-  @async
-  NumberWrapper notifyFlutterBackgroundStarted();
 }
 
 @HostApi()
@@ -413,7 +452,18 @@ abstract class PermissionControl {
 
 @HostApi()
 abstract class CalendarControl {
-  void requestCalendarSync();
+  void requestCalendarSync(bool forceResync);
+
+  @async
+  void setCalendarSyncEnabled(bool enabled);
+  @async
+  bool getCalendarSyncEnabled();
+  @async
+  void deleteAllCalendarPins();
+  @async
+  List<CalendarPigeon> getCalendars();
+  @async
+  void setCalendarEnabled(int id, bool enabled);
 }
 
 @HostApi()
@@ -444,29 +494,6 @@ abstract class WorkaroundsControl {
 abstract class AppInstallControl {
   @async
   PbwAppInfo getAppInfo(StringWrapper localPbwUri);
-
-  // Just relay method that triggers copies the app into local storage and
-  // begins install on the background flutter side
-  @async
-  BooleanWrapper beginAppInstall(InstallData installData);
-
-  // Just relay method that deletes app from the local store and triggers
-  // deleteApp on background flutter side
-  // Return BooleanWrapper as a
-  // workaround for https://github.com/flutter/flutter/issues/78536
-  @async
-  BooleanWrapper beginAppDeletion(StringWrapper uuid);
-
-  /// Read header from pbw file already in Cobble's storage and send it to
-  /// BlobDB on the watch
-  @async
-  NumberWrapper insertAppIntoBlobDb(StringWrapper uuidString);
-
-  @async
-  NumberWrapper removeAppFromBlobDb(StringWrapper appUuidString);
-
-  @async
-  NumberWrapper removeAllApps();
 
   void subscribeToAppStatus();
 
@@ -516,4 +543,11 @@ abstract class KeepUnusedHack {
   void keepPebbleScanDevicePigeon(PebbleScanDevicePigeon cls);
 
   void keepWatchResource(WatchResource cls);
+}
+
+//TODO: Move all api use to KMP so we don't need this
+@HostApi()
+abstract class KMPApi {
+  void updateToken(StringWrapper token);
+  void openLockerView();
 }

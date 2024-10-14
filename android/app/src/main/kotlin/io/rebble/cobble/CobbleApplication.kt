@@ -5,6 +5,7 @@ import io.rebble.cobble.di.AppComponent
 import io.rebble.cobble.di.DaggerAppComponent
 import io.rebble.cobble.log.AppTaggedDebugTree
 import io.rebble.cobble.log.FileLoggingTree
+import io.rebble.cobble.shared.di.initKoin
 import timber.log.Timber
 import kotlin.system.exitProcess
 
@@ -22,9 +23,9 @@ class CobbleApplication : FlutterApplication() {
         super.onCreate()
 
         initLogging()
+        initKoin(applicationContext)
 
         component.initNotificationChannels()
-        component.initLibPebbleCommonServices()
 
         beginConnectingToDefaultWatch()
     }

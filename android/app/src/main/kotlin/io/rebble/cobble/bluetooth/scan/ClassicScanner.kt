@@ -5,8 +5,8 @@ import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.IntentFilter
 import androidx.annotation.RequiresPermission
-import io.rebble.cobble.bluetooth.BluePebbleDevice
-import io.rebble.cobble.util.coroutines.asFlow
+import io.rebble.cobble.bluetooth.ScannedPebbleDevice
+import io.rebble.cobble.shared.util.coroutines.asFlow
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -25,12 +25,12 @@ class ClassicScanner @Inject constructor(private val context: Context) {
     private var stopTrigger: CompletableDeferred<Unit>? = null
 
     @RequiresPermission(allOf = [android.Manifest.permission.BLUETOOTH_SCAN, android.Manifest.permission.BLUETOOTH_CONNECT])
-    fun getScanFlow(): Flow<List<BluePebbleDevice>> = flow {
+    fun getScanFlow(): Flow<List<ScannedPebbleDevice>> = flow {
         val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
                 ?: throw BluetoothNotSupportedException("Device does not have a bluetooth adapter")
 
         coroutineScope {
-            var deviceList = emptyList<BluePebbleDevice>()
+            var deviceList = emptyList<ScannedPebbleDevice>()
             val stopTrigger = CompletableDeferred<Unit>()
             this@ClassicScanner.stopTrigger = stopTrigger
 
@@ -62,7 +62,7 @@ class ClassicScanner @Inject constructor(private val context: Context) {
                                         it.bluetoothDevice.address == device.address
                                     }
                             ) {
-                                deviceList = deviceList + BluePebbleDevice(device)
+                                deviceList = deviceList + ScannedPebbleDevice(device)
                                 emit(deviceList)
                             }
                         }

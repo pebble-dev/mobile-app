@@ -64,13 +64,13 @@ class About extends HookWidget implements CobbleScreen {
                               children: <Widget>[
                                 Text(
                                   appName,
-                                  style: Theme.of(context).textTheme.headline5,
+                                  style: Theme.of(context).textTheme.headlineSmall,
                                 ),
                                 SizedBox(height: 4.0),
                                 Text(
                                   tr.aboutPage.versionString(
                                       version: appVersion, platform: os),
-                                  style: Theme.of(context).textTheme.bodyText2,
+                                  style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                               ],
                             );
@@ -126,7 +126,7 @@ class About extends HookWidget implements CobbleScreen {
                       tr.aboutPage.support,
                       style: Theme.of(context)
                           .textTheme
-                          .headline6!
+                          .headlineMedium!
                           .copyWith(fontSize: 18),
                     ),
                   ),
@@ -175,7 +175,7 @@ class About extends HookWidget implements CobbleScreen {
                       tr.aboutPage.community,
                       style: Theme.of(context)
                           .textTheme
-                          .headline6!
+                          .headlineMedium!
                           .copyWith(fontSize: 18),
                     ),
                   ),

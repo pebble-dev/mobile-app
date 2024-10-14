@@ -2,9 +2,9 @@ package io.rebble.cobble.bluetooth.ble
 
 import android.content.Context
 import io.rebble.cobble.bluetooth.*
-import io.rebble.cobble.bluetooth.workarounds.UnboundWatchBeforeConnecting
-import io.rebble.cobble.bluetooth.workarounds.WorkaroundDescriptor
-import io.rebble.libpebblecommon.ProtocolHandler
+import io.rebble.cobble.shared.domain.common.PebbleDevice
+import io.rebble.cobble.shared.workarounds.UnboundWatchBeforeConnecting
+import io.rebble.cobble.shared.workarounds.WorkaroundDescriptor
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
@@ -23,7 +23,7 @@ import kotlin.coroutines.CoroutineContext
 class BlueLEDriver(
         coroutineContext: CoroutineContext = Dispatchers.IO,
         private val context: Context,
-        private val protocolHandler: ProtocolHandler,
+        private val pebbleDevice: PebbleDevice,
         private val gattServerManager: GattServerManager,
         private val incomingPacketsListener: MutableSharedFlow<ByteArray>,
         private val workaroundResolver: (WorkaroundDescriptor) -> Boolean
@@ -33,8 +33,7 @@ class BlueLEDriver(
     @OptIn(FlowPreview::class)
     @Throws(SecurityException::class)
     override fun startSingleWatchConnection(device: PebbleDevice): Flow<SingleConnectionStatus> {
-        require(!device.emulated)
-        require(device.bluetoothDevice != null)
+        require(device is BluetoothPebbleDevice) { "Device must be BluetoothPebbleDevice" }
         return flow {
             val gattServer = gattServerManager.gattServer.first()
             if (gattServer.state.value == NordicGattServer.State.INIT) {
@@ -45,7 +44,9 @@ class BlueLEDriver(
             }
             check(gattServer.state.value == NordicGattServer.State.OPEN) { "GATT server is not open" }
 
-            var gatt: BlueGATTConnection = device.bluetoothDevice.connectGatt(context, workaroundResolver(UnboundWatchBeforeConnecting))
+            var gatt: BlueGATTConnection = device.bluetoothDevice.connectGatt(context, workaroundResolver(
+                UnboundWatchBeforeConnecting
+            ))
                     ?: throw IOException("Failed to connect to device")
             try {
                 emit(SingleConnectionStatus.Connecting(device))
@@ -77,7 +78,7 @@ class BlueLEDriver(
                 val protocolIO = ProtocolIO(
                         protocolInputStream.buffered(8192),
                         protocolOutputStream.buffered(8192),
-                        protocolHandler,
+                        pebbleDevice.protocolHandler,
                         incomingPacketsListener
                 )
                 try {
@@ -97,7 +98,7 @@ class BlueLEDriver(
                 }?.flowOn(Dispatchers.IO)?.launchIn(scope)
                         ?: throw IOException("Failed to get rxFlow")
                 val sendLoop = scope.launch(Dispatchers.IO) {
-                    protocolHandler.startPacketSendingLoop {
+                    pebbleDevice.protocolHandler.startPacketSendingLoop {
                         gattServer.sendMessageToDevice(device.address, it.asByteArray())
                         return@startPacketSendingLoop true
                     }

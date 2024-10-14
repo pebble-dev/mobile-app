@@ -1,5 +1,6 @@
+import 'dart:math';
+
 import 'package:cobble/domain/apps/app_compatibility.dart';
-import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/db/dao/locker_cache_dao.dart';
 import 'package:cobble/domain/db/models/app.dart';
@@ -25,8 +26,9 @@ class LockerTab extends HookConsumerWidget implements CobbleScreen {
 
     final currentWatch = connectionState.currentConnectedWatch;
 
-    final appManager = ref.watch(appManagerProvider.notifier);
-    List allPackages = ref.watch(appManagerProvider);
+    //final appManager = ref.watch(appManagerProvider.notifier);
+    //TODO: Get packages from new app system
+    List allPackages = []; //ref.watch(appManagerProvider);
     List incompatibleApps =
         allPackages.where((element) => !element.isWatchface).toList();
     List incompatibleFaces =
@@ -36,7 +38,10 @@ class LockerTab extends HookConsumerWidget implements CobbleScreen {
     WatchType watchType;
     bool circleConnected = false;
     PebbleWatchLine lineConnected = PebbleWatchLine.unknown;
-    var lockerCache = ref.watch(lockerCacheDaoProvider).getAll().then((value) => { for (var v in value) v.id : v });
+    var lockerCache = ref
+        .watch(lockerCacheDaoProvider)
+        .getAll()
+        .then((value) => {for (var v in value) v.id: v});
 
     if (currentWatch != null) {
       watchType = currentWatch.runningFirmware.hardwarePlatform.getWatchType();
@@ -93,7 +98,8 @@ class LockerTab extends HookConsumerWidget implements CobbleScreen {
                     child: CustomScrollView(
                       slivers: [
                         SliverGrid(
-                          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          gridDelegate:
+                              SliverGridDelegateWithMaxCrossAxisExtent(
                             maxCrossAxisExtent: 320.0,
                             mainAxisSpacing: 16.0,
                             crossAxisSpacing: 16.0,
@@ -101,16 +107,24 @@ class LockerTab extends HookConsumerWidget implements CobbleScreen {
                           ),
                           delegate: SliverChildListDelegate(
                             compatibleFaces
-                              .map<Widget>(
-                                (face) => FacesCard(
-                                  listUrl: snap.data![face.appstoreId]?.getPlatformListImage(currentWatch?.runningFirmware.hardwarePlatform.getWatchType().name ?? ""),
-                                  face: face,
-                                  compatible: true,
-                                  appManager: appManager,
-                                  circleConnected: circleConnected,
-                                  key: ValueKey(face.uuid),
-                              ),
-                            ).toList(),
+                                .take(50)
+                                .map<Widget>(
+                                  (face) => FacesCard(
+                                    listUrl: snap.data![face.appstoreId]
+                                        ?.getPlatformListImage(currentWatch
+                                                ?.runningFirmware
+                                                .hardwarePlatform
+                                                .getWatchType()
+                                                .name ??
+                                            ""),
+                                    face: face,
+                                    compatible: true,
+                                    //appManager: appManager,
+                                    circleConnected: circleConnected,
+                                    key: ValueKey(face.uuid),
+                                  ),
+                                )
+                                .toList(),
                           ),
                         ),
                         if (incompatibleFaces.length > 0)
@@ -121,7 +135,8 @@ class LockerTab extends HookConsumerWidget implements CobbleScreen {
                                 children: [
                                   Padding(
                                     padding: EdgeInsets.all(16),
-                                    child: Text(tr.lockerPage.incompatibleFaces),
+                                    child:
+                                        Text(tr.lockerPage.incompatibleFaces),
                                   ),
                                   CobbleDivider(),
                                 ],
@@ -129,7 +144,8 @@ class LockerTab extends HookConsumerWidget implements CobbleScreen {
                             ),
                           ),
                         SliverGrid(
-                          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          gridDelegate:
+                              SliverGridDelegateWithMaxCrossAxisExtent(
                             maxCrossAxisExtent: 320.0,
                             mainAxisSpacing: 16.0,
                             crossAxisSpacing: 16.0,
@@ -137,15 +153,23 @@ class LockerTab extends HookConsumerWidget implements CobbleScreen {
                           ),
                           delegate: SliverChildListDelegate(
                             incompatibleFaces
-                              .map<Widget>(
-                                (face) => FacesCard(
-                                  listUrl: snap.data![face.appstoreId]?.getPlatformListImage(currentWatch?.runningFirmware.hardwarePlatform.getWatchType().name ?? ""),
-                                  face: face,
-                                  appManager: appManager,
-                                  lineConnected: lineConnected,
-                                  key: ValueKey(face.uuid),
-                                ),
-                              ).toList(),
+                                .take(50)
+                                .map<Widget>(
+                                  (face) => FacesCard(
+                                    listUrl: snap.data![face.appstoreId]
+                                        ?.getPlatformListImage(currentWatch
+                                                ?.runningFirmware
+                                                .hardwarePlatform
+                                                .getWatchType()
+                                                .name ??
+                                            ""),
+                                    face: face,
+                                    //appManager: appManager,
+                                    lineConnected: lineConnected,
+                                    key: ValueKey(face.uuid),
+                                  ),
+                                )
+                                .toList(),
                           ),
                         ),
                       ],
@@ -158,20 +182,26 @@ class LockerTab extends HookConsumerWidget implements CobbleScreen {
                           return AppsItem(
                             app: compatibleApps[index],
                             compatible: true,
-                            appManager: appManager,
+                            //appManager: appManager,
                             index: index,
-                            iconUrl: snap.data![compatibleApps[index].appstoreId]?.getPlatformIconImage(currentWatch?.runningFirmware.hardwarePlatform.getWatchType().name ?? ""),
+                            iconUrl: snap
+                                .data![compatibleApps[index].appstoreId]
+                                ?.getPlatformIconImage(currentWatch
+                                        ?.runningFirmware.hardwarePlatform
+                                        .getWatchType()
+                                        .name ??
+                                    ""),
                             key: ValueKey(compatibleApps[index].uuid),
                           );
                         },
-                        itemCount: compatibleApps.length,
+                        itemCount: min(50, compatibleApps.length),
                         onReorder: (int fromIndex, int toIndex) {
                           if (toIndex > fromIndex) {
                             toIndex -= 1;
                           }
                           App app = compatibleApps[fromIndex];
                           int newOrder = compatibleApps[toIndex].appOrder;
-                          appManager.reorderApp(app.uuid, newOrder);
+                          //appManager.reorderApp(app.uuid, newOrder);
 
                           /// This would be refreshed anyway, but we will do it manually here so the user doesn't have to see the items jump around
                           /// It may actually cause issues if the user moves this before appManager catches up, so it would probably be worth the effort to add a timeout for reordering with some user feedback
@@ -197,15 +227,21 @@ class LockerTab extends HookConsumerWidget implements CobbleScreen {
                       SliverList(
                         delegate: SliverChildListDelegate(
                           incompatibleApps
+                              .take(50)
                               .map<Widget>(
                                 (app) => AppsItem(
-                              app: app,
-                              appManager: appManager,
-                              lineConnected: lineConnected,
-                              iconUrl: snap.data![app.appstoreId]?.getPlatformIconImage(currentWatch?.runningFirmware.hardwarePlatform.getWatchType().name ?? ""),
-                              key: ValueKey(app.uuid),
-                            ),
-                          )
+                                  app: app,
+                                  //appManager: appManager,
+                                  lineConnected: lineConnected,
+                                  iconUrl: snap.data![app.appstoreId]
+                                      ?.getPlatformIconImage(currentWatch
+                                              ?.runningFirmware.hardwarePlatform
+                                              .getWatchType()
+                                              .name ??
+                                          ""),
+                                  key: ValueKey(app.uuid),
+                                ),
+                              )
                               .toList(),
                         ),
                       ),
@@ -215,7 +251,12 @@ class LockerTab extends HookConsumerWidget implements CobbleScreen {
               );
             } else if (snap.hasError) {
               return const Center(
-                child: CompIcon(RebbleIcons.dead_watch_ghost80, RebbleIcons.dead_watch_ghost80_background, size: 80.0, strokeColor: Color.fromARGB(255, 190, 190, 190),),
+                child: CompIcon(
+                  RebbleIcons.dead_watch_ghost80,
+                  RebbleIcons.dead_watch_ghost80_background,
+                  size: 80.0,
+                  strokeColor: Color.fromARGB(255, 190, 190, 190),
+                ),
               );
             } else {
               return const CircularProgressIndicator();

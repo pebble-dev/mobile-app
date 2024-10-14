@@ -7,7 +7,7 @@ part of 'RpcRequest.dart';
 // **************************************************************************
 
 RpcRequest _$RpcRequestFromJson(Map<String, dynamic> json) => RpcRequest(
-      json['requestId'] as int,
+      (json['requestId'] as num).toInt(),
       json['input'] as Map<String, dynamic>,
       json['type'] as String,
     );

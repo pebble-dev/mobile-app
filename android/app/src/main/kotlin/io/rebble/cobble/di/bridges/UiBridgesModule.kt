@@ -31,13 +31,6 @@ abstract class UiBridgesModule {
     @Binds
     @IntoSet
     @UiBridge
-    abstract fun bindBackgroundSetupBridge(
-            backgroundSetupFlutterBridge: BackgroundSetupFlutterBridge
-    ): FlutterBridge
-
-    @Binds
-    @IntoSet
-    @UiBridge
     abstract fun bindPermission(
             permissionControlFlutterBridge: PermissionControlFlutterBridge
     ): FlutterBridge

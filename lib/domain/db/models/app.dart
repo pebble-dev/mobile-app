@@ -45,6 +45,12 @@ class App {
 
   final int appOrder;
 
+  final String? url;
+
+  final String processInfoFlags;
+
+  final String sdkVersions;
+
   App(
       {required this.uuid,
       required this.shortName,
@@ -56,7 +62,10 @@ class App {
       required this.isSystem,
       required this.supportedHardware,
       required this.nextSyncAction,
-      required this.appOrder});
+      required this.appOrder,
+      required this.processInfoFlags,
+      required this.sdkVersions,
+      required this.url});
 
   Map<String, dynamic> toMap() {
     return _$AppToJson(this);
@@ -68,6 +77,6 @@ class App {
 
   @override
   String toString() {
-    return 'App{uuid: $uuid, shortName: $shortName, longName: $longName, company: $company, appstoreId: $appstoreId, version: $version, isWatchface: $isWatchface, supportedHardware: $supportedHardware, nextSyncAction: $nextSyncAction, order: $appOrder}';
+    return 'App{uuid: $uuid, shortName: $shortName, longName: $longName, company: $company, appstoreId: $appstoreId, version: $version, isWatchface: $isWatchface, supportedHardware: $supportedHardware, processInfoFlags: $processInfoFlags, sdkVersions: $sdkVersions, nextSyncAction: $nextSyncAction, order: $appOrder}';
   }
 }

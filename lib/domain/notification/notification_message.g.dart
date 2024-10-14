@@ -10,7 +10,7 @@ NotificationMessage _$NotificationMessageFromJson(Map<String, dynamic> json) =>
     NotificationMessage()
       ..sender = json['sender'] as String?
       ..text = json['text'] as String?
-      ..timestamp = json['timestamp'] as int?;
+      ..timestamp = (json['timestamp'] as num?)?.toInt();
 
 Map<String, dynamic> _$NotificationMessageToJson(NotificationMessage instance) {
   final val = <String, dynamic>{};

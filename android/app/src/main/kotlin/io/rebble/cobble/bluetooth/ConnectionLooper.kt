@@ -6,13 +6,14 @@ import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresPermission
 import io.rebble.cobble.bluetooth.classic.ReconnectionSocketServer
+import io.rebble.cobble.shared.domain.state.ConnectionState
+import io.rebble.cobble.shared.domain.state.ConnectionStateManager
+import io.rebble.cobble.shared.domain.state.watchOrNull
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.min
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -23,9 +24,9 @@ class ConnectionLooper @Inject constructor(
         private val errorHandler: CoroutineExceptionHandler
 ) {
     val connectionState: StateFlow<ConnectionState> get() = _connectionState
-    private val _connectionState: MutableStateFlow<ConnectionState> = MutableStateFlow(
+    private val _connectionState: MutableStateFlow<ConnectionState> = /*MutableStateFlow(
             ConnectionState.Disconnected
-    )
+    )*/ ConnectionStateManager.connectionState
     private val _watchPresenceState = MutableStateFlow<String?>(null)
     val watchPresenceState: StateFlow<String?> get() = _watchPresenceState
 
@@ -34,22 +35,6 @@ class ConnectionLooper @Inject constructor(
     private var currentConnection: Job? = null
     private var lastConnectedWatch: String? = null
     private var delayJob: Job? = null
-
-    fun negotiationsComplete(watch: PebbleDevice) {
-        if (connectionState.value is ConnectionState.Negotiating) {
-            _connectionState.value = ConnectionState.Connected(watch)
-        } else {
-            Timber.w("negotiationsComplete state mismatch!")
-        }
-    }
-
-    fun recoveryMode(watch: PebbleDevice) {
-        if (connectionState.value is ConnectionState.Connected || connectionState.value is ConnectionState.Negotiating) {
-            _connectionState.value = ConnectionState.RecoveryMode(watch)
-        } else {
-            Timber.w("recoveryMode state mismatch!")
-        }
-    }
 
     fun signalWatchPresence(macAddress: String) {
         _watchPresenceState.value = macAddress
@@ -62,76 +47,97 @@ class ConnectionLooper @Inject constructor(
         _watchPresenceState.value = null
     }
 
+    fun tryReconnect() {
+        try {
+            lastConnectedWatch?.let {
+                connectToWatch(it)
+            }
+        } catch (e: SecurityException) {
+            Timber.e(e, "Failed to trigger reconnect due to permissions issue")
+        }
+    }
+
     @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
     fun connectToWatch(macAddress: String) {
         coroutineScope.launch {
+            if (currentConnection != null) {
+                Timber.d("ConnectionLooper already targeting watch, will cancel.")
+            }
+            lastConnectedWatch = macAddress
+
             try {
-                lastConnectedWatch = macAddress
+                withTimeout(2000) {
+                    currentConnection?.cancelAndJoin()
+                }
+            } catch (_: TimeoutCancellationException) {
+                Timber.w("Failed to cancel connection in time")
+            }
+            currentConnection = launch {
+                try {
+                    launchRestartOnBluetoothOff(macAddress)
 
-                currentConnection?.cancelAndJoin()
-                currentConnection = coroutineContext[Job]
+                    var retryTime = HALF_OF_INITAL_RETRY_TIME
+                    var retries = 0
+                    val reconnectionSocketServer = ReconnectionSocketServer(BluetoothAdapter.getDefaultAdapter()!!)
+                    reconnectionSocketServer.start().onEach {
+                        Timber.d("Reconnection socket server received connection from $it")
+                        signalWatchPresence(macAddress)
+                    }.launchIn(this + CoroutineName("ReconnectionSocketServer"))
+                    while (isActive) {
+                        if (BluetoothAdapter.getDefaultAdapter()?.isEnabled != true) {
+                            Timber.d("Bluetooth is off. Waiting until it is on Cancel connection attempt.")
 
-                launchRestartOnBluetoothOff(macAddress)
+                            _connectionState.value = ConnectionState.WaitingForTransport(macAddress)
 
-                var retryTime = HALF_OF_INITAL_RETRY_TIME
-                var retries = 0
-                val reconnectionSocketServer = ReconnectionSocketServer(BluetoothAdapter.getDefaultAdapter()!!)
-                reconnectionSocketServer.start().onEach {
-                    Timber.d("Reconnection socket server received connection from $it")
-                    signalWatchPresence(macAddress)
-                }.launchIn(this)
-                while (isActive) {
-                    if (BluetoothAdapter.getDefaultAdapter()?.isEnabled != true) {
-                        Timber.d("Bluetooth is off. Waiting until it is on Cancel connection attempt.")
-
-                        _connectionState.value = ConnectionState.WaitingForBluetoothToEnable(
-                                BluetoothAdapter.getDefaultAdapter()?.getRemoteDevice(macAddress)?.let { PebbleDevice(it) }
-                        )
-
-                        getBluetoothStatus(context).first { bluetoothOn -> bluetoothOn }
-                    }
-
-                    try {
-                        blueCommon.startSingleWatchConnection(macAddress).collect {
-                            if (it is SingleConnectionStatus.Connected && connectionState.value !is ConnectionState.Connected && connectionState.value !is ConnectionState.RecoveryMode) {
-                                // initial connection, wait on negotiation
-                                _connectionState.value = ConnectionState.Negotiating(it.watch)
-                            } else {
-                                Timber.d("Not waiting for negotiation")
-                                _connectionState.value = it.toConnectionStatus()
+                            getBluetoothStatus(context).first { bluetoothOn -> bluetoothOn }
+                        }
+                        val connectionScope = CoroutineScope(SupervisorJob() + errorHandler + Dispatchers.IO) + CoroutineName("ConnectionScope-$macAddress")
+                        try {
+                            blueCommon.startSingleWatchConnection(macAddress).collect {
+                                if (it is SingleConnectionStatus.Connected /*&& connectionState.value !is ConnectionState.Connected && connectionState.value !is ConnectionState.RecoveryMode*/) {
+                                    // initial connection, wait on negotiation
+                                    _connectionState.value = ConnectionState.Negotiating(it.watch)
+                                } else {
+                                    Timber.d("Not waiting for negotiation")
+                                    _connectionState.value = it.toConnectionStatus()
+                                }
+                                if (it is SingleConnectionStatus.Connected) {
+                                    retryTime = HALF_OF_INITAL_RETRY_TIME
+                                    retries = 0
+                                    _connectionState.value.watchOrNull?.connectionScope?.value = connectionScope
+                                }
                             }
-                            if (it is SingleConnectionStatus.Connected) {
+                        } catch (_: CancellationException) {
+                            // Do nothing. Cancellation is OK
+                        } catch (e: Exception) {
+                            Timber.e(e, "Watch connection error")
+                        } finally {
+                            connectionScope.cancel("Connection ended")
+                        }
+
+                        if (isActive) {
+                            val lastWatch = connectionState.value.watchOrNull
+
+                            retryTime = min(retryTime + HALF_OF_INITAL_RETRY_TIME, MAX_RETRY_TIME)
+                            retries++
+                            Timber.d("Watch connection failed, waiting and reconnecting after $retryTime ms (retry: $retries)")
+                            _connectionState.value = ConnectionState.WaitingForReconnect(lastWatch)
+                            delayJob = launch(CoroutineName("DelayJob")) {
+                                delay(retryTime)
+                            }
+                            try {
+                                delayJob?.join()
+                            } catch (_: CancellationException) {
+                                Timber.i("Reconnect delay interrupted")
                                 retryTime = HALF_OF_INITAL_RETRY_TIME
                                 retries = 0
                             }
                         }
-                    } catch (_: CancellationException) {
-                        // Do nothing. Cancellation is OK
-                    } catch (e: Exception) {
-                        Timber.e(e, "Watch connection error")
                     }
-
-
-                    val lastWatch = connectionState.value.watchOrNull
-
-                    retryTime = min(retryTime + HALF_OF_INITAL_RETRY_TIME, MAX_RETRY_TIME)
-                    retries++
-                    Timber.d("Watch connection failed, waiting and reconnecting after $retryTime ms (retry: $retries)")
-                    _connectionState.value = ConnectionState.WaitingForReconnect(lastWatch)
-                    delayJob = launch {
-                        delay(retryTime)
-                    }
-                    try {
-                        delayJob?.join()
-                    } catch (_: CancellationException) {
-                        Timber.i("Reconnect delay interrupted")
-                        retryTime = HALF_OF_INITAL_RETRY_TIME
-                        retries = 0
-                    }
+                } finally {
+                    _connectionState.value = ConnectionState.Disconnected
+                    lastConnectedWatch = null
                 }
-            } finally {
-                _connectionState.value = ConnectionState.Disconnected
-                lastConnectedWatch = null
             }
         }
     }
@@ -161,28 +167,6 @@ class ConnectionLooper @Inject constructor(
             }
         }
         currentConnection?.cancel()
-    }
-
-    /**
-     * Get [CoroutineScope] that is active while watch is connected and cancelled if watch
-     * disconnects.
-     */
-    fun getWatchConnectedScope(
-            context: CoroutineContext = EmptyCoroutineContext
-    ): CoroutineScope {
-        val scope = CoroutineScope(SupervisorJob() + errorHandler + context)
-
-        scope.launch(Dispatchers.Unconfined) {
-            connectionState.collect {
-                if (it !is ConnectionState.Connected &&
-                        it !is ConnectionState.Negotiating &&
-                        it !is ConnectionState.RecoveryMode) {
-                    scope.cancel()
-                }
-            }
-        }
-
-        return scope
     }
 }
 

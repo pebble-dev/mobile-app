@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
@@ -26,8 +25,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class MyWatchesTab extends HookConsumerWidget implements CobbleScreen {
-  final Color _disconnectedColor = Color.fromRGBO(255, 255, 255, 0.5);
-  final Color _connectedColor = Color.fromARGB(255, 0, 169, 130);
+  final Color _disconnectedColor = const Color.fromRGBO(255, 255, 255, 0.5);
+  final Color _connectedColor = const Color.fromARGB(255, 0, 169, 130);
+
+  MyWatchesTab({super.key});
 
   void getCurrentWatchStatus() {}
   final UiConnectionControl uiConnectionControl = UiConnectionControl();
@@ -153,29 +154,27 @@ class MyWatchesTab extends HookConsumerWidget implements CobbleScreen {
               child: Wrap(
                 children: <Widget>[
                   Container(
+                    margin: const EdgeInsets.all(16.0),
                     child: Row(children: <Widget>[
                       PebbleWatchIcon(PebbleWatchModel.values[device.color!],
                           backgroundColor: _getBrStatusColor(device)),
-                      SizedBox(width: 16),
+                      const SizedBox(width: 16),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(device.name!, style: TextStyle(fontSize: 16)),
-                          SizedBox(height: 4),
+                          Text(device.name!, style: const TextStyle(fontSize: 16)),
+                          const SizedBox(height: 4),
                           Text(
-                              device.version.toString() +
-                                  " - " +
-                                  _getStatusText(device.address),
+                              "${device.version} - ${_getStatusText(device.address)}",
                               style: TextStyle(color: _getStatusColor(device))),
-                          Wrap(
+                          const Wrap(
                             spacing: 4,
                             children: [],
                           ),
                         ],
-                        crossAxisAlignment: CrossAxisAlignment.start,
                       ),
                       Expanded(child: Container(width: 0.0, height: 0.0)),
                     ]),
-                    margin: EdgeInsets.all(16.0),
                   ),
                   CobbleDivider(),
                   Offstage(
@@ -230,33 +229,33 @@ class MyWatchesTab extends HookConsumerWidget implements CobbleScreen {
         if (!isConnecting && !isConnected) ...[
           Column(children: <Widget>[
             Container(
+                margin: const EdgeInsets.all(16),
                 child: Row(children: <Widget>[
                   Container(
-                    child: Center(
-                        child: CompIcon(RebbleIcons.disconnect_from_watch,
-                            RebbleIcons.disconnect_from_watch_background)),
                     width: 56,
                     height: 56,
                     decoration: BoxDecoration(
                         color: _disconnectedColor, shape: BoxShape.circle),
+                    child: const Center(
+                        child: CompIcon(RebbleIcons.disconnect_from_watch,
+                            RebbleIcons.disconnect_from_watch_background)),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(tr.watchesPage.status.nothingConnected,
-                          style: TextStyle(fontSize: 16)),
-                      SizedBox(height: 4),
+                          style: const TextStyle(fontSize: 16)),
+                      const SizedBox(height: 4),
                       Text(tr.watchesPage.status.backgroundServiceStopped),
-                      Wrap(
+                      const Wrap(
                         spacing: 4,
                         children: [],
                       ),
                     ],
-                    crossAxisAlignment: CrossAxisAlignment.start,
                   ),
                   Expanded(child: Container(width: 0.0, height: 0.0)),
-                ]),
-                margin: EdgeInsets.all(16)),
+                ])),
           ])
         ],
         if (isConnecting || isConnected) ...[
@@ -264,26 +263,27 @@ class MyWatchesTab extends HookConsumerWidget implements CobbleScreen {
               children: connectedWatchList
                   .map((e) => InkWell(
                         child: Container(
+                            margin: const EdgeInsets.all(16),
                             child: Row(children: <Widget>[
                               Container(
                                 child: Center(
                                     child: PebbleWatchIcon(e!.model,
                                         backgroundColor: _getBrStatusColor(e))),
                               ),
-                              SizedBox(width: 16),
+                              const SizedBox(width: 16),
                               Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text(e.name!, style: TextStyle(fontSize: 16)),
-                                  SizedBox(height: 4),
+                                  Text(e.name!, style: const TextStyle(fontSize: 16)),
+                                  const SizedBox(height: 4),
                                   Text(_getStatusText(e.address),
                                       style: TextStyle(
                                           color: context.scheme!.muted)),
-                                  Wrap(
+                                  const Wrap(
                                     spacing: 4,
                                     children: [],
                                   ),
                                 ],
-                                crossAxisAlignment: CrossAxisAlignment.start,
                               ),
                               Expanded(
                                   child: Container(width: 0.0, height: 0.0)),
@@ -292,8 +292,7 @@ class MyWatchesTab extends HookConsumerWidget implements CobbleScreen {
                                 icon: RebbleIcons.disconnect_from_watch,
                                 onPressed: () => _onDisconnectPressed(false),
                               ),
-                            ]),
-                            margin: EdgeInsets.all(16)),
+                            ])),
                         onTap: () => _onSettingsPressed(true, e.address),
                       ))
                   .toList()),
@@ -304,6 +303,7 @@ class MyWatchesTab extends HookConsumerWidget implements CobbleScreen {
             children: allDisconnectedWatches
                 .map((e) => InkWell(
                       child: Container(
+                        margin: const EdgeInsets.fromLTRB(16, 10, 16, 16),
                         child: Row(children: <Widget>[
                           Container(
                             child: Center(
@@ -311,18 +311,18 @@ class MyWatchesTab extends HookConsumerWidget implements CobbleScreen {
                                     PebbleWatchModel.values[e.color ?? 0],
                                     backgroundColor: _getBrStatusColor(e))),
                           ),
-                          SizedBox(width: 16),
+                          const SizedBox(width: 16),
                           Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text(e.name!, style: TextStyle(fontSize: 16)),
-                              SizedBox(height: 4),
+                              Text(e.name!, style: const TextStyle(fontSize: 16)),
+                              const SizedBox(height: 4),
                               Text(_getStatusText(e.address)),
-                              Wrap(
+                              const Wrap(
                                 spacing: 4,
                                 children: [],
                               ),
                             ],
-                            crossAxisAlignment: CrossAxisAlignment.start,
                           ),
                           Expanded(child: Container(width: 0.0, height: 0.0)),
                           CobbleButton(
@@ -331,7 +331,6 @@ class MyWatchesTab extends HookConsumerWidget implements CobbleScreen {
                             onPressed: () => _onConnectPressed(e, false),
                           ),
                         ]),
-                        margin: EdgeInsets.fromLTRB(16, 10, 16, 16),
                       ),
                       onTap: () => _onSettingsPressed(false, e.address!),
                     ))

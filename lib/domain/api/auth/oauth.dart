@@ -8,6 +8,7 @@ import 'package:cobble/domain/api/boot/boot.dart';
 import 'package:cobble/domain/api/status_exception.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/datasources/secure_storage.dart';
+import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:crypto/crypto.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -158,6 +159,7 @@ class OAuthClient {
       await _prefs.setOAuthTokenCreationDate(
           DateTime.now().subtract(const Duration(hours: 1)));
       await _secureStorage.setToken(token);
+      await KMPApi().updateToken(StringWrapper(value: token.accessToken));
       return token;
     }
   }

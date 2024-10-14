@@ -30,10 +30,10 @@ class TestTab extends HookConsumerWidget implements CobbleScreen {
 
     final preferences = ref.watch(preferencesProvider);
     final neededWorkarounds = ref.watch(neededWorkaroundsProvider).when(
-      data: (data) => data,
-      loading: () => List<Workaround>.empty(),
-      error: (e, s) => List<Workaround>.empty(),
-    );
+          data: (data) => data,
+          loading: () => List<Workaround>.empty(),
+          error: (e, s) => List<Workaround>.empty(),
+        );
 
     useEffect(() {
       Future.microtask(() async {
@@ -61,10 +61,6 @@ class TestTab extends HookConsumerWidget implements CobbleScreen {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              CobbleButton(
-                onPressed: () => notifications.sendTestNotification(),
-                label: "Test Notification",
-              ),
               CobbleButton(
                 onPressed: () {
                   ListWrapper l = ListWrapper();
@@ -94,21 +90,21 @@ class TestTab extends HookConsumerWidget implements CobbleScreen {
                       Row(),
                       Text(
                         "Some debug options",
-                        style: Theme.of(context).textTheme.headline5,
+                        style: Theme.of(context).textTheme.headlineMedium,
                       ),
                       SizedBox(height: 8.0),
                       CobbleButton(
                         outlined: false,
                         label: "Developer options",
                         icon: RebbleIcons.developer_connection_console,
-                        color: Theme.of(context).accentColor,
+                        color: Theme.of(context).colorScheme.primary,
                         onPressed: () => context.push(DevOptionsPage()),
                       ),
                       CobbleButton(
                         outlined: false,
                         label: "App debug options",
                         icon: RebbleIcons.warning,
-                        color: Theme.of(context).accentColor,
+                        color: Theme.of(context).colorScheme.primary,
                         onPressed: () => context.push(DebugOptionsPage()),
                       ),
                     ],

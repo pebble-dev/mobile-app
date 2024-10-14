@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cobble/ui/common/components/cobble_accordion.dart';
 import 'package:cobble/ui/common/icons/back_comp_icon.dart';
 import 'package:cobble/ui/common/icons/system_app_icon.dart';
@@ -59,7 +60,7 @@ class CobbleTile extends StatelessWidget {
   }) =>
       CobbleTile._(
         key: key,
-        padding: EdgeInsets.fromLTRB(16, 24, 16, 8),
+        padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
         title: title,
         body: body,
       );
@@ -77,7 +78,7 @@ class CobbleTile extends StatelessWidget {
   }) =>
       CobbleTile._(
         key: key,
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         leading: _leadingToWidget(leading),
         title: title,
         subtitle: body,
@@ -97,7 +98,7 @@ class CobbleTile extends StatelessWidget {
   }) =>
       CobbleTile._(
         key: key,
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         leading: _leadingToWidget(leading),
         trailing: Icon(
           trailing,
@@ -121,7 +122,7 @@ class CobbleTile extends StatelessWidget {
   }) =>
       CobbleTile._(
         key: key,
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         leading: _leadingToWidget(leading),
         trailing: trailing != null
             ? Icon(
@@ -146,7 +147,7 @@ class CobbleTile extends StatelessWidget {
   }) =>
       CobbleTile._(
         key: key,
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         leading: _leadingToWidget(leading),
         title: title,
         subtitle: subtitle,
@@ -164,7 +165,7 @@ class CobbleTile extends StatelessWidget {
   }) =>
       CobbleTile._(
         key: key,
-        padding: EdgeInsets.all(0),
+        padding: const EdgeInsets.all(0),
         leading: _leadingToWidget(leading),
         title: title,
         subtitle: subtitle,
@@ -179,13 +180,13 @@ class CobbleTile extends StatelessWidget {
   }) =>
       CobbleAccordion(
         headerBuilder: (onTap, heightFactor) => CobbleTile._(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           title: title,
           onTap: onTap,
           leading: _leadingToWidget(leading),
           trailing: Transform.rotate(
             angle: heightFactor * pi,
-            child: Icon(RebbleIcons.caret_down),
+            child: const Icon(RebbleIcons.caret_down),
           ),
         ),
         child: Column(
@@ -204,7 +205,7 @@ class CobbleTile extends StatelessWidget {
   }) =>
       CobbleTile._(
         key: key,
-        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         leading: _leadingToWidget(leading, size: 48),
         title: title,
         subtitle: subtitle,
@@ -221,9 +222,9 @@ class CobbleTile extends StatelessWidget {
   }) =>
       CobbleTile._(
         key: key,
-        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         leading: _leadingToWidget(leading, size: 48),
-        trailing: Icon(RebbleIcons.caret_right),
+        trailing: const Icon(RebbleIcons.caret_right),
         title: title,
         subtitle: subtitle,
         navigateTo: navigateTo,
@@ -243,7 +244,7 @@ class CobbleTile extends StatelessWidget {
           children: [
             if (leading != null) ...[
               leading!,
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
             ],
             Expanded(
               child: Column(
@@ -251,21 +252,21 @@ class CobbleTile extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: context.textTheme.headline6,
+                    style: context.textTheme.headlineMedium,
                   ),
                   if (body is String) ...[
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       body!,
-                      style: context.textTheme.bodyText2,
+                      style: context.textTheme.bodyMedium,
                     ),
                   ],
                   if (subtitle is String) ...[
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       subtitle!,
-                      style: context.textTheme.bodyText2!.copyWith(
-                        color: context.textTheme.bodyText2!.color!.withOpacity(
+                      style: context.textTheme.bodyMedium!.copyWith(
+                        color: context.textTheme.bodyMedium!.color!.withOpacity(
                           context.scheme!.muted.opacity,
                         ),
                       ),
@@ -312,10 +313,10 @@ class CobbleTile extends StatelessWidget {
             color: intent,
           ),
           textTheme: context.textTheme.copyWith(
-            bodyText2: context.textTheme.bodyText2!.copyWith(
+            bodyMedium: context.textTheme.bodyMedium!.copyWith(
               color: intent,
             ),
-            headline6: context.textTheme.headline6!.copyWith(
+            headlineMedium: context.textTheme.headlineMedium!.copyWith(
               color: intent,
             ),
           ),
@@ -353,7 +354,7 @@ class CobbleTile extends StatelessWidget {
 
   /// Will change IconData or ImageProvider to Widget
   static Widget _leadingToWidget(Object? leading, {double size = 25}) {
-    assert(leading == null || leading is IconData || leading is ImageProvider || leading is BackCompIcon || leading is SystemAppIcon || leading is Decoration);
+    assert(leading == null || leading is IconData || leading is ImageProvider || leading is BackCompIcon || leading is SystemAppIcon || leading is Decoration || leading is CachedNetworkImage);
     if (leading is IconData && leading == reservedIconSpace)
       return SizedBox(width: size + 16.0);
     if (leading is IconData && leading != reservedIconSpace)
@@ -374,6 +375,12 @@ class CobbleTile extends StatelessWidget {
         width: 32.0,
         height: 32.0,
         decoration: leading,
+      );
+    if (leading is CachedNetworkImage)
+      return SizedBox(
+        width: size,
+        height: size,
+        child: leading,
       );
     return Container();
   }

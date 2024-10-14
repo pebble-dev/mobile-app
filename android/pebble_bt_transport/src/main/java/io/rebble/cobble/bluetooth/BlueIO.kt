@@ -3,8 +3,10 @@ package io.rebble.cobble.bluetooth
 import android.Manifest
 import android.bluetooth.BluetoothDevice
 import androidx.annotation.RequiresPermission
+import io.rebble.cobble.shared.domain.common.PebbleDevice
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.isActive
 
 interface BlueIO {
     @FlowPreview
@@ -12,22 +14,15 @@ interface BlueIO {
     fun startSingleWatchConnection(device: PebbleDevice): Flow<SingleConnectionStatus>
 }
 
-data class PebbleDevice(
-        val bluetoothDevice: BluetoothDevice?,
-        val emulated: Boolean,
-        val address: String
-) {
-    constructor(bluetoothDevice: BluetoothDevice?, emulated: Boolean = false) :
-            this(
-                    bluetoothDevice,
-                    emulated,
-                    bluetoothDevice?.address ?: throw IllegalArgumentException()
-            )
+class BluetoothPebbleDevice(
+        val bluetoothDevice: BluetoothDevice,
+        address: String
+) : PebbleDevice(null, address){
 
     override fun toString(): String {
-        val start = "< PebbleDevice emulated=$emulated, address=$address, bluetoothDevice=< BluetoothDevice address=${bluetoothDevice?.address}"
+        val start = "< BluetoothPebbleDevice, address=$address, connectionScopeActive=${connectionScope.value?.isActive}, bluetoothDevice=< BluetoothDevice address=${bluetoothDevice.address}"
         return try {
-            "$start, name=${bluetoothDevice?.name}, type=${bluetoothDevice?.type} > >"
+            "$start, name=${bluetoothDevice.name}, type=${bluetoothDevice.type} > >"
         } catch (e: SecurityException) {
             "$start, name=unknown, type=unknown > >"
         }

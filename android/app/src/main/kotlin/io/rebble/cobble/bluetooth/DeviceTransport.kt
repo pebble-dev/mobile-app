@@ -13,11 +13,12 @@ import io.rebble.cobble.bluetooth.classic.BlueSerialDriver
 import io.rebble.cobble.bluetooth.classic.SocketSerialDriver
 import io.rebble.cobble.bluetooth.scan.BleScanner
 import io.rebble.cobble.bluetooth.scan.ClassicScanner
-import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.datasources.IncomingPacketsListener
-import io.rebble.libpebblecommon.ProtocolHandler
+import io.rebble.cobble.shared.datastore.FlutterPreferences
+import io.rebble.cobble.shared.domain.common.PebbleDevice
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onCompletion
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -27,7 +28,6 @@ class DeviceTransport @Inject constructor(
         private val context: Context,
         private val bleScanner: BleScanner,
         private val classicScanner: ClassicScanner,
-        private val protocolHandler: ProtocolHandler,
         private val flutterPreferences: FlutterPreferences,
         private val incomingPacketsListener: IncomingPacketsListener
 ) {
@@ -55,51 +55,59 @@ class DeviceTransport @Inject constructor(
         lastMacAddress = macAddress
 
         val bluetoothDevice = if (BuildConfig.DEBUG && !macAddress.contains(":")) {
-            PebbleDevice(null, true, macAddress)
+            EmulatedPebbleDevice(macAddress)
         } else {
             val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-            PebbleDevice(bluetoothAdapter.getRemoteDevice(macAddress))
+            BluetoothPebbleDevice(bluetoothAdapter.getRemoteDevice(macAddress), macAddress)
         }
 
         val driver = getTargetTransport(bluetoothDevice)
         this@DeviceTransport.driver = driver
-        return driver.startSingleWatchConnection(bluetoothDevice)
+        return driver.startSingleWatchConnection(bluetoothDevice).onCompletion {
+            bluetoothDevice.close()
+        }
     }
 
     @Throws(SecurityException::class)
     private fun getTargetTransport(pebbleDevice: PebbleDevice): BlueIO {
-        val btDevice = pebbleDevice.bluetoothDevice
-        return when {
-            pebbleDevice.emulated -> {
+        return when (pebbleDevice) {
+            is EmulatedPebbleDevice -> {
                 SocketSerialDriver(
-                        protocolHandler,
+                        pebbleDevice,
                         incomingPacketsListener.receivedPackets
                 )
             }
 
-            btDevice?.type == BluetoothDevice.DEVICE_TYPE_LE || btDevice?.type == BluetoothDevice.DEVICE_TYPE_UNKNOWN /* || btDevice?.type == BluetoothDevice.DEVICE_TYPE_DUAL */ -> { // LE device
-                gattServerManager.initIfNeeded()
-                if (btDevice.type == BluetoothDevice.DEVICE_TYPE_UNKNOWN) {
-                    Timber.w("Device $pebbleDevice has type unknown, assuming LE will work")
-                }
-                BlueLEDriver(
-                        context = context,
-                        protocolHandler = protocolHandler,
-                        gattServerManager = gattServerManager,
-                        incomingPacketsListener = incomingPacketsListener.receivedPackets,
-                ) {
-                    flutterPreferences.shouldActivateWorkaround(it)
+            is BluetoothPebbleDevice -> {
+                val btDevice = pebbleDevice.bluetoothDevice
+                when (btDevice.type) {
+                    BluetoothDevice.DEVICE_TYPE_LE, BluetoothDevice.DEVICE_TYPE_UNKNOWN /* || btDevice?.type == BluetoothDevice.DEVICE_TYPE_DUAL */ -> { // LE device
+                        gattServerManager.initIfNeeded()
+                        if (btDevice.type == BluetoothDevice.DEVICE_TYPE_UNKNOWN) {
+                            Timber.w("Device $pebbleDevice has type unknown, assuming LE will work")
+                        }
+                        BlueLEDriver(
+                                context = context,
+                                pebbleDevice = pebbleDevice,
+                                gattServerManager = gattServerManager,
+                                incomingPacketsListener = incomingPacketsListener.receivedPackets,
+                        ) {
+                            flutterPreferences.shouldActivateWorkaround(it)
+                        }
+                    }
+
+                    BluetoothDevice.DEVICE_TYPE_CLASSIC, BluetoothDevice.DEVICE_TYPE_DUAL -> { // Serial only device or serial/LE
+                        BlueSerialDriver(
+                                pebbleDevice,
+                                incomingPacketsListener.receivedPackets
+                        )
+                    }
+
+                    else -> throw IllegalArgumentException("Unknown bluetooth device type: ${btDevice.type}")
                 }
             }
 
-            btDevice?.type == BluetoothDevice.DEVICE_TYPE_CLASSIC || btDevice?.type == BluetoothDevice.DEVICE_TYPE_DUAL -> { // Serial only device or serial/LE
-                BlueSerialDriver(
-                        protocolHandler,
-                        incomingPacketsListener.receivedPackets
-                )
-            }
-
-            else -> throw IllegalArgumentException("Unknown device type: ${btDevice?.type}") // Can't contact device
+            else -> throw IllegalArgumentException("Unknown device type: ${pebbleDevice::class.simpleName}")
         }
     }
 }

@@ -68,7 +68,7 @@ class _FirstRunPageState extends State<FirstRunPage> {
                   margin: EdgeInsets.symmetric(vertical: 8),
                   child: Text(
                     tr.firstRun.title,
-                    style: Theme.of(context).textTheme.headline4,
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                 ),
                 SizedBox(height: 24.0), // spacer
@@ -99,7 +99,7 @@ class _FirstRunPageState extends State<FirstRunPage> {
                 children: <Widget>[
                   CobbleButton(
                     outlined: false,
-                    color: context.textTheme.bodyText2?.color,
+                    color: context.textTheme.bodyMedium?.color,
                     label: tr.common.skip,
                     onPressed: () => context.pushAndRemoveAllBelow(
                       HomePage(),

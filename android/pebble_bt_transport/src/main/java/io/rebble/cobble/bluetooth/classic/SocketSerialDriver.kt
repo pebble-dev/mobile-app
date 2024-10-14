@@ -1,10 +1,10 @@
 package io.rebble.cobble.bluetooth.classic
 
 import io.rebble.cobble.bluetooth.BlueIO
-import io.rebble.cobble.bluetooth.PebbleDevice
+import io.rebble.cobble.bluetooth.EmulatedPebbleDevice
 import io.rebble.cobble.bluetooth.SingleConnectionStatus
 import io.rebble.cobble.bluetooth.readFully
-import io.rebble.libpebblecommon.ProtocolHandler
+import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.libpebblecommon.packets.QemuPacket
 import io.rebble.libpebblecommon.protocolhelpers.ProtocolEndpoint
 import kotlinx.coroutines.*
@@ -24,7 +24,7 @@ import kotlin.coroutines.coroutineContext
  * Used for testing app via a qemu pebble
  */
 class SocketSerialDriver(
-        private val protocolHandler: ProtocolHandler,
+        private val device: PebbleDevice,
         private val incomingPacketsListener: MutableSharedFlow<ByteArray>
 ) : BlueIO {
 
@@ -65,7 +65,7 @@ class SocketSerialDriver(
                 val packet = ByteArray(length.toInt() + 2 * (Short.SIZE_BYTES))
                 buf.get(packet, 0, packet.size)
                 incomingPacketsListener.emit(packet)
-                protocolHandler.receivePacket(packet.toUByteArray())
+                device.protocolHandler.receivePacket(packet.toUByteArray())
             }
         } finally {
             Timber.e("Read loop returning")
@@ -93,6 +93,7 @@ class SocketSerialDriver(
 
     @FlowPreview
     override fun startSingleWatchConnection(device: PebbleDevice): Flow<SingleConnectionStatus> = flow {
+        require(device is EmulatedPebbleDevice) { "Device must be EmulatedPebbleDevice" }
         val host = device.address
         coroutineScope {
             emit(SingleConnectionStatus.Connecting(device))
@@ -104,7 +105,7 @@ class SocketSerialDriver(
             delay(8000)
 
             val sendLoop = launch {
-                protocolHandler.startPacketSendingLoop(::sendPacket)
+                device.protocolHandler.startPacketSendingLoop(::sendPacket)
             }
 
             inputStream = serialSocket.inputStream

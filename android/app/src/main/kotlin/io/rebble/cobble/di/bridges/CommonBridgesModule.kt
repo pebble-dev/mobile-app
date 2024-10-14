@@ -57,20 +57,6 @@ abstract class CommonBridgesModule {
     @Binds
     @IntoSet
     @CommonBridge
-    abstract fun bindAppInstallBridge(
-            appInstallFlutterBridge: AppInstallFlutterBridge
-    ): FlutterBridge
-
-    @Binds
-    @IntoSet
-    @CommonBridge
-    abstract fun bindAppLifecycleBridge(
-            appLifecycleFlutterBridge: AppLifecycleFlutterBridge
-    ): FlutterBridge
-
-    @Binds
-    @IntoSet
-    @CommonBridge
     abstract fun bindScreenshotBridge(
             screenshotsFlutterBridge: ScreenshotsFlutterBridge
     ): FlutterBridge
@@ -87,6 +73,13 @@ abstract class CommonBridgesModule {
     @CommonBridge
     abstract fun bindIncomingPacketsBridge(
             packetsBridge: RawIncomingPacketsBridge
+    ): FlutterBridge
+
+    @Binds
+    @IntoSet
+    @CommonBridge
+    abstract fun bindKmpApiBridge(
+            kmpApiBridge: KMPApiBridge
     ): FlutterBridge
 }
 
