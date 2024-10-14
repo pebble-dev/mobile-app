@@ -9,20 +9,19 @@ import android.telecom.InCallService
 import android.telecom.VideoProfile
 import io.rebble.cobble.CobbleApplication
 import io.rebble.cobble.bluetooth.ConnectionLooper
-import io.rebble.cobble.notifications.CallNotificationProcessor
+import io.rebble.cobble.shared.Logging
+import io.rebble.cobble.shared.domain.notifications.CallNotificationProcessor
 import io.rebble.cobble.shared.domain.state.ConnectionState
+import io.rebble.cobble.shared.domain.state.ConnectionStateManager
+import io.rebble.cobble.shared.domain.state.watchOrNull
 import io.rebble.libpebblecommon.packets.PhoneControl
-import io.rebble.libpebblecommon.services.PhoneControlService
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import kotlin.random.Random
 
 class InCallService : InCallService() {
     private lateinit var coroutineScope: CoroutineScope
-    private lateinit var phoneControlService: PhoneControlService
     private lateinit var connectionLooper: ConnectionLooper
     private lateinit var contentResolver: ContentResolver
     private lateinit var callNotificationProcessor: CallNotificationProcessor
@@ -34,57 +33,65 @@ class InCallService : InCallService() {
         super.onCreate()
         Timber.d("InCallService created")
         val injectionComponent = (applicationContext as CobbleApplication).component
-        phoneControlService = injectionComponent.createPhoneControlService()
         connectionLooper = injectionComponent.createConnectionLooper()
         coroutineScope = CoroutineScope(
                 SupervisorJob() + injectionComponent.createExceptionHandler()
         )
-        callNotificationProcessor = injectionComponent.createCallNotificationProcessor()
         contentResolver = applicationContext.contentResolver
         listenForPhoneControlMessages()
     }
 
     private fun listenForPhoneControlMessages() {
-        phoneControlService.receivedMessages.receiveAsFlow().onEach {
-            if (connectionLooper.connectionState.value !is ConnectionState.Connected) {
-                Timber.w("Ignoring phone control message because watch is not connected")
-                return@onEach
-            }
-            when (it) {
-                is PhoneControl.Answer -> {
-                    synchronized(this@InCallService) {
-                        if (it.cookie.get() == lastCookie) {
-                            lastCall?.answer(VideoProfile.STATE_AUDIO_ONLY) // Answering from watch probably means a headset or something
-                        } else {
-                            callNotificationProcessor.handleCallAction(it)
-                        }
-                    }
+        ConnectionStateManager.connectionState.filterIsInstance<ConnectionState.Connected>().onEach {
+            val pebbleDevice = it.watch
+            val connectionScope = pebbleDevice.connectionScope.filterNotNull().first()
+            val phoneControlService = pebbleDevice.phoneControlService
+            phoneControlService.receivedMessages.receiveAsFlow().onEach {
+                if (connectionLooper.connectionState.value !is ConnectionState.Connected) {
+                    Timber.w("Ignoring phone control message because watch is not connected")
+                    return@onEach
                 }
-
-                is PhoneControl.Hangup -> {
-                    synchronized(this@InCallService) {
-                        if (it.cookie.get() == lastCookie) {
-                            lastCookie = null
-                            lastCall?.let { call ->
-                                if (call.details.state == Call.STATE_RINGING) {
-                                    Timber.d("Rejecting ringing call")
-                                    call.reject(Call.REJECT_REASON_DECLINED)
-                                } else {
-                                    Timber.d("Disconnecting call")
-                                    call.disconnect()
-                                }
+                when (it) {
+                    is PhoneControl.Answer -> {
+                        synchronized(this@InCallService) {
+                            if (it.cookie.get() == lastCookie) {
+                                lastCall?.answer(VideoProfile.STATE_AUDIO_ONLY) // Answering from watch probably means a headset or something
+                            } else {
+                                callNotificationProcessor.handleCallAction(it)
                             }
-                        } else {
-                            callNotificationProcessor.handleCallAction(it)
                         }
                     }
-                }
 
-                else -> {
-                    Timber.w("Unhandled phone control message: $it")
+                    is PhoneControl.Hangup -> {
+                        synchronized(this@InCallService) {
+                            if (it.cookie.get() == lastCookie) {
+                                lastCookie = null
+                                lastCall?.let { call ->
+                                    if (call.state == Call.STATE_RINGING) {
+                                        Timber.d("Rejecting ringing call")
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                            call.reject(Call.REJECT_REASON_DECLINED)
+                                        } else {
+                                            call.reject(false, null)
+                                        }
+                                    } else {
+                                        Timber.d("Disconnecting call")
+                                        call.disconnect()
+                                    }
+                                }
+                            } else {
+                                callNotificationProcessor.handleCallAction(it)
+                            }
+                        }
+                    }
+
+                    else -> {
+                        Timber.w("Unhandled phone control message: $it")
+                    }
                 }
-            }
-        }.launchIn(coroutineScope)
+            }.launchIn(connectionScope)
+        }
+
     }
 
     override fun onDestroy() {
@@ -97,12 +104,17 @@ class InCallService : InCallService() {
         super.onCallAdded(call)
         Timber.d("Call added")
         coroutineScope.launch(Dispatchers.IO) {
+            val pebbleDevice = ConnectionStateManager.connectionState.value.watchOrNull
+            val phoneControlService = pebbleDevice?.phoneControlService ?: run {
+                Logging.w("Phone control service not available (e.g. device disconnected)")
+                return@launch
+            }
             synchronized(this@InCallService) {
                 if (lastCookie != null) {
                     lastCookie = if (lastCall == null) {
                         null
                     } else {
-                        if (lastCall?.details?.state == Call.STATE_DISCONNECTED) {
+                        if (lastCall?.state == Call.STATE_DISCONNECTED) {
                             null
                         } else {
                             Timber.w("Ignoring call because there is already a call in progress")
@@ -116,7 +128,7 @@ class InCallService : InCallService() {
             synchronized(this@InCallService) {
                 lastCookie = cookie
             }
-            if (call.details.state == Call.STATE_RINGING) {
+            if (call.state == Call.STATE_RINGING) {
                 coroutineScope.launch(Dispatchers.IO) {
                     phoneControlService.send(
                             PhoneControl.IncomingCall(
@@ -204,6 +216,11 @@ class InCallService : InCallService() {
         super.onCallRemoved(call)
         Timber.d("Call removed")
         coroutineScope.launch(Dispatchers.IO) {
+            val pebbleDevice = ConnectionStateManager.connectionState.value.watchOrNull
+            val phoneControlService = pebbleDevice?.phoneControlService ?: run {
+                Logging.w("Phone control service not available (e.g. device disconnected)")
+                return@launch
+            }
             val cookie = synchronized(this@InCallService) {
                 val c = lastCookie ?: return@launch
                 lastCookie = null

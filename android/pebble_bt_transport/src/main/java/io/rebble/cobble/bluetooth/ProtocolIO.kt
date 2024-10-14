@@ -55,7 +55,7 @@ class ProtocolIO(
                 protocolHandler.receivePacket(packet.toUByteArray())
             }
         } finally {
-            Timber.e("Read loop returning")
+            Timber.e("Read loop returning: coroutineContext.isActive = ${coroutineContext.isActive}")
             try {
                 inputStream.close()
                 outputStream.close()

@@ -13,12 +13,12 @@ import io.rebble.cobble.bluetooth.classic.BlueSerialDriver
 import io.rebble.cobble.bluetooth.classic.SocketSerialDriver
 import io.rebble.cobble.bluetooth.scan.BleScanner
 import io.rebble.cobble.bluetooth.scan.ClassicScanner
-import io.rebble.cobble.datasources.FlutterPreferences
 import io.rebble.cobble.datasources.IncomingPacketsListener
+import io.rebble.cobble.shared.datastore.FlutterPreferences
 import io.rebble.cobble.shared.domain.common.PebbleDevice
-import io.rebble.libpebblecommon.ProtocolHandler
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onCompletion
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,7 +28,6 @@ class DeviceTransport @Inject constructor(
         private val context: Context,
         private val bleScanner: BleScanner,
         private val classicScanner: ClassicScanner,
-        private val protocolHandler: ProtocolHandler,
         private val flutterPreferences: FlutterPreferences,
         private val incomingPacketsListener: IncomingPacketsListener
 ) {
@@ -56,15 +55,17 @@ class DeviceTransport @Inject constructor(
         lastMacAddress = macAddress
 
         val bluetoothDevice = if (BuildConfig.DEBUG && !macAddress.contains(":")) {
-            EmulatedPebbleDevice(macAddress, protocolHandler)
+            EmulatedPebbleDevice(macAddress)
         } else {
             val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-            BluetoothPebbleDevice(bluetoothAdapter.getRemoteDevice(macAddress), protocolHandler, macAddress)
+            BluetoothPebbleDevice(bluetoothAdapter.getRemoteDevice(macAddress), macAddress)
         }
 
         val driver = getTargetTransport(bluetoothDevice)
         this@DeviceTransport.driver = driver
-        return driver.startSingleWatchConnection(bluetoothDevice)
+        return driver.startSingleWatchConnection(bluetoothDevice).onCompletion {
+            bluetoothDevice.close()
+        }
     }
 
     @Throws(SecurityException::class)
@@ -72,7 +73,7 @@ class DeviceTransport @Inject constructor(
         return when (pebbleDevice) {
             is EmulatedPebbleDevice -> {
                 SocketSerialDriver(
-                        protocolHandler,
+                        pebbleDevice,
                         incomingPacketsListener.receivedPackets
                 )
             }
@@ -87,7 +88,7 @@ class DeviceTransport @Inject constructor(
                         }
                         BlueLEDriver(
                                 context = context,
-                                protocolHandler = protocolHandler,
+                                pebbleDevice = pebbleDevice,
                                 gattServerManager = gattServerManager,
                                 incomingPacketsListener = incomingPacketsListener.receivedPackets,
                         ) {
@@ -97,7 +98,7 @@ class DeviceTransport @Inject constructor(
 
                     BluetoothDevice.DEVICE_TYPE_CLASSIC, BluetoothDevice.DEVICE_TYPE_DUAL -> { // Serial only device or serial/LE
                         BlueSerialDriver(
-                                protocolHandler,
+                                pebbleDevice,
                                 incomingPacketsListener.receivedPackets
                         )
                     }

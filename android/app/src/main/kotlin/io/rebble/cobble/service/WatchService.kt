@@ -8,20 +8,21 @@ import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
-import io.rebble.cobble.*
+import io.rebble.cobble.CobbleApplication
+import io.rebble.cobble.MainActivity
+import io.rebble.cobble.R
 import io.rebble.cobble.bluetooth.BluetoothPebbleDevice
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bluetooth.EmulatedPebbleDevice
-import io.rebble.cobble.shared.handlers.CobbleHandler
 import io.rebble.cobble.shared.domain.calendar.CalendarSync
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.util.NotificationId
 import io.rebble.libpebblecommon.ProtocolHandler
-import io.rebble.libpebblecommon.services.notification.NotificationService
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import timber.log.Timber
-import javax.inject.Provider
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WatchService : LifecycleService() {
@@ -45,11 +46,8 @@ class WatchService : LifecycleService() {
         startForeground(NotificationId.WATCH_CONNECTION, mainNotifBuilder.build())
 
         val injectionComponent = (applicationContext as CobbleApplication).component
-        val serviceComponent = injectionComponent.createServiceSubcomponentFactory()
-                .create(this)
 
         coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
-        protocolHandler = injectionComponent.createProtocolHandler()
         connectionLooper = injectionComponent.createConnectionLooper()
 
         calendarSync = injectionComponent.createKMPCalendarSync()
@@ -61,7 +59,6 @@ class WatchService : LifecycleService() {
         }
 
         startNotificationLoop()
-        startHandlersLoop(serviceComponent.getNegotiationMessageHandlersProvider(), serviceComponent.getNormalMessageHandlersProvider())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -142,20 +139,5 @@ class WatchService : LifecycleService() {
         return NotificationCompat
                 .Builder(this@WatchService, channel)
                 .setContentIntent(mainActivityIntent)
-    }
-
-    private fun startHandlersLoop(negotiationHandlers: Provider<Set<CobbleHandler>>, normalHandlers: Provider<Set<CobbleHandler>>) {
-        coroutineScope.launch {
-            connectionLooper.connectionState
-                    .filter { it is ConnectionState.Connected || it is ConnectionState.Negotiating }
-                    .collect {
-                        watchConnectionScope = connectionLooper
-                                .getWatchConnectedScope(Dispatchers.Main.immediate)
-                        negotiationHandlers.get()
-                        if (it is ConnectionState.Connected) {
-                            normalHandlers.get()
-                        }
-                    }
-        }
     }
 }

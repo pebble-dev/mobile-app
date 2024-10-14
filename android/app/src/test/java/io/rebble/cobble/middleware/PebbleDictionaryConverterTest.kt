@@ -1,5 +1,7 @@
 package io.rebble.cobble.middleware
 
+import io.rebble.cobble.shared.util.getPebbleDictionary
+import io.rebble.cobble.shared.util.toPacket
 import io.rebble.libpebblecommon.packets.AppMessage
 import io.rebble.libpebblecommon.packets.AppMessageTuple
 import org.junit.Assert.assertEquals

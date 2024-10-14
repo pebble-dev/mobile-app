@@ -1,6 +1,7 @@
 package io.rebble.cobble.shared.middleware
 
 import io.rebble.cobble.shared.Logging
+import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.domain.state.watchOrNull
 import io.rebble.cobble.shared.util.File
@@ -11,7 +12,6 @@ import io.rebble.libpebblecommon.metadata.pbw.manifest.PbwBlob
 import io.rebble.libpebblecommon.metadata.pbz.manifest.PbzManifest
 import io.rebble.libpebblecommon.packets.ObjectType
 import io.rebble.libpebblecommon.packets.PutBytesAbort
-import io.rebble.libpebblecommon.services.PutBytesService
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,11 +20,9 @@ import kotlinx.coroutines.sync.withLock
 import okio.buffer
 import okio.use
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
-class PutBytesController: KoinComponent {
-    private val putBytesService: PutBytesService by inject()
-
+class PutBytesController(pebbleDevice: PebbleDevice): KoinComponent {
+    private val putBytesService = pebbleDevice.putBytesService
     private val _status: MutableStateFlow<Status> = MutableStateFlow(Status(State.IDLE))
     private val statusMutex = Mutex()
     val status: StateFlow<Status> get() = _status
@@ -150,7 +148,7 @@ class PutBytesController: KoinComponent {
     }
 
     private fun launchNewPutBytesSession(block: suspend CoroutineScope.() -> Unit): Job {
-        return ConnectionStateManager.connectionScope.value.launch {
+        return ConnectionStateManager.connectionState.value.watchOrNull?.connectionScope?.value!!.launch {
             statusMutex.withLock {
                 if (_status.value.state != State.IDLE) {
                     throw IllegalStateException("Put bytes operation already in progress")

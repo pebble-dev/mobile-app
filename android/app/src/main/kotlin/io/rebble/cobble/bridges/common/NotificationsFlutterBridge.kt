@@ -4,8 +4,6 @@ import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.shared.database.dao.CachedPackageInfoDao
-import io.rebble.libpebblecommon.packets.blobdb.PushNotification
-import io.rebble.libpebblecommon.services.notification.NotificationService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject

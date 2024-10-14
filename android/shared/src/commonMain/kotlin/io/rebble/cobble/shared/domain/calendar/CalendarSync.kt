@@ -1,21 +1,19 @@
 package io.rebble.cobble.shared.domain.calendar
 
 import io.rebble.cobble.shared.Logging
-import io.rebble.cobble.shared.PlatformContext
 import io.rebble.cobble.shared.database.NextSyncAction
 import io.rebble.cobble.shared.database.dao.CalendarDao
 import io.rebble.cobble.shared.database.dao.TimelinePinDao
 import io.rebble.cobble.shared.database.entity.Calendar
-import io.rebble.cobble.shared.database.getDatabase
 import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.cobble.shared.domain.common.SystemAppIDs.calendarWatchappId
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.watchOrNull
 import io.rebble.cobble.shared.domain.timeline.WatchTimelineSyncer
-import io.rebble.libpebblecommon.packets.WatchVersion
-import io.rebble.libpebblecommon.services.blobdb.BlobDBService
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.qualifier.named
@@ -25,7 +23,6 @@ class CalendarSync(
 ): AutoCloseable, KoinComponent {
     private val calendarSyncer: PhoneCalendarSyncer by inject()
     private val connectionState: StateFlow<ConnectionState> by inject(named("connectionState"))
-    private val connectionScope: StateFlow<CoroutineScope> by inject(named("connectionScope"))
     private val timelinePinDao: TimelinePinDao by inject()
     private val calendarDao: CalendarDao by inject()
     private val calendarEnableChangeFlow: MutableSharedFlow<List<Calendar>> = MutableSharedFlow()
@@ -36,7 +33,7 @@ class CalendarSync(
 
     private val watchConnectedListener = connectionState.filterIsInstance<ConnectionState.Connected>().onEach {
         Logging.d("Watch connected, syncing calendar pins")
-        connectionScope.value.launch {
+        it.watch.connectionScope.value!!.launch {
             val res = onWatchConnected(it.watch.metadata.filterNotNull().first().isUnfaithful.get() ?: false, it.watch)
             Logging.d("Calendar sync result: $res")
         }
@@ -83,16 +80,22 @@ class CalendarSync(
         calendarSyncer.clearAllCalendarsFromDb()
         calendarSyncer.syncDeviceCalendarsToDb()
 
-        connectionState.value.watchOrNull?.blobDBService?.let {
-            val watchTimelineSyncer = WatchTimelineSyncer(it)
-            watchTimelineSyncer.clearAllPinsFromWatchAndResync()
+        connectionState.value.watchOrNull?.let {
+            val connectionScope = it.connectionScope.value
+            connectionScope?.async {
+                val watchTimelineSyncer = WatchTimelineSyncer(it.blobDBService)
+                watchTimelineSyncer.clearAllPinsFromWatchAndResync()
+            }?.await()
         }
     }
 
     private suspend fun syncTimelineToWatch(): Boolean {
-        connectionState.value.watchOrNull?.blobDBService?.let {
-            val watchTimelineSyncer = WatchTimelineSyncer(it)
-            return watchTimelineSyncer.syncPinDatabaseWithWatch()
+        connectionState.value.watchOrNull?.let {
+            val connectionScope = it.connectionScope.value
+            return connectionScope?.async {
+                val watchTimelineSyncer = WatchTimelineSyncer(it.blobDBService)
+                return@async watchTimelineSyncer.syncPinDatabaseWithWatch()
+            }?.await() ?: false
         } ?: return false
     }
 

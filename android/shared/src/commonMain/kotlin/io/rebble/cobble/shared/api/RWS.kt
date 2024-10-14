@@ -4,7 +4,10 @@ import io.rebble.cobble.shared.domain.state.CurrentToken
 import io.rebble.cobble.shared.domain.state.CurrentToken.LoggedOut.tokenOrNull
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.qualifier.named
@@ -17,6 +20,11 @@ object RWS: KoinComponent {
     private val _appstoreClient = token.map {
         it.tokenOrNull?.let { t -> AppstoreClient("https://appstore-api.$domainSuffix/api", t) }
     }.stateIn(scope, SharingStarted.Eagerly, null)
+    private val _authClient = token.map {
+        it.tokenOrNull?.let { t -> AuthClient("https://auth.$domainSuffix/api", t) }
+    }.stateIn(scope, SharingStarted.Eagerly, null)
     val appstoreClient: AppstoreClient?
         get() = _appstoreClient.value
+    val authClient: AuthClient?
+        get() = _authClient.value
 }

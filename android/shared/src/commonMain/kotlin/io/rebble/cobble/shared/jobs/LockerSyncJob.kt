@@ -7,21 +7,20 @@ import io.rebble.cobble.shared.api.RWS
 import io.rebble.cobble.shared.database.NextSyncAction
 import io.rebble.cobble.shared.database.dao.LockerDao
 import io.rebble.cobble.shared.database.entity.dataEqualTo
+import io.rebble.cobble.shared.database.entity.getBestPlatformForDevice
+import io.rebble.cobble.shared.database.entity.getSdkVersion
+import io.rebble.cobble.shared.database.entity.getVersion
 import io.rebble.cobble.shared.domain.api.appstore.toEntity
-import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.domain.state.watchOrNull
-import io.rebble.cobble.shared.util.AppCompatibility
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
 import io.rebble.libpebblecommon.packets.blobdb.AppMetadata
 import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
-import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import io.rebble.libpebblecommon.structmapper.SUUID
 import io.rebble.libpebblecommon.structmapper.StructMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -32,7 +31,10 @@ class LockerSyncJob: KoinComponent {
     suspend fun beginSync(): Boolean {
         val locker = withContext(Dispatchers.IO) {
             RWS.appstoreClient?.getLocker()
-        } ?: return false
+        } ?: run {
+            Logging.w("Failed to fetch locker")
+            return false
+        }
         val storedLocker = withContext(Dispatchers.IO) {
             lockerDao.getAllEntries()
         }
@@ -40,7 +42,7 @@ class LockerSyncJob: KoinComponent {
         val changedEntries = locker.filter { new ->
                 val newPlat = new.hardwarePlatforms.map { it.toEntity(new.id) }
             storedLocker.any { old ->
-                old.entry.id == new.id && (old.entry != new.toEntity() || old.platforms.any { oldPlat -> newPlat.none { newPlat -> oldPlat.dataEqualTo(newPlat) } })
+                old.entry.nextSyncAction != NextSyncAction.Ignore && old.entry.id == new.id && (old.entry != new.toEntity() || old.platforms.any { oldPlat -> newPlat.none { newPlat -> oldPlat.dataEqualTo(newPlat) } })
             }
         }
         val newEntries = locker.filter { new -> storedLocker.none { old -> old.entry.id == new.id } }
@@ -49,6 +51,24 @@ class LockerSyncJob: KoinComponent {
         lockerDao.insertOrReplaceAll(newEntries.map { it.toEntity() })
         changedEntries.forEach {
             lockerDao.clearPlatformsFor(it.id)
+        }
+        changedEntries.forEach {
+            val entity = lockerDao.getEntry(it.id) ?: return@forEach
+            val changed = it.toEntity()
+            lockerDao.update(entity.entry.copy(
+                    title = changed.title,
+                    hearts = changed.hearts,
+                    developerName = changed.developerName,
+                    developerId = changed.developerId,
+                    configurable = changed.configurable,
+                    timelineEnabled = changed.timelineEnabled,
+                    removeLink = changed.removeLink,
+                    shareLink = changed.shareLink,
+                    pbwLink = changed.pbwLink,
+                    pbwReleaseId = changed.pbwReleaseId,
+                    pbwIconResourceId = changed.pbwIconResourceId,
+                    nextSyncAction = changed.nextSyncAction,
+            ))
         }
         lockerDao.insertOrReplaceAll(changedEntries.map { it.toEntity() })
         lockerDao.insertOrReplaceAllPlatforms(newEntries.flatMap { new ->
@@ -64,7 +84,7 @@ class LockerSyncJob: KoinComponent {
     }
 
     private suspend fun syncToDevice(): Boolean {
-        val entries = lockerDao.getEntriesForSync()
+        val entries = lockerDao.getEntriesForSync().sortedBy { it.entry.title }
         val connectedWatch = ConnectionStateManager.connectionState.value.watchOrNull
         connectedWatch?.let {
             val connectedWatchType = WatchHardwarePlatform
@@ -74,19 +94,12 @@ class LockerSyncJob: KoinComponent {
                 return withContext(Dispatchers.IO) {
                     entries.forEach { row ->
                         val entry = row.entry
-                        val platformName = AppCompatibility.getBestVariant(
-                                connectedWatchType.watchType,
-                                row.platforms.map { plt -> plt.name }
-                        )?.codename
-                        val platform = row.platforms.firstOrNull { plt -> plt.name == platformName }
+                        val platform = row.getBestPlatformForDevice(connectedWatchType.watchType)
                         val res = platform?.let {
                             when (entry.nextSyncAction) {
                                 NextSyncAction.Upload -> {
-                                    val versionCode = Regex("""\d+\.\d+""").find(entry.version)?.value ?: "0.0"
-                                    val appVersionMajor = versionCode.split(".")[0].toUByte()
-                                    val appVersionMinor = versionCode.split(".")[1].toUByte()
-                                    val sdkVersionMajor = platform.sdkVersion.split(".")[0].toUByte()
-                                    val sdkVersionMinor = platform.sdkVersion.split(".")[1].toUByte()
+                                    val (appVersionMajor, appVersionMinor) = row.getVersion()
+                                    val (sdkVersionMajor, sdkVersionMinor) = platform.getSdkVersion()
                                     val packet = BlobCommand.InsertCommand(
                                             Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
                                             BlobCommand.BlobDatabase.App,

@@ -1,11 +1,8 @@
 package io.rebble.cobble.shared.data
 
-import io.rebble.cobble.shared.domain.calendar.CalendarTimelineActionId
-import io.rebble.libpebblecommon.packets.blobdb.TimelineAction
 import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor

@@ -6,7 +6,6 @@ import dagger.Provides
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.BinaryMessenger
 import io.rebble.cobble.FlutterMainActivity
-import io.rebble.cobble.MainActivity
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import kotlinx.coroutines.CoroutineScope
 

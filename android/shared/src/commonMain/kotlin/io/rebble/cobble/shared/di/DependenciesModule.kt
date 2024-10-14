@@ -6,6 +6,7 @@ import io.ktor.client.plugins.cache.storage.CacheStorage
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import io.rebble.cobble.shared.PlatformContext
+import io.rebble.cobble.shared.errors.GlobalExceptionHandler
 import org.koin.dsl.module
 
 val dependenciesModule = module {
@@ -19,6 +20,8 @@ val dependenciesModule = module {
             }
         }
     }
+
+    single { GlobalExceptionHandler() }
 }
 
 expect fun makePlatformCacheStorage(platformContext: PlatformContext): CacheStorage

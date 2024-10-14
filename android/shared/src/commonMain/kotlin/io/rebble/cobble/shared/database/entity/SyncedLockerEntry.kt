@@ -2,6 +2,9 @@ package io.rebble.cobble.shared.database.entity
 
 import androidx.room.*
 import io.rebble.cobble.shared.database.NextSyncAction
+import io.rebble.cobble.shared.util.AppCompatibility
+import io.rebble.libpebblecommon.metadata.WatchType
+import kotlinx.datetime.Instant
 
 @Entity(
         indices = [
@@ -17,6 +20,7 @@ data class SyncedLockerEntry(
         val type: String,
         val hearts: Int,
         val developerName: String,
+        val developerId: String?,
         val configurable: Boolean,
         val timelineEnabled: Boolean,
         val removeLink: String,
@@ -28,6 +32,7 @@ data class SyncedLockerEntry(
         val nextSyncAction: NextSyncAction,
         @ColumnInfo(defaultValue = "-1")
         val order: Int,
+        val lastOpened: Instant?,
 )
 
 data class SyncedLockerEntryWithPlatforms(
@@ -40,13 +45,28 @@ data class SyncedLockerEntryWithPlatforms(
         val platforms: List<SyncedLockerEntryPlatform>
 )
 
+fun SyncedLockerEntryWithPlatforms.getBestPlatformForDevice(watchType: WatchType): SyncedLockerEntryPlatform? {
+    val platformName = AppCompatibility.getBestVariant(
+            watchType,
+            this.platforms.map { plt -> plt.name }
+    )?.codename
+    return this.platforms.firstOrNull { plt -> plt.name == platformName }
+}
+
+fun SyncedLockerEntryWithPlatforms.getVersion(): Pair<UByte, UByte> {
+    val versionCode = Regex("""\d+\.\d+""").find(entry.version)?.value ?: "0.0"
+    val appVersionMajor = versionCode.split(".")[0].toUByte()
+    val appVersionMinor = versionCode.split(".")[1].toUByte()
+    return Pair(appVersionMajor, appVersionMinor)
+}
+
 @Entity(
         foreignKeys = [
-            androidx.room.ForeignKey(
+            ForeignKey(
                     entity = SyncedLockerEntry::class,
                     parentColumns = ["id"],
                     childColumns = ["lockerEntryId"],
-                    onDelete = androidx.room.ForeignKey.CASCADE
+                    onDelete = ForeignKey.CASCADE
             )
         ],
         indices = [
@@ -64,6 +84,12 @@ data class SyncedLockerEntryPlatform(
         @Embedded
         val images: SyncedLockerEntryPlatformImages,
 )
+
+fun SyncedLockerEntryPlatform.getSdkVersion(): Pair<UByte, UByte> {
+    val sdkVersionMajor = sdkVersion.split(".")[0].toUByte()
+    val sdkVersionMinor = sdkVersion.split(".")[1].toUByte()
+    return Pair(sdkVersionMajor, sdkVersionMinor)
+}
 
 data class SyncedLockerEntryPlatformImages(
         val icon: String?,

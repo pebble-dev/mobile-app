@@ -2,8 +2,8 @@ package io.rebble.cobble.data
 
 import io.rebble.cobble.bluetooth.BluetoothPebbleDevice
 import io.rebble.cobble.bluetooth.EmulatedPebbleDevice
-import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.cobble.pigeons.Pigeons
+import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.libpebblecommon.packets.WatchFirmwareVersion
 import io.rebble.libpebblecommon.packets.WatchVersion
 

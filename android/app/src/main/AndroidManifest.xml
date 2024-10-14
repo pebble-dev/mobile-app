@@ -197,7 +197,7 @@
             android:foregroundServiceType="connectedDevice"
             android:permission="android.permission.FOREGROUND_SERVICE" />
         <service
-            android:name=".notifications.NotificationListener"
+            android:name=".shared.domain.notifications.NotificationListener"
             android:exported="true"
             android:foregroundServiceType="specialUse"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
@@ -262,7 +262,7 @@
         </provider>
 
         <provider
-            android:name=".providers.PebbleKitProvider"
+            android:name=".shared.providers.PebbleKitProvider"
             android:authorities="${pebbleKitProviderAuthority}"
             android:exported="true"
             tools:ignore="ExportedContentProvider" />

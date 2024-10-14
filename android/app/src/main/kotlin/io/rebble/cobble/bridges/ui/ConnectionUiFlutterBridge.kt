@@ -15,16 +15,12 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.IntentSender
 import android.os.Build
-import android.service.notification.NotificationListenerService
 import io.rebble.cobble.BuildConfig
 import io.rebble.cobble.FlutterMainActivity
-import io.rebble.cobble.MainActivity
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bridges.FlutterBridge
-import io.rebble.cobble.notifications.NotificationListener
 import io.rebble.cobble.pigeons.Pigeons
-import io.rebble.cobble.util.coroutines.asFlow
-import io.rebble.cobble.util.hasNotificationAccessPermission
+import io.rebble.cobble.shared.util.coroutines.asFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch

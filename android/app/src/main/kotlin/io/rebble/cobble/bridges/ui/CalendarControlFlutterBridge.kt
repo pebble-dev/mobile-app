@@ -3,8 +3,6 @@ package io.rebble.cobble.bridges.ui
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.pigeons.Pigeons
-import io.rebble.cobble.pigeons.Pigeons.CalendarCallbacks
-import io.rebble.cobble.shared.database.dao.CalendarDao
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.calendar.CalendarSync
 import io.rebble.cobble.shared.domain.state.ConnectionState

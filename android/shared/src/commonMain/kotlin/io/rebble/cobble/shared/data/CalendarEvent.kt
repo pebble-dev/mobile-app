@@ -1,7 +1,6 @@
 package io.rebble.cobble.shared.data
 
 import com.benasher44.uuid.uuid4
-import com.benasher44.uuid.uuidFrom
 import io.rebble.cobble.shared.database.NextSyncAction
 import io.rebble.cobble.shared.database.entity.Calendar
 import io.rebble.cobble.shared.database.entity.TimelinePin
@@ -11,8 +10,6 @@ import io.rebble.cobble.shared.domain.timeline.TimelineIcon
 import io.rebble.libpebblecommon.packets.blobdb.TimelineItem
 import io.rebble.libpebblecommon.util.trimWithEllipsis
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.format.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.time.DurationUnit

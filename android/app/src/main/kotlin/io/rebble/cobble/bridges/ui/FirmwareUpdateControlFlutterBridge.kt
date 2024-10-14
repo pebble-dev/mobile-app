@@ -4,23 +4,19 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.net.toFile
 import io.rebble.cobble.bridges.FlutterBridge
-import io.rebble.cobble.datasources.WatchMetadataStore
-import io.rebble.cobble.shared.middleware.PutBytesController
 import io.rebble.cobble.pigeons.BooleanWrapper
 import io.rebble.cobble.pigeons.Pigeons
-import io.rebble.cobble.util.launchPigeonResult
+import io.rebble.cobble.shared.domain.state.ConnectionStateManager
+import io.rebble.cobble.shared.domain.state.watchOrNull
 import io.rebble.cobble.shared.util.zippedSource
+import io.rebble.cobble.util.launchPigeonResult
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
 import io.rebble.libpebblecommon.metadata.pbz.manifest.PbzManifest
 import io.rebble.libpebblecommon.packets.SystemMessage
 import io.rebble.libpebblecommon.packets.TimeMessage
-import io.rebble.libpebblecommon.services.SystemService
 import io.rebble.libpebblecommon.util.Crc32Calculator
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import okio.buffer
@@ -32,9 +28,6 @@ import javax.inject.Inject
 class FirmwareUpdateControlFlutterBridge @Inject constructor(
     bridgeLifecycleController: BridgeLifecycleController,
     private val coroutineScope: CoroutineScope,
-    private val watchMetadataStore: WatchMetadataStore,
-    private val systemService: SystemService,
-    private val putBytesController: PutBytesController,
     private val context: Context
 ) : FlutterBridge, Pigeons.FirmwareUpdateControl {
     init {
@@ -63,7 +56,7 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
             }
 
             val hardwarePlatformNumber = withTimeoutOrNull(2_000) {
-                watchMetadataStore.lastConnectedWatchMetadata.first { it != null }
+                ConnectionStateManager.connectionState.first { it.watchOrNull?.metadata?.value != null }.watchOrNull?.metadata?.value
             }
                     ?.running
                     ?.hardwarePlatform
@@ -92,7 +85,7 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
                 timezone.id
         )
 
-        systemService.send(updateTimePacket)
+        ConnectionStateManager.connectionState.value.watchOrNull?.systemService?.send(updateTimePacket)
     }
 
     override fun beginFirmwareUpdate(fwUri: Pigeons.StringWrapper, result: Pigeons.Result<Pigeons.BooleanWrapper>) {
@@ -129,7 +122,7 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
             }
 
             val lastConnectedWatch = withTimeoutOrNull(2_000) {
-                watchMetadataStore.lastConnectedWatchMetadata.first { it != null }
+                ConnectionStateManager.connectionState.first { it.watchOrNull?.metadata?.value != null }.watchOrNull?.metadata?.value
             }
                     ?: error("Watch not connected")
 
@@ -148,27 +141,31 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
 
             Timber.i("All checks passed, starting firmware update")
             sendTime()
-            val response = systemService.firmwareUpdateStart(0u, (manifest.firmware.size + (manifest.resources?.size
+            val updatingDevice = ConnectionStateManager.connectionState.value.watchOrNull
+            val connectionScope = updatingDevice?.connectionScope?.value ?: error("Watch not connected")
+            val response = updatingDevice.systemService.firmwareUpdateStart(0u, (manifest.firmware.size + (manifest.resources?.size
                     ?: 0)).toUInt())
             Timber.d("Firmware update start response: $response")
             firmwareUpdateCallbacks.onFirmwareUpdateStarted {}
-            val job = coroutineScope.launch {
+            val job = connectionScope.launch {
                 try {
-                    putBytesController.status.collect {
-                        firmwareUpdateCallbacks.onFirmwareUpdateProgress(it.progress) {}
+                    updatingDevice.putBytesController.status.collect {
+                        withContext(Dispatchers.Main) {
+                            firmwareUpdateCallbacks.onFirmwareUpdateProgress(it.progress) {}
+                        }
                     }
                 } catch (_: CancellationException) {
                 }
             }
             try {
-                putBytesController.startFirmwareInstall(firmwareBin, systemResources, manifest).join()
+                updatingDevice.putBytesController.startFirmwareInstall(firmwareBin, systemResources, manifest).join()
             } finally {
                 job.cancel()
-                if (putBytesController.lastProgress != 1.0) {
-                    systemService.send(SystemMessage.FirmwareUpdateFailed())
-                    error("Firmware update failed - Only reached ${putBytesController.status.value.progress}")
+                if (updatingDevice.putBytesController.lastProgress != 1.0) {
+                    updatingDevice.systemService.send(SystemMessage.FirmwareUpdateFailed())
+                    error("Firmware update failed - Only reached ${updatingDevice.putBytesController.status.value.progress}")
                 } else {
-                    systemService.send(SystemMessage.FirmwareUpdateComplete())
+                    updatingDevice.systemService.send(SystemMessage.FirmwareUpdateComplete())
                     firmwareUpdateCallbacks.onFirmwareUpdateFinished {}
                 }
             }

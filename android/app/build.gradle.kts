@@ -37,6 +37,7 @@ android {
             java.srcDirs("src/main/kotlin")
         }
         getByName("androidTest") {
+            assets.srcDirs("src/androidTest/assets")
             java.srcDirs("src/androidTest/kotlin")
         }
     }
@@ -73,7 +74,7 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro", rootProject.file("shared/androidMain/proguard-rules.pro"))
             signingConfig = signingConfigs.getByName("release")
         }
         getByName("debug") {
@@ -137,7 +138,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-service:$lifecycleVersion")
     implementation("com.jakewharton.timber:timber:$timberVersion")
     implementation("androidx.core:core-ktx:$androidxCoreVersion")
-    implementation("androidx.work:work-runtime-ktx:$workManagerVersion")
+    implementation(libs.androidx.work.runtime.ktx)
     implementation("com.squareup.okio:okio:$okioVersion")
     implementation(libs.androidx.room.runtime)
     implementation(libs.kotlinx.datetime)

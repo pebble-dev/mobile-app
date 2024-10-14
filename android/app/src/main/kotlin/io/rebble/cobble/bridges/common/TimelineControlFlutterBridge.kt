@@ -18,7 +18,6 @@ import io.rebble.libpebblecommon.structmapper.SUUID
 import io.rebble.libpebblecommon.structmapper.StructMapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.koin.core.qualifier.named
 import org.koin.mp.KoinPlatformTools

@@ -1,4 +1,3 @@
-import org.gradle.api.tasks.Delete
 import java.util.Properties
 
 buildscript {
@@ -23,6 +22,7 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.serialization) apply false
     alias(libs.plugins.jetbrains.compose) apply false
+    alias(libs.plugins.jetbrains.kotlinx.atomicfu) apply false
 }
 
 allprojects {

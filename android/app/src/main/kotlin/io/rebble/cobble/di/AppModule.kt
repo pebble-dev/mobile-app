@@ -7,27 +7,20 @@ import android.service.notification.StatusBarNotification
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import io.rebble.cobble.errors.GlobalExceptionHandler
-import io.rebble.cobble.middleware.DeviceLogController
 import io.rebble.cobble.shared.database.AppDatabase
 import io.rebble.cobble.shared.database.dao.CachedPackageInfoDao
 import io.rebble.cobble.shared.database.dao.NotificationChannelDao
 import io.rebble.cobble.shared.database.dao.PersistedNotificationDao
+import io.rebble.cobble.shared.datastore.FlutterPreferences
 import io.rebble.cobble.shared.datastore.KMPPrefs
 import io.rebble.cobble.shared.domain.calendar.CalendarSync
-import io.rebble.cobble.shared.domain.common.PebbleDevice
-import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.CurrentToken
-import io.rebble.cobble.shared.handlers.CalendarActionHandler
+import io.rebble.cobble.shared.errors.GlobalExceptionHandler
 import io.rebble.cobble.shared.jobs.AndroidJobScheduler
-import io.rebble.cobble.shared.middleware.PutBytesController
-import io.rebble.libpebblecommon.services.LogDumpService
-import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.plus
 import org.koin.core.qualifier.named
 import org.koin.mp.KoinPlatformTools
@@ -56,15 +49,12 @@ abstract class AppModule {
             return CalendarSync(CoroutineScope(Dispatchers.Default) + exceptionHandler)
         }
         @Provides
-        @Singleton
-        fun provideCalendarActionHandler(
-                exceptionHandler: CoroutineExceptionHandler
-        ): CalendarActionHandler {
-            return CalendarActionHandler(CoroutineScope(Dispatchers.Default) + exceptionHandler)
-        }
-        @Provides
         fun provideKMPPrefs(context: Context): KMPPrefs {
             return KMPPrefs()
+        }
+        @Provides
+        fun provideGlobalExceptionHandler(): GlobalExceptionHandler {
+            return KoinPlatformTools.defaultContext().get().get()
         }
         @Provides
         fun provideTokenState(): MutableStateFlow<CurrentToken> {
@@ -91,22 +81,14 @@ abstract class AppModule {
 
         @Provides
         @Singleton
-        fun providePutBytesController(): PutBytesController {
-            return KoinPlatformTools.defaultContext().get().get()
-        }
-
-        @Provides
-        @Singleton
         fun provideActiveNotifsState(): MutableStateFlow<Map<UUID, StatusBarNotification>> {
             return KoinPlatformTools.defaultContext().get().get(named("activeNotifsState"))
         }
 
         @Provides
         @Singleton
-        fun provideDeviceLogController(
-                logDumpService: LogDumpService,
-        ): DeviceLogController {
-            return DeviceLogController(logDumpService)
+        fun provideFlutterPreferences(): FlutterPreferences {
+            return KoinPlatformTools.defaultContext().get().get()
         }
     }
 }

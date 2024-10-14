@@ -1,15 +1,12 @@
 package io.rebble.cobble.shared.database
 
 import androidx.room.*
-import androidx.room.migration.Migration
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import io.rebble.cobble.shared.database.dao.*
 import io.rebble.cobble.shared.database.entity.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import org.koin.mp.KoinPlatformTools
 
 @Database(
@@ -22,7 +19,7 @@ import org.koin.mp.KoinPlatformTools
             SyncedLockerEntry::class,
             SyncedLockerEntryPlatform::class
                    ],
-        version = 9,
+        version = 11,
         autoMigrations = [
             AutoMigration(1, 2),
             AutoMigration(2, 3),
@@ -32,6 +29,8 @@ import org.koin.mp.KoinPlatformTools
             AutoMigration(6, 7),
             AutoMigration(7, 8),
             AutoMigration(8, 9),
+            AutoMigration(9, 10),
+            AutoMigration(10, 11)
         ]
 )
 @TypeConverters(Converters::class)

@@ -6,17 +6,21 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.service.notification.NotificationListenerService
 import androidx.core.content.FileProvider
 import io.rebble.cobble.BuildConfig
 import io.rebble.cobble.CobbleApplication
-import io.rebble.cobble.middleware.DeviceLogController
-import io.rebble.cobble.util.hasNotificationAccessPermission
+import io.rebble.cobble.shared.domain.state.ConnectionStateManager
+import io.rebble.cobble.shared.domain.state.watchOrNull
+import io.rebble.cobble.shared.middleware.DeviceLogController
+import io.rebble.cobble.shared.util.hasNotificationAccessPermission
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
 import io.rebble.libpebblecommon.packets.LogDump
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -42,10 +46,9 @@ private fun generateDebugInfo(context: Context, rwsId: String): String {
 
     val inj = (context.applicationContext as CobbleApplication).component
     val connectionLooper = inj.createConnectionLooper()
-    val watchMetadataStore = inj.createWatchMetadataStore()
     val connectionState = connectionLooper.connectionState.value
 
-    val watchMeta = watchMetadataStore.lastConnectedWatchMetadata.value
+    val watchMeta = ConnectionStateManager.connectionState.value.watchOrNull?.metadata?.value
     val watchModel = watchMeta?.running?.hardwarePlatform?.get()?.let {
         WatchHardwarePlatform.fromProtocolNumber(it)
     }
@@ -107,8 +110,9 @@ fun collectAndShareLogs(context: Context, rwsId: String) = GlobalScope.launch(Di
 
     var zipOutputStream: ZipOutputStream? = null
     val debugInfo = generateDebugInfo(context, rwsId)
-    val deviceLogController = (context.applicationContext as CobbleApplication).component.createDeviceLogController()
-    val deviceLogs = getDeviceLogs(deviceLogController)
+    val device = ConnectionStateManager.connectionState.value.watchOrNull
+    val deviceLogController = device?.let {DeviceLogController(it)}
+    val deviceLogs = deviceLogController?.let {getDeviceLogs(it)}
     try {
         zipOutputStream = ZipOutputStream(FileOutputStream(targetFile))
         for (file in logsFolder.listFiles() ?: emptyArray()) {

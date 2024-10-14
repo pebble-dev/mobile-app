@@ -57,13 +57,6 @@ abstract class CommonBridgesModule {
     @Binds
     @IntoSet
     @CommonBridge
-    abstract fun bindAppInstallBridge(
-            appInstallFlutterBridge: AppInstallFlutterBridge
-    ): FlutterBridge
-
-    @Binds
-    @IntoSet
-    @CommonBridge
     abstract fun bindScreenshotBridge(
             screenshotsFlutterBridge: ScreenshotsFlutterBridge
     ): FlutterBridge

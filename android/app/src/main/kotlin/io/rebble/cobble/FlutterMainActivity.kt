@@ -13,11 +13,10 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.ui.REQUEST_CODE_NOTIFICATIONS_POST
-import io.rebble.cobble.datasources.PermissionChangeBus
 import io.rebble.cobble.service.CompanionDeviceService
 import io.rebble.cobble.service.InCallService
-import io.rebble.cobble.shared.database.closeDatabase
-import io.rebble.cobble.util.hasNotificationPostingPermission
+import io.rebble.cobble.shared.domain.PermissionChangeBus
+import io.rebble.cobble.shared.util.hasNotificationPostingPermission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.plus
 import java.net.URI
@@ -128,7 +127,7 @@ class FlutterMainActivity : FlutterActivity() {
     }
 
     override fun onDestroy() {
-        closeDatabase()
+        //closeDatabase()
         super.onDestroy()
     }
 
