@@ -7,7 +7,7 @@ import kotlinx.coroutines.Job
 /**
  * Helper that automatically closes down all pigeon bridges when activity is destroyed
  */
-class BridgeLifecycleController constructor(
+class BridgeLifecycleController(
         private val binaryMessenger: BinaryMessenger,
         coroutineScope: CoroutineScope
 ) {

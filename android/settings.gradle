@@ -13,3 +13,4 @@ plugins.each { name, path ->
     include ":$name"
     project(":$name").projectDir = pluginDirectory
 }
+include ':pebble_bt_transport'

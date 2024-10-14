@@ -158,9 +158,9 @@ class DevConnState {
   DevConnState(this.running, this.connected, this.localIp);
 }
 
-final devConnectionProvider = StateNotifierProvider<DevConnection>((ref) {
+final devConnectionProvider = StateNotifierProvider<DevConnection, DevConnState>((ref) {
   final incomingPacketsStream = ref.read(rawPacketStreamProvider);
-  final appManager = ref.read(appManagerProvider);
+  final appManager = ref.read(appManagerProvider.notifier);
   return DevConnection(incomingPacketsStream, appManager);
 });
 

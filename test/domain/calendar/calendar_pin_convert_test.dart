@@ -10,11 +10,13 @@ import 'package:cobble/domain/timeline/timeline_icon.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 
 final TEST_CALENDAR =
     SelectableCalendar("Test@Calendar", "10", true, 0xFFFFFFFF);
 
 void main() {
+  tz.initializeTimeZones();
   test("Generate pin from basic event", () {
     final event = Event("10",
         eventId: "33",

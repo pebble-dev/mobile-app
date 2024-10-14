@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cobble/domain/db/models/app.dart';
 import 'package:flutter/material.dart';
 import 'package:cobble/domain/apps/app_manager.dart';
@@ -8,8 +9,7 @@ import 'package:cobble/ui/common/components/cobble_divider.dart';
 import 'package:cobble/ui/common/components/cobble_tile.dart';
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/common/components/cobble_sheet.dart';
-import 'package:flutter_svg_provider/flutter_svg_provider.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
 
 class AppsSheet {
@@ -19,13 +19,14 @@ class AppsSheet {
     bool compatible = false,
     required AppManager appManager,
     PebbleWatchLine? lineConnected,
+    String? iconUrl,
   }) {
     CobbleSheet.showModal(
       context: context,
       builder: (context) => Column(
         children: [
           CobbleTile.app(
-            leading: SystemAppIcon(app.uuid),
+            leading: iconUrl != null ? CachedNetworkImageProvider(iconUrl) : SystemAppIcon(app.uuid),
             title: "${app.longName} ${app.version}",
             subtitle: app.company,
           ),
@@ -82,7 +83,10 @@ class AppsSheet {
           CobbleTile.action(
             leading: RebbleIcons.delete_trash,
             title: tr.lockerPage.delete,
-            onTap: () => appManager.deleteApp(app.uuid),
+            onTap: () {
+              appManager.deleteApp(app.uuid);
+              Navigator.pop(context);
+            },
           ),
         ],
       ),

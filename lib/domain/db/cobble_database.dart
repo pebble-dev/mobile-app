@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cobble/domain/apps/default_apps.dart';
 import 'package:cobble/domain/db/dao/active_notification_dao.dart';
 import 'package:cobble/domain/db/dao/app_dao.dart';
+import 'package:cobble/domain/db/dao/locker_cache_dao.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:cobble/domain/db/dao/notification_channel_dao.dart';
 import 'package:path/path.dart';
@@ -74,10 +75,30 @@ Future<void> createAppsTable(Database db) async {
   await populate_system_apps(appDao);
 }
 
+Future<void> createLockerCacheTable(Database db) async {
+  await db.execute("""
+    CREATE TABLE $tableLocker(
+      id TEXT PRIMARY KEY NOT NULL,
+      uuid TEXT NOT NULL,
+      version TEXT NOT NULL,
+      apliteIcon TEXT,
+      basaltIcon TEXT,
+      chalkIcon TEXT,
+      dioriteIcon TEXT,
+      apliteList TEXT,
+      basaltList TEXT,
+      chalkList TEXT,
+      dioriteList TEXT,
+      markedForDeletion INTEGER NOT NULL
+    )
+  """);
+}
+
 void _createDb(Database db) async {
   await createTimelinePinsTable(db);
   await createActiveNotificationsTable(db);
   await createAppsTable(db);
+  await createLockerCacheTable(db);
 }
 
 void _upgradeDb(Database db, int oldVersion, int newVersion) async {
@@ -109,6 +130,9 @@ void _upgradeDb(Database db, int oldVersion, int newVersion) async {
         "appOrder = -1 WHERE "
         "isWatchface = 1");
   }
+  if (oldVersion < 6) {
+    createLockerCacheTable(db);
+  }
 }
 
 final AutoDisposeFutureProvider<Database> databaseProvider =
@@ -117,7 +141,7 @@ final AutoDisposeFutureProvider<Database> databaseProvider =
   final dbPath = join(dbFolder, "cobble.db");
 
   final db = await openDatabase(dbPath,
-      version: 5,
+      version: 6,
       onCreate: (db, name) {
         _createDb(db);
       },

@@ -466,6 +466,71 @@ public final class PebbleKit {
     }
 
     /**
+     * A convenience function to assist in programatically registering a broadcast receiver for the 'DATA_AVAILABLE'
+     * intent.
+     * <p>
+     * To avoid leaking memory, activities registering BroadcastReceivers <em>must</em> unregister them in the
+     * Activity's {@link android.app.Activity#onPause()} method.
+     *
+     * @param context  The context in which to register the BroadcastReceiver.
+     * @param receiver The receiver to be registered.
+     * @return The registered receiver.
+     * @see Constants#INTENT_DL_RECEIVE_DATA
+     */
+    public static BroadcastReceiver registerDataLogReceiver(final Context context,
+                                                            final PebbleDataLogReceiver receiver) {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(INTENT_DL_RECEIVE_DATA);
+        filter.addAction(INTENT_DL_FINISH_SESSION);
+        context.registerReceiver(receiver, filter);
+
+        return receiver;
+    }
+
+    /**
+     * A convenience function to emit an intent to pebble.apk to request the data logs for a particular app. If data
+     * is available, pebble.apk will advertise the data via 'INTENT_DL_RECEIVE_DATA' intents.
+     * <p>
+     * To avoid leaking memory, activities registering BroadcastReceivers <em>must</em> unregister them in the
+     * Activity's {@link android.app.Activity#onPause()} method.
+     *
+     * @param context The context in which to register the BroadcastReceiver.
+     * @param appUuid The app for which to request data logs.
+     * @see Constants#INTENT_DL_RECEIVE_DATA
+     * @see Constants#INTENT_DL_REQUEST_DATA
+     */
+    public static void requestDataLogsForApp(final Context context, final UUID appUuid) {
+        final Intent requestIntent = new Intent(INTENT_DL_REQUEST_DATA);
+        requestIntent.putExtra(APP_UUID, appUuid);
+        context.sendBroadcast(requestIntent);
+    }
+
+    /**
+     * Query the Pebble ContentProvider - utility method for various PebbleKit helper methods
+     * <p>
+     * This attempts first to query the Basalt app provider, then if that is non-existant or disconnected
+     * queries the primary (i.e. original) provider authority
+     */
+    private static Cursor queryProvider(final Context context) {
+        Cursor c = context.getContentResolver().query(Constants.URI_CONTENT_BASALT, null, null, null, null);
+        if (c != null) {
+            if (c.moveToFirst()) {
+                // If Basalt app is connected, talk to that (return the open cursor)
+                if (c.getInt(KIT_STATE_COLUMN_CONNECTED) == 1) {
+                    c.moveToPrevious();
+                    return c;
+                }
+            }
+            // Else close the cursor and try the primary authority
+            c.close();
+        }
+
+        c = context.getContentResolver().query(Constants.URI_CONTENT_PRIMARY, null, null, null, null);
+        // Do nothing with this cursor - the calling method will check it for whatever it is looking for
+        return c;
+    }
+
+    /**
      * A special-purpose BroadcastReceiver that makes it easy to handle 'RECEIVE' intents broadcast from pebble.apk.
      */
     public static abstract class PebbleDataReceiver extends BroadcastReceiver {
@@ -785,46 +850,6 @@ public final class PebbleKit {
         }
     }
 
-    /**
-     * A convenience function to assist in programatically registering a broadcast receiver for the 'DATA_AVAILABLE'
-     * intent.
-     * <p>
-     * To avoid leaking memory, activities registering BroadcastReceivers <em>must</em> unregister them in the
-     * Activity's {@link android.app.Activity#onPause()} method.
-     *
-     * @param context  The context in which to register the BroadcastReceiver.
-     * @param receiver The receiver to be registered.
-     * @return The registered receiver.
-     * @see Constants#INTENT_DL_RECEIVE_DATA
-     */
-    public static BroadcastReceiver registerDataLogReceiver(final Context context,
-                                                            final PebbleDataLogReceiver receiver) {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(INTENT_DL_RECEIVE_DATA);
-        filter.addAction(INTENT_DL_FINISH_SESSION);
-        context.registerReceiver(receiver, filter);
-
-        return receiver;
-    }
-
-    /**
-     * A convenience function to emit an intent to pebble.apk to request the data logs for a particular app. If data
-     * is available, pebble.apk will advertise the data via 'INTENT_DL_RECEIVE_DATA' intents.
-     * <p>
-     * To avoid leaking memory, activities registering BroadcastReceivers <em>must</em> unregister them in the
-     * Activity's {@link android.app.Activity#onPause()} method.
-     *
-     * @param context The context in which to register the BroadcastReceiver.
-     * @param appUuid The app for which to request data logs.
-     * @see Constants#INTENT_DL_RECEIVE_DATA
-     * @see Constants#INTENT_DL_REQUEST_DATA
-     */
-    public static void requestDataLogsForApp(final Context context, final UUID appUuid) {
-        final Intent requestIntent = new Intent(INTENT_DL_REQUEST_DATA);
-        requestIntent.putExtra(APP_UUID, appUuid);
-        context.sendBroadcast(requestIntent);
-    }
-
     public static class FirmwareVersionInfo {
         private final int major;
         private final int minor;
@@ -853,30 +878,5 @@ public final class PebbleKit {
         public final String getTag() {
             return tag;
         }
-    }
-
-    /**
-     * Query the Pebble ContentProvider - utility method for various PebbleKit helper methods
-     * <p>
-     * This attempts first to query the Basalt app provider, then if that is non-existant or disconnected
-     * queries the primary (i.e. original) provider authority
-     */
-    private static Cursor queryProvider(final Context context) {
-        Cursor c = context.getContentResolver().query(Constants.URI_CONTENT_BASALT, null, null, null, null);
-        if (c != null) {
-            if (c.moveToFirst()) {
-                // If Basalt app is connected, talk to that (return the open cursor)
-                if (c.getInt(KIT_STATE_COLUMN_CONNECTED) == 1) {
-                    c.moveToPrevious();
-                    return c;
-                }
-            }
-            // Else close the cursor and try the primary authority
-            c.close();
-        }
-
-        c = context.getContentResolver().query(Constants.URI_CONTENT_PRIMARY, null, null, null, null);
-        // Do nothing with this cursor - the calling method will check it for whatever it is looking for
-        return c;
     }
 }

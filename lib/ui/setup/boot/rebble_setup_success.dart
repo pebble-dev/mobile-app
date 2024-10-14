@@ -1,49 +1,48 @@
+import 'package:cobble/domain/api/auth/auth.dart';
+import 'package:cobble/domain/api/auth/user.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
-import 'package:cobble/infrastructure/datasources/web_services.dart';
 import 'package:cobble/localization/localization.dart';
+import 'package:cobble/ui/common/components/cobble_step.dart';
+import 'package:cobble/ui/common/icons/comp_icon.dart';
+import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/home/home_page.dart';
 import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
+import 'package:cobble/ui/setup/pair_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class RebbleSetupSuccess extends HookWidget implements CobbleScreen {
+class RebbleSetupSuccess extends HookConsumerWidget implements CobbleScreen {
+  const RebbleSetupSuccess({Key? key}) : super(key: key);
+
   @override
-  Widget build(BuildContext context) {
-    final preferences = useProvider(preferencesProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final preferences = ref.watch(preferencesProvider);
+    final userFuture = ref.watch(authUserProvider.future);
+
     return CobbleScaffold.page(
       title: tr.setup.success.title,
-      child: Column(
-        children: <Widget>[
-          Text(
-            tr.setup.success.subtitle,
-            style: Theme.of(context).textTheme.headline3,
-          ),
-          FutureBuilder<WSAuthUser>(
-            future: WSAuthUser.get(),
-            builder:
-                (BuildContext context, AsyncSnapshot<WSAuthUser> snapshot) {
-              if (snapshot.hasData) {
-                return Text(
-                    tr.setup.success.welcome(name: snapshot.data!.name!));
-              } else {
-                return Text(" ");
-              }
-            },
-          )
-        ],
+      child: FutureBuilder(
+        future: userFuture,
+        builder: (context, snap) => CobbleStep(
+            icon: const CompIcon(RebbleIcons.rocket80, RebbleIcons.rocket80_background, size: 80,),
+            title: tr.setup.success.subtitle,
+            child: Text(
+              tr.setup.success.welcome(name: snap.hasData ? (snap.data! as User).name : "..."),
+              textAlign: TextAlign.center,
+            )
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
-            SharedPreferences.getInstance().then((prefs) async {
-              await preferences.data?.value.setHasBeenConnected();
-              await preferences.data?.value.setWasSetupSuccessful(true);
-            }).then((_) {
-              context.pushAndRemoveAllBelow(HomePage());
-            });
+            preferences.when(data: (prefs) async {
+              await prefs.setWasSetupSuccessful(true);
+              context.push(
+                PairPage.fromLanding(),
+              );
+            }, loading: (){}, error: (e, s){});
           },
           label: Text(tr.setup.success.fab)),
     );

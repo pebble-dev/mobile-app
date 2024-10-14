@@ -2,7 +2,6 @@ package io.rebble.cobble.datasources
 
 import android.content.Context
 import android.util.Base64
-import io.rebble.cobble.util.macAddressToString
 import org.json.JSONObject
 import java.io.ByteArrayInputStream
 import java.io.ObjectInputStream

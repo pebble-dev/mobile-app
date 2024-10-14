@@ -6,7 +6,6 @@ import io.rebble.cobble.datasources.IncomingPacketsListener
 import io.rebble.cobble.pigeons.ListWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)

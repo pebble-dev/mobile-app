@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cobble/domain/db/models/app.dart';
 import 'package:cobble/domain/apps/app_manager.dart';
 import 'package:cobble/domain/entities/hardware_platform.dart';
@@ -8,14 +9,15 @@ import 'package:cobble/ui/common/icons/fonts/rebble_icons.dart';
 import 'package:cobble/ui/home/tabs/locker_tab/apps_sheet.dart';
 import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg_provider/flutter_svg_provider.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class AppsItem extends StatelessWidget {
+class AppsItem extends ConsumerWidget {
   final App app;
   final bool compatible;
   final AppManager appManager;
   final PebbleWatchLine? lineConnected;
   final int? index;
+  final String? iconUrl;
 
   const AppsItem({
     required this.app,
@@ -23,11 +25,12 @@ class AppsItem extends StatelessWidget {
     required this.appManager,
     this.lineConnected,
     this.index,
+    this.iconUrl,
     Key? key,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       key: key,
       child: Row(
@@ -48,10 +51,11 @@ class AppsItem extends StatelessWidget {
             SizedBox(width: 57),
           Expanded(
             child: CobbleTile.app(
-              leading: SystemAppIcon(app.uuid),
+              leading: iconUrl != null ? CachedNetworkImageProvider(iconUrl!) : SystemAppIcon(app.uuid),
               title: app.longName,
               subtitle: app.company,
               onTap: () => AppsSheet.showModal(
+                iconUrl: iconUrl,
                 context: context,
                 app: app,
                 compatible: compatible,
@@ -60,8 +64,8 @@ class AppsItem extends StatelessWidget {
               child: CobbleButton(
                 outlined: false,
                 icon: compatible
-                    ? RebbleIcons.settings
-                    : RebbleIcons.menu_vertical,
+                ? RebbleIcons.settings
+                : RebbleIcons.menu_vertical,
                 onPressed: () {},
               ),
             ),

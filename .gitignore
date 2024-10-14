@@ -31,6 +31,7 @@
 /build/
 android/key.properties
 android/key.jks
+android/.kotlin/metadata
 
 # Web related
 lib/generated_plugin_registrant.dart
@@ -46,5 +47,5 @@ app.*.map.json
 
 test/**/failures/
 
-# Flutter sdk from Flutter Version Manager
-/.fvm/flutter_sdk
+# Flutter Version Manager
+/.fvm

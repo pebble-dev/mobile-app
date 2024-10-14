@@ -4,11 +4,8 @@ import android.content.Intent
 import io.flutter.plugin.common.BinaryMessenger
 import io.rebble.cobble.MainActivity
 import io.rebble.cobble.bridges.FlutterBridge
-import io.rebble.cobble.pigeons.BooleanWrapper
 import io.rebble.cobble.pigeons.Pigeons
-import io.rebble.cobble.pigeons.toMapExt
 import io.rebble.cobble.util.launchPigeonResult
-import io.rebble.cobble.util.registerAsyncPigeonCallback
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
@@ -20,16 +17,16 @@ class IntentsFlutterBridge @Inject constructor(
         bridgeLifecycleController: BridgeLifecycleController
 ) : FlutterBridge, Pigeons.IntentControl {
 
-    private val bootTrigger = CompletableDeferred<Boolean>()
+    private val oauthTrigger = CompletableDeferred<Array<String?>>()
     private val intentCallbacks: Pigeons.IntentCallbacks
 
     private var flutterReadyToReceiveIntents = false
     private var waitingIntent: Intent? = null
 
     init {
-        mainActivity.bootIntentCallback = {
-            bootTrigger.complete(it)
-            mainActivity.bootIntentCallback = null
+        mainActivity.oauthIntentCallback = { code, state, error ->
+            oauthTrigger.complete(arrayOf(code, state, error))
+            mainActivity.oauthIntentCallback = null
         }
 
         mainActivity.intentCallback = this::forwardIntentToFlutter
@@ -57,9 +54,24 @@ class IntentsFlutterBridge @Inject constructor(
         flutterReadyToReceiveIntents = false
     }
 
-    override fun waitForBoot(result: Pigeons.Result<Pigeons.BooleanWrapper>?) {
-        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
-            BooleanWrapper(bootTrigger.await())
+    override fun waitForOAuth(result: Pigeons.Result<Pigeons.OAuthResult>) {
+        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
+            val res = oauthTrigger.await()
+            check(res.size == 3)
+            if (res[0] != null && res[1] != null) {
+                Pigeons.OAuthResult.Builder()
+                        .setCode(res[0])
+                        .setState(res[1])
+                        .build()
+            } else if (res[2] != null) {
+                Pigeons.OAuthResult.Builder()
+                        .setError(res[2])
+                        .build()
+            } else {
+                Pigeons.OAuthResult.Builder()
+                        .setError("_invalid_callback_params")
+                        .build()
+            }
         }
     }
 }

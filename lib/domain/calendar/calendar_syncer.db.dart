@@ -33,7 +33,7 @@ class CalendarSyncer {
       return false;
     }
 
-    final allCalendars = allCalendarsResult.data!.value;
+    final allCalendars = allCalendarsResult.value!;
 
     final now = _dateTimeProvider();
     // 1 day is added since we need to get the start of the next day
@@ -139,7 +139,7 @@ class _EventInCalendar {
 
 final AutoDisposeProvider<CalendarSyncer> calendarSyncerProvider =
     Provider.autoDispose<CalendarSyncer>((ref) {
-  final calendarList = ref.watch(calendarListProvider);
+  final calendarList = ref.watch(calendarListProvider.notifier);
   final deviceCalendar = ref.watch(deviceCalendarPluginProvider);
   final dateTimeProvider = ref.watch(currentDateTimeProvider);
   final timelinePinDao = ref.watch(timelinePinDaoProvider);

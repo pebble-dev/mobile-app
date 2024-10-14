@@ -9,6 +9,8 @@ import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.pigeons.BooleanWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.hasBatteryExclusionPermission
+import io.rebble.cobble.util.hasCallsPermission
+import io.rebble.cobble.util.hasContactsPermission
 import io.rebble.cobble.util.hasNotificationAccessPermission
 import javax.inject.Inject
 
@@ -39,6 +41,10 @@ class PermissionCheckFlutterBridge @Inject constructor(
 
     override fun hasBatteryExclusionEnabled(): Pigeons.BooleanWrapper {
         return BooleanWrapper(context.hasBatteryExclusionPermission())
+    }
+
+    override fun hasCallsPermissions(): Pigeons.BooleanWrapper {
+        return BooleanWrapper(context.hasCallsPermission() && context.hasContactsPermission())
     }
 
     private fun checkPermission(vararg permission: String) = BooleanWrapper(

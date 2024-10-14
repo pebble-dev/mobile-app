@@ -11,7 +11,6 @@ import io.rebble.cobble.notifications.NotificationListener
 import io.rebble.cobble.util.hasNotificationAccessPermission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -37,9 +36,9 @@ class ServiceLifecycleControl @Inject constructor(
                         context.stopService(serviceIntent)
                     }
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
-                            shouldServiceBeRunning &&
-                            context.hasNotificationAccessPermission()) {
+                    if (shouldServiceBeRunning &&
+                            context.hasNotificationAccessPermission() && it !is ConnectionState.RecoveryMode) {
+                        Timber.d("Requesting notifications rebind")
                         NotificationListenerService.requestRebind(
                                 NotificationListener.getComponentName(context)
                         )

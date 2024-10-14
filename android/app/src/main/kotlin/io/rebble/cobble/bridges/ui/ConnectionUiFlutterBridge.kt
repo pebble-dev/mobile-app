@@ -15,16 +15,18 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.IntentSender
 import android.os.Build
+import android.service.notification.NotificationListenerService
+import io.rebble.cobble.BuildConfig
 import io.rebble.cobble.MainActivity
 import io.rebble.cobble.bluetooth.ConnectionLooper
 import io.rebble.cobble.bridges.FlutterBridge
-import io.rebble.cobble.pigeons.NumberWrapper
+import io.rebble.cobble.notifications.NotificationListener
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.coroutines.asFlow
-import io.rebble.cobble.util.macAddressToLong
-import io.rebble.cobble.util.macAddressToString
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
+import io.rebble.cobble.util.hasNotificationAccessPermission
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -88,6 +90,11 @@ class ConnectionUiFlutterBridge @Inject constructor(
 
     @TargetApi(Build.VERSION_CODES.O)
     private fun associateWithCompanionDeviceManager(macAddress: String) {
+        if (BuildConfig.DEBUG && !macAddress.contains(":")) {
+            openConnectionToWatch(macAddress)
+            return
+        }
+
         val companionDeviceManager =
                 activity.getSystemService(Context.COMPANION_DEVICE_SERVICE) as CompanionDeviceManager
 
@@ -111,6 +118,7 @@ class ConnectionUiFlutterBridge @Inject constructor(
 
         val associationRequest = AssociationRequest.Builder()
                 .addDeviceFilter(filter)
+                .setDeviceProfile(AssociationRequest.DEVICE_PROFILE_WATCH)
                 .setSingleDevice(true)
                 .build()
 
@@ -149,12 +157,21 @@ class ConnectionUiFlutterBridge @Inject constructor(
                 }
                 deviceToPair.address
             }
+
             is ScanResult -> {
                 deviceToPair.device.address
             }
+
             else -> {
                 throw IllegalStateException("Unknown device type: $deviceToPair")
             }
+        }
+
+        if (activity.context.hasNotificationAccessPermission()) {
+            Timber.d("Requesting rebind of notification listener")
+            NotificationListenerService.requestRebind(
+                    NotificationListener.getComponentName(activity.context)
+            )
         }
 
         openConnectionToWatch(address)

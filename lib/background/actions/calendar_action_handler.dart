@@ -80,7 +80,7 @@ class CalendarActionHandler implements ActionHandler {
     final calendarList =
     await (_calendarList.streamWithExistingValue.firstSuccessOrError() as FutureOr<AsyncValue<List<SelectableCalendar>>>);
 
-    final calendars = calendarList.data?.value;
+    final calendars = calendarList.value;
     if (calendars == null) {
       return TimelineActionResponse(false);
     }
@@ -210,11 +210,11 @@ class CalendarActionHandler implements ActionHandler {
   }
 }
 
-final calendarActionHandlerProvider = Provider((ref) =>
+final calendarActionHandlerProvider = Provider<CalendarActionHandler>((ref) =>
     CalendarActionHandler(
       ref.read(timelinePinDaoProvider),
       ref.read(calendarSyncerProvider),
       ref.read(watchTimelineSyncerProvider),
-      ref.read(calendarListProvider),
+      ref.read(calendarListProvider.notifier),
       ref.read(deviceCalendarPluginProvider),
     ));

@@ -29,6 +29,74 @@ public class PebbleDictionary implements Iterable<PebbleTuple> {
     protected final Map<Integer, PebbleTuple> tuples = new HashMap<Integer, PebbleTuple>();
 
     /**
+     * Deserializes a JSON representation of a PebbleDictionary.
+     *
+     * @param jsonString the JSON representation to be deserialized
+     * @throws JSONException thrown if the specified JSON representation cannot be parsed
+     */
+    public static PebbleDictionary fromJson(String jsonString) throws JSONException {
+        PebbleDictionary d = new PebbleDictionary();
+
+        JSONArray elements = new JSONArray(jsonString);
+        for (int idx = 0; idx < elements.length(); ++idx) {
+            JSONObject o = elements.getJSONObject(idx);
+            final int key = o.getInt(KEY);
+            final PebbleTuple.TupleType type = PebbleTuple.TYPE_NAMES.get(o.getString(TYPE));
+            final PebbleTuple.Width width = PebbleTuple.WIDTH_MAP.get(o.getInt(LENGTH));
+
+            switch (type) {
+                case BYTES:
+                    byte[] bytes = Base64.decode(o.getString(VALUE), Base64.NO_WRAP);
+                    d.addBytes(key, bytes);
+                    break;
+                case STRING:
+                    d.addString(key, o.getString(VALUE));
+                    break;
+                case INT:
+                    if (width == PebbleTuple.Width.BYTE) {
+                        d.addInt8(key, (byte) o.getInt(VALUE));
+                    } else if (width == PebbleTuple.Width.SHORT) {
+                        d.addInt16(key, (short) o.getInt(VALUE));
+                    } else if (width == PebbleTuple.Width.WORD) {
+                        d.addInt32(key, o.getInt(VALUE));
+                    }
+                    break;
+                case UINT:
+                    if (width == PebbleTuple.Width.BYTE) {
+                        d.addUint8(key, (byte) o.getInt(VALUE));
+                    } else if (width == PebbleTuple.Width.SHORT) {
+                        d.addUint16(key, (short) o.getInt(VALUE));
+                    } else if (width == PebbleTuple.Width.WORD) {
+                        d.addUint32(key, o.getInt(VALUE));
+                    }
+                    break;
+            }
+        }
+
+        return d;
+    }
+
+    private static JSONObject serializeTuple(PebbleTuple t) throws JSONException {
+        JSONObject j = new JSONObject();
+        j.put(KEY, t.key);
+        j.put(TYPE, t.type.getName());
+        j.put(LENGTH, t.width.value);
+
+        switch (t.type) {
+            case BYTES:
+                j.put(VALUE, Base64.encodeToString((byte[]) t.value, Base64.NO_WRAP));
+                break;
+            case STRING:
+            case INT:
+            case UINT:
+                j.put(VALUE, t.value);
+                break;
+        }
+
+        return j;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -241,19 +309,6 @@ public class PebbleDictionary implements Iterable<PebbleTuple> {
         tuples.put(tuple.key, tuple);
     }
 
-    public static class PebbleDictTypeException extends RuntimeException {
-        public PebbleDictTypeException(long key, PebbleTuple.TupleType expected, PebbleTuple.TupleType actual) {
-            super(String.format(
-                    "Expected type '%s', but got '%s' for key 0x%08x", expected.name(), actual.name(), key));
-        }
-    }
-
-    public static class TupleOverflowException extends RuntimeException {
-        public TupleOverflowException() {
-            super("Too many tuples in dict");
-        }
-    }
-
     /**
      * Returns a JSON representation of this dictionary.
      *
@@ -272,71 +327,16 @@ public class PebbleDictionary implements Iterable<PebbleTuple> {
         return null;
     }
 
-    /**
-     * Deserializes a JSON representation of a PebbleDictionary.
-     *
-     * @param jsonString the JSON representation to be deserialized
-     * @throws JSONException thrown if the specified JSON representation cannot be parsed
-     */
-    public static PebbleDictionary fromJson(String jsonString) throws JSONException {
-        PebbleDictionary d = new PebbleDictionary();
-
-        JSONArray elements = new JSONArray(jsonString);
-        for (int idx = 0; idx < elements.length(); ++idx) {
-            JSONObject o = elements.getJSONObject(idx);
-            final int key = o.getInt(KEY);
-            final PebbleTuple.TupleType type = PebbleTuple.TYPE_NAMES.get(o.getString(TYPE));
-            final PebbleTuple.Width width = PebbleTuple.WIDTH_MAP.get(o.getInt(LENGTH));
-
-            switch (type) {
-                case BYTES:
-                    byte[] bytes = Base64.decode(o.getString(VALUE), Base64.NO_WRAP);
-                    d.addBytes(key, bytes);
-                    break;
-                case STRING:
-                    d.addString(key, o.getString(VALUE));
-                    break;
-                case INT:
-                    if (width == PebbleTuple.Width.BYTE) {
-                        d.addInt8(key, (byte) o.getInt(VALUE));
-                    } else if (width == PebbleTuple.Width.SHORT) {
-                        d.addInt16(key, (short) o.getInt(VALUE));
-                    } else if (width == PebbleTuple.Width.WORD) {
-                        d.addInt32(key, o.getInt(VALUE));
-                    }
-                    break;
-                case UINT:
-                    if (width == PebbleTuple.Width.BYTE) {
-                        d.addUint8(key, (byte) o.getInt(VALUE));
-                    } else if (width == PebbleTuple.Width.SHORT) {
-                        d.addUint16(key, (short) o.getInt(VALUE));
-                    } else if (width == PebbleTuple.Width.WORD) {
-                        d.addUint32(key, o.getInt(VALUE));
-                    }
-                    break;
-            }
+    public static class PebbleDictTypeException extends RuntimeException {
+        public PebbleDictTypeException(long key, PebbleTuple.TupleType expected, PebbleTuple.TupleType actual) {
+            super(String.format(
+                    "Expected type '%s', but got '%s' for key 0x%08x", expected.name(), actual.name(), key));
         }
-
-        return d;
     }
 
-    private static JSONObject serializeTuple(PebbleTuple t) throws JSONException {
-        JSONObject j = new JSONObject();
-        j.put(KEY, t.key);
-        j.put(TYPE, t.type.getName());
-        j.put(LENGTH, t.width.value);
-
-        switch (t.type) {
-            case BYTES:
-                j.put(VALUE, Base64.encodeToString((byte[]) t.value, Base64.NO_WRAP));
-                break;
-            case STRING:
-            case INT:
-            case UINT:
-                j.put(VALUE, t.value);
-                break;
+    public static class TupleOverflowException extends RuntimeException {
+        public TupleOverflowException() {
+            super("Too many tuples in dict");
         }
-
-        return j;
     }
 }

@@ -32,7 +32,7 @@ class CalendarList extends StateNotifier<AsyncValue<List<SelectableCalendar>>> {
         await _permissionCheck.hasCalendarPermission();
 
     if (hasCalendarPermission.value == false) {
-      return AsyncValue.error([ResultError(0, "No permission")]);
+      return AsyncValue.error([ResultError(0, "No permission")], StackTrace.current);
     }
 
     final preferences = await _preferencesFuture;
@@ -43,7 +43,7 @@ class CalendarList extends StateNotifier<AsyncValue<List<SelectableCalendar>>> {
 
     final calendars = await _deviceCalendarPlugin.retrieveCalendars();
     if (!calendars.isSuccess) {
-      return AsyncValue.error(calendars.errors);
+      return AsyncValue.error(calendars.errors, StackTrace.current);
     } else {
       return AsyncValue.data(calendars.data
           ?.map((c) => SelectableCalendar(
@@ -72,8 +72,8 @@ class CalendarList extends StateNotifier<AsyncValue<List<SelectableCalendar>>> {
   }
 }
 
-final AutoDisposeStateNotifierProvider<CalendarList> calendarListProvider =
-    StateNotifierProvider.autoDispose<CalendarList>((ref) {
+final AutoDisposeStateNotifierProvider<CalendarList, AsyncValue<List<SelectableCalendar>>> calendarListProvider =
+    StateNotifierProvider.autoDispose<CalendarList, AsyncValue<List<SelectableCalendar>>>((ref) {
   // Use auto-dispose to ensure calendar list is reloaded every time user
   // re-opens the screen since we cannot propagate change notifications
   // between background and UI isolate

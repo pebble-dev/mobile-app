@@ -1,13 +1,12 @@
 package io.rebble.cobble.bridges.common
 
-import io.flutter.plugin.common.BinaryMessenger
 import io.rebble.cobble.bridges.FlutterBridge
 import io.rebble.cobble.bridges.ui.BridgeLifecycleController
 import io.rebble.cobble.data.TimelineAction
 import io.rebble.cobble.data.TimelineAttribute
-import io.rebble.cobble.pigeons.*
+import io.rebble.cobble.pigeons.NumberWrapper
+import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.util.launchPigeonResult
-import io.rebble.cobble.util.registerAsyncPigeonCallback
 import io.rebble.libpebblecommon.PacketPriority
 import io.rebble.libpebblecommon.packets.blobdb.BlobCommand
 import io.rebble.libpebblecommon.packets.blobdb.BlobResponse
@@ -16,10 +15,9 @@ import io.rebble.libpebblecommon.services.blobdb.BlobDBService
 import io.rebble.libpebblecommon.structmapper.SUUID
 import io.rebble.libpebblecommon.structmapper.StructMapper
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -36,9 +34,11 @@ class TimelineControlFlutterBridge @Inject constructor(
     @OptIn(ExperimentalStdlibApi::class)
     @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun addTimelinePin(pin: Pigeons.TimelinePinPigeon): BlobResponse.BlobStatus {
-        val parsedAttributes: List<TimelineAttribute> = Json.decodeFromString(pin.attributesJson!!) ?: emptyList()
+        val parsedAttributes: List<TimelineAttribute> = Json.decodeFromString(pin.attributesJson!!)
+                ?: emptyList()
 
-        val parsedActions: List<TimelineAction> = Json.decodeFromString(pin.actionsJson!!) ?: emptyList()
+        val parsedActions: List<TimelineAction> = Json.decodeFromString(pin.actionsJson!!)
+                ?: emptyList()
 
         val flags = buildList {
             if (pin.isVisible!!) {
@@ -100,23 +100,23 @@ class TimelineControlFlutterBridge @Inject constructor(
         )).responseValue
     }
 
-    override fun addPin(pin: Pigeons.TimelinePinPigeon?, result: Pigeons.Result<Pigeons.NumberWrapper>?) {
-        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
-            val res = addTimelinePin(pin!!)
+    override fun addPin(pin: Pigeons.TimelinePinPigeon, result: Pigeons.Result<Pigeons.NumberWrapper>) {
+        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
+            val res = addTimelinePin(pin)
             NumberWrapper(res.value.toInt())
         }
     }
 
-    override fun removePin(pinUuid: Pigeons.StringWrapper?, result: Pigeons.Result<Pigeons.NumberWrapper>?) {
-        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
-            val res = removeTimelinePin(UUID.fromString(pinUuid?.value!!))
+    override fun removePin(pinUuid: Pigeons.StringWrapper, result: Pigeons.Result<Pigeons.NumberWrapper>) {
+        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
+            val res = removeTimelinePin(UUID.fromString(pinUuid.value!!))
             NumberWrapper(res.value.toInt())
         }
 
     }
 
-    override fun removeAllPins(result: Pigeons.Result<Pigeons.NumberWrapper>?) {
-        coroutineScope.launchPigeonResult(result!!, coroutineScope.coroutineContext) {
+    override fun removeAllPins(result: Pigeons.Result<Pigeons.NumberWrapper>) {
+        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
             val res = removeAllPins()
             NumberWrapper(res.value.toInt())
         }

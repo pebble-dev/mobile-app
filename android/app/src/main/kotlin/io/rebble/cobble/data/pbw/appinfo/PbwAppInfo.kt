@@ -2,7 +2,6 @@ package io.rebble.cobble.data.pbw.appinfo
 
 
 import io.rebble.cobble.pigeons.Pigeons
-import io.rebble.cobble.pigeons.toMapExt
 import io.rebble.libpebblecommon.metadata.pbw.appinfo.PbwAppInfo
 
 fun PbwAppInfo.toPigeon(): Pigeons.PbwAppInfo {

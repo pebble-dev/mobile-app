@@ -1,7 +1,7 @@
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:rxdart/rxdart.dart';
 
 class Workaround {
@@ -17,7 +17,7 @@ final neededWorkaroundsProvider = StreamProvider<List<Workaround>>((ref) {
     return Stream<List<Workaround>>.empty();
   }
 
-  final preferences = preferencesData.data!.value;
+  final preferences = preferencesData.value!;
 
   fetchControls() async {
     final workaroundControl = WorkaroundsControl();

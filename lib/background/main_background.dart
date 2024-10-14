@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:cobble/background/modules/apps_background.dart';
 import 'package:cobble/background/modules/notifications_background.dart';
@@ -6,6 +7,7 @@ import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/entities/pebble_device.dart';
 import 'package:cobble/domain/logging.dart';
 import 'package:cobble/infrastructure/backgroundcomm/BackgroundReceiver.dart';
+import 'package:cobble/infrastructure/backgroundcomm/BackgroundRpc.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/localization/localization.dart';
@@ -14,17 +16,13 @@ import 'package:cobble/util/container_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shared_preferences_android/shared_preferences_android.dart';
-import 'package:shared_preferences_ios/shared_preferences_ios.dart';
 
 import 'actions/master_action_handler.dart';
 import 'modules/calendar_background.dart';
 
 void main_background() {
-  // https://github.com/flutter/flutter/issues/98473#issuecomment-1041895729
-  if (Platform.isAndroid) SharedPreferencesAndroid.registerWith();
-  if (Platform.isIOS) SharedPreferencesIOS.registerWith();
   WidgetsFlutterBinding.ensureInitialized();
+  DartPluginRegistrant.ensureInitialized();
 
   BackgroundReceiver();
 }
@@ -40,6 +38,7 @@ class BackgroundReceiver implements TimelineCallbacks {
   late MasterActionHandler masterActionHandler;
 
   late ProviderSubscription<WatchConnectionState> connectionSubscription;
+  late BackgroundRpc foregroundRpc;
 
   BackgroundReceiver() {
     init();
@@ -55,10 +54,9 @@ class BackgroundReceiver implements TimelineCallbacks {
 
     masterActionHandler = container.read(masterActionHandlerProvider);
 
-    connectionSubscription = container.listen(
-      connectionStateProvider.state,
-      mayHaveChanged: (sub) {
-        final currentConnectedWatch = sub.read().currentConnectedWatch;
+    connectionSubscription = container.listen<WatchConnectionState>(
+      connectionStateProvider, (previous, sub) {
+        final currentConnectedWatch = sub.currentConnectedWatch;
         if (isConnectedToWatch()! && currentConnectedWatch!.name!.isNotEmpty) {
           onWatchConnected(currentConnectedWatch);
         }
@@ -69,7 +67,7 @@ class BackgroundReceiver implements TimelineCallbacks {
       final asyncValue =
           await container.readUntilFirstSuccessOrError(preferencesProvider);
 
-      return asyncValue.data!.value;
+      return asyncValue.value!;
     });
 
     TimelineCallbacks.setup(this);
@@ -80,8 +78,9 @@ class BackgroundReceiver implements TimelineCallbacks {
     notificationsBackground.init();
     appsBackground = AppsBackground(this.container);
     appsBackground.init();
+    foregroundRpc = container.read(foregroundRpcProvider);
 
-    startReceivingRpcRequests(onMessageFromUi);
+    startReceivingRpcRequests(RpcDirection.toBackground, onMessageFromUi);
   }
 
   void onWatchConnected(PebbleDevice watch) async {
@@ -105,6 +104,11 @@ class BackgroundReceiver implements TimelineCallbacks {
       await prefs.setLastConnectedWatchAddress("");
     }
 
+    if (watch.runningFirmware.isRecovery == true) {
+      Log.d("Watch is in recovery mode, not syncing");
+      return;
+    }
+
     bool success = true;
 
     success &= await calendarBackground.onWatchConnected(watch, unfaithful);
@@ -117,15 +121,15 @@ class BackgroundReceiver implements TimelineCallbacks {
     }
   }
 
-  Future<Object> onMessageFromUi(Object message) async {
+  Future<Object> onMessageFromUi(String type, Object message) async {
     Object? result;
 
-    result = appsBackground.onMessageFromUi(message);
+    result = appsBackground.onMessageFromUi(type, message);
     if (result != null) {
       return result;
     }
 
-    result = calendarBackground.onMessageFromUi(message);
+    result = calendarBackground.onMessageFromUi(type, message);
     if (result != null) {
       return result;
     }

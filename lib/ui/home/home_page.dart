@@ -1,17 +1,20 @@
+import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/localization/localization.dart';
 import 'package:cobble/ui/home/tabs/locker_tab.dart';
 import 'package:cobble/ui/home/tabs/store_tab.dart';
 import 'package:cobble/ui/home/tabs/test_tab.dart';
 import 'package:cobble/ui/home/tabs/watches_tab.dart';
+import 'package:cobble/ui/router/cobble_navigator.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
 import 'package:cobble/ui/router/cobble_screen.dart';
 import 'package:cobble/ui/router/uri_navigator.dart';
-import 'package:cobble/ui/screens/placeholder_screen.dart';
 import 'package:cobble/ui/screens/settings.dart';
+import 'package:cobble/ui/screens/update_prompt.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../common/icons/fonts/rebble_icons.dart';
 
@@ -25,7 +28,7 @@ class _TabConfig {
       : key = GlobalKey<NavigatorState>();
 }
 
-class HomePage extends HookWidget implements CobbleScreen {
+class HomePage extends HookConsumerWidget implements CobbleScreen {
   final _config = [
     // Only visible when in debug mode
     ... kDebugMode ? [_TabConfig(
@@ -45,11 +48,28 @@ class HomePage extends HookWidget implements CobbleScreen {
     _TabConfig(Settings(), tr.homePage.settings, RebbleIcons.settings),
   ];
 
+  HomePage({super.key});
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     useUriNavigator(context);
 
     final index = useState(0);
+    
+    final connectionState = ref.watch(connectionStateProvider);
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        if (connectionState.currentConnectedWatch?.runningFirmware.isRecovery == true) {
+          context.push(UpdatePrompt(
+            confirmOnSuccess: true,
+            onSuccess: (screenContext) {
+              Navigator.pop(screenContext);
+            },
+          ));
+        }
+      });
+      return null;
+    }, [connectionState]);
 
     return WillPopScope(
       onWillPop: () async {

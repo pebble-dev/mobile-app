@@ -1,4 +1,8 @@
+import 'package:cobble/domain/api/auth/auth.dart';
+import 'package:cobble/domain/api/auth/user.dart';
+import 'package:cobble/domain/api/no_token_exception.dart';
 import 'package:cobble/infrastructure/datasources/preferences.dart';
+import 'package:cobble/infrastructure/datasources/web_services/auth.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart';
 import 'package:cobble/ui/common/components/cobble_button.dart';
 import 'package:cobble/ui/router/cobble_scaffold.dart';
@@ -7,15 +11,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class DebugOptionsPage extends HookWidget implements CobbleScreen {
+class DebugOptionsPage extends HookConsumerWidget implements CobbleScreen {
   @override
-  Widget build(BuildContext context) {
-    final preferences = useProvider(preferencesProvider);
-    final bootUrl = useProvider(bootUrlProvider).data?.value ?? "";
+  Widget build(BuildContext context, WidgetRef ref) {
+    final preferences = ref.watch(preferencesProvider);
+    final bootUrl = ref.watch(bootUrlProvider).value ?? "";
     final shouldOverrideBoot =
-        useProvider(shouldOverrideBootProvider).data?.value ?? false;
+        ref.watch(shouldOverrideBootProvider).value ?? false;
     final overrideBootUrl =
-        useProvider(overrideBootValueProvider).data?.value ?? "";
+        ref.watch(overrideBootValueProvider).value ?? "";
 
     final bootUrlController = useTextEditingController();
     final bootOverrideUrlController = useTextEditingController();
@@ -83,7 +87,26 @@ class DebugOptionsPage extends HookWidget implements CobbleScreen {
             ),
           ),
           CobbleButton(
-            onPressed: () => debug.collectLogs(),
+            onPressed: () async {
+              try {
+                AuthService auth = await ref.read(authServiceProvider.future);
+                User user = await auth.user;
+                String id = user.uid.toString();
+                String bootOverrideCount = user.bootOverrides?.length.toString() ?? "0";
+                String subscribed = user.isSubscribed.toString();
+                String timelineTtl = user.timelineTtl.toString();
+                debug.collectLogs(
+                  """
+User ID: $id
+Boot override count: $bootOverrideCount
+Subscribed: $subscribed
+Timeline TTL: $timelineTtl
+                """,
+                );
+              } on NoTokenException catch (_) {
+                debug.collectLogs("Not logged in");
+              }
+            },
             label: "Share application logs",
           ),
         ],

@@ -1,5 +1,6 @@
 import 'package:cobble/domain/apps/app_lifecycle_manager.dart';
 import 'package:cobble/domain/apps/requests/app_reorder_request.dart';
+import 'package:cobble/domain/apps/requests/force_refresh_request.dart';
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/db/dao/app_dao.dart';
 import 'package:cobble/domain/db/models/app.dart';
@@ -26,20 +27,24 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
   AppsBackground(this.container);
 
   void init() async {
-    watchAppsSyncer = container.listen(watchAppSyncerProvider).read();
-    appDao = container.listen(appDaoProvider).read();
-    appLifecycleManager = container.listen(appLifecycleManagerProvider).read();
-    preferences = container.listen(preferencesProvider.future).read();
+    watchAppsSyncer = container.listen<WatchAppsSyncer>(watchAppSyncerProvider, (previous, value) {}).read();
+    appDao = container.listen<AppDao>(appDaoProvider, (previous, value) {}).read();
+    appLifecycleManager = container.listen<AppLifecycleManager>(appLifecycleManagerProvider, (previous, value) {}).read();
+    preferences = container.listen<Future<Preferences>>(preferencesProvider.future, (previous, value) {}).read();
 
     BackgroundAppInstallCallbacks.setup(this);
 
-    connectionSubscription = container.listen(
-      connectionStateProvider.state,
+    connectionSubscription = container.listen<WatchConnectionState>(
+      connectionStateProvider, (previous, value) {},
     );
   }
 
   Future<bool> onWatchConnected(PebbleDevice watch, bool unfaithful) async {
-    if (unfaithful) {
+    return forceAppSync(unfaithful);
+  }
+
+  Future<bool> forceAppSync(bool clear) async {
+    if (clear) {
       Log.d('Clearing all apps and re-syncing');
       return watchAppsSyncer.clearAllAppsFromWatchAndResync();
     } else {
@@ -48,9 +53,19 @@ class AppsBackground implements BackgroundAppInstallCallbacks {
     }
   }
 
-  Future<Object>? onMessageFromUi(Object message) {
-    if (message is AppReorderRequest) {
-      return beginAppOrderChange(message);
+  Future<Object>? onMessageFromUi(String type, Object message) {
+    if (type == (AppReorderRequest).toString()) {
+      if (container.read(connectionStateProvider).currentConnectedWatch?.runningFirmware.isRecovery == true) {
+        return Future.value(true);
+      }
+      final req = AppReorderRequest.fromJson(message as Map<String, dynamic>);
+      return beginAppOrderChange(req);
+    } else if (type == (ForceRefreshRequest).toString()) {
+      if (container.read(connectionStateProvider).currentConnectedWatch?.runningFirmware.isRecovery == true) {
+        return Future.value(true);
+      }
+      final req = ForceRefreshRequest.fromJson(message as Map<String, dynamic>);
+      return forceAppSync(req.clear);
     }
 
     return null;

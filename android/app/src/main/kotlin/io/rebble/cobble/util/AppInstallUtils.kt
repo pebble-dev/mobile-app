@@ -5,12 +5,13 @@ import androidx.annotation.WorkerThread
 import io.rebble.libpebblecommon.metadata.WatchType
 import io.rebble.libpebblecommon.metadata.pbw.appinfo.PbwAppInfo
 import io.rebble.libpebblecommon.metadata.pbw.manifest.PbwManifest
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import okio.Source
 import okio.buffer
 import java.io.File
+
+private val json = Json { ignoreUnknownKeys = true }
 
 fun getAppPbwFile(context: Context, appUuid: String): File {
     val appsDir = File(context.filesDir, "apps")
@@ -26,7 +27,7 @@ fun getPbwManifest(pbwFile: File, watchType: WatchType): PbwManifest? {
             ?: return null
 
     return manifestFile.use {
-        Json.decodeFromStream(it.inputStream())
+        json.decodeFromStream(it.inputStream())
     }
 }
 
@@ -47,7 +48,7 @@ fun requirePbwAppInfo(pbwFile: File): PbwAppInfo {
             ?: error("appinfo.json missing from app $pbwFile")
 
     return appInfoFile.use {
-        Json.decodeFromStream(it.inputStream())
+        json.decodeFromStream(it.inputStream())
     }
 }
 

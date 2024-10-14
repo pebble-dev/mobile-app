@@ -14,19 +14,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class Calendar extends HookWidget implements CobbleScreen {
+class Calendar extends HookConsumerWidget implements CobbleScreen {
 
   @override
-  Widget build(BuildContext context) {
-    final calendars = useProvider(calendarListProvider.state);
-    final calendarSelector = useProvider(calendarListProvider);
-    final calendarControl = useProvider(calendarControlProvider);
-    final backgroundRpc = useProvider(backgroundRpcProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final calendars = ref.watch(calendarListProvider);
+    final calendarSelector = ref.watch(calendarListProvider.notifier);
+    final calendarControl = ref.watch(calendarControlProvider);
+    final backgroundRpc = ref.watch(backgroundRpcProvider);
 
-    final preferences = useProvider(preferencesProvider);
-    final calendarSyncEnabled = useProvider(calendarSyncEnabledProvider);
-    final permissionControl = useProvider(permissionControlProvider);
-    final permissionCheck = useProvider(permissionCheckProvider);
+    final preferences = ref.watch(preferencesProvider);
+    final calendarSyncEnabled = ref.watch(calendarSyncEnabledProvider);
+    final permissionControl = ref.watch(permissionControlProvider);
+    final permissionCheck = ref.watch(permissionCheckProvider);
 
     useEffect(() {
       Future.microtask(() async {
@@ -46,9 +46,9 @@ class Calendar extends HookWidget implements CobbleScreen {
             title: tr.calendar.toggleTitle,
             subtitle: tr.calendar.toggleSubtitle,
             child: Switch(
-              value: calendarSyncEnabled.data?.value ?? false,
+              value: calendarSyncEnabled.value ?? false,
               onChanged: (value) async {
-                await preferences.data?.value.setCalendarSyncEnabled(value);
+                await preferences.value?.setCalendarSyncEnabled(value);
 
                 if (!value) {
                   backgroundRpc.triggerMethod(DeleteAllCalendarPinsRequest());
@@ -57,11 +57,11 @@ class Calendar extends HookWidget implements CobbleScreen {
             ),
           ),
           CobbleDivider(),
-          if (calendarSyncEnabled.data?.value ?? false) ...[
+          if (calendarSyncEnabled.value ?? false) ...[
             CobbleTile.title(
               title: tr.calendar.choose,
             ),
-            ...calendars.data?.value.map((e) {
+            ...calendars.value?.map((e) {
               return CobbleTile.setting(
                 leading: BoxDecoration(
                   color: Color(e.color).withOpacity(1),

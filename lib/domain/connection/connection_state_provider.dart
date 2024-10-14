@@ -31,16 +31,25 @@ class ConnectionCallbacksStateNotifier
         PebbleDevice.fromPigeon(pigeon.currentConnectedWatch));
   }
 
+  @override
   void dispose() {
     ConnectionCallbacks.setup(null);
     _connectionControl.cancelObservingConnectionChanges();
+    //XXX: Potentially a bug in riverpod
+    if (mounted) {
+      super.dispose();
+    }
   }
 }
 
-final AutoDisposeStateNotifierProvider<ConnectionCallbacksStateNotifier>
+final AutoDisposeStateNotifierProvider<ConnectionCallbacksStateNotifier, WatchConnectionState>
     connectionStateProvider =
-    StateNotifierProvider.autoDispose<ConnectionCallbacksStateNotifier>((ref) {
+    StateNotifierProvider.autoDispose<ConnectionCallbacksStateNotifier, WatchConnectionState>((ref) {
   final notifier = ConnectionCallbacksStateNotifier();
-  ref.onDispose(notifier.dispose);
+  ref.onDispose(() {
+    if (notifier.mounted) {
+      notifier.dispose();
+    }
+  });
   return notifier;
 });

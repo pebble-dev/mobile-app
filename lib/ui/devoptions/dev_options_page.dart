@@ -15,19 +15,19 @@ import 'package:cobble/ui/theme/with_cobble_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 
 enum ActionItem { debugOptions }
 
-class DevOptionsPage extends HookWidget implements CobbleScreen {
+class DevOptionsPage extends HookConsumerWidget implements CobbleScreen {
   @override
-  Widget build(BuildContext context) {
-    final devConControl = useProvider(devConnectionProvider);
-    final devConnState = useProvider(devConnectionProvider.state);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final devConControl = ref.watch(devConnectionProvider.notifier);
+    final devConnState = ref.watch(devConnectionProvider);
 
-    final connectionState = useProvider(connectionStateProvider.state);
+    final connectionState = ref.watch(connectionStateProvider);
     final ConnectionControl connectionControl = ConnectionControl();
-    final pairedStorage = useProvider(pairedStorageProvider);
+    final pairedStorage = ref.watch(pairedStorageProvider.notifier);
 
     void _onDisconnectPressed(bool inSettings) {
       connectionControl.disconnect();
@@ -146,8 +146,7 @@ class DevOptionsPage extends HookWidget implements CobbleScreen {
                                         await ScreenshotsControl().takeWatchScreenshot();
 
                                     if (result.success) {
-                                      Share.shareFiles([result.imagePath!],
-                                          mimeTypes: ["image/png"]);
+                                      Share.shareXFiles([XFile(result.imagePath!, mimeType: "image/png")]);
                                     }
                                   },
                                   icon: RebbleIcons.screenshot_camera,

@@ -23,7 +23,7 @@ fun getCompatibleAppVariants(watchType: WatchType): List<WatchType> {
 fun getBestVariant(watchType: WatchType, availableAppVariants: List<String>): WatchType? {
     val compatibleVariants = getCompatibleAppVariants(watchType)
 
-    return compatibleVariants.firstOrNull() { variant ->
+    return compatibleVariants.firstOrNull { variant ->
         availableAppVariants.contains(variant.codename)
     }
 }

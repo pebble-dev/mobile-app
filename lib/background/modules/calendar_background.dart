@@ -21,14 +21,14 @@ class CalendarBackground implements CalendarCallbacks {
   CalendarBackground(this.container);
 
   void init() async {
-    calendarSyncer = container.listen(calendarSyncerProvider).read();
-    watchTimelineSyncer = container.listen(watchTimelineSyncerProvider).read();
-    timelinePinDao = container.listen(timelinePinDaoProvider).read();
+    calendarSyncer = container.listen<CalendarSyncer>(calendarSyncerProvider, (previous, value) {}).read();
+    watchTimelineSyncer = container.listen<WatchTimelineSyncer>(watchTimelineSyncerProvider, (previous, value) {}).read();
+    timelinePinDao = container.listen<TimelinePinDao>(timelinePinDaoProvider, (previous, value) {}).read();
 
     CalendarCallbacks.setup(this);
 
-    connectionSubscription = container.listen(
-      connectionStateProvider.state,
+    connectionSubscription = container.listen<WatchConnectionState>(
+      connectionStateProvider, (previous, value) {},
     );
   }
 
@@ -42,8 +42,8 @@ class CalendarBackground implements CalendarCallbacks {
     }
   }
 
-  Future<Object>? onMessageFromUi(Object message) {
-    if (message is DeleteAllCalendarPinsRequest) {
+  Future<Object>? onMessageFromUi(String type, Object message) {
+    if (type == (DeleteAllCalendarPinsRequest).toString()) {
       return deleteCalendarPinsFromWatch();
     }
 

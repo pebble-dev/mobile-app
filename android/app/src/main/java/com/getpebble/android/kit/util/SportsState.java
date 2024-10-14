@@ -22,6 +22,42 @@ public class SportsState {
     private SportsState previousState = null;
 
     /**
+     * Creates a formatted time string from a total seconds value, formatted as
+     * "h:mm:ss".
+     * <p>
+     * For example, supplying the value 3930.0f seconds will return @"1:05:30".
+     *
+     * @param totalSeconds The number of seconds from which to create the time string.
+     * @return the formatted time as "h:mm:ss"
+     */
+    private static String convertSecondsToString(int totalSeconds) {
+        if (totalSeconds < 0) {
+            return null;
+        }
+        int hours = totalSeconds / 3600;
+        int remainder = totalSeconds - (hours * 3600);
+        int minutes = remainder / 60;
+        int seconds = remainder - (minutes * 60);
+        if (hours > 0) {
+            return String.format("%2d:%02d:%02d", hours, minutes, seconds);
+        } else {
+            return String.format("%02d:%02d", minutes, seconds);
+        }
+    }
+
+    /**
+     * Creates a formatted decimal string with one decimal number.
+     * <p>
+     * For example, supplying the value 13.42f will return @"13.4".
+     *
+     * @param distance The decimal number to format as a string.
+     * @return the formatted decimal number
+     */
+    private static String convertDistanceToString(float distance) {
+        return String.format("%.1f", distance);
+    }
+
+    /**
      * The current time in seconds.
      *
      * @return the current activity duration in seconds
@@ -274,41 +310,5 @@ public class SportsState {
         }
 
         PebbleKit.sendDataToPebble(context, Constants.SPORTS_UUID, message);
-    }
-
-    /**
-     * Creates a formatted time string from a total seconds value, formatted as
-     * "h:mm:ss".
-     * <p>
-     * For example, supplying the value 3930.0f seconds will return @"1:05:30".
-     *
-     * @param totalSeconds The number of seconds from which to create the time string.
-     * @return the formatted time as "h:mm:ss"
-     */
-    private static String convertSecondsToString(int totalSeconds) {
-        if (totalSeconds < 0) {
-            return null;
-        }
-        int hours = totalSeconds / 3600;
-        int remainder = totalSeconds - (hours * 3600);
-        int minutes = remainder / 60;
-        int seconds = remainder - (minutes * 60);
-        if (hours > 0) {
-            return String.format("%2d:%02d:%02d", hours, minutes, seconds);
-        } else {
-            return String.format("%02d:%02d", minutes, seconds);
-        }
-    }
-
-    /**
-     * Creates a formatted decimal string with one decimal number.
-     * <p>
-     * For example, supplying the value 13.42f will return @"13.4".
-     *
-     * @param distance The decimal number to format as a string.
-     * @return the formatted decimal number
-     */
-    private static String convertDistanceToString(float distance) {
-        return String.format("%.1f", distance);
     }
 }

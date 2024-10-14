@@ -1,6 +1,6 @@
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
 import 'package:cobble/infrastructure/pigeons/pigeons.g.dart' as pigeon;
-import 'package:hooks_riverpod/all.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Stores state of current scan operation. Devices can be empty array but
 /// will never be null.
@@ -32,15 +32,23 @@ class ScanCallbacks extends StateNotifier<ScanState>
   }
 
   @override
-  void onScanUpdate(pigeon.ListWrapper arg) {
-    final devices = (arg.value!.cast<Map>())
-        .map((element) => PebbleScanDevice.fromMap(element))
+  void onScanUpdate(List<pigeon.PebbleScanDevicePigeon?> arg) {
+    final devices = arg
+        .map((element) => PebbleScanDevice(
+              element!.name,
+              element.address,
+              element.version,
+              element.serialNumber,
+              element.color,
+              element.runningPRF,
+              element.firstUse,
+        ))
         .toList();
     state = ScanState(state.scanning, devices);
   }
 }
 
-final scanProvider = StateNotifierProvider<ScanCallbacks>((ref) {
+final scanProvider = StateNotifierProvider<ScanCallbacks, ScanState>((ref) {
   final notifier = ScanCallbacks();
   pigeon.ScanCallbacks.setup(notifier);
   ref.onDispose(() {

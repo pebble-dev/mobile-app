@@ -11,14 +11,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class Notifications extends HookWidget implements CobbleScreen {
+class Notifications extends HookConsumerWidget implements CobbleScreen {
   @override
-  Widget build(BuildContext context) {
-    final preferences = useProvider(preferencesProvider);
-    final notifcationsEnabled = useProvider(notificationToggleProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final preferences = ref.watch(preferencesProvider);
+    final notifcationsEnabled = ref.watch(notificationToggleProvider);
     final phoneNotificationsMuteEnabled =
-        useProvider(phoneNotificationsMuteProvider);
-    final phoneCallsMuteEnabled = useProvider(phoneCallsMuteProvider);
+        ref.watch(phoneNotificationsMuteProvider);
+    final phoneCallsMuteEnabled = ref.watch(phoneCallsMuteProvider);
 
     return CobbleScaffold.tab(
       title: tr.notifications.title,
@@ -28,9 +28,9 @@ class Notifications extends HookWidget implements CobbleScreen {
             leading: RebbleIcons.notification,
             title: tr.notifications.enabled,
             child: Switch(
-              value: notifcationsEnabled.data?.value ?? true,
+              value: notifcationsEnabled.value ?? true,
               onChanged: (bool value) async {
-                await preferences.data?.value.setNotificationsEnabled(value);
+                await preferences.value?.setNotificationsEnabled(value);
               },
             ),
           ),
@@ -55,9 +55,9 @@ class Notifications extends HookWidget implements CobbleScreen {
             leading: CobbleTile.reservedIconSpace,
             title: tr.notifications.silence.notifications,
             child: Switch(
-              value: phoneNotificationsMuteEnabled.data?.value ?? false,
+              value: phoneNotificationsMuteEnabled.value ?? false,
               onChanged: (bool value) async {
-                await preferences.data?.value.setPhoneNotificationMute(value);
+                await preferences.value?.setPhoneNotificationMute(value);
               },
             ),
           ),
@@ -65,9 +65,9 @@ class Notifications extends HookWidget implements CobbleScreen {
             leading: CobbleTile.reservedIconSpace,
             title: tr.notifications.silence.calls,
             child: Switch(
-              value: phoneCallsMuteEnabled.data?.value ?? false,
+              value: phoneCallsMuteEnabled.value ?? false,
               onChanged: (bool value) async {
-                await preferences.data?.value.setPhoneCallsMute(value);
+                await preferences.value?.setPhoneCallsMute(value);
               },
             ),
           ),

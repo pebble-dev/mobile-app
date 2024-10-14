@@ -18,4 +18,4 @@ fun ListWrapper(value: List<*>) = Pigeons.ListWrapper().also {
 
 // Provide public proxy to some package-only methods
 
-fun Pigeons.PebbleScanDevicePigeon.toMapExt() = toMap()
+//fun Pigeons.PebbleScanDevicePigeon.toMapExt() = toMap()

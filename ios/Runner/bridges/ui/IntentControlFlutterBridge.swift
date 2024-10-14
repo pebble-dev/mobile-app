@@ -38,8 +38,12 @@ class IntentControlFlutterBridge: NSObject, IntentControl {
         flutterReadyForIntents = false
     }
     
-    func waitForBoot(completion: @escaping (BooleanWrapper?, FlutterError?) -> Void) {
-        //TODO: wait for boot
+    func waitForOAuth(completion: @escaping (OAuthResult?, FlutterError?) -> Void) {
+        OAuthEvent.next().done { res in
+            completion(OAuthResult.make(withCode: res.code, state: res.state, error: res.error), nil)
+        }.catch { e in
+            completion(nil, FlutterError(code: "ERROR", message: e.localizedDescription, details: nil))
+        }
     }
     
 }

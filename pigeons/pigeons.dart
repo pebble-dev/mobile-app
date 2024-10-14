@@ -52,10 +52,12 @@ class PebbleScanDevicePigeon {
 }
 
 class WatchConnectionStatePigeon {
-  bool? isConnected;
-  bool? isConnecting;
+  bool isConnected;
+  bool isConnecting;
   String? currentWatchAddress;
   PebbleDevicePigeon? currentConnectedWatch;
+  WatchConnectionStatePigeon(this.isConnected, this.isConnecting,
+      this.currentWatchAddress, this.currentConnectedWatch);
 }
 
 class TimelinePinPigeon {
@@ -140,8 +142,9 @@ class WatchResource {
 class InstallData {
   String uri;
   PbwAppInfo appInfo;
+  bool stayOffloaded;
 
-  InstallData(this.uri, this.appInfo);
+  InstallData(this.uri, this.appInfo, this.stayOffloaded);
 }
 
 class AppInstallStatus {
@@ -171,6 +174,13 @@ class AppLogEntry {
       this.filename, this.message);
 }
 
+class OAuthResult {
+  String? code;
+  String? state;
+  String? error;
+  OAuthResult(this.code, this.state, this.error);
+}
+
 class NotifChannelPigeon {
   String? packageId;
   String? channelId;
@@ -182,7 +192,7 @@ class NotifChannelPigeon {
 @FlutterApi()
 abstract class ScanCallbacks {
   /// pebbles = list of PebbleScanDevicePigeon
-  void onScanUpdate(ListWrapper pebbles);
+  void onScanUpdate(List<PebbleScanDevicePigeon> pebbles);
 
   void onScanStarted();
 
@@ -253,6 +263,15 @@ abstract class AppLogCallbacks {
   void onLogReceived(AppLogEntry entry);
 }
 
+@FlutterApi()
+abstract class FirmwareUpdateCallbacks {
+  void onFirmwareUpdateStarted();
+
+  void onFirmwareUpdateProgress(double progress);
+
+  void onFirmwareUpdateFinished();
+}
+
 @HostApi()
 abstract class NotificationUtils {
   @async
@@ -313,12 +332,12 @@ abstract class IntentControl {
   void notifyFlutterNotReadyForIntents();
 
   @async
-  BooleanWrapper waitForBoot();
+  OAuthResult waitForOAuth();
 }
 
 @HostApi()
 abstract class DebugControl {
-  void collectLogs();
+  void collectLogs(String rwsId);
 }
 
 @HostApi()
@@ -353,6 +372,8 @@ abstract class PermissionCheck {
   BooleanWrapper hasNotificationAccess();
 
   BooleanWrapper hasBatteryExclusionEnabled();
+
+  BooleanWrapper hasCallsPermissions();
 }
 
 @HostApi()
@@ -378,6 +399,10 @@ abstract class PermissionControl {
   /// This can only be performed when at least one watch is paired
   @async
   void requestBatteryExclusion();
+
+  /// This can only be performed when at least one watch is paired
+  @async
+  void requestCallsPermissions();
 
   @async
   NumberWrapper requestBluetoothPermissions();
@@ -473,6 +498,14 @@ abstract class AppLogControl {
   void startSendingLogs();
 
   void stopSendingLogs();
+}
+
+@HostApi()
+abstract class FirmwareUpdateControl {
+  @async
+  BooleanWrapper checkFirmwareCompatible(StringWrapper fwUri);
+  @async
+  BooleanWrapper beginFirmwareUpdate(StringWrapper fwUri);
 }
 
 /// This class will keep all classes that appear in lists from being deleted

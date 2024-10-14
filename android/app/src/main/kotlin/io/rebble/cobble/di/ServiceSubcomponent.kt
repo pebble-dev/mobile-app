@@ -4,6 +4,7 @@ import dagger.BindsInstance
 import dagger.Subcomponent
 import io.rebble.cobble.handlers.CobbleHandler
 import io.rebble.cobble.service.WatchService
+import javax.inject.Named
 import javax.inject.Provider
 
 @Subcomponent(
@@ -12,7 +13,11 @@ import javax.inject.Provider
         ]
 )
 interface ServiceSubcomponent {
-    fun getMessageHandlersProvider(): Provider<Set<CobbleHandler>>
+    @Named("negotiation")
+    fun getNegotiationMessageHandlersProvider(): Provider<Set<CobbleHandler>>
+
+    @Named("normal")
+    fun getNormalMessageHandlersProvider(): Provider<Set<CobbleHandler>>
 
     @Subcomponent.Factory
     interface Factory {
