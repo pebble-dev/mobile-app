@@ -40,13 +40,13 @@ class LockerSyncJob: KoinComponent {
         }
 
         val changedEntries = locker.filter { new ->
-                val newPlat = new.hardwarePlatforms.map { it.toEntity(new.id) }
+            val newPlat = new.hardwarePlatforms.map { it.toEntity(new.id) }
             storedLocker.any { old ->
-                old.entry.nextSyncAction != NextSyncAction.Ignore && old.entry.id == new.id && (old.entry != new.toEntity() || old.platforms.any { oldPlat -> newPlat.none { newPlat -> oldPlat.dataEqualTo(newPlat) } })
+                old.entry.nextSyncAction != NextSyncAction.Ignore && old.entry.id == new.id && old.entry.version != new.version
             }
         }
         val newEntries = locker.filter { new -> storedLocker.none { old -> old.entry.id == new.id } }
-        val removedEntries = storedLocker.filter { old -> locker.none { nw -> nw.id == old.entry.id } }
+        val removedEntries = storedLocker.filter { old -> locker.none { nw -> nw.id == old.entry.id } && !old.entry.local }
 
         lockerDao.insertOrReplaceAll(newEntries.map { it.toEntity() })
         changedEntries.forEach {
@@ -83,7 +83,7 @@ class LockerSyncJob: KoinComponent {
         return syncToDevice()
     }
 
-    private suspend fun syncToDevice(): Boolean {
+    suspend fun syncToDevice(): Boolean {
         val entries = lockerDao.getEntriesForSync().sortedBy { it.entry.title }
         val connectedWatch = ConnectionStateManager.connectionState.value.watchOrNull
         connectedWatch?.let {

@@ -33,6 +33,8 @@ data class SyncedLockerEntry(
         @ColumnInfo(defaultValue = "-1")
         val order: Int,
         val lastOpened: Instant?,
+        @ColumnInfo(defaultValue = "0")
+        val local: Boolean = false
 )
 
 data class SyncedLockerEntryWithPlatforms(
