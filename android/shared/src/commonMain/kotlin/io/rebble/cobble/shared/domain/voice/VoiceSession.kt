@@ -26,7 +26,8 @@ sealed class AudioStreamFrame {
 class VoiceSession(
         val appUuid: Uuid?,
         val sessionId: Int,
-        val encoderInfo: SpeexEncoderInfo
+        val encoderInfo: SpeexEncoderInfo,
+        val recognizer: DictationService
 ) {
     val audioStreamFrames = MutableSharedFlow<AudioStreamFrame>(extraBufferCapacity = 16)
     override fun toString(): String {
