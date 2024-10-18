@@ -32,7 +32,7 @@ class AudioStreamHandler(
                         return
                     }
                     if (pebbleDevice.activeVoiceSession.value?.sessionId != message.sessionId.get().toInt()) {
-                        Logging.e("Received audio stream data transfer for different session ID")
+                        Logging.e("Received audio stream data transfer for different session ID (expected ${pebbleDevice.activeVoiceSession.value?.sessionId}, got ${message.sessionId.get()})")
                         pebbleDevice.audioStreamService.send(AudioStream.StopTransfer(message.sessionId.get()))
                         return
                     }

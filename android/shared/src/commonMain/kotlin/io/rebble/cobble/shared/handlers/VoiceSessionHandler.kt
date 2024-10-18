@@ -8,10 +8,7 @@ import io.rebble.cobble.shared.domain.voice.SpeexEncoderInfo
 import io.rebble.cobble.shared.domain.voice.VoiceSession
 import io.rebble.libpebblecommon.packets.*
 import io.rebble.libpebblecommon.util.DataBuffer
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -26,6 +23,25 @@ class VoiceSessionHandler(
                 pebbleDevice.activeVoiceSession.value = null
             }
         }
+    }
+
+    private fun makeTranscription(sentences: List<List<io.rebble.cobble.shared.domain.voice.Word>>): VoiceAttribute {
+        val data = VoiceAttribute.Transcription(
+                sentences = sentences.map { sentence ->
+                    Sentence(
+                            words = sentence.map { word ->
+                                Word(
+                                        word.confidence,
+                                        word.text
+                                )
+                            }
+                    )
+                }
+        )
+        return VoiceAttribute(
+                id = VoiceAttributeType.Transcription.value,
+                content = data
+        )
     }
 
     private suspend fun listenForVoiceSessions() {
@@ -56,11 +72,15 @@ class VoiceSessionHandler(
                         Logging.d("Received voice session: $voiceSession")
 
                         var sentReady = false
-                        dictationService.handleSpeechStream(voiceSession.audioStreamFrames)
+                        dictationService.handleSpeechStream(voiceSession.encoderInfo, voiceSession.audioStreamFrames)
                                 .takeWhile { it !is DictationServiceResponse.Complete }
+                                .onEach {
+                                    Logging.v("DictationServiceResponse: $it")
+                                }
                                 .collect {
                                     when (it) {
                                         is DictationServiceResponse.Ready -> {
+                                            pebbleDevice.activeVoiceSession.value = voiceSession
                                             pebbleDevice.voiceService.send(SessionSetupResult(
                                                     sessionType = SessionType.Dictation,
                                                     result = Result.Success
@@ -82,26 +102,17 @@ class VoiceSessionHandler(
                                             }
                                         }
                                         is DictationServiceResponse.Transcription -> {
-                                            pebbleDevice.voiceService.send(DictationResult(
+                                            val a = DictationResult(
                                                     voiceSession.sessionId.toUShort(),
                                                     Result.Success,
-                                                    buildList {
-                                                        val attr = VoiceAttribute()
-                                                        val data = VoiceAttribute.Transcription(
-                                                                words = it.words.map { word ->
-                                                                    Word(
-                                                                            word.confidence,
-                                                                            word.text
-                                                                    )
-                                                                }
-                                                        )
-                                                    }
-                                            ))
+                                                    listOf(
+                                                            makeTranscription(it.sentences)
+                                                    )
+                                            )
+                                            pebbleDevice.voiceService.send(a)
                                         }
                                     }
                                 }
-
-                        pebbleDevice.activeVoiceSession.value = voiceSession
                     }
                 }
 
