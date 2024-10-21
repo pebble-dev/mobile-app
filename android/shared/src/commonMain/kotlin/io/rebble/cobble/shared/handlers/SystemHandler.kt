@@ -147,12 +147,15 @@ class SystemHandler(
                 4u,
                 2u,
                 ProtocolCapsFlag.makeFlags(
-                        listOf(
-                                ProtocolCapsFlag.Supports8kAppMessage,
-                                ProtocolCapsFlag.SupportsExtendedMusicProtocol,
-                                ProtocolCapsFlag.SupportsTwoWayDismissal,
-                                ProtocolCapsFlag.SupportsAppRunStateProtocol
-                        )
+                        buildList {
+                            add(ProtocolCapsFlag.Supports8kAppMessage)
+                            add(ProtocolCapsFlag.SupportsExtendedMusicProtocol)
+                            add(ProtocolCapsFlag.SupportsTwoWayDismissal)
+                            add(ProtocolCapsFlag.SupportsAppRunStateProtocol)
+                            if (platformContext.osType == PhoneAppVersion.OSType.Android) {
+                                add(ProtocolCapsFlag.SupportsAppDictation)
+                            }
+                        }
                 )
         )
     }
