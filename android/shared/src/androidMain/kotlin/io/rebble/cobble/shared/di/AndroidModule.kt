@@ -53,6 +53,7 @@ val androidModule = module {
                 AppMessageHandler(pebbleDevice),
                 VoiceSessionHandler(pebbleDevice),
                 AudioStreamHandler(pebbleDevice),
+                AppLogHandler(pebbleDevice)
         )
     }
 

@@ -18,6 +18,8 @@ import io.rebble.libpebblecommon.util.DataBuffer
 import okio.buffer
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import kotlin.random.Random
+import kotlin.random.nextUInt
 
 class PbwApp(uri: String): KoinComponent {
     private val platformContext: PlatformContext by inject()
@@ -35,7 +37,7 @@ class PbwApp(uri: String): KoinComponent {
         val exists = lockerDao.getEntryByUuid(info.uuid)
         lockerDao.insertOrReplace(
                 SyncedLockerEntry(
-                        id = exists?.entry?.id ?: "",
+                        id = exists?.entry?.id ?: "local-${Random.nextUInt()}",
                         uuid = info.uuid,
                         version = info.versionLabel,
                         title = info.shortName,
@@ -66,12 +68,11 @@ class PbwApp(uri: String): KoinComponent {
         val platforms = WatchType.entries.mapNotNull {
             val manifest = getPbwManifest(file, it)
             if (manifest != null) {
-                val header = PbwBinHeader().apply {
-                    fromBytes(DataBuffer(requirePbwBinaryBlob(file, it, "pebble-app.bin")
-                            .buffer()
-                            .readByteArray((PbwBinHeader.SIZE+1).toLong()).asUByteArray()
-                    ))
-                }
+                val header = PbwBinHeader.parseFileHeader(
+                        requirePbwBinaryBlob(file, it, "pebble-app.bin")
+                                .buffer()
+                                .readByteArray((PbwBinHeader.SIZE).toLong()).asUByteArray()
+                )
 
                 SyncedLockerEntryPlatform(
                         platformEntryId = 0,
