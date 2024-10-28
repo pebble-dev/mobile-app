@@ -1,0 +1,3 @@
+[submodule "android/speex_codec/src/main/cpp/speex"]
+	path = android/speex_codec/src/main/cpp/speex
+	url = git@github.com:xiph/speex.git

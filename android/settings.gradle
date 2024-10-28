@@ -24,3 +24,4 @@ plugins.each { name, path ->
 include ':pebble_bt_transport'
 include ':shared'
 include ':pebblekit_android'
+include ':speex_codec'

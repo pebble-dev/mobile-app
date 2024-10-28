@@ -80,6 +80,7 @@ kotlin {
             implementation(libs.timber)
             implementation(libs.rrule)
             implementation(project(":pebblekit_android"))
+            implementation(project(":speex_codec"))
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
