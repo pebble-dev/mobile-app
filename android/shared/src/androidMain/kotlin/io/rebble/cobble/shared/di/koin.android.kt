@@ -14,7 +14,6 @@ fun initKoin(context: Context) {
             dataStoreModule,
             androidModule,
             libpebbleModule,
-            voiceModule,
             dependenciesModule
         )
     }

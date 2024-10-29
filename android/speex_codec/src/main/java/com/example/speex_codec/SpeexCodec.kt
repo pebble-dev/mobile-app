@@ -12,8 +12,8 @@ class SpeexCodec(private val sampleRate: Long, private val bitRate: Int): AutoCl
      * @param decodedFrame The buffer to store the decoded frame in.
      *
      */
-    fun decodeFrame(encodedFrame: ByteArray, decodedFrame: ByteArray): SpeexDecodeResult {
-        return SpeexDecodeResult.fromInt(decode(encodedFrame, decodedFrame))
+    fun decodeFrame(encodedFrame: ByteArray, decodedFrame: ByteArray, hasHeaderByte: Boolean = true): SpeexDecodeResult {
+        return SpeexDecodeResult.fromInt(decode(encodedFrame, decodedFrame, hasHeaderByte))
     }
 
     override fun close() {
@@ -21,7 +21,7 @@ class SpeexCodec(private val sampleRate: Long, private val bitRate: Int): AutoCl
         destroyDecState(speexDecState)
     }
 
-    private external fun decode(encodedFrame: ByteArray, decodedFrame: ByteArray): Int
+    private external fun decode(encodedFrame: ByteArray, decodedFrame: ByteArray, hasHeaderByte: Boolean): Int
     private external fun initSpeexBits(): Long
     private external fun initDecState(sampleRate: Long, bitRate: Int): Long
     private external fun destroySpeexBits(speexBits: Long)

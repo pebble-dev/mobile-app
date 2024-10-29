@@ -81,10 +81,14 @@ class VoiceSessionHandler(
                                     when (it) {
                                         is DictationServiceResponse.Ready -> {
                                             pebbleDevice.activeVoiceSession.value = voiceSession
-                                            pebbleDevice.voiceService.send(SessionSetupResult(
+                                            val result = SessionSetupResult(
                                                     sessionType = SessionType.Dictation,
                                                     result = Result.Success
-                                            ))
+                                            )
+                                            if (appInitiated) {
+                                                result.flags.set(1u)
+                                            }
+                                            pebbleDevice.voiceService.send(result)
                                             sentReady = true
                                         }
                                         is DictationServiceResponse.Error -> {
@@ -102,14 +106,22 @@ class VoiceSessionHandler(
                                             }
                                         }
                                         is DictationServiceResponse.Transcription -> {
-                                            val a = DictationResult(
+                                            val resp = DictationResult(
                                                     voiceSession.sessionId.toUShort(),
                                                     Result.Success,
-                                                    listOf(
-                                                            makeTranscription(it.sentences)
-                                                    )
+                                                    buildList {
+                                                        add(makeTranscription(it.sentences))
+                                                        if (appInitiated && voiceSession.appUuid != null) {
+                                                            add(VoiceAttribute.AppUuid().apply {
+                                                                uuid.set(voiceSession.appUuid)
+                                                            })
+                                                        }
+                                                    }
                                             )
-                                            pebbleDevice.voiceService.send(a)
+                                            if (appInitiated) {
+                                                resp.flags.set(1u)
+                                            }
+                                            pebbleDevice.voiceService.send(resp)
                                         }
                                     }
                                 }
