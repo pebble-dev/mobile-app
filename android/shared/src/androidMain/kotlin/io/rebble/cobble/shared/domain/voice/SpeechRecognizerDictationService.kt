@@ -19,11 +19,8 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.io.InputStream
-import java.io.PipedInputStream
-import java.io.PipedOutputStream
 import java.nio.ByteBuffer
-import kotlin.math.roundToInt
+
 
 @RequiresApi(VERSION_CODES.TIRAMISU)
 class SpeechRecognizerDictationService: DictationService, KoinComponent {
@@ -36,7 +33,7 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
         class Results(val results: List<Pair<Float, String>>): SpeechRecognizerStatus()
     }
 
-    private fun beginSpeechRecognition(speechRecognizer: SpeechRecognizer, intent: Intent) = callbackFlow<SpeechRecognizerStatus> {
+    private fun beginSpeechRecognition(speechRecognizer: SpeechRecognizer, intent: Intent) = callbackFlow {
         speechRecognizer.setRecognitionListener(object : RecognitionListener {
             private var lastPartials = emptyList<Pair<Float, String>>()
             override fun onReadyForSpeech(params: Bundle?) {
@@ -48,7 +45,7 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
             }
 
             override fun onRmsChanged(rmsdB: Float) {
-
+                //Logging.d("RMS: $rmsdB")
             }
 
             override fun onBufferReceived(buffer: ByteArray?) {
@@ -107,10 +104,11 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
             return@flow
         }
         val decoder = SpeexCodec(speexEncoderInfo.sampleRate, speexEncoderInfo.bitRate)
-        val decodedBuf = ByteArray(speexEncoderInfo.frameSize * Short.SIZE_BYTES)
+        val decodeBufLength = Short.SIZE_BYTES * speexEncoderInfo.frameSize
+        val decodedBuf = ByteBuffer.allocateDirect(decodeBufLength)
         val recognizerPipes = ParcelFileDescriptor.createSocketPair()
         val recognizerReadPipe = recognizerPipes[0]
-        val recognizerWritePipe = ParcelFileDescriptor.AutoCloseOutputStream(recognizerPipes[1]).buffered(320 * Short.SIZE_BYTES)
+        val recognizerWritePipe = ParcelFileDescriptor.AutoCloseOutputStream(recognizerPipes[1])
         val recognizerIntent = buildRecognizerIntent(recognizerReadPipe, AudioFormat.ENCODING_PCM_16BIT, speexEncoderInfo.sampleRate.toInt())
         //val recognizerIntent = buildRecognizerIntent()
         val speechRecognizer = withContext(Dispatchers.Main) {
@@ -131,14 +129,13 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
             emit(DictationServiceResponse.Error(Result.FailServiceUnavailable))
             return@flow
         }
+
         val audioJob = scope.launch {
             audioStreamFrames
                     .onEach { frame ->
                         if (frame is AudioStreamFrame.Stop) {
                             //Logging.v("Stop")
-                            withContext(Dispatchers.IO) {
-                                recognizerWritePipe.flush()
-                            }
+                            recognizerWritePipe.flush()
                             withContext(Dispatchers.Main) {
                                 //XXX: Shouldn't use main here for I/O call but recognizer has weird thread behaviour
                                 recognizerWritePipe.close()
@@ -146,15 +143,15 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
                                 speechRecognizer.stopListening()
                             }
                         } else if (frame is AudioStreamFrame.AudioData) {
+                            decodedBuf.rewind()
                             val result = decoder.decodeFrame(frame.data, decodedBuf, hasHeaderByte = true)
                             if (result != SpeexDecodeResult.Success) {
                                 Logging.e("Speex decode error: ${result.name}")
                             }
-                            withContext(Dispatchers.IO) {
-                                recognizerWritePipe.write(decodedBuf)
-                            }
+                            recognizerWritePipe.write(decodedBuf.array(), decodedBuf.arrayOffset(), decodeBufLength)
                         }
                     }
+                    .flowOn(Dispatchers.IO)
                     .catch {
                         Logging.e("Error in audio stream: $it")
                     }

@@ -2,29 +2,21 @@
 #include <string>
 #include <speex/speex.h>
 
+static jfieldID speexDecBits;
+static jfieldID speexDecState;
+
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_example_speex_1codec_SpeexCodec_decode(JNIEnv *env, jobject thiz,
-                                                jbyteArray encoded_frame, jbyteArray out_frame, jboolean has_header_byte) {
+                                                jbyteArray encoded_frame, jobject out_frame, jboolean has_header_byte) {
     jbyte *encoded_frame_data = env->GetByteArrayElements(encoded_frame, nullptr);
     jsize encoded_frame_length = env->GetArrayLength(encoded_frame);
-    if (has_header_byte) {
-        // Skip the first byte
-        encoded_frame_data++;
-        encoded_frame_length--;
-    }
-    auto *bits = reinterpret_cast<SpeexBits *>(env->GetLongField(thiz, env->GetFieldID(env->GetObjectClass(thiz), "speexDecBits", "J")));
-    auto *dec_state = reinterpret_cast<void *>(env->GetLongField(thiz, env->GetFieldID(env->GetObjectClass(thiz), "speexDecState", "J")));
-    jshort pcm_frame[320];
-    speex_bits_read_from(bits, reinterpret_cast<char *>(encoded_frame_data), encoded_frame_length);
-    int result = speex_decode_int(dec_state, bits, pcm_frame);
-    if (result == 0) {
-        env->SetByteArrayRegion(out_frame, 0, sizeof(pcm_frame), reinterpret_cast<jbyte *>(pcm_frame));
-    }
-    if (has_header_byte) {
-        // Restore the first byte, so that the encoded_frame_data pointer points to the original address
-        encoded_frame_data--;
-    }
+    auto *out_frame_data = reinterpret_cast<spx_int16_t *>(env->GetDirectBufferAddress(out_frame));
+    auto *bits = reinterpret_cast<SpeexBits *>(env->GetLongField(thiz, speexDecBits));
+    auto *dec_state = reinterpret_cast<void *>(env->GetLongField(thiz, speexDecState));
+    int offset = has_header_byte ? 1 : 0;
+    speex_bits_read_from(bits, reinterpret_cast<char *>(encoded_frame_data)+offset, encoded_frame_length-offset);
+    int result = speex_decode_int(dec_state, bits, out_frame_data);
     env->ReleaseByteArrayElements(encoded_frame, encoded_frame_data, 0);
     return result;
 }
@@ -56,4 +48,11 @@ Java_com_example_speex_1codec_SpeexCodec_destroyDecState(JNIEnv *env, jobject th
                                                          jlong dec_state) {
     auto *state = reinterpret_cast<void *>(dec_state);
     speex_decoder_destroy(state);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_speex_1codec_SpeexCodec_initNative(JNIEnv *env, jobject thiz) {
+    jclass clazz = env->GetObjectClass(thiz);
+    speexDecBits = env->GetFieldID(clazz, "speexDecBits", "J");
+    speexDecState = env->GetFieldID(clazz, "speexDecState", "J");
 }

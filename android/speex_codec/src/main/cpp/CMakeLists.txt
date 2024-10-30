@@ -59,6 +59,11 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         speex/libspeex/gain_table_lbr.c
 )
 
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
+        "$<$<CONFIG:RELEASE>:-O3>"
+        "$<$<CONFIG:DEBUG>:-O3>"
+)
+
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
         # List paths to include headers from
         include
@@ -66,7 +71,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
 )
 
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
-        FLOATING_POINT
+        FIXED_POINT
         "EXPORT=/* */"
 )
 

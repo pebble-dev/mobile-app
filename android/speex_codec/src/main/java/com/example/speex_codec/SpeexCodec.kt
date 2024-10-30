@@ -1,8 +1,12 @@
 package com.example.speex_codec
 
 import android.media.MediaCodec
+import java.nio.ByteBuffer
 
 class SpeexCodec(private val sampleRate: Long, private val bitRate: Int): AutoCloseable {
+    init {
+        initNative()
+    }
     private val speexDecBits: Long = initSpeexBits()
     private val speexDecState: Long = initDecState(sampleRate, bitRate)
 
@@ -12,7 +16,7 @@ class SpeexCodec(private val sampleRate: Long, private val bitRate: Int): AutoCl
      * @param decodedFrame The buffer to store the decoded frame in.
      *
      */
-    fun decodeFrame(encodedFrame: ByteArray, decodedFrame: ByteArray, hasHeaderByte: Boolean = true): SpeexDecodeResult {
+    fun decodeFrame(encodedFrame: ByteArray, decodedFrame: ByteBuffer, hasHeaderByte: Boolean = true): SpeexDecodeResult {
         return SpeexDecodeResult.fromInt(decode(encodedFrame, decodedFrame, hasHeaderByte))
     }
 
@@ -21,7 +25,8 @@ class SpeexCodec(private val sampleRate: Long, private val bitRate: Int): AutoCl
         destroyDecState(speexDecState)
     }
 
-    private external fun decode(encodedFrame: ByteArray, decodedFrame: ByteArray, hasHeaderByte: Boolean): Int
+    private external fun initNative()
+    private external fun decode(encodedFrame: ByteArray, decodedFrame: ByteBuffer, hasHeaderByte: Boolean): Int
     private external fun initSpeexBits(): Long
     private external fun initDecState(sampleRate: Long, bitRate: Int): Long
     private external fun destroySpeexBits(speexBits: Long)
