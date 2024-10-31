@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.*
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.nio.ByteBuffer
+import java.nio.ShortBuffer
 
 
 @RequiresApi(VERSION_CODES.TIRAMISU)
@@ -28,7 +29,7 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
     private val scope = CoroutineScope(Dispatchers.IO)
 
     sealed class SpeechRecognizerStatus {
-        object Ready: SpeechRecognizerStatus()
+        data object Ready: SpeechRecognizerStatus()
         class Error(val error: Int): SpeechRecognizerStatus()
         class Results(val results: List<Pair<Float, String>>): SpeechRecognizerStatus()
     }
@@ -143,11 +144,11 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
                                 speechRecognizer.stopListening()
                             }
                         } else if (frame is AudioStreamFrame.AudioData) {
-                            decodedBuf.rewind()
                             val result = decoder.decodeFrame(frame.data, decodedBuf, hasHeaderByte = true)
                             if (result != SpeexDecodeResult.Success) {
                                 Logging.e("Speex decode error: ${result.name}")
                             }
+                            decodedBuf.rewind()
                             recognizerWritePipe.write(decodedBuf.array(), decodedBuf.arrayOffset(), decodeBufLength)
                         }
                     }
@@ -173,6 +174,10 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
                     }
                     is SpeechRecognizerStatus.Results -> {
                         Logging.d("Speech recognition results: ${status.results}")
+                        if (status.results.firstOrNull()?.second?.isBlank() != false) {
+                            emit(DictationServiceResponse.Transcription(emptyList()))
+                            return@collect
+                        }
                         emit(DictationServiceResponse.Transcription(
                                 listOf(
                                         buildList {

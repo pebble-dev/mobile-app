@@ -92,18 +92,28 @@ class VoiceSessionHandler(
                                             sentReady = true
                                         }
                                         is DictationServiceResponse.Error -> {
-                                            if (sentReady) {
-                                                pebbleDevice.voiceService.send(DictationResult(
+                                            val result = if (sentReady) {
+                                                DictationResult(
                                                         voiceSession.sessionId.toUShort(),
                                                         it.result,
-                                                        emptyList()
-                                                ))
+                                                        buildList {
+                                                            if (appInitiated && voiceSession.appUuid != null) {
+                                                                add(VoiceAttribute.AppUuid().apply {
+                                                                    uuid.set(voiceSession.appUuid)
+                                                                })
+                                                            }
+                                                        }
+                                                )
                                             } else {
-                                                pebbleDevice.voiceService.send(SessionSetupResult(
+                                                SessionSetupResult(
                                                         sessionType = SessionType.Dictation,
                                                         result = it.result
-                                                ))
+                                                )
                                             }
+                                            if (appInitiated) {
+                                                result.flags.set(1u)
+                                            }
+                                            pebbleDevice.voiceService.send(result)
                                         }
                                         is DictationServiceResponse.Transcription -> {
                                             val resp = DictationResult(
