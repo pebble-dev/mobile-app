@@ -122,9 +122,12 @@ class VoiceSessionHandler(
                                                     buildList {
                                                         add(makeTranscription(it.sentences))
                                                         if (appInitiated && voiceSession.appUuid != null) {
-                                                            add(VoiceAttribute.AppUuid().apply {
-                                                                uuid.set(voiceSession.appUuid)
-                                                            })
+                                                            add(VoiceAttribute(
+                                                                    id = VoiceAttributeType.AppUuid.value,
+                                                                    content = VoiceAttribute.AppUuid().apply {
+                                                                        uuid.set(voiceSession.appUuid)
+                                                                    }
+                                                            ))
                                                         }
                                                     }
                                             )
