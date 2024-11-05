@@ -17,7 +17,7 @@ import io.rebble.cobble.shared.domain.notifications.NotificationProcessor
 import io.rebble.cobble.shared.domain.notifications.PlatformNotificationActionExecutor
 import io.rebble.cobble.shared.domain.voice.DictationService
 import io.rebble.cobble.shared.domain.voice.NullDictationService
-import io.rebble.cobble.shared.domain.voice.SpeechRecognizerDictationService
+import io.rebble.cobble.shared.domain.voice.speechrecognizer.SpeechRecognizerDictationService
 import io.rebble.cobble.shared.handlers.*
 import io.rebble.cobble.shared.handlers.music.MusicHandler
 import io.rebble.cobble.shared.jobs.AndroidJobScheduler
@@ -28,7 +28,6 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
-import org.koin.dsl.binds
 import org.koin.dsl.module
 
 val androidModule = module {

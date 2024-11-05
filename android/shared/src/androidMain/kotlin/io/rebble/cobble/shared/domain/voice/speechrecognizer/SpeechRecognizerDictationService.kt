@@ -1,9 +1,8 @@
-package io.rebble.cobble.shared.domain.voice
+package io.rebble.cobble.shared.domain.voice.speechrecognizer
 
 import android.content.Context
 import android.content.Intent
 import android.media.AudioFormat
-import android.os.Build
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
@@ -13,6 +12,7 @@ import androidx.compose.ui.text.intl.Locale
 import com.example.speex_codec.SpeexCodec
 import com.example.speex_codec.SpeexDecodeResult
 import io.rebble.cobble.shared.Logging
+import io.rebble.cobble.shared.domain.voice.*
 import io.rebble.libpebblecommon.packets.Result
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
@@ -27,6 +27,20 @@ import java.nio.ShortBuffer
 class SpeechRecognizerDictationService: DictationService, KoinComponent {
     private val context: Context by inject()
     private val scope = CoroutineScope(Dispatchers.IO)
+
+    companion object {
+        private const val GAIN = 1.5f
+        fun buildRecognizerIntent(audioSource: ParcelFileDescriptor? = null, encoding: Int = AudioFormat.ENCODING_PCM_16BIT, sampleRate: Int = 16000) = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            audioSource?.let {
+                putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE, audioSource)
+                putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE_ENCODING, encoding)
+                putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE_CHANNEL_COUNT, 1)
+                putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE_SAMPLING_RATE, sampleRate)
+            }
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.current.toLanguageTag())
+        }
+    }
 
     sealed class SpeechRecognizerStatus {
         data object Ready: SpeechRecognizerStatus()
@@ -86,19 +100,6 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
         }
     }.flowOn(Dispatchers.Main)
 
-    companion object {
-        fun buildRecognizerIntent(audioSource: ParcelFileDescriptor? = null, encoding: Int = AudioFormat.ENCODING_PCM_16BIT, sampleRate: Int = 16000) = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            audioSource?.let {
-                putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE, audioSource)
-                putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE_ENCODING, encoding)
-                putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE_CHANNEL_COUNT, 1)
-                putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE_SAMPLING_RATE, sampleRate)
-            }
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.current.toLanguageTag())
-        }
-    }
-
     override fun handleSpeechStream(speexEncoderInfo: SpeexEncoderInfo, audioStreamFrames: Flow<AudioStreamFrame>) = flow {
         if (!SpeechRecognizer.isRecognitionAvailable(context)) {
             emit(DictationServiceResponse.Error(Result.FailServiceUnavailable))
@@ -113,11 +114,7 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
         val recognizerIntent = buildRecognizerIntent(recognizerReadPipe, AudioFormat.ENCODING_PCM_16BIT, speexEncoderInfo.sampleRate.toInt())
         //val recognizerIntent = buildRecognizerIntent()
         val speechRecognizer = withContext(Dispatchers.Main) {
-            if (Build.VERSION.SDK_INT > VERSION_CODES.R && SpeechRecognizer.isOnDeviceRecognitionAvailable(context)) {
-                SpeechRecognizer.createOnDeviceSpeechRecognizer(context)
-            } else {
-                SpeechRecognizer.createSpeechRecognizer(context)
-            }
+            SpeechRecognizer.createOnDeviceSpeechRecognizer(context)
         }
         val supported = withContext(Dispatchers.Main) {
             speechRecognizer.checkRecognitionSupport(recognizerIntent)
@@ -167,7 +164,7 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
                         when (status.error) {
                             SpeechRecognizer.ERROR_NETWORK -> emit(DictationServiceResponse.Error(Result.FailServiceUnavailable))
                             SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> emit(DictationServiceResponse.Error(Result.FailTimeout))
-                            SpeechRecognizer.ERROR_NO_MATCH -> emit(DictationServiceResponse.Error(Result.FailRecognizerError))
+                            SpeechRecognizer.ERROR_NO_MATCH -> emit(DictationServiceResponse.Transcription(emptyList()))
                             else -> emit(DictationServiceResponse.Error(Result.FailServiceUnavailable))
                         }
                         emit(DictationServiceResponse.Complete)
@@ -196,37 +193,5 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
             speechRecognizer.destroy()
         }
 
-    }
-}
-
-enum class RecognitionSupportResult {
-    SupportedOnDevice,
-    SupportedOnline,
-    NeedsDownload,
-    Unsupported
-}
-
-@RequiresApi(VERSION_CODES.TIRAMISU)
-suspend fun SpeechRecognizer.checkRecognitionSupport(intent: Intent): RecognitionSupportResult {
-    val result = CompletableDeferred<RecognitionSupport>()
-    val language = Locale.current.toLanguageTag()
-    val executor = Dispatchers.IO.asExecutor()
-    checkRecognitionSupport(intent, executor, object : RecognitionSupportCallback {
-        override fun onSupportResult(recognitionSupport: RecognitionSupport) {
-            //TODO: override locale depending on user choice
-            result.complete(recognitionSupport)
-        }
-
-        override fun onError(error: Int) {
-            result.completeExceptionally(Exception("Error checking recognition support: $error"))
-        }
-    })
-    val support = result.await()
-    return when {
-        support.supportedOnDeviceLanguages.contains(language) -> RecognitionSupportResult.SupportedOnDevice
-        support.installedOnDeviceLanguages.contains(language) -> RecognitionSupportResult.SupportedOnDevice
-        support.onlineLanguages.contains(language) -> RecognitionSupportResult.SupportedOnline
-        support.pendingOnDeviceLanguages.contains(language) -> RecognitionSupportResult.NeedsDownload
-        else -> RecognitionSupportResult.Unsupported
     }
 }
