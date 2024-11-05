@@ -160,11 +160,12 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
                 when (status) {
                     is SpeechRecognizerStatus.Ready -> emit(DictationServiceResponse.Ready)
                     is SpeechRecognizerStatus.Error -> {
-                        Logging.e("Speech recognition error: ${status.error}")
-                        when (status.error) {
-                            SpeechRecognizer.ERROR_NETWORK -> emit(DictationServiceResponse.Error(Result.FailServiceUnavailable))
-                            SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> emit(DictationServiceResponse.Error(Result.FailTimeout))
-                            SpeechRecognizer.ERROR_NO_MATCH -> emit(DictationServiceResponse.Transcription(emptyList()))
+                        val error = SpeechRecognizerError.fromInt(status.error)
+                        Logging.e("Speech recognition error: ${error.name}")
+                        when (error) {
+                            SpeechRecognizerError.ERROR_NETWORK -> emit(DictationServiceResponse.Error(Result.FailServiceUnavailable))
+                            SpeechRecognizerError.ERROR_SPEECH_TIMEOUT -> emit(DictationServiceResponse.Error(Result.FailTimeout))
+                            SpeechRecognizerError.ERROR_NO_MATCH -> emit(DictationServiceResponse.Transcription(emptyList()))
                             else -> emit(DictationServiceResponse.Error(Result.FailServiceUnavailable))
                         }
                         emit(DictationServiceResponse.Complete)
