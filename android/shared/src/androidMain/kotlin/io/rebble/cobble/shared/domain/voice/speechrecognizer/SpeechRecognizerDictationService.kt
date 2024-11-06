@@ -3,6 +3,7 @@ package io.rebble.cobble.shared.domain.voice.speechrecognizer
 import android.content.Context
 import android.content.Intent
 import android.media.AudioFormat
+import android.media.AudioTrack
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
@@ -20,16 +21,29 @@ import kotlinx.coroutines.flow.*
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.nio.ShortBuffer
+import kotlin.math.pow
+import kotlin.math.sqrt
+import kotlin.time.Duration.Companion.milliseconds
 
 
 @RequiresApi(VERSION_CODES.TIRAMISU)
 class SpeechRecognizerDictationService: DictationService, KoinComponent {
     private val context: Context by inject()
     private val scope = CoroutineScope(Dispatchers.IO)
+    private val audioTrack = AudioTrack.Builder()
+            .setAudioFormat(AudioFormat.Builder()
+                    .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                    .setSampleRate(16000)
+                    .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+                    .build())
+            .setBufferSizeInBytes(16000)
+            .setTransferMode(AudioTrack.MODE_STREAM)
+            .build()
 
     companion object {
-        private const val GAIN = 1.5f
+        private val AUDIO_LATENCY = 600.milliseconds
         fun buildRecognizerIntent(audioSource: ParcelFileDescriptor? = null, encoding: Int = AudioFormat.ENCODING_PCM_16BIT, sampleRate: Int = 16000) = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
             audioSource?.let {
@@ -95,8 +109,7 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
         })
         speechRecognizer.startListening(intent)
         awaitClose {
-            Logging.d("Closing speech recognition listener")
-            speechRecognizer.cancel()
+
         }
     }.flowOn(Dispatchers.Main)
 
@@ -105,9 +118,10 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
             emit(DictationServiceResponse.Error(Result.FailServiceUnavailable))
             return@flow
         }
-        val decoder = SpeexCodec(speexEncoderInfo.sampleRate, speexEncoderInfo.bitRate)
+        val decoder = SpeexCodec(speexEncoderInfo.sampleRate, speexEncoderInfo.bitRate, speexEncoderInfo.frameSize, setOf(SpeexCodec.Preprocessor.DENOISE, SpeexCodec.Preprocessor.AGC))
         val decodeBufLength = Short.SIZE_BYTES * speexEncoderInfo.frameSize
         val decodedBuf = ByteBuffer.allocateDirect(decodeBufLength)
+        decodedBuf.order(ByteOrder.nativeOrder())
         val recognizerPipes = ParcelFileDescriptor.createSocketPair()
         val recognizerReadPipe = recognizerPipes[0]
         val recognizerWritePipe = ParcelFileDescriptor.AutoCloseOutputStream(recognizerPipes[1])
@@ -127,17 +141,22 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
             emit(DictationServiceResponse.Error(Result.FailServiceUnavailable))
             return@flow
         }
+        audioTrack.play()
 
         val audioJob = scope.launch {
             audioStreamFrames
                     .onEach { frame ->
                         if (frame is AudioStreamFrame.Stop) {
                             //Logging.v("Stop")
+                            withContext(Dispatchers.IO) {
+                                // Pad with extra frame of silence
+                                recognizerWritePipe.write(ByteArray(speexEncoderInfo.frameSize * Short.SIZE_BYTES))
+                            }
                             recognizerWritePipe.flush()
+                            delay(AUDIO_LATENCY)
                             withContext(Dispatchers.Main) {
                                 //XXX: Shouldn't use main here for I/O call but recognizer has weird thread behaviour
                                 recognizerWritePipe.close()
-                                recognizerReadPipe.close()
                                 speechRecognizer.stopListening()
                             }
                         } else if (frame is AudioStreamFrame.AudioData) {
@@ -146,7 +165,10 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
                                 Logging.e("Speex decode error: ${result.name}")
                             }
                             decodedBuf.rewind()
-                            recognizerWritePipe.write(decodedBuf.array(), decodedBuf.arrayOffset(), decodeBufLength)
+                            withContext(Dispatchers.IO) {
+                                audioTrack.write(decodedBuf.array(), decodedBuf.arrayOffset(), decodeBufLength)
+                                recognizerWritePipe.write(decodedBuf.array(), decodedBuf.arrayOffset(), decodeBufLength)
+                            }
                         }
                     }
                     .flowOn(Dispatchers.IO)
@@ -190,8 +212,10 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
                 }
             }
         } finally {
+            audioTrack.stop()
             audioJob.cancel()
             speechRecognizer.destroy()
+            decoder.close()
         }
 
     }

@@ -1,3 +1,9 @@
 [submodule "android/speex_codec/src/main/cpp/speex"]
 	path = android/speex_codec/src/main/cpp/speex
 	url = git@github.com:xiph/speex.git
+[submodule "android/speex_codec/src/main/cpp/speexdsp"]
+	path = android/speex_codec/src/main/cpp/speexdsp
+	url = git@github.com:xiph/speexdsp.git
+[submodule "android/speex_codec/src/main/cpp/kissfft"]
+	path = android/speex_codec/src/main/cpp/kissfft
+	url = git@github.com:mborgerding/kissfft.git

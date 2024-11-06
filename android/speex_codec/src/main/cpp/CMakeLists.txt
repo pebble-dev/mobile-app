@@ -5,12 +5,30 @@
 # Sets the minimum CMake version required for this project.
 cmake_minimum_required(VERSION 3.22.1)
 
+set(PYTHON_EXECUTABLE "python3")
+
 # Declares the project name. The project name can be accessed via ${ PROJECT_NAME},
 # Since this is the top level CMakeLists.txt, the project name is also accessible
 # with ${CMAKE_PROJECT_NAME} (both CMake variables are in-sync within the top level
 # build script scope).
 project("speex_codec")
 
+add_library(kissfft STATIC
+        kissfft/kiss_fft.c
+        kissfft/kfc.c
+        kissfft/kiss_fftnd.c
+        kissfft/kiss_fftndr.c
+        kissfft/kiss_fftr.c
+)
+
+target_include_directories(kissfft PRIVATE
+        kissfft
+)
+
+target_compile_definitions(kissfft PRIVATE
+        KISSFFT_DATATYPE=int16_t
+        KISSFFT_TOOLS=0
+)
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
@@ -57,6 +75,18 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         speex/libspeex/hexc_10_32_table.c
         speex/libspeex/gain_table.c
         speex/libspeex/gain_table_lbr.c
+
+        speexdsp/libspeexdsp/buffer.c
+        speexdsp/libspeexdsp/fftwrap.c
+        speexdsp/libspeexdsp/filterbank.c
+        speexdsp/libspeexdsp/jitter.c
+        speexdsp/libspeexdsp/kiss_fft.c
+        speexdsp/libspeexdsp/kiss_fftr.c
+        speexdsp/libspeexdsp/mdf.c
+        speexdsp/libspeexdsp/preprocess.c
+        speexdsp/libspeexdsp/resample.c
+        speexdsp/libspeexdsp/scal.c
+        speexdsp/libspeexdsp/smallft.c
 )
 
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
@@ -68,11 +98,13 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
         # List paths to include headers from
         include
         speex/include
+        speexdsp/include
 )
 
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
         FIXED_POINT
         "EXPORT=/* */"
+        USE_KISS_FFT
 )
 
 # Specifies libraries CMake should link to your target library. You
@@ -82,4 +114,5 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         # List libraries link to the target library
         android
         log
+        kissfft
 )
