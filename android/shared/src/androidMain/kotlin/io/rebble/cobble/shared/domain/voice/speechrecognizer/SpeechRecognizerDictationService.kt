@@ -32,6 +32,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class SpeechRecognizerDictationService: DictationService, KoinComponent {
     private val context: Context by inject()
     private val scope = CoroutineScope(Dispatchers.IO)
+    /*
     private val audioTrack = AudioTrack.Builder()
             .setAudioFormat(AudioFormat.Builder()
                     .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
@@ -41,6 +42,7 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
             .setBufferSizeInBytes(16000)
             .setTransferMode(AudioTrack.MODE_STREAM)
             .build()
+     */
 
     companion object {
         private val AUDIO_LATENCY = 600.milliseconds
@@ -141,7 +143,7 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
             emit(DictationServiceResponse.Error(Result.FailServiceUnavailable))
             return@flow
         }
-        audioTrack.play()
+        //audioTrack.play()
 
         val audioJob = scope.launch {
             audioStreamFrames
@@ -166,7 +168,7 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
                             }
                             decodedBuf.rewind()
                             withContext(Dispatchers.IO) {
-                                audioTrack.write(decodedBuf.array(), decodedBuf.arrayOffset(), decodeBufLength)
+                                //audioTrack.write(decodedBuf.array(), decodedBuf.arrayOffset(), decodeBufLength)
                                 recognizerWritePipe.write(decodedBuf.array(), decodedBuf.arrayOffset(), decodeBufLength)
                             }
                         }
@@ -212,7 +214,7 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
                 }
             }
         } finally {
-            audioTrack.stop()
+            //audioTrack.stop()
             audioJob.cancel()
             speechRecognizer.destroy()
             decoder.close()
