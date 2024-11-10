@@ -7,21 +7,14 @@ import android.speech.RecognitionSupportCallback
 import android.speech.SpeechRecognizer
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.text.intl.Locale
+import io.rebble.cobble.shared.Logging
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 
-enum class RecognitionSupportResult {
-    SupportedOnDevice,
-    SupportedOnline,
-    NeedsDownload,
-    Unsupported
-}
-
 @RequiresApi(VERSION_CODES.TIRAMISU)
-suspend fun SpeechRecognizer.checkRecognitionSupport(intent: Intent): RecognitionSupportResult {
+suspend fun SpeechRecognizer.checkRecognitionSupport(intent: Intent): RecognitionSupport {
     val result = CompletableDeferred<RecognitionSupport>()
-    val language = Locale.current.toLanguageTag()
     val executor = Dispatchers.IO.asExecutor()
     checkRecognitionSupport(intent, executor, object : RecognitionSupportCallback {
         override fun onSupportResult(recognitionSupport: RecognitionSupport) {
@@ -34,11 +27,6 @@ suspend fun SpeechRecognizer.checkRecognitionSupport(intent: Intent): Recognitio
         }
     })
     val support = result.await()
-    return when {
-        support.supportedOnDeviceLanguages.contains(language) -> RecognitionSupportResult.SupportedOnDevice
-        support.installedOnDeviceLanguages.contains(language) -> RecognitionSupportResult.SupportedOnDevice
-        support.onlineLanguages.contains(language) -> RecognitionSupportResult.SupportedOnline
-        support.pendingOnDeviceLanguages.contains(language) -> RecognitionSupportResult.NeedsDownload
-        else -> RecognitionSupportResult.Unsupported
-    }
+    Logging.d("Locale: ${Locale.current.toLanguageTag()}, Recognition support: $support")
+    return support
 }

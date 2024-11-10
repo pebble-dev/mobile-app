@@ -7,6 +7,7 @@ import android.media.AudioTrack
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
+import android.os.ParcelFileDescriptor.AutoCloseOutputStream
 import android.speech.*
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.text.intl.Locale
@@ -46,7 +47,7 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
 
     companion object {
         private val AUDIO_LATENCY = 600.milliseconds
-        fun buildRecognizerIntent(audioSource: ParcelFileDescriptor? = null, encoding: Int = AudioFormat.ENCODING_PCM_16BIT, sampleRate: Int = 16000) = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+        fun buildRecognizerIntent(audioSource: ParcelFileDescriptor? = null, encoding: Int = AudioFormat.ENCODING_PCM_16BIT, sampleRate: Int = 16000, language: String? = null) = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
             audioSource?.let {
                 putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE, audioSource)
@@ -54,7 +55,9 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
                 putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE_CHANNEL_COUNT, 1)
                 putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE_SAMPLING_RATE, sampleRate)
             }
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.current.toLanguageTag())
+            language?.let {
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE, language)
+            }
         }
     }
 
@@ -115,8 +118,30 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
         }
     }.flowOn(Dispatchers.Main)
 
+    private suspend fun SpeechRecognizer.getBestRecognitionLanguage(recognizerIntent: Intent): RecognitionLanguage? {
+        val support = withContext(Dispatchers.Main) {
+            this@getBestRecognitionLanguage.checkRecognitionSupport(recognizerIntent)
+        }
+        val locale = Locale.current.toLanguageTag()
+        val installedBest = support.installedOnDeviceLanguages.firstOrNull { locale.startsWith(it) }
+        val availableBest = support.supportedOnDeviceLanguages.firstOrNull { locale.startsWith(it) }
+        return when {
+            installedBest != null -> RecognitionLanguage(installedBest, true)
+            availableBest != null -> RecognitionLanguage(availableBest, false)
+            else -> null
+        }
+    }
+
+    private fun createRecognizerPipes(): Pair<ParcelFileDescriptor, AutoCloseOutputStream> {
+        val recognizerPipes = ParcelFileDescriptor.createSocketPair()
+        val recognizerReadPipe = recognizerPipes[0]
+        val recognizerWritePipe = AutoCloseOutputStream(recognizerPipes[1])
+        return recognizerReadPipe to recognizerWritePipe
+    }
+
     override fun handleSpeechStream(speexEncoderInfo: SpeexEncoderInfo, audioStreamFrames: Flow<AudioStreamFrame>) = flow {
-        if (!SpeechRecognizer.isRecognitionAvailable(context)) {
+        if (!SpeechRecognizer.isOnDeviceRecognitionAvailable(context)) {
+            Logging.e("Offline speech recognition not available")
             emit(DictationServiceResponse.Error(Result.FailServiceUnavailable))
             return@flow
         }
@@ -124,25 +149,24 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
         val decodeBufLength = Short.SIZE_BYTES * speexEncoderInfo.frameSize
         val decodedBuf = ByteBuffer.allocateDirect(decodeBufLength)
         decodedBuf.order(ByteOrder.nativeOrder())
-        val recognizerPipes = ParcelFileDescriptor.createSocketPair()
-        val recognizerReadPipe = recognizerPipes[0]
-        val recognizerWritePipe = ParcelFileDescriptor.AutoCloseOutputStream(recognizerPipes[1])
-        val recognizerIntent = buildRecognizerIntent(recognizerReadPipe, AudioFormat.ENCODING_PCM_16BIT, speexEncoderInfo.sampleRate.toInt())
-        //val recognizerIntent = buildRecognizerIntent()
+
+        val (recognizerReadPipe, recognizerWritePipe) = createRecognizerPipes()
         val speechRecognizer = withContext(Dispatchers.Main) {
             SpeechRecognizer.createOnDeviceSpeechRecognizer(context)
         }
-        val supported = withContext(Dispatchers.Main) {
-            speechRecognizer.checkRecognitionSupport(recognizerIntent)
-        }
-
-        //TODO: handle downloads, etc
-        Logging.d("Recognition support: $supported")
-        if (supported == RecognitionSupportResult.Unsupported) {
-            Logging.e("Speech recognition language/type not supported")
+        val recognizerIntent = buildRecognizerIntent(recognizerReadPipe, AudioFormat.ENCODING_PCM_16BIT, speexEncoderInfo.sampleRate.toInt())
+        val recognitionLanguage = speechRecognizer.getBestRecognitionLanguage(recognizerIntent)
+        if (recognitionLanguage == null) {
+            Logging.e("No recognition language available")
             emit(DictationServiceResponse.Error(Result.FailServiceUnavailable))
             return@flow
         }
+        if (!recognitionLanguage.downloaded) {
+            Logging.e("Recognition language not downloaded: ${recognitionLanguage.tag}")
+            emit(DictationServiceResponse.Error(Result.FailServiceUnavailable))
+            return@flow
+        }
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, recognitionLanguage.tag)
         //audioTrack.play()
 
         val audioJob = scope.launch {
