@@ -75,7 +75,7 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
             }
 
             override fun onBeginningOfSpeech() {
-                Logging.i("Speech start detected")
+                //Logging.i("Speech start detected")
             }
 
             override fun onRmsChanged(rmsdB: Float) {
@@ -87,7 +87,7 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
             }
 
             override fun onEndOfSpeech() {
-                Logging.i("Speech end detected")
+                //Logging.i("Speech end detected")
             }
 
             override fun onError(error: Int) {
