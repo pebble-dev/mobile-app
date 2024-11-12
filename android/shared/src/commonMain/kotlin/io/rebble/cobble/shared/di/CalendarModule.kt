@@ -13,8 +13,9 @@ import org.koin.dsl.module
 
 val calendarModule = module {
     singleOf(::PhoneCalendarSyncer)
-    singleOf(::WatchTimelineSyncer)
-    singleOf(::TimelineActionManager)
+    factory { params ->
+        TimelineActionManager(params.get())
+    }
     single {
         CalendarSync(CoroutineScope(SupervisorJob() + get<GlobalExceptionHandler>() + CoroutineName("CalendarSync")))
     }

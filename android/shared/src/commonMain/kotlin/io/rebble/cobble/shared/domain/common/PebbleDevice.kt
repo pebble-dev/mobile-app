@@ -5,6 +5,7 @@ import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.domain.appmessage.AppMessageTransactionSequence
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
+import io.rebble.cobble.shared.domain.timeline.TimelineActionManager
 import io.rebble.cobble.shared.domain.voice.VoiceSession
 import io.rebble.cobble.shared.handlers.CobbleHandler
 import io.rebble.cobble.shared.handlers.OutgoingMessage
@@ -80,6 +81,7 @@ open class PebbleDevice(
     val audioStreamService: AudioStreamService by inject {parametersOf(protocolHandler)}
 
     val putBytesController: PutBytesController by inject {parametersOf(this)}
+    val timelineActionManager: TimelineActionManager by inject {parametersOf(this)}
 
     override fun close() {
         negotiationScope.cancel("PebbleDevice closed")

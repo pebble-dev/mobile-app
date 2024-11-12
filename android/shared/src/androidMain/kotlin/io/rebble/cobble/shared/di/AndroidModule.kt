@@ -45,7 +45,9 @@ val androidModule = module {
     single { AndroidJobScheduler() }
     single { FlutterPreferences() }
     singleOf<PlatformNotificationActionExecutor>(::AndroidNotificationActionExecutor)
-    singleOf<PlatformCalendarActionExecutor>(::AndroidCalendarActionExecutor)
+    factory<PlatformCalendarActionExecutor> { params ->
+        AndroidCalendarActionExecutor(params.get())
+    }
 
     factory<Set<CobbleHandler>>(named("deviceHandlers")) { params ->
         val pebbleDevice: PebbleDevice = params.get()

@@ -17,10 +17,9 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.time.Duration.Companion.days
 
-class AndroidCalendarActionExecutor: PlatformCalendarActionExecutor, KoinComponent {
+class AndroidCalendarActionExecutor(private val watchTimelineSyncer: WatchTimelineSyncer): PlatformCalendarActionExecutor, KoinComponent {
     private val platformContext: PlatformContext by inject()
     private val calendarDao: CalendarDao by inject()
-    private val watchTimelineSyncer: WatchTimelineSyncer by inject()
 
     override suspend fun handlePlatformAction(action: CalendarAction, pin: TimelinePin): TimelineService.ActionResponse {
         val instanceId = pin.backingId ?: run {
