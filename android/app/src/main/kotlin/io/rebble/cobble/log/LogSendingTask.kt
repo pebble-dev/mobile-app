@@ -63,7 +63,7 @@ private fun generateDebugInfo(context: Context, rwsId: String): String {
         null
     }
     val allowedPermissions = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)
-            .requestedPermissions.map {
+            .requestedPermissions?.map {
                 it to (context.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED)
             }
     return """
@@ -82,7 +82,7 @@ private fun generateDebugInfo(context: Context, rwsId: String): String {
     RWS ID:
     $rwsId
     Allowed Permissions:
-    ${allowedPermissions.joinToString("\n") { (permission, result) -> "$permission: $result" }}
+    ${allowedPermissions?.joinToString("\n") { (permission, result) -> "$permission: $result" }}
     Notification listening enabled: ${context.hasNotificationAccessPermission()}
     """.trimIndent()
 }

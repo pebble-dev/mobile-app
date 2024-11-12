@@ -30,7 +30,7 @@ android {
     if (System.getenv("ANDROID_NDK_HOME") != null) {
         ndkPath = System.getenv("ANDROID_NDK_HOME")
     }
-    compileSdk = 34
+    compileSdk = 35
 
     sourceSets {
         getByName("main") {
@@ -45,7 +45,7 @@ android {
     defaultConfig {
         applicationId = "io.rebble.cobble"
         minSdk = 29
-        targetSdk = 34
+        targetSdk = 35
         versionCode = flutterVersionCode.toInt()
         versionName = flutterVersionName
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
