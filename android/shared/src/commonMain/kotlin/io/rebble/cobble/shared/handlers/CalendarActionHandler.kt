@@ -1,6 +1,7 @@
 package io.rebble.cobble.shared.handlers
 
 import com.benasher44.uuid.Uuid
+import io.ktor.http.parametersOf
 import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.database.NextSyncAction
 import io.rebble.cobble.shared.database.dao.TimelinePinDao
@@ -17,15 +18,15 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.koin.core.parameter.parametersOf
 
 class CalendarActionHandler(private val pebbleDevice: PebbleDevice): KoinComponent, CobbleHandler {
-    private val timelineActionManager: TimelineActionManager by inject()
+    private val timelineActionManager = pebbleDevice.timelineActionManager
     private val timelinePinDao: TimelinePinDao by inject()
-    private val calendarActionExecutor: PlatformCalendarActionExecutor by inject()
+    private val timelineSyncer = WatchTimelineSyncer(pebbleDevice.blobDBService)
+    private val calendarActionExecutor: PlatformCalendarActionExecutor by inject() { parametersOf(timelineSyncer) }
 
     private val calendarActionFlow = timelineActionManager.actionFlowForApp(calendarWatchappId)
-
-    private val timelineSyncer = WatchTimelineSyncer(pebbleDevice.blobDBService)
 
     init {
         pebbleDevice.negotiationScope.launch {
