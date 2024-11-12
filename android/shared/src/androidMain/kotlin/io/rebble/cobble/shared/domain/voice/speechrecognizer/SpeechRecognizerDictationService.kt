@@ -114,7 +114,7 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
         })
         speechRecognizer.startListening(intent)
         awaitClose {
-
+            speechRecognizer.destroy()
         }
     }.flowOn(Dispatchers.Main)
 
@@ -222,6 +222,7 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
                         Logging.d("Speech recognition results: ${status.results}")
                         if (status.results.firstOrNull()?.second?.isBlank() != false) {
                             emit(DictationServiceResponse.Transcription(emptyList()))
+                            emit(DictationServiceResponse.Complete)
                             return@collect
                         }
                         emit(DictationServiceResponse.Transcription(
@@ -240,7 +241,6 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
         } finally {
             //audioTrack.stop()
             audioJob.cancel()
-            speechRecognizer.destroy()
             decoder.close()
         }
 
