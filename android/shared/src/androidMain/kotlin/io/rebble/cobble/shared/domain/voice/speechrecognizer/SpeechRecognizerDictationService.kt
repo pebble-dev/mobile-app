@@ -49,6 +49,7 @@ class SpeechRecognizerDictationService: DictationService, KoinComponent {
         private val AUDIO_LATENCY = 600.milliseconds
         fun buildRecognizerIntent(audioSource: ParcelFileDescriptor? = null, encoding: Int = AudioFormat.ENCODING_PCM_16BIT, sampleRate: Int = 16000, language: String? = null) = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_ENABLE_FORMATTING, RecognizerIntent.FORMATTING_OPTIMIZE_QUALITY)
             audioSource?.let {
                 putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE, audioSource)
                 putExtra(RecognizerIntent.EXTRA_AUDIO_SOURCE_ENCODING, encoding)
