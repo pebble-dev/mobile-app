@@ -1,7 +1,9 @@
 package io.rebble.cobble.shared.di
 
+import io.rebble.cobble.shared.datastore.SecureStorage
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.CurrentToken
+import io.rebble.cobble.shared.domain.state.CurrentToken.LoggedOut.tokenOrNull
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -20,6 +22,7 @@ val stateModule = module {
     }
 
     single(named("currentToken")) {
-        MutableStateFlow<CurrentToken>(CurrentToken.LoggedOut)
+        val token = get<SecureStorage>().token
+        MutableStateFlow(token?.let { CurrentToken.LoggedIn(token) } ?: CurrentToken.LoggedOut)
     } bind StateFlow::class
 }

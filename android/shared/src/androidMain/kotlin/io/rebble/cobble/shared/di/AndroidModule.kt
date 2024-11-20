@@ -6,7 +6,9 @@ import android.service.notification.StatusBarNotification
 import com.benasher44.uuid.Uuid
 import io.rebble.cobble.shared.AndroidPlatformContext
 import io.rebble.cobble.shared.PlatformContext
+import io.rebble.cobble.shared.datastore.AndroidSecureStorage
 import io.rebble.cobble.shared.datastore.FlutterPreferences
+import io.rebble.cobble.shared.datastore.SecureStorage
 import io.rebble.cobble.shared.datastore.createDataStore
 import io.rebble.cobble.shared.domain.calendar.AndroidCalendarActionExecutor
 import io.rebble.cobble.shared.domain.calendar.PlatformCalendarActionExecutor
@@ -80,4 +82,5 @@ val androidModule = module {
     } else {
         factoryOf(::NullDictationService) bind DictationService::class
     }
+    singleOf(::AndroidSecureStorage) bind SecureStorage::class
 }

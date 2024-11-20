@@ -79,6 +79,7 @@ kotlin {
             implementation(libs.androidx.core.ktx)
             implementation(libs.timber)
             implementation(libs.rrule)
+            implementation(libs.androidx.security.crypto.ktx)
             implementation(project(":pebblekit_android"))
             implementation(project(":speex_codec"))
         }
@@ -106,6 +107,7 @@ android {
 }
 dependencies {
     implementation(libs.protolite.wellknowntypes)
+    implementation(libs.androidx.security.crypto.ktx)
     add("kspCommonMainMetadata", libs.androidx.room.compiler)
     add("kspAndroid", libs.androidx.room.compiler)
 }

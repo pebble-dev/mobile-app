@@ -16,6 +16,7 @@ errorproneVersion = "2.26.1"
 rruleVersion = "1.0.3"
 spotbugsVersion = "4.8.6"
 atomicfu = "0.25.0"
+securityCrypto = "1.1.0-alpha06"
 
 protoliteWellKnownTypes = "18.0.0"
 room = "2.7.0-alpha11"
@@ -57,6 +58,7 @@ androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidxTest" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTest" }
 androidx-test-monitor = { module = "androidx.test:monitor", version.ref = "androidxTest" }
+androidx-security-crypto-ktx = { module = "androidx.security:security-crypto-ktx", version.ref = "securityCrypto" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workManagerVersion" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "daggerVersion" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "daggerVersion" }

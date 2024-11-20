@@ -13,6 +13,7 @@ import io.rebble.cobble.shared.database.dao.NotificationChannelDao
 import io.rebble.cobble.shared.database.dao.PersistedNotificationDao
 import io.rebble.cobble.shared.datastore.FlutterPreferences
 import io.rebble.cobble.shared.datastore.KMPPrefs
+import io.rebble.cobble.shared.datastore.SecureStorage
 import io.rebble.cobble.shared.domain.calendar.CalendarSync
 import io.rebble.cobble.shared.domain.state.CurrentToken
 import io.rebble.cobble.shared.errors.GlobalExceptionHandler
@@ -59,6 +60,10 @@ abstract class AppModule {
         @Provides
         fun provideTokenState(): MutableStateFlow<CurrentToken> {
             return KoinPlatformTools.defaultContext().get().get(named("currentToken"))
+        }
+        @Provides
+        fun provideSecureStorage(): SecureStorage {
+            return KoinPlatformTools.defaultContext().get().get()
         }
         @Provides
         fun providePersistedNotificationDao(context: Context): PersistedNotificationDao {
