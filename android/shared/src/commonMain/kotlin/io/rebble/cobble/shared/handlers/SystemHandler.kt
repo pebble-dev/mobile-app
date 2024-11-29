@@ -34,13 +34,6 @@ class SystemHandler(
         listenForTimeChange()
 
         negotiationScope.launch {
-            // Wait until watch is connected before sending time
-            ConnectionStateManager.connectionState.first { it is ConnectionState.Connected }
-
-            sendCurrentTime()
-        }
-
-        negotiationScope.launch {
             ConnectionStateManager.connectionState.first { it is ConnectionState.Negotiating }
             negotiate()
         }
@@ -72,6 +65,7 @@ class SystemHandler(
                     Logging.i("Watch is in recovery mode, switching to recovery state")
                     recoveryMode(pebbleDevice)
                 } else {
+                    sendCurrentTime()
                     negotiationsComplete(pebbleDevice)
                 }
             }
@@ -113,6 +107,7 @@ class SystemHandler(
         negotiationScope.launch {
             val connectionScope = pebbleDevice.connectionScope.filterNotNull().first()
             platformTimeChangedFlow(platformContext).onEach {
+                Logging.d("Time/timezone changed, updating time on watch")
                 sendCurrentTime()
             }.launchIn(connectionScope)
         }
@@ -122,14 +117,15 @@ class SystemHandler(
     private suspend fun sendCurrentTime() {
         val timezone = TimeZone.currentSystemDefault()
         val now = Clock.System.now()
-
+        val timezoneOffsetMinutes = timezone.offsetAt(now).totalSeconds.seconds.inWholeMinutes
+        Logging.i("Sending current time to watch: $now, timezone: $timezone, offset: $timezoneOffsetMinutes")
         val updateTimePacket = TimeMessage.SetUTC(
                 now.epochSeconds.toUInt(),
-                timezone.offsetAt(now).totalSeconds.seconds.inWholeHours.toShort(),
+                timezoneOffsetMinutes.toShort(),
                 timezone.id
         )
 
-        systemService.send(updateTimePacket, PacketPriority.LOW)
+        systemService.send(updateTimePacket)
     }
 
     private suspend fun handleAppVersionRequest(): PhoneAppVersion.AppVersionResponse {
