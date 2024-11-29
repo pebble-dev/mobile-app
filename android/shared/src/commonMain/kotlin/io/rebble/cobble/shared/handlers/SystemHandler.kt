@@ -39,6 +39,10 @@ class SystemHandler(
         }
     }
 
+    companion object {
+        const val MAX_TIMEZONE_NAME_LENGTH = 32
+    }
+
     fun negotiationsComplete(watch: PebbleDevice) {
         if (ConnectionStateManager.connectionState.value is ConnectionState.Negotiating) {
             ConnectionStateManager.connectionState.value = ConnectionState.Connected(watch)
@@ -118,11 +122,11 @@ class SystemHandler(
         val timezone = TimeZone.currentSystemDefault()
         val now = Clock.System.now()
         val timezoneOffsetMinutes = timezone.offsetAt(now).totalSeconds.seconds.inWholeMinutes
-        Logging.i("Sending current time to watch: $now, timezone: $timezone, offset: $timezoneOffsetMinutes")
+        Logging.i("Sending current time to watch: $now, timezone: ${timezone.id} (truncated: ${timezone.id.take(MAX_TIMEZONE_NAME_LENGTH)}), offset: $timezoneOffsetMinutes")
         val updateTimePacket = TimeMessage.SetUTC(
                 now.epochSeconds.toUInt(),
                 timezoneOffsetMinutes.toShort(),
-                timezone.id
+                timezone.id.take(MAX_TIMEZONE_NAME_LENGTH)
         )
 
         systemService.send(updateTimePacket)

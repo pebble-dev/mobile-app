@@ -8,6 +8,7 @@ import io.rebble.cobble.pigeons.BooleanWrapper
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.domain.state.watchOrNull
+import io.rebble.cobble.shared.handlers.SystemHandler
 import io.rebble.cobble.shared.util.zippedSource
 import io.rebble.cobble.util.launchPigeonResult
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
@@ -84,7 +85,7 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
         val updateTimePacket = TimeMessage.SetUTC(
                 now.toUInt(),
                 offsetMinutes.toShort(),
-                timezone.id
+                timezone.id.take(SystemHandler.MAX_TIMEZONE_NAME_LENGTH)
         )
 
         ConnectionStateManager.connectionState.value.watchOrNull?.systemService?.send(updateTimePacket)
