@@ -24,6 +24,7 @@ import timber.log.Timber
 import java.io.InputStream
 import java.util.TimeZone
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 class FirmwareUpdateControlFlutterBridge @Inject constructor(
     bridgeLifecycleController: BridgeLifecycleController,
@@ -77,11 +78,12 @@ class FirmwareUpdateControlFlutterBridge @Inject constructor(
 
     private suspend fun sendTime() {
         val timezone = TimeZone.getDefault()
-        val now = System.currentTimeMillis()
+        val now = System.currentTimeMillis().milliseconds.inWholeSeconds
+        val offsetMinutes = timezone.getOffset(now).milliseconds.inWholeMinutes
 
         val updateTimePacket = TimeMessage.SetUTC(
-                (now / 1000).toUInt(),
-                timezone.getOffset(now).toShort(),
+                now.toUInt(),
+                offsetMinutes.toShort(),
                 timezone.id
         )
 
