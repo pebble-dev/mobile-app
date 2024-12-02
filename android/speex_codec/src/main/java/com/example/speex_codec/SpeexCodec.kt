@@ -3,7 +3,7 @@ package com.example.speex_codec
 import android.media.MediaCodec
 import java.nio.ByteBuffer
 
-class SpeexCodec(private val sampleRate: Long, private val bitRate: Int, private val frameSize: Int, private val preprocessors: Set<Preprocessor> = emptySet()): AutoCloseable {
+class SpeexCodec(private val sampleRate: Long, private val bitRate: Int, private val frameSize: Int, private val preprocessors: Set<Preprocessor> = emptySet(), private val gain: Float = 4.0f): AutoCloseable {
     enum class Preprocessor(val flagValue: Int) {
         DENOISE(1),
         AGC(2),

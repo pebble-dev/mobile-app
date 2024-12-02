@@ -6,6 +6,7 @@
 static jfieldID speexDecBits;
 static jfieldID speexDecState;
 static jfieldID speexPreprocessState;
+static jfieldID gainField;
 
 static const int FLAG_PREPROCESSOR_DENOISE = 1;
 static const int FLAG_PREPROCESSOR_AGC = 2;
@@ -20,6 +21,7 @@ Java_com_example_speex_1codec_SpeexCodec_decode(JNIEnv *env, jobject thiz,
     auto *out_frame_data = reinterpret_cast<spx_int16_t *>(env->GetDirectBufferAddress(out_frame));
     auto *bits = reinterpret_cast<SpeexBits *>(env->GetLongField(thiz, speexDecBits));
     auto *dec_state = reinterpret_cast<void *>(env->GetLongField(thiz, speexDecState));
+    auto gain = env->GetFloatField(thiz, gainField);
     int offset = has_header_byte ? 1 : 0;
     speex_bits_read_from(bits, reinterpret_cast<char *>(encoded_frame_data)+offset, encoded_frame_length-offset);
     int result = speex_decode_int(dec_state, bits, out_frame_data);
@@ -28,6 +30,13 @@ Java_com_example_speex_1codec_SpeexCodec_decode(JNIEnv *env, jobject thiz,
     auto *preprocess_state = reinterpret_cast<SpeexPreprocessState *>(env->GetLongField(thiz, speexPreprocessState));
     if (preprocess_state != nullptr) {
         speex_preprocess_run(preprocess_state, out_frame_data);
+    }
+    int output_size = 0;
+    speex_decoder_ctl(dec_state, SPEEX_GET_FRAME_SIZE, &output_size);
+    for (int i = 0; i < output_size; i++) {
+        float gained = static_cast<float>(out_frame_data[i]) * gain;
+        float gained_clipped = std::clamp(gained, static_cast<float>(SHRT_MIN), static_cast<float>(SHRT_MAX));
+        out_frame_data[i] = static_cast<spx_int16_t>(gained_clipped);
     }
     return result;
 }
@@ -67,6 +76,7 @@ Java_com_example_speex_1codec_SpeexCodec_initNative(JNIEnv *env, jobject thiz) {
     speexDecBits = env->GetFieldID(clazz, "speexDecBits", "J");
     speexDecState = env->GetFieldID(clazz, "speexDecState", "J");
     speexPreprocessState = env->GetFieldID(clazz, "speexPreprocessState", "J");
+    gainField = env->GetFieldID(clazz, "gain", "F");
 }
 extern "C"
 JNIEXPORT void JNICALL
