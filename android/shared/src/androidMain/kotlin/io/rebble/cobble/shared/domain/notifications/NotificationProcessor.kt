@@ -198,7 +198,7 @@ class NotificationProcessor: KoinComponent {
                         return@withTimeout
                     }
 
-                    val itemId = uuidFrom(NotificationActionHandler.notificationUuidPrefix + (uuid4().toString()).substring(NotificationActionHandler.notificationUuidPrefix.length))
+                    val itemId = uuidFrom(NotificationActionHandler.NOTIFICATION_UUID_PREFIX + (uuid4().toString()).substring(NotificationActionHandler.NOTIFICATION_UUID_PREFIX.length))
                     val attributes = buildPebbleAttributes(packageId, category, title, text, messages, color)
                     val pebbleActions = buildPebbleActions(actions, channel?.name ?: tagId, channel?.conversationId != null)
                     activeNotifsState.value += (itemId to sbn)

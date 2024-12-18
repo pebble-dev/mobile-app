@@ -2,6 +2,8 @@ package io.rebble.cobble.shared.domain.notifications
 
 import android.app.Notification
 import android.app.NotificationChannel
+import android.companion.CompanionDeviceManager
+import android.companion.CompanionDeviceService
 import android.content.ComponentName
 import android.content.Context
 import android.os.Build
@@ -10,6 +12,7 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 import com.benasher44.uuid.Uuid
+import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.database.dao.NotificationChannelDao
 import io.rebble.cobble.shared.datastore.FlutterPreferences
 import io.rebble.cobble.shared.datastore.KMPPrefs
@@ -35,6 +38,7 @@ class NotificationListener : NotificationListenerService(), KoinComponent {
     //TODO: switch to main prefs once we switch notif pages to flutter
     private val flutterPreferences: FlutterPreferences by inject()
     private val prefs: KMPPrefs by inject()
+    private lateinit var companionDeviceManager: CompanionDeviceManager
 
 
     private var isListening = false
@@ -43,6 +47,7 @@ class NotificationListener : NotificationListenerService(), KoinComponent {
 
     override fun onCreate() {
         super.onCreate()
+        companionDeviceManager = getSystemService(Context.COMPANION_DEVICE_SERVICE) as CompanionDeviceManager
         _isActive.value = true
         Timber.d("NotificationListener created")
     }
@@ -84,32 +89,37 @@ class NotificationListener : NotificationListenerService(), KoinComponent {
             coroutineScope.launch {
                 val sensitiveLogging = prefs.sensitiveDataLoggingEnabled.firstOrNull() == true
                 try {
-                    val channels = getNotificationChannels(sbn.packageName, sbn.user)
-                    /*if (sensitiveLogging) {
-                        channels.forEach {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                Timber.v("Channel: ${it.id}, ${it.name}, ${it.description} ${it.conversationId}")
-                            } else {
-                                Timber.v("Channel: ${it.id}, ${it.name}, ${it.description} (no conversationId as old android)")
+                    if (companionDeviceManager.associations.isEmpty()) {
+                        Logging.w("No companion devices, listener service has reduced permissions, skipping channel fetch")
+                    } else {
+                        val channels = getNotificationChannels(sbn.packageName, sbn.user)
+                        /*if (sensitiveLogging) {
+                            channels.forEach {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                    Timber.v("Channel: ${it.id}, ${it.name}, ${it.description} ${it.conversationId}")
+                                } else {
+                                    Timber.v("Channel: ${it.id}, ${it.name}, ${it.description} (no conversationId as old android)")
+                                }
                             }
-                        }
-                    }*/
-                    notificationChannelDao.insertAllIfNotExists(
-                            channels.map {
-                                io.rebble.cobble.shared.database.entity.NotificationChannel(
-                                        sbn.packageName,
-                                        it.id,
-                                        it.name.toString(),
-                                        it.description,
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                            it.conversationId
-                                        } else {
-                                            null
-                                        },
-                                        true
-                                )
-                            }
-                    )
+                        }*/
+                        notificationChannelDao.insertAllIfNotExists(
+                                channels.map {
+                                    io.rebble.cobble.shared.database.entity.NotificationChannel(
+                                            sbn.packageName,
+                                            it.id,
+                                            it.name.toString(),
+                                            it.description,
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                                it.conversationId
+                                            } else {
+                                                null
+                                            },
+                                            true
+                                    )
+                                }
+                        )
+                    }
+
                 } catch (e: Exception) {
                     Timber.w(e, "Failed to get notif channels from ${sbn.packageName}")
                 }
