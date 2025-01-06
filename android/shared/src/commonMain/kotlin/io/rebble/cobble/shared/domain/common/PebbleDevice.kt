@@ -48,6 +48,9 @@ open class PebbleDevice(
 
     val appMessageTransactionSequence = AppMessageTransactionSequence().iterator()
 
+    // Required for the system handler
+    val systemService: SystemService by inject {parametersOf(protocolHandler)}
+
     init {
         // This will init all the handlers by reading the lazy value causing them to be injected
         negotiationScope.launch {
@@ -68,7 +71,6 @@ open class PebbleDevice(
     val appRunStateService: AppRunStateService by inject {parametersOf(protocolHandler)}
     val blobDBService: BlobDBService by inject {parametersOf(protocolHandler)}
     val appMessageService: AppMessageService by inject {parametersOf(protocolHandler)}
-    val systemService: SystemService by inject {parametersOf(protocolHandler)}
     val musicService: MusicService by inject {parametersOf(protocolHandler)}
     val putBytesService: PutBytesService by inject {parametersOf(protocolHandler)}
     val phoneControlService: PhoneControlService by inject {parametersOf(protocolHandler)}
