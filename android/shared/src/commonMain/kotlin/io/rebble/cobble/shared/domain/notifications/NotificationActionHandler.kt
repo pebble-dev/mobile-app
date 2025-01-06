@@ -14,14 +14,14 @@ import org.koin.core.component.inject
 
 class NotificationActionHandler(scope: CoroutineScope): KoinComponent, CobbleHandler {
     companion object {
-        const val notificationUuidPrefix = "cafecafe"
+        const val NOTIFICATION_UUID_PREFIX = "cafecafe"
     }
     private val timelineActionManager: TimelineActionManager by inject()
     private val notificationActionExecutor: PlatformNotificationActionExecutor by inject()
 
     private val notificationActionFlow = timelineActionManager.actionFlow.filter {
         val (action, _) = it
-        action.itemID.get().toString().startsWith(notificationUuidPrefix)
+        action.itemID.get().toString().startsWith(NOTIFICATION_UUID_PREFIX)
     }
 
     init {
