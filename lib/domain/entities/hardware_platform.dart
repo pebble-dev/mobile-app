@@ -7,7 +7,7 @@ enum PebbleHardwarePlatform {
   pebbleOneEv2_3,
   pebbleOneEv2_4,
   pebbleOnePointFive,
-  pebbleOnePointZero,
+  pebbleTwoPointZero,
   pebbleSnowyEvt2,
   pebbleSnowyDvt,
   pebbleBobbySmiles,
@@ -40,7 +40,7 @@ PebbleHardwarePlatform pebbleHardwarePlatformFromNumber(int? number) {
     case 5:
       return PebbleHardwarePlatform.pebbleOnePointFive;
     case 6:
-      return PebbleHardwarePlatform.pebbleOnePointZero;
+      return PebbleHardwarePlatform.pebbleTwoPointZero;
     case 7:
       return PebbleHardwarePlatform.pebbleSnowyEvt2;
     case 8:
@@ -95,7 +95,7 @@ extension PebbleHardwareData on PebbleHardwarePlatform {
         return WatchType.aplite;
       case PebbleHardwarePlatform.pebbleOnePointFive:
         return WatchType.aplite;
-      case PebbleHardwarePlatform.pebbleOnePointZero:
+      case PebbleHardwarePlatform.pebbleTwoPointZero:
         return WatchType.aplite;
       case PebbleHardwarePlatform.pebbleSnowyEvt2:
         return WatchType.basalt;
@@ -148,8 +148,8 @@ extension PebbleHardwareData on PebbleHardwarePlatform {
         return "ev2_4";
       case PebbleHardwarePlatform.pebbleOnePointFive:
         return "v1_5";
-      case PebbleHardwarePlatform.pebbleOnePointZero:
-        return "v1_0";
+      case PebbleHardwarePlatform.pebbleTwoPointZero:
+        return "v2_0";
       case PebbleHardwarePlatform.pebbleSnowyEvt2:
         return "snowy_evt2";
       case PebbleHardwarePlatform.pebbleSnowyDvt:
