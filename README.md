@@ -45,6 +45,16 @@ If you don't have Android Studio installed, and you want an emulator, do:
 Then choose a device (I chose Pixel 2), then download R (hey, what's 620MB
 between friends?), then hit finish.
 
+## Building the app for iOS
+iOS requires CocoaPods to be installed. To install CocoaPods, run the following commands:
+
+```
+brew install ruby
+sudo gem install cocoapods
+```
+
+After installing CocoaPods, you should build the app using `fvm flutter build ios`, which will also run `pod install` for you ready for building the app in Xcode.
+
 ## Building mappings
 
 To build all the mappings in this project (such as entity <> map mapping for SQL), you have to
