@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cobble/domain/connection/connection_state_provider.dart';
 import 'package:cobble/domain/connection/scan_provider.dart';
 import 'package:cobble/domain/entities/pebble_scan_device.dart';
@@ -97,7 +99,11 @@ class PairPage extends HookConsumerWidget implements CobbleScreen {
     }, [scan, /*pair,*/ connectionState]);
 
     useEffect(() {
-      scanControl.startBleScan();
+      if (Platform.isIOS) {
+        scanControl.startBleScan();
+      } else {
+        scanControl.startClassicScan();
+      }
       return null;
     }, []);
 
@@ -112,6 +118,14 @@ class PairPage extends HookConsumerWidget implements CobbleScreen {
       if (!scan.scanning) {
         ref.refresh(scanProvider.notifier).onScanStarted();
         scanControl.startClassicScan();
+      }
+    }
+
+    _refreshDevices() {
+      if (Platform.isIOS) {
+        _refreshDevicesBle();
+      } else {
+        _refreshDevicesClassic();
       }
     }
 
@@ -195,20 +209,20 @@ class PairPage extends HookConsumerWidget implements CobbleScreen {
             )
             .toList(),
         if (!scan.scanning) ...[
-          Padding(
+          /*Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32.0),
             child: CobbleButton(
               outlined: false,
               label: tr.pairPage.searchAgain.ble,
               onPressed: connectionState.isConnected == true || connectionState.isConnecting == true ? null : _refreshDevicesBle,
             ),
-          ),
+          ),*/
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32.0),
             child: CobbleButton(
               outlined: false,
-              label: tr.pairPage.searchAgain.classic,
-              onPressed: connectionState.isConnected == true || connectionState.isConnecting == true ? null : _refreshDevicesClassic,
+              label: Platform.isIOS ? tr.pairPage.searchAgain.ble : tr.pairPage.searchAgain.classic,
+              onPressed: connectionState.isConnected == true || connectionState.isConnecting == true ? null : _refreshDevices,
             ),
           ),
         ],
