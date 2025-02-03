@@ -10,6 +10,12 @@ import Flutter
 
 //TODO: Permission checks
 class PermissionCheckFlutterBridge: NSObject, PermissionCheck {
+    func hasCallsPermissionsWithError(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> BooleanWrapper? {
+        let bool = BooleanWrapper()
+        bool.value = false
+        return bool
+    }
+
     func hasLocationPermissionWithError(_ error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> BooleanWrapper? {
         let bool = BooleanWrapper()
         bool.value = false

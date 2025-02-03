@@ -7,6 +7,10 @@
 
 import Foundation
 class PermissionControlFlutterBridge: NSObject, PermissionControl {
+    func requestCallsPermissions(completion: @escaping (FlutterError?) -> Void) {
+        completion(nil)
+    }
+
     //TODO: finish impl
     func requestBluetoothPermissions(completion: @escaping (NumberWrapper?, FlutterError?) -> Void) {
         let num = NumberWrapper()

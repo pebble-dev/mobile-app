@@ -28,7 +28,6 @@ import Logging
         }
         FlutterBridgeSetup.createUIBridges(binaryMessenger: binaryMessenger)
         FlutterBridgeSetup.createCommonBridges(binaryMessenger: binaryMessenger)
-        FlutterBackgroundController.shared = FlutterBackgroundController()
     }
     
     private func setupLogging() {
