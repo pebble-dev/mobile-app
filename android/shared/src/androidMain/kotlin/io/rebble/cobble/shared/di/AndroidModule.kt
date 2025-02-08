@@ -13,10 +13,7 @@ import io.rebble.cobble.shared.datastore.createDataStore
 import io.rebble.cobble.shared.domain.calendar.AndroidCalendarActionExecutor
 import io.rebble.cobble.shared.domain.calendar.PlatformCalendarActionExecutor
 import io.rebble.cobble.shared.domain.common.PebbleDevice
-import io.rebble.cobble.shared.domain.notifications.AndroidNotificationActionExecutor
-import io.rebble.cobble.shared.domain.notifications.CallNotificationProcessor
-import io.rebble.cobble.shared.domain.notifications.NotificationProcessor
-import io.rebble.cobble.shared.domain.notifications.PlatformNotificationActionExecutor
+import io.rebble.cobble.shared.domain.notifications.*
 import io.rebble.cobble.shared.domain.voice.DictationService
 import io.rebble.cobble.shared.domain.voice.NullDictationService
 import io.rebble.cobble.shared.domain.voice.speechrecognizer.SpeechRecognizerDictationService
@@ -63,7 +60,8 @@ val androidModule = module {
                 AppMessageHandler(pebbleDevice),
                 VoiceSessionHandler(pebbleDevice),
                 AudioStreamHandler(pebbleDevice),
-                AppLogHandler(pebbleDevice)
+                AppLogHandler(pebbleDevice),
+                NotificationActionHandler(pebbleDevice)
         )
     }
 

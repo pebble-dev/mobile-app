@@ -37,7 +37,10 @@ class AndroidNotificationActionExecutor(): PlatformNotificationActionExecutor, K
 
     override suspend fun handleMetaNotificationAction(action: MetaNotificationAction, itemId: Uuid, attributes: List<TimelineItem.Attribute>): TimelineService.ActionResponse {
         val sbn = activeNotifsState.value[itemId]
-                ?: return TimelineService.ActionResponse(success = false)
+                ?: run {
+                    Logging.w("Notification not found for action, could be notif before we started tracking them")
+                    return TimelineService.ActionResponse(success = false)
+                }
         return when (action) {
             MetaNotificationAction.Dismiss -> actionIntent(sbn.notification.deleteIntent)
                     .map {

@@ -48,23 +48,6 @@ open class PebbleDevice(
 
     val appMessageTransactionSequence = AppMessageTransactionSequence().iterator()
 
-    // Required for the system handler
-    val systemService: SystemService by inject {parametersOf(protocolHandler)}
-
-    init {
-        // This will init all the handlers by reading the lazy value causing them to be injected
-        negotiationScope.launch {
-            val initNHandlers = negotiationHandlers.joinToString { it::class.simpleName ?: "Unknown" }
-            Logging.i("Initialised negotiation handlers: $initNHandlers")
-            ConnectionStateManager.connectionState.first { it is ConnectionState.Connected && it.watch.address == address }
-            val connectionScope = connectionScope.filterNotNull().first()
-            connectionScope.launch {
-                val initHandlers = handlers.joinToString { it::class.simpleName ?: "Unknown" }
-                Logging.i("Initialised handlers: $initHandlers")
-            }
-        }
-    }
-
     override fun toString(): String = "< PebbleDevice address=$address >"
 
     //TODO: Move to per-protocol handler services, so we can have multiple PebbleDevices, this is the first of many
@@ -81,9 +64,24 @@ open class PebbleDevice(
     val appFetchService: AppFetchService by inject {parametersOf(protocolHandler)}
     val voiceService: VoiceService by inject {parametersOf(protocolHandler)}
     val audioStreamService: AudioStreamService by inject {parametersOf(protocolHandler)}
+    val systemService: SystemService by inject {parametersOf(protocolHandler)}
 
     val putBytesController: PutBytesController by inject {parametersOf(this)}
     val timelineActionManager: TimelineActionManager by inject {parametersOf(this)}
+
+    init {
+        // This will init all the handlers by reading the lazy value causing them to be injected
+        negotiationScope.launch {
+            val initNHandlers = negotiationHandlers.joinToString { it::class.simpleName ?: "Unknown" }
+            Logging.i("Initialised negotiation handlers: $initNHandlers")
+            ConnectionStateManager.connectionState.first { it is ConnectionState.Connected && it.watch.address == address }
+            val connectionScope = connectionScope.filterNotNull().first()
+            connectionScope.launch {
+                val initHandlers = handlers.joinToString { it::class.simpleName ?: "Unknown" }
+                Logging.i("Initialised handlers: $initHandlers")
+            }
+        }
+    }
 
     override fun close() {
         negotiationScope.cancel("PebbleDevice closed")

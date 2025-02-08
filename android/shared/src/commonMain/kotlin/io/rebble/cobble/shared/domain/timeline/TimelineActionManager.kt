@@ -4,6 +4,7 @@ import com.benasher44.uuid.Uuid
 import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.database.dao.TimelinePinDao
 import io.rebble.cobble.shared.domain.common.PebbleDevice
+import io.rebble.cobble.shared.domain.notifications.NotificationActionHandler
 import io.rebble.libpebblecommon.packets.blobdb.TimelineAction
 import io.rebble.libpebblecommon.services.blobdb.TimelineService
 import kotlinx.coroutines.CompletableDeferred
@@ -36,7 +37,9 @@ class TimelineActionManager(private val pebbleDevice: PebbleDevice): KoinCompone
             val (action, _) = it
             val itemId = action.itemID.get()
             val item = timelineDao.get(itemId) ?: run {
-                Logging.w("Received action for non-existent item $itemId")
+                if (!itemId.toString().startsWith(NotificationActionHandler.NOTIFICATION_UUID_PREFIX)) {
+                    Logging.w("Received action for non-existent item $itemId")
+                }
                 return@filter false
             }
             item.parentId == appId
