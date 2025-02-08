@@ -59,18 +59,16 @@ class MainActivity : AppCompatActivity() {
     private fun handleIntent(intent: Intent) {
         val uri = intent.data
         if (intent.scheme == "content" && uri != null) {
-            if (uri.path?.endsWith("pbw") == true) {
-                Logging.d("Received pbw install intent")
-                val fileSize = contentResolver.openAssetFileDescriptor(uri, "r").use {
-                    it?.length
-                }
-                if (fileSize == null || fileSize > 10_000_000) {
-                    Logging.e("Invalid PBW file size, ignoring")
-                    return
-                }
-                val cachedUri = cacheIncomingPbw(uri)
-                navHostController?.navigate("${Routes.DIALOG_APP_INSTALL}?uri=$cachedUri")
+            Logging.d("Received pbw install intent")
+            val fileSize = contentResolver.openAssetFileDescriptor(uri, "r").use {
+                it?.length
             }
+            if (fileSize == null || fileSize > 10_000_000) {
+                Logging.e("Invalid PBW file size, ignoring")
+                return
+            }
+            val cachedUri = cacheIncomingPbw(uri)
+            navHostController?.navigate("${Routes.DIALOG_APP_INSTALL}?uri=$cachedUri")
         } else {
             if (intent.hasExtra("navigationPath")) {
                 navHostController?.navigate(intent.getStringExtra("navigationPath")!!)
