@@ -143,6 +143,9 @@ fun AppMessage.Companion.fromJSDataString(json: String, appInfo: PbwAppInfo): Ap
                     objectEntry.value.jsonPrimitive.longOrNull != null -> {
                         AppMessageTuple.createUInt(keyId.toUInt(), objectEntry.value.jsonPrimitive.long.toUInt())
                     }
+                    objectEntry.value.jsonPrimitive.booleanOrNull != null -> {
+                        AppMessageTuple.createShort(keyId.toUInt(), if (objectEntry.value.jsonPrimitive.boolean) 1.toShort() else 0.toShort())
+                    }
                     else -> error("Invalid JSON value, unsupported primitive type")
                 }
             }
