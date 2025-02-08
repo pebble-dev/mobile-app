@@ -17,14 +17,19 @@ object RWS: KoinComponent {
     private val token: StateFlow<CurrentToken> by inject(named("currentToken"))
     private val scope = CoroutineScope(Dispatchers.Default)
 
-    private val _appstoreClient = token.map {
+    val appstoreClientFlow = token.map {
         it.tokenOrNull?.let { t -> AppstoreClient("https://appstore-api.$domainSuffix/api", t) }
     }.stateIn(scope, SharingStarted.Eagerly, null)
-    private val _authClient = token.map {
+    val authClientFlow = token.map {
         it.tokenOrNull?.let { t -> AuthClient("https://auth.$domainSuffix/api", t) }
     }.stateIn(scope, SharingStarted.Eagerly, null)
+    val timelineClientFlow = token.map {
+        it.tokenOrNull?.let { t -> TimelineClient("https://timeline-sync.$domainSuffix", t) }
+    }.stateIn(scope, SharingStarted.Eagerly, null)
     val appstoreClient: AppstoreClient?
-        get() = _appstoreClient.value
+        get() = appstoreClientFlow.value
     val authClient: AuthClient?
-        get() = _authClient.value
+        get() = authClientFlow.value
+    val timelineClient: TimelineClient?
+        get() = timelineClientFlow.value
 }

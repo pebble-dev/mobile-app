@@ -4,10 +4,15 @@ import com.benasher44.uuid.Uuid
 import io.rebble.cobble.shared.api.RWS
 import io.rebble.cobble.shared.database.dao.LockerDao
 import io.rebble.cobble.shared.domain.common.PebbleDevice
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeout
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.security.MessageDigest
 import java.util.Locale
+import kotlin.time.Duration.Companion.seconds
 
 object JsTokenUtil: KoinComponent {
     private val lockerDao: LockerDao by inject()
@@ -36,6 +41,22 @@ object JsTokenUtil: KoinComponent {
     }
 
     suspend fun getAccountToken(uuid: Uuid): String? {
-        return RWS.authClient?.getCurrentAccount()?.uid?.toString()?.let { generateToken(uuid, it) }
+        return try {
+            withTimeout(5.seconds) {
+                RWS.authClientFlow.filterNotNull().first().getCurrentAccount().uid.toString().let { generateToken(uuid, it) }
+            }
+        } catch (e: TimeoutCancellationException) {
+            null
+        }
+    }
+
+    suspend fun getSandboxTimelineToken(uuid: Uuid): String? {
+        return try {
+            withTimeout(5.seconds) {
+                RWS.timelineClientFlow.filterNotNull().first().getSandboxUserToken(uuid.toString())
+            }
+        } catch (e: TimeoutCancellationException) {
+            null
+        }
     }
 }

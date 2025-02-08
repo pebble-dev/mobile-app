@@ -6,4 +6,5 @@ interface PrivatePKJSInterface {
     fun logInterceptedRequest()
     fun logLocationRequest()
     fun getVersionCode(): Int
+    fun getTimelineTokenAsync(): String
 }

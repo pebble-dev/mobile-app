@@ -18,7 +18,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 
-class WebViewJsRunner(val context: Context, device: PebbleDevice, private val scope: CoroutineScope, appInfo: PbwAppInfo, jsPath: String): JsRunner(appInfo, jsPath, device) {
+class WebViewJsRunner(val context: Context, device: PebbleDevice, val scope: CoroutineScope, appInfo: PbwAppInfo, jsPath: String): JsRunner(appInfo, jsPath, device) {
 
     companion object {
         const val API_NAMESPACE = "Pebble"
@@ -236,6 +236,20 @@ class WebViewJsRunner(val context: Context, device: PebbleDevice, private val sc
                 webView.loadUrl("javascript:loadScript('$jsUrl')")
             }
         } ?: error("WebView not initialized")
+    }
+
+    suspend fun signalTimelineToken(callId: String, token: String) {
+        val tokenJson = Json.encodeToString(mapOf("userToken" to token, "callId" to callId))
+        withContext(Dispatchers.Main) {
+            webView?.loadUrl("javascript:signalTimelineTokenSuccess('${Uri.encode(tokenJson)}')")
+        }
+    }
+
+    suspend fun signalTimelineTokenFail(callId: String) {
+        val tokenJson = Json.encodeToString(mapOf("userToken" to null, "callId" to callId))
+        withContext(Dispatchers.Main) {
+            webView?.loadUrl("javascript:signalTimelineTokenFailure('${Uri.encode(tokenJson)}')")
+        }
     }
 
     suspend fun signalReady() {

@@ -123,7 +123,8 @@ fun LockerEntry.toEntity(): SyncedLockerEntry {
             pbwIconResourceId = pbw.iconResourceId,
             nextSyncAction = if (type == "watchface") NextSyncAction.Ignore else NextSyncAction.Upload,
             order = -1,
-            lastOpened = null
+            lastOpened = null,
+            userToken = userToken
     )
 }
 

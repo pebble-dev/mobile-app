@@ -55,7 +55,8 @@ class PbwApp(uri: String): KoinComponent {
                         NextSyncAction.Upload,
                         order = -1,
                         lastOpened = null,
-                        local = true
+                        local = true,
+                        userToken = null
                 )
         )
 

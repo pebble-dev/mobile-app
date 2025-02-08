@@ -34,7 +34,9 @@ data class SyncedLockerEntry(
         val order: Int,
         val lastOpened: Instant?,
         @ColumnInfo(defaultValue = "0")
-        val local: Boolean = false
+        val local: Boolean = false,
+        @ColumnInfo(defaultValue = "null")
+        val userToken: String? = null,
 )
 
 data class SyncedLockerEntryWithPlatforms(

@@ -2,9 +2,11 @@ package io.rebble.cobble.shared.js
 
 import android.net.Uri
 import android.webkit.JavascriptInterface
+import com.benasher44.uuid.Uuid
 import io.rebble.cobble.shared.Logging
 import io.rebble.cobble.shared.data.js.ActivePebbleWatchInfo
 import io.rebble.cobble.shared.data.js.fromDevice
+import io.rebble.cobble.shared.database.dao.LockerDao
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.domain.state.watchOrNull
 import kotlinx.coroutines.CoroutineScope
@@ -12,8 +14,11 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class WebViewPrivatePKJSInterface(private val jsRunner: WebViewJsRunner, private val scope: CoroutineScope, private val outgoingAppMessages: MutableSharedFlow<String>): PrivatePKJSInterface {
+class WebViewPrivatePKJSInterface(private val jsRunner: WebViewJsRunner, private val scope: CoroutineScope, private val outgoingAppMessages: MutableSharedFlow<String>): PrivatePKJSInterface, KoinComponent {
+    private val lockerDao: LockerDao by inject()
 
     @JavascriptInterface
     override fun privateLog(message: String) {
@@ -39,6 +44,35 @@ class WebViewPrivatePKJSInterface(private val jsRunner: WebViewJsRunner, private
     @JavascriptInterface
     override fun logLocationRequest() {
         Logging.v("logLocationRequest")
+    }
+
+    @JavascriptInterface
+    override fun getTimelineTokenAsync(): String {
+        val uuid = Uuid.fromString(jsRunner.appInfo.uuid)
+        jsRunner.scope.launch {
+            var token: String? = null
+            val entry = lockerDao.getEntryByUuid(uuid.toString())
+            if (entry != null) {
+                token = entry.entry.userToken
+                if (entry.entry.local /*&& token == null*/) {
+                    Logging.d("App is local, getting sandbox timeline token")
+                    token = JsTokenUtil.getSandboxTimelineToken(uuid)
+                    if (token == null) {
+                        Logging.w("Failed to get sandbox timeline token")
+                    } else {
+                        lockerDao.update(entry.entry.copy(userToken = token))
+                    }
+                }
+            } else {
+                Logging.e("App not found in locker")
+            }
+            if (token == null) {
+                jsRunner.signalTimelineTokenFail(uuid.toString())
+            } else {
+                jsRunner.signalTimelineToken(uuid.toString(), token)
+            }
+        }
+        return uuid.toString()
     }
 
     @JavascriptInterface
