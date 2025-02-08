@@ -54,7 +54,7 @@ class WebViewPrivatePKJSInterface(private val jsRunner: WebViewJsRunner, private
             val entry = lockerDao.getEntryByUuid(uuid.toString())
             if (entry != null) {
                 token = entry.entry.userToken
-                if (entry.entry.local /*&& token == null*/) {
+                if (entry.entry.local && token == null) {
                     Logging.d("App is local, getting sandbox timeline token")
                     token = JsTokenUtil.getSandboxTimelineToken(uuid)
                     if (token == null) {
