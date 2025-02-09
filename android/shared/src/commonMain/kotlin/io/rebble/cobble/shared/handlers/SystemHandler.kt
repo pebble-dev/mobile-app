@@ -122,13 +122,20 @@ class SystemHandler(
         val timezone = TimeZone.currentSystemDefault()
         val now = Clock.System.now()
         val timezoneOffsetMinutes = timezone.offsetAt(now).totalSeconds.seconds.inWholeMinutes
-        Logging.i("Sending current time to watch: $now, timezone: ${timezone.id} (truncated: ${timezone.id.take(MAX_TIMEZONE_NAME_LENGTH)}), offset: $timezoneOffsetMinutes")
+   
+        val normalizedZone = timezone.id
+        if (normalizedZone.length > MAX_TIMEZONE_NAME_LENGTH) {
+            normalizedZone = timezone.id.take(MAX_TIMEZONE_NAME_LENGTH)
+            Logging.i("Time Zone ${timezone.id} exceeds maximum value length and has been truncated to ${normalizedZone}")
+        }
+        
         val updateTimePacket = TimeMessage.SetUTC(
                 now.epochSeconds.toUInt(),
                 timezoneOffsetMinutes.toShort(),
-                timezone.id.take(MAX_TIMEZONE_NAME_LENGTH)
+                normalizedZone
         )
 
+        Logging.i("Sending current time to watch: $now, timezone: ${normalizedZone}, offset: $timezoneOffsetMinutes")
         systemService.send(updateTimePacket)
     }
 
