@@ -125,7 +125,7 @@ class SystemHandler(
    
         val normalizedZone = timezone.id
         if (normalizedZone.length > MAX_TIMEZONE_NAME_LENGTH) {
-            normalizedZone = timezone.id.take(MAX_TIMEZONE_NAME_LENGTH)
+            normalizedZone = normalizedZone.take(MAX_TIMEZONE_NAME_LENGTH)
             Logging.i("Time Zone ${timezone.id} exceeds maximum value length and has been truncated to ${normalizedZone}")
         }
         
