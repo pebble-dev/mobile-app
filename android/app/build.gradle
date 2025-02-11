@@ -122,7 +122,7 @@ def okioVersion = '3.9.0'
 def serializationJsonVersion = '1.7.3'
 
 def junitVersion = '4.13.2'
-def androidxTestVersion = "1.5.0"
+def androidxTestVersion = "1.6.1"
 
 dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
