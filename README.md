@@ -6,24 +6,34 @@ A multi platform watch companion app for Pebble/RebbleOS devices
 
 ## Building the app
 1. Checkout this repo
-2. [Generate new Github token with `read:packages` permission](https://github.com/settings/tokens). This is required to fetch libpebblecommons from Github packages repository.
-3. Create `local.properties` file in `android` folder. Write following to the file:
+2. Pull the submodules
+```bash
+git submodule update --init --recursive
+```
+3. [Generate new Github token with `read:packages` permission](https://github.com/settings/tokens). This is required to fetch libpebblecommons from Github packages repository.
+4. Create `local.properties` file in `android` folder. Write following to the file:
 
     ```
     GITHUB_ACTOR=<YOUR GITHUB USERNAME>
     GITHUB_TOKEN=<GENERATED TOKEN>
     ```
-
-4. Install flutter on your machine. To make builds reproducible, we use exact flutter version in pubspec.yml. Thus we recommend you use [FVM](https://fvm.app/documentation/getting-started/installation) to install flutter. After you install FVM, just run `fvm install` command in the
+5. Install flutter on your machine. To make builds reproducible, we use exact flutter version in pubspec.yml. Thus we recommend you use [FVM](https://fvm.app/documentation/getting-started/installation) to install flutter. After you install FVM, just run `fvm install` command in the
  project folder and you will automatically get the required flutter version. 
-5. [Setup flutter in the IDE of your choice](https://flutter.dev/docs/get-started/editor). Be sure to also configure it with [FVM Flutter path](https://fvm.app/docs/getting_started/configuration#ide).
-6. Open this repo in the IDE set up in step 5
+6. [Setup flutter in the IDE of your choice](https://flutter.dev/docs/get-started/editor). Be sure to also configure it with [FVM Flutter path](https://fvm.app/docs/getting_started/configuration#ide).
+7. Open this repo in the IDE set up in step 5
 
 If you do not have an IDE, from step 5, you'll instead:
 
 1. `fvm flutter pub get`
 2. Launch an emulator: `fvm flutter emulators --launch Pixel_2_API_30`
 3. `fvm flutter run`
+
+If you get the `Unknown Kotlin JVM target: 21` error while trying to build the app, you probably have wrong JDK version.
+
+Install JDK 17 and update flutter config to point to this JDK:
+```bash
+fvm flutter config --jdk-dir <path-to-jdk-17>
+```
 
 ### Host-specific instructions: Ubuntu and similar
 
