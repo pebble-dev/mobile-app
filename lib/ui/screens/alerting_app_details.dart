@@ -51,7 +51,7 @@ class AlertingAppDetails extends HookConsumerWidget implements CobbleScreen {
                   child: Switch(
                     value: app.enabled,
                     onChanged: (value) async {
-                      var mutedPkgList = mutedPackages.value ?? [];
+                      var mutedPkgList = List<String>.from(mutedPackages.value ?? []);
                       if (value) {
                         mutedPkgList.removeWhere((element) => element == app.packageId);
                       }else {
