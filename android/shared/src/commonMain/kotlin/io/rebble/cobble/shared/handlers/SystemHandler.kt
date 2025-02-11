@@ -123,7 +123,7 @@ class SystemHandler(
         val now = Clock.System.now()
         val timezoneOffsetMinutes = timezone.offsetAt(now).totalSeconds.seconds.inWholeMinutes
    
-        val normalizedZone = timezone.id
+        var normalizedZone = timezone.id
         if (normalizedZone.length > MAX_TIMEZONE_NAME_LENGTH) {
             normalizedZone = normalizedZone.take(MAX_TIMEZONE_NAME_LENGTH)
             Logging.i("Time Zone ${timezone.id} exceeds maximum value length and has been truncated to ${normalizedZone}")
