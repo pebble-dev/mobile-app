@@ -83,6 +83,9 @@ kotlin {
             implementation(project(":pebblekit_android"))
             implementation(project(":speex_codec"))
         }
+        iosMain {
+            kotlin.srcDir("build/generated/ksp/metadata")
+        }
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.ktor.client.mock)
@@ -110,4 +113,7 @@ dependencies {
     implementation(libs.androidx.security.crypto.ktx)
     add("kspCommonMainMetadata", libs.androidx.room.compiler)
     add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosX64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
 }

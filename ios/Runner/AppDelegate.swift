@@ -3,6 +3,7 @@ import Flutter
 import CocoaLumberjackSwift
 import CocoaLumberjackSwiftLogBackend
 import Logging
+import shared
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -18,6 +19,7 @@ import Logging
         LECentral.shared = LECentral()
         
         setupFlutter()
+        setupKmp()
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
@@ -28,6 +30,10 @@ import Logging
         }
         FlutterBridgeSetup.createUIBridges(binaryMessenger: binaryMessenger)
         FlutterBridgeSetup.createCommonBridges(binaryMessenger: binaryMessenger)
+    }
+    
+    private func setupKmp() {
+        Koin_iosKt.doInitKoin()
     }
     
     private func setupLogging() {

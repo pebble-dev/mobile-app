@@ -20,6 +20,7 @@ class FlutterBridgeSetup {
         ConnectionControlSetup(binaryMessenger, ConnectionFlutterBridge(callbackMessenger: binaryMessenger))
         PigeonLoggerSetup(binaryMessenger, LoggingFlutterBridge())
         AppLifecycleControlSetup(binaryMessenger, AppLifecycleFlutterBridge())
+        KMPApiSetup(binaryMessenger, KMPApiBridge())
     }
 
     static func createUIBridges(binaryMessenger: FlutterBinaryMessenger) {
