@@ -48,7 +48,8 @@ class LockerItemViewModel(private val httpClient: HttpClient, val entry: SyncedL
         it.watchOrNull?.metadata?.mapNotNull { meta ->
             meta?.running?.let { running ->
                 val platform = WatchHardwarePlatform.fromProtocolNumber(running.hardwarePlatform.get())
-                entry.platforms.any { it.name == platform?.watchType?.codename }
+                val compatibleVariants = platform?.watchType?.getCompatibleAppVariants()?.map { it.codename } ?: emptyList()
+                entry.platforms.any { compatibleVariants.contains(it.name) }
             }
         } ?: flowOf(true)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), true)
