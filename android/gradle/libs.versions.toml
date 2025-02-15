@@ -44,6 +44,8 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 material = "1.12.0"
+assertk = "0.28.1"
+turbine = "1.2.0"
 
 [plugins]
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -94,6 +96,7 @@ androidx-datastore-preferences = { module = "androidx.datastore:datastore-prefer
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinVersion" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinVersion" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinVersion" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koinVersion" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koinVersion" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutinesVersion" }
@@ -125,3 +128,5 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+assertk = {module = "com.willowtreeapps.assertk:assertk", version.ref = "assertk"}
+turbine = {module = "app.cash.turbine:turbine", version.ref = "turbine"}

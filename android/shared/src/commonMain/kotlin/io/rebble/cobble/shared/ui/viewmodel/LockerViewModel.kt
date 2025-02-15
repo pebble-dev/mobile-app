@@ -13,7 +13,10 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class LockerViewModel(private val lockerDao: LockerDao): ViewModel() {
+class LockerViewModel(
+        private val lockerDao: LockerDao,
+        private val dispatcher: CoroutineDispatcher,
+): ViewModel() {
     open class LockerEntriesState {
         object Loading : LockerEntriesState()
         object Error : LockerEntriesState()
@@ -26,7 +29,7 @@ class LockerViewModel(private val lockerDao: LockerDao): ViewModel() {
 
     val entriesState = MutableStateFlow<LockerEntriesState>(LockerEntriesState.Loading)
     init {
-        viewModelScope.launch(Dispatchers.IO + CoroutineName("LockerViewModelGet")) {
+        viewModelScope.launch(dispatcher + CoroutineName("LockerViewModelGet")) {
             lockerDao.getAllEntriesFlow().catch {
                 Logging.e("Error loading locker entries", it)
                 entriesState.value = LockerEntriesState.Error
@@ -45,7 +48,7 @@ class LockerViewModel(private val lockerDao: LockerDao): ViewModel() {
 
     suspend fun updateOrder(entries: List<SyncedLockerEntryWithPlatforms>) {
         lastJob?.cancel()
-        lastJob = viewModelScope.launch(Dispatchers.IO) {
+        lastJob = viewModelScope.launch(dispatcher) {
             mutex.withLock {
                 entries.forEachIndexed { i, e ->
                     if (e.entry.type == "watchapp") {
