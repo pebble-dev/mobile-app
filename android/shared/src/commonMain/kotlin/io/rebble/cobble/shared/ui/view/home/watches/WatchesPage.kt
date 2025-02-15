@@ -24,11 +24,10 @@ fun WatchesPage() {
         CenterAlignedTopAppBar(
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 title = {
                     Text(
-                            "My Watches",
+                            "My watches",
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                     )
@@ -37,9 +36,9 @@ fun WatchesPage() {
         Row(
                 modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(horizontal = 16.dp, vertical = 24.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(25.dp)
         ) {
             RebbleIcons.disconnectFromWatch()
 
@@ -56,12 +55,10 @@ fun WatchesPage() {
                 )
             }
         }
-        Column(
-                modifier = Modifier.padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text("All watches")
-            HorizontalDivider(thickness = 2.dp)
-        }
+        Text(modifier = Modifier
+                        .padding(
+                        horizontal = 10.dp),
+                        text = "Other Watches")
+        HorizontalDivider(thickness = 2.dp)
     }
 }

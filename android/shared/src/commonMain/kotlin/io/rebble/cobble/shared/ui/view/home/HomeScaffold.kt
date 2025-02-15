@@ -32,6 +32,7 @@ fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
     val scope = rememberCoroutineScope()
     val searchingState = remember { mutableStateOf(false) }
     Scaffold(
+        contentWindowInsets = WindowInsets(0.dp), // Needed in scaffold for edgetoedge to work
         snackbarHost = { SnackbarHost(snackbarHostState) },
         /*topBar = {
             TopAppBar(
@@ -60,7 +61,7 @@ fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
                     selected = page is HomePage.WatchesPage,
                     onClick = { onNavChange(Routes.Home.WATCHES) },
                     icon = { RebbleIcons.devices() },
-                    label = { Text("Watches") }
+                    label = { Text("Devices") }
                 )
             }
         },
@@ -79,13 +80,14 @@ fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
                     )
                 }
                 is HomePage.WatchesPage -> {
-                    ExtendedFloatingActionButton(
+                    FloatingActionButton(
+                            modifier = Modifier
+                                    .padding(16.dp),
                             onClick = {
                                 searchingState.value = false //TODO Change this so that it actually goes into pairing mode.
                             },
                             content = {
                                 Icon(Icons.Filled.Add, "PAIR A WATCH FLOATING BUTTON")
-                                Text("PAIR A WATCH")
                             }
                     )
                 }
