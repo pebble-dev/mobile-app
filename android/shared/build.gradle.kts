@@ -12,10 +12,6 @@ plugins {
     alias(libs.plugins.jetbrains.kotlinx.atomicfu)
 }
 
-val timberVersion = "5.0.1"
-val androidxVersion = "1.13.1"
-val rruleVersion = "1.0.3"
-
 kotlin {
     androidTarget {
         compilations.all {
