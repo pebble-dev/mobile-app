@@ -25,6 +25,7 @@ fun WatchesPage(viewModel: WatchesListViewModel = viewModel{ WatchesListViewMode
 
     if (selectedWatch != null) {
         ModalBottomSheet(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
                 onDismissRequest = {
                     coroutineScope.launch {
                         sheetState.hide()  // First, hide the sheet smoothly
@@ -36,7 +37,7 @@ fun WatchesPage(viewModel: WatchesListViewModel = viewModel{ WatchesListViewMode
         ) {
             WatchBottomSheetContent(
                     watch = selectedWatch,
-                    onToggleConnection = { viewModel.toggleConnection(selectedWatch) },
+                    onToggleConnection = { viewModel.toggleConnection(selectedWatch, true) },
                     onForgetWatch = { viewModel.forgetWatch(selectedWatch) },
                     onCheckForUpdates = { viewModel.checkForUpdates(selectedWatch) },
                     onDismiss = {
@@ -66,27 +67,31 @@ fun WatchesPage(viewModel: WatchesListViewModel = viewModel{ WatchesListViewMode
                     )
                 }
         )
-        Row(
-                modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 24.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(25.dp)
-        ) {
-            RebbleIcons.disconnectFromWatch()
+        if (viewModel.getConnectedWatch() == null) {
+            Row(
+                    modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 24.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(25.dp)
+            ) {
+                RebbleIcons.disconnectFromWatch()
 
-            Column {
-                Text(
-                        text = "Nothing connected",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.SemiBold
-                )
-                Text(
-                        text = "Background service stopped",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Column {
+                    Text(
+                            text = "Nothing connected",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                            text = "Background service stopped",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
+        } else {
+            WatchesListItem(watch = viewModel.getConnectedWatch()!!, viewModel = viewModel)
         }
         Text(modifier = Modifier
                         .padding(
@@ -95,10 +100,8 @@ fun WatchesPage(viewModel: WatchesListViewModel = viewModel{ WatchesListViewMode
         HorizontalDivider(thickness = 2.dp)
 
         LazyColumn {
-            items(viewModel.watches) { watch ->
-                WatchesListItem(watch = watch) {
-                    viewModel.selectWatch(watch)
-                }
+            items(viewModel.watches.filter { !it.isConnected }) { watch ->
+                WatchesListItem(watch = watch, viewModel = viewModel)
             }
         }
     }
