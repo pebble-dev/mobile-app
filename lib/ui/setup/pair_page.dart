@@ -24,6 +24,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 final ConnectionControl connectionControl = ConnectionControl();
 final UiConnectionControl uiConnectionControl = UiConnectionControl();
 final ScanControl scanControl = ScanControl();
+final PermissionCheck permissionCheck = PermissionCheck();
+final PermissionControl permissionControl = PermissionControl();
 
 class PairPage extends HookConsumerWidget implements CobbleScreen {
   final bool fromLanding;
@@ -99,11 +101,22 @@ class PairPage extends HookConsumerWidget implements CobbleScreen {
     }, [scan, /*pair,*/ connectionState]);
 
     useEffect(() {
-      if (Platform.isIOS) {
-        scanControl.startBleScan();
-      } else {
-        scanControl.startClassicScan();
+      Future<void> initializeScan() async {
+        // Check and request permissions before starting scan
+        if (!(await permissionCheck.hasLocationPermission()).value!) {
+          await permissionControl.requestLocationPermission();
+        }
+        await permissionControl.requestBluetoothPermissions();
+        
+        // Start scan after permissions are granted
+        if (Platform.isIOS) {
+          scanControl.startBleScan();
+        } else {
+          scanControl.startClassicScan();
+        }
       }
+
+      initializeScan();
       return null;
     }, []);
 
