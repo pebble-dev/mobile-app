@@ -1,0 +1,529 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 13,
+    "identityHash": "40a219d017357252022cfbee3971fefb",
+    "entities": [
+      {
+        "tableName": "Calendar",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `platformId` TEXT NOT NULL, `name` TEXT NOT NULL, `ownerName` TEXT NOT NULL, `ownerId` TEXT NOT NULL, `color` INTEGER NOT NULL, `enabled` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "platformId",
+            "columnName": "platformId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ownerName",
+            "columnName": "ownerName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ownerId",
+            "columnName": "ownerId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "color",
+            "columnName": "color",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "enabled",
+            "columnName": "enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Calendar_platformId",
+            "unique": true,
+            "columnNames": [
+              "platformId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Calendar_platformId` ON `${TABLE_NAME}` (`platformId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "TimelinePin",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`itemId` TEXT NOT NULL, `parentId` TEXT NOT NULL, `backingId` TEXT, `timestamp` INTEGER NOT NULL, `duration` INTEGER, `type` TEXT NOT NULL, `isVisible` INTEGER NOT NULL, `isFloating` INTEGER NOT NULL, `isAllDay` INTEGER NOT NULL, `persistQuickView` INTEGER NOT NULL, `layout` TEXT NOT NULL, `attributesJson` TEXT, `actionsJson` TEXT, `nextSyncAction` TEXT, PRIMARY KEY(`itemId`))",
+        "fields": [
+          {
+            "fieldPath": "itemId",
+            "columnName": "itemId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "parentId",
+            "columnName": "parentId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "backingId",
+            "columnName": "backingId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "duration",
+            "columnName": "duration",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isVisible",
+            "columnName": "isVisible",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isFloating",
+            "columnName": "isFloating",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isAllDay",
+            "columnName": "isAllDay",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "persistQuickView",
+            "columnName": "persistQuickView",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "layout",
+            "columnName": "layout",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "attributesJson",
+            "columnName": "attributesJson",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "actionsJson",
+            "columnName": "actionsJson",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "nextSyncAction",
+            "columnName": "nextSyncAction",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "itemId"
+          ]
+        }
+      },
+      {
+        "tableName": "PersistedNotification",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`sbnKey` TEXT NOT NULL, `packageName` TEXT NOT NULL, `postTime` INTEGER NOT NULL, `title` TEXT NOT NULL, `text` TEXT NOT NULL, `groupKey` TEXT, PRIMARY KEY(`sbnKey`))",
+        "fields": [
+          {
+            "fieldPath": "sbnKey",
+            "columnName": "sbnKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "postTime",
+            "columnName": "postTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "text",
+            "columnName": "text",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "groupKey",
+            "columnName": "groupKey",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "sbnKey"
+          ]
+        }
+      },
+      {
+        "tableName": "CachedPackageInfo",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `flags` INTEGER NOT NULL, `updated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "flags",
+            "columnName": "flags",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updated",
+            "columnName": "updated",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "NotificationChannel",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`packageId` TEXT NOT NULL, `channelId` TEXT NOT NULL, `name` TEXT, `description` TEXT, `conversationId` TEXT, `shouldNotify` INTEGER NOT NULL, PRIMARY KEY(`packageId`, `channelId`))",
+        "fields": [
+          {
+            "fieldPath": "packageId",
+            "columnName": "packageId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "channelId",
+            "columnName": "channelId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "conversationId",
+            "columnName": "conversationId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "shouldNotify",
+            "columnName": "shouldNotify",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "packageId",
+            "channelId"
+          ]
+        }
+      },
+      {
+        "tableName": "SyncedLockerEntry",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `uuid` TEXT NOT NULL, `version` TEXT NOT NULL, `title` TEXT NOT NULL, `type` TEXT NOT NULL, `hearts` INTEGER NOT NULL, `developerName` TEXT NOT NULL, `developerId` TEXT, `configurable` INTEGER NOT NULL, `timelineEnabled` INTEGER NOT NULL, `removeLink` TEXT NOT NULL, `shareLink` TEXT NOT NULL, `pbwLink` TEXT NOT NULL, `pbwReleaseId` TEXT NOT NULL, `pbwIconResourceId` INTEGER NOT NULL DEFAULT 0, `nextSyncAction` TEXT NOT NULL, `order` INTEGER NOT NULL DEFAULT -1, `lastOpened` INTEGER, `local` INTEGER NOT NULL DEFAULT 0, `userToken` TEXT DEFAULT null, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "uuid",
+            "columnName": "uuid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "version",
+            "columnName": "version",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hearts",
+            "columnName": "hearts",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "developerName",
+            "columnName": "developerName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "developerId",
+            "columnName": "developerId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "configurable",
+            "columnName": "configurable",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timelineEnabled",
+            "columnName": "timelineEnabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "removeLink",
+            "columnName": "removeLink",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shareLink",
+            "columnName": "shareLink",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pbwLink",
+            "columnName": "pbwLink",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pbwReleaseId",
+            "columnName": "pbwReleaseId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pbwIconResourceId",
+            "columnName": "pbwIconResourceId",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "nextSyncAction",
+            "columnName": "nextSyncAction",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "order",
+            "columnName": "order",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "-1"
+          },
+          {
+            "fieldPath": "lastOpened",
+            "columnName": "lastOpened",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "local",
+            "columnName": "local",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "userToken",
+            "columnName": "userToken",
+            "affinity": "TEXT",
+            "defaultValue": "null"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_SyncedLockerEntry_uuid",
+            "unique": true,
+            "columnNames": [
+              "uuid"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_SyncedLockerEntry_uuid` ON `${TABLE_NAME}` (`uuid`)"
+          }
+        ]
+      },
+      {
+        "tableName": "SyncedLockerEntryPlatform",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`platformEntryId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `lockerEntryId` TEXT NOT NULL, `sdkVersion` TEXT NOT NULL, `processInfoFlags` INTEGER NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `icon` TEXT, `list` TEXT, `screenshot` TEXT, FOREIGN KEY(`lockerEntryId`) REFERENCES `SyncedLockerEntry`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "platformEntryId",
+            "columnName": "platformEntryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lockerEntryId",
+            "columnName": "lockerEntryId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sdkVersion",
+            "columnName": "sdkVersion",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "processInfoFlags",
+            "columnName": "processInfoFlags",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "images.icon",
+            "columnName": "icon",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "images.list",
+            "columnName": "list",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "images.screenshot",
+            "columnName": "screenshot",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "platformEntryId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_SyncedLockerEntryPlatform_lockerEntryId",
+            "unique": false,
+            "columnNames": [
+              "lockerEntryId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_SyncedLockerEntryPlatform_lockerEntryId` ON `${TABLE_NAME}` (`lockerEntryId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "SyncedLockerEntry",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "lockerEntryId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '40a219d017357252022cfbee3971fefb')"
+    ]
+  }
+}

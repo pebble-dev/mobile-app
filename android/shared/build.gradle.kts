@@ -20,7 +20,7 @@ kotlin {
     androidTarget {
         compilations.all {
             kotlinOptions {
-                jvmTarget = JvmTarget.JVM_1_8.target
+                jvmTarget = JvmTarget.JVM_17.target
             }
         }
     }
@@ -101,8 +101,8 @@ android {
         buildConfigField("Boolean", "VERBOSE_BT", "false") // Will spam logs and slow down bluetooth
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 dependencies {
