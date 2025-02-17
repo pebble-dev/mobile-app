@@ -1,8 +1,10 @@
 package io.rebble.cobble.shared.ui.view.home.watches
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -55,7 +57,17 @@ fun WatchesPage(viewModel: WatchesListViewModel = viewModel{ WatchesListViewMode
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(25.dp)
             ) {
-                RebbleIcons.disconnectFromWatch()
+                Box(
+                        modifier = Modifier
+                                .size(60.dp)
+                                .background(
+                                        color = MaterialTheme.colorScheme.primaryContainer,
+                                        shape = RoundedCornerShape(8.dp)
+                                ),
+                        contentAlignment = Alignment.Center
+                ) {
+                    RebbleIcons.disconnectFromWatch()
+                }
 
                 Column {
                     Text(
@@ -77,7 +89,7 @@ fun WatchesPage(viewModel: WatchesListViewModel = viewModel{ WatchesListViewMode
                         .padding(
                         horizontal = 10.dp),
                         text = "Other Watches")
-        HorizontalDivider(thickness = 2.dp)
+        HorizontalDivider(thickness = 2.dp, color = MaterialTheme.colorScheme.secondary)
 
         LazyColumn {
             items(viewModel.watches.filter { !it.isConnected }) { watch ->

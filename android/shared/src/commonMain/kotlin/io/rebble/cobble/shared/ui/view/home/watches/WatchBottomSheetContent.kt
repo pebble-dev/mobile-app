@@ -1,7 +1,9 @@
 package io.rebble.cobble.shared.ui.view.home.watches
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -24,7 +26,7 @@ fun WatchBottomSheetContent(watch: WatchItem, onToggleConnection: (WatchItem) ->
     val coroutineScope = rememberCoroutineScope()
 
     ModalBottomSheet(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
             onDismissRequest = {
                 coroutineScope.launch {
                     sheetState.hide()  // First, hide the sheet smoothly
@@ -45,23 +47,49 @@ fun WatchBottomSheetContent(watch: WatchItem, onToggleConnection: (WatchItem) ->
                             .padding(12.dp),
                     verticalAlignment = Alignment.CenterVertically
             ) {
-                RebbleIcons.deadWatchGhost80()
+                if (watch.isConnected) {
+                    Box(
+                            modifier = Modifier
+                                    .size(60.dp)
+                                    .background(
+                                            color = Color(121,249,205),
+                                            shape = RoundedCornerShape(8.dp)
+                                    ),
+                            contentAlignment = Alignment.Center
+                    ) {
+                        RebbleIcons.deadWatchGhost80() //TODO Switch with watch icon
+                    }
+                } else {
+                    Box(
+                            modifier = Modifier
+                                    .size(60.dp)
+                                    .background(
+                                            color = MaterialTheme.colorScheme.primaryContainer,
+                                            shape = RoundedCornerShape(8.dp)
+                                    ),
+                            contentAlignment = Alignment.Center
+                    ) {
+                        RebbleIcons.deadWatchGhost80()
+                    }
+                }
 
                 Spacer(modifier = Modifier.width(12.dp))
 
                 Column {
-                    Text(text = watch.name, fontWeight = FontWeight.Bold)
+                    Text(text = watch.name, fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodyLarge)
                     Text(
                             text = if (watch.isConnected&&watch.updateAvailable) watch.softwareVersion + " - Update Available!"
                                     else if(watch.isConnected) watch.softwareVersion + " - Connected!"
                                     else "Disconnected",
-                            color = if (watch.isConnected&&watch.updateAvailable) Color.Green
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (watch.isConnected&&watch.updateAvailable) Color(0, 108, 81)
                                     else MaterialTheme.colorScheme.secondary
                     )
                 }
             }
 
-            HorizontalDivider(thickness = 2.dp)
+            HorizontalDivider(thickness = 2.dp, color = MaterialTheme.colorScheme.secondary)
 
             Row(
                     modifier = Modifier
@@ -70,11 +98,14 @@ fun WatchBottomSheetContent(watch: WatchItem, onToggleConnection: (WatchItem) ->
                             .clickable { onToggleConnection(watch) },
                     verticalAlignment = Alignment.CenterVertically
             ) {
-                if (watch.isConnected) RebbleIcons.disconnectFromWatch() else RebbleIcons.connectToWatch()
+                if (watch.isConnected) RebbleIcons.disconnectFromWatch(tint = MaterialTheme.colorScheme.secondary)
+                else RebbleIcons.connectToWatch(tint = MaterialTheme.colorScheme.secondary)
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(
-                            text = if (watch.isConnected) "Disconnect from watch" else "Connect to watch"
+                            text = if (watch.isConnected) "Disconnect from watch" else "Connect to watch",
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.secondary
                     )
                 }
             }
@@ -86,12 +117,15 @@ fun WatchBottomSheetContent(watch: WatchItem, onToggleConnection: (WatchItem) ->
                                 .clickable { onCheckForUpdates(watch) },
                         verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (watch.updateAvailable) RebbleIcons.applyUpdate(tint=Color.Green) else RebbleIcons.checkForUpdates()
+                    if (watch.updateAvailable) RebbleIcons.applyUpdate(tint = Color(0, 108, 81))
+                    else RebbleIcons.checkForUpdates(tint = MaterialTheme.colorScheme.secondary)
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
                                 text = if (watch.updateAvailable) "Download Update" else "Check for updates",
-                                color = if (watch.updateAvailable) Color.Green else Color.Unspecified
+                                fontWeight = FontWeight.SemiBold,
+                                color = if (watch.updateAvailable) Color(0, 108, 81)
+                                        else MaterialTheme.colorScheme.secondary
                         )
                     }
                 }
@@ -103,17 +137,18 @@ fun WatchBottomSheetContent(watch: WatchItem, onToggleConnection: (WatchItem) ->
                                 .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                 ) {
-                    RebbleIcons.checkForUpdates()
+                    RebbleIcons.checkForUpdates(tint = MaterialTheme.colorScheme.secondary)
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
-                                text = "Check for updates"
+                                text = "Check for updates",
+                                color = MaterialTheme.colorScheme.secondary
                         )
                     }
                 }
             }
 
-            HorizontalDivider(thickness = 2.dp)
+            HorizontalDivider(thickness = 2.dp, color = MaterialTheme.colorScheme.secondary)
 
             Row(
                     modifier = Modifier
@@ -122,7 +157,7 @@ fun WatchBottomSheetContent(watch: WatchItem, onToggleConnection: (WatchItem) ->
                             .clickable { onForgetWatch(watch) },
                     verticalAlignment = Alignment.CenterVertically
             ) {
-                RebbleIcons.unpairFromWatch()
+                RebbleIcons.unpairFromWatch(tint = Color.Red)
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(

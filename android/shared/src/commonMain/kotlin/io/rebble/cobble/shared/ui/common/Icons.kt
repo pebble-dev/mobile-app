@@ -45,7 +45,7 @@ object RebbleIcons {
     @Composable
     fun rocket(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe80d), modifier = modifier)
     @Composable
-    fun unpairFromWatch(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe80e), modifier = modifier)
+    fun unpairFromWatch(modifier:  Modifier = Modifier.width(24.dp), tint: Color = LocalContentColor.current) = TextIcon(font(), Char(0xe80e), modifier = modifier, tint = tint)
     @Composable
     fun applyUpdate(modifier:  Modifier = Modifier.width(24.dp), tint: Color = LocalContentColor.current) = TextIcon(font(), Char(0xe80f), modifier = modifier, tint = tint)
     @Composable
@@ -53,7 +53,7 @@ object RebbleIcons {
     @Composable
     fun disconnectFromWatch(modifier:  Modifier = Modifier.width(24.dp), tint: Color = LocalContentColor.current) = TextIcon(font(), Char(0xe811), modifier = modifier, tint = tint)
     @Composable
-    fun connectToWatch(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe812), modifier = modifier)
+    fun connectToWatch(modifier:  Modifier = Modifier.width(24.dp), tint: Color = LocalContentColor.current) = TextIcon(font(), Char(0xe812), modifier = modifier, tint = tint)
     @Composable
     fun devices(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe813), modifier = modifier)
     @Composable
