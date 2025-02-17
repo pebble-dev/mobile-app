@@ -22,7 +22,7 @@ fun WatchesListItem(watch: WatchItem, viewModel: WatchesListViewModel) {
     Row(
             modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp)
+                    .padding(horizontal = 16.dp, vertical = 24.dp)
                     .clickable { viewModel.selectWatch(watch) },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
