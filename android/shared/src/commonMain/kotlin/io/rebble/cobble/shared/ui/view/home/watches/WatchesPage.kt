@@ -13,42 +13,22 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.rebble.cobble.shared.ui.common.RebbleIcons
 import io.rebble.cobble.shared.ui.viewmodel.WatchesListViewModel
-import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WatchesPage(viewModel: WatchesListViewModel = viewModel{ WatchesListViewModel() }) {
     val selectedWatch = viewModel.selectedWatch.value
-    val sheetState = rememberModalBottomSheetState()
-    val coroutineScope = rememberCoroutineScope()
 
     if (selectedWatch != null) {
-        ModalBottomSheet(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                onDismissRequest = {
-                    coroutineScope.launch {
-                        sheetState.hide()  // First, hide the sheet smoothly
-                    }.invokeOnCompletion {
-                        viewModel.clearSelection()  // Then, reset selected watch
-                    }
-                },
-                sheetState = sheetState
-        ) {
-            WatchBottomSheetContent(
-                    watch = selectedWatch,
-                    onToggleConnection = { viewModel.toggleConnection(selectedWatch, true) },
-                    onForgetWatch = { viewModel.forgetWatch(selectedWatch) },
-                    onCheckForUpdates = { viewModel.checkForUpdates(selectedWatch) },
-                    onDismiss = {
-                        coroutineScope.launch {
-                            sheetState.hide()
-                        }.invokeOnCompletion {
-                            viewModel.clearSelection()
-                        }
-                    }
-            )
-        }
+
+        WatchBottomSheetContent(
+                watch = selectedWatch,
+                onToggleConnection = { viewModel.toggleConnection(selectedWatch, true) },
+                onForgetWatch = { viewModel.forgetWatch(selectedWatch) },
+                onCheckForUpdates = { viewModel.checkForUpdates(selectedWatch) },
+                clearSelection = { viewModel.clearSelection() }
+        )
     }
 
     Column(

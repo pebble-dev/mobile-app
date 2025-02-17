@@ -59,7 +59,7 @@ fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
 
                 NavigationBarItem(
                     selected = page is HomePage.WatchesPage,
-                    onClick = { onNavChange(Routes.Home.WATCHES) },
+                    onClick = { onNavChange(Routes.Home.WATCHES_PAGE) },
                     icon = { RebbleIcons.devices() },
                     label = { Text("Devices") }
                 )
