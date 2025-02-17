@@ -9,9 +9,9 @@ import io.rebble.cobble.shared.data.WatchItem
 
 class WatchesListViewModel : ViewModel(){
     private val _watches = mutableStateListOf(
-            WatchItem("Pebble Time 2747", false),
-            WatchItem("Asterix ABXY", false),
-            WatchItem("Rebble Steel", true)
+            WatchItem("Pebble Time 2747","v4.4.0-rbl", false, false),
+            WatchItem("Asterix ABXY", "v4.4.0-rbl", false, false),
+            WatchItem("Rebble Steel", "v4.4.0-rbl", true, true)
     )
     val watches: List<WatchItem> = _watches
 

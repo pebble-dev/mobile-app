@@ -2,11 +2,11 @@ package io.rebble.cobble.shared.ui.view.home.watches
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.rebble.cobble.shared.data.WatchItem
@@ -31,8 +31,8 @@ fun WatchesListItem(watch: WatchItem, viewModel: WatchesListViewModel) {
             Column {
                 Text(text = watch.name, fontWeight = FontWeight.Bold)
                 Text(
-                        text = if (watch.isConnected) "Connected" else "Disconnected",
-                        color = if (watch.isConnected) Color.Green else Color.Red
+                        text = if (watch.isConnected) "Connected!" else "Disconnected",
+                        color = MaterialTheme.colorScheme.secondary
                 )
             }
         }
