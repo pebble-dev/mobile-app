@@ -118,7 +118,7 @@ def timberVersion = "5.0.1"
 def androidxCoreVersion = '1.13.1'
 def daggerVersion = '2.51.1'
 def workManagerVersion = '2.9.0'
-def okioVersion = '3.9.0'
+def okioVersion = '3.10.2'
 def serializationJsonVersion = '1.7.3'
 
 def junitVersion = '4.13.2'
