@@ -10,48 +10,39 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.rebble.cobble.shared.data.WatchItem
 import io.rebble.cobble.shared.ui.common.RebbleIcons
-import io.rebble.cobble.shared.ui.viewmodel.WatchesListViewModel
 
 @Composable
-fun WatchesListItem(watch: WatchItem, viewModel: WatchesListViewModel) {
+fun WatchesListItem(watch: WatchItem,
+                    onSelectWatch: () -> Unit,
+                    onToggleConnection: () -> Unit) {
     Row(
             modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 24.dp)
-                    .clickable { viewModel.selectWatch(watch) },
+                    .clickable { onSelectWatch() },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if (watch.isConnected) {
-                Box(
-                        modifier = Modifier
-                                .size(60.dp)
-                                .background(
-                                        color = Color(121,249,205),
-                                        shape = RoundedCornerShape(8.dp)
-                                ),
-                        contentAlignment = Alignment.Center
-                ) {
-                    RebbleIcons.deadWatchGhost80()
-                }
-            } else {
-                Box(
-                        modifier = Modifier
-                                .size(60.dp)
-                                .background(
-                                        color = MaterialTheme.colorScheme.primaryContainer,
-                                        shape = RoundedCornerShape(8.dp)
-                                ),
-                        contentAlignment = Alignment.Center
-                ) {
-                    RebbleIcons.deadWatchGhost80()
-                }
+            Box(
+                    modifier = Modifier
+                            .size(60.dp)
+                            .background(
+                                    color = if (watch.isConnected) {
+                                                AQUAMARINE
+                                            } else {
+                                                MaterialTheme.colorScheme.primaryContainer
+                                            },
+
+                                    shape = RoundedCornerShape(8.dp)
+                            ),
+                    contentAlignment = Alignment.Center
+            ) {
+                RebbleIcons.deadWatchGhost80()
             }
 
             Spacer(modifier = Modifier.width(12.dp))
@@ -59,7 +50,12 @@ fun WatchesListItem(watch: WatchItem, viewModel: WatchesListViewModel) {
             Column {
                 Text(text = watch.name, fontWeight = FontWeight.Bold)
                 Text(
-                        text = if (watch.isConnected) "Connected!" else "Disconnected",
+                        text = if (watch.isConnected) {
+                                    "Connected!"
+                                } else {
+                                    "Disconnected"
+                                },
+
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.secondary
                 )
@@ -67,10 +63,13 @@ fun WatchesListItem(watch: WatchItem, viewModel: WatchesListViewModel) {
         }
         // Ensure the icon's click event is separate from the row's click event
         Box(
-                modifier = Modifier.clickable { viewModel.toggleConnection(watch) }
+                modifier = Modifier.clickable { onToggleConnection() }
         ) {
-            if (watch.isConnected) RebbleIcons.disconnectFromWatch(tint = ButtonDefaults.buttonColors().containerColor)
-            else RebbleIcons.connectToWatch(tint = ButtonDefaults.buttonColors().containerColor)
+            if (watch.isConnected){
+                RebbleIcons.disconnectFromWatch(tint = ButtonDefaults.buttonColors().containerColor)
+            } else {
+                RebbleIcons.connectToWatch(tint = ButtonDefaults.buttonColors().containerColor)
+            }
         }
     }
 }

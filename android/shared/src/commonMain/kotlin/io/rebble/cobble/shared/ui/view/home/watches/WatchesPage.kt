@@ -20,15 +20,15 @@ import io.rebble.cobble.shared.ui.viewmodel.WatchesListViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WatchesPage(viewModel: WatchesListViewModel = viewModel{ WatchesListViewModel() }) {
-    val selectedWatch = viewModel.selectedWatch.value
+    val selectedWatch by viewModel.selectedWatch
 
     if (selectedWatch != null) {
 
         WatchBottomSheetContent(
-                watch = selectedWatch,
-                onToggleConnection = { viewModel.toggleConnection(selectedWatch, true) },
-                onForgetWatch = { viewModel.forgetWatch(selectedWatch) },
-                onCheckForUpdates = { viewModel.checkForUpdates(selectedWatch) },
+                watch = selectedWatch!!,
+                onToggleConnection = { viewModel.toggleConnection(selectedWatch!!, true) },
+                onForgetWatch = { viewModel.forgetWatch(selectedWatch!!) },
+                onCheckForUpdates = { viewModel.checkForUpdates(selectedWatch!!) },
                 clearSelection = { viewModel.clearSelection() }
         )
     }
@@ -49,7 +49,8 @@ fun WatchesPage(viewModel: WatchesListViewModel = viewModel{ WatchesListViewMode
                     )
                 }
         )
-        if (viewModel.getConnectedWatch() == null) {
+        val connectedWatch = viewModel.connectedWatch
+        if (connectedWatch == null) {
             Row(
                     modifier = Modifier
                             .fillMaxWidth()
@@ -83,17 +84,20 @@ fun WatchesPage(viewModel: WatchesListViewModel = viewModel{ WatchesListViewMode
                 }
             }
         } else {
-            WatchesListItem(watch = viewModel.getConnectedWatch()!!, viewModel = viewModel)
+            WatchesListItem(watch = connectedWatch,
+                            onSelectWatch = { viewModel.selectWatch(connectedWatch) },
+                            onToggleConnection = { viewModel.toggleConnection(connectedWatch) })
         }
         Text(modifier = Modifier
-                        .padding(
-                        horizontal = 10.dp),
+                        .padding(horizontal = 10.dp),
                         text = "Other Watches")
         HorizontalDivider(thickness = 2.dp, color = MaterialTheme.colorScheme.secondary)
 
         LazyColumn {
-            items(viewModel.watches.filter { !it.isConnected }) { watch ->
-                WatchesListItem(watch = watch, viewModel = viewModel)
+            items(viewModel.disconnectedWatches, key = { it.name }) { watch ->
+                WatchesListItem(watch = watch,
+                                onSelectWatch = { viewModel.selectWatch(watch) },
+                                onToggleConnection = { viewModel.toggleConnection(watch) })
             }
         }
     }

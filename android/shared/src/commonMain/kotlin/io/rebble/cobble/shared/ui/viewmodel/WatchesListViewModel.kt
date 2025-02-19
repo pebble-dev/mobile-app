@@ -1,8 +1,6 @@
 package io.rebble.cobble.shared.ui.viewmodel
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import io.rebble.cobble.shared.data.WatchItem
 
@@ -17,6 +15,14 @@ class WatchesListViewModel : ViewModel(){
 
     private val _selectedWatch = mutableStateOf<WatchItem?>(null)
     val selectedWatch: State<WatchItem?> = _selectedWatch
+
+    val connectedWatch: WatchItem? by derivedStateOf {
+        _watches.find { it.isConnected }
+    }
+
+    val disconnectedWatches: List<WatchItem> by derivedStateOf {
+        _watches.filter { !it.isConnected }
+    }
 
     fun selectWatch(watch: WatchItem) {
         _selectedWatch.value = watch
@@ -54,14 +60,5 @@ class WatchesListViewModel : ViewModel(){
         if (index != -1) {
             // TODO Check for Updates logic here
         }
-    }
-
-    fun getConnectedWatch(): WatchItem? {
-        for (watch: WatchItem in _watches) {
-            if (watch.isConnected) {
-                return watch
-            }
-        }
-        return null
     }
 }
