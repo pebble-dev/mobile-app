@@ -1,5 +1,10 @@
 package io.rebble.cobble.shared.ui.view.home.watches
 
+import android.shared.generated.resources.*
+import android.shared.generated.resources.Res
+import android.shared.generated.resources.bg_service_stopped
+import android.shared.generated.resources.my_watches
+import android.shared.generated.resources.nothing_connected
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.rebble.cobble.shared.ui.common.RebbleIcons
 import io.rebble.cobble.shared.ui.viewmodel.WatchesListViewModel
+import org.jetbrains.compose.resources.stringResource
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,7 +49,7 @@ fun WatchesPage(viewModel: WatchesListViewModel = viewModel{ WatchesListViewMode
                 ),
                 title = {
                     Text(
-                            "My watches",
+                            text = stringResource(Res.string.my_watches),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                     )
@@ -72,12 +78,12 @@ fun WatchesPage(viewModel: WatchesListViewModel = viewModel{ WatchesListViewMode
 
                 Column {
                     Text(
-                            text = "Nothing connected",
+                            text = stringResource(Res.string.nothing_connected),
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                            text = "Background service stopped",
+                            text = stringResource(Res.string.bg_service_stopped),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -90,7 +96,7 @@ fun WatchesPage(viewModel: WatchesListViewModel = viewModel{ WatchesListViewMode
         }
         Text(modifier = Modifier
                         .padding(horizontal = 10.dp),
-                        text = "Other Watches")
+                        text = stringResource(Res.string.other_watches))
         HorizontalDivider(thickness = 2.dp, color = MaterialTheme.colorScheme.secondary)
 
         LazyColumn {

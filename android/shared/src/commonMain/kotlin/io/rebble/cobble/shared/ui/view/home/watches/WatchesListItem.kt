@@ -1,5 +1,9 @@
 package io.rebble.cobble.shared.ui.view.home.watches
 
+import android.shared.generated.resources.Res
+import android.shared.generated.resources.connected
+import android.shared.generated.resources.disconnect_watch
+import android.shared.generated.resources.disconnected
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.rebble.cobble.shared.data.WatchItem
 import io.rebble.cobble.shared.ui.common.RebbleIcons
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun WatchesListItem(watch: WatchItem,
@@ -51,9 +56,9 @@ fun WatchesListItem(watch: WatchItem,
                 Text(text = watch.name, fontWeight = FontWeight.Bold)
                 Text(
                         text = if (watch.isConnected) {
-                                    "Connected!"
+                                    "${stringResource(Res.string.connected)}!"
                                 } else {
-                                    "Disconnected"
+                                    stringResource(Res.string.disconnected)
                                 },
 
                         fontWeight = FontWeight.SemiBold,

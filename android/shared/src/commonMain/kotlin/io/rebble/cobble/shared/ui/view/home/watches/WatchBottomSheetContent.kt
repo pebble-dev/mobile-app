@@ -1,5 +1,7 @@
 package io.rebble.cobble.shared.ui.view.home.watches
 
+import android.shared.generated.resources.*
+import android.shared.generated.resources.Res
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import io.rebble.cobble.shared.data.WatchItem
 import io.rebble.cobble.shared.ui.common.RebbleIcons
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 val AQUAMARINE = Color(121,249,205)
 val TROPICALRAINFOREST = Color(0, 108, 81)
@@ -78,11 +81,11 @@ fun WatchBottomSheetContent(watch: WatchItem,
                             style = MaterialTheme.typography.bodyLarge)
                     Text(
                             text = if (watch.isConnected && watch.updateAvailable){
-                                        watch.softwareVersion + " - Update Available!"
+                                        "${watch.softwareVersion} - ${stringResource(Res.string.update_available)}!"
                                     } else if(watch.isConnected) {
-                                        watch.softwareVersion + " - Connected!"
+                                        "${watch.softwareVersion} - ${stringResource(Res.string.connected)}!"
                                     } else {
-                                        "Disconnected"
+                                        stringResource(Res.string.disconnected)
                                     },
 
                             color = if (watch.isConnected && watch.updateAvailable){
@@ -115,9 +118,9 @@ fun WatchBottomSheetContent(watch: WatchItem,
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
                         text = if (watch.isConnected){
-                                    "Disconnect from watch"
+                                    stringResource(Res.string.disconnect_watch)
                                 } else {
-                                    "Connect to watch"
+                                    stringResource(Res.string.connect_watch)
                                 },
 
                         fontWeight = FontWeight.SemiBold,
@@ -148,9 +151,9 @@ fun WatchBottomSheetContent(watch: WatchItem,
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
                         text = if (watch.updateAvailable && watch.isConnected){
-                            "Download Update"
+                            stringResource(Res.string.download_update)
                         } else {
-                            "Check for updates"
+                            stringResource(Res.string.check_for_updates)
                         },
 
                         color = if (watch.updateAvailable && watch.isConnected){
@@ -175,7 +178,7 @@ fun WatchBottomSheetContent(watch: WatchItem,
                 RebbleIcons.unpairFromWatch(tint = Color.Red)
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                        text = "Forget Watch",
+                        text = stringResource(Res.string.forget_watch),
                         color = Color.Red
                 )
             }
