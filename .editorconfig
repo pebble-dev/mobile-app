@@ -13,6 +13,9 @@ ij_formatter_tags_enabled = false
 ij_smart_tabs = false
 ij_wrap_on_typing = false
 
+[/.git/**]
+max_line_length = unset
+
 [*.dart]
 max_line_length = 80
 
