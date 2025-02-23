@@ -23,6 +23,7 @@ private fun Settings(settings: List<SettingsViewModel.SettingsNavigationItem>, o
     Column(modifier = modifier) {
         CenterAlignedTopAppBar(title = { Text("Settings") })
         Column(modifier.verticalScroll(rememberScrollState())) {
+            SettingsAccountCard(modifier = Modifier.padding(16.dp))
             settings.forEach { item ->
                 if (item.icon == SettingsViewModel.SettingsNavigationItem.SettingsIcons.DEVELOPER) {
                     HorizontalDivider(thickness = 2.dp)
