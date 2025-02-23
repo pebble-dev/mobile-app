@@ -1,107 +1,29 @@
-package com.getpebble.android.kit.util;
+package com.getpebble.android.kit.util
 
-import android.util.Base64;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import android.util.Base64
+import com.getpebble.android.kit.util.PebbleTuple.TupleType
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
 
 /**
  * A collection of key-value pairs of heterogeneous types. PebbleDictionaries are the primary structure used to exchange
  * data between the phone and watch.
- * <p>
+ *
+ *
  * To accommodate the mixed-types contained within a PebbleDictionary, an internal JSON representation is used when
  * exchanging the dictionary between Android processes.
  *
  * @author zulak@getpebble.com
  */
-public class PebbleDictionary implements Iterable<PebbleTuple> {
-
-    private static final String KEY = "key";
-    private static final String TYPE = "type";
-    private static final String LENGTH = "length";
-    private static final String VALUE = "value";
-
-    protected final Map<Integer, PebbleTuple> tuples = new HashMap<Integer, PebbleTuple>();
-
-    /**
-     * Deserializes a JSON representation of a PebbleDictionary.
-     *
-     * @param jsonString the JSON representation to be deserialized
-     * @throws JSONException thrown if the specified JSON representation cannot be parsed
-     */
-    public static PebbleDictionary fromJson(String jsonString) throws JSONException {
-        PebbleDictionary d = new PebbleDictionary();
-
-        JSONArray elements = new JSONArray(jsonString);
-        for (int idx = 0; idx < elements.length(); ++idx) {
-            JSONObject o = elements.getJSONObject(idx);
-            final int key = o.getInt(KEY);
-            final PebbleTuple.TupleType type = PebbleTuple.TYPE_NAMES.get(o.getString(TYPE));
-            final PebbleTuple.Width width = PebbleTuple.WIDTH_MAP.get(o.getInt(LENGTH));
-
-            switch (type) {
-                case BYTES:
-                    byte[] bytes = Base64.decode(o.getString(VALUE), Base64.NO_WRAP);
-                    d.addBytes(key, bytes);
-                    break;
-                case STRING:
-                    d.addString(key, o.getString(VALUE));
-                    break;
-                case INT:
-                    if (width == PebbleTuple.Width.BYTE) {
-                        d.addInt8(key, (byte) o.getInt(VALUE));
-                    } else if (width == PebbleTuple.Width.SHORT) {
-                        d.addInt16(key, (short) o.getInt(VALUE));
-                    } else if (width == PebbleTuple.Width.WORD) {
-                        d.addInt32(key, o.getInt(VALUE));
-                    }
-                    break;
-                case UINT:
-                    if (width == PebbleTuple.Width.BYTE) {
-                        d.addUint8(key, (byte) o.getInt(VALUE));
-                    } else if (width == PebbleTuple.Width.SHORT) {
-                        d.addUint16(key, (short) o.getInt(VALUE));
-                    } else if (width == PebbleTuple.Width.WORD) {
-                        d.addUint32(key, o.getInt(VALUE));
-                    }
-                    break;
-            }
-        }
-
-        return d;
-    }
-
-    private static JSONObject serializeTuple(PebbleTuple t) throws JSONException {
-        JSONObject j = new JSONObject();
-        j.put(KEY, t.key);
-        j.put(TYPE, t.type.getName());
-        j.put(LENGTH, t.width.value);
-
-        switch (t.type) {
-            case BYTES:
-                j.put(VALUE, Base64.encodeToString((byte[]) t.value, Base64.NO_WRAP));
-                break;
-            case STRING:
-            case INT:
-            case UINT:
-                j.put(VALUE, t.value);
-                break;
-        }
-
-        return j;
-    }
+class PebbleDictionary : Iterable<PebbleTuple> {
+    protected val tuples: MutableMap<Int, PebbleTuple> = HashMap()
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Iterator<PebbleTuple> iterator() {
-        return tuples.values().iterator();
+    override fun iterator(): MutableIterator<PebbleTuple> {
+        return tuples.values.iterator()
     }
 
     /**
@@ -109,8 +31,8 @@ public class PebbleDictionary implements Iterable<PebbleTuple> {
      *
      * @return the number of key-value pairs in this dictionary
      */
-    public int size() {
-        return tuples.size();
+    fun size(): Int {
+        return tuples.size
     }
 
     /**
@@ -119,8 +41,8 @@ public class PebbleDictionary implements Iterable<PebbleTuple> {
      * @param key key whose presence in this dictionary is to be tested
      * @return true if this dictionary contains a mapping for the specified key
      */
-    public boolean contains(final int key) {
-        return tuples.containsKey(key);
+    fun contains(key: Int): Boolean {
+        return tuples.containsKey(key)
     }
 
     /**
@@ -128,8 +50,8 @@ public class PebbleDictionary implements Iterable<PebbleTuple> {
      *
      * @param key key to be removed from the dictionary
      */
-    public void remove(final int key) {
-        tuples.remove(key);
+    fun remove(key: Int) {
+        tuples.remove(key)
     }
 
     /**
@@ -139,9 +61,9 @@ public class PebbleDictionary implements Iterable<PebbleTuple> {
      * @param key   key with which the specified value is associated
      * @param bytes value to be associated with the specified key
      */
-    public void addBytes(int key, byte[] bytes) {
-        PebbleTuple t = PebbleTuple.create(key, PebbleTuple.TupleType.BYTES, PebbleTuple.Width.NONE, bytes);
-        addTuple(t);
+    fun addBytes(key: Int, bytes: ByteArray?) {
+        val t = PebbleTuple.create(key, TupleType.BYTES, PebbleTuple.Width.NONE, bytes)
+        addTuple(t)
     }
 
     /**
@@ -151,10 +73,10 @@ public class PebbleDictionary implements Iterable<PebbleTuple> {
      * @param key   key with which the specified value is associated
      * @param value value to be associated with the specified key
      */
-    public void addString(int key, String value) {
-        PebbleTuple t =
-                PebbleTuple.create(key, PebbleTuple.TupleType.STRING, PebbleTuple.Width.NONE, value);
-        addTuple(t);
+    fun addString(key: Int, value: String?) {
+        val t =
+            PebbleTuple.create(key, TupleType.STRING, PebbleTuple.Width.NONE, value)
+        addTuple(t)
     }
 
     /**
@@ -164,9 +86,9 @@ public class PebbleDictionary implements Iterable<PebbleTuple> {
      * @param key key with which the specified value is associated
      * @param b   value to be associated with the specified key
      */
-    public void addInt8(final int key, final byte b) {
-        PebbleTuple t = PebbleTuple.create(key, PebbleTuple.TupleType.INT, PebbleTuple.Width.BYTE, b);
-        addTuple(t);
+    fun addInt8(key: Int, b: Byte) {
+        val t = PebbleTuple.create(key, TupleType.INT, PebbleTuple.Width.BYTE, b.toInt())
+        addTuple(t)
     }
 
     /**
@@ -176,9 +98,9 @@ public class PebbleDictionary implements Iterable<PebbleTuple> {
      * @param key key with which the specified value is associated
      * @param b   value to be associated with the specified key
      */
-    public void addUint8(final int key, final byte b) {
-        PebbleTuple t = PebbleTuple.create(key, PebbleTuple.TupleType.UINT, PebbleTuple.Width.BYTE, b);
-        addTuple(t);
+    fun addUint8(key: Int, b: Byte) {
+        val t = PebbleTuple.create(key, TupleType.UINT, PebbleTuple.Width.BYTE, b.toInt())
+        addTuple(t)
     }
 
     /**
@@ -188,9 +110,9 @@ public class PebbleDictionary implements Iterable<PebbleTuple> {
      * @param key key with which the specified value is associated
      * @param s   value to be associated with the specified key
      */
-    public void addInt16(final int key, final short s) {
-        PebbleTuple t = PebbleTuple.create(key, PebbleTuple.TupleType.INT, PebbleTuple.Width.SHORT, s);
-        addTuple(t);
+    fun addInt16(key: Int, s: Short) {
+        val t = PebbleTuple.create(key, TupleType.INT, PebbleTuple.Width.SHORT, s.toInt())
+        addTuple(t)
     }
 
     /**
@@ -200,9 +122,9 @@ public class PebbleDictionary implements Iterable<PebbleTuple> {
      * @param key key with which the specified value is associated
      * @param s   value to be associated with the specified key
      */
-    public void addUint16(final int key, final short s) {
-        PebbleTuple t = PebbleTuple.create(key, PebbleTuple.TupleType.UINT, PebbleTuple.Width.SHORT, s);
-        addTuple(t);
+    fun addUint16(key: Int, s: Short) {
+        val t = PebbleTuple.create(key, TupleType.UINT, PebbleTuple.Width.SHORT, s.toInt())
+        addTuple(t)
     }
 
     /**
@@ -212,9 +134,9 @@ public class PebbleDictionary implements Iterable<PebbleTuple> {
      * @param key key with which the specified value is associated
      * @param i   value to be associated with the specified key
      */
-    public void addInt32(final int key, final int i) {
-        PebbleTuple t = PebbleTuple.create(key, PebbleTuple.TupleType.INT, PebbleTuple.Width.WORD, i);
-        addTuple(t);
+    fun addInt32(key: Int, i: Int) {
+        val t = PebbleTuple.create(key, TupleType.INT, PebbleTuple.Width.WORD, i)
+        addTuple(t)
     }
 
     /**
@@ -224,21 +146,21 @@ public class PebbleDictionary implements Iterable<PebbleTuple> {
      * @param key key with which the specified value is associated
      * @param i   value to be associated with the specified key
      */
-    public void addUint32(final int key, final int i) {
-        PebbleTuple t = PebbleTuple.create(key, PebbleTuple.TupleType.UINT, PebbleTuple.Width.WORD, i);
-        addTuple(t);
+    fun addUint32(key: Int, i: Int) {
+        val t = PebbleTuple.create(key, TupleType.UINT, PebbleTuple.Width.WORD, i)
+        addTuple(t)
     }
 
-    private PebbleTuple getTuple(int key, PebbleTuple.TupleType type) {
-        if (!tuples.containsKey(key) || tuples.get(key) == null) {
-            return null;
+    private fun getTuple(key: Int, type: TupleType): PebbleTuple? {
+        if (!tuples.containsKey(key) || tuples[key] == null) {
+            return null
         }
 
-        PebbleTuple t = tuples.get(key);
-        if (t.type != type) {
-            throw new PebbleDictTypeException(key, type, t.type);
+        val t = tuples[key]
+        if (t!!.type != type) {
+            throw PebbleDictTypeException(key.toLong(), type, t.type)
         }
-        return t;
+        return t
     }
 
     /**
@@ -248,12 +170,9 @@ public class PebbleDictionary implements Iterable<PebbleTuple> {
      * @param key key whose associated value is to be returned
      * @return value to which the specified key is mapped
      */
-    public Long getInteger(int key) {
-        PebbleTuple tuple = getTuple(key, PebbleTuple.TupleType.INT);
-        if (tuple == null) {
-            return null;
-        }
-        return (Long) tuple.value;
+    fun getInteger(key: Int): Long? {
+        val tuple = getTuple(key, TupleType.INT) ?: return null
+        return tuple.value as Long
     }
 
     /**
@@ -264,12 +183,9 @@ public class PebbleDictionary implements Iterable<PebbleTuple> {
      * @param key key whose associated value is to be returned
      * @return value to which the specified key is mapped
      */
-    public Long getUnsignedIntegerAsLong(int key) {
-        PebbleTuple tuple = getTuple(key, PebbleTuple.TupleType.UINT);
-        if (tuple == null) {
-            return null;
-        }
-        return (Long) tuple.value;
+    fun getUnsignedIntegerAsLong(key: Int): Long? {
+        val tuple = getTuple(key, TupleType.UINT) ?: return null
+        return tuple.value as Long
     }
 
     /**
@@ -279,12 +195,9 @@ public class PebbleDictionary implements Iterable<PebbleTuple> {
      * @param key key whose associated value is to be returned
      * @return value to which the specified key is mapped
      */
-    public byte[] getBytes(int key) {
-        PebbleTuple tuple = getTuple(key, PebbleTuple.TupleType.BYTES);
-        if (tuple == null) {
-            return null;
-        }
-        return (byte[]) tuple.value;
+    fun getBytes(key: Int): ByteArray? {
+        val tuple = getTuple(key, TupleType.BYTES) ?: return null
+        return tuple.value as ByteArray
     }
 
     /**
@@ -293,20 +206,17 @@ public class PebbleDictionary implements Iterable<PebbleTuple> {
      * @param key key whose associated value is to be returned
      * @return value to which the specified key is mapped
      */
-    public String getString(int key) {
-        PebbleTuple tuple = getTuple(key, PebbleTuple.TupleType.STRING);
-        if (tuple == null) {
-            return null;
-        }
-        return (String) tuple.value;
+    fun getString(key: Int): String? {
+        val tuple = getTuple(key, TupleType.STRING) ?: return null
+        return tuple.value as String
     }
 
-    public void addTuple(PebbleTuple tuple) {
-        if (tuples.size() > 0xff) {
-            throw new TupleOverflowException();
+    fun addTuple(tuple: PebbleTuple) {
+        if (tuples.size > 0xff) {
+            throw TupleOverflowException()
         }
 
-        tuples.put(tuple.key, tuple);
+        tuples[tuple.key] = tuple
     }
 
     /**
@@ -314,29 +224,98 @@ public class PebbleDictionary implements Iterable<PebbleTuple> {
      *
      * @return a JSON representation of this dictionary
      */
-    public String toJsonString() {
+    fun toJsonString(): String? {
         try {
-            JSONArray array = new JSONArray();
-            for (PebbleTuple t : tuples.values()) {
-                array.put(serializeTuple(t));
+            val array = JSONArray()
+            for (t in tuples.values) {
+                array.put(serializeTuple(t))
             }
-            return array.toString();
-        } catch (JSONException je) {
-            je.printStackTrace();
+            return array.toString()
+        } catch (je: JSONException) {
+            je.printStackTrace()
         }
-        return null;
+        return null
     }
 
-    public static class PebbleDictTypeException extends RuntimeException {
-        public PebbleDictTypeException(long key, PebbleTuple.TupleType expected, PebbleTuple.TupleType actual) {
-            super(String.format(
-                    "Expected type '%s', but got '%s' for key 0x%08x", expected.name(), actual.name(), key));
-        }
-    }
+    class PebbleDictTypeException(key: Long, expected: TupleType, actual: TupleType) :
+        RuntimeException(
+            String.format(
+                "Expected type '%s', but got '%s' for key 0x%08x", expected.name, actual.name, key
+            )
+        )
 
-    public static class TupleOverflowException extends RuntimeException {
-        public TupleOverflowException() {
-            super("Too many tuples in dict");
+    class TupleOverflowException : RuntimeException("Too many tuples in dict")
+    companion object {
+        private const val KEY = "key"
+        private const val TYPE = "type"
+        private const val LENGTH = "length"
+        private const val VALUE = "value"
+
+        /**
+         * Deserializes a JSON representation of a PebbleDictionary.
+         *
+         * @param jsonString the JSON representation to be deserialized
+         * @throws JSONException thrown if the specified JSON representation cannot be parsed
+         */
+        @JvmStatic
+        @Throws(JSONException::class)
+        fun fromJson(jsonString: String?): PebbleDictionary {
+            val d = PebbleDictionary()
+
+            val elements = JSONArray(jsonString)
+            for (idx in 0 until elements.length()) {
+                val o = elements.getJSONObject(idx)
+                val key = o.getInt(KEY)
+                val type = PebbleTuple.TYPE_NAMES[o.getString(TYPE)]
+                val width = PebbleTuple.WIDTH_MAP[o.getInt(LENGTH)]
+
+                when (type) {
+                    TupleType.BYTES -> {
+                        val bytes = Base64.decode(o.getString(VALUE), Base64.NO_WRAP)
+                        d.addBytes(key, bytes)
+                    }
+
+                    TupleType.STRING -> d.addString(key, o.getString(VALUE))
+                    TupleType.INT -> if (width == PebbleTuple.Width.BYTE) {
+                        d.addInt8(key, o.getInt(VALUE).toByte())
+                    } else if (width == PebbleTuple.Width.SHORT) {
+                        d.addInt16(key, o.getInt(VALUE).toShort())
+                    } else if (width == PebbleTuple.Width.WORD) {
+                        d.addInt32(key, o.getInt(VALUE))
+                    }
+
+                    TupleType.UINT -> if (width == PebbleTuple.Width.BYTE) {
+                        d.addUint8(key, o.getInt(VALUE).toByte())
+                    } else if (width == PebbleTuple.Width.SHORT) {
+                        d.addUint16(key, o.getInt(VALUE).toShort())
+                    } else if (width == PebbleTuple.Width.WORD) {
+                        d.addUint32(key, o.getInt(VALUE))
+                    }
+
+                    else -> {}
+                }
+            }
+
+            return d
+        }
+
+        @Throws(JSONException::class)
+        private fun serializeTuple(t: PebbleTuple): JSONObject {
+            val j = JSONObject()
+            j.put(KEY, t.key)
+            j.put(TYPE, t.type.getName())
+            j.put(LENGTH, t.width.value)
+
+            when (t.type) {
+                TupleType.BYTES -> j.put(
+                    VALUE,
+                    Base64.encodeToString(t.value as ByteArray, Base64.NO_WRAP)
+                )
+
+                TupleType.STRING, TupleType.INT, TupleType.UINT -> j.put(VALUE, t.value)
+            }
+
+            return j
         }
     }
 }
