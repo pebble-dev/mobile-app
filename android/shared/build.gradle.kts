@@ -53,6 +53,7 @@ kotlin {
             //XXX: Workaround for https://github.com/Kotlin/kotlinx-atomicfu/issues/469
             implementation(libs.jetbrains.kotlinx.atomicfu)
             implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
             implementation(libs.uuid)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
