@@ -20,6 +20,7 @@ import io.rebble.cobble.shared.ui.view.dialogs.AppInstallDialog
 import io.rebble.cobble.shared.ui.view.home.HomePage
 import io.rebble.cobble.shared.ui.view.home.HomeScaffold
 import io.rebble.cobble.shared.ui.view.home.locker.LockerTabs
+import io.rebble.cobble.shared.ui.view.home.store.StoreTabs
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.Json.Default.decodeFromString
 import org.koin.compose.KoinContext
@@ -42,6 +43,12 @@ fun MainView(navController: NavHostController = rememberNavController()) {
                         }
                         composable(Routes.Home.LOCKER_APPS) {
                             HomeScaffold(HomePage.Locker(LockerTabs.Apps), onNavChange = navController::navigate)
+                        }
+                        composable(Routes.Home.STORE_WATCHFACES) {
+                            HomeScaffold(HomePage.Store(StoreTabs.Watchfaces), onNavChange = navController::navigate)
+                        }
+                        composable(Routes.Home.STORE_APPS) {
+                            HomeScaffold(HomePage.Store(StoreTabs.Apps), onNavChange = navController::navigate)
                         }
                         composable(Routes.Home.TEST_PAGE) {
                             HomeScaffold(HomePage.TestPage, onNavChange = navController::navigate)

@@ -4,21 +4,20 @@
 package io.rebble.cobble.pigeons;
 
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MessageCodec;
 import io.flutter.plugin.common.StandardMessageCodec;
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /** Generated class from Pigeon. */
 @SuppressWarnings({"unused", "unchecked", "CodeBlock2Expr", "RedundantSuppression", "serial"})
@@ -5458,6 +5457,8 @@ public class Pigeons {
 
     void openLockerView();
 
+    void openStoreView();
+
     /** The codec used by KMPApi. */
     static @NonNull MessageCodec<Object> getCodec() {
       return KMPApiCodec.INSTANCE;
@@ -5498,6 +5499,28 @@ public class Pigeons {
                 ArrayList<Object> wrapped = new ArrayList<Object>();
                 try {
                   api.openLockerView();
+                  wrapped.add(0, null);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.KMPApi.openStoreView", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  api.openStoreView();
                   wrapped.add(0, null);
                 }
  catch (Throwable exception) {

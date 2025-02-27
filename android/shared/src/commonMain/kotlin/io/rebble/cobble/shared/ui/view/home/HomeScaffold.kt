@@ -15,10 +15,13 @@ import io.rebble.cobble.shared.ui.common.RebbleIcons
 import io.rebble.cobble.shared.ui.nav.Routes
 import io.rebble.cobble.shared.ui.view.home.locker.Locker
 import io.rebble.cobble.shared.ui.view.home.locker.LockerTabs
+import io.rebble.cobble.shared.ui.view.home.store.Store
+import io.rebble.cobble.shared.ui.view.home.store.StoreTabs
 import kotlinx.coroutines.launch
 
 open class HomePage {
     class Locker(val tab: LockerTabs) : HomePage()
+    class Store(val tab: StoreTabs) : HomePage()
     object TestPage : HomePage()
 }
 
@@ -26,7 +29,6 @@ open class HomePage {
 fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    val searchingState = remember { mutableStateOf(false) }
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         /*topBar = {
@@ -51,6 +53,12 @@ fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
                     icon = { RebbleIcons.locker() },
                     label = { Text("Locker") }
                 )
+                NavigationBarItem(
+                    selected = page is HomePage.Store,
+                    onClick = { onNavChange(Routes.Home.STORE_WATCHFACES) },
+                    icon = { RebbleIcons.rebbleStore() },
+                    label = { Text("Store") }
+                )
             }
         },
         floatingActionButton = {
@@ -60,10 +68,14 @@ fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
                             modifier = Modifier
                                     .padding(16.dp),
                             onClick = {
-                                searchingState.value = true
+                                if (page.tab == LockerTabs.Watchfaces) {
+                                    onNavChange(Routes.Home.STORE_WATCHFACES)
+                                } else {
+                                    onNavChange(Routes.Home.STORE_APPS)
+                                }
                             },
                             content = {
-                                RebbleIcons.search()
+                                RebbleIcons.plusAdd()
                             },
                     )
                 }
@@ -73,7 +85,12 @@ fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
         Box(modifier = Modifier.padding(innerPadding)) {
             when (page) {
                 is HomePage.Locker -> {
-                    Locker(searchingState, page.tab, onTabChanged = {
+                    Locker(page.tab, onTabChanged = {
+                        onNavChange(it.navRoute)
+                    })
+                }
+                is HomePage.Store -> {
+                    Store(page.tab, onTabChanged = {
                         onNavChange(it.navRoute)
                     })
                 }

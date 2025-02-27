@@ -37,4 +37,12 @@ class KMPApiBridge @Inject constructor(
             activity.startActivity(intent)
         }
     }
+    override fun openStoreView() {
+        activity?.let {
+            Timber.d("Opening store view")
+            val intent = Intent(activity.context, MainActivity::class.java)
+            intent.putExtra("navigationPath", Routes.Home.STORE_WATCHFACES)
+            activity.startActivity(intent)
+        }
+    }
 }
