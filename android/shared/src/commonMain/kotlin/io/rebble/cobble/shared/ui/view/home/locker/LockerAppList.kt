@@ -1,6 +1,5 @@
 package io.rebble.cobble.shared.ui.view.home.locker
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -17,7 +16,6 @@ import org.koin.compose.getKoin
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LockerAppList(viewModel: LockerViewModel, onOpenModalSheet: (LockerItemViewModel) -> Unit) {
     val lazyListState = rememberLazyListState()

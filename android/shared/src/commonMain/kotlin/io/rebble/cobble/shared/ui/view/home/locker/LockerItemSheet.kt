@@ -23,7 +23,6 @@ import io.rebble.cobble.shared.ui.common.AppIconContainer
 import io.rebble.cobble.shared.ui.common.RebbleIcons
 import io.rebble.cobble.shared.ui.viewmodel.LockerItemViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LockerItemSheet(onDismissRequest: () -> Unit, watchIsConnected: Boolean, viewModel: LockerItemViewModel) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
