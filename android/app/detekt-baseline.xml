@@ -1,0 +1,150 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:BleScanner.kt$BleScanner$device.name != null &amp;&amp; (device.type == BluetoothDevice.DEVICE_TYPE_LE || device.type == BluetoothDevice.DEVICE_TYPE_DUAL) &amp;&amp; (device.name.startsWith("Pebble ") || device.name.startsWith("Pebble-LE"))</ID>
+    <ID>CyclomaticComplexMethod:FirmwareUpdateControlFlutterBridge.kt$FirmwareUpdateControlFlutterBridge$override fun beginFirmwareUpdate(fwUri: Pigeons.StringWrapper, result: Pigeons.Result&lt;Pigeons.BooleanWrapper&gt;)</ID>
+    <ID>CyclomaticComplexMethod:MetadataConversion.kt$fun WatchVersion.WatchVersionResponse?.toPigeon( btDevice: PebbleDevice?, model: Int? ): Pigeons.PebbleDevicePigeon</ID>
+    <ID>ForbiddenComment:AppComponent.kt$AppComponent$//TODO: Unify DI under Koin</ID>
+    <ID>FunctionNaming:CommonWrappers.kt$fun BooleanWrapper(value: Boolean)</ID>
+    <ID>FunctionNaming:CommonWrappers.kt$fun ListWrapper(value: List&lt;*&gt;)</ID>
+    <ID>FunctionNaming:CommonWrappers.kt$fun NumberWrapper(value: Number)</ID>
+    <ID>LongMethod:ConnectionLooper.kt$ConnectionLooper$@RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT) fun connectToWatch(macAddress: String)</ID>
+    <ID>LongMethod:FirmwareUpdateControlFlutterBridge.kt$FirmwareUpdateControlFlutterBridge$override fun beginFirmwareUpdate(fwUri: Pigeons.StringWrapper, result: Pigeons.Result&lt;Pigeons.BooleanWrapper&gt;)</ID>
+    <ID>MagicNumber:BleScanner.kt$8_000L</ID>
+    <ID>MagicNumber:BluetoothAclReceiver.kt$BluetoothAclReceiver$1000</ID>
+    <ID>MagicNumber:CalendarControlFlutterBridge.kt$CalendarControlFlutterBridge$50</ID>
+    <ID>MagicNumber:ClassicScanner.kt$8_000L</ID>
+    <ID>MagicNumber:ConnectionLooper.kt$ConnectionLooper$2000</ID>
+    <ID>MagicNumber:FirmwareUpdateControlFlutterBridge.kt$FirmwareUpdateControlFlutterBridge$2_000</ID>
+    <ID>MagicNumber:IntentsFlutterBridge.kt$IntentsFlutterBridge$3</ID>
+    <ID>MagicNumber:LogSendingTask.kt$1024</ID>
+    <ID>MagicNumber:MacAddresses.kt$12</ID>
+    <ID>MagicNumber:MacAddresses.kt$16</ID>
+    <ID>MagicNumber:MainActivity.kt$MainActivity$10_000_000</ID>
+    <ID>MagicNumber:ScreenshotsFlutterBridge.kt$0b11</ID>
+    <ID>MagicNumber:ScreenshotsFlutterBridge.kt$4</ID>
+    <ID>MagicNumber:ScreenshotsFlutterBridge.kt$8</ID>
+    <ID>MagicNumber:ScreenshotsFlutterBridge.kt$85</ID>
+    <ID>MagicNumber:ScreenshotsFlutterBridge.kt$ScreenshotsFlutterBridge$100</ID>
+    <ID>MagicNumber:ScreenshotsFlutterBridge.kt$ScreenshotsFlutterBridge$10_000</ID>
+    <ID>MagicNumber:ScreenshotsFlutterBridge.kt$ScreenshotsFlutterBridge$8</ID>
+    <ID>MagicNumber:extensions.kt$16</ID>
+    <ID>MagicNumber:extensions.kt$7</ID>
+    <ID>MagicNumber:extensions.kt$8</ID>
+    <ID>MaxLineLength:BleScanner.kt$BleScanner$(device.type == BluetoothDevice.DEVICE_TYPE_LE || device.type == BluetoothDevice.DEVICE_TYPE_DUAL)</ID>
+    <ID>MaxLineLength:BleScanner.kt$BleScanner$@RequiresPermission(allOf = [android.Manifest.permission.BLUETOOTH_SCAN, android.Manifest.permission.BLUETOOTH_CONNECT])</ID>
+    <ID>MaxLineLength:ClassicScanner.kt$ClassicScanner$@RequiresPermission(allOf = [android.Manifest.permission.BLUETOOTH_SCAN, android.Manifest.permission.BLUETOOTH_CONNECT])</ID>
+    <ID>MaxLineLength:CompanionDeviceService.kt$CompanionDeviceService$Timber.i("Ignoring device disappeared event (${associationInfo.deviceMacAddress?.toString()?.uppercase()}, ${connectionLooper.connectionState.value})")</ID>
+    <ID>MaxLineLength:CompanionDeviceService.kt$CompanionDeviceService$connectionLooper.connectionState.value.watchOrNull?.address == associationInfo.deviceMacAddress?.toString()?.uppercase()</ID>
+    <ID>MaxLineLength:ConnectionLooper.kt$ConnectionLooper$Timber.d("Watch connection failed, waiting and reconnecting after $retryTime ms (retry: $retries)")</ID>
+    <ID>MaxLineLength:ConnectionLooper.kt$ConnectionLooper$if</ID>
+    <ID>MaxLineLength:ConnectionLooper.kt$ConnectionLooper$val connectionScope = CoroutineScope(SupervisorJob() + errorHandler + Dispatchers.IO) + CoroutineName("ConnectionScope-$macAddress")</ID>
+    <ID>MaxLineLength:DeviceTransport.kt$DeviceTransport$BluetoothDevice.DEVICE_TYPE_CLASSIC</ID>
+    <ID>MaxLineLength:DeviceTransport.kt$DeviceTransport$BluetoothDevice.DEVICE_TYPE_LE</ID>
+    <ID>MaxLineLength:DeviceTransport.kt$DeviceTransport$Timber.d("Companion device associated: ${macAddress in companionDeviceManager.associations}, associations: ${companionDeviceManager.associations}")</ID>
+    <ID>MaxLineLength:FirmwareUpdateControlFlutterBridge.kt$FirmwareUpdateControlFlutterBridge$ConnectionStateManager.connectionState.first { it.watchOrNull?.metadata?.value != null }.watchOrNull?.metadata?.value</ID>
+    <ID>MaxLineLength:FirmwareUpdateControlFlutterBridge.kt$FirmwareUpdateControlFlutterBridge$Timber.e("Firmware update not compatible with connected watch: ${manifest.firmware.hwRev} != $connectedWatchHardware")</ID>
+    <ID>MaxLineLength:FirmwareUpdateControlFlutterBridge.kt$FirmwareUpdateControlFlutterBridge$error("Firmware update failed - Only reached ${updatingDevice.putBytesController.status.value.progress}")</ID>
+    <ID>MaxLineLength:FirmwareUpdateControlFlutterBridge.kt$FirmwareUpdateControlFlutterBridge$val</ID>
+    <ID>MaxLineLength:FirmwareUpdateControlFlutterBridge.kt$FirmwareUpdateControlFlutterBridge$val firmwareBin = openZippedFile(context.applicationContext.contentResolver.openInputStream(uri) ?: error("Couldn't open stream"), manifest.firmware.name).use { it.readByteArray() }</ID>
+    <ID>MaxLineLength:FirmwareUpdateControlFlutterBridge.kt$FirmwareUpdateControlFlutterBridge$val manifestFile = openZippedFile(context.applicationContext.contentResolver.openInputStream(uri) ?: error("Couldn't open stream"), "manifest.json")</ID>
+    <ID>MaxLineLength:FirmwareUpdateControlFlutterBridge.kt$FirmwareUpdateControlFlutterBridge$val systemResources = manifest.resources?.let { res -&gt; openZippedFile(context.applicationContext.contentResolver.openInputStream(uri) ?: error("Couldn't open stream"), res.name).use { it.readByteArray() } }</ID>
+    <ID>MaxLineLength:FlutterMainActivity.kt$FlutterMainActivity$Toast.makeText(context, "Cancelled boot URL change", Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:FlutterMainActivity.kt$FlutterMainActivity$requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), REQUEST_CODE_NOTIFICATIONS_POST)</ID>
+    <ID>MaxLineLength:InCallService.kt$InCallService$lastCall?.answer(VideoProfile.STATE_AUDIO_ONLY)</ID>
+    <ID>MaxLineLength:InCallService.kt$InCallService$val cookie = Random.nextInt().toUInt() or 0xCAu // Magic number for phone call to differentiate from third-party calls</ID>
+    <ID>MaxLineLength:PermissionControlFlutterBridge.kt$PermissionControlFlutterBridge$companionDeviceManager.requestNotificationAccess(ComponentName(activity, NotificationListener::class.java))</ID>
+    <ID>MaxLineLength:PermissionControlFlutterBridge.kt$PermissionControlFlutterBridge$if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.S) Manifest.permission.ACCESS_COARSE_LOCATION else Manifest.permission.ACCESS_FINE_LOCATION</ID>
+    <ID>MaxLineLength:ScreenshotsFlutterBridge.kt$ScreenshotsFlutterBridge$ConnectionStateManager.connectionState.value.watchOrNull?.screenshotService?.send(ScreenshotRequest()) ?: return@launchPigeonResult Pigeons.ScreenshotResult.Builder().setSuccess(false).build()</ID>
+    <ID>MaxLineLength:ScreenshotsFlutterBridge.kt$ScreenshotsFlutterBridge$val firstResult = receiveScreenshotResponse() ?: return@launchPigeonResult Pigeons.ScreenshotResult.Builder().setSuccess(false).build()</ID>
+    <ID>MaxLineLength:ScreenshotsFlutterBridge.kt$ScreenshotsFlutterBridge$val nextSegment = receiveScreenshotResponse() ?: return@launchPigeonResult Pigeons.ScreenshotResult.Builder().setSuccess(false).build()</ID>
+    <ID>MaxLineLength:TimelineControlFlutterBridge.kt$TimelineControlFlutterBridge$private val connectionState: StateFlow&lt;ConnectionState&gt; = KoinPlatformTools.defaultContext().get().get(named("connectionState"))</ID>
+    <ID>MaxLineLength:TimelineControlFlutterBridge.kt$TimelineControlFlutterBridge$return blobDBService?.send(packet, PacketPriority.LOW)?.responseValue ?: BlobResponse.BlobStatus.WatchDisconnected</ID>
+    <ID>MaxLineLength:WatchService.kt$WatchService$deviceName = if (it.watch is EmulatedPebbleDevice) "[EMU] ${it.watch.address}" else if (it.watch is BluetoothPebbleDevice) (it.watch as BluetoothPebbleDevice).bluetoothDevice.name!! else it.watch.address</ID>
+    <ID>MayBeConst:AndroidPreferences.kt$private val KEY_FLUTTER_BACKGROUND_HANDLE = "FlutterBackgroundHandle"</ID>
+    <ID>MayBeConst:BleScanner.kt$private val SCAN_TIMEOUT_MS = 8_000L</ID>
+    <ID>MayBeConst:ClassicScanner.kt$private val SCAN_TIMEOUT_MS = 8_000L</ID>
+    <ID>NestedBlockDepth:FlutterMainActivity.kt$FlutterMainActivity$private fun handleIntent(intent: Intent)</ID>
+    <ID>NewLineAtEndOfFile:ActivityModule.kt$io.rebble.cobble.di.ActivityModule.kt</ID>
+    <ID>NewLineAtEndOfFile:ActivitySubcomponent.kt$io.rebble.cobble.di.ActivitySubcomponent.kt</ID>
+    <ID>NewLineAtEndOfFile:AndroidPreferences.kt$io.rebble.cobble.datasources.AndroidPreferences.kt</ID>
+    <ID>NewLineAtEndOfFile:AppComponent.kt$io.rebble.cobble.di.AppComponent.kt</ID>
+    <ID>NewLineAtEndOfFile:AppLogFlutterBridge.kt$io.rebble.cobble.bridges.common.AppLogFlutterBridge.kt</ID>
+    <ID>NewLineAtEndOfFile:AppModule.kt$io.rebble.cobble.di.AppModule.kt</ID>
+    <ID>NewLineAtEndOfFile:AppStartReceiver.kt$io.rebble.cobble.receivers.AppStartReceiver.kt</ID>
+    <ID>NewLineAtEndOfFile:AppTaggedDebugTree.kt$io.rebble.cobble.log.AppTaggedDebugTree.kt</ID>
+    <ID>NewLineAtEndOfFile:BleScanner.kt$io.rebble.cobble.bluetooth.scan.BleScanner.kt</ID>
+    <ID>NewLineAtEndOfFile:BluetoothAclReceiver.kt$io.rebble.cobble.receivers.BluetoothAclReceiver.kt</ID>
+    <ID>NewLineAtEndOfFile:BluetoothBondReceiver.kt$io.rebble.cobble.receivers.BluetoothBondReceiver.kt</ID>
+    <ID>NewLineAtEndOfFile:BluetoothNotSupportedException.kt$io.rebble.cobble.bluetooth.scan.BluetoothNotSupportedException.kt</ID>
+    <ID>NewLineAtEndOfFile:BridgeLifecycleController.kt$io.rebble.cobble.bridges.ui.BridgeLifecycleController.kt</ID>
+    <ID>NewLineAtEndOfFile:CalendarControlFlutterBridge.kt$io.rebble.cobble.bridges.ui.CalendarControlFlutterBridge.kt</ID>
+    <ID>NewLineAtEndOfFile:ClassicScanner.kt$io.rebble.cobble.bluetooth.scan.ClassicScanner.kt</ID>
+    <ID>NewLineAtEndOfFile:CobbleApplication.kt$io.rebble.cobble.CobbleApplication.kt</ID>
+    <ID>NewLineAtEndOfFile:CommonBridgesModule.kt$io.rebble.cobble.di.bridges.CommonBridgesModule.kt</ID>
+    <ID>NewLineAtEndOfFile:CommonWrappers.kt$io.rebble.cobble.pigeons.CommonWrappers.kt</ID>
+    <ID>NewLineAtEndOfFile:CompanionDeviceService.kt$io.rebble.cobble.service.CompanionDeviceService.kt</ID>
+    <ID>NewLineAtEndOfFile:ConnectionFlutterBridge.kt$io.rebble.cobble.bridges.common.ConnectionFlutterBridge.kt</ID>
+    <ID>NewLineAtEndOfFile:ConnectionLooper.kt$io.rebble.cobble.bluetooth.ConnectionLooper.kt</ID>
+    <ID>NewLineAtEndOfFile:ConnectionUiFlutterBridge.kt$io.rebble.cobble.bridges.ui.ConnectionUiFlutterBridge.kt</ID>
+    <ID>NewLineAtEndOfFile:Debouncer.kt$io.rebble.cobble.util.Debouncer.kt</ID>
+    <ID>NewLineAtEndOfFile:DebugFlutterBridge.kt$io.rebble.cobble.bridges.ui.DebugFlutterBridge.kt</ID>
+    <ID>NewLineAtEndOfFile:DeviceTransport.kt$io.rebble.cobble.bluetooth.DeviceTransport.kt</ID>
+    <ID>NewLineAtEndOfFile:FileLoggingTree.kt$io.rebble.cobble.log.FileLoggingTree.kt</ID>
+    <ID>NewLineAtEndOfFile:FirmwareUpdateControlFlutterBridge.kt$io.rebble.cobble.bridges.ui.FirmwareUpdateControlFlutterBridge.kt</ID>
+    <ID>NewLineAtEndOfFile:FlutterActivityModule.kt$io.rebble.cobble.di.FlutterActivityModule.kt</ID>
+    <ID>NewLineAtEndOfFile:FlutterActivitySubcomponent.kt$io.rebble.cobble.di.FlutterActivitySubcomponent.kt</ID>
+    <ID>NewLineAtEndOfFile:FlutterBridge.kt$io.rebble.cobble.bridges.FlutterBridge.kt</ID>
+    <ID>NewLineAtEndOfFile:FlutterMessages.kt$io.rebble.cobble.util.FlutterMessages.kt</ID>
+    <ID>NewLineAtEndOfFile:GATTPacketTest.kt$io.rebble.cobble.bluetooth.GATTPacketTest.kt</ID>
+    <ID>NewLineAtEndOfFile:InCallService.kt$io.rebble.cobble.service.InCallService.kt</ID>
+    <ID>NewLineAtEndOfFile:IncomingPacketsListener.kt$io.rebble.cobble.datasources.IncomingPacketsListener.kt</ID>
+    <ID>NewLineAtEndOfFile:IntentsFlutterBridge.kt$io.rebble.cobble.bridges.ui.IntentsFlutterBridge.kt</ID>
+    <ID>NewLineAtEndOfFile:KMPApiBridge.kt$io.rebble.cobble.bridges.common.KMPApiBridge.kt</ID>
+    <ID>NewLineAtEndOfFile:Lifecycle.kt$io.rebble.cobble.util.Lifecycle.kt</ID>
+    <ID>NewLineAtEndOfFile:LogSendingTask.kt$io.rebble.cobble.log.LogSendingTask.kt</ID>
+    <ID>NewLineAtEndOfFile:LoggingFlutterBridge.kt$io.rebble.cobble.bridges.common.LoggingFlutterBridge.kt</ID>
+    <ID>NewLineAtEndOfFile:MacAddresses.kt$io.rebble.cobble.util.MacAddresses.kt</ID>
+    <ID>NewLineAtEndOfFile:MainActivity.kt$io.rebble.cobble.MainActivity.kt</ID>
+    <ID>NewLineAtEndOfFile:Media.kt$io.rebble.cobble.data.pbw.appinfo.Media.kt</ID>
+    <ID>NewLineAtEndOfFile:MetadataConversion.kt$io.rebble.cobble.data.MetadataConversion.kt</ID>
+    <ID>NewLineAtEndOfFile:NotificationChannelManager.kt$io.rebble.cobble.NotificationChannelManager.kt</ID>
+    <ID>NewLineAtEndOfFile:NotificationsFlutterBridge.kt$io.rebble.cobble.bridges.common.NotificationsFlutterBridge.kt</ID>
+    <ID>NewLineAtEndOfFile:PackageDetailsFlutterBridge.kt$io.rebble.cobble.bridges.common.PackageDetailsFlutterBridge.kt</ID>
+    <ID>NewLineAtEndOfFile:PairedStorage.kt$io.rebble.cobble.datasources.PairedStorage.kt</ID>
+    <ID>NewLineAtEndOfFile:PbwAppInfo.kt$io.rebble.cobble.data.pbw.appinfo.PbwAppInfo.kt</ID>
+    <ID>NewLineAtEndOfFile:PebbleDictionaryConverterTest.kt$io.rebble.cobble.middleware.PebbleDictionaryConverterTest.kt</ID>
+    <ID>NewLineAtEndOfFile:PermissionCheckFlutterBridge.kt$io.rebble.cobble.bridges.common.PermissionCheckFlutterBridge.kt</ID>
+    <ID>NewLineAtEndOfFile:PermissionControlFlutterBridge.kt$io.rebble.cobble.bridges.ui.PermissionControlFlutterBridge.kt</ID>
+    <ID>NewLineAtEndOfFile:RawIncomingPacketsBridge.kt$io.rebble.cobble.bridges.common.RawIncomingPacketsBridge.kt</ID>
+    <ID>NewLineAtEndOfFile:ScanFailedException.kt$io.rebble.cobble.bluetooth.scan.ScanFailedException.kt</ID>
+    <ID>NewLineAtEndOfFile:ScanFlutterBridge.kt$io.rebble.cobble.bridges.common.ScanFlutterBridge.kt</ID>
+    <ID>NewLineAtEndOfFile:ScannedPebbleDevice.kt$io.rebble.cobble.bluetooth.ScannedPebbleDevice.kt</ID>
+    <ID>NewLineAtEndOfFile:ScreenshotsFlutterBridge.kt$io.rebble.cobble.bridges.common.ScreenshotsFlutterBridge.kt</ID>
+    <ID>NewLineAtEndOfFile:ServiceLifecycleControl.kt$io.rebble.cobble.service.ServiceLifecycleControl.kt</ID>
+    <ID>NewLineAtEndOfFile:UiBridgesModule.kt$io.rebble.cobble.di.bridges.UiBridgesModule.kt</ID>
+    <ID>NewLineAtEndOfFile:Watchapp.kt$io.rebble.cobble.data.pbw.appinfo.Watchapp.kt</ID>
+    <ID>NewLineAtEndOfFile:WorkaroundsFlutterBridge.kt$io.rebble.cobble.bridges.ui.WorkaroundsFlutterBridge.kt</ID>
+    <ID>NewLineAtEndOfFile:extensions.kt$io.rebble.cobble.util.extensions.kt</ID>
+    <ID>ReturnCount:PairedStorage.kt$PairedStorage$fun getMacAddressOfDefaultPebble(): String?</ID>
+    <ID>SwallowedException:FlutterMainActivity.kt$FlutterMainActivity$e: IllegalArgumentException</ID>
+    <ID>SwallowedException:PairedStorage.kt$PairedStorage$e: NoSuchElementException</ID>
+    <ID>TooGenericExceptionCaught:ConnectionLooper.kt$ConnectionLooper$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:FlutterMessages.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:LogSendingTask.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:ScreenshotsFlutterBridge.kt$ScreenshotsFlutterBridge$e: Exception</ID>
+    <ID>TooGenericExceptionThrown:FileLoggingTree.kt$FileLoggingTree$throw RuntimeException("Cannot create logging folder!")</ID>
+    <ID>TooManyFunctions:AppComponent.kt$AppComponent</ID>
+    <ID>TooManyFunctions:AppModule.kt$AppModule$Companion</ID>
+    <ID>TooManyFunctions:CommonBridgesModule.kt$CommonBridgesModule</ID>
+    <ID>TooManyFunctions:PermissionControlFlutterBridge.kt$PermissionControlFlutterBridge : FlutterBridgePermissionControl</ID>
+    <ID>UnusedParameter:AppModule.kt$AppModule.Companion$context: Context</ID>
+    <ID>UnusedPrivateProperty:DeviceTransport.kt$DeviceTransport$private var externalIncomingPacketHandler: (suspend (ByteArray) -&gt; Unit)? = null</ID>
+    <ID>UnusedPrivateProperty:IntentsFlutterBridge.kt$IntentsFlutterBridge$binaryMessenger: BinaryMessenger</ID>
+    <ID>UnusedPrivateProperty:MainActivity.kt$MainActivity$val activityComponent = injectionComponent.createActivitySubcomponentFactory() .create(this)</ID>
+    <ID>UnusedPrivateProperty:WatchService.kt$WatchService$private lateinit var protocolHandler: ProtocolHandler</ID>
+    <ID>UseCheckOrError:ClassicScanner.kt$ClassicScanner$throw IllegalStateException("Scan failed to start")</ID>
+    <ID>UseCheckOrError:ConnectionUiFlutterBridge.kt$ConnectionUiFlutterBridge$throw IllegalStateException("Unknown device type: $deviceToPair")</ID>
+  </CurrentIssues>
+</SmellBaseline>

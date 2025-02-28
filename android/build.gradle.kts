@@ -1,3 +1,5 @@
+import io.gitlab.arturbosch.detekt.Detekt
+import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
 import java.util.Properties
 
 buildscript {
@@ -23,6 +25,7 @@ plugins {
     alias(libs.plugins.serialization) apply false
     alias(libs.plugins.jetbrains.compose) apply false
     alias(libs.plugins.jetbrains.kotlinx.atomicfu) apply false
+    alias(libs.plugins.detekt) apply false
 }
 
 allprojects {
@@ -53,6 +56,19 @@ allprojects {
 
         mavenLocal()
     }
+
+    tasks.register("detektAll").configure {
+        description = "Run detekt on all source code"
+        group = "verification"
+        dependsOn(tasks.withType<Detekt>() )
+    }
+
+    tasks.register("detektBaselineAll").configure {
+        description = "todo"
+        group = "verification"
+        dependsOn(tasks.withType<DetektCreateBaselineTask>() )
+    }
+
 }
 
 rootProject.buildDir = file("../build")
