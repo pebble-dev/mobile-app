@@ -28,13 +28,6 @@ If you do not have an IDE, from step 5, you'll instead:
 2. Launch an emulator: `fvm flutter emulators --launch Pixel_2_API_30`
 3. `fvm flutter run`
 
-If you get the `Unknown Kotlin JVM target: 21` error while trying to build the app, you probably have wrong JDK version.
-
-Install JDK 17 and update flutter config to point to this JDK:
-```bash
-fvm flutter config --jdk-dir <path-to-jdk-17>
-```
-
 ### Host-specific instructions: Ubuntu and similar
 
 To install FVM on Ubuntu, try something like:
