@@ -2,7 +2,6 @@ package io.rebble.cobble.shared.ui.view.home.watches
 
 import android.shared.generated.resources.Res
 import android.shared.generated.resources.connected
-import android.shared.generated.resources.disconnect_watch
 import android.shared.generated.resources.disconnected
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,7 +37,7 @@ fun WatchesListItem(watch: WatchItem,
                             .size(60.dp)
                             .background(
                                     color = if (watch.isConnected) {
-                                                AQUAMARINE
+                                                CONNECTED_BACKGROUND
                                             } else {
                                                 MaterialTheme.colorScheme.primaryContainer
                                             },

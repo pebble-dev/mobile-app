@@ -87,7 +87,7 @@ fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
                                 searchingState.value = false //TODO Change this so that it actually goes into pairing mode.
                             },
                             content = {
-                                Icon(Icons.Filled.Add, "PAIR A WATCH FLOATING BUTTON")
+                                Icon(Icons.Filled.Add, "Pair a watch")
                             }
                     )
                 }

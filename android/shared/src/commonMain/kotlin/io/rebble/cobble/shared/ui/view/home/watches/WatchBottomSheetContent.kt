@@ -20,8 +20,8 @@ import io.rebble.cobble.shared.ui.common.RebbleIcons
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
-val AQUAMARINE = Color(121,249,205)
-val TROPICALRAINFOREST = Color(0, 108, 81)
+val CONNECTED_BACKGROUND = Color(121,249,205)
+val UPDATE_FOREGROUND = Color(0, 108, 81)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,7 +61,7 @@ fun WatchBottomSheetContent(watch: WatchItem,
                                 .size(60.dp)
                                 .background(
                                         color = if (watch.isConnected) {
-                                                    AQUAMARINE
+                                                    CONNECTED_BACKGROUND
                                                 } else {
                                                     MaterialTheme.colorScheme.primaryContainer
                                                 },
@@ -89,7 +89,7 @@ fun WatchBottomSheetContent(watch: WatchItem,
                                     },
 
                             color = if (watch.isConnected && watch.updateAvailable){
-                                        TROPICALRAINFOREST
+                                        UPDATE_FOREGROUND
                                     } else {
                                         MaterialTheme.colorScheme.secondary
                                     },
@@ -142,7 +142,7 @@ fun WatchBottomSheetContent(watch: WatchItem,
             ) {
 
                 if (watch.updateAvailable && watch.isConnected){
-                    RebbleIcons.applyUpdate(tint = TROPICALRAINFOREST)
+                    RebbleIcons.applyUpdate(tint = UPDATE_FOREGROUND)
                 }
                 else {
                     RebbleIcons.checkForUpdates(tint = MaterialTheme.colorScheme.secondary)
@@ -157,7 +157,7 @@ fun WatchBottomSheetContent(watch: WatchItem,
                         },
 
                         color = if (watch.updateAvailable && watch.isConnected){
-                                    TROPICALRAINFOREST
+                                    UPDATE_FOREGROUND
                                 } else {
                                     MaterialTheme.colorScheme.secondary
                                 },
