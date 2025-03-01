@@ -9,15 +9,17 @@ import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 
 @OptIn(ExperimentalForeignApi::class)
-fun createDataStore(): DataStore<Preferences> = createDataStore(
+fun createDataStore(): DataStore<Preferences> =
+    createDataStore(
         producePath = {
-            val documentDirectory: NSURL? = NSFileManager.defaultManager.URLForDirectory(
+            val documentDirectory: NSURL? =
+                NSFileManager.defaultManager.URLForDirectory(
                     directory = NSDocumentDirectory,
                     inDomain = NSUserDomainMask,
                     appropriateForURL = null,
                     create = false,
-                    error = null,
-            )
+                    error = null
+                )
             requireNotNull(documentDirectory).path + "/$dataStoreFileName"
         }
-)
+    )

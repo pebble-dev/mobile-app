@@ -19,25 +19,27 @@ class ReconnectionSocketServer(private val adapter: BluetoothAdapter, private va
     }
 
     @RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT)
-    suspend fun start() = flow {
-        val serverSocket = adapter.listenUsingRfcommWithServiceRecord(socketName, socketUUID)
-        serverSocket.use {
-            Timber.d("Starting reconnection socket server")
-            while (true) {
-                //XXX: This is a blocking call, but runInterruptible doesn't seem to work here
-                val socket = try {
-                    serverSocket.accept(2000)
-                } catch (e: IOException) {
-                    if (currentCoroutineContext().isActive) {
-                        continue
-                    } else {
-                        break
-                    }
-                } ?: break
-                Timber.d("Accepted connection from ${socket.remoteDevice.address}")
-                emit(socket.remoteDevice.address)
-                socket.close()
+    suspend fun start() =
+        flow {
+            val serverSocket = adapter.listenUsingRfcommWithServiceRecord(socketName, socketUUID)
+            serverSocket.use {
+                Timber.d("Starting reconnection socket server")
+                while (true) {
+                    // XXX: This is a blocking call, but runInterruptible doesn't seem to work here
+                    val socket =
+                        try {
+                            serverSocket.accept(2000)
+                        } catch (e: IOException) {
+                            if (currentCoroutineContext().isActive) {
+                                continue
+                            } else {
+                                break
+                            }
+                        } ?: break
+                    Timber.d("Accepted connection from ${socket.remoteDevice.address}")
+                    emit(socket.remoteDevice.address)
+                    socket.close()
+                }
             }
-        }
-    }.flowOn(ioDispatcher)
+        }.flowOn(ioDispatcher)
 }

@@ -10,17 +10,26 @@ import org.koin.core.component.inject
 import timber.log.Timber
 
 class ActiveMediaSessionProvider :
-        androidx.lifecycle.LiveData<MediaController>(),
-        MediaSessionManager.OnActiveSessionsChangedListener, KoinComponent {
+    androidx.lifecycle.LiveData<MediaController>(),
+    MediaSessionManager.OnActiveSessionsChangedListener,
+    KoinComponent {
     private val context: Context by inject()
-    private val mediaSessionManager: MediaSessionManager = context.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
+    private val mediaSessionManager: MediaSessionManager =
+        context.getSystemService(
+            Context.MEDIA_SESSION_SERVICE
+        ) as MediaSessionManager
     var currentController: MediaController? = null
 
     private val idlePlayers = ArrayList<OwnedPlaybackCallback>()
 
     private fun findPlayingMediaController() {
         val activeSessions = getActiveSessions()
-        Timber.d("Active Sessions %s", activeSessions.map { "${it.packageName} ${it.playbackState} ${it.playbackInfo}" })
+        Timber.d(
+            "Active Sessions %s",
+            activeSessions.map {
+                "${it.packageName} ${it.playbackState} ${it.playbackInfo}"
+            }
+        )
 
         val newController = activeSessions.firstOrNull { it.isPlaying() }
 
@@ -43,14 +52,19 @@ class ActiveMediaSessionProvider :
             currentController?.registerCallback(mediaCallback)
         }
 
-        Timber.d("Reported session %s", activeSessions.map { "${reportedController?.packageName} ${reportedController?.playbackState} ${reportedController?.playbackInfo}" })
+        Timber.d(
+            "Reported session %s",
+            activeSessions.map {
+                "${reportedController?.packageName} ${reportedController?.playbackState} ${reportedController?.playbackInfo}"
+            }
+        )
         setReportedController(reportedController)
     }
 
     private fun getActiveSessions(): List<MediaController> {
         try {
             return mediaSessionManager.getActiveSessions(
-                    NotificationListener.getComponentName(context)
+                NotificationListener.getComponentName(context)
             )
         } catch (e: SecurityException) {
             return emptyList()
@@ -60,8 +74,8 @@ class ActiveMediaSessionProvider :
     private fun activate() {
         try {
             mediaSessionManager.addOnActiveSessionsChangedListener(
-                    this,
-                    NotificationListener.getComponentName(context)
+                this,
+                NotificationListener.getComponentName(context)
             )
         } catch (e: SecurityException) {
             // No notification access. Just ignore, MusicHandler should stop and restart us when
@@ -72,7 +86,10 @@ class ActiveMediaSessionProvider :
     }
 
     override fun onActiveSessionsChanged(controllers: MutableList<MediaController>?) {
-        Timber.d("ActiveSessions changed %s", controllers?.map { it.packageName + " " + it.isPlaying() })
+        Timber.d(
+            "ActiveSessions changed %s",
+            controllers?.map { it.packageName + " " + it.isPlaying() }
+        )
         updateControllerIfNeeded()
     }
 
@@ -136,26 +153,26 @@ class ActiveMediaSessionProvider :
     }
 
     init {
-        this.mediaCallback = object : MediaController.Callback() {
-            override fun onPlaybackStateChanged(state: PlaybackState?) {
-                updateControllerIfNeeded()
-            }
+        this.mediaCallback =
+            object : MediaController.Callback() {
+                override fun onPlaybackStateChanged(state: PlaybackState?) {
+                    updateControllerIfNeeded()
+                }
 
-            override fun onMetadataChanged(metadata: android.media.MediaMetadata?) {
-                setReportedController(currentController)
+                override fun onMetadataChanged(metadata: android.media.MediaMetadata?) {
+                    setReportedController(currentController)
+                }
             }
-        }
     }
 }
 
 fun PlaybackState.isPlaying(): Boolean {
     val state = this.state
     return state != PlaybackState.STATE_NONE &&
-            state != PlaybackState.STATE_PAUSED &&
-            state != PlaybackState.STATE_STOPPED &&
-            state != PlaybackState.STATE_ERROR
+        state != PlaybackState.STATE_PAUSED &&
+        state != PlaybackState.STATE_STOPPED &&
+        state != PlaybackState.STATE_ERROR
 }
-
 
 fun MediaController.isPlaying(): Boolean {
     return this.playbackState?.isPlaying() == true

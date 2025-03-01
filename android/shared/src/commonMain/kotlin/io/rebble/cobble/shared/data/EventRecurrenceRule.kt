@@ -5,20 +5,22 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.Month
 
 data class EventRecurrenceRule(
-        val totalOccurrences: Int?,
-        val interval: Int?,
-        val endDate: Instant?,
-        val recurrenceFrequency: Frequency,
+    val totalOccurrences: Int?,
+    val interval: Int?,
+    val endDate: Instant?,
+    val recurrenceFrequency: Frequency
 ) {
     open class Frequency {
         val name: String
-            get() = when (this) {
-                is Daily -> "Daily"
-                is Weekly -> "Weekly"
-                is Monthly -> "Monthly"
-                is Yearly -> "Yearly"
-                else -> error("Unknown frequency type")
-            }
+            get() =
+                when (this) {
+                    is Daily -> "Daily"
+                    is Weekly -> "Weekly"
+                    is Monthly -> "Monthly"
+                    is Yearly -> "Yearly"
+                    else -> error("Unknown frequency type")
+                }
+
         /**
          * Repeats daily
          */
@@ -36,7 +38,11 @@ data class EventRecurrenceRule(
          * @param days Set of days of the week when the event should repeat
          * @param weekOfMonth Week of the month when the event should repeat, if dayOfMonth is null
          */
-        class Monthly(val dayOfMonth: Int?, val days: Set<DayOfWeek>?, weekOfMonth: Int?) : Frequency()
+        class Monthly(
+            val dayOfMonth: Int?,
+            val days: Set<DayOfWeek>?,
+            weekOfMonth: Int?
+        ) : Frequency()
 
         /**
          * Repeats yearly
@@ -45,6 +51,11 @@ data class EventRecurrenceRule(
          * @param days Set of days of the week when the event should repeat
          * @param weekOfMonth Week of the month when the event should repeat, if dayOfMonth is null
          */
-        class Yearly(val month: Month?, val dayOfMonth: Int?, val days: Set<DayOfWeek>?, weekOfMonth: Int?) : Frequency()
+        class Yearly(
+            val month: Month?,
+            val dayOfMonth: Int?,
+            val days: Set<DayOfWeek>?,
+            weekOfMonth: Int?
+        ) : Frequency()
     }
 }

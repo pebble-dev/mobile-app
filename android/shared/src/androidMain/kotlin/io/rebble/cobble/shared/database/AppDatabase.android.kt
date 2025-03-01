@@ -8,8 +8,7 @@ actual fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase> {
     val appContext = GlobalContext.get().get<android.content.Context>()
     val dbFile = appContext.getDatabasePath("cobble-room.db")
     return Room.databaseBuilder<AppDatabase>(
-            context = appContext,
-            name = dbFile.absolutePath
+        context = appContext,
+        name = dbFile.absolutePath
     )
-
 }

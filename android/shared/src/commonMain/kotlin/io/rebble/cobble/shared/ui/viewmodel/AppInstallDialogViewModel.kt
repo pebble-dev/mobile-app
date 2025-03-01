@@ -3,7 +3,6 @@ package io.rebble.cobble.shared.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.benasher44.uuid.uuidFrom
-import io.rebble.cobble.shared.database.dao.LockerDao
 import io.rebble.cobble.shared.domain.pbw.PbwApp
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.domain.state.watchOrNull
@@ -11,16 +10,17 @@ import io.rebble.cobble.shared.middleware.PutBytesController
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import kotlin.time.Duration.Companion.seconds
 
-class AppInstallDialogViewModel(val uri: String): ViewModel() {
+class AppInstallDialogViewModel(val uri: String) : ViewModel() {
     open class AppInstallState {
-        class Installing(val progress: Double): AppInstallState()
-        object Success: AppInstallState()
-        class Error(val message: String): AppInstallState()
+        class Installing(val progress: Double) : AppInstallState()
+
+        object Success : AppInstallState()
+
+        class Error(val message: String) : AppInstallState()
     }
+
     private val _state = MutableStateFlow<AppInstallState?>(null)
     val state = _state.asStateFlow()
 
@@ -39,7 +39,9 @@ class AppInstallDialogViewModel(val uri: String): ViewModel() {
                 device.appRunStateService.startApp(uuidFrom(app.info.uuid))
                 viewModelScope.launch {
                     try {
-                        device.putBytesController.status.drop(1).takeWhile { it.state != PutBytesController.State.IDLE }.timeout(15.seconds).collect {
+                        device.putBytesController.status.drop(1).takeWhile {
+                            it.state != PutBytesController.State.IDLE
+                        }.timeout(15.seconds).collect {
                             _state.value = AppInstallState.Installing(it.progress)
                         }
                         _state.value = AppInstallState.Success

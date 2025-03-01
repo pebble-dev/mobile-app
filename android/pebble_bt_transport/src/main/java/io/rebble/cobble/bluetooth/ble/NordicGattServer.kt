@@ -23,7 +23,10 @@ import java.util.UUID
 import kotlin.coroutines.CoroutineContext
 
 @OptIn(FlowPreview::class)
-class NordicGattServer(private val ioDispatcher: CoroutineContext = Dispatchers.IO, private val context: Context) : Closeable {
+class NordicGattServer(
+    private val ioDispatcher: CoroutineContext = Dispatchers.IO,
+    private val context: Context
+) : Closeable {
     enum class State {
         INIT,
         OPEN,
@@ -33,58 +36,76 @@ class NordicGattServer(private val ioDispatcher: CoroutineContext = Dispatchers.
     private val _state = MutableStateFlow(State.INIT)
     val state = _state.asStateFlow()
 
-    private val ppogServiceConfig = ServerBleGattServiceConfig(
+    private val ppogServiceConfig =
+        ServerBleGattServiceConfig(
             uuid = UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID_SERVER),
             type = ServerBleGattServiceType.SERVICE_TYPE_PRIMARY,
-            characteristicConfigs = listOf(
+            characteristicConfigs =
+                listOf(
                     // Meta characteristic
                     ServerBleGattCharacteristicConfig(
-                            uuid = UUID.fromString(LEConstants.UUIDs.META_CHARACTERISTIC_SERVER),
-                            properties = listOf(
-                                    BleGattProperty.PROPERTY_READ,
+                        uuid = UUID.fromString(LEConstants.UUIDs.META_CHARACTERISTIC_SERVER),
+                        properties =
+                            listOf(
+                                BleGattProperty.PROPERTY_READ
                             ),
-                            permissions = listOf(
-                                    BleGattPermission.PERMISSION_READ_ENCRYPTED,
+                        permissions =
+                            listOf(
+                                BleGattPermission.PERMISSION_READ_ENCRYPTED
                             ),
-                            initialValue = DataByteArray(LEConstants.SERVER_META_RESPONSE)
+                        initialValue = DataByteArray(LEConstants.SERVER_META_RESPONSE)
                     ),
                     // Data characteristic
                     ServerBleGattCharacteristicConfig(
-                            uuid = UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER),
-                            properties = listOf(
-                                    BleGattProperty.PROPERTY_WRITE_NO_RESPONSE,
-                                    BleGattProperty.PROPERTY_NOTIFY,
+                        uuid =
+                            UUID.fromString(
+                                LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER
                             ),
-                            permissions = listOf(
-                                    BleGattPermission.PERMISSION_WRITE_ENCRYPTED,
+                        properties =
+                            listOf(
+                                BleGattProperty.PROPERTY_WRITE_NO_RESPONSE,
+                                BleGattProperty.PROPERTY_NOTIFY
                             ),
-                            descriptorConfigs = listOf(
-                                    ServerBleGattDescriptorConfig(
-                                            uuid = UUID.fromString(LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR),
-                                            permissions = listOf(
-                                                    BleGattPermission.PERMISSION_WRITE
-                                            )
-                                    )
+                        permissions =
+                            listOf(
+                                BleGattPermission.PERMISSION_WRITE_ENCRYPTED
+                            ),
+                        descriptorConfigs =
+                            listOf(
+                                ServerBleGattDescriptorConfig(
+                                    uuid =
+                                        UUID.fromString(
+                                            LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR
+                                        ),
+                                    permissions =
+                                        listOf(
+                                            BleGattPermission.PERMISSION_WRITE
+                                        )
+                                )
                             )
                     )
-            )
-    )
+                )
+        )
 
-    private val fakeServiceConfig = ServerBleGattServiceConfig(
+    private val fakeServiceConfig =
+        ServerBleGattServiceConfig(
             uuid = UUID.fromString(LEConstants.UUIDs.FAKE_SERVICE_UUID),
             type = ServerBleGattServiceType.SERVICE_TYPE_PRIMARY,
-            characteristicConfigs = listOf(
+            characteristicConfigs =
+                listOf(
                     ServerBleGattCharacteristicConfig(
-                            uuid = UUID.fromString(LEConstants.UUIDs.FAKE_SERVICE_UUID),
-                            properties = listOf(
-                                    BleGattProperty.PROPERTY_READ,
+                        uuid = UUID.fromString(LEConstants.UUIDs.FAKE_SERVICE_UUID),
+                        properties =
+                            listOf(
+                                BleGattProperty.PROPERTY_READ
                             ),
-                            permissions = listOf(
-                                    BleGattPermission.PERMISSION_READ_ENCRYPTED,
-                            ),
+                        permissions =
+                            listOf(
+                                BleGattPermission.PERMISSION_READ_ENCRYPTED
+                            )
                     )
-            )
-    )
+                )
+        )
 
     private var scope: CoroutineScope? = null
     private var server: ServerBleGatt? = null
@@ -104,14 +125,15 @@ class NordicGattServer(private val ioDispatcher: CoroutineContext = Dispatchers.
             Timber.v(it, "GattServer scope closed")
             close()
         }
-        server = ServerBleGatt.create(
+        server =
+            ServerBleGatt.create(
                 context, serverScope,
                 ppogServiceConfig,
                 fakeServiceConfig,
                 mock = mockServerDevice,
                 options = ServerConnectionOption(bufferSize = 32)
-        ).also { server ->
-            server.connectionEvents
+            ).also { server ->
+                server.connectionEvents
                     .debounce(1000)
                     .mapNotNull { it as? ServerConnectionEvent.DeviceConnected }
                     .map { it.connection }
@@ -130,21 +152,26 @@ class NordicGattServer(private val ioDispatcher: CoroutineContext = Dispatchers.
                         }
                     }
                     .launchIn(serverScope)
-        }
+            }
         scope = serverScope
         _state.value = State.OPEN
     }
 
-    suspend fun sendMessageToDevice(deviceAddress: String, packet: ByteArray): Boolean {
-        val connection = connections[deviceAddress] ?: run {
-            Timber.w("Tried to send message but no connection for device $deviceAddress")
-            return false
-        }
+    suspend fun sendMessageToDevice(
+        deviceAddress: String,
+        packet: ByteArray
+    ): Boolean {
+        val connection =
+            connections[deviceAddress] ?: run {
+                Timber.w("Tried to send message but no connection for device $deviceAddress")
+                return false
+            }
         return connection.sendMessage(packet)
     }
 
     suspend fun resetDevice(deviceAddress: String) {
-        val connection = connections[deviceAddress]
+        val connection =
+            connections[deviceAddress]
                 ?: throw IOException("No connection for device $deviceAddress")
         connection.requestReset()
     }

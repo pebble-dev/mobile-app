@@ -21,7 +21,7 @@ kotlin {
             }
         }
     }
-    
+
     val xcf = XCFramework()
     listOf(
         iosX64(),
@@ -45,7 +45,7 @@ kotlin {
             api(libs.koin.core)
             api(libs.kotlinx.serialization.core)
 
-            //XXX: Workaround for https://github.com/Kotlin/kotlinx-atomicfu/issues/469
+            // XXX: Workaround for https://github.com/Kotlin/kotlinx-atomicfu/issues/469
             implementation(libs.jetbrains.kotlinx.atomicfu)
             implementation(libs.koin.compose)
             implementation(libs.uuid)

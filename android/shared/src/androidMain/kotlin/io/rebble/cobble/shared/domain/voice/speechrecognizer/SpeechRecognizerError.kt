@@ -1,4 +1,5 @@
 package io.rebble.cobble.shared.domain.voice.speechrecognizer
+
 enum class SpeechRecognizerError {
     ERROR_NETWORK_TIMEOUT,
     ERROR_NETWORK,

@@ -29,28 +29,29 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-val androidModule = module {
-    factory {
-        AndroidPlatformContext(androidContext().applicationContext)
-    } bind PlatformContext::class
-    single { createDataStore(androidContext()) }
-    factory {
-        androidContext().packageManager
-    }
+val androidModule =
+    module {
+        factory {
+            AndroidPlatformContext(androidContext().applicationContext)
+        } bind PlatformContext::class
+        single { createDataStore(androidContext()) }
+        factory {
+            androidContext().packageManager
+        }
 
-    single(named("activeNotifsState")) {
-        MutableStateFlow<Map<Uuid, StatusBarNotification>>(emptyMap())
-    } bind StateFlow::class
-    single { AndroidJobScheduler() }
-    single { FlutterPreferences() }
-    singleOf<PlatformNotificationActionExecutor>(::AndroidNotificationActionExecutor)
-    factory<PlatformCalendarActionExecutor> { params ->
-        AndroidCalendarActionExecutor(params.get())
-    }
+        single(named("activeNotifsState")) {
+            MutableStateFlow<Map<Uuid, StatusBarNotification>>(emptyMap())
+        } bind StateFlow::class
+        single { AndroidJobScheduler() }
+        single { FlutterPreferences() }
+        singleOf<PlatformNotificationActionExecutor>(::AndroidNotificationActionExecutor)
+        factory<PlatformCalendarActionExecutor> { params ->
+            AndroidCalendarActionExecutor(params.get())
+        }
 
-    factory<Set<CobbleHandler>>(named("deviceHandlers")) { params ->
-        val pebbleDevice: PebbleDevice = params.get()
-        setOf(
+        factory<Set<CobbleHandler>>(named("deviceHandlers")) { params ->
+            val pebbleDevice: PebbleDevice = params.get()
+            setOf(
                 AppRunStateHandler(pebbleDevice),
                 AppInstallHandler(pebbleDevice),
                 CalendarActionHandler(pebbleDevice),
@@ -62,23 +63,23 @@ val androidModule = module {
                 AudioStreamHandler(pebbleDevice),
                 AppLogHandler(pebbleDevice),
                 NotificationActionHandler(pebbleDevice)
-        )
-    }
+            )
+        }
 
-    factory<Set<CobbleHandler>>(named("negotiationDeviceHandlers")) { params ->
-        val pebbleDevice: PebbleDevice = params.get()
-        setOf(
+        factory<Set<CobbleHandler>>(named("negotiationDeviceHandlers")) { params ->
+            val pebbleDevice: PebbleDevice = params.get()
+            setOf(
                 SystemHandler(pebbleDevice)
-        )
-    }
+            )
+        }
 
-    singleOf(::NotificationProcessor)
-    singleOf(::CallNotificationProcessor)
-    singleOf(::AndroidPlatformAppMessageIPC) bind PlatformAppMessageIPC::class
-    if (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
-        factoryOf(::SpeechRecognizerDictationService) bind DictationService::class
-    } else {
-        factoryOf(::NullDictationService) bind DictationService::class
+        singleOf(::NotificationProcessor)
+        singleOf(::CallNotificationProcessor)
+        singleOf(::AndroidPlatformAppMessageIPC) bind PlatformAppMessageIPC::class
+        if (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+            factoryOf(::SpeechRecognizerDictationService) bind DictationService::class
+        } else {
+            factoryOf(::NullDictationService) bind DictationService::class
+        }
+        singleOf(::AndroidSecureStorage) bind SecureStorage::class
     }
-    singleOf(::AndroidSecureStorage) bind SecureStorage::class
-}

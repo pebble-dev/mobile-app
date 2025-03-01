@@ -14,10 +14,10 @@ import org.junit.Test
 import java.io.File
 
 class WebViewJsRunnerTest {
-
     private lateinit var context: Context
-    private val json = Json {ignoreUnknownKeys = true}
+    private val json = Json { ignoreUnknownKeys = true }
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
+
     @Before
     fun setUp() {
         context = InstrumentationRegistry.getInstrumentation().targetContext
@@ -39,46 +39,55 @@ class WebViewJsRunnerTest {
     }
 
     @Test
-    fun test() = runBlocking {
-        val appInfo: PbwAppInfo = json.decodeFromString(
-            """
-                {
-                    "targetPlatforms": [
-                        "aplite", 
-                        "basalt", 
-                        "chalk", 
-                        "diorite"
-                    ], 
-                    "projectType": "native", 
-                    "messageKeys": {}, 
-                    "companyName": "ttmm", 
-                    "enableMultiJS": true, 
-                    "versionLabel": "2.12", 
-                    "longName": "ttmmbrn", 
-                    "shortName": "ttmmbrn", 
-                    "name": "ttmmbrn", 
-                    "sdkVersion": "3", 
-                    "displayName": "ttmmbrn", 
-                    "uuid": "c4c60c62-2c22-4ad7-aef4-cad9481da58b", 
-                    "appKeys": {}, 
-                    "capabilities": [
-                        "health", 
-                        "location", 
-                        "configurable"
-                    ], 
-                    "watchapp": {
-                        "watchface": true
-                    },
-                    "resources": {
-                        "media": []
+    fun test() =
+        runBlocking {
+            val appInfo: PbwAppInfo =
+                json.decodeFromString(
+                    """
+                    {
+                        "targetPlatforms": [
+                            "aplite", 
+                            "basalt", 
+                            "chalk", 
+                            "diorite"
+                        ], 
+                        "projectType": "native", 
+                        "messageKeys": {}, 
+                        "companyName": "ttmm", 
+                        "enableMultiJS": true, 
+                        "versionLabel": "2.12", 
+                        "longName": "ttmmbrn", 
+                        "shortName": "ttmmbrn", 
+                        "name": "ttmmbrn", 
+                        "sdkVersion": "3", 
+                        "displayName": "ttmmbrn", 
+                        "uuid": "c4c60c62-2c22-4ad7-aef4-cad9481da58b", 
+                        "appKeys": {}, 
+                        "capabilities": [
+                            "health", 
+                            "location", 
+                            "configurable"
+                        ], 
+                        "watchapp": {
+                            "watchface": true
+                        },
+                        "resources": {
+                            "media": []
+                        }
                     }
-                }
-            """.trimIndent()
-        )
-        val printTestPath = assetsToSdcard("print_test.js")
-        val webViewJsRunner = WebViewJsRunner(context, PebbleDevice(null, "dummy"), coroutineScope, appInfo, printTestPath)
-        webViewJsRunner.start()
-        delay(1000)
-        webViewJsRunner.stop()
-    }
+                    """.trimIndent()
+                )
+            val printTestPath = assetsToSdcard("print_test.js")
+            val webViewJsRunner =
+                WebViewJsRunner(
+                    context,
+                    PebbleDevice(null, "dummy"),
+                    coroutineScope,
+                    appInfo,
+                    printTestPath
+                )
+            webViewJsRunner.start()
+            delay(1000)
+            webViewJsRunner.stop()
+        }
 }

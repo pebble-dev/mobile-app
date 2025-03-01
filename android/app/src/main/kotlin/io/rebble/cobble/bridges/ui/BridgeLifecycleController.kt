@@ -8,12 +8,15 @@ import kotlinx.coroutines.Job
  * Helper that automatically closes down all pigeon bridges when activity is destroyed
  */
 class BridgeLifecycleController(
-        private val binaryMessenger: BinaryMessenger,
-        coroutineScope: CoroutineScope
+    private val binaryMessenger: BinaryMessenger,
+    coroutineScope: CoroutineScope
 ) {
     private val activatedSetupMethods = ArrayList<(BinaryMessenger, Any?) -> Unit>()
 
-    fun <T> setupControl(pigeonSetupMethod: (BinaryMessenger, T) -> Unit, callback: T) {
+    fun <T> setupControl(
+        pigeonSetupMethod: (BinaryMessenger, T) -> Unit,
+        callback: T
+    ) {
         pigeonSetupMethod(binaryMessenger, callback)
         @Suppress("UNCHECKED_CAST")
         activatedSetupMethods.add(pigeonSetupMethod as (BinaryMessenger, Any?) -> Unit)

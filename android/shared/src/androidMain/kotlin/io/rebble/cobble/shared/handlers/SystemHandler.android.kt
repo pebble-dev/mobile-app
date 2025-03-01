@@ -17,7 +17,10 @@ import kotlinx.coroutines.flow.merge
 actual fun platformTimeChangedFlow(context: PlatformContext): Flow<Unit> {
     context as AndroidPlatformContext
     val timeChangeFlow = IntentFilter(Intent.ACTION_TIME_CHANGED).asFlow(context.applicationContext)
-    val timezoneChangeFlow = IntentFilter(Intent.ACTION_TIMEZONE_CHANGED).asFlow(context.applicationContext)
+    val timezoneChangeFlow =
+        IntentFilter(
+            Intent.ACTION_TIMEZONE_CHANGED
+        ).asFlow(context.applicationContext)
 
     return merge(timeChangeFlow, timezoneChangeFlow).map { }
 }
@@ -29,12 +32,27 @@ actual fun getPlatformPebbleFlags(context: PlatformContext): Set<PhoneAppVersion
 
     return buildSet {
         add(PhoneAppVersion.PlatformFlag.BTLE)
-        //TODO: Check for SMS
+        // TODO: Check for SMS
         add(PhoneAppVersion.PlatformFlag.Telephony)
 
-        if (!sensorManager?.getSensorList(Sensor.TYPE_ACCELEROMETER).isNullOrEmpty()) add(PhoneAppVersion.PlatformFlag.Accelerometer)
-        if (!sensorManager?.getSensorList(Sensor.TYPE_GYROSCOPE).isNullOrEmpty()) add(PhoneAppVersion.PlatformFlag.Gyroscope)
-        if (!sensorManager?.getSensorList(Sensor.TYPE_MAGNETIC_FIELD).isNullOrEmpty()) add(PhoneAppVersion.PlatformFlag.Compass)
+        if (!sensorManager?.getSensorList(
+                Sensor.TYPE_ACCELEROMETER
+            ).isNullOrEmpty()
+        ) {
+            add(PhoneAppVersion.PlatformFlag.Accelerometer)
+        }
+        if (!sensorManager?.getSensorList(
+                Sensor.TYPE_GYROSCOPE
+            ).isNullOrEmpty()
+        ) {
+            add(PhoneAppVersion.PlatformFlag.Gyroscope)
+        }
+        if (!sensorManager?.getSensorList(
+                Sensor.TYPE_MAGNETIC_FIELD
+            ).isNullOrEmpty()
+        ) {
+            add(PhoneAppVersion.PlatformFlag.Compass)
+        }
         if (
             locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) == true ||
             locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) == true

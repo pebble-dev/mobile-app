@@ -7,53 +7,56 @@ import io.rebble.libpebblecommon.metadata.WatchType
 import kotlinx.datetime.Instant
 
 @Entity(
-        indices = [
-            Index(value = ["uuid"], unique = true),
-        ]
+    indices = [
+        Index(value = ["uuid"], unique = true)
+    ]
 )
 data class SyncedLockerEntry(
-        @PrimaryKey
-        val id: String,
-        val uuid: String,
-        val version: String,
-        val title: String,
-        val type: String,
-        val hearts: Int,
-        val developerName: String,
-        val developerId: String?,
-        val configurable: Boolean,
-        val timelineEnabled: Boolean,
-        val removeLink: String,
-        val shareLink: String,
-        val pbwLink: String,
-        val pbwReleaseId: String,
-        @ColumnInfo(defaultValue = "0")
-        val pbwIconResourceId: Int,
-        val nextSyncAction: NextSyncAction,
-        @ColumnInfo(defaultValue = "-1")
-        val order: Int,
-        val lastOpened: Instant?,
-        @ColumnInfo(defaultValue = "0")
-        val local: Boolean = false,
-        @ColumnInfo(defaultValue = "null")
-        val userToken: String? = null,
+    @PrimaryKey
+    val id: String,
+    val uuid: String,
+    val version: String,
+    val title: String,
+    val type: String,
+    val hearts: Int,
+    val developerName: String,
+    val developerId: String?,
+    val configurable: Boolean,
+    val timelineEnabled: Boolean,
+    val removeLink: String,
+    val shareLink: String,
+    val pbwLink: String,
+    val pbwReleaseId: String,
+    @ColumnInfo(defaultValue = "0")
+    val pbwIconResourceId: Int,
+    val nextSyncAction: NextSyncAction,
+    @ColumnInfo(defaultValue = "-1")
+    val order: Int,
+    val lastOpened: Instant?,
+    @ColumnInfo(defaultValue = "0")
+    val local: Boolean = false,
+    @ColumnInfo(defaultValue = "null")
+    val userToken: String? = null
 )
 
 data class SyncedLockerEntryWithPlatforms(
-        @Embedded
-        val entry: SyncedLockerEntry,
-        @Relation(
-                parentColumn = "id",
-                entityColumn = "lockerEntryId"
-        )
-        val platforms: List<SyncedLockerEntryPlatform>
+    @Embedded
+    val entry: SyncedLockerEntry,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "lockerEntryId"
+    )
+    val platforms: List<SyncedLockerEntryPlatform>
 )
 
-fun SyncedLockerEntryWithPlatforms.getBestPlatformForDevice(watchType: WatchType): SyncedLockerEntryPlatform? {
-    val platformName = AppCompatibility.getBestVariant(
+fun SyncedLockerEntryWithPlatforms.getBestPlatformForDevice(
+    watchType: WatchType
+): SyncedLockerEntryPlatform? {
+    val platformName =
+        AppCompatibility.getBestVariant(
             watchType,
             this.platforms.map { plt -> plt.name }
-    )?.codename
+        )?.codename
     return this.platforms.firstOrNull { plt -> plt.name == platformName }
 }
 
@@ -65,28 +68,28 @@ fun SyncedLockerEntryWithPlatforms.getVersion(): Pair<UByte, UByte> {
 }
 
 @Entity(
-        foreignKeys = [
-            ForeignKey(
-                    entity = SyncedLockerEntry::class,
-                    parentColumns = ["id"],
-                    childColumns = ["lockerEntryId"],
-                    onDelete = ForeignKey.CASCADE
-            )
-        ],
-        indices = [
-            Index(value = ["lockerEntryId"]),
-        ]
+    foreignKeys = [
+        ForeignKey(
+            entity = SyncedLockerEntry::class,
+            parentColumns = ["id"],
+            childColumns = ["lockerEntryId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [
+        Index(value = ["lockerEntryId"])
+    ]
 )
 data class SyncedLockerEntryPlatform(
-        @PrimaryKey(autoGenerate = true)
-        val platformEntryId: Int,
-        val lockerEntryId: String,
-        val sdkVersion: String,
-        val processInfoFlags: Int,
-        val name: String,
-        val description: String,
-        @Embedded
-        val images: SyncedLockerEntryPlatformImages,
+    @PrimaryKey(autoGenerate = true)
+    val platformEntryId: Int,
+    val lockerEntryId: String,
+    val sdkVersion: String,
+    val processInfoFlags: Int,
+    val name: String,
+    val description: String,
+    @Embedded
+    val images: SyncedLockerEntryPlatformImages
 )
 
 fun SyncedLockerEntryPlatform.getSdkVersion(): Pair<UByte, UByte> {
@@ -96,9 +99,9 @@ fun SyncedLockerEntryPlatform.getSdkVersion(): Pair<UByte, UByte> {
 }
 
 data class SyncedLockerEntryPlatformImages(
-        val icon: String?,
-        val list: String?,
-        val screenshot: String?,
+    val icon: String?,
+    val list: String?,
+    val screenshot: String?
 )
 
 /**
@@ -106,9 +109,9 @@ data class SyncedLockerEntryPlatformImages(
  */
 fun SyncedLockerEntryWithPlatforms.dataEqualTo(other: SyncedLockerEntryWithPlatforms): Boolean {
     return entry == other.entry &&
-            platforms.all { platform ->
-                other.platforms.any { it.dataEqualTo(platform) }
-            }
+        platforms.all { platform ->
+            other.platforms.any { it.dataEqualTo(platform) }
+        }
 }
 
 /**
@@ -116,11 +119,11 @@ fun SyncedLockerEntryWithPlatforms.dataEqualTo(other: SyncedLockerEntryWithPlatf
  */
 fun SyncedLockerEntryPlatform.dataEqualTo(other: SyncedLockerEntryPlatform): Boolean {
     return lockerEntryId == other.lockerEntryId &&
-            sdkVersion == other.sdkVersion &&
-            processInfoFlags == other.processInfoFlags &&
-            name == other.name &&
-            description == other.description &&
-            images.icon == other.images.icon &&
-            images.list == other.images.list &&
-            images.screenshot == other.images.screenshot
+        sdkVersion == other.sdkVersion &&
+        processInfoFlags == other.processInfoFlags &&
+        name == other.name &&
+        description == other.description &&
+        images.icon == other.images.icon &&
+        images.list == other.images.list &&
+        images.screenshot == other.images.screenshot
 }

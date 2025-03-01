@@ -13,6 +13,7 @@ import timber.log.Timber
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class CompanionDeviceService : CompanionDeviceService() {
     lateinit var connectionLooper: ConnectionLooper
+
     override fun onCreate() {
         val injectionComponent = (applicationContext as CobbleApplication).component
         connectionLooper = injectionComponent.createConnectionLooper()
@@ -33,10 +34,13 @@ class CompanionDeviceService : CompanionDeviceService() {
     override fun onDeviceDisappeared(associationInfo: AssociationInfo) {
         Timber.d("Device disappeared: $associationInfo")
         if (connectionLooper.connectionState.value !is ConnectionState.Disconnected &&
-                connectionLooper.connectionState.value.watchOrNull?.address == associationInfo.deviceMacAddress?.toString()?.uppercase()) {
+            connectionLooper.connectionState.value.watchOrNull?.address == associationInfo.deviceMacAddress?.toString()?.uppercase()
+        ) {
             connectionLooper.signalWatchAbsence()
         } else {
-            Timber.i("Ignoring device disappeared event (${associationInfo.deviceMacAddress?.toString()?.uppercase()}, ${connectionLooper.connectionState.value})")
+            Timber.i(
+                "Ignoring device disappeared event (${associationInfo.deviceMacAddress?.toString()?.uppercase()}, ${connectionLooper.connectionState.value})"
+            )
         }
     }
 }

@@ -1,7 +1,10 @@
 package io.rebble.cobble.shared.js
 
 interface PKJSInterface {
-    fun showSimpleNotificationOnPebble(title: String, notificationText: String)
+    fun showSimpleNotificationOnPebble(
+        title: String,
+        notificationText: String
+    )
 
     /**
      * Get account token
@@ -17,7 +20,9 @@ interface PKJSInterface {
      * Appstore apps: hash of watch serial and developer ID
      */
     fun getWatchToken(): String
+
     fun showToast(toast: String)
+
     fun showNotificationOnPebble(jsonObjectStringNotificationData: String)
 
     /**

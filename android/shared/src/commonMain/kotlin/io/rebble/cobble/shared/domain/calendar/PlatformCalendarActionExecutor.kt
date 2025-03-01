@@ -4,5 +4,8 @@ import io.rebble.cobble.shared.database.entity.TimelinePin
 import io.rebble.libpebblecommon.services.blobdb.TimelineService
 
 interface PlatformCalendarActionExecutor {
-    suspend fun handlePlatformAction(action: CalendarAction, pin: TimelinePin): TimelineService.ActionResponse
+    suspend fun handlePlatformAction(
+        action: CalendarAction,
+        pin: TimelinePin
+    ): TimelineService.ActionResponse
 }

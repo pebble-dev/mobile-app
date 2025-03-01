@@ -15,33 +15,36 @@ import kotlinx.coroutines.flow.*
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class TimelineActionManager(private val pebbleDevice: PebbleDevice): KoinComponent {
+class TimelineActionManager(private val pebbleDevice: PebbleDevice) : KoinComponent {
     private val timelineDao: TimelinePinDao by inject()
     private val timelineService = pebbleDevice.timelineService
-    private val scope = CoroutineScope(Dispatchers.Default) //todo: Exception handler
+    private val scope = CoroutineScope(Dispatchers.Default) // todo: Exception handler
 
-    val actionFlow = callbackFlow {
-        timelineService.actionHandler = {
-            val deferred = CompletableDeferred<TimelineService.ActionResponse>()
-            trySend(Pair(it, deferred))
-            deferred.await()
-        }
-        awaitClose {
-            timelineService.actionHandler = null
-        }
-    }.shareIn(scope, SharingStarted.Lazily).buffer()
+    val actionFlow =
+        callbackFlow {
+            timelineService.actionHandler = {
+                val deferred = CompletableDeferred<TimelineService.ActionResponse>()
+                trySend(Pair(it, deferred))
+                deferred.await()
+            }
+            awaitClose {
+                timelineService.actionHandler = null
+            }
+        }.shareIn(scope, SharingStarted.Lazily).buffer()
 
-    fun actionFlowForApp(appId: Uuid):
-            Flow<Pair<TimelineAction.InvokeAction, CompletableDeferred<TimelineService.ActionResponse>>> {
+    fun actionFlowForApp(
+        appId: Uuid
+    ): Flow<Pair<TimelineAction.InvokeAction, CompletableDeferred<TimelineService.ActionResponse>>> {
         return actionFlow.filter {
             val (action, _) = it
             val itemId = action.itemID.get()
-            val item = timelineDao.get(itemId) ?: run {
-                if (!itemId.toString().startsWith(NotificationActionHandler.NOTIFICATION_UUID_PREFIX)) {
-                    Logging.w("Received action for non-existent item $itemId")
+            val item =
+                timelineDao.get(itemId) ?: run {
+                    if (!itemId.toString().startsWith(NotificationActionHandler.NOTIFICATION_UUID_PREFIX)) {
+                        Logging.w("Received action for non-existent item $itemId")
+                    }
+                    return@filter false
                 }
-                return@filter false
-            }
             item.parentId == appId
         }
     }

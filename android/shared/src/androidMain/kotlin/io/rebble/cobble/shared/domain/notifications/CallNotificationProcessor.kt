@@ -20,20 +20,23 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.random.Random
 
-class CallNotificationProcessor: KoinComponent {
+class CallNotificationProcessor : KoinComponent {
     private val exceptionHandler: GlobalExceptionHandler by inject()
     private val prefs: KMPPrefs by inject()
-    val coroutineScope = CoroutineScope(
+    val coroutineScope =
+        CoroutineScope(
             SupervisorJob() + exceptionHandler
-    )
+        )
 
     open class CallState(val cookie: UInt?) {
         object IDLE : CallState(null)
+
         class RINGING(val notification: CallNotification, cookie: UInt?) : CallState(cookie) {
             override fun toString(): String {
                 return "RINGING(cookie=$cookie, notification=$notification)"
             }
         }
+
         class ONGOING(val notification: CallNotification, cookie: UInt?) : CallState(cookie) {
             override fun toString(): String {
                 return "ONGOING(cookie=$cookie, notification=$notification)"
@@ -51,18 +54,20 @@ class CallNotificationProcessor: KoinComponent {
             if (sensitiveLogging) {
                 Logging.d("Call state changed to $state from $previousState")
             } else {
-                Logging.d("Call state changed to ${state::class.simpleName} from ${previousState::class.simpleName}")
+                Logging.d(
+                    "Call state changed to ${state::class.simpleName} from ${previousState::class.simpleName}"
+                )
             }
             val phoneControl = ConnectionStateManager.connectionState.value.watchOrNull?.phoneControlService
             if (state is CallState.RINGING && previousState is CallState.IDLE) {
                 state.cookie?.let {
                     Logging.d("Sending incoming call notification")
                     phoneControl?.send(
-                            PhoneControl.IncomingCall(
-                                    it,
-                                    state.notification.contactHandle ?: "Unknown",
-                                    state.notification.contactName ?: ""
-                            )
+                        PhoneControl.IncomingCall(
+                            it,
+                            state.notification.contactHandle ?: "Unknown",
+                            state.notification.contactName ?: ""
+                        )
                     )
                 } ?: run {
                     Logging.e("Ringing call state does not have a cookie")
@@ -83,59 +88,71 @@ class CallNotificationProcessor: KoinComponent {
             }
             previousState = state
         }.launchIn(coroutineScope)
-
     }
 
     companion object {
-        private val callPackages = mapOf(
+        private val callPackages =
+            mapOf(
                 "com.whatsapp" to WhatsAppCallNotificationInterpreter(),
-                "com.discord" to DiscordCallNotificationInterpreter(),
-        )
+                "com.discord" to DiscordCallNotificationInterpreter()
+            )
     }
 
     fun processCallNotification(sbn: StatusBarNotification) {
         if (sbn.packageName == "com.google.android.dialer" || sbn.packageName == "com.android.server.telecom") {
             return // Ignore system call notifications, we handle those with InCallService
         }
-        val interpreter = callPackages[sbn.packageName] ?: run {
-            Logging.d("Call notification from ${sbn.packageName} does not have an interpreter")
-            return
-        }
+        val interpreter =
+            callPackages[sbn.packageName] ?: run {
+                Logging.d("Call notification from ${sbn.packageName} does not have an interpreter")
+                return
+            }
         coroutineScope.launch {
             val sensitiveLogging = prefs.sensitiveDataLoggingEnabled.first()
             if (sensitiveLogging) {
-                Logging.d("Processing call notification from ${sbn.packageName} with actions: ${sbn.notification.actions.joinToString { it.title.toString() }}")
+                Logging.d(
+                    "Processing call notification from ${sbn.packageName} with actions: ${sbn.notification.actions.joinToString { it.title.toString() }}"
+                )
                 Logging.d("Call Notification: ${sbn.notification}")
                 Logging.d("Extras: ${sbn.notification.extras}")
-                Logging.d("Actions: ${
-                    sbn.notification.actions.joinToString(", ") {
-                        buildString {
-                            append("(")
-                            append("Action: ${it.title}")
-                            append(", Extras: ${it.extras.keySet().joinToString { key -> "$key: ${it.extras[key]}" }}")
-                            append(", SemanticAction: ${it.semanticAction}")
-                            append(")")
+                Logging.d(
+                    "Actions: ${
+                        sbn.notification.actions.joinToString(", ") {
+                            buildString {
+                                append("(")
+                                append("Action: ${it.title}")
+                                append(
+                                    ", Extras: ${it.extras.keySet().joinToString {
+                                            key ->
+                                        "$key: ${it.extras[key]}"
+                                    }}"
+                                )
+                                append(", SemanticAction: ${it.semanticAction}")
+                                append(")")
+                            }
                         }
-                    }
-                }")
+                    }"
+                )
             } else {
                 Logging.d("Processing call notification from ${sbn.packageName}")
             }
 
-            val callNotification = interpreter.processCallNotification(sbn) ?: run {
-                Logging.d("Call notification from ${sbn.packageName} was not recognized")
-                return@launch
-            }
+            val callNotification =
+                interpreter.processCallNotification(sbn) ?: run {
+                    Logging.d("Call notification from ${sbn.packageName} was not recognized")
+                    return@launch
+                }
             val nwCookie = Random.nextInt().toUInt() and 0xCAu.inv()
             synchronized(this@CallNotificationProcessor) {
                 if (callState.value is CallState.IDLE && callNotification.type == CallNotificationType.RINGING) {
                     // Random number that does not end with 0xCA (magic number for phone call)
                     callState.value = CallState.RINGING(callNotification, nwCookie)
                 } else if (callState.value !is CallState.ONGOING && callNotification.type == CallNotificationType.ONGOING) {
-                    callState.value = CallState.ONGOING(
-                        callNotification,
-                        (callState.value as? CallState.RINGING)?.cookie ?: nwCookie
-                    )
+                    callState.value =
+                        CallState.ONGOING(
+                            callNotification,
+                            (callState.value as? CallState.RINGING)?.cookie ?: nwCookie
+                        )
                 }
             }
         }
@@ -149,8 +166,8 @@ class CallNotificationProcessor: KoinComponent {
             Logging.d("Call notification dismissal from ${sbn.packageName}")
             callNotification.answer?.intentSender
             if (
-                    (state is CallState.RINGING && state.notification.packageName == sbn.packageName) ||
-                    (state is CallState.ONGOING && state.notification.packageName == sbn.packageName)
+                (state is CallState.RINGING && state.notification.packageName == sbn.packageName) ||
+                (state is CallState.ONGOING && state.notification.packageName == sbn.packageName)
             ) {
                 callState.value = CallState.IDLE
             }

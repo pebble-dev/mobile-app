@@ -1,6 +1,5 @@
 package io.rebble.cobble.data.pbw.appinfo
 
-
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.libpebblecommon.metadata.pbw.appinfo.PbwAppInfo
 
@@ -19,6 +18,5 @@ fun PbwAppInfo.toPigeon(): Pigeons.PbwAppInfo {
         it.watchapp = watchapp.toPigeon()
 
         it.isValid = true
-
     }
 }

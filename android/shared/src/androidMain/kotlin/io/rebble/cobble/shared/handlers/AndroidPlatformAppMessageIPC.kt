@@ -15,30 +15,33 @@ import io.rebble.libpebblecommon.packets.AppType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 
-class AndroidPlatformAppMessageIPC(private val context: Context): PlatformAppMessageIPC {
+class AndroidPlatformAppMessageIPC(private val context: Context) : PlatformAppMessageIPC {
     override fun sendPush(message: AppMessage.AppMessagePush) {
-        val intent = Intent(Constants.INTENT_APP_RECEIVE).apply {
-            putExtra(Constants.APP_UUID, message.uuid.get())
-            putExtra(Constants.TRANSACTION_ID, message.transactionId.get().toInt())
+        val intent =
+            Intent(Constants.INTENT_APP_RECEIVE).apply {
+                putExtra(Constants.APP_UUID, message.uuid.get())
+                putExtra(Constants.TRANSACTION_ID, message.transactionId.get().toInt())
 
-            val dictionary = message.getPebbleDictionary()
-            putExtra(Constants.MSG_DATA, dictionary.toJsonString())
-        }
+                val dictionary = message.getPebbleDictionary()
+                putExtra(Constants.MSG_DATA, dictionary.toJsonString())
+            }
         context.sendBroadcast(intent)
     }
 
     override fun sendAck(message: AppMessage.AppMessageACK) {
-        val intent = Intent(Constants.INTENT_APP_RECEIVE_ACK).apply {
-            putExtra(Constants.TRANSACTION_ID, message.transactionId.get().toInt())
-        }
+        val intent =
+            Intent(Constants.INTENT_APP_RECEIVE_ACK).apply {
+                putExtra(Constants.TRANSACTION_ID, message.transactionId.get().toInt())
+            }
 
         context.sendBroadcast(intent)
     }
 
     override fun sendNack(transactionId: Int) {
-        val intent = Intent(Constants.INTENT_APP_RECEIVE_NACK).apply {
-            putExtra(Constants.TRANSACTION_ID, transactionId)
-        }
+        val intent =
+            Intent(Constants.INTENT_APP_RECEIVE_NACK).apply {
+                putExtra(Constants.TRANSACTION_ID, transactionId)
+            }
 
         context.sendBroadcast(intent)
     }
@@ -56,26 +59,33 @@ class AndroidPlatformAppMessageIPC(private val context: Context): PlatformAppMes
                 Constants.INTENT_APP_SEND -> {
                     val uuid = uuidFrom(it.getStringExtra(Constants.APP_UUID)!!)
                     val transactionId = it.getIntExtra(Constants.TRANSACTION_ID, 0)
-                    val dictionary = PebbleDictionary.fromJson(it.getStringExtra(Constants.MSG_DATA)!!)
+                    val dictionary =
+                        PebbleDictionary.fromJson(
+                            it.getStringExtra(Constants.MSG_DATA)!!
+                        )
 
-                    OutgoingMessage.Data(uuid, transactionId, dictionary.toPacket(uuid, transactionId))
+                    OutgoingMessage.Data(
+                        uuid,
+                        transactionId,
+                        dictionary.toPacket(uuid, transactionId)
+                    )
                 }
                 Constants.INTENT_APP_ACK -> {
                     val transactionId: Int = it.getIntExtra(Constants.TRANSACTION_ID, 0)
 
                     OutgoingMessage.Ack(
-                            AppMessage.AppMessageACK(
-                                    transactionId.toUByte()
-                            )
+                        AppMessage.AppMessageACK(
+                            transactionId.toUByte()
+                        )
                     )
                 }
                 Constants.INTENT_APP_NACK -> {
                     val transactionId: Int = it.getIntExtra(Constants.TRANSACTION_ID, 0)
 
                     OutgoingMessage.Nack(
-                            AppMessage.AppMessageNACK(
-                                    transactionId.toUByte()
-                            )
+                        AppMessage.AppMessageNACK(
+                            transactionId.toUByte()
+                        )
                     )
                 }
                 Constants.INTENT_APP_START -> {
@@ -89,7 +99,8 @@ class AndroidPlatformAppMessageIPC(private val context: Context): PlatformAppMes
                     OutgoingMessage.AppStop(uuid)
                 }
                 Constants.INTENT_APP_CUSTOMIZE -> {
-                    val appType = it.getIntExtraOrNull(Constants.CUST_APP_TYPE)
+                    val appType =
+                        it.getIntExtraOrNull(Constants.CUST_APP_TYPE)
                             ?.let { type ->
                                 if (type == 0) {
                                     AppType.SPORTS
@@ -102,8 +113,8 @@ class AndroidPlatformAppMessageIPC(private val context: Context): PlatformAppMes
                     val name = it.getStringExtra(Constants.CUST_NAME) ?: return@mapNotNull null
 
                     OutgoingMessage.AppCustomize(
-                            appType,
-                            name
+                        appType,
+                        name
                     )
 
                     // Pebble watch is also supposed to support customizing the icon of the

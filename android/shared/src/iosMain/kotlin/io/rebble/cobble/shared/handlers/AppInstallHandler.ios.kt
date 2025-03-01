@@ -21,6 +21,11 @@ actual suspend fun savePbwFile(
     TODO("Not yet implemented")
 }
 
-actual suspend fun downloadPbw(context: PlatformContext, httpClient: HttpClient, lockerDao: LockerDao, appUuid: String): String? {
+actual suspend fun downloadPbw(
+    context: PlatformContext,
+    httpClient: HttpClient,
+    lockerDao: LockerDao,
+    appUuid: String
+): String? {
     TODO("Not yet implemented")
 }

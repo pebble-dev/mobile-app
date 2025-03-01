@@ -5,6 +5,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class IncomingPacketsListener @Inject constructor() {
-    val receivedPackets = MutableSharedFlow<ByteArray>()
-}
+class IncomingPacketsListener
+    @Inject
+    constructor() {
+        val receivedPackets = MutableSharedFlow<ByteArray>()
+    }

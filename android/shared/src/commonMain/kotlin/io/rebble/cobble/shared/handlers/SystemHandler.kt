@@ -5,7 +5,6 @@ import io.rebble.cobble.shared.PlatformContext
 import io.rebble.cobble.shared.domain.common.PebbleDevice
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
-import io.rebble.libpebblecommon.PacketPriority
 import io.rebble.libpebblecommon.packets.PhoneAppVersion
 import io.rebble.libpebblecommon.packets.ProtocolCapsFlag
 import io.rebble.libpebblecommon.packets.TimeMessage
@@ -23,7 +22,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class SystemHandler(
-        private val pebbleDevice: PebbleDevice,
+    private val pebbleDevice: PebbleDevice
 ) : CobbleHandler, KoinComponent {
     private val negotiationScope = pebbleDevice.negotiationScope
     private val systemService = pebbleDevice.systemService
@@ -82,7 +81,7 @@ class SystemHandler(
             try {
                 withTimeout(3000) {
                     val watchInfo = systemService.requestWatchVersion()
-                    //FIXME: Possible race condition here
+                    // FIXME: Possible race condition here
                     pebbleDevice.metadata.value = watchInfo
                     val watchModel = systemService.requestWatchModel()
                     pebbleDevice.modelId.value = watchModel
@@ -105,7 +104,6 @@ class SystemHandler(
         }
     }
 
-
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun listenForTimeChange() {
         negotiationScope.launch {
@@ -115,58 +113,63 @@ class SystemHandler(
                 sendCurrentTime()
             }.launchIn(connectionScope)
         }
-
     }
 
     private suspend fun sendCurrentTime() {
         val timezone = TimeZone.currentSystemDefault()
         val now = Clock.System.now()
         val timezoneOffsetMinutes = timezone.offsetAt(now).totalSeconds.seconds.inWholeMinutes
-   
+
         var normalizedZone = timezone.id
         if (normalizedZone.length > MAX_TIMEZONE_NAME_LENGTH) {
             normalizedZone = normalizedZone.take(MAX_TIMEZONE_NAME_LENGTH)
-            Logging.i("Time Zone ${timezone.id} exceeds maximum value length and has been truncated to ${normalizedZone}")
+            Logging.i(
+                "Time Zone ${timezone.id} exceeds maximum value length and has been truncated to $normalizedZone"
+            )
         }
-        
-        val updateTimePacket = TimeMessage.SetUTC(
+
+        val updateTimePacket =
+            TimeMessage.SetUTC(
                 now.epochSeconds.toUInt(),
                 timezoneOffsetMinutes.toShort(),
                 normalizedZone
-        )
+            )
 
-        Logging.i("Sending current time to watch: $now, timezone: ${normalizedZone}, offset: $timezoneOffsetMinutes")
+        Logging.i(
+            "Sending current time to watch: $now, timezone: $normalizedZone, offset: $timezoneOffsetMinutes"
+        )
         systemService.send(updateTimePacket)
     }
 
     private suspend fun handleAppVersionRequest(): PhoneAppVersion.AppVersionResponse {
-       val platformFlags = getPlatformPebbleFlags(platformContext)
+        val platformFlags = getPlatformPebbleFlags(platformContext)
 
         return PhoneAppVersion.AppVersionResponse(
-                UInt.MAX_VALUE,
-                0u,
-                PhoneAppVersion.PlatformFlag.makeFlags(
-                        platformContext.osType,
-                        platformFlags.toList()
-                ),
-                2u,
-                4u,
-                4u,
-                2u,
-                ProtocolCapsFlag.makeFlags(
-                        buildList {
-                            add(ProtocolCapsFlag.Supports8kAppMessage)
-                            add(ProtocolCapsFlag.SupportsExtendedMusicProtocol)
-                            add(ProtocolCapsFlag.SupportsTwoWayDismissal)
-                            add(ProtocolCapsFlag.SupportsAppRunStateProtocol)
-                            if (platformContext.osType == PhoneAppVersion.OSType.Android) {
-                                add(ProtocolCapsFlag.SupportsAppDictation)
-                            }
-                        }
-                )
+            UInt.MAX_VALUE,
+            0u,
+            PhoneAppVersion.PlatformFlag.makeFlags(
+                platformContext.osType,
+                platformFlags.toList()
+            ),
+            2u,
+            4u,
+            4u,
+            2u,
+            ProtocolCapsFlag.makeFlags(
+                buildList {
+                    add(ProtocolCapsFlag.Supports8kAppMessage)
+                    add(ProtocolCapsFlag.SupportsExtendedMusicProtocol)
+                    add(ProtocolCapsFlag.SupportsTwoWayDismissal)
+                    add(ProtocolCapsFlag.SupportsAppRunStateProtocol)
+                    if (platformContext.osType == PhoneAppVersion.OSType.Android) {
+                        add(ProtocolCapsFlag.SupportsAppDictation)
+                    }
+                }
+            )
         )
     }
 }
 
 expect fun platformTimeChangedFlow(context: PlatformContext): Flow<Unit>
+
 expect fun getPlatformPebbleFlags(context: PlatformContext): Set<PhoneAppVersion.PlatformFlag>

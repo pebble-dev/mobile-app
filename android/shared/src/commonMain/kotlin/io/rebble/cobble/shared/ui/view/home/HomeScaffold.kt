@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -21,12 +20,17 @@ import kotlinx.coroutines.launch
 
 open class HomePage {
     class Locker(val tab: LockerTabs) : HomePage()
+
     class Store(val tab: StoreTabs) : HomePage()
+
     object TestPage : HomePage()
 }
 
 @Composable
-fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
+fun HomeScaffold(
+    page: HomePage,
+    onNavChange: (String) -> Unit
+) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     Scaffold(
@@ -39,7 +43,7 @@ fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
         },*/
         bottomBar = {
             NavigationBar(
-                    windowInsets = WindowInsets.navigationBars
+                windowInsets = WindowInsets.navigationBars
             ) {
                 NavigationBarItem(
                     selected = page is HomePage.TestPage,
@@ -65,18 +69,19 @@ fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
             when (page) {
                 is HomePage.Locker -> {
                     FloatingActionButton(
-                            modifier = Modifier
-                                    .padding(16.dp),
-                            onClick = {
-                                if (page.tab == LockerTabs.Watchfaces) {
-                                    onNavChange(Routes.Home.STORE_WATCHFACES)
-                                } else {
-                                    onNavChange(Routes.Home.STORE_APPS)
-                                }
-                            },
-                            content = {
-                                RebbleIcons.plusAdd()
-                            },
+                        modifier =
+                            Modifier
+                                .padding(16.dp),
+                        onClick = {
+                            if (page.tab == LockerTabs.Watchfaces) {
+                                onNavChange(Routes.Home.STORE_WATCHFACES)
+                            } else {
+                                onNavChange(Routes.Home.STORE_APPS)
+                            }
+                        },
+                        content = {
+                            RebbleIcons.plusAdd()
+                        }
                     )
                 }
             }

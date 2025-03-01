@@ -24,31 +24,45 @@ import org.koin.core.component.inject
 import org.koin.core.qualifier.named
 import java.util.UUID
 
-class AndroidNotificationActionExecutor(): PlatformNotificationActionExecutor, KoinComponent {
+class AndroidNotificationActionExecutor() : PlatformNotificationActionExecutor, KoinComponent {
     private val context: Context by inject()
-    private val activeNotifsState: MutableStateFlow<Map<UUID, StatusBarNotification>> by inject(named("activeNotifsState"))
+    private val activeNotifsState: MutableStateFlow<Map<UUID, StatusBarNotification>> by inject(
+        named("activeNotifsState")
+    )
     private val prefs: KMPPrefs by inject()
     private val channelDao: NotificationChannelDao by inject()
-    private val activityOptions = ActivityOptions.makeBasic().apply {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            setPendingIntentBackgroundActivityStartMode(ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED)
+    private val activityOptions =
+        ActivityOptions.makeBasic().apply {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                setPendingIntentBackgroundActivityStartMode(
+                    ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED
+                )
+            }
         }
-    }
 
-    override suspend fun handleMetaNotificationAction(action: MetaNotificationAction, itemId: Uuid, attributes: List<TimelineItem.Attribute>): TimelineService.ActionResponse {
-        val sbn = activeNotifsState.value[itemId]
+    override suspend fun handleMetaNotificationAction(
+        action: MetaNotificationAction,
+        itemId: Uuid,
+        attributes: List<TimelineItem.Attribute>
+    ): TimelineService.ActionResponse {
+        val sbn =
+            activeNotifsState.value[itemId]
                 ?: run {
                     Logging.w("Notification not found for action, could be notif before we started tracking them")
                     return TimelineService.ActionResponse(success = false)
                 }
         return when (action) {
-            MetaNotificationAction.Dismiss -> actionIntent(sbn.notification.deleteIntent)
+            MetaNotificationAction.Dismiss ->
+                actionIntent(sbn.notification.deleteIntent)
                     .map {
                         TimelineService.ActionResponse(
-                                success = true,
-                                attributes = listOf(
-                                        TimelineAttributeFactory.subtitle("Dismissed"),
-                                        TimelineAttributeFactory.largeIcon(TimelineIcon.ResultDismissed),
+                            success = true,
+                            attributes =
+                                listOf(
+                                    TimelineAttributeFactory.subtitle("Dismissed"),
+                                    TimelineAttributeFactory.largeIcon(
+                                        TimelineIcon.ResultDismissed
+                                    )
                                 )
                         )
                     }
@@ -59,13 +73,17 @@ class AndroidNotificationActionExecutor(): PlatformNotificationActionExecutor, K
                         emit(TimelineService.ActionResponse(success = false))
                     }
                     .first()
-            MetaNotificationAction.Open -> actionIntent(sbn.notification.contentIntent)
+            MetaNotificationAction.Open ->
+                actionIntent(sbn.notification.contentIntent)
                     .map {
                         TimelineService.ActionResponse(
-                                success = true,
-                                attributes = listOf(
-                                        TimelineAttributeFactory.subtitle("Opened on phone"),
-                                        TimelineAttributeFactory.largeIcon(TimelineIcon.DuringPhoneCall),
+                            success = true,
+                            attributes =
+                                listOf(
+                                    TimelineAttributeFactory.subtitle("Opened on phone"),
+                                    TimelineAttributeFactory.largeIcon(
+                                        TimelineIcon.DuringPhoneCall
+                                    )
                                 )
                         )
                     }
@@ -79,10 +97,11 @@ class AndroidNotificationActionExecutor(): PlatformNotificationActionExecutor, K
             MetaNotificationAction.MutePackage -> {
                 prefs.setMutedPackages(prefs.mutedPackages.first() + sbn.packageName)
                 TimelineService.ActionResponse(
-                        success = true,
-                        attributes = listOf(
-                                TimelineAttributeFactory.subtitle("Muted app"),
-                                TimelineAttributeFactory.largeIcon(TimelineIcon.ResultMute),
+                    success = true,
+                    attributes =
+                        listOf(
+                            TimelineAttributeFactory.subtitle("Muted app"),
+                            TimelineAttributeFactory.largeIcon(TimelineIcon.ResultMute)
                         )
                 )
             }
@@ -90,10 +109,11 @@ class AndroidNotificationActionExecutor(): PlatformNotificationActionExecutor, K
                 channelDao.get(sbn.packageName, sbn.notification.channelId)?.let {
                     channelDao.setShouldNotify(sbn.packageName, sbn.notification.channelId, false)
                     TimelineService.ActionResponse(
-                            success = true,
-                            attributes = listOf(
-                                    TimelineAttributeFactory.subtitle("Muted channel"),
-                                    TimelineAttributeFactory.largeIcon(TimelineIcon.ResultMute),
+                        success = true,
+                        attributes =
+                            listOf(
+                                TimelineAttributeFactory.subtitle("Muted channel"),
+                                TimelineAttributeFactory.largeIcon(TimelineIcon.ResultMute)
                             )
                     )
                 } ?: TimelineService.ActionResponse(success = false)
@@ -101,66 +121,92 @@ class AndroidNotificationActionExecutor(): PlatformNotificationActionExecutor, K
         }
     }
 
-    override suspend fun handlePlatformAction(actionId: Int, itemId: Uuid, attributes: List<TimelineItem.Attribute>): TimelineService.ActionResponse {
-        val sbn = activeNotifsState.value[itemId]
+    override suspend fun handlePlatformAction(
+        actionId: Int,
+        itemId: Uuid,
+        attributes: List<TimelineItem.Attribute>
+    ): TimelineService.ActionResponse {
+        val sbn =
+            activeNotifsState.value[itemId]
                 ?: return TimelineService.ActionResponse(success = false)
         val actions = sbn.notification.actions ?: return TimelineService.ActionResponse(success = false)
-        val action = actions.getOrNull(actionId-MetaNotificationAction.metaActionLength)
+        val action =
+            actions.getOrNull(actionId - MetaNotificationAction.metaActionLength)
                 ?: return TimelineService.ActionResponse(success = false)
 
-        val fillIntent = if (action.isReply) {
-            val replyText = attributes.firstOrNull { it.attributeId.get() == TimelineAttribute.Title.id }
-                    ?.content?.get()?.asByteArray()?.decodeToString()
-                    ?: return TimelineService.ActionResponse(success = false)
-            val replyInput = action.replyInput ?: return TimelineService.ActionResponse(success = false)
-            val fillIntent = Intent()
-            RemoteInput.addResultsToIntent(arrayOf(replyInput), fillIntent, Bundle().apply {
-                putString(replyInput.resultKey, replyText)
-            })
-            fillIntent
-        } else {
-            null
-        }
+        val fillIntent =
+            if (action.isReply) {
+                val replyText =
+                    attributes.firstOrNull { it.attributeId.get() == TimelineAttribute.Title.id }
+                        ?.content?.get()?.asByteArray()?.decodeToString()
+                        ?: return TimelineService.ActionResponse(success = false)
+                val replyInput = action.replyInput ?: return TimelineService.ActionResponse(success = false)
+                val fillIntent = Intent()
+                RemoteInput.addResultsToIntent(
+                    arrayOf(replyInput),
+                    fillIntent,
+                    Bundle().apply {
+                        putString(replyInput.resultKey, replyText)
+                    }
+                )
+                fillIntent
+            } else {
+                null
+            }
 
-        val successResponse = if (action.isReply) {
-            TimelineService.ActionResponse(
+        val successResponse =
+            if (action.isReply) {
+                TimelineService.ActionResponse(
                     success = true,
-                    attributes = listOf(
+                    attributes =
+                        listOf(
                             TimelineAttributeFactory.subtitle("Replied"),
-                            TimelineAttributeFactory.largeIcon(TimelineIcon.ResultSent),
-                    )
-            )
-        } else {
-            TimelineService.ActionResponse(
+                            TimelineAttributeFactory.largeIcon(TimelineIcon.ResultSent)
+                        )
+                )
+            } else {
+                TimelineService.ActionResponse(
                     success = true,
-                    attributes = listOf(
+                    attributes =
+                        listOf(
                             TimelineAttributeFactory.subtitle("Done"),
-                            TimelineAttributeFactory.largeIcon(TimelineIcon.GenericConfirmation),
-                    )
-            )
-        }
+                            TimelineAttributeFactory.largeIcon(TimelineIcon.GenericConfirmation)
+                        )
+                )
+            }
 
         return actionIntent(action.actionIntent, fillIntent)
-                .map {
-                    successResponse
+            .map {
+                successResponse
+            }
+            .catch {
+                if (prefs.sensitiveDataLoggingEnabled.first()) {
+                    Logging.e("Error while sending notification action intent", it)
                 }
-                .catch {
-                    if (prefs.sensitiveDataLoggingEnabled.first()) {
-                        Logging.e("Error while sending notification action intent", it)
-                    }
-                    emit(TimelineService.ActionResponse(success = false))
-                }
-                .first()
+                emit(TimelineService.ActionResponse(success = false))
+            }
+            .first()
     }
 
-    private suspend fun actionIntent(intent: PendingIntent, fillintent: Intent? = null) = callbackFlow {
+    private suspend fun actionIntent(
+        intent: PendingIntent,
+        fillintent: Intent? = null
+    ) = callbackFlow {
         val sensitiveLogging = prefs.sensitiveDataLoggingEnabled.first()
-        val callback = PendingIntent.OnFinished { pendingIntent, intent, resultCode, resultData, resultExtras ->
-            if (sensitiveLogging) {
-                Logging.d("Intent sent: $intent, resultCode: $resultCode, resultData: $resultData, resultExtras: $resultExtras")
+        val callback =
+            PendingIntent.OnFinished {
+                    pendingIntent,
+                    intent,
+                    resultCode,
+                    resultData,
+                    resultExtras ->
+                if (sensitiveLogging) {
+                    Logging.d(
+                        "Intent sent: $intent, resultCode: $resultCode, resultData: $resultData, resultExtras: $resultExtras"
+                    )
+                }
+                trySend(Unit)
             }
-            trySend(Unit)
-        }
         intent.send(context, 0, fillintent, callback, null, null, activityOptions.toBundle())
         awaitClose {}
     }

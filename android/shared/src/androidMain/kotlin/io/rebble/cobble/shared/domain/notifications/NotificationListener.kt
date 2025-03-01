@@ -3,7 +3,6 @@ package io.rebble.cobble.shared.domain.notifications
 import android.app.Notification
 import android.app.NotificationChannel
 import android.companion.CompanionDeviceManager
-import android.companion.CompanionDeviceService
 import android.content.ComponentName
 import android.content.Context
 import android.os.Build
@@ -28,18 +27,21 @@ import timber.log.Timber
 
 class NotificationListener : NotificationListenerService(), KoinComponent {
     private val globalExceptionHandler: GlobalExceptionHandler by inject()
-    private val coroutineScope: CoroutineScope = CoroutineScope(
+    private val coroutineScope: CoroutineScope =
+        CoroutineScope(
             SupervisorJob() + globalExceptionHandler + CoroutineName("NotificationListener")
-    )
+        )
     private val notificationProcessor: NotificationProcessor by inject()
     private val callNotificationProcessor: CallNotificationProcessor by inject()
-    private val activeNotifsState: MutableStateFlow<Map<Uuid, StatusBarNotification>> by inject(named("activeNotifsState"))
+    private val activeNotifsState: MutableStateFlow<Map<Uuid, StatusBarNotification>> by inject(
+        named("activeNotifsState")
+    )
     private val notificationChannelDao: NotificationChannelDao by inject()
-    //TODO: switch to main prefs once we switch notif pages to flutter
+
+    // TODO: switch to main prefs once we switch notif pages to flutter
     private val flutterPreferences: FlutterPreferences by inject()
     private val prefs: KMPPrefs by inject()
     private lateinit var companionDeviceManager: CompanionDeviceManager
-
 
     private var isListening = false
     private var areNotificationsEnabled = true
@@ -90,7 +92,9 @@ class NotificationListener : NotificationListenerService(), KoinComponent {
                 val sensitiveLogging = prefs.sensitiveDataLoggingEnabled.firstOrNull() == true
                 try {
                     if (companionDeviceManager.associations.isEmpty()) {
-                        Logging.w("No companion devices, listener service has reduced permissions, skipping channel fetch")
+                        Logging.w(
+                            "No companion devices, listener service has reduced permissions, skipping channel fetch"
+                        )
                     } else {
                         val channels = getNotificationChannels(sbn.packageName, sbn.user)
                         /*if (sensitiveLogging) {
@@ -103,23 +107,22 @@ class NotificationListener : NotificationListenerService(), KoinComponent {
                             }
                         }*/
                         notificationChannelDao.insertAllIfNotExists(
-                                channels.map {
-                                    io.rebble.cobble.shared.database.entity.NotificationChannel(
-                                            sbn.packageName,
-                                            it.id,
-                                            it.name.toString(),
-                                            it.description,
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                                it.conversationId
-                                            } else {
-                                                null
-                                            },
-                                            true
-                                    )
-                                }
+                            channels.map {
+                                io.rebble.cobble.shared.database.entity.NotificationChannel(
+                                    sbn.packageName,
+                                    it.id,
+                                    it.name.toString(),
+                                    it.description,
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                        it.conversationId
+                                    } else {
+                                        null
+                                    },
+                                    true
+                                )
+                            }
                         )
                     }
-
                 } catch (e: Exception) {
                     Timber.w(e, "Failed to get notif channels from ${sbn.packageName}")
                 }
@@ -129,7 +132,12 @@ class NotificationListener : NotificationListenerService(), KoinComponent {
                     return@launch
                 }
 
-                if (NotificationCompat.getLocalOnly(sbn.notification)) return@launch // ignore local notifications TODO: respect user preference
+                if (NotificationCompat.getLocalOnly(
+                        sbn.notification
+                    )
+                ) {
+                    return@launch // ignore local notifications TODO: respect user preference
+                }
                 if (sbn.notification.flags and Notification.FLAG_ONGOING_EVENT != 0) return@launch // ignore ongoing notifications
                 if (mutedPackages.contains(sbn.packageName)) return@launch // ignore muted packages
                 if (sensitiveLogging) {
@@ -165,7 +173,12 @@ class NotificationListener : NotificationListenerService(), KoinComponent {
         }
     }
 
-    override fun onNotificationChannelModified(pkg: String?, user: UserHandle?, channel: NotificationChannel?, modificationType: Int) {
+    override fun onNotificationChannelModified(
+        pkg: String?,
+        user: UserHandle?,
+        channel: NotificationChannel?,
+        modificationType: Int
+    ) {
         if (pkg != null && channel != null) {
             coroutineScope.launch {
                 val channelId = channel.id
@@ -173,22 +186,25 @@ class NotificationListener : NotificationListenerService(), KoinComponent {
                 val delete = modificationType == NOTIFICATION_CHANNEL_OR_GROUP_DELETED
                 val channelDesc = channel.description ?: ""
                 val channelName = channel.name.toString()
-                val conversation = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    channel.conversationId
-                } else {
-                    null
-                }
+                val conversation =
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        channel.conversationId
+                    } else {
+                        null
+                    }
 
                 val existing = notificationChannelDao.get(packageId, channelId)
                 if (existing != null) {
                     if (delete) {
                         notificationChannelDao.delete(existing)
                     } else {
-                        notificationChannelDao.update(existing.copy(
+                        notificationChannelDao.update(
+                            existing.copy(
                                 name = channelName,
                                 description = channelDesc,
                                 conversationId = conversation
-                        ))
+                            )
+                        )
                     }
                 }
             }
@@ -198,9 +214,9 @@ class NotificationListener : NotificationListenerService(), KoinComponent {
     private fun controlListenerHints() {
         coroutineScope.launch(Dispatchers.Main.immediate) {
             combine(
-                    flutterPreferences.mutePhoneNotificationSounds,
-                    flutterPreferences.mutePhoneCallSounds,
-                    ConnectionStateManager.connectionState
+                flutterPreferences.mutePhoneNotificationSounds,
+                flutterPreferences.mutePhoneCallSounds,
+                ConnectionStateManager.connectionState
             ) { mutePhoneNotificationSounds, mutePhoneCallSounds, connectionState ->
                 if (connectionState is ConnectionState.Disconnected) {
                     // Do nothing. Listener will be unbound anyway

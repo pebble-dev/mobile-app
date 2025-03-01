@@ -10,12 +10,16 @@ import kotlinx.coroutines.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BluetoothAclReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) {
+    override fun onReceive(
+        context: Context,
+        intent: Intent
+    ) {
         if (intent.action != BluetoothDevice.ACTION_ACL_CONNECTED) {
             return
         }
 
-        val device: BluetoothDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+        val device: BluetoothDevice =
+            intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                 ?: return
 
         val component = (context.applicationContext as CobbleApplication).component
@@ -24,7 +28,8 @@ class BluetoothAclReceiver : BroadcastReceiver() {
         val connectionLooper = component.createConnectionLooper()
 
         if (pairedStorage.getMacAddressOfDefaultPebble() == device.address &&
-                connectionLooper.connectionState.value is ConnectionState.WaitingForReconnect) {
+            connectionLooper.connectionState.value is ConnectionState.WaitingForReconnect
+        ) {
             // After ACL is established, Pebble still needs some time to initialize
             // Attempt connection after one second
 

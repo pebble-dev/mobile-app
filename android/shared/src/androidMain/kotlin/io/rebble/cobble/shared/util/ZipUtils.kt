@@ -46,7 +46,10 @@ fun File.zippedSource(fileName: String): Source? {
     return zipInputStream.source()
 }
 
-fun io.rebble.cobble.shared.util.File.zippedSource(fileName: String): Source? = this.file.zippedSource(fileName)
+fun io.rebble.cobble.shared.util.File.zippedSource(fileName: String): Source? =
+    this.file.zippedSource(
+        fileName
+    )
 
 fun io.rebble.cobble.shared.util.File.source(): Source = this.file.source()
 

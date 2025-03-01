@@ -15,28 +15,40 @@ interface TimelinePinDao {
     suspend fun deleteAll()
 
     @Query("SELECT * FROM TimelinePin WHERE nextSyncAction IN (:nextSyncActions)")
-    suspend fun getAllPinsWithNextSyncAction(vararg nextSyncActions: NextSyncAction): List<TimelinePin>
+    suspend fun getAllPinsWithNextSyncAction(
+        vararg nextSyncActions: NextSyncAction
+    ): List<TimelinePin>
 
     @Query("UPDATE TimelinePin SET nextSyncAction = :nextSyncAction WHERE itemId in (:itemIds)")
-    suspend fun setSyncActionForPins(itemIds: List<Uuid>, nextSyncAction: NextSyncAction)
+    suspend fun setSyncActionForPins(
+        itemIds: List<Uuid>,
+        nextSyncAction: NextSyncAction
+    )
 
     @Update
     suspend fun updatePin(pin: TimelinePin)
 
     @Delete
     suspend fun deletePin(pin: TimelinePin)
+
     @Transaction
     @Delete
     suspend fun deletePins(pins: List<TimelinePin>)
 
     @Query("UPDATE TimelinePin SET nextSyncAction = :nextSyncAction WHERE parentId = :appId")
-    suspend fun setSyncActionForAllPinsFromApp(appId: Uuid, nextSyncAction: NextSyncAction)
+    suspend fun setSyncActionForAllPinsFromApp(
+        appId: Uuid,
+        nextSyncAction: NextSyncAction
+    )
 
     @Query("DELETE FROM TimelinePin WHERE nextSyncAction = :nextSyncAction")
     suspend fun deletePinsWithNextSyncAction(nextSyncAction: NextSyncAction)
 
     @Query("UPDATE TimelinePin SET nextSyncAction = :replacement WHERE nextSyncAction = :current")
-    suspend fun replaceNextSyncAction(current: NextSyncAction, replacement: NextSyncAction)
+    suspend fun replaceNextSyncAction(
+        current: NextSyncAction,
+        replacement: NextSyncAction
+    )
 
     @Query("SELECT * FROM TimelinePin WHERE parentId = :parentId")
     suspend fun getPinsForWatchapp(parentId: Uuid): List<TimelinePin>

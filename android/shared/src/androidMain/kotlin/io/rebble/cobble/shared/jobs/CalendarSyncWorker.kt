@@ -10,8 +10,14 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import timber.log.Timber
 
-class CalendarSyncWorker(appContext: Context, params: WorkerParameters) : CoroutineWorker(appContext, params), KoinComponent {
+class CalendarSyncWorker(appContext: Context, params: WorkerParameters) :
+    CoroutineWorker(
+        appContext,
+        params
+    ),
+    KoinComponent {
     private val calendarSync: CalendarSync by inject()
+
     override suspend fun doWork(): Result {
         Timber.d("Calendar sync worker start")
 

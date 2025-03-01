@@ -10,7 +10,11 @@ import java.nio.ByteBuffer
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-suspend fun InputStream.readFully(buffer: ByteBuffer, offset: Int, count: Int) {
+suspend fun InputStream.readFully(
+    buffer: ByteBuffer,
+    offset: Int,
+    count: Int
+) {
     return withContext(Dispatchers.IO) {
         suspendCancellableCoroutine<Unit> { continuation ->
             continuation.invokeOnCancellation {

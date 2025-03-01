@@ -6,7 +6,6 @@ import io.rebble.cobble.shared.PlatformContext
 import io.rebble.cobble.shared.api.RWS
 import io.rebble.cobble.shared.database.NextSyncAction
 import io.rebble.cobble.shared.database.dao.LockerDao
-import io.rebble.cobble.shared.database.entity.dataEqualTo
 import io.rebble.cobble.shared.database.entity.getBestPlatformForDevice
 import io.rebble.cobble.shared.database.entity.getSdkVersion
 import io.rebble.cobble.shared.database.entity.getVersion
@@ -26,27 +25,39 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.random.Random
 
-class LockerSyncJob: KoinComponent {
+class LockerSyncJob : KoinComponent {
     private val lockerDao: LockerDao by inject()
-    suspend fun beginSync(): Boolean {
-        val locker = withContext(Dispatchers.IO) {
-            RWS.appstoreClient?.getLocker()
-        } ?: run {
-            Logging.w("Failed to fetch locker")
-            return false
-        }
-        val storedLocker = withContext(Dispatchers.IO) {
-            lockerDao.getAllEntries()
-        }
 
-        val changedEntries = locker.filter { new ->
-            val newPlat = new.hardwarePlatforms.map { it.toEntity(new.id) }
-            storedLocker.any { old ->
-                old.entry.nextSyncAction != NextSyncAction.Ignore && old.entry.id == new.id && old.entry.version != new.version
+    suspend fun beginSync(): Boolean {
+        val locker =
+            withContext(Dispatchers.IO) {
+                RWS.appstoreClient?.getLocker()
+            } ?: run {
+                Logging.w("Failed to fetch locker")
+                return false
             }
-        }
-        val newEntries = locker.filter { new -> storedLocker.none { old -> old.entry.id == new.id } }
-        val removedEntries = storedLocker.filter { old -> locker.none { nw -> nw.id == old.entry.id } && !old.entry.local }
+        val storedLocker =
+            withContext(Dispatchers.IO) {
+                lockerDao.getAllEntries()
+            }
+
+        val changedEntries =
+            locker.filter { new ->
+                val newPlat = new.hardwarePlatforms.map { it.toEntity(new.id) }
+                storedLocker.any { old ->
+                    old.entry.nextSyncAction != NextSyncAction.Ignore && old.entry.id == new.id && old.entry.version != new.version
+                }
+            }
+        val newEntries =
+            locker.filter {
+                    new ->
+                storedLocker.none { old -> old.entry.id == new.id }
+            }
+        val removedEntries =
+            storedLocker.filter {
+                    old ->
+                locker.none { nw -> nw.id == old.entry.id } && !old.entry.local
+            }
 
         lockerDao.insertOrReplaceAll(newEntries.map { it.toEntity() })
         changedEntries.forEach {
@@ -55,7 +66,8 @@ class LockerSyncJob: KoinComponent {
         changedEntries.forEach {
             val entity = lockerDao.getEntry(it.id) ?: return@forEach
             val changed = it.toEntity()
-            lockerDao.update(entity.entry.copy(
+            lockerDao.update(
+                entity.entry.copy(
                     title = changed.title,
                     hearts = changed.hearts,
                     developerName = changed.developerName,
@@ -67,19 +79,29 @@ class LockerSyncJob: KoinComponent {
                     pbwLink = changed.pbwLink,
                     pbwReleaseId = changed.pbwReleaseId,
                     pbwIconResourceId = changed.pbwIconResourceId,
-                    nextSyncAction = changed.nextSyncAction,
-            ))
+                    nextSyncAction = changed.nextSyncAction
+                )
+            )
         }
         lockerDao.insertOrReplaceAll(changedEntries.map { it.toEntity() })
-        lockerDao.insertOrReplaceAllPlatforms(newEntries.flatMap { new ->
-            new.hardwarePlatforms.map { it.toEntity(new.id) }
-        })
-        lockerDao.insertOrReplaceAllPlatforms(changedEntries.flatMap { new ->
-            new.hardwarePlatforms.map { it.toEntity(new.id) }
-        })
-        lockerDao.setNextSyncAction(removedEntries.map { it.entry.id }.toSet(), NextSyncAction.Delete)
+        lockerDao.insertOrReplaceAllPlatforms(
+            newEntries.flatMap { new ->
+                new.hardwarePlatforms.map { it.toEntity(new.id) }
+            }
+        )
+        lockerDao.insertOrReplaceAllPlatforms(
+            changedEntries.flatMap { new ->
+                new.hardwarePlatforms.map { it.toEntity(new.id) }
+            }
+        )
+        lockerDao.setNextSyncAction(
+            removedEntries.map { it.entry.id }.toSet(),
+            NextSyncAction.Delete
+        )
         lockerDao.setNextSyncAction(changedEntries.map { it.id }.toSet(), NextSyncAction.Upload)
-        Logging.i("Synced locker: ${newEntries.size} new, ${changedEntries.size} changed, ${removedEntries.size} removed")
+        Logging.i(
+            "Synced locker: ${newEntries.size} new, ${changedEntries.size} changed, ${removedEntries.size} removed"
+        )
         return syncToDevice()
     }
 
@@ -87,7 +109,8 @@ class LockerSyncJob: KoinComponent {
         val entries = lockerDao.getEntriesForSync().sortedBy { it.entry.title }
         val connectedWatch = ConnectionStateManager.connectionState.value.watchOrNull
         connectedWatch?.let {
-            val connectedWatchType = WatchHardwarePlatform
+            val connectedWatchType =
+                WatchHardwarePlatform
                     .fromProtocolNumber(connectedWatch.metadata.value?.running?.hardwarePlatform?.get() ?: 0u)
             connectedWatchType?.let {
                 val blobDBService = connectedWatch.blobDBService
@@ -95,43 +118,45 @@ class LockerSyncJob: KoinComponent {
                     entries.forEach { row ->
                         val entry = row.entry
                         val platform = row.getBestPlatformForDevice(connectedWatchType.watchType)
-                        val res = platform?.let {
-                            when (entry.nextSyncAction) {
-                                NextSyncAction.Upload -> {
-                                    val (appVersionMajor, appVersionMinor) = row.getVersion()
-                                    val (sdkVersionMajor, sdkVersionMinor) = platform.getSdkVersion()
-                                    val packet = BlobCommand.InsertCommand(
-                                            Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
-                                            BlobCommand.BlobDatabase.App,
-                                            SUUID(StructMapper(), uuidFrom(entry.uuid)).toBytes(),
-                                            AppMetadata().also { meta ->
-                                                meta.uuid.set(uuidFrom(entry.uuid))
-                                                meta.flags.set(platform.processInfoFlags.toUInt())
-                                                meta.icon.set(entry.pbwIconResourceId.toUInt())
-                                                meta.appVersionMajor.set(appVersionMajor)
-                                                meta.appVersionMinor.set(appVersionMinor)
-                                                meta.sdkVersionMajor.set(sdkVersionMajor)
-                                                meta.sdkVersionMinor.set(sdkVersionMinor)
-                                                meta.appName.set(entry.title)
-                                            }.toBytes()
-                                    )
-                                    return@let blobDBService.send(packet)
-                                }
-                                NextSyncAction.Delete -> {
-                                    return@let blobDBService.send(
-                                            BlobCommand.DeleteCommand(
-                                                    Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
-                                                    BlobCommand.BlobDatabase.App,
-                                                    SUUID(StructMapper(), uuidFrom(entry.uuid)).toBytes()
+                        val res =
+                            platform?.let {
+                                when (entry.nextSyncAction) {
+                                    NextSyncAction.Upload -> {
+                                        val (appVersionMajor, appVersionMinor) = row.getVersion()
+                                        val (sdkVersionMajor, sdkVersionMinor) = platform.getSdkVersion()
+                                        val packet =
+                                            BlobCommand.InsertCommand(
+                                                Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
+                                                BlobCommand.BlobDatabase.App,
+                                                SUUID(StructMapper(), uuidFrom(entry.uuid)).toBytes(),
+                                                AppMetadata().also { meta ->
+                                                    meta.uuid.set(uuidFrom(entry.uuid))
+                                                    meta.flags.set(platform.processInfoFlags.toUInt())
+                                                    meta.icon.set(entry.pbwIconResourceId.toUInt())
+                                                    meta.appVersionMajor.set(appVersionMajor)
+                                                    meta.appVersionMinor.set(appVersionMinor)
+                                                    meta.sdkVersionMajor.set(sdkVersionMajor)
+                                                    meta.sdkVersionMinor.set(sdkVersionMinor)
+                                                    meta.appName.set(entry.title)
+                                                }.toBytes()
                                             )
-                                    )
-                                }
-                                else -> {
-                                    Logging.w("Unknown next sync action ${entry.nextSyncAction}")
-                                    return@let null
+                                        return@let blobDBService.send(packet)
+                                    }
+                                    NextSyncAction.Delete -> {
+                                        return@let blobDBService.send(
+                                            BlobCommand.DeleteCommand(
+                                                Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
+                                                BlobCommand.BlobDatabase.App,
+                                                SUUID(StructMapper(), uuidFrom(entry.uuid)).toBytes()
+                                            )
+                                        )
+                                    }
+                                    else -> {
+                                        Logging.w("Unknown next sync action ${entry.nextSyncAction}")
+                                        return@let null
+                                    }
                                 }
                             }
-                        }
                         when (res?.responseValue) {
                             BlobResponse.BlobStatus.Success -> {
                                 lockerDao.setNextSyncAction(entry.id, NextSyncAction.Nothing)

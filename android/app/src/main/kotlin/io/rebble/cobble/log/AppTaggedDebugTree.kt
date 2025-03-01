@@ -9,7 +9,12 @@ import timber.log.Timber
  * Taken from https://github.com/matejdro/WearUtils/blob/011964110a541126e3639172dc81b72ccf836a27/src/main/java/timber/log/Timber.java
  */
 open class AppTaggedDebugTree(private val appTag: String) : Timber.DebugTree() {
-    override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+    override fun log(
+        priority: Int,
+        tag: String?,
+        message: String,
+        t: Throwable?
+    ) {
         super.log(priority, appTag, "[$tag] $message", t)
     }
 }

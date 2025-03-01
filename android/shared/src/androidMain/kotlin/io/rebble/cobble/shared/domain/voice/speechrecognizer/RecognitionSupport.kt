@@ -16,16 +16,22 @@ import kotlinx.coroutines.asExecutor
 suspend fun SpeechRecognizer.checkRecognitionSupport(intent: Intent): RecognitionSupport {
     val result = CompletableDeferred<RecognitionSupport>()
     val executor = Dispatchers.IO.asExecutor()
-    checkRecognitionSupport(intent, executor, object : RecognitionSupportCallback {
-        override fun onSupportResult(recognitionSupport: RecognitionSupport) {
-            //TODO: override locale depending on user choice
-            result.complete(recognitionSupport)
-        }
+    checkRecognitionSupport(
+        intent,
+        executor,
+        object : RecognitionSupportCallback {
+            override fun onSupportResult(recognitionSupport: RecognitionSupport) {
+                // TODO: override locale depending on user choice
+                result.complete(recognitionSupport)
+            }
 
-        override fun onError(error: Int) {
-            result.completeExceptionally(Exception("Error checking recognition support: $error"))
+            override fun onError(error: Int) {
+                result.completeExceptionally(
+                    Exception("Error checking recognition support: $error")
+                )
+            }
         }
-    })
+    )
     val support = result.await()
     Logging.d("Locale: ${Locale.current.toLanguageTag()}, Recognition support: $support")
     return support

@@ -30,7 +30,8 @@ class PebbleKitProvider : ContentProvider() {
             return
         }
 
-        val context = context
+        val context =
+            context
                 ?: throw IllegalStateException("Context should not be null when initializing")
 
         initialized = true
@@ -60,7 +61,8 @@ class PebbleKitProvider : ContentProvider() {
         val metadata = ConnectionStateManager.connectionState.value.watchOrNull?.metadata?.value
 
         if (ConnectionStateManager.connectionState.value is ConnectionState.Connected &&
-                metadata != null) {
+            metadata != null
+        ) {
             val parsedVersion = FIRMWARE_VERSION_REGEX.find(metadata.running.versionTag.get())
             val groupValues = parsedVersion?.groupValues
             val majorVersion = groupValues?.elementAtOrNull(1)?.toIntOrNull() ?: 0
@@ -69,27 +71,27 @@ class PebbleKitProvider : ContentProvider() {
             val tag = groupValues?.elementAtOrNull(4) ?: ""
 
             cursor.addRow(
-                    listOf(
-                            1, // Connected
-                            1, // App Message support
-                            0, // Data Logging support
-                            majorVersion, // Major version support
-                            minorVersion, // Minor version support
-                            pointVersion, // Point version support
-                            tag, // Version Tag
-                    )
+                listOf(
+                    1, // Connected
+                    1, // App Message support
+                    0, // Data Logging support
+                    majorVersion, // Major version support
+                    minorVersion, // Minor version support
+                    pointVersion, // Point version support
+                    tag // Version Tag
+                )
             )
         } else {
             cursor.addRow(
-                    listOf(
-                            0, // Connected
-                            0, // App Message support
-                            0, // Data Logging support
-                            0, // Major version support
-                            0, // Minor version support
-                            0, // Point version support
-                            "", // Version Tag
-                    )
+                listOf(
+                    0, // Connected
+                    0, // App Message support
+                    0, // Data Logging support
+                    0, // Major version support
+                    0, // Minor version support
+                    0, // Point version support
+                    "" // Version Tag
+                )
             )
         }
 
@@ -100,23 +102,36 @@ class PebbleKitProvider : ContentProvider() {
         return null
     }
 
-    override fun insert(uri: Uri, values: ContentValues?): Uri? {
+    override fun insert(
+        uri: Uri,
+        values: ContentValues?
+    ): Uri? {
         // This provider is read-only
         return null
     }
 
-    override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int {
+    override fun delete(
+        uri: Uri,
+        selection: String?,
+        selectionArgs: Array<out String>?
+    ): Int {
         // This provider is read-only
         return 0
     }
 
-    override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
+    override fun update(
+        uri: Uri,
+        values: ContentValues?,
+        selection: String?,
+        selectionArgs: Array<out String>?
+    ): Int {
         // This provider is read-only
         return 0
     }
 }
 
-private val CURSOR_COLUMN_NAMES = arrayOf(
+private val CURSOR_COLUMN_NAMES =
+    arrayOf(
         Constants.KIT_STATE_COLUMN_CONNECTED.toString(),
         Constants.KIT_STATE_COLUMN_APPMSG_SUPPORT.toString(),
         Constants.KIT_STATE_COLUMN_DATALOGGING_SUPPORT.toString(),
@@ -124,6 +139,6 @@ private val CURSOR_COLUMN_NAMES = arrayOf(
         Constants.KIT_STATE_COLUMN_VERSION_MINOR.toString(),
         Constants.KIT_STATE_COLUMN_VERSION_POINT.toString(),
         Constants.KIT_STATE_COLUMN_VERSION_TAG.toString()
-)
+    )
 
 private val FIRMWARE_VERSION_REGEX = Regex("([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-(.*))?")

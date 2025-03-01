@@ -9,19 +9,20 @@ import io.rebble.cobble.shared.PlatformContext
 import io.rebble.cobble.shared.errors.GlobalExceptionHandler
 import org.koin.dsl.module
 
-val dependenciesModule = module {
-    factory {
-        HttpClient {
-            install(HttpCache) {
-                publicStorage(makePlatformCacheStorage(get()))
-            }
-            install(ContentNegotiation) {
-                json()
+val dependenciesModule =
+    module {
+        factory {
+            HttpClient {
+                install(HttpCache) {
+                    publicStorage(makePlatformCacheStorage(get()))
+                }
+                install(ContentNegotiation) {
+                    json()
+                }
             }
         }
-    }
 
-    single { GlobalExceptionHandler() }
-}
+        single { GlobalExceptionHandler() }
+    }
 
 expect fun makePlatformCacheStorage(platformContext: PlatformContext): CacheStorage

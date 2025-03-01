@@ -19,45 +19,60 @@ import io.rebble.cobble.shared.ui.common.RebbleIcons
 import io.rebble.cobble.shared.ui.viewmodel.LockerItemViewModel
 
 @Composable
-fun LockerListItem(httpClient: HttpClient, entry: SyncedLockerEntryWithPlatforms,  onOpenModalSheet: (LockerItemViewModel) -> Unit, dragHandle: (@Composable () -> Unit)? = null) {
-    val viewModel = viewModel(key = "locker-${entry.entry.id}") { LockerItemViewModel(httpClient, entry) }
+fun LockerListItem(
+    httpClient: HttpClient,
+    entry: SyncedLockerEntryWithPlatforms,
+    onOpenModalSheet: (LockerItemViewModel) -> Unit,
+    dragHandle: (@Composable () -> Unit)? = null
+) {
+    val viewModel =
+        viewModel(key = "locker-${entry.entry.id}") { LockerItemViewModel(httpClient, entry) }
     val imageState: LockerItemViewModel.ImageState by viewModel.imageState.collectAsState()
     ListItem(
-            modifier = Modifier.clickable {
+        modifier =
+            Modifier.clickable {
                 onOpenModalSheet(viewModel)
             },
-            leadingContent = {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    dragHandle?.invoke()
-                    when (imageState) {
-                        is LockerItemViewModel.ImageState.Loaded -> {
-                            AppIconContainer {
-                                Image(
-                                        modifier = Modifier.size(48.dp),
-                                        bitmap = (imageState as LockerItemViewModel.ImageState.Loaded).image,
-                                        contentDescription = "App icon",
-                                )
-                            }
-                        }
-
-                        is LockerItemViewModel.ImageState.Error -> {
-                            RebbleIcons.unknownApp(modifier = Modifier.size(40.dp))
-                        }
-
-                        is LockerItemViewModel.ImageState.Loading -> {
-                            CircularProgressIndicator(modifier = Modifier.size(40.dp))
+        leadingContent = {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                dragHandle?.invoke()
+                when (imageState) {
+                    is LockerItemViewModel.ImageState.Loaded -> {
+                        AppIconContainer {
+                            Image(
+                                modifier = Modifier.size(48.dp),
+                                bitmap = (imageState as LockerItemViewModel.ImageState.Loaded).image,
+                                contentDescription = "App icon"
+                            )
                         }
                     }
-                }
-            },
-            headlineContent = { Text(viewModel.title) },
-            supportingContent = { Text(viewModel.developerName) },
-            trailingContent = {
-                if (viewModel.hasSettings) {
-                    IconButton(onClick = { /*TODO*/ }, colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)) {
-                        RebbleIcons.settings()
+
+                    is LockerItemViewModel.ImageState.Error -> {
+                        RebbleIcons.unknownApp(modifier = Modifier.size(40.dp))
+                    }
+
+                    is LockerItemViewModel.ImageState.Loading -> {
+                        CircularProgressIndicator(modifier = Modifier.size(40.dp))
                     }
                 }
-            },
+            }
+        },
+        headlineContent = { Text(viewModel.title) },
+        supportingContent = { Text(viewModel.developerName) },
+        trailingContent = {
+            if (viewModel.hasSettings) {
+                IconButton(
+                    onClick = {
+                        // TODO
+                    },
+                    colors =
+                        IconButtonDefaults.iconButtonColors(
+                            contentColor = MaterialTheme.colorScheme.primary
+                        )
+                ) {
+                    RebbleIcons.settings()
+                }
+            }
+        }
     )
 }

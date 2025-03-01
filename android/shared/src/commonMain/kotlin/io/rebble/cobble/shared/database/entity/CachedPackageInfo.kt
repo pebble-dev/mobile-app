@@ -6,8 +6,8 @@ import kotlinx.datetime.Instant
 
 @Entity
 data class CachedPackageInfo(
-        @PrimaryKey val id: String,
-        val name: String,
-        val flags: Int,
-        val updated: Instant
+    @PrimaryKey val id: String,
+    val name: String,
+    val flags: Int,
+    val updated: Instant
 )

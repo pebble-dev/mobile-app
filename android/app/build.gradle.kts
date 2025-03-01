@@ -19,12 +19,13 @@ if (localPropertiesFile.exists()) {
     }
 }
 
-val flutterRoot = localProperties.getProperty("flutter.sdk")
+val flutterRoot =
+    localProperties.getProperty("flutter.sdk")
         ?: throw GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
 
 val flutterVersionCode = localProperties.getProperty("flutter.versionCode") ?: "1"
 val flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "1.0"
-//apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+// apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 apply(from = "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle")
 
 android {
@@ -75,7 +76,11 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro", rootProject.file("shared/androidMain/proguard-rules.pro"))
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+                rootProject.file("shared/androidMain/proguard-rules.pro")
+            )
             signingConfig = signingConfigs.getByName("release")
         }
         getByName("debug") {
@@ -104,11 +109,12 @@ android {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
-        freeCompilerArgs = listOf(
+        freeCompilerArgs =
+            listOf(
                 "-opt-in=kotlin.RequiresOptIn",
                 "-opt-in=kotlin.ExperimentalUnsignedTypes",
                 "-opt-in=kotlinx.serialization.ExperimentalSerializationApi"
-        )
+            )
     }
 }
 

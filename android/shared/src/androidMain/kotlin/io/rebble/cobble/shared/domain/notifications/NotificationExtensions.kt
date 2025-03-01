@@ -27,12 +27,19 @@ suspend fun StatusBarNotification.queryPackage(context: Context): CachedPackageI
     val dao = AppDatabase.instance().cachedPackageInfoDao()
     val packageInfo = dao.getPackageInfo(packageName)
     return if (packageInfo == null || packageInfo.updated < (Clock.System.now() - cacheLifetime)) {
-        val info = try {
-            packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-        } catch (e: NameNotFoundException) {
-            return null
-        }
-        val cache = CachedPackageInfo(packageName, packageManager.getApplicationLabel(info).toString(), info.flags, Clock.System.now())
+        val info =
+            try {
+                packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+            } catch (e: NameNotFoundException) {
+                return null
+            }
+        val cache =
+            CachedPackageInfo(
+                packageName,
+                packageManager.getApplicationLabel(info).toString(),
+                info.flags,
+                Clock.System.now()
+            )
         dao.insert(cache)
         cache
     } else {
@@ -44,4 +51,7 @@ val Notification.Action.isReply: Boolean
     get() = replyInput != null
 
 val Notification.Action.replyInput: RemoteInput?
-    get() = remoteInputs?.firstOrNull { it.allowFreeFormInput && (it.allowedDataTypes?.contains("text/plain") != false || it.allowedDataTypes.isEmpty()) }
+    get() =
+        remoteInputs?.firstOrNull {
+            it.allowFreeFormInput && (it.allowedDataTypes?.contains("text/plain") != false || it.allowedDataTypes.isEmpty())
+        }

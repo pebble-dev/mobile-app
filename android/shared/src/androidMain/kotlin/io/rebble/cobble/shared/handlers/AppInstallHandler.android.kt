@@ -14,7 +14,10 @@ import io.rebble.cobble.shared.database.dao.LockerDao
 import io.rebble.cobble.shared.util.File
 import io.rebble.cobble.shared.util.toKMPFile
 
-actual fun getAppPbwFile(context: PlatformContext, appUuid: String): File {
+actual fun getAppPbwFile(
+    context: PlatformContext,
+    appUuid: String
+): File {
     require(context is AndroidPlatformContext)
     val appsDir = java.io.File(context.applicationContext.filesDir, "apps")
     appsDir.mkdirs()
@@ -22,7 +25,11 @@ actual fun getAppPbwFile(context: PlatformContext, appUuid: String): File {
     return targetFileName.toKMPFile()
 }
 
-actual suspend fun savePbwFile(context: PlatformContext, appUuid: String, byteReadChannel: ByteReadChannel): String {
+actual suspend fun savePbwFile(
+    context: PlatformContext,
+    appUuid: String,
+    byteReadChannel: ByteReadChannel
+): String {
     val file = getAppPbwFile(context, appUuid)
     file.file.writeChannel().use {
         byteReadChannel.copyAndClose(this)
@@ -30,12 +37,18 @@ actual suspend fun savePbwFile(context: PlatformContext, appUuid: String, byteRe
     return file.file.toURI().toString()
 }
 
-actual suspend fun downloadPbw(context: PlatformContext, httpClient: HttpClient, lockerDao: LockerDao, appUuid: String): String? {
+actual suspend fun downloadPbw(
+    context: PlatformContext,
+    httpClient: HttpClient,
+    lockerDao: LockerDao,
+    appUuid: String
+): String? {
     val row = lockerDao.getEntryByUuid(appUuid)
-    val url = row?.entry?.pbwLink ?: run {
-        Logging.e("App URL for $appUuid not found in locker")
-        return null
-    }
+    val url =
+        row?.entry?.pbwLink ?: run {
+            Logging.e("App URL for $appUuid not found in locker")
+            return null
+        }
 
     val response = httpClient.get(url)
     if (response.status.value != 200) {

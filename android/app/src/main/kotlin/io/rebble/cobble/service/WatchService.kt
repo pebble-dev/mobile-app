@@ -39,7 +39,8 @@ class WatchService : LifecycleService() {
     private lateinit var mainNotifBuilder: NotificationCompat.Builder
 
     override fun onCreate() {
-        mainNotifBuilder = createBaseNotificationBuilder(NotificationId.NOTIFICATION_CHANNEL_WATCH_CONNECTING)
+        mainNotifBuilder =
+            createBaseNotificationBuilder(NotificationId.NOTIFICATION_CHANNEL_WATCH_CONNECTING)
                 .setContentTitle("Waiting to connect")
                 .setContentText(null)
                 .setSmallIcon(R.drawable.ic_notification_disconnected)
@@ -61,7 +62,11 @@ class WatchService : LifecycleService() {
         startNotificationLoop()
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int
+    ): Int {
         super.onStartCommand(intent, flags, startId)
         return START_STICKY
     }
@@ -103,14 +108,28 @@ class WatchService : LifecycleService() {
                     is ConnectionState.Connected -> {
                         icon = R.drawable.ic_notification_connected
                         titleText = "Connected to device"
-                        deviceName = if (it.watch is EmulatedPebbleDevice) "[EMU] ${it.watch.address}" else if (it.watch is BluetoothPebbleDevice) (it.watch as BluetoothPebbleDevice).bluetoothDevice.name!! else it.watch.address
+                        deviceName =
+                            if (it.watch is EmulatedPebbleDevice) {
+                                "[EMU] ${it.watch.address}"
+                            } else if (it.watch is BluetoothPebbleDevice) {
+                                (it.watch as BluetoothPebbleDevice).bluetoothDevice.name!!
+                            } else {
+                                it.watch.address
+                            }
                         channel = NotificationId.NOTIFICATION_CHANNEL_WATCH_CONNECTED
                     }
 
                     is ConnectionState.RecoveryMode -> {
                         icon = R.drawable.ic_notification_connected
                         titleText = "Connected to device (Recovery Mode)"
-                        deviceName = if (it.watch is EmulatedPebbleDevice) "[EMU] ${it.watch.address}" else if (it.watch is BluetoothPebbleDevice) (it.watch as BluetoothPebbleDevice).bluetoothDevice.name!! else it.watch.address
+                        deviceName =
+                            if (it.watch is EmulatedPebbleDevice) {
+                                "[EMU] ${it.watch.address}"
+                            } else if (it.watch is BluetoothPebbleDevice) {
+                                (it.watch as BluetoothPebbleDevice).bluetoothDevice.name!!
+                            } else {
+                                it.watch.address
+                            }
                         channel = NotificationId.NOTIFICATION_CHANNEL_WATCH_CONNECTED
                     }
                     else -> error("Unhandled connection state")
@@ -118,7 +137,8 @@ class WatchService : LifecycleService() {
 
                 Timber.d("Notification Title Text %s", titleText)
 
-                mainNotifBuilder = createBaseNotificationBuilder(channel)
+                mainNotifBuilder =
+                    createBaseNotificationBuilder(channel)
                         .setContentTitle(titleText)
                         .setContentText(deviceName)
                         .setSmallIcon(icon)
@@ -129,15 +149,16 @@ class WatchService : LifecycleService() {
     }
 
     private fun createBaseNotificationBuilder(channel: String): NotificationCompat.Builder {
-        val mainActivityIntent = PendingIntent.getActivity(
+        val mainActivityIntent =
+            PendingIntent.getActivity(
                 this,
                 0,
                 Intent(this, MainActivity::class.java),
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
-        )
+            )
 
         return NotificationCompat
-                .Builder(this@WatchService, channel)
-                .setContentIntent(mainActivityIntent)
+            .Builder(this@WatchService, channel)
+            .setContentIntent(mainActivityIntent)
     }
 }

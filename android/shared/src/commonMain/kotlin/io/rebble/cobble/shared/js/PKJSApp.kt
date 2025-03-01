@@ -20,7 +20,7 @@ import kotlinx.serialization.json.*
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class PKJSApp(val uuid: Uuid): KoinComponent {
+class PKJSApp(val uuid: Uuid) : KoinComponent {
     private val context: PlatformContext by inject()
     private val pbw = getAppPbwFile(context, uuid.toString())
     private val appInfo = requirePbwAppInfo(pbw)
@@ -29,16 +29,20 @@ class PKJSApp(val uuid: Uuid): KoinComponent {
     private var runningScope: CoroutineScope? = null
 
     companion object {
-        fun isJsApp(context: PlatformContext, uuid: Uuid): Boolean {
+        fun isJsApp(
+            context: PlatformContext,
+            uuid: Uuid
+        ): Boolean {
             val pbw = getAppPbwFile(context, uuid.toString())
             return pbw.exists() && getPbwJsFilePath(context, requirePbwAppInfo(pbw), pbw) != null
         }
     }
 
     suspend fun start(device: PebbleDevice) {
-        val connectionScope = withTimeout(1000) {
-            device.connectionScope.filterNotNull().first()
-        }
+        val connectionScope =
+            withTimeout(1000) {
+                device.connectionScope.filterNotNull().first()
+            }
         val scope = connectionScope + SupervisorJob() + CoroutineName("PKJSApp-$uuid")
         runningScope = scope
         jsRunner = JsRunnerFactory.createJsRunner(scope, device, appInfo, jsPath)
@@ -49,10 +53,15 @@ class PKJSApp(val uuid: Uuid): KoinComponent {
             }
             Logging.d("Received app message: $it")
             withTimeout(1000) {
-                device.outgoingAppMessages.emit(OutgoingMessage.Ack(AppMessage.AppMessageACK(it.transactionId.get())))
+                device.outgoingAppMessages.emit(
+                    OutgoingMessage.Ack(AppMessage.AppMessageACK(it.transactionId.get()))
+                )
             }
             when (it) {
-                is AppMessage.AppMessagePush -> jsRunner?.signalNewAppMessageData(it.dictionary.list.toJSDataString(appInfo.appKeys))
+                is AppMessage.AppMessagePush ->
+                    jsRunner?.signalNewAppMessageData(
+                        it.dictionary.list.toJSDataString(appInfo.appKeys)
+                    )
                 is AppMessage.AppMessageACK -> jsRunner?.signalAppMessageAck(it.toJSDataString())
                 is AppMessage.AppMessageNACK -> jsRunner?.signalAppMessageNack(it.toJSDataString())
             }
@@ -79,33 +88,35 @@ class PKJSApp(val uuid: Uuid): KoinComponent {
 }
 
 fun List<AppMessageTuple>.toJSDataString(appKeys: Map<String, Int>): String {
-    val obj = buildJsonObject {
-        for (tuple in this@toJSDataString) {
-            val type = tuple.type.get()
-            val keyId = tuple.key.get()
-            val key = appKeys.entries.firstOrNull { it.value.toUInt() == keyId }?.key ?: keyId.toString()
+    val obj =
+        buildJsonObject {
+            for (tuple in this@toJSDataString) {
+                val type = tuple.type.get()
+                val keyId = tuple.key.get()
+                val key = appKeys.entries.firstOrNull { it.value.toUInt() == keyId }?.key ?: keyId.toString()
 
-            when (type) {
-                AppMessageTuple.Type.ByteArray.value -> {
-                    val array = buildJsonArray {
-                        for (byte in tuple.dataAsBytes) {
-                            add(byte.toInt())
-                        }
+                when (type) {
+                    AppMessageTuple.Type.ByteArray.value -> {
+                        val array =
+                            buildJsonArray {
+                                for (byte in tuple.dataAsBytes) {
+                                    add(byte.toInt())
+                                }
+                            }
+                        put(key, array)
                     }
-                    put(key, array)
-                }
-                AppMessageTuple.Type.CString.value -> {
-                    put(key, tuple.dataAsString)
-                }
-                AppMessageTuple.Type.UInt.value -> {
-                    put(key, tuple.dataAsUnsignedNumber)
-                }
-                AppMessageTuple.Type.Int.value -> {
-                    put(key, tuple.dataAsSignedNumber)
+                    AppMessageTuple.Type.CString.value -> {
+                        put(key, tuple.dataAsString)
+                    }
+                    AppMessageTuple.Type.UInt.value -> {
+                        put(key, tuple.dataAsUnsignedNumber)
+                    }
+                    AppMessageTuple.Type.Int.value -> {
+                        put(key, tuple.dataAsSignedNumber)
+                    }
                 }
             }
         }
-    }
     return Json.encodeToString(obj)
 }
 
@@ -121,35 +132,56 @@ fun AppMessage.AppMessageACK.toJSDataString(): String {
     }.toString()
 }
 
-fun AppMessage.Companion.fromJSDataString(json: String, appInfo: PbwAppInfo): AppMessage {
+fun AppMessage.Companion.fromJSDataString(
+    json: String,
+    appInfo: PbwAppInfo
+): AppMessage {
     val jsonElement = Json.parseToJsonElement(json)
     val jsonObject = jsonElement.jsonObject
-    val tuples = jsonObject.mapNotNull { objectEntry ->
-        val key = objectEntry.key
-        val keyId = appInfo.appKeys[key] ?: return@mapNotNull null
-        when (objectEntry.value) {
-            is JsonArray -> {
-                AppMessageTuple.createUByteArray(keyId.toUInt(), objectEntry.value.jsonArray.map { it.jsonPrimitive.long.toUByte() }.toUByteArray())
-            }
-            is JsonObject -> error("Invalid JSON value, JsonObject not supported")
-            else -> {
-                when {
-                    objectEntry.value.jsonPrimitive.isString -> {
-                        AppMessageTuple.createString(keyId.toUInt(), objectEntry.value.jsonPrimitive.content)
+    val tuples =
+        jsonObject.mapNotNull { objectEntry ->
+            val key = objectEntry.key
+            val keyId = appInfo.appKeys[key] ?: return@mapNotNull null
+            when (objectEntry.value) {
+                is JsonArray -> {
+                    AppMessageTuple.createUByteArray(
+                        keyId.toUInt(),
+                        objectEntry.value.jsonArray.map {
+                            it.jsonPrimitive.long.toUByte()
+                        }.toUByteArray()
+                    )
+                }
+                is JsonObject -> error("Invalid JSON value, JsonObject not supported")
+                else -> {
+                    when {
+                        objectEntry.value.jsonPrimitive.isString -> {
+                            AppMessageTuple.createString(
+                                keyId.toUInt(),
+                                objectEntry.value.jsonPrimitive.content
+                            )
+                        }
+                        objectEntry.value.jsonPrimitive.intOrNull != null -> {
+                            AppMessageTuple.createInt(
+                                keyId.toUInt(),
+                                objectEntry.value.jsonPrimitive.long.toInt()
+                            )
+                        }
+                        objectEntry.value.jsonPrimitive.longOrNull != null -> {
+                            AppMessageTuple.createUInt(
+                                keyId.toUInt(),
+                                objectEntry.value.jsonPrimitive.long.toUInt()
+                            )
+                        }
+                        objectEntry.value.jsonPrimitive.booleanOrNull != null -> {
+                            AppMessageTuple.createShort(
+                                keyId.toUInt(),
+                                if (objectEntry.value.jsonPrimitive.boolean) 1.toShort() else 0.toShort()
+                            )
+                        }
+                        else -> error("Invalid JSON value, unsupported primitive type")
                     }
-                    objectEntry.value.jsonPrimitive.intOrNull != null -> {
-                        AppMessageTuple.createInt(keyId.toUInt(), objectEntry.value.jsonPrimitive.long.toInt())
-                    }
-                    objectEntry.value.jsonPrimitive.longOrNull != null -> {
-                        AppMessageTuple.createUInt(keyId.toUInt(), objectEntry.value.jsonPrimitive.long.toUInt())
-                    }
-                    objectEntry.value.jsonPrimitive.booleanOrNull != null -> {
-                        AppMessageTuple.createShort(keyId.toUInt(), if (objectEntry.value.jsonPrimitive.boolean) 1.toShort() else 0.toShort())
-                    }
-                    else -> error("Invalid JSON value, unsupported primitive type")
                 }
             }
         }
-    }
     return AppMessage.AppMessagePush(uuid = uuidFrom(appInfo.uuid), tuples = tuples)
 }

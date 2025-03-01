@@ -4,7 +4,10 @@ import io.rebble.cobble.shared.Logging
 import kotlinx.datetime.Clock
 import org.koin.mp.KoinPlatformTools
 
-actual suspend fun writeRecording(encoderInfo: SpeexEncoderInfo, frames: List<AudioStreamFrame.AudioData>) {
+actual suspend fun writeRecording(
+    encoderInfo: SpeexEncoderInfo,
+    frames: List<AudioStreamFrame.AudioData>
+) {
     val koin = KoinPlatformTools.defaultContext().get()
     val context = koin.get<android.content.Context>()
     val timestamp = Clock.System.now().epochSeconds

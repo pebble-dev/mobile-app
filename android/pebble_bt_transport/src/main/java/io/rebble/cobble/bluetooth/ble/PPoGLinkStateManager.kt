@@ -13,7 +13,10 @@ object PPoGLinkStateManager {
         }.asStateFlow()
     }
 
-    fun updateState(deviceAddress: String, state: PPoGLinkState) {
+    fun updateState(
+        deviceAddress: String,
+        state: PPoGLinkState
+    ) {
         states.getOrPut(deviceAddress) {
             MutableStateFlow(PPoGLinkState.Closed)
         }.value = state

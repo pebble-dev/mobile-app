@@ -9,31 +9,35 @@ import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class RawIncomingPacketsBridge @Inject constructor(
+class RawIncomingPacketsBridge
+    @Inject
+    constructor(
         bridgeLifecycleController: BridgeLifecycleController,
         private val coroutineScope: CoroutineScope,
         private val incomingPacketsListener: IncomingPacketsListener
-) : FlutterBridge, Pigeons.RawIncomingPacketsControl {
-    private val connectionCallbacks = bridgeLifecycleController
-            .createCallbacks(Pigeons::RawIncomingPacketsCallbacks)
+    ) : FlutterBridge, Pigeons.RawIncomingPacketsControl {
+        private val connectionCallbacks =
+            bridgeLifecycleController
+                .createCallbacks(Pigeons::RawIncomingPacketsCallbacks)
 
-    private var packetsObservingJob: Job? = null
+        private var packetsObservingJob: Job? = null
 
-    init {
-        bridgeLifecycleController.setupControl(Pigeons.RawIncomingPacketsControl::setup, this)
-    }
+        init {
+            bridgeLifecycleController.setupControl(Pigeons.RawIncomingPacketsControl::setup, this)
+        }
 
-    override fun observeIncomingPackets() {
-        packetsObservingJob = coroutineScope.launch(Dispatchers.Main.immediate) {
-            incomingPacketsListener.receivedPackets.collect {
-                val byteList = it.toList()
+        override fun observeIncomingPackets() {
+            packetsObservingJob =
+                coroutineScope.launch(Dispatchers.Main.immediate) {
+                    incomingPacketsListener.receivedPackets.collect {
+                        val byteList = it.toList()
 
-                connectionCallbacks.onPacketReceived(ListWrapper(byteList)) {}
-            }
+                        connectionCallbacks.onPacketReceived(ListWrapper(byteList)) {}
+                    }
+                }
+        }
+
+        override fun cancelObservingIncomingPackets() {
+            packetsObservingJob?.cancel()
         }
     }
-
-    override fun cancelObservingIncomingPackets() {
-        packetsObservingJob?.cancel()
-    }
-}

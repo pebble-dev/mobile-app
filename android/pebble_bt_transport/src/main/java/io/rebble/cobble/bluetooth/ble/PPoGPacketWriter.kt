@@ -23,7 +23,10 @@ class PPoGPacketWriter(private val scope: CoroutineScope, private val stateManag
     val packetWriteFlow: SharedFlow<GATTPacket> = _packetWriteFlow
     private val packetSendStatusFlow = MutableSharedFlow<Pair<GATTPacket, Boolean>>()
 
-    suspend fun setPacketSendStatus(packet: GATTPacket, status: Boolean) {
+    suspend fun setPacketSendStatus(
+        packet: GATTPacket,
+        status: Boolean
+    ) {
         packetSendStatusFlow.emit(Pair(packet, status))
     }
 
@@ -81,22 +84,25 @@ class PPoGPacketWriter(private val scope: CoroutineScope, private val stateManag
             return
         }
 
-        val packet = if (metaWaitingToSend != null) {
-            metaWaitingToSend
-        } else {
-            if (inflightPackets.size > txWindow) {
-                return
+        val packet =
+            if (metaWaitingToSend != null) {
+                metaWaitingToSend
             } else {
-                dataWaitingToSend.peek()
+                if (inflightPackets.size > txWindow) {
+                    return
+                } else {
+                    dataWaitingToSend.peek()
+                }
             }
-        }
 
         if (packet == null) {
             return
         }
 
         if (packet.type !in stateManager.state.allowedTxTypes) {
-            Timber.e("Attempted to send packet of type ${packet.type} in state ${stateManager.state}")
+            Timber.e(
+                "Attempted to send packet of type ${packet.type} in state ${stateManager.state}"
+            )
             return
         }
 
@@ -125,17 +131,20 @@ class PPoGPacketWriter(private val scope: CoroutineScope, private val stateManag
     fun rescheduleTimeout(force: Boolean = false) {
         timeoutJob?.cancel()
         if (inflightPackets.isNotEmpty() || force) {
-            timeoutJob = scope.launch {
-                delay(PACKET_ACK_TIMEOUT_MILLIS)
-                onTimeout()
-            }
+            timeoutJob =
+                scope.launch {
+                    delay(PACKET_ACK_TIMEOUT_MILLIS)
+                    onTimeout()
+                }
         }
     }
 
     @RequiresPermission("android.permission.BLUETOOTH_CONNECT")
     private suspend fun sendPacket(packet: GATTPacket) {
         val data = packet.toByteArray()
-        require(data.size <= (stateManager.mtuSize - 3)) { "Packet too large to send: ${data.size} > ${stateManager.mtuSize}-3" }
+        require(data.size <= (stateManager.mtuSize - 3)) {
+            "Packet too large to send: ${data.size} > ${stateManager.mtuSize}-3"
+        }
         _packetWriteFlow.emit(packet)
     }
 

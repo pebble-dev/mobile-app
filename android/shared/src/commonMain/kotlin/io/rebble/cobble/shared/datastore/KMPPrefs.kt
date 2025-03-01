@@ -7,7 +7,8 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 const val DEFAULT_MUTED_PACKAGES_VERSION = 1
-val defaultMutedPackages = setOf(
+val defaultMutedPackages =
+    setOf(
         "com.google.android.googlequicksearchbox",
         "de.itgecko.sharedownloader",
         "com.android.vending",
@@ -22,41 +23,49 @@ val defaultMutedPackages = setOf(
         "com.dropbox.android",
         "com.lookout",
         "com.lastpass.lpandroid"
-)
+    )
 
-class KMPPrefs: KoinComponent {
+class KMPPrefs : KoinComponent {
     private val dataStore: DataStore<Preferences> by inject()
 
-    val calendarSyncEnabled = dataStore.data.map { preferences ->
-        preferences[ENABLE_CALENDAR_KEY] ?: true
-    }
+    val calendarSyncEnabled =
+        dataStore.data.map { preferences ->
+            preferences[ENABLE_CALENDAR_KEY] ?: true
+        }
+
     suspend fun setCalendarSyncEnabled(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[ENABLE_CALENDAR_KEY] = enabled
         }
     }
 
-    val sensitiveDataLoggingEnabled = dataStore.data.map { preferences ->
-        preferences[SENSITIVE_DATA_LOGGING_KEY] ?: false
-    }
+    val sensitiveDataLoggingEnabled =
+        dataStore.data.map { preferences ->
+            preferences[SENSITIVE_DATA_LOGGING_KEY] ?: false
+        }
+
     suspend fun setSensitiveDataLoggingEnabled(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[SENSITIVE_DATA_LOGGING_KEY] = enabled
         }
     }
 
-    val defaultMutedPackagesVersion = dataStore.data.map { preferences ->
-        preferences[DEFAULT_MUTED_PACKAGES_VERSION_KEY] ?: 0
-    }
+    val defaultMutedPackagesVersion =
+        dataStore.data.map { preferences ->
+            preferences[DEFAULT_MUTED_PACKAGES_VERSION_KEY] ?: 0
+        }
+
     suspend fun setDefaultMutedPackagesVersion(version: Int) {
         dataStore.edit { preferences ->
             preferences[DEFAULT_MUTED_PACKAGES_VERSION_KEY] = version
         }
     }
 
-    val mutedPackages = dataStore.data.map { preferences ->
-        preferences[MUTED_PACKAGES_KEY] ?: setOf()
-    }
+    val mutedPackages =
+        dataStore.data.map { preferences ->
+            preferences[MUTED_PACKAGES_KEY] ?: setOf()
+        }
+
     suspend fun setMutedPackages(packages: Set<String>) {
         dataStore.edit { preferences ->
             preferences[MUTED_PACKAGES_KEY] = packages

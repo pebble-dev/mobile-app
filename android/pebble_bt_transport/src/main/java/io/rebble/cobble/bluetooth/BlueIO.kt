@@ -15,9 +15,9 @@ interface BlueIO {
 }
 
 class BluetoothPebbleDevice(
-        val bluetoothDevice: BluetoothDevice,
-        address: String
-) : PebbleDevice(null, address){
+    val bluetoothDevice: BluetoothDevice,
+    address: String
+) : PebbleDevice(null, address) {
 
     override fun toString(): String {
         val start = "< BluetoothPebbleDevice, address=$address, connectionScopeActive=${connectionScope.value?.isActive}, bluetoothDevice=< BluetoothDevice address=${bluetoothDevice.address}"
@@ -31,5 +31,6 @@ class BluetoothPebbleDevice(
 
 sealed class SingleConnectionStatus {
     class Connecting(val watch: PebbleDevice) : SingleConnectionStatus()
+
     class Connected(val watch: PebbleDevice) : SingleConnectionStatus()
 }

@@ -16,7 +16,9 @@ abstract class UiBridgesModule {
     @Binds
     @IntoSet
     @UiBridge
-    abstract fun bindConnectionUiBridge(connectionFlutterBridge: ConnectionUiFlutterBridge): FlutterBridge
+    abstract fun bindConnectionUiBridge(
+        connectionFlutterBridge: ConnectionUiFlutterBridge
+    ): FlutterBridge
 
     @Binds
     @IntoSet
@@ -32,28 +34,26 @@ abstract class UiBridgesModule {
     @IntoSet
     @UiBridge
     abstract fun bindPermission(
-            permissionControlFlutterBridge: PermissionControlFlutterBridge
+        permissionControlFlutterBridge: PermissionControlFlutterBridge
     ): FlutterBridge
 
     @Binds
     @IntoSet
     @UiBridge
     abstract fun bindCalendarControl(
-            calendarControlFlutterBridge: CalendarControlFlutterBridge
+        calendarControlFlutterBridge: CalendarControlFlutterBridge
     ): FlutterBridge
 
     @Binds
     @IntoSet
     @UiBridge
-    abstract fun bindWorkaroundsControl(
-            bridge: WorkaroundsFlutterBridge
-    ): FlutterBridge
+    abstract fun bindWorkaroundsControl(bridge: WorkaroundsFlutterBridge): FlutterBridge
 
     @Binds
     @IntoSet
     @UiBridge
     abstract fun bindFirmwareUpdateControl(
-            bridge: FirmwareUpdateControlFlutterBridge
+        bridge: FirmwareUpdateControlFlutterBridge
     ): FlutterBridge
 }
 

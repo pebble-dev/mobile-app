@@ -12,16 +12,18 @@ class TimberLogbackAppender : UnsynchronizedAppenderBase<ILoggingEvent>() {
         }
 
         val message = eventObject.formattedMessage
-        val throwable = eventObject.throwableProxy?.let {
-            Throwable(
+        val throwable =
+            eventObject.throwableProxy?.let {
+                Throwable(
                     message = it.message,
-                    cause = it.cause?.let { cause ->
-                        Throwable(
+                    cause =
+                        it.cause?.let { cause ->
+                            Throwable(
                                 message = cause.message
-                        )
-                    }
-            )
-        }
+                            )
+                        }
+                )
+            }
 
         when (eventObject.level.toInt()) {
             Level.TRACE_INT -> {

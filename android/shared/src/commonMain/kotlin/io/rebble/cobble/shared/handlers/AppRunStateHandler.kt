@@ -12,9 +12,10 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class AppRunStateHandler(
-        private val pebbleDevice: PebbleDevice
+    private val pebbleDevice: PebbleDevice
 ) : CobbleHandler, KoinComponent {
     private val lockerDao: LockerDao by inject()
+
     init {
         pebbleDevice.negotiationScope.launch {
             val deviceScope = pebbleDevice.connectionScope.filterNotNull().first()

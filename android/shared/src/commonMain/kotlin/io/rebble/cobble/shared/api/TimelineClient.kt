@@ -10,18 +10,20 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class TimelineClient(
-        val syncBaseUrl: String,
-        private val token: String
-): KoinComponent {
+    val syncBaseUrl: String,
+    private val token: String
+) : KoinComponent {
     private val client: HttpClient by inject()
     private val version = "v1"
+
     suspend fun getSandboxUserToken(uuid: String): String {
-        val res = client.get("$syncBaseUrl/$version/tokens/sandbox/$uuid") {
-            headers {
-                append(HttpHeaders.Accept, "application/json")
-                append(HttpHeaders.Authorization, "Bearer $token")
+        val res =
+            client.get("$syncBaseUrl/$version/tokens/sandbox/$uuid") {
+                headers {
+                    append(HttpHeaders.Accept, "application/json")
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                }
             }
-        }
         if (res.status.value != 200) {
             error("Failed to get sandbox user token: ${res.status}")
         }

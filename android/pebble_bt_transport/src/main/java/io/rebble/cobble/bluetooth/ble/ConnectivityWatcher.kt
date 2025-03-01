@@ -37,7 +37,8 @@ class ConnectivityWatcher(val gatt: BlueGATTConnection) {
             pairingErrorCode = PairingErrorCode.getByValue(characteristicValue[3])
         }
 
-        override fun toString(): String = "< ConnectivityStatus connected = ${connected} paired = ${paired} encrypted = ${encrypted} hasBondedGateway = ${hasBondedGateway} supportsPinningWithoutSlaveSecurity = ${supportsPinningWithoutSlaveSecurity} hasRemoteAttemptedToUseStalePairing = ${hasRemoteAttemptedToUseStalePairing} pairingErrorCode = ${pairingErrorCode}>"
+        override fun toString(): String =
+            "< ConnectivityStatus connected = $connected paired = $paired encrypted = $encrypted hasBondedGateway = $hasBondedGateway supportsPinningWithoutSlaveSecurity = $supportsPinningWithoutSlaveSecurity hasRemoteAttemptedToUseStalePairing = $hasRemoteAttemptedToUseStalePairing pairingErrorCode = $pairingErrorCode>"
     }
 
     enum class PairingErrorCode(val value: Byte) {
@@ -74,28 +75,37 @@ class ConnectivityWatcher(val gatt: BlueGATTConnection) {
             Timber.e("pairService is null")
             return false
         } else {
-            val connectivityCharacteristic = pairService.getCharacteristic(UUID.fromString(LEConstants.UUIDs.CONNECTIVITY_CHARACTERISTIC))
+            val connectivityCharacteristic =
+                pairService.getCharacteristic(
+                    UUID.fromString(LEConstants.UUIDs.CONNECTIVITY_CHARACTERISTIC)
+                )
             if (connectivityCharacteristic == null) {
                 Timber.e("connectivityCharacteristic is null")
             } else {
-                val configDescriptor = connectivityCharacteristic.getDescriptor(UUID.fromString(LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR))
+                val configDescriptor =
+                    connectivityCharacteristic.getDescriptor(
+                        UUID.fromString(LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR)
+                    )
                 if (configDescriptor == null) {
                     Timber.e("configDescriptor for connectivityCharacteristic is null")
                     return false
                 } else {
                     Timber.d("Requesting subscribe to connectivity characteristic")
                     if (!gatt.setCharacteristicNotification(connectivityCharacteristic, true)) {
-                        Timber.e("BluetoothGatt refused to subscribe to connectivity characteristic")
+                        Timber.e(
+                            "BluetoothGatt refused to subscribe to connectivity characteristic"
+                        )
                     } else {
                         if (gatt.writeDescriptor(configDescriptor, LEConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)?.isSuccess() != true) {
-                            Timber.e("Failed to write subscribe value to connectivityCharacteristic's configDescriptor")
+                            Timber.e(
+                                "Failed to write subscribe value to connectivityCharacteristic's configDescriptor"
+                            )
                         } else {
                             isSubscribed = true
                             Timber.d("Subscribed successfully")
                             return true
                         }
                     }
-
                 }
             }
         }
@@ -106,7 +116,7 @@ class ConnectivityWatcher(val gatt: BlueGATTConnection) {
         if (characteristic?.uuid == UUID.fromString(LEConstants.UUIDs.CONNECTIVITY_CHARACTERISTIC)) {
             if (characteristic != null) {
                 val status = ConnectivityStatus(characteristic.value)
-                //GlobalScope.launch(Dispatchers.IO) { onConnectivityChanged(lastStatus!!) }
+                // GlobalScope.launch(Dispatchers.IO) { onConnectivityChanged(lastStatus!!) }
                 Timber.d(status.toString())
                 connectivityStatus.complete(status)
             }
@@ -121,7 +131,10 @@ class ConnectivityWatcher(val gatt: BlueGATTConnection) {
         }
     }
 
-    fun getStatusFlow() = gatt.characteristicChanged.filter { it.characteristic?.uuid == UUID.fromString(LEConstants.UUIDs.CONNECTIVITY_CHARACTERISTIC) }.mapNotNull {
-        it.value?.let { value -> ConnectivityStatus(value) }
-    }
+    fun getStatusFlow() =
+        gatt.characteristicChanged.filter {
+            it.characteristic?.uuid == UUID.fromString(LEConstants.UUIDs.CONNECTIVITY_CHARACTERISTIC)
+        }.mapNotNull {
+            it.value?.let { value -> ConnectivityStatus(value) }
+        }
 }

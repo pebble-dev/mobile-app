@@ -14,39 +14,41 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-class ServiceLifecycleControl @Inject constructor(
+class ServiceLifecycleControl
+    @Inject
+    constructor(
         context: Context,
         connectionLooper: ConnectionLooper
-) {
-    private var serviceRunning = false
-    private val serviceIntent = Intent(context, WatchService::class.java)
+    ) {
+        private var serviceRunning = false
+        private val serviceIntent = Intent(context, WatchService::class.java)
 
-    init {
-        GlobalScope.launch(Dispatchers.Main.immediate) {
-            connectionLooper.connectionState.collect {
-                Timber.d("Watch connection status %s", it)
+        init {
+            GlobalScope.launch(Dispatchers.Main.immediate) {
+                connectionLooper.connectionState.collect {
+                    Timber.d("Watch connection status %s", it)
 
-                val shouldServiceBeRunning = it !is ConnectionState.Disconnected
+                    val shouldServiceBeRunning = it !is ConnectionState.Disconnected
 
-                if (shouldServiceBeRunning != serviceRunning) {
-                    if (shouldServiceBeRunning) {
-                        ContextCompat.startForegroundService(context, serviceIntent)
-                    } else {
-                        context.stopService(serviceIntent)
-                    }
+                    if (shouldServiceBeRunning != serviceRunning) {
+                        if (shouldServiceBeRunning) {
+                            ContextCompat.startForegroundService(context, serviceIntent)
+                        } else {
+                            context.stopService(serviceIntent)
+                        }
 
-                    if (shouldServiceBeRunning &&
-                            context.hasNotificationAccessPermission() && it !is ConnectionState.RecoveryMode) {
-                        Timber.d("Requesting notifications rebind")
-                        NotificationListenerService.requestRebind(
+                        if (shouldServiceBeRunning &&
+                            context.hasNotificationAccessPermission() && it !is ConnectionState.RecoveryMode
+                        ) {
+                            Timber.d("Requesting notifications rebind")
+                            NotificationListenerService.requestRebind(
                                 NotificationListener.getComponentName(context)
-                        )
+                            )
+                        }
+
+                        serviceRunning = shouldServiceBeRunning
                     }
-
-                    serviceRunning = shouldServiceBeRunning
                 }
-
             }
         }
     }
-}

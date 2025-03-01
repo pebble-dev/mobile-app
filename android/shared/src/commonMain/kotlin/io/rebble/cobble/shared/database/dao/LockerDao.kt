@@ -41,10 +41,16 @@ interface LockerDao {
     suspend fun clearPlatformsFor(entryId: String)
 
     @Query("UPDATE SyncedLockerEntry SET nextSyncAction = :action WHERE id = :id")
-    suspend fun setNextSyncAction(id: String, action: NextSyncAction)
+    suspend fun setNextSyncAction(
+        id: String,
+        action: NextSyncAction
+    )
 
     @Query("UPDATE SyncedLockerEntry SET nextSyncAction = :action WHERE id IN (:ids)")
-    suspend fun setNextSyncAction(ids: Set<String>, action: NextSyncAction)
+    suspend fun setNextSyncAction(
+        ids: Set<String>,
+        action: NextSyncAction
+    )
 
     @Transaction
     @Query("SELECT * FROM SyncedLockerEntry WHERE nextSyncAction in ('Upload', 'Delete')")
@@ -55,7 +61,10 @@ interface LockerDao {
     suspend fun getEntryByUuid(uuid: String): SyncedLockerEntryWithPlatforms?
 
     @Query("UPDATE SyncedLockerEntry SET `order` = :order WHERE id = :id")
-    suspend fun updateOrder(id: String, order: Int)
+    suspend fun updateOrder(
+        id: String,
+        order: Int
+    )
 
     @Query("DELETE FROM SyncedLockerEntry")
     suspend fun clearAll()
@@ -67,5 +76,8 @@ interface LockerDao {
     suspend fun getSyncedEntries(): List<SyncedLockerEntry>
 
     @Query("UPDATE SyncedLockerEntry SET lastOpened = :time WHERE uuid = :uuid")
-    suspend fun updateLastOpened(uuid: String, time: Instant?)
+    suspend fun updateLastOpened(
+        uuid: String,
+        time: Instant?
+    )
 }

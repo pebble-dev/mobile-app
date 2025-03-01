@@ -8,6 +8,6 @@ enum class CalendarAction {
     Decline;
 
     companion object {
-        fun fromID(id: Int): CalendarAction = entries.first {it.ordinal == id}
+        fun fromID(id: Int): CalendarAction = entries.first { it.ordinal == id }
     }
 }

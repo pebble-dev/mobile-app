@@ -10,68 +10,69 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
 
-class IntentsFlutterBridge @Inject constructor(
+class IntentsFlutterBridge
+    @Inject
+    constructor(
         binaryMessenger: BinaryMessenger,
         mainActivity: FlutterMainActivity,
         private val coroutineScope: CoroutineScope,
         bridgeLifecycleController: BridgeLifecycleController
-) : FlutterBridge, Pigeons.IntentControl {
+    ) : FlutterBridge, Pigeons.IntentControl {
+        private val oauthTrigger = CompletableDeferred<Array<String?>>()
+        private val intentCallbacks: Pigeons.IntentCallbacks
 
-    private val oauthTrigger = CompletableDeferred<Array<String?>>()
-    private val intentCallbacks: Pigeons.IntentCallbacks
+        private var flutterReadyToReceiveIntents = false
+        private var waitingIntent: Intent? = null
 
-    private var flutterReadyToReceiveIntents = false
-    private var waitingIntent: Intent? = null
+        init {
+            mainActivity.oauthIntentCallback = { code, state, error ->
+                oauthTrigger.complete(arrayOf(code, state, error))
+                mainActivity.oauthIntentCallback = null
+            }
 
-    init {
-        mainActivity.oauthIntentCallback = { code, state, error ->
-            oauthTrigger.complete(arrayOf(code, state, error))
-            mainActivity.oauthIntentCallback = null
+            mainActivity.intentCallback = this::forwardIntentToFlutter
+
+            bridgeLifecycleController.setupControl(Pigeons.IntentControl::setup, this)
+            intentCallbacks = bridgeLifecycleController.createCallbacks(Pigeons::IntentCallbacks)
         }
 
-        mainActivity.intentCallback = this::forwardIntentToFlutter
+        private fun forwardIntentToFlutter(intent: Intent) {
+            if (!flutterReadyToReceiveIntents) {
+                waitingIntent = intent
+                return
+            }
 
-        bridgeLifecycleController.setupControl(Pigeons.IntentControl::setup, this)
-        intentCallbacks = bridgeLifecycleController.createCallbacks(Pigeons::IntentCallbacks)
-    }
-
-    private fun forwardIntentToFlutter(intent: Intent) {
-        if (!flutterReadyToReceiveIntents) {
-            waitingIntent = intent
-            return
+            val uri = intent.data?.toString() ?: return
+            intentCallbacks.openUri(Pigeons.StringWrapper().also { it.value = uri }) {}
         }
 
-        val uri = intent.data?.toString() ?: return
-        intentCallbacks.openUri(Pigeons.StringWrapper().also { it.value = uri }) {}
-    }
+        override fun notifyFlutterReadyForIntents() {
+            flutterReadyToReceiveIntents = true
+            waitingIntent?.let { forwardIntentToFlutter(it) }
+        }
 
-    override fun notifyFlutterReadyForIntents() {
-        flutterReadyToReceiveIntents = true
-        waitingIntent?.let { forwardIntentToFlutter(it) }
-    }
+        override fun notifyFlutterNotReadyForIntents() {
+            flutterReadyToReceiveIntents = false
+        }
 
-    override fun notifyFlutterNotReadyForIntents() {
-        flutterReadyToReceiveIntents = false
-    }
-
-    override fun waitForOAuth(result: Pigeons.Result<Pigeons.OAuthResult>) {
-        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
-            val res = oauthTrigger.await()
-            check(res.size == 3)
-            if (res[0] != null && res[1] != null) {
-                Pigeons.OAuthResult.Builder()
+        override fun waitForOAuth(result: Pigeons.Result<Pigeons.OAuthResult>) {
+            coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
+                val res = oauthTrigger.await()
+                check(res.size == 3)
+                if (res[0] != null && res[1] != null) {
+                    Pigeons.OAuthResult.Builder()
                         .setCode(res[0])
                         .setState(res[1])
                         .build()
-            } else if (res[2] != null) {
-                Pigeons.OAuthResult.Builder()
+                } else if (res[2] != null) {
+                    Pigeons.OAuthResult.Builder()
                         .setError(res[2])
                         .build()
-            } else {
-                Pigeons.OAuthResult.Builder()
+                } else {
+                    Pigeons.OAuthResult.Builder()
                         .setError("_invalid_callback_params")
                         .build()
+                }
             }
         }
     }
-}

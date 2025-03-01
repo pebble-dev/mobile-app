@@ -24,7 +24,7 @@ import org.koin.core.component.inject
 import timber.log.Timber
 import kotlin.math.roundToInt
 
-class MusicHandler(private val pebbleDevice: PebbleDevice): CobbleHandler, KoinComponent {
+class MusicHandler(private val pebbleDevice: PebbleDevice) : CobbleHandler, KoinComponent {
     private val context: Context by inject()
     private val packageManager: PackageManager by inject()
     private val activeMediaSessionProvider = ActiveMediaSessionProvider()
@@ -40,12 +40,23 @@ class MusicHandler(private val pebbleDevice: PebbleDevice): CobbleHandler, KoinC
             val connectionScope = pebbleDevice.connectionScope.filterNotNull().first()
 
             musicControl.filterIsInstance<MusicControl.UpdateCurrentTrack>().debounce(200).onEach {
-                Timber.d("Update current track %s %s %s %s", it.title.get(), it.artist.get(), it.album.get(), it.trackLength.get())
+                Timber.d(
+                    "Update current track %s %s %s %s",
+                    it.title.get(),
+                    it.artist.get(),
+                    it.album.get(),
+                    it.trackLength.get()
+                )
                 musicService.send(it)
             }.launchIn(connectionScope)
 
             musicControl.filterIsInstance<MusicControl.UpdatePlayStateInfo>().debounce(200).onEach {
-                Timber.d("Update play state %s %s %s", it.state.get(), it.trackPosition.get(), it.playRate.get())
+                Timber.d(
+                    "Update play state %s %s %s",
+                    it.state.get(),
+                    it.trackPosition.get(),
+                    it.playRate.get()
+                )
                 musicService.send(it)
             }.launchIn(connectionScope)
 
@@ -79,19 +90,27 @@ class MusicHandler(private val pebbleDevice: PebbleDevice): CobbleHandler, KoinC
     }
 
     private fun sendPlayerInfoUpdate(mediaController: MediaController) {
-        val name = packageManager
+        val name =
+            packageManager
                 .getPackageInfo(mediaController.packageName, 0)
                 .applicationInfo
                 .loadLabel(packageManager)
                 .toString()
 
-        if (!musicControl.tryEmit(MusicControl.UpdatePlayerInfo(name, mediaController.packageName))) {
+        if (!musicControl.tryEmit(
+                MusicControl.UpdatePlayerInfo(name, mediaController.packageName)
+            )
+        ) {
             Timber.w("Failed to emit player info")
         }
     }
 
     private fun disposeCurrentMediaController() {
-        Timber.d("Dispose %s %s", currentMediaController?.packageName, currentMediaController?.hashCode())
+        Timber.d(
+            "Dispose %s %s",
+            currentMediaController?.packageName,
+            currentMediaController?.hashCode()
+        )
         currentMediaController?.unregisterCallback(callback)
         currentMediaController = null
     }
@@ -106,64 +125,67 @@ class MusicHandler(private val pebbleDevice: PebbleDevice): CobbleHandler, KoinC
             val audioService = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
             audioService.dispatchMediaKeyEvent(
-                    KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY)
+                KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY)
             )
             audioService.dispatchMediaKeyEvent(
-                    KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY)
+                KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY)
             )
         }
     }
 
     private fun sendCurrentTrackUpdate(metadata: MediaMetadata?) {
         Timber.d("Send track %s", metadata?.keySet()?.toList())
-        Timber.d("Artist present: %s, Album present: %s, Title present: %s",
-                metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST) != null,
-                metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM) != null,
-                metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) != null)
+        Timber.d(
+            "Artist present: %s, Album present: %s, Title present: %s",
+            metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST) != null,
+            metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM) != null,
+            metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) != null
+        )
 
-        val updateTrackObject = when {
-            !hasPermission -> {
-                MusicControl.UpdateCurrentTrack(
+        val updateTrackObject =
+            when {
+                !hasPermission -> {
+                    MusicControl.UpdateCurrentTrack(
                         "No permission",
                         "",
                         "Check Rebble app"
-                )
-            }
+                    )
+                }
 
-            metadata != null -> {
-                MusicControl.UpdateCurrentTrack(
+                metadata != null -> {
+                    MusicControl.UpdateCurrentTrack(
                         metadata.getString(MediaMetadata.METADATA_KEY_ARTIST) ?: "",
                         metadata.getString(MediaMetadata.METADATA_KEY_ALBUM) ?: "",
                         metadata.getString(MediaMetadata.METADATA_KEY_TITLE) ?: "",
                         metadata.getLong(MediaMetadata.METADATA_KEY_DURATION).toInt(),
                         metadata.getLong(MediaMetadata.METADATA_KEY_NUM_TRACKS).toInt(),
                         metadata.getLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER).toInt()
-                )
-            }
+                    )
+                }
 
-            else -> {
-                Timber.d("No metadata")
-                MusicControl.UpdateCurrentTrack(
+                else -> {
+                    Timber.d("No metadata")
+                    MusicControl.UpdateCurrentTrack(
                         "",
                         "",
                         ""
-                )
+                    )
+                }
             }
-        }
 
         if (!musicControl.tryEmit(updateTrackObject)) {
             Timber.w("Failed to emit track update")
         }
     }
 
-
     private fun sendVolumeUpdate(playbackInfo: MediaController.PlaybackInfo) {
         Timber.d("Send volume update %s", playbackInfo)
-        val packet = MusicControl.UpdateVolumeInfo(
+        val packet =
+            MusicControl.UpdateVolumeInfo(
                 (100f * playbackInfo.currentVolume / playbackInfo.maxVolume)
-                        .roundToInt()
-                        .toUByte()
-        )
+                    .roundToInt()
+                    .toUByte()
+            )
         if (!musicControl.tryEmit(packet)) {
             Timber.w("Failed to emit volume update")
         }
@@ -172,36 +194,39 @@ class MusicHandler(private val pebbleDevice: PebbleDevice): CobbleHandler, KoinC
     private fun sendPlayStateUpdate(playbackState: PlaybackState?) {
         Timber.d("Send play state %s", playbackState)
 
-        val state = when (playbackState?.state) {
-            PlaybackState.STATE_PLAYING,
-            PlaybackState.STATE_BUFFERING ->
-                MusicControl.PlaybackState.Playing
+        val state =
+            when (playbackState?.state) {
+                PlaybackState.STATE_PLAYING,
+                PlaybackState.STATE_BUFFERING ->
+                    MusicControl.PlaybackState.Playing
 
-            PlaybackState.STATE_REWINDING,
-            PlaybackState.STATE_SKIPPING_TO_PREVIOUS ->
-                MusicControl.PlaybackState.Rewinding
+                PlaybackState.STATE_REWINDING,
+                PlaybackState.STATE_SKIPPING_TO_PREVIOUS ->
+                    MusicControl.PlaybackState.Rewinding
 
-            PlaybackState.STATE_FAST_FORWARDING,
-            PlaybackState.STATE_SKIPPING_TO_NEXT -> MusicControl.PlaybackState.FastForwarding
+                PlaybackState.STATE_FAST_FORWARDING,
+                PlaybackState.STATE_SKIPPING_TO_NEXT -> MusicControl.PlaybackState.FastForwarding
 
-            PlaybackState.STATE_PAUSED,
-            PlaybackState.STATE_STOPPED -> MusicControl.PlaybackState.Paused
+                PlaybackState.STATE_PAUSED,
+                PlaybackState.STATE_STOPPED -> MusicControl.PlaybackState.Paused
 
-            else -> MusicControl.PlaybackState.Unknown
-        }
+                else -> MusicControl.PlaybackState.Unknown
+            }
 
-        val timeSinceLastPositionUpdate = SystemClock.elapsedRealtime() -
+        val timeSinceLastPositionUpdate =
+            SystemClock.elapsedRealtime() -
                 (playbackState?.lastPositionUpdateTime ?: SystemClock.elapsedRealtime())
         val position = (playbackState?.position ?: 0) + timeSinceLastPositionUpdate
 
         val playbackSpeed = playbackState?.playbackSpeed ?: 1f
-        val packet = MusicControl.UpdatePlayStateInfo(
+        val packet =
+            MusicControl.UpdatePlayStateInfo(
                 state,
                 position.toUInt(),
                 (playbackSpeed * 100f).roundToInt().toUInt(),
                 MusicControl.ShuffleState.Unknown,
                 MusicControl.RepeatState.Unknown
-        )
+            )
         if (!musicControl.tryEmit(packet)) {
             Timber.w("Failed to emit play state update")
         }
@@ -211,25 +236,29 @@ class MusicHandler(private val pebbleDevice: PebbleDevice): CobbleHandler, KoinC
         connectionScope.launch(Dispatchers.Main.immediate) {
             @Suppress("EXPERIMENTAL_API_USAGE")
             PermissionChangeBus.notificationPermissionFlow(context)
-                    .flatMapLatest { hasNotificationPermission ->
-                        this@MusicHandler.hasPermission = hasNotificationPermission
+                .flatMapLatest { hasNotificationPermission ->
+                    this@MusicHandler.hasPermission = hasNotificationPermission
 
-                        if (hasNotificationPermission) {
-                            activeMediaSessionProvider.asFlow()
-                        } else {
-                            sendCurrentTrackUpdate(null)
-                            flowOf(null)
-                        }
-                    }.collect {
-                        onMediaPlayerChanged(it)
+                    if (hasNotificationPermission) {
+                        activeMediaSessionProvider.asFlow()
+                    } else {
+                        sendCurrentTrackUpdate(null)
+                        flowOf(null)
                     }
+                }.collect {
+                    onMediaPlayerChanged(it)
+                }
         }
     }
 
     private fun listenForIncomingMessages(connectionScope: CoroutineScope) {
         connectionScope.launch(Dispatchers.Main.immediate) {
             for (msg in musicService.receivedMessages) {
-                Timber.d("Received music packet %s %s", msg.message, currentMediaController?.packageName)
+                Timber.d(
+                    "Received music packet %s %s",
+                    msg.message,
+                    currentMediaController?.packageName
+                )
                 when (msg.message) {
                     MusicControl.Message.PlayPause -> {
                         if (currentMediaController?.isPlaying() == true) {
@@ -281,24 +310,25 @@ class MusicHandler(private val pebbleDevice: PebbleDevice): CobbleHandler, KoinC
         }
     }
 
-    private val callback = object : MediaController.Callback() {
-        override fun onAudioInfoChanged(info: MediaController.PlaybackInfo) {
-            sendVolumeUpdate(info)
-        }
+    private val callback =
+        object : MediaController.Callback() {
+            override fun onAudioInfoChanged(info: MediaController.PlaybackInfo) {
+                sendVolumeUpdate(info)
+            }
 
-        override fun onPlaybackStateChanged(state: PlaybackState?) {
-            sendPlayStateUpdate(state)
-        }
+            override fun onPlaybackStateChanged(state: PlaybackState?) {
+                sendPlayStateUpdate(state)
+            }
 
-        override fun onMetadataChanged(metadata: MediaMetadata?) {
-            sendCurrentTrackUpdate(metadata)
-        }
+            override fun onMetadataChanged(metadata: MediaMetadata?) {
+                sendCurrentTrackUpdate(metadata)
+            }
 
-        override fun onSessionDestroyed() {
-            Timber.d("Session destroyed")
-            disposeCurrentMediaController()
+            override fun onSessionDestroyed() {
+                Timber.d("Session destroyed")
+                disposeCurrentMediaController()
+            }
         }
-    }
 
     init {
         pebbleDevice.negotiationScope.launch {

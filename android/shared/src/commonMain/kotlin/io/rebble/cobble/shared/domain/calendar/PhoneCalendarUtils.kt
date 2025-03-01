@@ -6,4 +6,10 @@ import io.rebble.cobble.shared.database.entity.Calendar
 import kotlinx.datetime.Instant
 
 expect suspend fun getCalendars(platformContext: PlatformContext): List<Calendar>
-expect suspend fun getCalendarEvents(platformContext: PlatformContext, calendar: Calendar, startDate: Instant, endDate: Instant): List<CalendarEvent>
+
+expect suspend fun getCalendarEvents(
+    platformContext: PlatformContext,
+    calendar: Calendar,
+    startDate: Instant,
+    endDate: Instant
+): List<CalendarEvent>

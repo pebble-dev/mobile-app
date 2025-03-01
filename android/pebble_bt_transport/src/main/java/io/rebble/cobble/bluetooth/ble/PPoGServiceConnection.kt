@@ -15,18 +15,34 @@ import java.io.Closeable
 import java.util.UUID
 
 @OptIn(FlowPreview::class)
-class PPoGServiceConnection(private var serverConnection: ServerBluetoothGattConnection, private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO) : Closeable {
+class PPoGServiceConnection(
+    private var serverConnection: ServerBluetoothGattConnection,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+) : Closeable {
     private var scope = serverConnection.connectionScope + ioDispatcher + CoroutineName("PPoGServiceConnection-${serverConnection.device.address}")
     private val sessionScope = CoroutineScope(ioDispatcher) + CoroutineName("PPoGSession-${serverConnection.device.address}")
-    private val ppogSession = PPoGSession(sessionScope, serverConnection.device.address, LEConstants.DEFAULT_MTU)
+    private val ppogSession =
+        PPoGSession(sessionScope, serverConnection.device.address, LEConstants.DEFAULT_MTU)
 
     val device get() = serverConnection.device
 
     companion object {
-        val ppogServiceUUID: UUID = UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID_SERVER)
-        val ppogCharacteristicUUID: UUID = UUID.fromString(LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER)
-        val configurationDescriptorUUID: UUID = UUID.fromString(LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR)
-        val metaCharacteristicUUID: UUID = UUID.fromString(LEConstants.UUIDs.META_CHARACTERISTIC_SERVER)
+        val ppogServiceUUID: UUID =
+            UUID.fromString(
+                LEConstants.UUIDs.PPOGATT_DEVICE_SERVICE_UUID_SERVER
+            )
+        val ppogCharacteristicUUID: UUID =
+            UUID.fromString(
+                LEConstants.UUIDs.PPOGATT_DEVICE_CHARACTERISTIC_SERVER
+            )
+        val configurationDescriptorUUID: UUID =
+            UUID.fromString(
+                LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR
+            )
+        val metaCharacteristicUUID: UUID =
+            UUID.fromString(
+                LEConstants.UUIDs.META_CHARACTERISTIC_SERVER
+            )
     }
 
     private val _incomingPebblePackets = Channel<ByteArray>(Channel.BUFFERED)
@@ -45,18 +61,20 @@ class PPoGServiceConnection(private var serverConnection: ServerBluetoothGattCon
 
     init {
         connectionStateDebounced
-                .filterNotNull()
-                .debounce(1000)
-                .onEach {
-                    Timber.v("(${serverConnection.device}) New connection state: ${it.state} ${it.status}")
-                }
-                .filter { it.state == GattConnectionState.STATE_DISCONNECTED }
-                .onEach {
-                    Timber.i("(${serverConnection.device}) Connection lost")
-                    scope.cancel("Connection lost")
-                    sessionScope.cancel("Connection lost")
-                }
-                .launchIn(sessionScope)
+            .filterNotNull()
+            .debounce(1000)
+            .onEach {
+                Timber.v(
+                    "(${serverConnection.device}) New connection state: ${it.state} ${it.status}"
+                )
+            }
+            .filter { it.state == GattConnectionState.STATE_DISCONNECTED }
+            .onEach {
+                Timber.i("(${serverConnection.device}) Connection lost")
+                scope.cancel("Connection lost")
+                sessionScope.cancel("Connection lost")
+            }
+            .launchIn(sessionScope)
         launchFlows()
     }
 
@@ -70,10 +88,10 @@ class PPoGServiceConnection(private var serverConnection: ServerBluetoothGattCon
                     ppogSession.mtu = it
                 }.launchIn(scope)
                 characteristic.value
-                        .filter { it != lastNotify } // Ignore echo
-                        .onEach {
-                            ppogSession.handlePacket(it.value.clone())
-                        }.launchIn(scope)
+                    .filter { it != lastNotify } // Ignore echo
+                    .onEach {
+                        ppogSession.handlePacket(it.value.clone())
+                    }.launchIn(scope)
                 characteristic.findDescriptor(configurationDescriptorUUID)?.value?.onEach {
                     val value = it.getIntValue(IntFormat.FORMAT_UINT8, 0)
                     Timber.i("(${serverConnection.device}) PPOG Notify changed: $value")
@@ -103,10 +121,10 @@ class PPoGServiceConnection(private var serverConnection: ServerBluetoothGattCon
                     }
                 }.launchIn(scope)
                 serverConnection.connectionProvider.connectionStateWithStatus
-                        .onEach {
-                            connectionStateDebounced.value = it
-                        }
-                        .launchIn(scope)
+                    .onEach {
+                        connectionStateDebounced.value = it
+                    }
+                    .launchIn(scope)
             } ?: throw IllegalStateException("PPOG Characteristic missing")
         } ?: throw IllegalStateException("PPOG Service missing")
     }
@@ -123,7 +141,9 @@ class PPoGServiceConnection(private var serverConnection: ServerBluetoothGattCon
     }
 
     suspend fun sendMessage(packet: ByteArray): Boolean {
-        ppogSession.stateManager.stateFlow.first { it == PPoGSession.State.Open } // Wait for session to open, otherwise packet will be dropped
+        ppogSession.stateManager.stateFlow.first {
+            it == PPoGSession.State.Open
+        } // Wait for session to open, otherwise packet will be dropped
         return ppogSession.sendMessage(packet)
     }
 

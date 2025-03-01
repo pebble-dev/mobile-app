@@ -8,7 +8,7 @@ import androidx.core.content.getSystemService
 
 fun Context.hasNotificationAccessPermission(): Boolean {
     return NotificationManagerCompat.getEnabledListenerPackages(this)
-            .contains(this.packageName)
+        .contains(this.packageName)
 }
 
 fun Context.hasBatteryExclusionPermission(): Boolean {
@@ -21,10 +21,10 @@ fun Context.hasBatteryExclusionPermission(): Boolean {
 }
 
 fun Context.hasCallsPermission() =
-        checkSelfPermission(android.Manifest.permission.READ_PHONE_STATE) == android.content.pm.PackageManager.PERMISSION_GRANTED
+    checkSelfPermission(android.Manifest.permission.READ_PHONE_STATE) == android.content.pm.PackageManager.PERMISSION_GRANTED
 
 fun Context.hasContactsPermission() =
-        checkSelfPermission(android.Manifest.permission.READ_CONTACTS) == android.content.pm.PackageManager.PERMISSION_GRANTED
+    checkSelfPermission(android.Manifest.permission.READ_CONTACTS) == android.content.pm.PackageManager.PERMISSION_GRANTED
 
 fun Context.hasNotificationPostingPermission(): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

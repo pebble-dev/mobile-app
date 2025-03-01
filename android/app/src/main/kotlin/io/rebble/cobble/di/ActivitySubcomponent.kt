@@ -7,14 +7,16 @@ import javax.inject.Scope
 
 @PerActivity
 @Subcomponent(
-        modules = [
-            ActivityModule::class,
-        ]
+    modules = [
+        ActivityModule::class
+    ]
 )
 interface ActivitySubcomponent {
     @Subcomponent.Factory
     interface Factory {
-        fun create(@BindsInstance mainActivity: MainActivity): ActivitySubcomponent
+        fun create(
+            @BindsInstance mainActivity: MainActivity
+        ): ActivitySubcomponent
     }
 }
 

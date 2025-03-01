@@ -1,6 +1,5 @@
 package io.rebble.cobble.data.pbw.appinfo
 
-
 import io.rebble.cobble.pigeons.Pigeons
 import io.rebble.libpebblecommon.metadata.pbw.appinfo.Media
 

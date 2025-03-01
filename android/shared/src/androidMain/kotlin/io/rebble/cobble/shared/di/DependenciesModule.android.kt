@@ -6,7 +6,10 @@ import io.rebble.cobble.shared.AndroidPlatformContext
 import io.rebble.cobble.shared.PlatformContext
 
 actual fun makePlatformCacheStorage(platformContext: PlatformContext): CacheStorage {
-    val dir = (platformContext as AndroidPlatformContext).applicationContext.cacheDir.resolve("http_cache")
+    val dir =
+        (platformContext as AndroidPlatformContext).applicationContext.cacheDir.resolve(
+            "http_cache"
+        )
     dir.mkdir()
     return FileStorage(dir)
 }
