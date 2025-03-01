@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.jetbrains.compose.compiler)
     alias(libs.plugins.jetbrains.kotlinx.atomicfu)
+    alias(libs.plugins.ktlint)
 }
 
 kotlin {
