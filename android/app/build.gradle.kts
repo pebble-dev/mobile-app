@@ -115,31 +115,21 @@ project.extensions.getByName("flutter").apply {
     this::class.java.getMethod("source", String::class.java).invoke(this, "../..")
 }
 
-val coroutinesVersion = "1.8.1"
-val lifecycleVersion = "2.8.2"
-val timberVersion = "5.0.1"
-val androidxCoreVersion = "1.13.1"
-val workManagerVersion = "2.9.0"
-val okioVersion = "3.9.0"
-
-val junitVersion = "4.13.2"
-val androidxTestVersion = "1.5.0"
-
 dependencies {
     implementation(libs.androidx.appcompat)
     api(libs.androidx.activity.compose)
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    coreLibraryDesugaring(libs.desugar)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.libpebblecommon)
     implementation(libs.kotlin.reflect)
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion")
-    implementation("androidx.lifecycle:lifecycle-service:$lifecycleVersion")
-    implementation("com.jakewharton.timber:timber:$timberVersion")
-    implementation("androidx.core:core-ktx:$androidxCoreVersion")
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.service)
+    implementation(libs.timber)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.work.runtime.ktx)
-    implementation("com.squareup.okio:okio:$okioVersion")
+    implementation(libs.okio)
     implementation(libs.androidx.room.runtime)
     implementation(libs.kotlinx.datetime)
     implementation(libs.dagger)
@@ -151,9 +141,9 @@ dependencies {
     implementation(project(":shared"))
     kapt(libs.dagger.compiler)
 
-    testImplementation("junit:junit:$junitVersion")
-    androidTestImplementation("androidx.test:runner:$androidxTestVersion")
-    androidTestImplementation("androidx.test:rules:$androidxTestVersion")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
 }
 
 android.buildTypes.getByName("release").ndk.debugSymbolLevel = "FULL"

@@ -2,9 +2,12 @@
 activityCompose = "1.9.3"
 android-minSdk = "29"
 android-targetSdk = "34"
+androidxLifecycle = "2.8.2"
 androidxVersion = "1.15.0"
+ble = "1.0.16"
 coroutinesVersion = "1.8.1"
 daggerVersion = "2.51.1"
+desugar = "2.0.4"
 gradle = "8.7.2"
 koinVersion = "4.0.0"
 kotlin = "2.1.0-RC"
@@ -13,7 +16,11 @@ kotlinxSerializationJson = "1.7.1"
 ksp = "2.1.0-RC-1.0.27"
 libpebblecommonVersion = "0.1.27"
 errorproneVersion = "2.26.1"
+logbackAndroid = "3.0.0"
+mockk = "1.13.11"
+okio = "3.9.0"
 rruleVersion = "1.0.3"
+slf4jApi = "2.0.9"
 spotbugsVersion = "4.8.6"
 atomicfu = "0.25.0"
 securityCrypto = "1.1.0-alpha06"
@@ -55,17 +62,27 @@ jetbrains-kotlinx-atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.re
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxVersion" }
+androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "androidxLifecycle" }
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidxLifecycle" }
+androidx-lifecycle-service = { module = "androidx.lifecycle:lifecycle-service", version.ref = "androidxLifecycle" }
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidxTest" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTest" }
 androidx-test-monitor = { module = "androidx.test:monitor", version.ref = "androidxTest" }
 androidx-security-crypto-ktx = { module = "androidx.security:security-crypto-ktx", version.ref = "securityCrypto" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workManagerVersion" }
+ble-core = { module = "no.nordicsemi.android.kotlin.ble:core", version.ref = "ble" }
+ble-server = { module = "no.nordicsemi.android.kotlin.ble:server", version.ref = "ble" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "daggerVersion" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "daggerVersion" }
+desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 kgp = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 errorprone-annotations = { module = "com.google.errorprone:error_prone_annotations", version.ref = "errorproneVersion" }
+logback-android = { module = "com.github.tony19:logback-android", version.ref = "logbackAndroid" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 rrule = { module = "com.github.PhilJay:RRule", version.ref = "rruleVersion" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4jApi" }
 spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version.ref = "spotbugsVersion" }
 
 androidx-sqlite = { module = "androidx.sqlite:sqlite", version.ref = "room-sqlite" }
@@ -82,6 +99,7 @@ kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref =
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutinesVersion" }
 kotlinx-coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "coroutinesVersion" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutinesVersion" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutinesVersion" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationJson" }

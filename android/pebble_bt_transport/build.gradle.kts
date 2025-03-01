@@ -33,37 +33,31 @@ android {
     }
 }
 
-val timberVersion = "4.7.1"
-val coroutinesVersion = "1.8.0"
-val okioVersion = "3.7.0"
-val mockkVersion = "1.13.11"
-val nordicBleVersion = "1.0.16"
-
 dependencies {
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
     implementation(libs.libpebblecommon)
-    implementation("com.jakewharton.timber:timber:$timberVersion")
+    implementation(libs.timber)
     // for nordic ble
-    implementation("org.slf4j:slf4j-api:2.0.9")
-    implementation("com.github.tony19:logback-android:3.0.0")
+    implementation(libs.slf4j.api)
+    implementation(libs.logback.android)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
-    implementation("com.squareup.okio:okio:$okioVersion")
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.okio)
     implementation(libs.kotlinx.serialization.json)
 
 
 
-    implementation("no.nordicsemi.android.kotlin.ble:core:$nordicBleVersion")
-    implementation("no.nordicsemi.android.kotlin.ble:server:$nordicBleVersion")
+    implementation(libs.ble.core)
+    implementation(libs.ble.server)
     implementation(project(":shared"))
 
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
-    testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
 
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.test:rules:1.5.0")
-    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 }
