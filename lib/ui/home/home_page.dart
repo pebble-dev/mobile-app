@@ -55,7 +55,12 @@ class HomePage extends HookConsumerWidget implements CobbleScreen {
       onSelect: () => KMPApi().openLockerView(),
       child: PlaceholderScreen(),
     ),
-    _TabConfig(tr.homePage.store, RebbleIcons.rebble_store, child: StoreTab()),
+    _TabConfig(
+      tr.homePage.store,
+      RebbleIcons.rebble_store,
+      onSelect: () => KMPApi().openStoreView(),
+      child: PlaceholderScreen(),
+    ),
     _TabConfig(tr.homePage.watches, RebbleIcons.devices, child: MyWatchesTab()),
     _TabConfig(tr.homePage.settings, RebbleIcons.settings, child: Settings()),
   ];

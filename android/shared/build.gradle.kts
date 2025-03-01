@@ -71,6 +71,7 @@ kotlin {
             implementation(libs.compose.viewmodel)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.components.reorderable)
+            api("io.github.kevinnzou:compose-webview-multiplatform:1.9.40")
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)

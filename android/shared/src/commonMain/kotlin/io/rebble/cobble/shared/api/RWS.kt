@@ -17,6 +17,8 @@ object RWS: KoinComponent {
     private val token: StateFlow<CurrentToken> by inject(named("currentToken"))
     private val scope = CoroutineScope(Dispatchers.Default)
 
+    val currentTokenFlow: StateFlow<CurrentToken> get() = token
+
     val appstoreClientFlow = token.map {
         it.tokenOrNull?.let { t -> AppstoreClient("https://appstore-api.$domainSuffix/api", t) }
     }.stateIn(scope, SharingStarted.Eagerly, null)

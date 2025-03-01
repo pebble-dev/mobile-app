@@ -24,12 +24,13 @@ enum class LockerTabs(val label: String, val navRoute: String) {
 }
 
 @Composable
-fun Locker(searchingState: MutableState<Boolean>, page: LockerTabs, lockerDao: LockerDao = getKoin().get(), viewModel: LockerViewModel = viewModel { LockerViewModel(lockerDao) }, onTabChanged: (LockerTabs) -> Unit) {
+fun Locker(page: LockerTabs, lockerDao: LockerDao = getKoin().get(), viewModel: LockerViewModel = viewModel { LockerViewModel(lockerDao) }, onTabChanged: (LockerTabs) -> Unit) {
     val entriesState: LockerViewModel.LockerEntriesState by viewModel.entriesState.collectAsState()
     val modalSheetState by viewModel.modalSheetState.collectAsState()
     val watchIsConnected by viewModel.watchIsConnected.collectAsState()
     val searchQuery: String? by viewModel.searchQuery.collectAsState()
     val focusRequester = remember { FocusRequester() }
+    val searchingState = remember { mutableStateOf(false) }
     val (searching, setSearching) = searchingState
 
     Column {

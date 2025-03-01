@@ -550,4 +550,5 @@ abstract class KeepUnusedHack {
 abstract class KMPApi {
   void updateToken(StringWrapper token);
   void openLockerView();
+  void openStoreView();
 }
