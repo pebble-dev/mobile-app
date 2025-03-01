@@ -36,7 +36,7 @@ dependencies:
   package_info_plus: ^4.2.0
   state_notifier: ^1.0.0
   hooks_riverpod: ^2.0.0
-  flutter_hooks: ^0.18.0
+  flutter_hooks: ^0.20.5
   device_calendar:
     git:
       url: https://github.com/builttoroam/device_calendar.git
