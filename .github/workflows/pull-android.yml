@@ -28,6 +28,11 @@ jobs:
       - run: fvm flutter pub get
       - run: fvm flutter analyze
         continue-on-error: true
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Run Android Lint Checks
+        working-directory: android
+        run: ./gradlew ktlintCheck
       - name: Flutter test
         run: fvm flutter test
       - run: fvm flutter build apk --debug
