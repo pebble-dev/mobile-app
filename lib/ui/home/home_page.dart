@@ -56,8 +56,11 @@ class HomePage extends HookConsumerWidget implements CobbleScreen {
       child: PlaceholderScreen(),
     ),
     _TabConfig(tr.homePage.store, RebbleIcons.rebble_store, child: StoreTab()),
-    _TabConfig(tr.homePage.watches, RebbleIcons.devices,
-        onSelect: () => KMPApi().openWatchesView(), child: PlaceholderScreen()),
+    _TabConfig(tr.homePage.watches, RebbleIcons.devices, child: MyWatchesTab()),
+    // Use the comment below to access the KMP UI version of the Watch Tab
+    // by clicking the watch tab in flutter UI, first comment the line above
+    // _TabConfig(tr.homePage.watches, RebbleIcons.devices,
+    //     onSelect: () => KMPApi().openWatchesView(), child: PlaceholderScreen()),
     _TabConfig(tr.homePage.settings, RebbleIcons.settings, child: Settings()),
   ];
 
