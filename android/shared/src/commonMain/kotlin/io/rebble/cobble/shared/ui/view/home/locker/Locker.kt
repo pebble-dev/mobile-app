@@ -12,11 +12,10 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import io.rebble.cobble.shared.database.dao.LockerDao
 import io.rebble.cobble.shared.ui.nav.Routes
 import io.rebble.cobble.shared.ui.viewmodel.LockerViewModel
-import org.koin.compose.getKoin
+
+import org.koin.compose.viewmodel.koinViewModel
 
 enum class LockerTabs(val label: String, val navRoute: String) {
     Watchfaces("My watch faces", Routes.Home.LOCKER_WATCHFACES),
@@ -24,7 +23,7 @@ enum class LockerTabs(val label: String, val navRoute: String) {
 }
 
 @Composable
-fun Locker(page: LockerTabs, lockerDao: LockerDao = getKoin().get(), viewModel: LockerViewModel = viewModel { LockerViewModel(lockerDao) }, onTabChanged: (LockerTabs) -> Unit) {
+fun Locker(page: LockerTabs, viewModel: LockerViewModel = koinViewModel(), onTabChanged: (LockerTabs) -> Unit) {
     val entriesState: LockerViewModel.LockerEntriesState by viewModel.entriesState.collectAsState()
     val modalSheetState by viewModel.modalSheetState.collectAsState()
     val watchIsConnected by viewModel.watchIsConnected.collectAsState()

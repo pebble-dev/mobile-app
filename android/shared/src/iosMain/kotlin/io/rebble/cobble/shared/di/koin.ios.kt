@@ -9,7 +9,8 @@ fun initKoin() {
             stateModule,
             databaseModule,
             dataStoreModule,
-            iosModule
+            iosModule,
+            viewModelModule,
         )
     }
 }
