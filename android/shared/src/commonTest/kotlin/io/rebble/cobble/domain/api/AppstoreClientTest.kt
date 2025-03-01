@@ -1,17 +1,25 @@
 package io.rebble.cobble.domain.api
 
+import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
+import io.ktor.serialization.kotlinx.json.json
 import io.rebble.cobble.shared.api.AppstoreClient
 import io.rebble.libpebblecommon.util.runBlocking
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
+import org.koin.test.KoinTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class AppstoreClientTest {
+class AppstoreClientTest : KoinTest {
+
     @Test
     fun `Get locker data`() = runBlocking {
         val data = """
@@ -1422,29 +1430,37 @@ class AppstoreClientTest {
             when (request.url.encodedPath) {
                 "/api/v1/locker" -> {
                     if (request.headers[HttpHeaders.Authorization] != "Bearer x") {
-                        respond(
-                                "Unauthorized",
-                                status = HttpStatusCode.Unauthorized
-                        )
+                        respond("Unauthorized", status = HttpStatusCode.Unauthorized)
                     }
                     val response = when (request.method) {
                         HttpMethod.Get -> {
-                            respond(
-                                    data,
-                                    headers = headersOf(
-                                            HttpHeaders.ContentType, "application/json"
-                                    )
-                            )
+                            respond(data, headers = headersOf(HttpHeaders.ContentType, "application/json"))
                         }
+
                         else -> error("Unsupported method")
                     }
                     response
                 }
+
                 else -> error("Unhandled ${request.url.encodedPath}")
             }
         }
-        val client = AppstoreClient("https://appstore-api.rebble.io/api", "x", mockEngine)
+
+        startKoin {
+            modules(module {
+                factory {
+                    HttpClient(engine = mockEngine) {
+                        install(ContentNegotiation) {
+                            json()
+                        }
+                    }
+                }
+            })
+        }
+
+        val client = AppstoreClient("https://appstore-api.rebble.io/api", "x")
         val locker = client.getLocker()
         assertEquals(13, locker.size)
+        stopKoin()
     }
 }
