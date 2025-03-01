@@ -45,7 +45,7 @@ dependencies:
   path: ^1.8.0
   json_annotation: ^4.6.0
   copy_with_extension: ^5.0.0
-  flutter_local_notifications: ^17.1.2
+  flutter_local_notifications: ^17.2.2
   stream_transform: ^2.1.0
   flutter_svg: ^2.0.0
   flutter_svg_provider: ^1.0.4
