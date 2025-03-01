@@ -80,6 +80,9 @@ kotlin {
             implementation(project(":pebblekit_android"))
             implementation(project(":speex_codec"))
         }
+        androidUnitTest.dependencies {
+            implementation(libs.junit)
+        }
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.ktor.client.mock)
