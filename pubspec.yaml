@@ -65,7 +65,7 @@ dev_dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_test:
     sdk: flutter
-  pigeon: ^9.2.4
+  pigeon: ^14.0.0
   build_runner: ^2.3.0
   json_serializable: ^6.5.0
   copy_with_extension_gen: ^5.0.0
