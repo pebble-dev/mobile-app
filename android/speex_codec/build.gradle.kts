@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.speex_codec"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 29

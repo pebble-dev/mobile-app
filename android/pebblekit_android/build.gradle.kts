@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "com.getpebble.android.kit"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 29
