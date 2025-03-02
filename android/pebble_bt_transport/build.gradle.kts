@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.pebble_ble"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()

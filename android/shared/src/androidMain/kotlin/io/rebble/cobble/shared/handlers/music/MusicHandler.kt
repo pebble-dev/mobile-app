@@ -82,7 +82,7 @@ class MusicHandler(private val pebbleDevice: PebbleDevice): CobbleHandler, KoinC
         val name = packageManager
                 .getPackageInfo(mediaController.packageName, 0)
                 .applicationInfo
-                .loadLabel(packageManager)
+                ?.loadLabel(packageManager)
                 .toString()
 
         if (!musicControl.tryEmit(MusicControl.UpdatePlayerInfo(name, mediaController.packageName))) {
