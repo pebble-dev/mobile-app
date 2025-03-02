@@ -77,7 +77,7 @@ kotlin {
             implementation(libs.timber)
             implementation(libs.rrule)
             implementation(libs.androidx.security.crypto.ktx)
-            implementation(project(":pebblekit_android"))
+            api(project(":pebblekit_android"))
             implementation(project(":speex_codec"))
         }
         commonTest.dependencies {
