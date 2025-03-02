@@ -21,7 +21,7 @@ import okio.buffer
 import okio.use
 import org.koin.core.component.KoinComponent
 
-class PutBytesController(pebbleDevice: PebbleDevice): KoinComponent {
+class PutBytesController(pebbleDevice: PebbleDevice) : KoinComponent {
     private val putBytesService = pebbleDevice.putBytesService
     private val _status: MutableStateFlow<Status> = MutableStateFlow(Status(State.IDLE))
     private val statusMutex = Mutex()
@@ -32,92 +32,104 @@ class PutBytesController(pebbleDevice: PebbleDevice): KoinComponent {
     var lastProgress = 0.0
         private set
 
-    fun startAppInstall(appId: UInt, pbwFile: File, watchType: WatchType) = launchNewPutBytesSession {
+    fun startAppInstall(
+        appId: UInt,
+        pbwFile: File,
+        watchType: WatchType
+    ) = launchNewPutBytesSession {
         val manifest = requirePbwManifest(pbwFile, watchType)
 
-        val totalSize = manifest.application.size +
+        val totalSize =
+            manifest.application.size +
                 (manifest.resources?.size ?: 0) +
                 (manifest.worker?.size ?: 0)
 
         val progressMultiplier = 1 / totalSize.toDouble()
 
         sendAppPart(
-                appId,
-                pbwFile,
-                watchType,
-                manifest.application,
-                ObjectType.APP_EXECUTABLE,
-                progressMultiplier
+            appId,
+            pbwFile,
+            watchType,
+            manifest.application,
+            ObjectType.APP_EXECUTABLE,
+            progressMultiplier
         )
 
         if (manifest.resources != null) {
             sendAppPart(
-                    appId,
-                    pbwFile,
-                    watchType,
-                    manifest.resources!!,
-                    ObjectType.APP_RESOURCE,
-                    progressMultiplier
+                appId,
+                pbwFile,
+                watchType,
+                manifest.resources!!,
+                ObjectType.APP_RESOURCE,
+                progressMultiplier
             )
         }
         if (manifest.worker != null) {
             sendAppPart(
-                    appId,
-                    pbwFile,
-                    watchType,
-                    manifest.worker!!,
-                    ObjectType.WORKER,
-                    progressMultiplier
+                appId,
+                pbwFile,
+                watchType,
+                manifest.worker!!,
+                ObjectType.WORKER,
+                progressMultiplier
             )
         }
 
         _status.value = Status(State.IDLE)
     }
 
-    fun startFirmwareInstall(firmware: ByteArray, resources: ByteArray?, manifest: PbzManifest) = launchNewPutBytesSession {
+    fun startFirmwareInstall(
+        firmware: ByteArray,
+        resources: ByteArray?,
+        manifest: PbzManifest
+    ) = launchNewPutBytesSession {
         lastProgress = 0.0
         val totalSize = manifest.firmware.size + (manifest.resources?.size ?: 0)
         require(manifest.firmware.type == "normal" || resources == null) {
             "Resources are only supported for normal firmware"
         }
         var count = 0
-        val progressJob = launch {
-            try {
-                while (isActive) {
-                    val progress = putBytesService.progressUpdates.receive()
-                    count += progress.delta
-                    val nwProgress = count / totalSize.toDouble()
-                    lastProgress = nwProgress
-                    _status.value = Status(State.SENDING, nwProgress)
+        val progressJob =
+            launch {
+                try {
+                    while (isActive) {
+                        val progress = putBytesService.progressUpdates.receive()
+                        count += progress.delta
+                        val nwProgress = count / totalSize.toDouble()
+                        lastProgress = nwProgress
+                        _status.value = Status(State.SENDING, nwProgress)
+                    }
+                } catch (_: CancellationException) {
                 }
-            } catch (_: CancellationException) {
             }
-        }
         try {
             resources?.let {
                 putBytesService.sendFirmwarePart(
-                        it,
-                        ConnectionStateManager.connectionState.value.watchOrNull?.metadata?.value!!,
-                        manifest.resources!!.crc,
-                        manifest.resources!!.size.toUInt(),
-                        0u,
-                        ObjectType.SYSTEM_RESOURCE
+                    it,
+                    ConnectionStateManager.connectionState.value.watchOrNull?.metadata?.value!!,
+                    manifest.resources!!.crc,
+                    manifest.resources!!.size.toUInt(),
+                    0u,
+                    ObjectType.SYSTEM_RESOURCE
                 )
             }
             putBytesService.sendFirmwarePart(
-                    firmware,
-                    ConnectionStateManager.connectionState.value.watchOrNull?.metadata?.value!!,
-                    manifest.firmware.crc,
-                    manifest.firmware.size.toUInt(),
-                    when {
-                        manifest.resources != null -> 2u
-                        else -> 1u
-                    },
-                    when (manifest.firmware.type) {
-                        "normal" -> ObjectType.FIRMWARE
-                        "recovery" -> ObjectType.RECOVERY
-                        else -> throw IllegalArgumentException("Unknown firmware type ${manifest.firmware.type}")
-                    }
+                firmware,
+                ConnectionStateManager.connectionState.value.watchOrNull?.metadata?.value!!,
+                manifest.firmware.crc,
+                manifest.firmware.size.toUInt(),
+                when {
+                    manifest.resources != null -> 2u
+                    else -> 1u
+                },
+                when (manifest.firmware.type) {
+                    "normal" -> ObjectType.FIRMWARE
+                    "recovery" -> ObjectType.RECOVERY
+                    else -> throw IllegalArgumentException(
+                        "Unknown firmware type ${manifest.firmware.type}"
+                    )
+                }
             )
         } finally {
             progressJob.cancel()
@@ -126,23 +138,25 @@ class PutBytesController(pebbleDevice: PebbleDevice): KoinComponent {
     }
 
     private suspend fun sendAppPart(
-            appId: UInt,
-            pbwFile: File,
-            watchType: WatchType,
-            manifestEntry: PbwBlob,
-            type: ObjectType,
-            progressMultiplier: Double
+        appId: UInt,
+        pbwFile: File,
+        watchType: WatchType,
+        manifestEntry: PbwBlob,
+        type: ObjectType,
+        progressMultiplier: Double
     ) {
-        Logging.d("Send app part $watchType, $appId, $manifestEntry, $type, ${type.value}, $progressMultiplier")
+        Logging.d(
+            "Send app part $watchType, $appId, $manifestEntry, $type, ${type.value}, $progressMultiplier"
+        )
         val source = requirePbwBinaryBlob(pbwFile, watchType, manifestEntry.name)
         source.buffer().use {
             putBytesService.sendAppPart(
-                    appId,
-                    it.readByteArray(),
-                    watchType,
-                    ConnectionStateManager.connectionState.value.watchOrNull?.metadata?.value!!,
-                    manifestEntry,
-                    type
+                appId,
+                it.readByteArray(),
+                watchType,
+                ConnectionStateManager.connectionState.value.watchOrNull?.metadata?.value!!,
+                manifestEntry,
+                type
             )
         }
     }
@@ -173,8 +187,8 @@ class PutBytesController(pebbleDevice: PebbleDevice): KoinComponent {
     }
 
     data class Status(
-            val state: State,
-            val progress: Double = 0.0
+        val state: State,
+        val progress: Double = 0.0
     )
 
     enum class State {

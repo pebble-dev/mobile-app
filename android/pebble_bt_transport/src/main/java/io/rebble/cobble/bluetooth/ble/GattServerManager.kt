@@ -11,8 +11,8 @@ import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
 class GattServerManager(
-        private val context: Context,
-        private val ioDispatcher: CoroutineContext = Dispatchers.IO
+    private val context: Context,
+    private val ioDispatcher: CoroutineContext = Dispatchers.IO
 ) {
     private val _gattServer: MutableStateFlow<NordicGattServer?> = MutableStateFlow(null)
     val gattServer = _gattServer.asStateFlow().filterNotNull()
@@ -22,14 +22,15 @@ class GattServerManager(
         val gattServer = _gattServer.value
         if (gattServer?.isOpened != true) {
             gattServer?.close()
-            _gattServer.value = NordicGattServer(
+            _gattServer.value =
+                NordicGattServer(
                     ioDispatcher = ioDispatcher,
                     context = context
-            ).also {
-                CoroutineScope(ioDispatcher).launch {
-                    it.open()
+                ).also {
+                    CoroutineScope(ioDispatcher).launch {
+                        it.open()
+                    }
                 }
-            }
         }
         return _gattServer.value!!
     }
@@ -38,5 +39,4 @@ class GattServerManager(
         _gattServer.value?.close()
         _gattServer.value = null
     }
-
 }

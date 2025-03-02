@@ -35,12 +35,17 @@ class FlutterMainActivity : FlutterActivity() {
     var intentCallback: ((Intent) -> Unit)? = null
 
     val activityResultCallbacks = ArrayMap<Int, (resultCode: Int, data: Intent?) -> Unit>()
-    val activityPermissionCallbacks = ArrayMap<
+    val activityPermissionCallbacks =
+        ArrayMap<
             Int,
-            (permissions: Array<String>, grantResults: IntArray) -> Unit>()
+            (permissions: Array<String>, grantResults: IntArray) -> Unit
+            >()
 
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         activityPermissionCallbacks[requestCode]?.invoke(permissions, grantResults)
@@ -56,32 +61,54 @@ class FlutterMainActivity : FlutterActivity() {
                 "pebble" -> {
                     when (data.host) {
                         "custom-boot-config-url" -> {
-                            val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+                            val prefs =
+                                getSharedPreferences(
+                                    "FlutterSharedPreferences",
+                                    Context.MODE_PRIVATE
+                                )
                             try {
                                 val boot = URI.create(data.pathSegments[0])
 
-                                val dialogClickListener = DialogInterface.OnClickListener { dialog, which ->
-                                    when (which) {
-                                        DialogInterface.BUTTON_POSITIVE -> {
-                                            prefs.edit().putString("flutter.boot", boot.toString()).apply()
-                                            Toast.makeText(context, "Updated boot URL: $boot", Toast.LENGTH_LONG).show()
-                                            bootIntentCallback?.invoke(true)
-                                        }
+                                val dialogClickListener =
+                                    DialogInterface.OnClickListener { dialog, which ->
+                                        when (which) {
+                                            DialogInterface.BUTTON_POSITIVE -> {
+                                                prefs.edit().putString(
+                                                    "flutter.boot",
+                                                    boot.toString()
+                                                ).apply()
+                                                Toast.makeText(
+                                                    context,
+                                                    "Updated boot URL: $boot",
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                                bootIntentCallback?.invoke(true)
+                                            }
 
-                                        DialogInterface.BUTTON_NEGATIVE -> {
-                                            Toast.makeText(context, "Cancelled boot URL change", Toast.LENGTH_SHORT).show()
-                                            bootIntentCallback?.invoke(false)
+                                            DialogInterface.BUTTON_NEGATIVE -> {
+                                                Toast.makeText(
+                                                    context,
+                                                    "Cancelled boot URL change",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                                bootIntentCallback?.invoke(false)
+                                            }
                                         }
                                     }
-                                }
 
                                 AlertDialog.Builder(context)
-                                        .setTitle(R.string.bootUrlWarningTitle)
-                                        .setMessage(getString(R.string.bootUrlWarningBody, boot.toString()))
-                                        .setPositiveButton("Allow", dialogClickListener)
-                                        .setNegativeButton("Deny", dialogClickListener).show()
+                                    .setTitle(R.string.bootUrlWarningTitle)
+                                    .setMessage(
+                                        getString(R.string.bootUrlWarningBody, boot.toString())
+                                    )
+                                    .setPositiveButton("Allow", dialogClickListener)
+                                    .setNegativeButton("Deny", dialogClickListener).show()
                             } catch (e: IllegalArgumentException) {
-                                Toast.makeText(this, "Boot URL not updated, was invalid", Toast.LENGTH_LONG).show()
+                                Toast.makeText(
+                                    this,
+                                    "Boot URL not updated, was invalid",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
                         }
                     }
@@ -103,7 +130,8 @@ class FlutterMainActivity : FlutterActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val injectionComponent = (applicationContext as CobbleApplication).component
-        val activityComponent = injectionComponent.createFlutterActivitySubcomponentFactory()
+        val activityComponent =
+            injectionComponent.createFlutterActivitySubcomponentFactory()
                 .create(this)
 
         coroutineScope = lifecycleScope + injectionComponent.createExceptionHandler()
@@ -113,13 +141,16 @@ class FlutterMainActivity : FlutterActivity() {
         // Bridges need to be created after super.onCreate() to ensure
         // flutter stuff is ready
         flutterBridges = activityComponent.createCommonBridges() +
-                activityComponent.createUiBridges()
+            activityComponent.createUiBridges()
 
         startAdditionalServices()
 
         if (!hasNotificationPostingPermission()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), REQUEST_CODE_NOTIFICATIONS_POST)
+                requestPermissions(
+                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                    REQUEST_CODE_NOTIFICATIONS_POST
+                )
             }
         }
 
@@ -127,7 +158,7 @@ class FlutterMainActivity : FlutterActivity() {
     }
 
     override fun onDestroy() {
-        //closeDatabase()
+        // closeDatabase()
         super.onDestroy()
     }
 
@@ -144,7 +175,6 @@ class FlutterMainActivity : FlutterActivity() {
         val inCallServiceIntent = Intent(this, InCallService::class.java)
         startService(inCallServiceIntent)
 
-
         /*if (context.hasNotificationAccessPermission()) {
             NotificationListenerService.requestRebind(
                     NotificationListener.getComponentName(context)
@@ -157,7 +187,11 @@ class FlutterMainActivity : FlutterActivity() {
         handleIntent(intent)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
         super.onActivityResult(requestCode, resultCode, data)
 
         activityResultCallbacks[requestCode]?.invoke(resultCode, data)

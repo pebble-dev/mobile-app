@@ -13,36 +13,38 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
 import javax.inject.Inject
 
-class KMPApiBridge @Inject constructor(
+class KMPApiBridge
+    @Inject
+    constructor(
         private val tokenState: MutableStateFlow<CurrentToken>,
         private val secureStorage: SecureStorage,
         bridgeLifecycleController: BridgeLifecycleController,
         private val activity: FlutterMainActivity? = null
-): FlutterBridge, Pigeons.KMPApi {
+    ) : FlutterBridge, Pigeons.KMPApi {
+        init {
+            bridgeLifecycleController.setupControl(Pigeons.KMPApi::setup, this)
+        }
 
-    init {
-        bridgeLifecycleController.setupControl(Pigeons.KMPApi::setup, this)
-    }
+        override fun updateToken(token: Pigeons.StringWrapper) {
+            tokenState.value = token.value?.let { CurrentToken.LoggedIn(it) } ?: CurrentToken.LoggedOut
+            secureStorage.token = token.value
+        }
 
-    override fun updateToken(token: Pigeons.StringWrapper) {
-        tokenState.value = token.value?.let { CurrentToken.LoggedIn(it) } ?: CurrentToken.LoggedOut
-        secureStorage.token = token.value
-    }
+        override fun openLockerView() {
+            activity?.let {
+                Timber.d("Opening locker view")
+                val intent = Intent(activity.context, MainActivity::class.java)
+                intent.putExtra("navigationPath", Routes.Home.LOCKER_WATCHFACES)
+                activity.startActivity(intent)
+            }
+        }
 
-    override fun openLockerView() {
-        activity?.let {
-            Timber.d("Opening locker view")
-            val intent = Intent(activity.context, MainActivity::class.java)
-            intent.putExtra("navigationPath", Routes.Home.LOCKER_WATCHFACES)
-            activity.startActivity(intent)
+        override fun openStoreView() {
+            activity?.let {
+                Timber.d("Opening store view")
+                val intent = Intent(activity.context, MainActivity::class.java)
+                intent.putExtra("navigationPath", Routes.Home.STORE_WATCHFACES)
+                activity.startActivity(intent)
+            }
         }
     }
-    override fun openStoreView() {
-        activity?.let {
-            Timber.d("Opening store view")
-            val intent = Intent(activity.context, MainActivity::class.java)
-            intent.putExtra("navigationPath", Routes.Home.STORE_WATCHFACES)
-            activity.startActivity(intent)
-        }
-    }
-}

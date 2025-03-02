@@ -35,7 +35,7 @@ abstract class AppModule {
 
     @Binds
     abstract fun bindCoroutineExceptionHandler(
-            globalExceptionHandler: GlobalExceptionHandler
+        globalExceptionHandler: GlobalExceptionHandler
     ): CoroutineExceptionHandler
 
     @Module
@@ -44,35 +44,43 @@ abstract class AppModule {
         fun providePackageManager(context: Context): PackageManager {
             return context.packageManager
         }
+
         @Provides
         @Singleton
         fun provideCalendarSync(exceptionHandler: CoroutineExceptionHandler): CalendarSync {
             return CalendarSync(CoroutineScope(Dispatchers.Default) + exceptionHandler)
         }
+
         @Provides
         fun provideKMPPrefs(context: Context): KMPPrefs {
             return KMPPrefs()
         }
+
         @Provides
         fun provideGlobalExceptionHandler(): GlobalExceptionHandler {
             return KoinPlatformTools.defaultContext().get().get()
         }
+
         @Provides
         fun provideTokenState(): MutableStateFlow<CurrentToken> {
             return KoinPlatformTools.defaultContext().get().get(named("currentToken"))
         }
+
         @Provides
         fun provideSecureStorage(): SecureStorage {
             return KoinPlatformTools.defaultContext().get().get()
         }
+
         @Provides
         fun providePersistedNotificationDao(context: Context): PersistedNotificationDao {
             return AppDatabase.instance().persistedNotificationDao()
         }
+
         @Provides
         fun provideCachedPackageInfoDao(context: Context): CachedPackageInfoDao {
             return AppDatabase.instance().cachedPackageInfoDao()
         }
+
         @Provides
         fun provideNotificationChannelDao(context: Context): NotificationChannelDao {
             return AppDatabase.instance().notificationChannelDao()

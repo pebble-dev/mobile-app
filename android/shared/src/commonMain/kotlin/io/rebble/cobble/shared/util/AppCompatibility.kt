@@ -9,19 +9,23 @@ object AppCompatibility {
             WatchType.BASALT -> listOf(WatchType.BASALT, WatchType.APLITE)
             WatchType.CHALK -> listOf(WatchType.CHALK)
             WatchType.DIORITE -> listOf(WatchType.DIORITE, WatchType.APLITE)
-            WatchType.EMERY -> listOf(
+            WatchType.EMERY ->
+                listOf(
                     WatchType.EMERY,
                     WatchType.BASALT,
                     WatchType.DIORITE,
                     WatchType.APLITE
-            )
+                )
         }
     }
 
     /**
      * @param availableAppVariants List of variants, from [PbwAppInfo.targetPlatforms]
      */
-    fun getBestVariant(watchType: WatchType, availableAppVariants: List<String>): WatchType? {
+    fun getBestVariant(
+        watchType: WatchType,
+        availableAppVariants: List<String>
+    ): WatchType? {
         val compatibleVariants = getCompatibleAppVariants(watchType)
 
         return compatibleVariants.firstOrNull { variant ->

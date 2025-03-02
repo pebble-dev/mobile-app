@@ -15,33 +15,33 @@ import kotlinx.serialization.json.Json
 import kotlin.time.DurationUnit
 
 data class CalendarEvent(
-        val id: Long,
-        val calendarId: Long,
-        val title: String,
-        val description: String,
-        val location: String?,
-        val startTime: Instant,
-        val endTime: Instant,
-        val allDay: Boolean,
-        val attendees: List<EventAttendee>,
-        val recurrenceRule: EventRecurrenceRule?,
-        val reminders: List<EventReminder>,
-        val availability: Availability,
-        val status: Status,
-        val baseEventId: Long,
+    val id: Long,
+    val calendarId: Long,
+    val title: String,
+    val description: String,
+    val location: String?,
+    val startTime: Instant,
+    val endTime: Instant,
+    val allDay: Boolean,
+    val attendees: List<EventAttendee>,
+    val recurrenceRule: EventRecurrenceRule?,
+    val reminders: List<EventReminder>,
+    val availability: Availability,
+    val status: Status,
+    val baseEventId: Long
 ) {
     enum class Availability {
         Free,
         Busy,
         Tentative,
-        Unavailable,
+        Unavailable
     }
 
     enum class Status {
         None,
         Confirmed,
         Cancelled,
-        Tentative,
+        Tentative
     }
 }
 
@@ -54,21 +54,22 @@ private fun CalendarEvent.makeAttributes(calendar: Calendar): List<TimelineAttri
     val headings = mutableListOf<String>()
     val paragraphs = mutableListOf<String>()
 
-    if (description.isNotBlank())  {
+    if (description.isNotBlank()) {
         headings.add("")
         paragraphs.add(transformDescription(description))
     }
 
     if (attendees.isNotEmpty()) {
-        val attendeesString = attendees.mapNotNull { attendee ->
-            if (!attendee.name.isNullOrBlank()) {
-                attendee.name
-            } else if (!attendee.email.isNullOrBlank()) {
-                attendee.email
-            } else {
-                null
-            }
-        }.joinToString(", ")
+        val attendeesString =
+            attendees.mapNotNull { attendee ->
+                if (!attendee.name.isNullOrBlank()) {
+                    attendee.name
+                } else if (!attendee.email.isNullOrBlank()) {
+                    attendee.email
+                } else {
+                    null
+                }
+            }.joinToString(", ")
         if (attendeesString.isNotBlank()) {
             headings.add("Attendees")
             paragraphs.add(attendeesString)
@@ -108,87 +109,96 @@ private fun CalendarEvent.makeActions(): List<TimelineAction> {
     return buildList {
         if (selfAttendee != null) {
             if (selfAttendee.attendanceStatus != EventAttendee.AttendanceStatus.Accepted) {
-                add(TimelineAction(
+                add(
+                    TimelineAction(
                         CalendarTimelineActionId.AcceptEvent.id,
                         TimelineItem.Action.Type.Generic,
                         listOf(
-                                TimelineAttribute.title("Accept")
+                            TimelineAttribute.title("Accept")
                         )
-                ))
+                    )
+                )
             }
 
             if (selfAttendee.attendanceStatus != EventAttendee.AttendanceStatus.Tentative) {
-                add(TimelineAction(
+                add(
+                    TimelineAction(
                         CalendarTimelineActionId.MaybeEvent.id,
                         TimelineItem.Action.Type.Generic,
                         listOf(
-                                TimelineAttribute.title("Maybe")
+                            TimelineAttribute.title("Maybe")
                         )
-                ))
+                    )
+                )
             }
 
             if (selfAttendee.attendanceStatus != EventAttendee.AttendanceStatus.Declined) {
-                add(TimelineAction(
+                add(
+                    TimelineAction(
                         CalendarTimelineActionId.DeclineEvent.id,
                         TimelineItem.Action.Type.Generic,
                         listOf(
-                                TimelineAttribute.title("Decline")
+                            TimelineAttribute.title("Decline")
                         )
-                ))
+                    )
+                )
             }
         }
 
-        add(TimelineAction(
+        add(
+            TimelineAction(
                 CalendarTimelineActionId.Remove.id,
                 TimelineItem.Action.Type.Generic,
                 listOf(
-                        TimelineAttribute.title("Remove")
+                    TimelineAttribute.title("Remove")
                 )
-        ))
+            )
+        )
 
-        add(TimelineAction(
+        add(
+            TimelineAction(
                 CalendarTimelineActionId.MuteCalendar.id,
                 TimelineItem.Action.Type.Generic,
                 listOf(
-                        TimelineAttribute.title("Mute Calendar")
+                    TimelineAttribute.title("Mute Calendar")
                 )
-        ))
+            )
+        )
     }
 }
 
 fun CalendarEvent.toTimelinePin(calendar: Calendar): TimelinePin {
     return TimelinePin(
-            itemId = uuid4(),
-            parentId = calendarWatchappId,
-            backingId = generateCompositeBackingId(),
-            timestamp = startTime,
-            duration = if (allDay) null else (endTime - startTime).toInt(DurationUnit.MINUTES),
-            type = TimelineItem.Type.Pin,
-            isVisible = true,
-            isFloating = false,
-            isAllDay = allDay,
-            persistQuickView = false,
-            layout = TimelineItem.Layout.CalendarPin,
-            attributesJson = Json.encodeToString(makeAttributes(calendar)),
-            actionsJson = Json.encodeToString(makeActions()),
-            nextSyncAction = NextSyncAction.Upload
+        itemId = uuid4(),
+        parentId = calendarWatchappId,
+        backingId = generateCompositeBackingId(),
+        timestamp = startTime,
+        duration = if (allDay) null else (endTime - startTime).toInt(DurationUnit.MINUTES),
+        type = TimelineItem.Type.Pin,
+        isVisible = true,
+        isFloating = false,
+        isAllDay = allDay,
+        persistQuickView = false,
+        layout = TimelineItem.Layout.CalendarPin,
+        attributesJson = Json.encodeToString(makeAttributes(calendar)),
+        actionsJson = Json.encodeToString(makeActions()),
+        nextSyncAction = NextSyncAction.Upload
     )
 }
 
-
-private fun CalendarEvent.generateCompositeBackingId() = "${calendarId}T${id}T${startTime}"
+private fun CalendarEvent.generateCompositeBackingId() = "${calendarId}T${id}T$startTime"
 
 data class CompositeBackingId(
-        val calendarId: Long,
-        val eventId: Long,
-        val startTime: String
+    val calendarId: Long,
+    val eventId: Long,
+    val startTime: String
 )
 
 fun String.toCompositeBackingId(): CompositeBackingId {
     val parts = split("T")
     return CompositeBackingId(
-            calendarId = parts[0].toLong(),
-            eventId = parts[1].toLong(),
-            startTime = parts[2]
+        calendarId = parts[0].toLong(),
+        eventId = parts[1].toLong(),
+        startTime = parts[2]
     )
 }

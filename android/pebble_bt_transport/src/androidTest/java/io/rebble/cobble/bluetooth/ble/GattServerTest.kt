@@ -47,14 +47,15 @@ import kotlin.random.Random
 class GattServerTest {
     @JvmField
     @Rule
-    val mGrantPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(
+    val mGrantPermissionRule: GrantPermissionRule =
+        GrantPermissionRule.grant(
             android.Manifest.permission.BLUETOOTH_SCAN,
             android.Manifest.permission.BLUETOOTH_CONNECT,
             android.Manifest.permission.BLUETOOTH_ADMIN,
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.ACCESS_COARSE_LOCATION,
             android.Manifest.permission.BLUETOOTH
-    )
+        )
 
     companion object {
         private const val DEVICE_ADDRESS_LE = "71:D2:AE:CE:30:C1"
@@ -68,26 +69,25 @@ class GattServerTest {
                 }
             }
             return PhoneAppVersion.AppVersionResponse(
-                    UInt.MAX_VALUE,
-                    0u,
-                    PhoneAppVersion.PlatformFlag.makeFlags(
-                            PhoneAppVersion.OSType.Android,
-                            listOf(
-                                    PhoneAppVersion.PlatformFlag.BTLE,
-                            )
-                    ),
-                    2u,
-                    4u,
-                    4u,
-                    2u,
-                    ProtocolCapsFlag.makeFlags(
-                            listOf(
-                                    ProtocolCapsFlag.Supports8kAppMessage,
-                                    ProtocolCapsFlag.SupportsExtendedMusicProtocol,
-                                    ProtocolCapsFlag.SupportsAppRunStateProtocol
-                            )
+                UInt.MAX_VALUE,
+                0u,
+                PhoneAppVersion.PlatformFlag.makeFlags(
+                    PhoneAppVersion.OSType.Android,
+                    listOf(
+                        PhoneAppVersion.PlatformFlag.BTLE
                     )
-
+                ),
+                2u,
+                4u,
+                4u,
+                2u,
+                ProtocolCapsFlag.makeFlags(
+                    listOf(
+                        ProtocolCapsFlag.Supports8kAppMessage,
+                        ProtocolCapsFlag.SupportsExtendedMusicProtocol,
+                        ProtocolCapsFlag.SupportsAppRunStateProtocol
+                    )
+                )
             )
         }
     }
@@ -103,261 +103,290 @@ class GattServerTest {
         bluetoothAdapter = bluetoothManager.adapter ?: error("Bluetooth adapter not available")
     }
 
-    suspend fun makeSession(clientConn: BlueGATTConnection, connectionScope: CoroutineScope) {
+    suspend fun makeSession(
+        clientConn: BlueGATTConnection,
+        connectionScope: CoroutineScope
+    ) {
         val connector = PebbleLEConnector(clientConn, context, connectionScope)
         connector.connect().onEach {
             Timber.d("Connector state: $it")
         }.first { it == PebbleLEConnector.ConnectorState.CONNECTED }
         Timber.d("Connected to watch")
         PPoGLinkStateManager.updateState(clientConn.device.address, PPoGLinkState.ReadyForSession)
-        PPoGLinkStateManager.getState(clientConn.device.address).first { it == PPoGLinkState.SessionOpen }
+        PPoGLinkStateManager.getState(
+            clientConn.device.address
+        ).first { it == PPoGLinkState.SessionOpen }
     }
 
     @OptIn(FlowPreview::class)
     @Test
-    fun connectToWatchAndPing() = runBlocking {
-        withTimeout(10000) {
-            restartBluetooth(bluetoothAdapter)
-        }
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val connectionScope = CoroutineScope(Dispatchers.IO) + CoroutineName("ConnectionScope")
-        val server = NordicGattServer(
-                context = context
-        )
-        server.open()
-        assertTrue(server.isOpened)
-
-        val device = bluetoothAdapter.getRemoteLeDevice(DEVICE_ADDRESS_LE, BluetoothDevice.ADDRESS_TYPE_RANDOM)
-        assertNotNull(device)
-
-        val clientConn = device.connectGatt(context, false)
-        assertNotNull(clientConn)
-
-        makeSession(clientConn!!, connectionScope)
-
-        val serverRx = server.rxFlowFor(device.address)
-        assertNotNull(serverRx)
-
-        val protocolHandler = ProtocolHandlerImpl()
-        val systemService = SystemService(protocolHandler)
-        val blobService = BlobDBService(protocolHandler)
-        val notifService = NotificationService(blobService)
-        systemService.appVersionRequestHandler = Companion::appVersionRequestHandler
-
-        val protocolInputStream = PipedInputStream()
-        val protocolOutputStream = PipedOutputStream()
-        val rxStream = PipedOutputStream(protocolInputStream)
-
-        val protocolIO = ProtocolIO(
-                protocolInputStream.buffered(8192),
-                protocolOutputStream.buffered(8192),
-                protocolHandler,
-                MutableSharedFlow()
-        )
-        val sendLoop = connectionScope.launch {
-            protocolHandler.startPacketSendingLoop {
-                server.sendMessageToDevice(device.address, it.asByteArray())
-                return@startPacketSendingLoop true
+    fun connectToWatchAndPing() =
+        runBlocking {
+            withTimeout(10000) {
+                restartBluetooth(bluetoothAdapter)
             }
-        }
+            val context = InstrumentationRegistry.getInstrumentation().targetContext
+            val connectionScope = CoroutineScope(Dispatchers.IO) + CoroutineName("ConnectionScope")
+            val server =
+                NordicGattServer(
+                    context = context
+                )
+            server.open()
+            assertTrue(server.isOpened)
 
-        serverRx!!.onEach {
-            withContext(Dispatchers.IO) {
-                rxStream.write(it)
+            val device =
+                bluetoothAdapter.getRemoteLeDevice(
+                    DEVICE_ADDRESS_LE,
+                    BluetoothDevice.ADDRESS_TYPE_RANDOM
+                )
+            assertNotNull(device)
+
+            val clientConn = device.connectGatt(context, false)
+            assertNotNull(clientConn)
+
+            makeSession(clientConn!!, connectionScope)
+
+            val serverRx = server.rxFlowFor(device.address)
+            assertNotNull(serverRx)
+
+            val protocolHandler = ProtocolHandlerImpl()
+            val systemService = SystemService(protocolHandler)
+            val blobService = BlobDBService(protocolHandler)
+            val notifService = NotificationService(blobService)
+            systemService.appVersionRequestHandler = Companion::appVersionRequestHandler
+
+            val protocolInputStream = PipedInputStream()
+            val protocolOutputStream = PipedOutputStream()
+            val rxStream = PipedOutputStream(protocolInputStream)
+
+            val protocolIO =
+                ProtocolIO(
+                    protocolInputStream.buffered(8192),
+                    protocolOutputStream.buffered(8192),
+                    protocolHandler,
+                    MutableSharedFlow()
+                )
+            val sendLoop =
+                connectionScope.launch {
+                    protocolHandler.startPacketSendingLoop {
+                        server.sendMessageToDevice(device.address, it.asByteArray())
+                        return@startPacketSendingLoop true
+                    }
+                }
+
+            serverRx!!.onEach {
+                withContext(Dispatchers.IO) {
+                    rxStream.write(it)
+                }
+            }.launchIn(connectionScope)
+
+            val ping = PingPong.Ping(1337u)
+            val completeable = CompletableDeferred<PebblePacket>()
+            protocolHandler.registerReceiveCallback(ProtocolEndpoint.PING) {
+                completeable.complete(it)
             }
-        }.launchIn(connectionScope)
+            launch {
+                protocolHandler.send(ping)
+            }
 
-        val ping = PingPong.Ping(1337u)
-        val completeable = CompletableDeferred<PebblePacket>()
-        protocolHandler.registerReceiveCallback(ProtocolEndpoint.PING) {
-            completeable.complete(it)
+            val pong = completeable.await() as? PingPong.Pong
+            assertNotNull(pong)
+            assertEquals(1337u, pong!!.cookie.get())
+
+            server.close()
+            assertFalse(server.isOpened)
+
+            clientConn.close()
+            connectionScope.cancel()
         }
-        launch {
-            protocolHandler.send(ping)
-        }
-
-        val pong = completeable.await() as? PingPong.Pong
-        assertNotNull(pong)
-        assertEquals(1337u, pong!!.cookie.get())
-
-        server.close()
-        assertFalse(server.isOpened)
-
-        clientConn.close()
-        connectionScope.cancel()
-    }
 
     @OptIn(FlowPreview::class)
     @Test
-    fun connectToWatchAndInstallApp() = runBlocking {
-        withTimeout(10000) {
-            restartBluetooth(bluetoothAdapter)
-        }
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val connectionScope = CoroutineScope(Dispatchers.IO) + CoroutineName("ConnectionScope")
-        val server = NordicGattServer(
-                context = context
-        )
-        server.open()
-        assertTrue(server.isOpened)
+    fun connectToWatchAndInstallApp() =
+        runBlocking {
+            withTimeout(10000) {
+                restartBluetooth(bluetoothAdapter)
+            }
+            val context = InstrumentationRegistry.getInstrumentation().targetContext
+            val connectionScope = CoroutineScope(Dispatchers.IO) + CoroutineName("ConnectionScope")
+            val server =
+                NordicGattServer(
+                    context = context
+                )
+            server.open()
+            assertTrue(server.isOpened)
 
-        val device = bluetoothAdapter.getRemoteLeDevice(DEVICE_ADDRESS_LE, BluetoothDevice.ADDRESS_TYPE_RANDOM)
-        assertNotNull(device)
+            val device =
+                bluetoothAdapter.getRemoteLeDevice(
+                    DEVICE_ADDRESS_LE,
+                    BluetoothDevice.ADDRESS_TYPE_RANDOM
+                )
+            assertNotNull(device)
 
-        val clientConn = device.connectGatt(context, false)
-        assertNotNull(clientConn)
+            val clientConn = device.connectGatt(context, false)
+            assertNotNull(clientConn)
 
-        makeSession(clientConn!!, connectionScope)
+            makeSession(clientConn!!, connectionScope)
 
-        val serverRx = server.rxFlowFor(device.address)
-        assertNotNull(serverRx)
+            val serverRx = server.rxFlowFor(device.address)
+            assertNotNull(serverRx)
 
-        val protocolHandler = ProtocolHandlerImpl()
-        val systemService = SystemService(protocolHandler)
-        val putBytesService = PutBytesService(protocolHandler)
-        val appFetchService = AppFetchService(protocolHandler)
-        val blobDBService = BlobDBService(protocolHandler)
-        val appRunStateService = AppRunStateService(protocolHandler)
-        var watchVersion: WatchVersion.WatchVersionResponse? = null
+            val protocolHandler = ProtocolHandlerImpl()
+            val systemService = SystemService(protocolHandler)
+            val putBytesService = PutBytesService(protocolHandler)
+            val appFetchService = AppFetchService(protocolHandler)
+            val blobDBService = BlobDBService(protocolHandler)
+            val appRunStateService = AppRunStateService(protocolHandler)
+            var watchVersion: WatchVersion.WatchVersionResponse? = null
 
-        /* -- Load app from resources -- */
-        Timber.d("Loading app from resources")
-        systemService.appVersionRequestHandler = ::appVersionRequestHandler
-        val json = Json { ignoreUnknownKeys = true }
-        var pbwAppInfo: PbwAppInfo? = null
-        var pbwManifest: PbwManifest? = null
-        var pbwResBlob: ByteArray? = null
-        var pbwBinaryBlob: ByteArray? = null
-        context.assets.open("pixel-miner.pbw").use {
-            val zipInputStream = ZipInputStream(it)
-            while (true) {
-                val entry = zipInputStream.nextEntry ?: break
-                when (entry.name) {
-                    "appinfo.json" -> {
-                        pbwAppInfo = json.decodeFromStream(zipInputStream)
-                    }
+            // -- Load app from resources --
+            Timber.d("Loading app from resources")
+            systemService.appVersionRequestHandler = ::appVersionRequestHandler
+            val json = Json { ignoreUnknownKeys = true }
+            var pbwAppInfo: PbwAppInfo? = null
+            var pbwManifest: PbwManifest? = null
+            var pbwResBlob: ByteArray? = null
+            var pbwBinaryBlob: ByteArray? = null
+            context.assets.open("pixel-miner.pbw").use {
+                val zipInputStream = ZipInputStream(it)
+                while (true) {
+                    val entry = zipInputStream.nextEntry ?: break
+                    when (entry.name) {
+                        "appinfo.json" -> {
+                            pbwAppInfo = json.decodeFromStream(zipInputStream)
+                        }
 
-                    "manifest.json" -> {
-                        pbwManifest = json.decodeFromStream(zipInputStream)
-                    }
+                        "manifest.json" -> {
+                            pbwManifest = json.decodeFromStream(zipInputStream)
+                        }
 
-                    "app_resources.pbpack" -> {
-                        pbwResBlob = zipInputStream.readBytes()
-                    }
+                        "app_resources.pbpack" -> {
+                            pbwResBlob = zipInputStream.readBytes()
+                        }
 
-                    "pebble-app.bin" -> {
-                        pbwBinaryBlob = zipInputStream.readBytes()
+                        "pebble-app.bin" -> {
+                            pbwBinaryBlob = zipInputStream.readBytes()
+                        }
                     }
                 }
             }
-        }
-        assertNotNull(pbwAppInfo)
-        assertNotNull(pbwManifest)
-        assertNotNull(pbwResBlob)
-        assertNotNull(pbwBinaryBlob)
+            assertNotNull(pbwAppInfo)
+            assertNotNull(pbwManifest)
+            assertNotNull(pbwResBlob)
+            assertNotNull(pbwBinaryBlob)
 
+            // -- Setup app fetch service --
+            appFetchService.receivedMessages.receiveAsFlow().onEach { message ->
+                Timber.d("Received appfetch message: $message")
+                if (message is AppFetchRequest) {
+                    val appUuid = message.uuid.get().toString()
 
-        /* -- Setup app fetch service -- */
-        appFetchService.receivedMessages.receiveAsFlow().onEach { message ->
-            Timber.d("Received appfetch message: $message")
-            if (message is AppFetchRequest) {
-                val appUuid = message.uuid.get().toString()
+                    appFetchService.send(AppFetchResponse(AppFetchResponseStatus.START))
 
-                appFetchService.send(AppFetchResponse(AppFetchResponseStatus.START))
-
-                putBytesService.sendAppPart(
+                    putBytesService.sendAppPart(
                         message.appId.get(),
                         pbwBinaryBlob!!,
                         WatchType.BASALT,
                         watchVersion!!,
                         pbwManifest!!.application,
                         ObjectType.APP_EXECUTABLE
-                )
+                    )
 
-                if (pbwManifest!!.resources != null) {
-                    putBytesService.sendAppPart(
+                    if (pbwManifest!!.resources != null) {
+                        putBytesService.sendAppPart(
                             message.appId.get(),
                             pbwResBlob!!,
                             WatchType.BASALT,
                             watchVersion!!,
                             pbwManifest!!.resources!!,
                             ObjectType.APP_RESOURCE
-                    )
+                        )
+                    }
                 }
             }
-        }
 
-        val sendLoop = connectionScope.launch {
-            protocolHandler.startPacketSendingLoop {
-                Timber.d("Sending packet")
-                server.sendMessageToDevice(device.address, it.asByteArray())
-            }
-        }
+            val sendLoop =
+                connectionScope.launch {
+                    protocolHandler.startPacketSendingLoop {
+                        Timber.d("Sending packet")
+                        server.sendMessageToDevice(device.address, it.asByteArray())
+                    }
+                }
 
-        serverRx!!.onEach {
-            Timber.d("Received packet")
-            protocolHandler.receivePacket(it.asUByteArray())
-        }.launchIn(connectionScope)
+            serverRx!!.onEach {
+                Timber.d("Received packet")
+                protocolHandler.receivePacket(it.asUByteArray())
+            }.launchIn(connectionScope)
 
-        val timezone = TimeZone.getDefault()
-        val now = System.currentTimeMillis()
+            val timezone = TimeZone.getDefault()
+            val now = System.currentTimeMillis()
 
-        val updateTimePacket = TimeMessage.SetUTC(
-                (now / 1000).toUInt(),
-                timezone.getOffset(now).toShort(),
-                timezone.id
-        )
-        systemService.send(updateTimePacket)
+            val updateTimePacket =
+                TimeMessage.SetUTC(
+                    (now / 1000).toUInt(),
+                    timezone.getOffset(now).toShort(),
+                    timezone.id
+                )
+            systemService.send(updateTimePacket)
 
-        Timber.d("Requesting watch version")
-        val watchVersionResponse = systemService.requestWatchVersion()
-        assertNotNull(watchVersionResponse)
-        Timber.d("Watch version: ${watchVersionResponse.running.versionTag.get()}")
-        watchVersion = watchVersionResponse
-        val watchModel = systemService.requestWatchModel()
-        Timber.d("Watch model: $watchModel")
+            Timber.d("Requesting watch version")
+            val watchVersionResponse = systemService.requestWatchVersion()
+            assertNotNull(watchVersionResponse)
+            Timber.d("Watch version: ${watchVersionResponse.running.versionTag.get()}")
+            watchVersion = watchVersionResponse
+            val watchModel = systemService.requestWatchModel()
+            Timber.d("Watch model: $watchModel")
 
-        /* -- Insert app into BlobDB -- */
-        Timber.d("Clearing App BlobDB")
-        val clearResult = blobDBService.send(BlobCommand.ClearCommand(
-                Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
-                BlobCommand.BlobDatabase.App
-        )).responseValue
-        assertEquals(BlobResponse.BlobStatus.Success, clearResult)
-        Timber.d("Cleared App BlobDB")
-        val headerData = pbwBinaryBlob!!.copyOfRange(0, PbwBinHeader.SIZE)
+            // -- Insert app into BlobDB --
+            Timber.d("Clearing App BlobDB")
+            val clearResult =
+                blobDBService.send(
+                    BlobCommand.ClearCommand(
+                        Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
+                        BlobCommand.BlobDatabase.App
+                    )
+                ).responseValue
+            assertEquals(BlobResponse.BlobStatus.Success, clearResult)
+            Timber.d("Cleared App BlobDB")
+            val headerData = pbwBinaryBlob!!.copyOfRange(0, PbwBinHeader.SIZE)
 
-        val parsedHeader = PbwBinHeader.parseFileHeader(headerData.asUByteArray())
-        Timber.d("Inserting app into BlobDB")
-        val insertResult = blobDBService.send(
-                BlobCommand.InsertCommand(
+            val parsedHeader = PbwBinHeader.parseFileHeader(headerData.asUByteArray())
+            Timber.d("Inserting app into BlobDB")
+            val insertResult =
+                blobDBService.send(
+                    BlobCommand.InsertCommand(
                         Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
                         BlobCommand.BlobDatabase.App,
                         parsedHeader.uuid.toBytes(),
                         parsedHeader.toBlobDbApp().toBytes()
+                    )
                 )
-        )
-        assertEquals(BlobResponse.BlobStatus.Success, insertResult)
-        Timber.d("Inserted app into BlobDB")
+            assertEquals(BlobResponse.BlobStatus.Success, insertResult)
+            Timber.d("Inserted app into BlobDB")
 
-        val runStateStart = connectionScope.async {
-            appRunStateService.receivedMessages.receiveAsFlow().first { it is AppRunStateMessage.AppRunStateStart }
+            val runStateStart =
+                connectionScope.async {
+                    appRunStateService.receivedMessages.receiveAsFlow().first {
+                        it is AppRunStateMessage.AppRunStateStart
+                    }
+                }
+
+            // -- Send launch app message --
+            Timber.d("Sending launch app message")
+            appRunStateService.send(
+                AppRunStateMessage.AppRunStateStart(
+                    UUID.fromString(pbwAppInfo!!.uuid)
+                )
+            )
+
+            withTimeout(3000) {
+                runStateStart.await()
+            }
+
+            server.close()
+            assertFalse(server.isOpened)
+
+            clientConn.close()
+            connectionScope.cancel()
         }
-
-        /* -- Send launch app message -- */
-        Timber.d("Sending launch app message")
-        appRunStateService.send(AppRunStateMessage.AppRunStateStart(
-                UUID.fromString(pbwAppInfo!!.uuid))
-        )
-
-        withTimeout(3000) {
-            runStateStart.await()
-        }
-
-        server.close()
-        assertFalse(server.isOpened)
-
-        clientConn.close()
-        connectionScope.cancel()
-    }
 }

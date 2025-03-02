@@ -14,45 +14,48 @@ import io.rebble.cobble.shared.util.hasContactsPermission
 import io.rebble.cobble.shared.util.hasNotificationAccessPermission
 import javax.inject.Inject
 
-class PermissionCheckFlutterBridge @Inject constructor(
+class PermissionCheckFlutterBridge
+    @Inject
+    constructor(
         private val context: Context,
         bridgeLifecycleController: BridgeLifecycleController
-) : Pigeons.PermissionCheck, FlutterBridge {
-    init {
-        bridgeLifecycleController.setupControl(Pigeons.PermissionCheck::setup, this)
-    }
+    ) : Pigeons.PermissionCheck, FlutterBridge {
+        init {
+            bridgeLifecycleController.setupControl(Pigeons.PermissionCheck::setup, this)
+        }
 
-    override fun hasLocationPermission(): Pigeons.BooleanWrapper {
-        return checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-    }
+        override fun hasLocationPermission(): Pigeons.BooleanWrapper {
+            return checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
 
-    override fun hasCalendarPermission(): Pigeons.BooleanWrapper {
-        return checkPermission(
+        override fun hasCalendarPermission(): Pigeons.BooleanWrapper {
+            return checkPermission(
                 Manifest.permission.READ_CALENDAR,
                 Manifest.permission.WRITE_CALENDAR
-        )
-    }
+            )
+        }
 
-    override fun hasNotificationAccess(): Pigeons.BooleanWrapper {
-        return BooleanWrapper(
+        override fun hasNotificationAccess(): Pigeons.BooleanWrapper {
+            return BooleanWrapper(
                 context.hasNotificationAccessPermission()
-        )
-    }
+            )
+        }
 
-    override fun hasBatteryExclusionEnabled(): Pigeons.BooleanWrapper {
-        return BooleanWrapper(context.hasBatteryExclusionPermission())
-    }
+        override fun hasBatteryExclusionEnabled(): Pigeons.BooleanWrapper {
+            return BooleanWrapper(context.hasBatteryExclusionPermission())
+        }
 
-    override fun hasCallsPermissions(): Pigeons.BooleanWrapper {
-        return BooleanWrapper(context.hasCallsPermission() && context.hasContactsPermission())
-    }
+        override fun hasCallsPermissions(): Pigeons.BooleanWrapper {
+            return BooleanWrapper(context.hasCallsPermission() && context.hasContactsPermission())
+        }
 
-    private fun checkPermission(vararg permission: String) = BooleanWrapper(
-            permission.all {
-                ContextCompat.checkSelfPermission(
+        private fun checkPermission(vararg permission: String) =
+            BooleanWrapper(
+                permission.all {
+                    ContextCompat.checkSelfPermission(
                         context,
                         it
-                ) == PackageManager.PERMISSION_GRANTED
-            }
-    )
-}
+                    ) == PackageManager.PERMISSION_GRANTED
+                }
+            )
+    }

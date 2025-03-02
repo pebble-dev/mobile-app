@@ -34,9 +34,10 @@ class InCallService : InCallService() {
         Timber.d("InCallService created")
         val injectionComponent = (applicationContext as CobbleApplication).component
         connectionLooper = injectionComponent.createConnectionLooper()
-        coroutineScope = CoroutineScope(
+        coroutineScope =
+            CoroutineScope(
                 SupervisorJob() + injectionComponent.createExceptionHandler()
-        )
+            )
         contentResolver = applicationContext.contentResolver
         listenForPhoneControlMessages()
     }
@@ -55,7 +56,9 @@ class InCallService : InCallService() {
                     is PhoneControl.Answer -> {
                         synchronized(this@InCallService) {
                             if (it.cookie.get() == lastCookie) {
-                                lastCall?.answer(VideoProfile.STATE_AUDIO_ONLY) // Answering from watch probably means a headset or something
+                                lastCall?.answer(
+                                    VideoProfile.STATE_AUDIO_ONLY
+                                ) // Answering from watch probably means a headset or something
                             } else {
                                 callNotificationProcessor.handleCallAction(it)
                             }
@@ -91,7 +94,6 @@ class InCallService : InCallService() {
                 }
             }.launchIn(connectionScope)
         }
-
     }
 
     override fun onDestroy() {
@@ -105,22 +107,24 @@ class InCallService : InCallService() {
         Timber.d("Call added")
         coroutineScope.launch(Dispatchers.IO) {
             val pebbleDevice = ConnectionStateManager.connectionState.value.watchOrNull
-            val phoneControlService = pebbleDevice?.phoneControlService ?: run {
-                Logging.w("Phone control service not available (e.g. device disconnected)")
-                return@launch
-            }
+            val phoneControlService =
+                pebbleDevice?.phoneControlService ?: run {
+                    Logging.w("Phone control service not available (e.g. device disconnected)")
+                    return@launch
+                }
             synchronized(this@InCallService) {
                 if (lastCookie != null) {
-                    lastCookie = if (lastCall == null) {
-                        null
-                    } else {
-                        if (lastCall?.state == Call.STATE_DISCONNECTED) {
+                    lastCookie =
+                        if (lastCall == null) {
                             null
                         } else {
-                            Timber.w("Ignoring call because there is already a call in progress")
-                            return@launch
+                            if (lastCall?.state == Call.STATE_DISCONNECTED) {
+                                null
+                            } else {
+                                Timber.w("Ignoring call because there is already a call in progress")
+                                return@launch
+                            }
                         }
-                    }
                 }
                 lastCall = call
             }
@@ -131,56 +135,63 @@ class InCallService : InCallService() {
             if (call.state == Call.STATE_RINGING) {
                 coroutineScope.launch(Dispatchers.IO) {
                     phoneControlService.send(
-                            PhoneControl.IncomingCall(
-                                    cookie,
-                                    getPhoneNumber(call),
-                                    getContactName(call)
-                            )
+                        PhoneControl.IncomingCall(
+                            cookie,
+                            getPhoneNumber(call),
+                            getContactName(call)
+                        )
                     )
                 }
             }
             if (connectionLooper.connectionState.value is ConnectionState.Connected) {
                 withContext(Dispatchers.Main) {
-                    call.registerCallback(object : Call.Callback() {
-                        override fun onStateChanged(call: Call, state: Int) {
-                            super.onStateChanged(call, state)
-                            Timber.d("Call state changed to $state")
-                            synchronized(this@InCallService) {
-                                if (lastCookie != cookie) {
-                                    Timber.w("Ignoring incoming call ring because it's not the last call")
-                                    call.unregisterCallback(this)
-                                    return
-                                }
-                            }
-                            when (state) {
-                                Call.STATE_ACTIVE -> {
-                                    coroutineScope.launch(Dispatchers.IO) {
-                                        phoneControlService.send(
-                                                PhoneControl.Start(
-                                                        cookie
-                                                )
+                    call.registerCallback(
+                        object : Call.Callback() {
+                            override fun onStateChanged(
+                                call: Call,
+                                state: Int
+                            ) {
+                                super.onStateChanged(call, state)
+                                Timber.d("Call state changed to $state")
+                                synchronized(this@InCallService) {
+                                    if (lastCookie != cookie) {
+                                        Timber.w(
+                                            "Ignoring incoming call ring because it's not the last call"
                                         )
+                                        call.unregisterCallback(this)
+                                        return
                                     }
                                 }
-
-                                Call.STATE_DISCONNECTED -> {
-                                    synchronized(this@InCallService) {
-                                        if (lastCookie == cookie) {
-                                            lastCookie = null
+                                when (state) {
+                                    Call.STATE_ACTIVE -> {
+                                        coroutineScope.launch(Dispatchers.IO) {
+                                            phoneControlService.send(
+                                                PhoneControl.Start(
+                                                    cookie
+                                                )
+                                            )
                                         }
                                     }
-                                    coroutineScope.launch(Dispatchers.IO) {
-                                        phoneControlService.send(
+
+                                    Call.STATE_DISCONNECTED -> {
+                                        synchronized(this@InCallService) {
+                                            if (lastCookie == cookie) {
+                                                lastCookie = null
+                                            }
+                                        }
+                                        coroutineScope.launch(Dispatchers.IO) {
+                                            phoneControlService.send(
                                                 PhoneControl.End(
-                                                        cookie
+                                                    cookie
                                                 )
-                                        )
+                                            )
+                                        }
+                                        call.unregisterCallback(this)
                                     }
-                                    call.unregisterCallback(this)
                                 }
                             }
                         }
-                    })
+                    )
                 }
             }
         }
@@ -194,20 +205,22 @@ class InCallService : InCallService() {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             call.details.contactDisplayName ?: call.details.handle.schemeSpecificPart
         } else {
-            val cursor = contentResolver.query(
+            val cursor =
+                contentResolver.query(
                     Contacts.CONTENT_URI,
                     arrayOf(Contacts.DISPLAY_NAME),
                     Contacts.HAS_PHONE_NUMBER + " = 1 AND " + ContactsContract.CommonDataKinds.Phone.NUMBER + " = ?",
                     arrayOf(call.details.handle.schemeSpecificPart),
                     null
-            )
-            val name = cursor?.use {
-                if (it.moveToFirst()) {
-                    it.getString(it.getColumnIndexOrThrow(Contacts.DISPLAY_NAME))
-                } else {
-                    null
+                )
+            val name =
+                cursor?.use {
+                    if (it.moveToFirst()) {
+                        it.getString(it.getColumnIndexOrThrow(Contacts.DISPLAY_NAME))
+                    } else {
+                        null
+                    }
                 }
-            }
             return name ?: call.details.handle.schemeSpecificPart
         }
     }
@@ -217,23 +230,24 @@ class InCallService : InCallService() {
         Timber.d("Call removed")
         coroutineScope.launch(Dispatchers.IO) {
             val pebbleDevice = ConnectionStateManager.connectionState.value.watchOrNull
-            val phoneControlService = pebbleDevice?.phoneControlService ?: run {
-                Logging.w("Phone control service not available (e.g. device disconnected)")
-                return@launch
-            }
-            val cookie = synchronized(this@InCallService) {
-                val c = lastCookie ?: return@launch
-                lastCookie = null
-                c
-            }
+            val phoneControlService =
+                pebbleDevice?.phoneControlService ?: run {
+                    Logging.w("Phone control service not available (e.g. device disconnected)")
+                    return@launch
+                }
+            val cookie =
+                synchronized(this@InCallService) {
+                    val c = lastCookie ?: return@launch
+                    lastCookie = null
+                    c
+                }
             if (connectionLooper.connectionState.value is ConnectionState.Connected) {
                 phoneControlService.send(
-                        PhoneControl.End(
-                                cookie
-                        )
+                    PhoneControl.End(
+                        cookie
+                    )
                 )
             }
         }
     }
-
 }

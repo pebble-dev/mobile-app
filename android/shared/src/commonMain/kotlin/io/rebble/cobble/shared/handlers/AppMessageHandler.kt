@@ -17,48 +17,51 @@ import kotlin.time.Duration.Companion.seconds
 
 private data class AppMessageTimestamp(val app: Uuid, val timestamp: Long)
 
-
-
 open class OutgoingMessage {
     data class Data(
-            val uuid: Uuid,
-            val transactionId: Int,
-            val packet: AppMessage
+        val uuid: Uuid,
+        val transactionId: Int,
+        val packet: AppMessage
     ) : OutgoingMessage()
 
     data class Ack(
-            val packet: AppMessage
+        val packet: AppMessage
     ) : OutgoingMessage()
 
     data class Nack(
-            val packet: AppMessage
+        val packet: AppMessage
     ) : OutgoingMessage()
 
     data class AppStart(
-            val uuid: Uuid
+        val uuid: Uuid
     ) : OutgoingMessage()
 
     data class AppStop(
-            val uuid: Uuid
+        val uuid: Uuid
     ) : OutgoingMessage()
 
     data class AppCustomize(
-            val appType: AppType,
-            val name: String
+        val appType: AppType,
+        val name: String
     ) : OutgoingMessage()
 }
 
 interface PlatformAppMessageIPC {
     fun sendPush(message: AppMessage.AppMessagePush)
+
     fun sendAck(message: AppMessage.AppMessageACK)
+
     fun sendNack(transactionId: Int)
+
     fun outgoingMessages(): Flow<OutgoingMessage>
+
     fun broadcastPebbleConnected()
+
     fun broadcastPebbleDisconnected()
 }
 
 class AppMessageHandler(
-    private val pebbleDevice: PebbleDevice,
+    private val pebbleDevice: PebbleDevice
 ) : KoinComponent, CobbleHandler {
     private val platformAppMessageIPC: PlatformAppMessageIPC by inject()
     private var lastReceivedMessage: AppMessageTimestamp? = null
@@ -73,7 +76,6 @@ class AppMessageHandler(
 
             sendConnectDisconnectEvents(deviceScope)
         }
-
     }
 
     private fun listenForIncomingPackets(deviceScope: CoroutineScope) {
@@ -150,16 +152,19 @@ class AppMessageHandler(
         return if (pebbleDevice.currentActiveApp.value == app) {
             true
         } else if (lastReceivedMessage != null &&
-                lastReceivedMessage.app == app &&
-                (Clock.System.now().toEpochMilliseconds() - lastReceivedMessage.timestamp
-                        ) < 5.seconds.inWholeMilliseconds) {
+            lastReceivedMessage.app == app &&
+            (
+                Clock.System.now().toEpochMilliseconds() - lastReceivedMessage.timestamp
+            ) < 5.seconds.inWholeMilliseconds
+        ) {
             // Sometimes app run state packets arrive with a delay. If we received incoming
             // AppMessage from the app within last 5 seconds, consider it active
             // and permit sending messages
             true
         } else {
-            Logging.w("Invalid AppMessage intent. " +
-                    "Wanted to send a message to the app $app, but ${pebbleDevice.currentActiveApp.value} is active on the watch.",
+            Logging.w(
+                "Invalid AppMessage intent. " +
+                    "Wanted to send a message to the app $app, but ${pebbleDevice.currentActiveApp.value} is active on the watch."
             )
             false
         }

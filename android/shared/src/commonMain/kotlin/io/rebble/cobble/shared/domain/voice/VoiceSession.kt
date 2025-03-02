@@ -24,32 +24,33 @@ sealed class AudioStreamFrame {
 }
 
 class VoiceSession(
-        val appUuid: Uuid?,
-        val sessionId: Int,
-        val encoderInfo: SpeexEncoderInfo,
-        val recognizer: DictationService
+    val appUuid: Uuid?,
+    val sessionId: Int,
+    val encoderInfo: SpeexEncoderInfo,
+    val recognizer: DictationService
 ) {
     val audioStreamFrames = MutableSharedFlow<AudioStreamFrame>(extraBufferCapacity = 16)
+
     override fun toString(): String {
         return "VoiceSession(appUuid=$appUuid, sessionId=$sessionId, encoderInfo=$encoderInfo)"
     }
 }
 
 data class SpeexEncoderInfo(
-        val version: String,
-        val sampleRate: Long,
-        val bitRate: Int,
-        val bitstreamVersion: Int,
-        val frameSize: Int
+    val version: String,
+    val sampleRate: Long,
+    val bitRate: Int,
+    val bitstreamVersion: Int,
+    val frameSize: Int
 ) {
     companion object {
         fun fromPacketData(data: VoiceAttribute.SpeexEncoderInfo): SpeexEncoderInfo {
             return SpeexEncoderInfo(
-                    version = data.version.get(),
-                    sampleRate = data.sampleRate.get().toLong(),
-                    bitRate = data.bitRate.get().toInt(),
-                    bitstreamVersion = data.bitstreamVersion.get().toInt(),
-                    frameSize = data.frameSize.get().toInt()
+                version = data.version.get(),
+                sampleRate = data.sampleRate.get().toLong(),
+                bitRate = data.bitRate.get().toInt(),
+                bitstreamVersion = data.bitstreamVersion.get().toInt(),
+                frameSize = data.frameSize.get().toInt()
             )
         }
     }

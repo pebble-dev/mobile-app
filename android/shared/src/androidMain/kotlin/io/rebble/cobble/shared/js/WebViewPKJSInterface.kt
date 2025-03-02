@@ -10,17 +10,20 @@ import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class WebViewPKJSInterface(private val jsRunner: JsRunner): PKJSInterface, KoinComponent {
+class WebViewPKJSInterface(private val jsRunner: JsRunner) : PKJSInterface, KoinComponent {
     val context: Context by inject()
 
     @JavascriptInterface
-    override fun showSimpleNotificationOnPebble(title: String, notificationText: String) {
+    override fun showSimpleNotificationOnPebble(
+        title: String,
+        notificationText: String
+    ) {
         TODO("Not yet implemented")
     }
 
     @JavascriptInterface
     override fun getAccountToken(): String {
-        //XXX: This is a blocking call, but it's fine because it's called from a WebView thread, maybe
+        // XXX: This is a blocking call, but it's fine because it's called from a WebView thread, maybe
         return runBlocking(Dispatchers.IO) {
             JsTokenUtil.getAccountToken(uuidFrom(jsRunner.appInfo.uuid)) ?: ""
         }

@@ -8,16 +8,20 @@ import io.rebble.libpebblecommon.packets.WatchFirmwareVersion
 import io.rebble.libpebblecommon.packets.WatchVersion
 
 fun WatchVersion.WatchVersionResponse?.toPigeon(
-        btDevice: PebbleDevice?,
-        model: Int?
+    btDevice: PebbleDevice?,
+    model: Int?
 ): Pigeons.PebbleDevicePigeon {
     // Pigeon does not appear to allow null values. We have to set some dummy values instead
 
     return Pigeons.PebbleDevicePigeon().also {
         it.name = btDevice?.let {
-            if (btDevice is EmulatedPebbleDevice) "[Emulator]"
-            else if (btDevice is BluetoothPebbleDevice) btDevice.bluetoothDevice.name.orEmpty()
-            else error("Unknown PebbleDevice type")
+            if (btDevice is EmulatedPebbleDevice) {
+                "[Emulator]"
+            } else if (btDevice is BluetoothPebbleDevice) {
+                btDevice.bluetoothDevice.name.orEmpty()
+            } else {
+                error("Unknown PebbleDevice type")
+            }
         } ?: ""
         it.address = btDevice?.address ?: ""
         it.runningFirmware = this?.running?.toPigeon() ?: blankWatchFirwmareVersion()
@@ -42,11 +46,12 @@ fun WatchFirmwareVersion.toPigeon(): Pigeons.PebbleFirmwarePigeon {
     }
 }
 
-private fun blankWatchFirwmareVersion() = Pigeons.PebbleFirmwarePigeon().also {
-    it.timestamp = 0L
-    it.version = ""
-    it.gitHash = ""
-    it.isRecovery = false
-    it.hardwarePlatform = 0L
-    it.metadataVersion = 0L
-}
+private fun blankWatchFirwmareVersion() =
+    Pigeons.PebbleFirmwarePigeon().also {
+        it.timestamp = 0L
+        it.version = ""
+        it.gitHash = ""
+        it.isRecovery = false
+        it.hardwarePlatform = 0L
+        it.metadataVersion = 0L
+    }

@@ -17,7 +17,7 @@ import kotlinx.serialization.json.Json
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class WebViewPrivatePKJSInterface(private val jsRunner: WebViewJsRunner, private val scope: CoroutineScope, private val outgoingAppMessages: MutableSharedFlow<String>): PrivatePKJSInterface, KoinComponent {
+class WebViewPrivatePKJSInterface(private val jsRunner: WebViewJsRunner, private val scope: CoroutineScope, private val outgoingAppMessages: MutableSharedFlow<String>) : PrivatePKJSInterface, KoinComponent {
     private val lockerDao: LockerDao by inject()
 
     @JavascriptInterface
@@ -86,7 +86,10 @@ class WebViewPrivatePKJSInterface(private val jsRunner: WebViewJsRunner, private
     }
 
     @JavascriptInterface
-    fun privateFnLocalStorageWrite(key: String, value: String) {
+    fun privateFnLocalStorageWrite(
+        key: String,
+        value: String
+    ) {
         Logging.v("privateFnLocalStorageWrite")
         TODO("Not yet implemented")
     }

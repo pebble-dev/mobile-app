@@ -17,7 +17,7 @@ class PebbleBridge {
 
         fun searchRequest(
             query: String,
-            section: String,
+            section: String
         ): String {
             val request = PebbleBridgeSearchRequest(query = query, section = section)
             return createRequest(request)
@@ -35,7 +35,7 @@ class PebbleBridge {
 
         fun lockerResponse(
             callbackId: Int,
-            addedToLocker: Boolean,
+            addedToLocker: Boolean
         ): String {
             val response = PebbleBridgeLockerResponse(addedToLocker)
             return createResponse(callbackId, response)
@@ -48,7 +48,7 @@ class PebbleBridge {
 
         private inline fun <reified T> createResponse(
             callbackId: Int,
-            response: T,
+            response: T
         ): String {
             val responseData = PebbleBridgeResponse(callbackId, response)
             val responseJson = json.encodeToString(responseData)
@@ -60,29 +60,29 @@ class PebbleBridge {
 @Serializable
 data class PebbleBridgeResponse<T>(
     val callbackId: Int,
-    val data: T,
+    val data: T
 )
 
 @Serializable
 data class PebbleBridgeLockerResponse(
     @SerialName("added_to_locker")
-    val addedToLocker: Boolean,
+    val addedToLocker: Boolean
 )
 
 @Serializable
 data class PebbleBridgeSearchRequest(
     val methodName: String = "search",
     val query: String,
-    val section: String,
+    val section: String
 )
 
 @Serializable
 data class PebbleBridgeNavigateRequest(
     val methodName: String = "navigate",
-    val url: String,
+    val url: String
 )
 
 @Serializable
 data class PebbleBridgeRefreshRequest(
-    val methodName: String = "refresh",
+    val methodName: String = "refresh"
 )

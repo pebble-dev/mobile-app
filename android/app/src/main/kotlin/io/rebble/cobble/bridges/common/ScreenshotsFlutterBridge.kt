@@ -22,102 +22,112 @@ import java.io.File
 import javax.inject.Inject
 import kotlin.experimental.and
 
-class ScreenshotsFlutterBridge @Inject constructor(
+class ScreenshotsFlutterBridge
+    @Inject
+    constructor(
         private val context: Context,
         bridgeLifecycleController: BridgeLifecycleController,
         private val coroutineScope: CoroutineScope
-) : FlutterBridge, Pigeons.ScreenshotsControl {
-    init {
-        bridgeLifecycleController.setupControl(Pigeons.ScreenshotsControl::setup, this)
-    }
+    ) : FlutterBridge, Pigeons.ScreenshotsControl {
+        init {
+            bridgeLifecycleController.setupControl(Pigeons.ScreenshotsControl::setup, this)
+        }
 
-    override fun takeWatchScreenshot(result: Pigeons.Result<Pigeons.ScreenshotResult>) {
-        coroutineScope.launchPigeonResult(result) {
+        override fun takeWatchScreenshot(result: Pigeons.Result<Pigeons.ScreenshotResult>) {
+            coroutineScope.launchPigeonResult(result) {
+                try {
+                    ConnectionStateManager.connectionState.value.watchOrNull?.screenshotService?.send(ScreenshotRequest()) ?: return@launchPigeonResult Pigeons.ScreenshotResult.Builder().setSuccess(false).build()
 
-            try {
-                ConnectionStateManager.connectionState.value.watchOrNull?.screenshotService?.send(ScreenshotRequest()) ?: return@launchPigeonResult Pigeons.ScreenshotResult.Builder().setSuccess(false).build()
+                    val firstResult = receiveScreenshotResponse() ?: return@launchPigeonResult Pigeons.ScreenshotResult.Builder().setSuccess(false).build()
 
-                val firstResult = receiveScreenshotResponse() ?: return@launchPigeonResult Pigeons.ScreenshotResult.Builder().setSuccess(false).build()
+                    val header =
+                        ScreenshotHeader().apply {
+                            m.fromBytes(DataBuffer(firstResult.data.get()))
+                        }
 
-                val header = ScreenshotHeader().apply {
-                    m.fromBytes(DataBuffer(firstResult.data.get()))
-                }
-
-                if (header.responseCode.get() != ScreenshotResponseCode.OK.rawCode) {
-                    Timber.e(
+                    if (header.responseCode.get() != ScreenshotResponseCode.OK.rawCode) {
+                        Timber.e(
                             "Screenshot fail: %s",
                             ScreenshotResponseCode.fromRawCode(header.responseCode.get())
-                    )
+                        )
 
-                    return@launchPigeonResult Pigeons.ScreenshotResult.Builder().setSuccess(false).build()
-                }
-
-                val width = header.width.get().toInt()
-                val height = header.height.get().toInt()
-                val version = ScreenshotVersion.fromRawCode(header.version.get())
-
-                val buffer = Buffer()
-
-                val expectedBytes = when (version) {
-                    ScreenshotVersion.BLACK_WHITE_1_BIT -> {
-                        width * height / 8
+                        return@launchPigeonResult Pigeons.ScreenshotResult.Builder().setSuccess(
+                            false
+                        ).build()
                     }
 
-                    ScreenshotVersion.COLOR_8_BIT -> {
-                        width * height
+                    val width = header.width.get().toInt()
+                    val height = header.height.get().toInt()
+                    val version = ScreenshotVersion.fromRawCode(header.version.get())
+
+                    val buffer = Buffer()
+
+                    val expectedBytes =
+                        when (version) {
+                            ScreenshotVersion.BLACK_WHITE_1_BIT -> {
+                                width * height / 8
+                            }
+
+                            ScreenshotVersion.COLOR_8_BIT -> {
+                                width * height
+                            }
+                        }
+
+                    buffer.request(expectedBytes.toLong())
+
+                    buffer.write(header.data.get().asByteArray())
+
+                    while (buffer.size < expectedBytes) {
+                        val nextSegment = receiveScreenshotResponse() ?: return@launchPigeonResult Pigeons.ScreenshotResult.Builder().setSuccess(false).build()
+                        buffer.write(nextSegment.data.get().asByteArray())
                     }
-                }
 
-                buffer.request(expectedBytes.toLong())
+                    val pixels =
+                        when (version) {
+                            ScreenshotVersion.BLACK_WHITE_1_BIT -> {
+                                decodeBlackWhite1BitImagePixels(width, height, buffer)
+                            }
 
-                buffer.write(header.data.get().asByteArray())
+                            ScreenshotVersion.COLOR_8_BIT -> {
+                                decodeColor8BitImagePixels(width, height, buffer)
+                            }
+                        }
 
-                while (buffer.size < expectedBytes) {
-                    val nextSegment = receiveScreenshotResponse() ?: return@launchPigeonResult Pigeons.ScreenshotResult.Builder().setSuccess(false).build()
-                    buffer.write(nextSegment.data.get().asByteArray())
-                }
+                    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                    bitmap.setPixels(pixels, 0, width, 0, 0, width, height)
 
-                val pixels = when (version) {
-                    ScreenshotVersion.BLACK_WHITE_1_BIT -> {
-                        decodeBlackWhite1BitImagePixels(width, height, buffer)
+                    val targetFile = File(context.cacheDir, "screenshot.png")
+
+                    withContext(Dispatchers.IO) {
+                        targetFile.outputStream().buffered().use {
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+                        }
                     }
 
-                    ScreenshotVersion.COLOR_8_BIT -> {
-                        decodeColor8BitImagePixels(width, height, buffer)
-                    }
-                }
-
-                val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-                bitmap.setPixels(pixels, 0, width, 0, 0, width, height)
-
-                val targetFile = File(context.cacheDir, "screenshot.png")
-
-                withContext(Dispatchers.IO) {
-                    targetFile.outputStream().buffered().use {
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
-                    }
-                }
-
-                Pigeons.ScreenshotResult.Builder()
+                    Pigeons.ScreenshotResult.Builder()
                         .setSuccess(true)
                         .setImagePath(targetFile.absolutePath)
                         .build()
-            } catch (e: Exception) {
-                Timber.e(e, "Screenshot fetch failed")
+                } catch (e: Exception) {
+                    Timber.e(e, "Screenshot fetch failed")
 
-                Pigeons.ScreenshotResult.Builder().setSuccess(false).build()
+                    Pigeons.ScreenshotResult.Builder().setSuccess(false).build()
+                }
+            }
+        }
+
+        private suspend fun receiveScreenshotResponse(): ScreenshotResponse? {
+            return withTimeout(10_000) {
+                ConnectionStateManager.connectionState.value.watchOrNull?.screenshotService?.receivedMessages?.receive()
             }
         }
     }
 
-    private suspend fun receiveScreenshotResponse(): ScreenshotResponse? {
-        return withTimeout(10_000) {
-            ConnectionStateManager.connectionState.value.watchOrNull?.screenshotService?.receivedMessages?.receive()
-        }
-    }
-}
-
-private fun decodeBlackWhite1BitImagePixels(width: Int, height: Int, buffer: Buffer): IntArray {
+private fun decodeBlackWhite1BitImagePixels(
+    width: Int,
+    height: Int,
+    buffer: Buffer
+): IntArray {
     val pixels = IntArray(width * height)
     val rawPixelData = buffer.readByteArray()
 
@@ -130,18 +140,23 @@ private fun decodeBlackWhite1BitImagePixels(width: Int, height: Int, buffer: Buf
         for (x in 0 until width) {
             val white = ((rawPixelData[rawRowPosition + x / 8] ushr (x % 8)) and 0x1.toByte()) != 0.toByte()
 
-            pixels[rowPosition + x] = if (white) {
-                Color.WHITE
-            } else {
-                Color.BLACK
-            }
+            pixels[rowPosition + x] =
+                if (white) {
+                    Color.WHITE
+                } else {
+                    Color.BLACK
+                }
         }
     }
 
     return pixels
 }
 
-private fun decodeColor8BitImagePixels(width: Int, height: Int, buffer: Buffer): IntArray {
+private fun decodeColor8BitImagePixels(
+    width: Int,
+    height: Int,
+    buffer: Buffer
+): IntArray {
     val pixels = IntArray(width * height)
     val rawPixelData = buffer.readByteArray()
 

@@ -22,7 +22,12 @@ class FileLoggingTree(context: Context, appTag: String) : AppTaggedDebugTree(app
     private var currentDayOfYear: Int = -1
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+    override fun log(
+        priority: Int,
+        tag: String?,
+        message: String,
+        t: Throwable?
+    ) {
         GlobalScope.launch(loggingDispatcher) {
             Thread.currentThread().priority = Thread.MIN_PRIORITY
 
@@ -32,10 +37,10 @@ class FileLoggingTree(context: Context, appTag: String) : AppTaggedDebugTree(app
             try {
                 val calendar = Calendar.getInstance()
                 writer.write(
-                        getLogPriorityAbbreviation(priority).toString() + " " +
-                                LOG_DATE_FORMAT.format(calendar.time) + " [" +
-                                tag + "Z] " +
-                                message
+                    getLogPriorityAbbreviation(priority).toString() + " " +
+                        LOG_DATE_FORMAT.format(calendar.time) + " [" +
+                        tag + "Z] " +
+                        message
                 )
                 writer.newLine()
 
@@ -50,7 +55,6 @@ class FileLoggingTree(context: Context, appTag: String) : AppTaggedDebugTree(app
                 this@FileLoggingTree.writer = null
             }
         }
-
     }
 
     private fun openFileIfNeeded() {
@@ -68,7 +72,8 @@ class FileLoggingTree(context: Context, appTag: String) : AppTaggedDebugTree(app
             }
         }
 
-        val fileNameTimeStamp = SimpleDateFormat("yyyy-dd-MM", Locale.getDefault())
+        val fileNameTimeStamp =
+            SimpleDateFormat("yyyy-dd-MM", Locale.getDefault())
                 .format(Date())
 
         val filename = "log_$fileNameTimeStamp.log"
@@ -90,7 +95,6 @@ class FileLoggingTree(context: Context, appTag: String) : AppTaggedDebugTree(app
         }
     }
 
-
     private fun getLogPriorityAbbreviation(priority: Int): Char {
         return when (priority) {
             Log.ASSERT -> 'A'
@@ -104,8 +108,10 @@ class FileLoggingTree(context: Context, appTag: String) : AppTaggedDebugTree(app
 }
 
 @SuppressLint("ConstantLocale")
-private val LOG_DATE_FORMAT: DateFormat = SimpleDateFormat(
-        "HH:mm:ss.SSS", Locale.getDefault()
-).apply {
-    timeZone = TimeZone.getTimeZone("UTC")
-}
+private val LOG_DATE_FORMAT: DateFormat =
+    SimpleDateFormat(
+        "HH:mm:ss.SSS",
+        Locale.getDefault()
+    ).apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+    }

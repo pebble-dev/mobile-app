@@ -17,12 +17,28 @@ interface NotificationChannelDao {
     @Delete
     suspend fun delete(notification: NotificationChannel)
 
-    @Query("SELECT * FROM NotificationChannel WHERE packageId = :packageId AND channelId = :channelId")
-    suspend fun get(packageId: String, channelId: String): NotificationChannel?
+    @Query(
+        "SELECT * FROM NotificationChannel WHERE packageId = :packageId AND channelId = :channelId"
+    )
+    suspend fun get(
+        packageId: String,
+        channelId: String
+    ): NotificationChannel?
 
-    @Query("UPDATE NotificationChannel SET shouldNotify = :shouldNotify WHERE packageId = :packageId AND channelId = :channelId")
-    suspend fun setShouldNotify(packageId: String, channelId: String, shouldNotify: Boolean)
+    @Query(
+        "UPDATE NotificationChannel SET shouldNotify = :shouldNotify WHERE packageId = :packageId AND channelId = :channelId"
+    )
+    suspend fun setShouldNotify(
+        packageId: String,
+        channelId: String,
+        shouldNotify: Boolean
+    )
 
-    @Query("SELECT conversationId FROM NotificationChannel WHERE packageId = :packageId AND channelId = :channelId")
-    suspend fun getConversationId(packageId: String, channelId: String): String?
+    @Query(
+        "SELECT conversationId FROM NotificationChannel WHERE packageId = :packageId AND channelId = :channelId"
+    )
+    suspend fun getConversationId(
+        packageId: String,
+        channelId: String
+    ): String?
 }

@@ -15,31 +15,32 @@ class PPoGPebblePacketAssembler {
     /**
      * Emits one or more [PebblePacket]s if the data is complete.
      */
-    fun assemble(dataToAdd: ByteArray) = flow {
-        val dataToAddBuf = ByteBuffer.wrap(dataToAdd)
-        while (dataToAddBuf.hasRemaining()) {
-            if (data == null) {
-                if (dataToAddBuf.remaining() < 4) {
-                    throw PPoGPebblePacketAssemblyException("Not enough data for header")
+    fun assemble(dataToAdd: ByteArray) =
+        flow {
+            val dataToAddBuf = ByteBuffer.wrap(dataToAdd)
+            while (dataToAddBuf.hasRemaining()) {
+                if (data == null) {
+                    if (dataToAddBuf.remaining() < 4) {
+                        throw PPoGPebblePacketAssemblyException("Not enough data for header")
+                    }
+                    val header = ByteArray(4)
+                    dataToAddBuf.get(header)
+                    beginAssembly(header)
                 }
-                val header = ByteArray(4)
-                dataToAddBuf.get(header)
-                beginAssembly(header)
-            }
 
-            val remaining = min(dataToAddBuf.remaining(), data!!.remaining())
-            val slice = ByteArray(remaining)
-            dataToAddBuf.get(slice)
-            data!!.put(slice)
+                val remaining = min(dataToAddBuf.remaining(), data!!.remaining())
+                val slice = ByteArray(remaining)
+                dataToAddBuf.get(slice)
+                data!!.put(slice)
 
-            if (!data!!.hasRemaining()) {
-                data!!.flip()
-                val packet = data!!.array().clone()
-                emit(packet)
-                clear()
+                if (!data!!.hasRemaining()) {
+                    data!!.flip()
+                    val packet = data!!.array().clone()
+                    emit(packet)
+                    clear()
+                }
             }
         }
-    }
 
     private fun beginAssembly(header: ByteArray) {
         val meta = StructMapper()

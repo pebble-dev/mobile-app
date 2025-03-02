@@ -12,10 +12,10 @@ import kotlin.coroutines.CoroutineContext
  * to ensure no further tasks are there.
  */
 class Debouncer(
-        private val debouncingTimeMs: Long = 500L,
-        private val triggerFirstImmediately: Boolean = false,
-        private val scope: CoroutineScope = GlobalScope,
-        private val targetContext: CoroutineContext = Dispatchers.Main.immediate
+    private val debouncingTimeMs: Long = 500L,
+    private val triggerFirstImmediately: Boolean = false,
+    private val scope: CoroutineScope = GlobalScope,
+    private val targetContext: CoroutineContext = Dispatchers.Main.immediate
 ) {
     private var previousJob: Job? = null
     private var lastStart = 0L
@@ -23,14 +23,16 @@ class Debouncer(
     fun executeDebouncing(task: suspend () -> Unit) {
         previousJob?.cancel()
 
-        previousJob = scope.launch(targetContext) {
-            if (!triggerFirstImmediately ||
-                    (System.currentTimeMillis() - lastStart) < debouncingTimeMs) {
-                delay(debouncingTimeMs)
-            }
+        previousJob =
+            scope.launch(targetContext) {
+                if (!triggerFirstImmediately ||
+                    (System.currentTimeMillis() - lastStart) < debouncingTimeMs
+                ) {
+                    delay(debouncingTimeMs)
+                }
 
-            lastStart = System.currentTimeMillis()
-            task()
-        }
+                lastStart = System.currentTimeMillis()
+                task()
+            }
     }
 }

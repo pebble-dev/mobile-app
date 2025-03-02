@@ -23,14 +23,15 @@ import timber.log.Timber
 class PebbleLEConnectorTest {
     @JvmField
     @Rule
-    val mGrantPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(
+    val mGrantPermissionRule: GrantPermissionRule =
+        GrantPermissionRule.grant(
             android.Manifest.permission.BLUETOOTH_SCAN,
             android.Manifest.permission.BLUETOOTH_CONNECT,
             android.Manifest.permission.BLUETOOTH_ADMIN,
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.ACCESS_COARSE_LOCATION,
             android.Manifest.permission.BLUETOOTH
-    )
+        )
 
     lateinit var context: Context
     lateinit var bluetoothAdapter: BluetoothAdapter
@@ -52,52 +53,62 @@ class PebbleLEConnectorTest {
     }
 
     @Test
-    fun testConnectPebble() = runBlocking {
-        withTimeout(10000) {
-            restartBluetooth(bluetoothAdapter)
-        }
-        val remoteDevice = bluetoothAdapter.getRemoteLeDevice(DEVICE_ADDRESS_LE, BluetoothDevice.ADDRESS_TYPE_RANDOM)
-        removeBond(remoteDevice)
-        val connection = remoteDevice.connectGatt(context, false)
-        assertNotNull(connection)
-        val connector = PebbleLEConnector(connection!!, context, GlobalScope)
-        val order = mutableListOf<PebbleLEConnector.ConnectorState>()
-        connector.connect().collect {
-            println(it)
-            order.add(it)
-        }
-        assertEquals(
+    fun testConnectPebble() =
+        runBlocking {
+            withTimeout(10000) {
+                restartBluetooth(bluetoothAdapter)
+            }
+            val remoteDevice =
+                bluetoothAdapter.getRemoteLeDevice(
+                    DEVICE_ADDRESS_LE,
+                    BluetoothDevice.ADDRESS_TYPE_RANDOM
+                )
+            removeBond(remoteDevice)
+            val connection = remoteDevice.connectGatt(context, false)
+            assertNotNull(connection)
+            val connector = PebbleLEConnector(connection!!, context, GlobalScope)
+            val order = mutableListOf<PebbleLEConnector.ConnectorState>()
+            connector.connect().collect {
+                println(it)
+                order.add(it)
+            }
+            assertEquals(
                 listOf(
-                        PebbleLEConnector.ConnectorState.CONNECTING,
-                        PebbleLEConnector.ConnectorState.PAIRING,
-                        PebbleLEConnector.ConnectorState.CONNECTED
+                    PebbleLEConnector.ConnectorState.CONNECTING,
+                    PebbleLEConnector.ConnectorState.PAIRING,
+                    PebbleLEConnector.ConnectorState.CONNECTED
                 ),
                 order
-        )
-        connection.close()
-    }
+            )
+            connection.close()
+        }
 
     @Test
-    fun testConnectPebbleWithBond() = runBlocking {
-        withTimeout(10000) {
-            restartBluetooth(bluetoothAdapter)
-        }
-        val remoteDevice = bluetoothAdapter.getRemoteLeDevice(DEVICE_ADDRESS_LE, BluetoothDevice.ADDRESS_TYPE_RANDOM)
-        val connection = remoteDevice.connectGatt(context, false)
-        assertNotNull(connection)
-        val connector = PebbleLEConnector(connection!!, context, GlobalScope)
-        val order = mutableListOf<PebbleLEConnector.ConnectorState>()
-        connector.connect().collect {
-            println(it)
-            order.add(it)
-        }
-        assertEquals(
+    fun testConnectPebbleWithBond() =
+        runBlocking {
+            withTimeout(10000) {
+                restartBluetooth(bluetoothAdapter)
+            }
+            val remoteDevice =
+                bluetoothAdapter.getRemoteLeDevice(
+                    DEVICE_ADDRESS_LE,
+                    BluetoothDevice.ADDRESS_TYPE_RANDOM
+                )
+            val connection = remoteDevice.connectGatt(context, false)
+            assertNotNull(connection)
+            val connector = PebbleLEConnector(connection!!, context, GlobalScope)
+            val order = mutableListOf<PebbleLEConnector.ConnectorState>()
+            connector.connect().collect {
+                println(it)
+                order.add(it)
+            }
+            assertEquals(
                 listOf(
-                        PebbleLEConnector.ConnectorState.CONNECTING,
-                        PebbleLEConnector.ConnectorState.CONNECTED
+                    PebbleLEConnector.ConnectorState.CONNECTING,
+                    PebbleLEConnector.ConnectorState.CONNECTED
                 ),
                 order
-        )
-        connection.close()
-    }
+            )
+            connection.close()
+        }
 }

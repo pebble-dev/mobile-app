@@ -12,26 +12,29 @@ import java.io.ObjectInputStream
 /**
  * Read only provider for all shared preferences from flutter
  */
-class FlutterPreferences: KoinComponent {
+class FlutterPreferences : KoinComponent {
     private val context: Context by inject()
-    private val preferences = context.getSharedPreferences(
+    private val preferences =
+        context.getSharedPreferences(
             "FlutterSharedPreferences",
-        Context.MODE_PRIVATE
-    )
+            Context.MODE_PRIVATE
+        )
 
-    val mutePhoneNotificationSounds = preferences.flow(
+    val mutePhoneNotificationSounds =
+        preferences.flow(
             KEY_MUTE_PHONE_NOTIFICATION_SOUNDS
-    ) { prefs: SharedPreferences,
-        key: String ->
-        prefs.getBoolean(key, false)
-    }
+        ) { prefs: SharedPreferences,
+            key: String ->
+            prefs.getBoolean(key, false)
+        }
 
-    val mutePhoneCallSounds = preferences.flow(
+    val mutePhoneCallSounds =
+        preferences.flow(
             KEY_MUTE_PHONE_CALL_SOUNDS
-    ) { prefs: SharedPreferences,
-        key: String ->
-        prefs.getBoolean(key, false)
-    }
+        ) { prefs: SharedPreferences,
+            key: String ->
+            prefs.getBoolean(key, false)
+        }
 
     fun shouldActivateWorkaround(workaround: WorkaroundDescriptor): Boolean {
         if (!workaround.isNeeded(context)) {
@@ -41,20 +44,22 @@ class FlutterPreferences: KoinComponent {
         return !preferences.getBoolean(KEY_PREFIX_DISABLE_WORKAROUND + workaround.name, false)
     }
 
-    val masterNotificationsToggle = preferences.flow(
+    val masterNotificationsToggle =
+        preferences.flow(
             KEY_MASTER_NOTIFICATION_TOGGLE
-    ) { prefs: SharedPreferences,
-        key: String ->
-        prefs.getBoolean(key, true)
-    }
+        ) { prefs: SharedPreferences,
+            key: String ->
+            prefs.getBoolean(key, true)
+        }
 
-    val mutedNotifPackages = preferences.flow(
+    val mutedNotifPackages =
+        preferences.flow(
             KEY_MUTED_NOTIF_PACKAGES
-    ) { prefs: SharedPreferences,
-        key: String ->
-        val list = prefs.getString(key, null)
-        if (list != null) return@flow decodeList(list) else return@flow null
-    }
+        ) { prefs: SharedPreferences,
+            key: String ->
+            val list = prefs.getString(key, null)
+            if (list != null) return@flow decodeList(list) else return@flow null
+        }
 }
 
 private fun decodeList(encodedList: String): List<String>? {

@@ -11,8 +11,8 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 fun BasicMessageChannel<Any>.setCoroutineMessageHandler(
-        coroutineScope: CoroutineScope,
-        block: suspend (Any?) -> Any?
+    coroutineScope: CoroutineScope,
+    block: suspend (Any?) -> Any?
 ) {
     setMessageHandler { message, reply ->
         // Replies must be sent through UI thread
@@ -31,15 +31,16 @@ fun BasicMessageChannel<Any>.setCoroutineMessageHandler(
  */
 @Deprecated("Use native pigeon's support for @async and wrap it with launchPigeonResult")
 fun BinaryMessenger.registerAsyncPigeonCallback(
-        coroutineScope: CoroutineScope,
-        callName: String,
-        callback: suspend (rawMessage: HashMap<*, *>?) -> Map<*, *>
+    coroutineScope: CoroutineScope,
+    callName: String,
+    callback: suspend (rawMessage: HashMap<*, *>?) -> Map<*, *>
 ) {
-    val channel = BasicMessageChannel(
+    val channel =
+        BasicMessageChannel(
             this,
             callName,
             StandardMessageCodec()
-    )
+        )
     channel.setCoroutineMessageHandler(coroutineScope) { rawMessage ->
         @Suppress("UNCHECKED_CAST")
         val result = callback(rawMessage as HashMap<*, *>?)
@@ -54,9 +55,11 @@ fun BinaryMessenger.registerAsyncPigeonCallback(
 
 val voidResult: Map<*, *> = mapOf("result" to null)
 
-fun <T> CoroutineScope.launchPigeonResult(result: Pigeons.Result<T>,
-                                          coroutineContext: CoroutineContext = EmptyCoroutineContext,
-                                          callback: suspend () -> T) {
+fun <T> CoroutineScope.launchPigeonResult(
+    result: Pigeons.Result<T>,
+    coroutineContext: CoroutineContext = EmptyCoroutineContext,
+    callback: suspend () -> T
+) {
     launch(coroutineContext) {
         try {
             val callbackResult = callback()

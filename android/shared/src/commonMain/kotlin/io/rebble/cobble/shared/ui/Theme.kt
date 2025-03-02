@@ -10,25 +10,28 @@ import androidx.compose.ui.graphics.Color
 
 @Immutable
 data class Theme(
-        val materialColors: ColorScheme,
+    val materialColors: ColorScheme
 ) {
-
     companion object {
-        val dark = Theme(
-                materialColors = darkColorScheme(
+        val dark =
+            Theme(
+                materialColors =
+                    darkColorScheme(
                         primary = Color(0xFFF9A285),
                         background = Color(0xFF333333),
-                        surface = Color(0xFF414141),
-                )
-        )
+                        surface = Color(0xFF414141)
+                    )
+            )
 
-        val light = Theme(
-                materialColors = lightColorScheme(
+        val light =
+            Theme(
+                materialColors =
+                    lightColorScheme(
                         primary = Color(0xFFCD3100),
                         background = Color(0xFFF0F0F0),
-                        surface = Color(0xFFFAFAFA),
-                )
-        )
+                        surface = Color(0xFFFAFAFA)
+                    )
+            )
     }
 }
 

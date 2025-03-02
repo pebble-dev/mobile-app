@@ -24,7 +24,7 @@ class FlutterActivityModule {
     @Provides
     fun provideFlutterEngine(mainActivity: FlutterMainActivity): FlutterEngine {
         return mainActivity.flutterEngine
-                ?: error("Flutter engine should be initialized before creating flutter bridges")
+            ?: error("Flutter engine should be initialized before creating flutter bridges")
     }
 
     @Provides
@@ -35,7 +35,7 @@ class FlutterActivityModule {
     @Provides
     @PerActivity
     fun provideBridgeLifecycleController(
-            binaryMessenger: BinaryMessenger,
-            coroutineScope: CoroutineScope
+        binaryMessenger: BinaryMessenger,
+        coroutineScope: CoroutineScope
     ) = BridgeLifecycleController(binaryMessenger, coroutineScope)
 }

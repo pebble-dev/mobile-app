@@ -2,7 +2,7 @@ package io.rebble.cobble.shared.domain.appmessage
 
 import kotlinx.atomicfu.atomic
 
-class AppMessageTransactionSequence: Sequence<UByte> {
+class AppMessageTransactionSequence : Sequence<UByte> {
     private val sequence = atomic(0)
 
     override fun iterator(): Iterator<UByte> {
@@ -11,11 +11,11 @@ class AppMessageTransactionSequence: Sequence<UByte> {
         }
         return object : Iterator<UByte> {
             override fun hasNext(): Boolean = true
+
             override fun next(): UByte {
                 sequence.compareAndSet(0x100, 0)
                 return (sequence.getAndIncrement() and 0xff).toUByte()
             }
         }
     }
-
 }

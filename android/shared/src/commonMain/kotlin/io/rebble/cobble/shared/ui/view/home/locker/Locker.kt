@@ -20,11 +20,16 @@ import org.koin.compose.getKoin
 
 enum class LockerTabs(val label: String, val navRoute: String) {
     Watchfaces("My watch faces", Routes.Home.LOCKER_WATCHFACES),
-    Apps("My apps", Routes.Home.LOCKER_APPS),
+    Apps("My apps", Routes.Home.LOCKER_APPS)
 }
 
 @Composable
-fun Locker(page: LockerTabs, lockerDao: LockerDao = getKoin().get(), viewModel: LockerViewModel = viewModel { LockerViewModel(lockerDao) }, onTabChanged: (LockerTabs) -> Unit) {
+fun Locker(
+    page: LockerTabs,
+    lockerDao: LockerDao = getKoin().get(),
+    viewModel: LockerViewModel = viewModel { LockerViewModel(lockerDao) },
+    onTabChanged: (LockerTabs) -> Unit
+) {
     val entriesState: LockerViewModel.LockerEntriesState by viewModel.entriesState.collectAsState()
     val modalSheetState by viewModel.modalSheetState.collectAsState()
     val watchIsConnected by viewModel.watchIsConnected.collectAsState()
@@ -38,34 +43,38 @@ fun Locker(page: LockerTabs, lockerDao: LockerDao = getKoin().get(), viewModel: 
             Row(modifier = Modifier.fillMaxWidth().height(64.dp)) {
                 if (searching) {
                     TextField(
-                            value = searchQuery ?: "",
-                            onValueChange = { viewModel.searchQuery.value = it },
-                            label = { Text("Search") },
-                            modifier = Modifier.fillMaxWidth().padding(8.dp)
-                                    .focusRequester(focusRequester)
-                                    .onGloballyPositioned {
-                                        focusRequester.requestFocus()
-                                    },
-                            singleLine = true,
-                            trailingIcon = {
-                                IconButton(
-                                        onClick = {
-                                            viewModel.searchQuery.value = null
-                                            setSearching(false)
-                                        },
-                                        modifier = Modifier.align(CenterVertically),
-                                        content = {
-                                            Icon(Icons.Default.Close, contentDescription = "Clear search")
-                                        },
-                                )
-                            }
+                        value = searchQuery ?: "",
+                        onValueChange = { viewModel.searchQuery.value = it },
+                        label = { Text("Search") },
+                        modifier =
+                            Modifier.fillMaxWidth().padding(8.dp)
+                                .focusRequester(focusRequester)
+                                .onGloballyPositioned {
+                                    focusRequester.requestFocus()
+                                },
+                        singleLine = true,
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
+                                    viewModel.searchQuery.value = null
+                                    setSearching(false)
+                                },
+                                modifier = Modifier.align(CenterVertically),
+                                content = {
+                                    Icon(
+                                        Icons.Default.Close,
+                                        contentDescription = "Clear search"
+                                    )
+                                }
+                            )
+                        }
                     )
                 } else {
                     LockerTabs.entries.forEachIndexed { index, it ->
                         NavigationBarItem(
-                                selected = page == it,
-                                onClick = { onTabChanged(it) },
-                                icon = { Text(it.label) },
+                            selected = page == it,
+                            onClick = { onTabChanged(it) },
+                            icon = { Text(it.label) }
                         )
                     }
                 }
@@ -76,11 +85,17 @@ fun Locker(page: LockerTabs, lockerDao: LockerDao = getKoin().get(), viewModel: 
             is LockerViewModel.LockerEntriesState.Loaded -> {
                 when (page) {
                     LockerTabs.Apps -> {
-                        LockerAppList(viewModel, onOpenModalSheet = { viewModel.openModalSheet(it) })
+                        LockerAppList(
+                            viewModel,
+                            onOpenModalSheet = { viewModel.openModalSheet(it) }
+                        )
                     }
 
                     LockerTabs.Watchfaces -> {
-                        LockerWatchfaceList(viewModel, onOpenModalSheet = { viewModel.openModalSheet(it) })
+                        LockerWatchfaceList(
+                            viewModel,
+                            onOpenModalSheet = { viewModel.openModalSheet(it) }
+                        )
                     }
                 }
             }
@@ -94,6 +109,8 @@ fun Locker(page: LockerTabs, lockerDao: LockerDao = getKoin().get(), viewModel: 
     }
     if (modalSheetState is LockerViewModel.ModalSheetState.Open) {
         val sheetViewModel = (modalSheetState as LockerViewModel.ModalSheetState.Open).viewModel
-        LockerItemSheet(onDismissRequest = { viewModel.closeModalSheet() }, watchIsConnected = watchIsConnected, viewModel = sheetViewModel)
+        LockerItemSheet(onDismissRequest = {
+            viewModel.closeModalSheet()
+        }, watchIsConnected = watchIsConnected, viewModel = sheetViewModel)
     }
 }

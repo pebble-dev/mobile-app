@@ -12,9 +12,10 @@ fun Lifecycle.asFlow(): Flow<Lifecycle.State> {
     return callbackFlow {
         trySend(currentState).isSuccess
 
-        val observer = LifecycleEventObserver { _, _ ->
-            trySend(currentState).isSuccess
-        }
+        val observer =
+            LifecycleEventObserver { _, _ ->
+                trySend(currentState).isSuccess
+            }
 
         addObserver(observer)
 

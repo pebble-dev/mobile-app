@@ -8,25 +8,29 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class NotificationsFlutterBridge @Inject constructor(
+class NotificationsFlutterBridge
+    @Inject
+    constructor(
         bridgeLifecycleController: BridgeLifecycleController,
         private val coroutineScope: CoroutineScope,
-        private val cachedPackageInfoDao: CachedPackageInfoDao,
-) : FlutterBridge, Pigeons.NotificationsControl {
-    init {
-        bridgeLifecycleController.setupControl(Pigeons.NotificationsControl::setup, this)
-    }
+        private val cachedPackageInfoDao: CachedPackageInfoDao
+    ) : FlutterBridge, Pigeons.NotificationsControl {
+        init {
+            bridgeLifecycleController.setupControl(Pigeons.NotificationsControl::setup, this)
+        }
 
-    override fun getNotificationPackages(result: Pigeons.Result<MutableList<Pigeons.NotifyingPackage>>) {
-        coroutineScope.launch {
-            result.success(
+        override fun getNotificationPackages(
+            result: Pigeons.Result<MutableList<Pigeons.NotifyingPackage>>
+        ) {
+            coroutineScope.launch {
+                result.success(
                     cachedPackageInfoDao.getAll().map {
                         Pigeons.NotifyingPackage.Builder()
-                                .setPackageId(it.id)
-                                .setPackageName(it.name)
-                                .build()
+                            .setPackageId(it.id)
+                            .setPackageName(it.name)
+                            .build()
                     }.toMutableList()
-            )
+                )
+            }
         }
     }
-}

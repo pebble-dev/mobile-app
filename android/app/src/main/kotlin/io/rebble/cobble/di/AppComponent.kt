@@ -19,30 +19,43 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [
-    AppModule::class
-])
+@Component(
+    modules = [
+        AppModule::class
+    ]
+)
 interface AppComponent {
     fun createBlueCommon(): DeviceTransport
 
     fun createExceptionHandler(): GlobalExceptionHandler
+
     fun createConnectionLooper(): ConnectionLooper
+
     fun createPairedStorage(): PairedStorage
+
     fun initServiceLifecycleControl(): ServiceLifecycleControl
+
     fun initNotificationChannels(): NotificationChannelManager
 
     fun createActivitySubcomponentFactory(): ActivitySubcomponent.Factory
+
     fun createFlutterActivitySubcomponentFactory(): FlutterActivitySubcomponent.Factory
 
-    //TODO: Unify DI under Koin
+    // TODO: Unify DI under Koin
     fun createKMPCalendarSync(): CalendarSync
+
     fun createKMPPrefs(): KMPPrefs
+
     fun createActiveNotifsState(): MutableStateFlow<Map<Uuid, StatusBarNotification>>
+
     fun createNotificationChannelDao(): NotificationChannelDao
+
     fun createAndroidJobScheduler(): AndroidJobScheduler
 
     @Component.Factory
     interface Factory {
-        fun build(@BindsInstance application: Application): AppComponent
+        fun build(
+            @BindsInstance application: Application
+        ): AppComponent
     }
 }

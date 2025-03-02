@@ -8,17 +8,17 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ActivePebbleWatchInfo(
-        val platform: String,
-        val model: String,
-        val language: String,
-        val firmware: FirmwareVersion
+    val platform: String,
+    val model: String,
+    val language: String,
+    val firmware: FirmwareVersion
 ) {
     @Serializable
     data class FirmwareVersion(
-            val major: Int,
-            val minor: Int,
-            val patch: Int,
-            val suffix: String
+        val major: Int,
+        val minor: Int,
+        val patch: Int,
+        val suffix: String
     )
 }
 
@@ -29,14 +29,15 @@ fun ActivePebbleWatchInfo.Companion.fromDevice(device: PebbleDevice): ActivePebb
     val color = PebbleWatchModel.fromProtocolNumber(modelId)
     val parsedFwVersion = metadata.running.parsed()
     return ActivePebbleWatchInfo(
-            platform = platform?.watchType?.codename ?: "unknown",
-            model = color.jsName,
-            language = metadata.language.get(),
-            firmware = ActivePebbleWatchInfo.FirmwareVersion(
-                    major = parsedFwVersion.major,
-                    minor = parsedFwVersion.minor,
-                    patch = parsedFwVersion.patch,
-                    suffix = parsedFwVersion.suffix
+        platform = platform?.watchType?.codename ?: "unknown",
+        model = color.jsName,
+        language = metadata.language.get(),
+        firmware =
+            ActivePebbleWatchInfo.FirmwareVersion(
+                major = parsedFwVersion.major,
+                minor = parsedFwVersion.minor,
+                patch = parsedFwVersion.patch,
+                suffix = parsedFwVersion.suffix
             )
     )
 }

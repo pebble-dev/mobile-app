@@ -14,11 +14,18 @@ import androidx.compose.ui.graphics.isUnspecified
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun AppIconContainer(color: Color = Color.Unspecified, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+fun AppIconContainer(
+    color: Color = Color.Unspecified,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
     val background = remember { if (color.isUnspecified) randomColor() else color }
     Box(
-            modifier = Modifier.clip(RoundedCornerShape(8.dp)).background(background).size(48.dp).then(modifier),
-            contentAlignment = Alignment.Center
+        modifier =
+            Modifier.clip(
+                RoundedCornerShape(8.dp)
+            ).background(background).size(48.dp).then(modifier),
+        contentAlignment = Alignment.Center
     ) {
         content()
     }
@@ -26,10 +33,10 @@ fun AppIconContainer(color: Color = Color.Unspecified, modifier: Modifier = Modi
 
 fun randomColor(): Color {
     return listOf(
-            Color(0xFF41CBF7),
-            Color(0xFF008DFF),
-            Color(0xFF00A982),
-            Color(0xFFFFFF00),
-            Color(0xFF6B1D97)
+        Color(0xFF41CBF7),
+        Color(0xFF008DFF),
+        Color(0xFF00A982),
+        Color(0xFFFFFF00),
+        Color(0xFF6B1D97)
     ).random()
 }

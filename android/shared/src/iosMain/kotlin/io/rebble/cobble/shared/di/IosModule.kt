@@ -7,23 +7,25 @@ import io.rebble.cobble.shared.handlers.*
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-val iosModule = module {
-    factory<PlatformContext> {
-        IOSPlatformContext()
-    }
-    single { createDataStore() }
+val iosModule =
+    module {
+        factory<PlatformContext> {
+            IOSPlatformContext()
+        }
+        single { createDataStore() }
 
-    factory<Set<CobbleHandler>>(named("deviceHandlers")) { params ->
-        get<Set<CobbleHandler>>(named("negotiationDeviceHandlers")) + setOf(
-                AppRunStateHandler(params.get()),
-                AppInstallHandler(params.get()),
-                CalendarActionHandler(params.get())
-        )
-    }
+        factory<Set<CobbleHandler>>(named("deviceHandlers")) { params ->
+            get<Set<CobbleHandler>>(named("negotiationDeviceHandlers")) +
+                setOf(
+                    AppRunStateHandler(params.get()),
+                    AppInstallHandler(params.get()),
+                    CalendarActionHandler(params.get())
+                )
+        }
 
-    factory<Set<CobbleHandler>>(named("negotiationDeviceHandlers")) { params ->
-        setOf(
+        factory<Set<CobbleHandler>>(named("negotiationDeviceHandlers")) { params ->
+            setOf(
                 SystemHandler(params.get())
-        )
+            )
+        }
     }
-}

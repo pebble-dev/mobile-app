@@ -12,31 +12,37 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class DebugFlutterBridge @Inject constructor(
-    private val context: Context,
-    private val prefs: KMPPrefs,
-    private val globalExceptionHandler: GlobalExceptionHandler,
-    bridgeLifecycleController: BridgeLifecycleController
-) : FlutterBridge, Pigeons.DebugControl {
-    private val scope = CoroutineScope(Dispatchers.Main + globalExceptionHandler)
-    init {
-        bridgeLifecycleController.setupControl(Pigeons.DebugControl::setup, this)
-    }
+class DebugFlutterBridge
+    @Inject
+    constructor(
+        private val context: Context,
+        private val prefs: KMPPrefs,
+        private val globalExceptionHandler: GlobalExceptionHandler,
+        bridgeLifecycleController: BridgeLifecycleController
+    ) : FlutterBridge, Pigeons.DebugControl {
+        private val scope = CoroutineScope(Dispatchers.Main + globalExceptionHandler)
 
-    override fun collectLogs(rwsId: String) {
-        collectAndShareLogs(context, rwsId)
-    }
+        init {
+            bridgeLifecycleController.setupControl(Pigeons.DebugControl::setup, this)
+        }
 
-    override fun getSensitiveLoggingEnabled(result: Pigeons.Result<Boolean>) {
-        scope.launch {
-            result.success(prefs.sensitiveDataLoggingEnabled.first())
+        override fun collectLogs(rwsId: String) {
+            collectAndShareLogs(context, rwsId)
+        }
+
+        override fun getSensitiveLoggingEnabled(result: Pigeons.Result<Boolean>) {
+            scope.launch {
+                result.success(prefs.sensitiveDataLoggingEnabled.first())
+            }
+        }
+
+        override fun setSensitiveLoggingEnabled(
+            enabled: Boolean,
+            result: Pigeons.Result<Void>
+        ) {
+            scope.launch {
+                prefs.setSensitiveDataLoggingEnabled(enabled)
+                result.success(null)
+            }
         }
     }
-
-    override fun setSensitiveLoggingEnabled(enabled: Boolean, result: Pigeons.Result<Void>) {
-        scope.launch {
-            prefs.setSensitiveDataLoggingEnabled(enabled)
-            result.success(null)
-        }
-    }
-}

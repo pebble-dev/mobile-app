@@ -11,7 +11,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlin.random.Random
 
 class DeviceLogController(
-        private val device: PebbleDevice
+    private val device: PebbleDevice
 ) {
     private val deviceLogsService = device.logDumpService
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -24,7 +24,8 @@ class DeviceLogController(
      */
     suspend fun requestLogDump(generation: Int = 0): Flow<LogDump.ReceivedLogDumpMessage> {
         val cookie = Random.Default.nextInt().toUInt()
-        val flow = deviceLogsService.receivedMessages.receiveAsFlow()
+        val flow =
+            deviceLogsService.receivedMessages.receiveAsFlow()
                 .onStart {
                     mutex.lock()
                 }
@@ -38,7 +39,7 @@ class DeviceLogController(
                     mutex.unlock()
                 }
         deviceLogsService.send(
-                LogDump.RequestLogDump(generation.toUByte(), cookie)
+            LogDump.RequestLogDump(generation.toUByte(), cookie)
         )
         return flow
     }

@@ -9,7 +9,9 @@ actual fun log(
     throwable: Throwable?
 ) {
     val caller = Throwable().stackTrace[3]
-    Timber.tag("${caller.className.split(".").last()}$${caller.methodName}").log(level.toTimber(), throwable, message)
+    Timber.tag(
+        "${caller.className.split(".").last()}$${caller.methodName}"
+    ).log(level.toTimber(), throwable, message)
 }
 
 private fun LogLevel.toTimber(): Int {

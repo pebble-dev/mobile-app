@@ -18,6 +18,6 @@ object PermissionChangeBus {
 
 fun PermissionChangeBus.notificationPermissionFlow(context: Context): Flow<Boolean> {
     return (permissionChangeFlow.onStart { emit(Unit) })
-            .map { context.hasNotificationAccessPermission() }
-            .distinctUntilChanged()
+        .map { context.hasNotificationAccessPermission() }
+        .distinctUntilChanged()
 }

@@ -30,13 +30,20 @@ import org.koin.core.qualifier.named
 
 open class PebbleDevice(
     metadata: WatchVersion.WatchVersionResponse?,
-    val address: String,
-): KoinComponent, AutoCloseable {
-    private val negotiationHandlers: Set<CobbleHandler> by inject(named("negotiationDeviceHandlers")) { parametersOf(this as PebbleDevice) }
-    private val handlers: Set<CobbleHandler> by inject(named("deviceHandlers")) { parametersOf(this as PebbleDevice) }
+    val address: String
+) : KoinComponent, AutoCloseable {
+    private val negotiationHandlers: Set<CobbleHandler> by inject(
+        named("negotiationDeviceHandlers")
+    ) {
+        parametersOf(this as PebbleDevice)
+    }
+    private val handlers: Set<CobbleHandler> by inject(named("deviceHandlers")) {
+        parametersOf(this as PebbleDevice)
+    }
 
     val protocolHandler: ProtocolHandler by inject()
-    val negotiationScope = CoroutineScope(Dispatchers.Default + CoroutineName("NegotationScope-$address"))
+    val negotiationScope =
+        CoroutineScope(Dispatchers.Default + CoroutineName("NegotationScope-$address"))
     val metadata: MutableStateFlow<WatchVersion.WatchVersionResponse?> = MutableStateFlow(metadata)
     val modelId: MutableStateFlow<Int?> = MutableStateFlow(null)
     val connectionScope: MutableStateFlow<CoroutineScope?> = MutableStateFlow(null)
@@ -50,31 +57,33 @@ open class PebbleDevice(
 
     override fun toString(): String = "< PebbleDevice address=$address >"
 
-    //TODO: Move to per-protocol handler services, so we can have multiple PebbleDevices, this is the first of many
-    val appRunStateService: AppRunStateService by inject {parametersOf(protocolHandler)}
-    val blobDBService: BlobDBService by inject {parametersOf(protocolHandler)}
-    val appMessageService: AppMessageService by inject {parametersOf(protocolHandler)}
-    val musicService: MusicService by inject {parametersOf(protocolHandler)}
-    val putBytesService: PutBytesService by inject {parametersOf(protocolHandler)}
-    val phoneControlService: PhoneControlService by inject {parametersOf(protocolHandler)}
-    val appLogsService: AppLogService by inject {parametersOf(protocolHandler)}
-    val logDumpService: LogDumpService by inject {parametersOf(protocolHandler)}
-    val screenshotService: ScreenshotService by inject {parametersOf(protocolHandler)}
-    val timelineService: TimelineService by inject {parametersOf(protocolHandler)}
-    val appFetchService: AppFetchService by inject {parametersOf(protocolHandler)}
-    val voiceService: VoiceService by inject {parametersOf(protocolHandler)}
-    val audioStreamService: AudioStreamService by inject {parametersOf(protocolHandler)}
-    val systemService: SystemService by inject {parametersOf(protocolHandler)}
+    // TODO: Move to per-protocol handler services, so we can have multiple PebbleDevices, this is the first of many
+    val appRunStateService: AppRunStateService by inject { parametersOf(protocolHandler) }
+    val blobDBService: BlobDBService by inject { parametersOf(protocolHandler) }
+    val appMessageService: AppMessageService by inject { parametersOf(protocolHandler) }
+    val musicService: MusicService by inject { parametersOf(protocolHandler) }
+    val putBytesService: PutBytesService by inject { parametersOf(protocolHandler) }
+    val phoneControlService: PhoneControlService by inject { parametersOf(protocolHandler) }
+    val appLogsService: AppLogService by inject { parametersOf(protocolHandler) }
+    val logDumpService: LogDumpService by inject { parametersOf(protocolHandler) }
+    val screenshotService: ScreenshotService by inject { parametersOf(protocolHandler) }
+    val timelineService: TimelineService by inject { parametersOf(protocolHandler) }
+    val appFetchService: AppFetchService by inject { parametersOf(protocolHandler) }
+    val voiceService: VoiceService by inject { parametersOf(protocolHandler) }
+    val audioStreamService: AudioStreamService by inject { parametersOf(protocolHandler) }
+    val systemService: SystemService by inject { parametersOf(protocolHandler) }
 
-    val putBytesController: PutBytesController by inject {parametersOf(this)}
-    val timelineActionManager: TimelineActionManager by inject {parametersOf(this)}
+    val putBytesController: PutBytesController by inject { parametersOf(this) }
+    val timelineActionManager: TimelineActionManager by inject { parametersOf(this) }
 
     init {
         // This will init all the handlers by reading the lazy value causing them to be injected
         negotiationScope.launch {
             val initNHandlers = negotiationHandlers.joinToString { it::class.simpleName ?: "Unknown" }
             Logging.i("Initialised negotiation handlers: $initNHandlers")
-            ConnectionStateManager.connectionState.first { it is ConnectionState.Connected && it.watch.address == address }
+            ConnectionStateManager.connectionState.first {
+                it is ConnectionState.Connected && it.watch.address == address
+            }
             val connectionScope = connectionScope.filterNotNull().first()
             connectionScope.launch {
                 val initHandlers = handlers.joinToString { it::class.simpleName ?: "Unknown" }

@@ -102,5 +102,5 @@ enum class TimelineIcon(val protocolValue: Int) {
     AlarmClock(13),
     HeavySnow(53),
     DinnerReservation(27),
-    NotificationKakaoTalk(79),
+    NotificationKakaoTalk(79)
 }

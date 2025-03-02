@@ -19,8 +19,8 @@ import org.koin.core.component.inject
 import org.koin.core.qualifier.named
 
 class CalendarSync(
-        scope: CoroutineScope
-): AutoCloseable, KoinComponent {
+    scope: CoroutineScope
+) : AutoCloseable, KoinComponent {
     private val calendarSyncer: PhoneCalendarSyncer by inject()
     private val connectionState: StateFlow<ConnectionState> by inject(named("connectionState"))
     private val timelinePinDao: TimelinePinDao by inject()
@@ -31,15 +31,23 @@ class CalendarSync(
         Logging.d("CalendarSync init")
     }
 
-    private val watchConnectedListener = connectionState.filterIsInstance<ConnectionState.Connected>().onEach {
-        Logging.d("Watch connected, syncing calendar pins")
-        it.watch.connectionScope.value!!.launch {
-            val res = onWatchConnected(it.watch.metadata.filterNotNull().first().isUnfaithful.get() ?: false, it.watch)
-            Logging.d("Calendar sync result: $res")
-        }
-    }.launchIn(scope)
+    private val watchConnectedListener =
+        connectionState.filterIsInstance<ConnectionState.Connected>().onEach {
+            Logging.d("Watch connected, syncing calendar pins")
+            it.watch.connectionScope.value!!.launch {
+                val res =
+                    onWatchConnected(
+                        it.watch.metadata.filterNotNull().first().isUnfaithful.get() ?: false,
+                        it.watch
+                    )
+                Logging.d("Calendar sync result: $res")
+            }
+        }.launchIn(scope)
 
-    private suspend fun onWatchConnected(unfaithful: Boolean, watch: PebbleDevice): Boolean {
+    private suspend fun onWatchConnected(
+        unfaithful: Boolean,
+        watch: PebbleDevice
+    ): Boolean {
         if (unfaithful) {
             val watchTimelineSyncer = WatchTimelineSyncer(watch.blobDBService)
             Logging.d("Clearing calendar pins from watch")
@@ -71,7 +79,10 @@ class CalendarSync(
         return calendarDao.getFlow()
     }
 
-    suspend fun setCalendarEnabled(calendarId: Long, enabled: Boolean) {
+    suspend fun setCalendarEnabled(
+        calendarId: Long,
+        enabled: Boolean
+    ) {
         calendarDao.setEnabled(calendarId, enabled)
     }
 

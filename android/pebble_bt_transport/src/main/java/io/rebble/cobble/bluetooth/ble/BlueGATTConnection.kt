@@ -15,13 +15,17 @@ import kotlin.coroutines.CoroutineContext
  * @param cbTimeout the timeout for all callbacks behind the scenes before the suspend function returns null
  */
 suspend fun BluetoothDevice.connectGatt(
-        context: Context,
-        unbindOnTimeout: Boolean,
-        auto: Boolean = false,
-        cbTimeout: Long = 8000,
-        ioDispatcher: CoroutineContext = Dispatchers.IO
+    context: Context,
+    unbindOnTimeout: Boolean,
+    auto: Boolean = false,
+    cbTimeout: Long = 8000,
+    ioDispatcher: CoroutineContext = Dispatchers.IO
 ): BlueGATTConnection? {
-    return BlueGATTConnection(this, cbTimeout, ioDispatcher).connectGatt(context, auto, unbindOnTimeout)
+    return BlueGATTConnection(
+        this,
+        cbTimeout,
+        ioDispatcher
+    ).connectGatt(context, auto, unbindOnTimeout)
 }
 
 class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Long, private val ioDispatcher: CoroutineContext = Dispatchers.IO) : BluetoothGattCallback() {
@@ -57,70 +61,121 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
         fun isSuccess() = status == BluetoothGatt.GATT_SUCCESS
     }
 
-    class ConnectionStateResult(gatt: BluetoothGatt?, status: Int, val newState: Int) : StatusResult(gatt, status)
-    class CharacteristicResult(gatt: BluetoothGatt?, val characteristic: BluetoothGattCharacteristic?, val value: ByteArray? = null, status: Int = BluetoothGatt.GATT_SUCCESS) : StatusResult(gatt, status)
-    class DescriptorResult(gatt: BluetoothGatt?, val descriptor: BluetoothGattDescriptor?, status: Int = BluetoothGatt.GATT_SUCCESS, value: ByteArray? = null) : StatusResult(gatt, status)
+    class ConnectionStateResult(gatt: BluetoothGatt?, status: Int, val newState: Int) : StatusResult(
+        gatt,
+        status
+    )
+
+    class CharacteristicResult(gatt: BluetoothGatt?, val characteristic: BluetoothGattCharacteristic?, val value: ByteArray? = null, status: Int = BluetoothGatt.GATT_SUCCESS) : StatusResult(
+        gatt,
+        status
+    )
+
+    class DescriptorResult(gatt: BluetoothGatt?, val descriptor: BluetoothGattDescriptor?, status: Int = BluetoothGatt.GATT_SUCCESS, value: ByteArray? = null) : StatusResult(
+        gatt,
+        status
+    )
+
     class MTUResult(gatt: BluetoothGatt?, val mtu: Int, status: Int) : StatusResult(gatt, status)
 
-    override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
+    override fun onConnectionStateChange(
+        gatt: BluetoothGatt?,
+        status: Int,
+        newState: Int
+    ) {
         if (this.gatt?.device?.address == null || gatt?.device?.address != this.gatt!!.device.address) return
         _connectionStateChanged.value = ConnectionStateResult(gatt, status, newState)
     }
 
-    override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray) {
+    override fun onCharacteristicChanged(
+        gatt: BluetoothGatt,
+        characteristic: BluetoothGattCharacteristic,
+        value: ByteArray
+    ) {
         if (this.gatt?.device?.address == null || gatt.device?.address != this.gatt!!.device.address) return
         _characteristicChanged.value = CharacteristicResult(gatt, characteristic, value)
     }
 
-    override fun onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int) {
+    override fun onCharacteristicRead(
+        gatt: BluetoothGatt,
+        characteristic: BluetoothGattCharacteristic,
+        value: ByteArray,
+        status: Int
+    ) {
         if (this.gatt?.device?.address == null || gatt.device?.address != this.gatt!!.device.address) return
         _characteristicRead.value = CharacteristicResult(gatt, characteristic, value, status)
     }
 
-    override fun onCharacteristicWrite(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
+    override fun onCharacteristicWrite(
+        gatt: BluetoothGatt?,
+        characteristic: BluetoothGattCharacteristic?,
+        status: Int
+    ) {
         if (this.gatt?.device?.address == null || gatt?.device?.address != this.gatt!!.device.address) return
         _characteristicWritten.value = CharacteristicResult(gatt, characteristic, status = status)
     }
 
-    override fun onDescriptorRead(gatt: BluetoothGatt, descriptor: BluetoothGattDescriptor, status: Int, value: ByteArray) {
+    override fun onDescriptorRead(
+        gatt: BluetoothGatt,
+        descriptor: BluetoothGattDescriptor,
+        status: Int,
+        value: ByteArray
+    ) {
         if (this.gatt?.device?.address == null || gatt.device?.address != this.gatt!!.device.address) return
         _descriptorRead.value = DescriptorResult(gatt, descriptor, status, value)
     }
 
-    override fun onDescriptorWrite(gatt: BluetoothGatt?, descriptor: BluetoothGattDescriptor?, status: Int) {
+    override fun onDescriptorWrite(
+        gatt: BluetoothGatt?,
+        descriptor: BluetoothGattDescriptor?,
+        status: Int
+    ) {
         if (this.gatt?.device?.address == null || gatt?.device?.address != this.gatt!!.device.address) return
         _descriptorWritten.value = DescriptorResult(gatt, descriptor, status)
     }
 
-    override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
+    override fun onServicesDiscovered(
+        gatt: BluetoothGatt?,
+        status: Int
+    ) {
         if (this.gatt?.device?.address == null || gatt?.device?.address != this.gatt!!.device.address) return
         _servicesDiscovered.value = StatusResult(gatt, status)
     }
 
-    override fun onMtuChanged(gatt: BluetoothGatt?, mtu: Int, status: Int) {
+    override fun onMtuChanged(
+        gatt: BluetoothGatt?,
+        mtu: Int,
+        status: Int
+    ) {
         if (this.gatt?.device?.address == null || gatt?.device?.address != this.gatt!!.device.address) return
         _mtuChanged.value = MTUResult(gatt, mtu, status)
     }
 
     @FlowPreview
     @Throws(SecurityException::class)
-    suspend fun connectGatt(context: Context, auto: Boolean, unbondOnTimeout: Boolean = true): BlueGATTConnection? {
+    suspend fun connectGatt(
+        context: Context,
+        auto: Boolean,
+        unbondOnTimeout: Boolean = true
+    ): BlueGATTConnection? {
         var res: ConnectionStateResult? = null
         try {
             coroutineScope {
                 launch(ioDispatcher) {
-                    gatt = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                        device.connectGatt(context, auto, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_LE, BluetoothDevice.PHY_LE_1M)
-                    } else {
-                        device.connectGatt(context, auto, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_LE)
-                    }
+                    gatt =
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                            device.connectGatt(context, auto, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_LE, BluetoothDevice.PHY_LE_1M)
+                        } else {
+                            device.connectGatt(context, auto, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_LE)
+                        }
                 }
                 withTimeout(cbTimeout) {
-                    res = if (_connectionStateChanged.value != null) {
-                        _connectionStateChanged.value
-                    } else {
-                        connectionStateChanged.first()
-                    }
+                    res =
+                        if (_connectionStateChanged.value != null) {
+                            _connectionStateChanged.value
+                        } else {
+                            connectionStateChanged.first()
+                        }
                 }
             }
         } catch (e: TimeoutCancellationException) {
@@ -133,7 +188,6 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
 
                 return connectGatt(context, auto, unbondOnTimeout = false)
             }
-
 
             Timber.e("connectGatt timed out")
         }
@@ -185,10 +239,16 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
     fun getService(uuid: UUID): BluetoothGattService? = gatt!!.getService(uuid)
 
     @Throws(SecurityException::class)
-    fun setCharacteristicNotification(characteristic: BluetoothGattCharacteristic, enable: Boolean) = gatt!!.setCharacteristicNotification(characteristic, enable)
+    fun setCharacteristicNotification(
+        characteristic: BluetoothGattCharacteristic,
+        enable: Boolean
+    ) = gatt!!.setCharacteristicNotification(characteristic, enable)
 
     @Throws(SecurityException::class)
-    suspend fun writeCharacteristic(characteristic: BluetoothGattCharacteristic, value: ByteArray): CharacteristicResult? {
+    suspend fun writeCharacteristic(
+        characteristic: BluetoothGattCharacteristic,
+        value: ByteArray
+    ): CharacteristicResult? {
         characteristic.value = value
         if (!gatt!!.writeCharacteristic(characteristic)) return null
         var result: CharacteristicResult? = null
@@ -203,7 +263,9 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
     }
 
     @Throws(SecurityException::class)
-    suspend fun readCharacteristic(characteristic: BluetoothGattCharacteristic): CharacteristicResult? {
+    suspend fun readCharacteristic(
+        characteristic: BluetoothGattCharacteristic
+    ): CharacteristicResult? {
         if (!gatt!!.readCharacteristic(characteristic)) return null
         var result: CharacteristicResult? = null
         try {
@@ -217,13 +279,20 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
     }
 
     @Throws(SecurityException::class)
-    suspend fun writeDescriptor(descriptor: BluetoothGattDescriptor, value: ByteArray): DescriptorResult? {
+    suspend fun writeDescriptor(
+        descriptor: BluetoothGattDescriptor,
+        value: ByteArray
+    ): DescriptorResult? {
         descriptor.value = value
         if (!gatt!!.writeDescriptor(descriptor)) return null
         var result: DescriptorResult? = null
         try {
             withTimeout(cbTimeout) {
-                result = descriptorWritten.first { a -> a.descriptor?.uuid == descriptor.uuid && a.descriptor?.characteristic?.uuid == descriptor.characteristic.uuid }
+                result =
+                    descriptorWritten.first {
+                            a ->
+                        a.descriptor?.uuid == descriptor.uuid && a.descriptor?.characteristic?.uuid == descriptor.characteristic.uuid
+                    }
             }
         } catch (e: TimeoutCancellationException) {
             Timber.e("writeDescriptor timed out")
@@ -252,7 +321,11 @@ class BlueGATTConnection(val device: BluetoothDevice, private val cbTimeout: Lon
             withTimeout(cbTimeout) {
                 var result: ConnectionStateResult? = null
                 while (result == null) {
-                    result = connectionStateChanged.first { a -> a.newState == BluetoothGatt.STATE_DISCONNECTED }
+                    result =
+                        connectionStateChanged.first {
+                                a ->
+                            a.newState == BluetoothGatt.STATE_DISCONNECTED
+                        }
                 }
             }
         } catch (e: TimeoutCancellationException) {

@@ -34,8 +34,10 @@ import java.time.format.DateTimeFormatter
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-
-private fun generateDebugInfo(context: Context, rwsId: String): String {
+private fun generateDebugInfo(
+    context: Context,
+    rwsId: String
+): String {
     val commitHash = BuildConfig.COMMIT_HASH
     val branchName = BuildConfig.BRANCH_NAME
     val sdkVersion = Build.VERSION.SDK_INT
@@ -49,42 +51,44 @@ private fun generateDebugInfo(context: Context, rwsId: String): String {
     val connectionState = connectionLooper.connectionState.value
 
     val watchMeta = ConnectionStateManager.connectionState.value.watchOrNull?.metadata?.value
-    val watchModel = watchMeta?.running?.hardwarePlatform?.get()?.let {
-        WatchHardwarePlatform.fromProtocolNumber(it)
-    }
+    val watchModel =
+        watchMeta?.running?.hardwarePlatform?.get()?.let {
+            WatchHardwarePlatform.fromProtocolNumber(it)
+        }
     val watchVersionTag = watchMeta?.running?.versionTag?.get()
     val watchIsRecovery = watchMeta?.running?.isRecovery?.get()
 
-
-    val associatedDevices = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val deviceManager = context.getSystemService(CompanionDeviceManager::class.java)
-        deviceManager.associations
-    } else {
-        null
-    }
-    val allowedPermissions = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)
+    val associatedDevices =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val deviceManager = context.getSystemService(CompanionDeviceManager::class.java)
+            deviceManager.associations
+        } else {
+            null
+        }
+    val allowedPermissions =
+        context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)
             .requestedPermissions?.map {
                 it to (context.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED)
             }
     return """
-    Commit Hash: $commitHash
-    Branch Name: $branchName
-    SDK Version: $sdkVersion
-    Device: $device
-    Model: $model
-    Product: $product
-    Manufacturer: $manufacturer
-    Connection State: $connectionState
-    Associated devices: $associatedDevices
-    Watch Model: $watchModel
-    Watch Version Tag: $watchVersionTag
-    Watch Is Recovery: $watchIsRecovery
-    RWS ID:
-    $rwsId
-    Allowed Permissions:
-    ${allowedPermissions?.joinToString("\n") { (permission, result) -> "$permission: $result" }}
-    Notification listening enabled: ${context.hasNotificationAccessPermission()}
-    """.trimIndent()
+        Commit Hash: $commitHash
+        Branch Name: $branchName
+        SDK Version: $sdkVersion
+        Device: $device
+        Model: $model
+        Product: $product
+        Manufacturer: $manufacturer
+        Connection State: $connectionState
+        Associated devices: $associatedDevices
+        Watch Model: $watchModel
+        Watch Version Tag: $watchVersionTag
+        Watch Is Recovery: $watchIsRecovery
+        RWS ID:
+        $rwsId
+        Allowed Permissions:
+        ${allowedPermissions?.joinToString("\n") { (permission, result) -> "$permission: $result" }}
+        Notification listening enabled: ${context.hasNotificationAccessPermission()}
+        """.trimIndent()
 }
 
 private suspend fun getDeviceLogs(deviceLogController: DeviceLogController): List<String>? {
@@ -94,25 +98,28 @@ private suspend fun getDeviceLogs(deviceLogController: DeviceLogController): Lis
         return null
     }
     return flow.filterIsInstance<LogDump.LogLine>()
-            .map {
-                "${it.timestamp.get()} ${it.filename.get()}:${it.line.get()} ${it.level.get()} ${it.messageText.get()}"
-            }.toList()
+        .map {
+            "${it.timestamp.get()} ${it.filename.get()}:${it.line.get()} ${it.level.get()} ${it.messageText.get()}"
+        }.toList()
 }
 
 /**
  * This should be eventually moved to flutter. Written it in Kotlin for now so we can use it while
  * testing other things.
  */
-fun collectAndShareLogs(context: Context, rwsId: String) = GlobalScope.launch(Dispatchers.IO) {
+fun collectAndShareLogs(
+    context: Context,
+    rwsId: String
+) = GlobalScope.launch(Dispatchers.IO) {
     val logsFolder = File(context.cacheDir, "logs")
     val date = LocalDateTime.now(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_DATE_TIME)
-    val targetFile = File(logsFolder, "logs-${date}.zip")
+    val targetFile = File(logsFolder, "logs-$date.zip")
 
     var zipOutputStream: ZipOutputStream? = null
     val debugInfo = generateDebugInfo(context, rwsId)
     val device = ConnectionStateManager.connectionState.value.watchOrNull
-    val deviceLogController = device?.let {DeviceLogController(it)}
-    val deviceLogs = deviceLogController?.let {getDeviceLogs(it)}
+    val deviceLogController = device?.let { DeviceLogController(it) }
+    val deviceLogs = deviceLogController?.let { getDeviceLogs(it) }
     try {
         zipOutputStream = ZipOutputStream(FileOutputStream(targetFile))
         for (file in logsFolder.listFiles() ?: emptyArray()) {
@@ -157,9 +164,12 @@ fun collectAndShareLogs(context: Context, rwsId: String) = GlobalScope.launch(Di
         activityIntent.putExtra(Intent.EXTRA_STREAM, targetUri)
         activityIntent.setType("application/octet-stream")
 
-        activityIntent.clipData = ClipData.newUri(context.contentResolver,
+        activityIntent.clipData =
+            ClipData.newUri(
+                context.contentResolver,
                 "Cobble Logs",
-                targetUri)
+                targetUri
+            )
 
         activityIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 

@@ -11,11 +11,11 @@ import io.rebble.cobble.di.bridges.UiBridgesModule
 
 @PerActivity
 @Subcomponent(
-        modules = [
-            FlutterActivityModule::class,
-            CommonBridgesModule::class,
-            UiBridgesModule::class,
-        ]
+    modules = [
+        FlutterActivityModule::class,
+        CommonBridgesModule::class,
+        UiBridgesModule::class
+    ]
 )
 interface FlutterActivitySubcomponent {
     @CommonBridge
@@ -26,6 +26,8 @@ interface FlutterActivitySubcomponent {
 
     @Subcomponent.Factory
     interface Factory {
-        fun create(@BindsInstance mainActivity: FlutterMainActivity): FlutterActivitySubcomponent
+        fun create(
+            @BindsInstance mainActivity: FlutterMainActivity
+        ): FlutterActivitySubcomponent
     }
 }

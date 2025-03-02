@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TimelineTokenResponse(
-        val token: String,
-        val uuid: String
+    val token: String,
+    val uuid: String
 )

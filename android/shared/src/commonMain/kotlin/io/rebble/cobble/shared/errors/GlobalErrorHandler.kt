@@ -8,8 +8,11 @@ import kotlin.coroutines.CoroutineContext
 /**
  * Global exception handler for all coroutines in the app
  */
-class GlobalExceptionHandler: CoroutineExceptionHandler {
-    override fun handleException(context: CoroutineContext, exception: Throwable) {
+class GlobalExceptionHandler : CoroutineExceptionHandler {
+    override fun handleException(
+        context: CoroutineContext,
+        exception: Throwable
+    ) {
         if (exception is CancellationException) {
             return
         }

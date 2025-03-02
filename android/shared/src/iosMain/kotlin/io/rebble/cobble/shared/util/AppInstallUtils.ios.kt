@@ -16,7 +16,10 @@ actual fun getPbwManifest(
 /**
  * @throws IllegalStateException if pbw does not contain manifest with that watch type
  */
-actual fun requirePbwManifest(pbwFile: File, watchType: WatchType): PbwManifest {
+actual fun requirePbwManifest(
+    pbwFile: File,
+    watchType: WatchType
+): PbwManifest {
     TODO()
 }
 
@@ -30,10 +33,18 @@ actual fun requirePbwAppInfo(pbwFile: File): PbwAppInfo {
 /**
  * @throws IllegalStateException if pbw does not contain manifest with that watch type
  */
-actual fun requirePbwBinaryBlob(pbwFile: File, watchType: WatchType, blobName: String): Source {
+actual fun requirePbwBinaryBlob(
+    pbwFile: File,
+    watchType: WatchType,
+    blobName: String
+): Source {
     TODO("Not yet implemented")
 }
 
-actual fun getPbwJsFilePath(context: PlatformContext, pbwAppInfo: PbwAppInfo, pbwFile: File): String? {
+actual fun getPbwJsFilePath(
+    context: PlatformContext,
+    pbwAppInfo: PbwAppInfo,
+    pbwFile: File
+): String? {
     TODO()
 }

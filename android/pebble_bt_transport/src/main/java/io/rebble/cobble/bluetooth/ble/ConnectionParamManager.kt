@@ -19,12 +19,25 @@ class ConnectionParamManager(val gatt: BlueGATTConnection) {
             if (service == null) {
                 Timber.e("Pairing service null")
             } else {
-                val characteristic = service.getCharacteristic(UUID.fromString(LEConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC))
+                val characteristic =
+                    service.getCharacteristic(
+                        UUID.fromString(LEConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC)
+                    )
                 if (characteristic == null) {
                     Timber.e("Conn params characteristic null")
                 } else {
-                    val configDescriptor = characteristic.getDescriptor(UUID.fromString(LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR))
-                    if (gatt.readDescriptor(configDescriptor)?.descriptor?.value.contentEquals(LEConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)) {
+                    val configDescriptor =
+                        characteristic.getDescriptor(
+                            UUID.fromString(
+                                LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR
+                            )
+                        )
+                    if (gatt.readDescriptor(
+                            configDescriptor
+                        )?.descriptor?.value.contentEquals(
+                            LEConstants.CHARACTERISTIC_SUBSCRIBE_VALUE
+                        )
+                    ) {
                         Timber.w("Already subscribed to conn params")
                     } else {
                         if (gatt.writeDescriptor(configDescriptor, LEConstants.CHARACTERISTIC_SUBSCRIBE_VALUE)?.isSuccess() == true) {

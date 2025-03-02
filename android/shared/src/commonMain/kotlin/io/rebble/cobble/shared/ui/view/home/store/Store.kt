@@ -8,7 +8,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -16,6 +15,11 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.multiplatform.webview.cookie.Cookie
+import com.multiplatform.webview.jsbridge.rememberWebViewJsBridge
+import com.multiplatform.webview.web.WebView
+import com.multiplatform.webview.web.rememberWebViewNavigator
+import com.multiplatform.webview.web.rememberWebViewState
 import io.rebble.cobble.shared.api.RWS
 import io.rebble.cobble.shared.domain.state.ConnectionState
 import io.rebble.cobble.shared.domain.state.CurrentToken
@@ -23,21 +27,20 @@ import io.rebble.cobble.shared.domain.store.*
 import io.rebble.cobble.shared.ui.common.RebbleIcons
 import io.rebble.cobble.shared.ui.nav.Routes
 import io.rebble.cobble.shared.ui.viewmodel.StoreViewModel
-import com.multiplatform.webview.cookie.Cookie
-import com.multiplatform.webview.jsbridge.rememberWebViewJsBridge
-import com.multiplatform.webview.web.WebView
-import com.multiplatform.webview.web.rememberWebViewNavigator
-import com.multiplatform.webview.web.rememberWebViewState
 import kotlinx.coroutines.flow.collectLatest
 
 enum class StoreTabs(val label: String, val navRoute: String) {
     Watchfaces("Watchfaces", Routes.Home.STORE_WATCHFACES),
-    Apps("Apps", Routes.Home.STORE_APPS),
+    Apps("Apps", Routes.Home.STORE_APPS)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Store(page: StoreTabs, viewModel: StoreViewModel = viewModel { StoreViewModel() }, onTabChanged: (StoreTabs) -> Unit) {
+fun Store(
+    page: StoreTabs,
+    viewModel: StoreViewModel = viewModel { StoreViewModel() },
+    onTabChanged: (StoreTabs) -> Unit
+) {
     LaunchedEffect(page) {
         viewModel.setCurrentTab(page)
     }
@@ -61,9 +64,10 @@ fun Store(page: StoreTabs, viewModel: StoreViewModel = viewModel { StoreViewMode
 
     val state = rememberWebViewState(url = initialUrl!!)
     val jsBridge = rememberWebViewJsBridge()
-    val navigator = rememberWebViewNavigator(
-        requestInterceptor = viewModel.createRequestInterceptor()
-    )
+    val navigator =
+        rememberWebViewNavigator(
+            requestInterceptor = viewModel.createRequestInterceptor()
+        )
 
     val uriHandler = LocalUriHandler.current
 
@@ -90,7 +94,11 @@ fun Store(page: StoreTabs, viewModel: StoreViewModel = viewModel { StoreViewMode
     LaunchedEffect(Unit) {
         viewModel.resultFlow.collectLatest { result ->
             val addedToLocker = result is StoreViewModel.LockerResult.Success
-            val jsResponse = PebbleBridge.lockerResponse(callbackId = result.callbackId, addedToLocker)
+            val jsResponse =
+                PebbleBridge.lockerResponse(
+                    callbackId = result.callbackId,
+                    addedToLocker
+                )
             navigator.evaluateJavaScript(jsResponse)
         }
     }
@@ -110,13 +118,14 @@ fun Store(page: StoreTabs, viewModel: StoreViewModel = viewModel { StoreViewMode
                 onSearch = { viewModel.performSearch(navigator) },
                 active = false,
                 onActiveChange = {},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .focusRequester(focusRequester)
-                    .onGloballyPositioned {
-                        focusRequester.requestFocus()
-                    },
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .focusRequester(focusRequester)
+                        .onGloballyPositioned {
+                            focusRequester.requestFocus()
+                        },
                 leadingIcon = {
                     IconButton(
                         onClick = { viewModel.setSearching(false) },
@@ -137,18 +146,18 @@ fun Store(page: StoreTabs, viewModel: StoreViewModel = viewModel { StoreViewMode
         } else {
             CenterAlignedTopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                modifier = Modifier
-                    .onGloballyPositioned { coordinates ->
-                        println("TopAppBar height: ${coordinates.size.height}")
-                    },
-                navigationIcon =  {
+                modifier =
+                    Modifier
+                        .onGloballyPositioned { coordinates ->
+                            println("TopAppBar height: ${coordinates.size.height}")
+                        },
+                navigationIcon = {
                     IconButton(
                         onClick = { navigator.navigateBack() },
                         enabled = navigator.canGoBack,
                         content = { RebbleIcons.caretLeft() }
                     )
                 },
-
                 title = {
                     TextButton(onClick = { viewModel.toggleDropdown() }) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -180,7 +189,6 @@ fun Store(page: StoreTabs, viewModel: StoreViewModel = viewModel { StoreViewMode
                         }
                     }
                 },
-
                 actions = {
                     if (searchButton) {
                         IconButton(

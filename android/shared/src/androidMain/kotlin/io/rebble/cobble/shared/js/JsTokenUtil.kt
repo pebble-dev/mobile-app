@@ -14,7 +14,7 @@ import java.security.MessageDigest
 import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
 
-object JsTokenUtil: KoinComponent {
+object JsTokenUtil : KoinComponent {
     private val lockerDao: LockerDao by inject()
     private const val ACCOUNT_TOKEN_SALT = "MMIxeUT[G9/U#(7V67O^EuADSw,{\$C;B}`>|-  lrQCs|t|k=P_!*LETm,RKc,BG*'"
 
@@ -25,17 +25,24 @@ object JsTokenUtil: KoinComponent {
         return bytes.joinToString(separator = "") { String.format("%02X", it) }.lowercase(Locale.US)
     }
 
-    private suspend fun generateToken(uuid: Uuid, seed: String): String {
+    private suspend fun generateToken(
+        uuid: Uuid,
+        seed: String
+    ): String {
         val developerId = lockerDao.getEntryByUuid(uuid.toString())?.entry?.developerId
-        val unhashed = buildString {
-            append(seed)
-            append(developerId ?: uuid.toString().uppercase(Locale.US))
-            append(ACCOUNT_TOKEN_SALT)
-        }
+        val unhashed =
+            buildString {
+                append(seed)
+                append(developerId ?: uuid.toString().uppercase(Locale.US))
+                append(ACCOUNT_TOKEN_SALT)
+            }
         return md5Digest(unhashed)
     }
 
-    suspend fun getWatchToken(uuid: Uuid, device: PebbleDevice): String {
+    suspend fun getWatchToken(
+        uuid: Uuid,
+        device: PebbleDevice
+    ): String {
         val serial = device.metadata.value?.serial?.get() ?: throw IllegalArgumentException("Device has no serial")
         return generateToken(uuid, serial)
     }
@@ -43,7 +50,9 @@ object JsTokenUtil: KoinComponent {
     suspend fun getAccountToken(uuid: Uuid): String? {
         return try {
             withTimeout(5.seconds) {
-                RWS.authClientFlow.filterNotNull().first().getCurrentAccount().uid.toString().let { generateToken(uuid, it) }
+                RWS.authClientFlow.filterNotNull().first().getCurrentAccount().uid.toString().let {
+                    generateToken(uuid, it)
+                }
             }
         } catch (e: TimeoutCancellationException) {
             null

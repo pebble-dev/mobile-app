@@ -33,7 +33,8 @@ class CobbleApplication : FlutterApplication() {
     private fun beginConnectingToDefaultWatch() {
         component.initServiceLifecycleControl()
 
-        val macAddressOfDefaultPebble = component.createPairedStorage()
+        val macAddressOfDefaultPebble =
+            component.createPairedStorage()
                 .getMacAddressOfDefaultPebble()
         if (macAddressOfDefaultPebble != null) {
             component.createConnectionLooper().connectToWatch(macAddressOfDefaultPebble)

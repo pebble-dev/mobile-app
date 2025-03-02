@@ -11,7 +11,10 @@ import kotlinx.coroutines.flow.first
 
 class BluetoothBondReceiver(private val targetAddr: String, private val context: Context) : BroadcastReceiver() {
     companion object {
-        fun registerBondReceiver(context: Context, targetAddress: String): BluetoothBondReceiver {
+        fun registerBondReceiver(
+            context: Context,
+            targetAddress: String
+        ): BluetoothBondReceiver {
             val receiver = BluetoothBondReceiver(targetAddress, context)
             val intentFilter = IntentFilter()
             intentFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
@@ -21,7 +24,11 @@ class BluetoothBondReceiver(private val targetAddr: String, private val context:
     }
 
     private var bondEvent = MutableStateFlow<Int?>(null)
-    override fun onReceive(context: Context?, intent: Intent?) {
+
+    override fun onReceive(
+        context: Context?,
+        intent: Intent?
+    ) {
         if (intent?.action != BluetoothDevice.ACTION_BOND_STATE_CHANGED) {
             return
         }

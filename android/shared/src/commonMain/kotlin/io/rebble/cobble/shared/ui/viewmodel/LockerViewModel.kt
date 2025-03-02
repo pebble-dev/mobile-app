@@ -13,18 +13,23 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class LockerViewModel(private val lockerDao: LockerDao): ViewModel() {
+class LockerViewModel(private val lockerDao: LockerDao) : ViewModel() {
     open class LockerEntriesState {
         object Loading : LockerEntriesState()
+
         object Error : LockerEntriesState()
+
         data class Loaded(val entries: List<SyncedLockerEntryWithPlatforms>) : LockerEntriesState()
     }
+
     open class ModalSheetState {
         object Closed : ModalSheetState()
+
         data class Open(val viewModel: LockerItemViewModel) : ModalSheetState()
     }
 
     val entriesState = MutableStateFlow<LockerEntriesState>(LockerEntriesState.Loading)
+
     init {
         viewModelScope.launch(Dispatchers.IO + CoroutineName("LockerViewModelGet")) {
             lockerDao.getAllEntriesFlow().catch {
@@ -45,15 +50,16 @@ class LockerViewModel(private val lockerDao: LockerDao): ViewModel() {
 
     suspend fun updateOrder(entries: List<SyncedLockerEntryWithPlatforms>) {
         lastJob?.cancel()
-        lastJob = viewModelScope.launch(Dispatchers.IO) {
-            mutex.withLock {
-                entries.forEachIndexed { i, e ->
-                    if (e.entry.type == "watchapp") {
-                        lockerDao.updateOrder(e.entry.id, i+1)
+        lastJob =
+            viewModelScope.launch(Dispatchers.IO) {
+                mutex.withLock {
+                    entries.forEachIndexed { i, e ->
+                        if (e.entry.type == "watchapp") {
+                            lockerDao.updateOrder(e.entry.id, i + 1)
+                        }
                     }
                 }
             }
-        }
     }
 
     fun openModalSheet(viewModel: LockerItemViewModel) {

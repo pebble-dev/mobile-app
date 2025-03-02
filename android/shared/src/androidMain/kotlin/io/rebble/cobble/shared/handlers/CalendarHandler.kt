@@ -35,23 +35,32 @@ class CalendarHandler(private val pebbleDevice: PebbleDevice) : CobbleHandler, K
     private var initialSyncJob: Job? = null
     private var calendarHandlerStarted = false
 
-    private val calendarChangeFlow = MutableSharedFlow<Unit>(extraBufferCapacity = 4, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    private val calendarChangeFlow =
+        MutableSharedFlow<Unit>(
+            extraBufferCapacity = 4,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST
+        )
 
-    private val contentObserver = object : ContentObserver(null) {
-        override fun onChange(selfChange: Boolean, uri: Uri?) {
-            if (!calendarChangeFlow.tryEmit(Unit)) {
-                Logging.e("Failed to emit calendar change event")
+    private val contentObserver =
+        object : ContentObserver(null) {
+            override fun onChange(
+                selfChange: Boolean,
+                uri: Uri?
+            ) {
+                if (!calendarChangeFlow.tryEmit(Unit)) {
+                    Logging.e("Failed to emit calendar change event")
+                }
             }
         }
-    }
 
     init {
-        val permissionChangeFlow = PermissionChangeBus.permissionChangeFlow
+        val permissionChangeFlow =
+            PermissionChangeBus.permissionChangeFlow
                 .onStart { emit(Unit) }
 
         combine(
-                permissionChangeFlow,
-                prefs.calendarSyncEnabled
+            permissionChangeFlow,
+            prefs.calendarSyncEnabled
         ) { _,
             calendarSyncEnabled ->
             startStopCalendar(calendarSyncEnabled)
@@ -67,10 +76,11 @@ class CalendarHandler(private val pebbleDevice: PebbleDevice) : CobbleHandler, K
     }
 
     private fun startStopCalendar(calendarSyncEnabled: Boolean) {
-        val hasPermission = ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.READ_CALENDAR
-        ) == PackageManager.PERMISSION_GRANTED
+        val hasPermission =
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.READ_CALENDAR
+            ) == PackageManager.PERMISSION_GRANTED
         synchronized(this) {
             val shouldSyncCalendar = hasPermission && calendarSyncEnabled
             Timber.d("Should sync calendar: $shouldSyncCalendar")
@@ -89,15 +99,16 @@ class CalendarHandler(private val pebbleDevice: PebbleDevice) : CobbleHandler, K
         observeCalendarChanges()
         schedulePeriodicCalendarSync()
 
-        initialSyncJob = pebbleDevice.negotiationScope.launch {
-            // We were not receiving any calendar changes when service was offline or we did not
-            // have permissions.
-            // Sync calendar
+        initialSyncJob =
+            pebbleDevice.negotiationScope.launch {
+                // We were not receiving any calendar changes when service was offline or we did not
+                // have permissions.
+                // Sync calendar
 
-            Timber.d("Watch service started or we received permissions. Syncing calendar...")
-            calendarSync.doFullCalendarSync()
-            Timber.d("Sync complete")
-        }
+                Timber.d("Watch service started or we received permissions. Syncing calendar...")
+                calendarSync.doFullCalendarSync()
+                Timber.d("Sync complete")
+            }
 
         pebbleDevice.negotiationScope.coroutineContext.job.invokeOnCompletion {
             stopCalendarHandler()
@@ -114,19 +125,21 @@ class CalendarHandler(private val pebbleDevice: PebbleDevice) : CobbleHandler, K
     private fun schedulePeriodicCalendarSync() {
         // Sync calendar approximately every 24 hours
         // (+- 5 hours to allow Android to batch tasks to save battery
-        val workRequest = PeriodicWorkRequestBuilder<CalendarSyncWorker>(
+        val workRequest =
+            PeriodicWorkRequestBuilder<CalendarSyncWorker>(
                 repeatInterval = 24L,
                 flexTimeInterval = 5L,
                 repeatIntervalTimeUnit = TimeUnit.HOURS,
                 flexTimeIntervalUnit = TimeUnit.HOURS
-        ).addTag(CALENDAR_WORK_TAG).build()
+            ).addTag(CALENDAR_WORK_TAG).build()
         WorkManager.getInstance(context).enqueue(workRequest)
     }
 
     private fun observeCalendarChanges() {
         context.contentResolver.registerContentObserver(
-            CalendarContract.Instances.CONTENT_URI, true, contentObserver
+            CalendarContract.Instances.CONTENT_URI,
+            true,
+            contentObserver
         )
     }
-
 }

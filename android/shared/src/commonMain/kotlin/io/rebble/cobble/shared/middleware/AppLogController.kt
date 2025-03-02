@@ -12,22 +12,23 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 
 class AppLogController(
-        private val pebbleDevice: PebbleDevice,
+    private val pebbleDevice: PebbleDevice
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    val logs = ConnectionStateManager.connectionState.flatMapLatest {
-        if (it is ConnectionState.Connected) {
-            flow {
-                toggleAppLogOnWatch(true)
+    val logs =
+        ConnectionStateManager.connectionState.flatMapLatest {
+            if (it is ConnectionState.Connected) {
+                flow {
+                    toggleAppLogOnWatch(true)
 
-                emitAll(pebbleDevice.appLogsService.receivedMessages.receiveAsFlow())
+                    emitAll(pebbleDevice.appLogsService.receivedMessages.receiveAsFlow())
+                }
+            } else {
+                emptyFlow()
             }
-        } else {
-            emptyFlow()
-        }
-    }.onCompletion {
-        toggleAppLogOnWatch(false)
-    }.shareIn(GlobalScope, SharingStarted.WhileSubscribed(1000, 1000))
+        }.onCompletion {
+            toggleAppLogOnWatch(false)
+        }.shareIn(GlobalScope, SharingStarted.WhileSubscribed(1000, 1000))
 
     private suspend fun toggleAppLogOnWatch(enable: Boolean) {
         try {

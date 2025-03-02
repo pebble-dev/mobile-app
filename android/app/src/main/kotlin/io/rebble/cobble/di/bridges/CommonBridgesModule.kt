@@ -21,66 +21,64 @@ abstract class CommonBridgesModule {
     @Binds
     @IntoSet
     @CommonBridge
-    abstract fun bindConnectionBridge(connectionFlutterBridge: ConnectionFlutterBridge): FlutterBridge
+    abstract fun bindConnectionBridge(
+        connectionFlutterBridge: ConnectionFlutterBridge
+    ): FlutterBridge
 
     @Binds
     @IntoSet
     @CommonBridge
-    abstract fun bindNotificationsBridge(notificationsFlutter: NotificationsFlutterBridge): FlutterBridge
+    abstract fun bindNotificationsBridge(
+        notificationsFlutter: NotificationsFlutterBridge
+    ): FlutterBridge
 
     @Binds
     @IntoSet
     @CommonBridge
-    abstract fun bindTimelineBridge(timelineControlFlutterBridge: TimelineControlFlutterBridge): FlutterBridge
+    abstract fun bindTimelineBridge(
+        timelineControlFlutterBridge: TimelineControlFlutterBridge
+    ): FlutterBridge
 
     @Binds
     @IntoSet
     @CommonBridge
     abstract fun bindPermissionBridge(
-            permissionCheckFlutterBridge: PermissionCheckFlutterBridge
+        permissionCheckFlutterBridge: PermissionCheckFlutterBridge
     ): FlutterBridge
 
     @Binds
     @IntoSet
     @CommonBridge
-    abstract fun bindLoggingBridge(
-            loggingFlutterBridge: LoggingFlutterBridge
-    ): FlutterBridge
+    abstract fun bindLoggingBridge(loggingFlutterBridge: LoggingFlutterBridge): FlutterBridge
 
     @Binds
     @IntoSet
     @CommonBridge
     abstract fun bindPackageDetailsBridge(
-            packageDetailsFlutterBridge: PackageDetailsFlutterBridge
+        packageDetailsFlutterBridge: PackageDetailsFlutterBridge
     ): FlutterBridge
 
     @Binds
     @IntoSet
     @CommonBridge
     abstract fun bindScreenshotBridge(
-            screenshotsFlutterBridge: ScreenshotsFlutterBridge
+        screenshotsFlutterBridge: ScreenshotsFlutterBridge
     ): FlutterBridge
 
     @Binds
     @IntoSet
     @CommonBridge
-    abstract fun bindLogsBridge(
-            appLogFlutterBridge: AppLogFlutterBridge
-    ): FlutterBridge
+    abstract fun bindLogsBridge(appLogFlutterBridge: AppLogFlutterBridge): FlutterBridge
 
     @Binds
     @IntoSet
     @CommonBridge
-    abstract fun bindIncomingPacketsBridge(
-            packetsBridge: RawIncomingPacketsBridge
-    ): FlutterBridge
+    abstract fun bindIncomingPacketsBridge(packetsBridge: RawIncomingPacketsBridge): FlutterBridge
 
     @Binds
     @IntoSet
     @CommonBridge
-    abstract fun bindKmpApiBridge(
-            kmpApiBridge: KMPApiBridge
-    ): FlutterBridge
+    abstract fun bindKmpApiBridge(kmpApiBridge: KMPApiBridge): FlutterBridge
 }
 
 @Qualifier

@@ -5,5 +5,5 @@ enum class CalendarTimelineActionId(val id: Int) {
     MuteCalendar(1),
     AcceptEvent(2),
     MaybeEvent(3),
-    DeclineEvent(4),
+    DeclineEvent(4)
 }

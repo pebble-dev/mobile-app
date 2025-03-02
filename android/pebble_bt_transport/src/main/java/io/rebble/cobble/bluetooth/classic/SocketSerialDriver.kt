@@ -24,10 +24,9 @@ import kotlin.coroutines.coroutineContext
  * Used for testing app via a qemu pebble
  */
 class SocketSerialDriver(
-        private val device: PebbleDevice,
-        private val incomingPacketsListener: MutableSharedFlow<ByteArray>
+    private val device: PebbleDevice,
+    private val incomingPacketsListener: MutableSharedFlow<ByteArray>
 ) : BlueIO {
-
     private var inputStream: InputStream? = null
     private var outputStream: OutputStream? = null
 
@@ -37,7 +36,7 @@ class SocketSerialDriver(
 
             while (coroutineContext.isActive) {
                 val inputStream = inputStream ?: break
-                /* READ PACKET META */
+                // READ PACKET META
                 inputStream.readFully(buf, 0, 4)
 
                 val qemuPacket = QemuPacket.deserialize(buf.array().asUByteArray())
@@ -55,11 +54,17 @@ class SocketSerialDriver(
                 val length = metBuf.short
                 val endpoint = metBuf.short
                 if (length < 0 || length > buf.capacity()) {
-                    Timber.w("Invalid length in packet (EP ${endpoint.toUShort()}): got ${length.toUShort()}")
+                    Timber.w(
+                        "Invalid length in packet (EP ${endpoint.toUShort()}): got ${length.toUShort()}"
+                    )
                     continue
                 }
 
-                Timber.d("Got packet: EP ${ProtocolEndpoint.getByValue(endpoint.toUShort())} | Length ${length.toUShort()}")
+                Timber.d(
+                    "Got packet: EP ${ProtocolEndpoint.getByValue(
+                        endpoint.toUShort()
+                    )} | Length ${length.toUShort()}"
+                )
 
                 buf.rewind()
                 val packet = ByteArray(length.toInt() + 2 * (Short.SIZE_BYTES))
@@ -92,38 +97,41 @@ class SocketSerialDriver(
     }
 
     @FlowPreview
-    override fun startSingleWatchConnection(device: PebbleDevice): Flow<SingleConnectionStatus> = flow {
-        require(device is EmulatedPebbleDevice) { "Device must be EmulatedPebbleDevice" }
-        val host = device.address
-        coroutineScope {
-            emit(SingleConnectionStatus.Connecting(device))
+    override fun startSingleWatchConnection(device: PebbleDevice): Flow<SingleConnectionStatus> =
+        flow {
+            require(device is EmulatedPebbleDevice) { "Device must be EmulatedPebbleDevice" }
+            val host = device.address
+            coroutineScope {
+                emit(SingleConnectionStatus.Connecting(device))
 
-            val serialSocket = withContext(Dispatchers.IO) {
-                Socket(host, 12344)
-            }
+                val serialSocket =
+                    withContext(Dispatchers.IO) {
+                        Socket(host, 12344)
+                    }
 
-            delay(8000)
+                delay(8000)
 
-            val sendLoop = launch {
-                device.protocolHandler.startPacketSendingLoop(::sendPacket)
-            }
+                val sendLoop =
+                    launch {
+                        device.protocolHandler.startPacketSendingLoop(::sendPacket)
+                    }
 
-            inputStream = serialSocket.inputStream
-            outputStream = serialSocket.outputStream
+                inputStream = serialSocket.inputStream
+                outputStream = serialSocket.outputStream
 
-            readLoop()
-            try {
-                withContext(Dispatchers.IO) {
-                    serialSocket.close()
+                readLoop()
+                try {
+                    withContext(Dispatchers.IO) {
+                        serialSocket.close()
+                    }
+                } catch (_: IOException) {
                 }
-            } catch (_: IOException) {
+                sendLoop.cancel()
             }
-            sendLoop.cancel()
         }
-    }
 
     private suspend fun sendPacket(bytes: UByteArray): Boolean {
-        //Timber.d("Sending packet of EP ${PebblePacket(bytes.toUByteArray()).endpoint}")
+        // Timber.d("Sending packet of EP ${PebblePacket(bytes.toUByteArray()).endpoint}")
         val qemuPacket = QemuPacket.QemuSPP(bytes)
         val outputStream = outputStream ?: return false
         withContext(Dispatchers.IO) {
@@ -131,5 +139,4 @@ class SocketSerialDriver(
         }
         return true
     }
-
 }

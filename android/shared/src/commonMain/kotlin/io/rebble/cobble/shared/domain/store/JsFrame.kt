@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 data class JsFrame<T>(
     val methodName: String,
     val callbackId: Int,
-    val data: T,
+    val data: T
 )
 
 @Serializable
@@ -24,7 +24,7 @@ data class LoadAppToDeviceAndLocker(
     val type: String,
     @SerialName("pbw_file")
     val pbwFile: String,
-    val links: AppLinks,
+    val links: AppLinks
 )
 
 @Serializable
@@ -39,7 +39,7 @@ data class AppLinks(
     @SerialName("remove_flag")
     val removeFlag: String? = null,
     @SerialName("remove_heart")
-    val removeHeart: String? = null,
+    val removeHeart: String? = null
 )
 
 @Serializable
@@ -49,10 +49,10 @@ data class SetNavBarTitle(
     @SerialName("show_search")
     val showSearch: Boolean = true,
     @SerialName("show_share")
-    val showShare: Boolean? = null,
+    val showShare: Boolean? = null
 )
 
 @Serializable
 data class OpenURL(
-    val url: String,
+    val url: String
 )

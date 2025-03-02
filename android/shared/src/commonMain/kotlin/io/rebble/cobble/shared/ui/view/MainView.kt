@@ -5,7 +5,6 @@ import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -21,8 +20,6 @@ import io.rebble.cobble.shared.ui.view.home.HomePage
 import io.rebble.cobble.shared.ui.view.home.HomeScaffold
 import io.rebble.cobble.shared.ui.view.home.locker.LockerTabs
 import io.rebble.cobble.shared.ui.view.home.store.StoreTabs
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.Json.Default.decodeFromString
 import org.koin.compose.KoinContext
 
 @Composable
@@ -32,31 +29,52 @@ fun MainView(navController: NavHostController = rememberNavController()) {
             val theme = if (isSystemInDarkTheme()) Theme.dark else Theme.light
 
             CompositionLocalProvider(
-                    LocalTheme provides theme,
+                LocalTheme provides theme
             ) {
                 MaterialTheme(
-                        colorScheme = theme.materialColors
+                    colorScheme = theme.materialColors
                 ) {
-                    NavHost(navController = navController, startDestination = Routes.Home.LOCKER_WATCHFACES) {
+                    NavHost(
+                        navController = navController,
+                        startDestination = Routes.Home.LOCKER_WATCHFACES
+                    ) {
                         composable(Routes.Home.LOCKER_WATCHFACES) {
-                            HomeScaffold(HomePage.Locker(LockerTabs.Watchfaces), onNavChange = navController::navigate)
+                            HomeScaffold(
+                                HomePage.Locker(LockerTabs.Watchfaces),
+                                onNavChange = navController::navigate
+                            )
                         }
                         composable(Routes.Home.LOCKER_APPS) {
-                            HomeScaffold(HomePage.Locker(LockerTabs.Apps), onNavChange = navController::navigate)
+                            HomeScaffold(
+                                HomePage.Locker(LockerTabs.Apps),
+                                onNavChange = navController::navigate
+                            )
                         }
                         composable(Routes.Home.STORE_WATCHFACES) {
-                            HomeScaffold(HomePage.Store(StoreTabs.Watchfaces), onNavChange = navController::navigate)
+                            HomeScaffold(
+                                HomePage.Store(StoreTabs.Watchfaces),
+                                onNavChange = navController::navigate
+                            )
                         }
                         composable(Routes.Home.STORE_APPS) {
-                            HomeScaffold(HomePage.Store(StoreTabs.Apps), onNavChange = navController::navigate)
+                            HomeScaffold(
+                                HomePage.Store(StoreTabs.Apps),
+                                onNavChange = navController::navigate
+                            )
                         }
                         composable(Routes.Home.TEST_PAGE) {
                             HomeScaffold(HomePage.TestPage, onNavChange = navController::navigate)
                         }
-                        dialog("${Routes.DIALOG_APP_INSTALL}?uri={uri}", arguments = listOf(navArgument("uri") {
-                            nullable = false
-                            type = NavType.StringType
-                        })) {
+                        dialog(
+                            "${Routes.DIALOG_APP_INSTALL}?uri={uri}",
+                            arguments =
+                                listOf(
+                                    navArgument("uri") {
+                                        nullable = false
+                                        type = NavType.StringType
+                                    }
+                                )
+                        ) {
                             val uri = it.arguments?.getString("uri") ?: return@dialog
                             AppInstallDialog(uri) {
                                 navController.popBackStack()

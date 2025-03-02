@@ -25,103 +25,125 @@ import java.util.UUID
 import javax.inject.Inject
 import kotlin.random.Random
 
-class TimelineControlFlutterBridge @Inject constructor(
+class TimelineControlFlutterBridge
+    @Inject
+    constructor(
         bridgeLifecycleController: BridgeLifecycleController,
-        private val coroutineScope: CoroutineScope,
-) : FlutterBridge, Pigeons.TimelineControl {
-    private val connectionState: StateFlow<ConnectionState> = KoinPlatformTools.defaultContext().get().get(named("connectionState"))
-    private val blobDBService: BlobDBService? get() = connectionState.value.watchOrNull?.blobDBService
-    init {
-        bridgeLifecycleController.setupControl(Pigeons.TimelineControl::setup, this)
-    }
+        private val coroutineScope: CoroutineScope
+    ) : FlutterBridge, Pigeons.TimelineControl {
+        private val connectionState: StateFlow<ConnectionState> =
+            KoinPlatformTools.defaultContext().get().get(
+                named("connectionState")
+            )
+        private val blobDBService: BlobDBService? get() = connectionState.value.watchOrNull?.blobDBService
 
-    private suspend fun addTimelinePin(pin: Pigeons.TimelinePinPigeon): BlobResponse.BlobStatus {
-        val parsedAttributes: List<TimelineAttribute> = Json.decodeFromString(pin.attributesJson!!)
-                ?: emptyList()
+        init {
+            bridgeLifecycleController.setupControl(Pigeons.TimelineControl::setup, this)
+        }
 
-        val parsedActions: List<TimelineAction> = Json.decodeFromString(pin.actionsJson!!)
-                ?: emptyList()
+        private suspend fun addTimelinePin(
+            pin: Pigeons.TimelinePinPigeon
+        ): BlobResponse.BlobStatus {
+            val parsedAttributes: List<TimelineAttribute> =
+                Json.decodeFromString(pin.attributesJson!!)
+                    ?: emptyList()
 
-        val flags = buildList {
-            if (pin.isVisible!!) {
-                add(TimelineItem.Flag.IS_VISIBLE)
-            }
+            val parsedActions: List<TimelineAction> =
+                Json.decodeFromString(pin.actionsJson!!)
+                    ?: emptyList()
 
-            if (pin.isFloating!!) {
-                add(TimelineItem.Flag.IS_FLOATING)
-            }
+            val flags =
+                buildList {
+                    if (pin.isVisible!!) {
+                        add(TimelineItem.Flag.IS_VISIBLE)
+                    }
 
-            if (pin.isAllDay!!) {
-                add(TimelineItem.Flag.IS_ALL_DAY)
-            }
+                    if (pin.isFloating!!) {
+                        add(TimelineItem.Flag.IS_FLOATING)
+                    }
 
-            if (pin.persistQuickView!!) {
-                add(TimelineItem.Flag.PERSIST_QUICK_VIEW)
+                    if (pin.isAllDay!!) {
+                        add(TimelineItem.Flag.IS_ALL_DAY)
+                    }
+
+                    if (pin.persistQuickView!!) {
+                        add(TimelineItem.Flag.PERSIST_QUICK_VIEW)
+                    }
+                }
+
+            val itemId = UUID.fromString(pin.itemId)
+            val timelineItem =
+                TimelineItem(
+                    itemId,
+                    UUID.fromString(pin.parentId),
+                    pin.timestamp!!.toUInt(),
+                    pin.duration!!.toUShort(),
+                    TimelineItem.Type.Pin,
+                    TimelineItem.Flag.makeFlags(flags),
+                    TimelineItem.Layout.fromValue(pin.layout!!.toUByte()),
+                    parsedAttributes.map { it.toProtocolAttribute() },
+                    parsedActions.map { it.toProtocolAction() }
+                )
+            val packet =
+                BlobCommand.InsertCommand(
+                    Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
+                    BlobCommand.BlobDatabase.Pin,
+                    SUUID(StructMapper(), itemId).toBytes(),
+                    timelineItem.toBytes()
+                )
+
+            // This packet is usually sent as part of the background sync, so we use low priority
+            // to not disturb any user experience with our sync
+            return blobDBService?.send(packet, PacketPriority.LOW)?.responseValue ?: BlobResponse.BlobStatus.WatchDisconnected
+        }
+
+        private suspend fun removeTimelinePin(id: UUID): BlobResponse.BlobStatus {
+            // This packet is usually sent as part of the background sync, so we use low priority
+            // to not disturb any user experience with our sync
+
+            return blobDBService?.send(
+                BlobCommand.DeleteCommand(
+                    Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
+                    BlobCommand.BlobDatabase.Pin,
+                    SUUID(StructMapper(), id).toBytes()
+                ),
+                PacketPriority.LOW
+            )?.responseValue ?: BlobResponse.BlobStatus.WatchDisconnected
+        }
+
+        private suspend fun removeAllPins(): BlobResponse.BlobStatus {
+            return blobDBService?.send(
+                BlobCommand.ClearCommand(
+                    Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
+                    BlobCommand.BlobDatabase.Pin
+                )
+            )?.responseValue ?: BlobResponse.BlobStatus.WatchDisconnected
+        }
+
+        override fun addPin(
+            pin: Pigeons.TimelinePinPigeon,
+            result: Pigeons.Result<Pigeons.NumberWrapper>
+        ) {
+            coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
+                val res = addTimelinePin(pin)
+                NumberWrapper(res.value.toInt())
             }
         }
 
-        val itemId = UUID.fromString(pin.itemId)
-        val timelineItem = TimelineItem(
-                itemId,
-                UUID.fromString(pin.parentId),
-                pin.timestamp!!.toUInt(),
-                pin.duration!!.toUShort(),
-                TimelineItem.Type.Pin,
-                TimelineItem.Flag.makeFlags(flags),
-                TimelineItem.Layout.fromValue(pin.layout!!.toUByte()),
-                parsedAttributes.map { it.toProtocolAttribute() },
-                parsedActions.map { it.toProtocolAction() }
-        )
-        val packet = BlobCommand.InsertCommand(
-                Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
-                BlobCommand.BlobDatabase.Pin,
-                SUUID(StructMapper(), itemId).toBytes(),
-                timelineItem.toBytes(),
-        )
-
-        // This packet is usually sent as part of the background sync, so we use low priority
-        // to not disturb any user experience with our sync
-        return blobDBService?.send(packet, PacketPriority.LOW)?.responseValue ?: BlobResponse.BlobStatus.WatchDisconnected
-    }
-
-    private suspend fun removeTimelinePin(id: UUID): BlobResponse.BlobStatus {
-        // This packet is usually sent as part of the background sync, so we use low priority
-        // to not disturb any user experience with our sync
-
-        return blobDBService?.send(BlobCommand.DeleteCommand(
-                Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
-                BlobCommand.BlobDatabase.Pin,
-                SUUID(StructMapper(), id).toBytes(),
-        ), PacketPriority.LOW)?.responseValue ?: BlobResponse.BlobStatus.WatchDisconnected
-    }
-
-    private suspend fun removeAllPins(): BlobResponse.BlobStatus {
-        return blobDBService?.send(BlobCommand.ClearCommand(
-                Random.nextInt(0, UShort.MAX_VALUE.toInt()).toUShort(),
-                BlobCommand.BlobDatabase.Pin
-        ))?.responseValue ?: BlobResponse.BlobStatus.WatchDisconnected
-    }
-
-    override fun addPin(pin: Pigeons.TimelinePinPigeon, result: Pigeons.Result<Pigeons.NumberWrapper>) {
-        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
-            val res = addTimelinePin(pin)
-            NumberWrapper(res.value.toInt())
-        }
-    }
-
-    override fun removePin(pinUuid: Pigeons.StringWrapper, result: Pigeons.Result<Pigeons.NumberWrapper>) {
-        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
-            val res = removeTimelinePin(UUID.fromString(pinUuid.value!!))
-            NumberWrapper(res.value.toInt())
+        override fun removePin(
+            pinUuid: Pigeons.StringWrapper,
+            result: Pigeons.Result<Pigeons.NumberWrapper>
+        ) {
+            coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
+                val res = removeTimelinePin(UUID.fromString(pinUuid.value!!))
+                NumberWrapper(res.value.toInt())
+            }
         }
 
-    }
-
-    override fun removeAllPins(result: Pigeons.Result<Pigeons.NumberWrapper>) {
-        coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
-            val res = removeAllPins()
-            NumberWrapper(res.value.toInt())
+        override fun removeAllPins(result: Pigeons.Result<Pigeons.NumberWrapper>) {
+            coroutineScope.launchPigeonResult(result, coroutineScope.coroutineContext) {
+                val res = removeAllPins()
+                NumberWrapper(res.value.toInt())
+            }
         }
-
     }
-}

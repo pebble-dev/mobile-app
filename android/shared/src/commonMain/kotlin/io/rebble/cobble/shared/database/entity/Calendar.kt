@@ -6,11 +6,11 @@ import androidx.room.PrimaryKey
 
 @Entity(indices = [Index(value = ["platformId"], unique = true)])
 data class Calendar(
-        @PrimaryKey(autoGenerate = true) val id: Int,
-        val platformId: String,
-        val name: String,
-        val ownerName: String,
-        val ownerId: String,
-        val color: Int,
-        val enabled: Boolean,
+    @PrimaryKey(autoGenerate = true) val id: Int,
+    val platformId: String,
+    val name: String,
+    val ownerName: String,
+    val ownerId: String,
+    val color: Int,
+    val enabled: Boolean
 )

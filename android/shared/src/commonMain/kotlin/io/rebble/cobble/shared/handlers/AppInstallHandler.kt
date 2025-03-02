@@ -22,8 +22,8 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class AppInstallHandler(
-        private val pebbleDevice: PebbleDevice
-): CobbleHandler, KoinComponent {
+    private val pebbleDevice: PebbleDevice
+) : CobbleHandler, KoinComponent {
     private val lockerDao: LockerDao by inject()
     private val platformContext: PlatformContext by inject()
     private val httpClient: HttpClient by inject()
@@ -71,9 +71,10 @@ class AppInstallHandler(
 
             // Wait some time for metadata to become available in case this has been called
             // Right after watch has been connected
-            val hardwarePlatformNumber = withTimeoutOrNull(2_000) {
-                pebbleDevice.metadata.first()
-            }
+            val hardwarePlatformNumber =
+                withTimeoutOrNull(2_000) {
+                    pebbleDevice.metadata.first()
+                }
                     ?.running
                     ?.hardwarePlatform
                     ?.get()
@@ -84,8 +85,8 @@ class AppInstallHandler(
                 return
             }
 
-
-            val connectedWatchType = WatchHardwarePlatform
+            val connectedWatchType =
+                WatchHardwarePlatform
                     .fromProtocolNumber(hardwarePlatformNumber)
                     ?.watchType
 
@@ -99,18 +100,18 @@ class AppInstallHandler(
 
             val targetWatchType = getBestVariant(connectedWatchType, appInfo.targetPlatforms)
             if (targetWatchType == null) {
-                Logging.e("Watch $targetWatchType is not compatible with app $appUuid Compatible apps: ${appInfo.targetPlatforms}")
+                Logging.e(
+                    "Watch $targetWatchType is not compatible with app $appUuid Compatible apps: ${appInfo.targetPlatforms}"
+                )
                 respondFetchRequest(AppFetchResponseStatus.NO_DATA)
                 return
             }
-
 
             respondFetchRequest(AppFetchResponseStatus.START)
             putBytesController.startAppInstall(message.appId.get(), appFile, targetWatchType)
         } catch (e: Exception) {
             Logging.e("AppFetch fail", e)
             respondFetchRequest(AppFetchResponseStatus.NO_DATA)
-
         }
     }
 
@@ -118,6 +119,21 @@ class AppInstallHandler(
         appFetchService.send(AppFetchResponse(status))
     }
 }
-expect fun getAppPbwFile(context: PlatformContext, appUuid: String): File
-expect suspend fun savePbwFile(context: PlatformContext, appUuid: String, byteReadChannel: ByteReadChannel): String
-expect suspend fun downloadPbw(context: PlatformContext, httpClient: HttpClient, lockerDao: LockerDao, appUuid: String): String?
+
+expect fun getAppPbwFile(
+    context: PlatformContext,
+    appUuid: String
+): File
+
+expect suspend fun savePbwFile(
+    context: PlatformContext,
+    appUuid: String,
+    byteReadChannel: ByteReadChannel
+): String
+
+expect suspend fun downloadPbw(
+    context: PlatformContext,
+    httpClient: HttpClient,
+    lockerDao: LockerDao,
+    appUuid: String
+): String?

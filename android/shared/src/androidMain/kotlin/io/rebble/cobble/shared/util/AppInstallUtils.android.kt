@@ -12,8 +12,9 @@ import okio.buffer
 actual fun getPbwManifest(
     pbwFile: File,
     watchType: WatchType
-): PbwManifest?  {
-    val manifestFile = pbwFile.zippedPlatformSource(watchType, "manifest.json")
+): PbwManifest? {
+    val manifestFile =
+        pbwFile.zippedPlatformSource(watchType, "manifest.json")
             ?.buffer()
             ?: return null
 
@@ -22,7 +23,10 @@ actual fun getPbwManifest(
     }
 }
 
-private fun File.zippedPlatformSource(watchType: WatchType, fileName: String): Source? {
+private fun File.zippedPlatformSource(
+    watchType: WatchType,
+    fileName: String
+): Source? {
     return if (watchType == WatchType.APLITE) {
         // Older aplite-only releases do not have folders for different platforms
         // Everything is in root
@@ -35,16 +39,20 @@ private fun File.zippedPlatformSource(watchType: WatchType, fileName: String): S
 /**
  * @throws IllegalStateException if pbw does not contain manifest with that watch type
  */
-actual fun requirePbwManifest(pbwFile: File, watchType: WatchType): PbwManifest {
+actual fun requirePbwManifest(
+    pbwFile: File,
+    watchType: WatchType
+): PbwManifest {
     return getPbwManifest(pbwFile, watchType)
-            ?: error("Manifest $watchType missing from app $pbwFile")
+        ?: error("Manifest $watchType missing from app $pbwFile")
 }
 
 /**
  * @throws IllegalStateException if pbw does not contain manifest with that watch type
  */
 actual fun requirePbwAppInfo(pbwFile: File): PbwAppInfo {
-    val appInfoFile = pbwFile.zippedSource("appinfo.json")
+    val appInfoFile =
+        pbwFile.zippedSource("appinfo.json")
             ?.buffer()
             ?: error("appinfo.json missing from app $pbwFile")
 
@@ -56,12 +64,20 @@ actual fun requirePbwAppInfo(pbwFile: File): PbwAppInfo {
 /**
  * @throws IllegalStateException if pbw does not contain manifest with that watch type
  */
-actual fun requirePbwBinaryBlob(pbwFile: File, watchType: WatchType, blobName: String): Source {
+actual fun requirePbwBinaryBlob(
+    pbwFile: File,
+    watchType: WatchType,
+    blobName: String
+): Source {
     return pbwFile.zippedPlatformSource(watchType, blobName)
-            ?: error("Blob $blobName missing from app $pbwFile")
+        ?: error("Blob $blobName missing from app $pbwFile")
 }
 
-actual fun getPbwJsFilePath(context: PlatformContext, pbwAppInfo: PbwAppInfo, pbwFile: File): String? {
+actual fun getPbwJsFilePath(
+    context: PlatformContext,
+    pbwAppInfo: PbwAppInfo,
+    pbwFile: File
+): String? {
     context as AndroidPlatformContext
     val cache = context.applicationContext.cacheDir.resolve("js")
     cache.mkdirs()
@@ -69,7 +85,8 @@ actual fun getPbwJsFilePath(context: PlatformContext, pbwAppInfo: PbwAppInfo, pb
     if (cachedJsFile.exists()) {
         return cachedJsFile.absolutePath
     }
-    val jsFile = pbwFile.zippedSource("pebble-js-app.js")
+    val jsFile =
+        pbwFile.zippedSource("pebble-js-app.js")
             ?: return null
 
     cachedJsFile.bufferedWriter().use {

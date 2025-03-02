@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.android.kotlin)
+    alias(libs.plugins.ktlint)
 }
 
 android {
@@ -18,8 +19,8 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                    getDefaultProguardFile("proguard-android-optimize.txt"),
-                    "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
             )
         }
     }
@@ -45,8 +46,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.okio)
     implementation(libs.kotlinx.serialization.json)
-
-
 
     implementation(libs.ble.core)
     implementation(libs.ble.server)

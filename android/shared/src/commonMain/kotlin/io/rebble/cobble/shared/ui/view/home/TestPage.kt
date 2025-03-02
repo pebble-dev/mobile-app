@@ -23,12 +23,13 @@ fun TestPage(onShowSnackbar: (String) -> Unit) {
     Column {
         OutlinedButton(onClick = {
             watchConnection.watchOrNull?.connectionScope?.value?.launch {
-                val res = watchConnection.watchOrNull?.blobDBService?.send(
+                val res =
+                    watchConnection.watchOrNull?.blobDBService?.send(
                         BlobCommand.ClearCommand(
-                                token = Random.nextInt().toUShort(),
-                                database = BlobCommand.BlobDatabase.App
+                            token = Random.nextInt().toUShort(),
+                            database = BlobCommand.BlobDatabase.App
                         )
-                ) ?: BlobResponse.BlobStatus.WatchDisconnected
+                    ) ?: BlobResponse.BlobStatus.WatchDisconnected
                 onShowSnackbar("Response: ${res::class.simpleName}")
                 val lockerDao: LockerDao = koin.get()
                 lockerDao.clearAll()

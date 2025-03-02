@@ -13,23 +13,27 @@ import kotlinx.coroutines.flow.callbackFlow
  * Consume intents from specific IntentFilter as coroutine flow
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-fun IntentFilter.asFlow(context: Context): Flow<Intent> = callbackFlow {
-    val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            trySend(intent).isSuccess
+fun IntentFilter.asFlow(context: Context): Flow<Intent> =
+    callbackFlow {
+        val receiver =
+            object : BroadcastReceiver() {
+                override fun onReceive(
+                    context: Context,
+                    intent: Intent
+                ) {
+                    trySend(intent).isSuccess
+                }
+            }
+
+        context.registerReceiver(receiver, this@asFlow)
+
+        awaitClose {
+            try {
+                context.unregisterReceiver(receiver)
+            } catch (e: IllegalArgumentException) {
+                // unregisterReceiver can throw IllegalArgumentException if receiver
+                // was already unregistered
+                // This is not a problem, we can eat the exception
+            }
         }
     }
-
-    context.registerReceiver(receiver, this@asFlow)
-
-    awaitClose {
-        try {
-            context.unregisterReceiver(receiver)
-        } catch (e: IllegalArgumentException) {
-            // unregisterReceiver can throw IllegalArgumentException if receiver
-            // was already unregistered
-            // This is not a problem, we can eat the exception
-        }
-
-    }
-}

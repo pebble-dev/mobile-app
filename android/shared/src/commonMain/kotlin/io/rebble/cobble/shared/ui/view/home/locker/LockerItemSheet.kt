@@ -25,33 +25,38 @@ import io.rebble.cobble.shared.ui.viewmodel.LockerItemViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LockerItemSheet(onDismissRequest: () -> Unit, watchIsConnected: Boolean, viewModel: LockerItemViewModel) {
+fun LockerItemSheet(
+    onDismissRequest: () -> Unit,
+    watchIsConnected: Boolean,
+    viewModel: LockerItemViewModel
+) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
-            onDismissRequest = onDismissRequest,
-            sheetState = sheetState,
-            containerColor = AppTheme.materialColors.surface,
+        onDismissRequest = onDismissRequest,
+        sheetState = sheetState,
+        containerColor = AppTheme.materialColors.surface
     ) {
         val imageState: LockerItemViewModel.ImageState by viewModel.imageState.collectAsState()
         val supportedState: Boolean by viewModel.supportedState.collectAsState()
         Column(
-                modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp, bottom = 8.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, bottom = 8.dp)
         ) {
             if (viewModel.entry.entry.type == "watchapp") {
                 Row(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
                     AppIconContainer {
                         when (imageState) {
                             is LockerItemViewModel.ImageState.Loaded -> {
                                 Image(
-                                        modifier = Modifier.size(48.dp),
-                                        bitmap = (imageState as LockerItemViewModel.ImageState.Loaded).image,
-                                        contentDescription = "App icon",
+                                    modifier = Modifier.size(48.dp),
+                                    bitmap = (imageState as LockerItemViewModel.ImageState.Loaded).image,
+                                    contentDescription = "App icon"
                                 )
                             }
 
@@ -61,103 +66,177 @@ fun LockerItemSheet(onDismissRequest: () -> Unit, watchIsConnected: Boolean, vie
                         }
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("${viewModel.title} v${viewModel.version}", overflow = TextOverflow.Ellipsis, maxLines = 1, style = MaterialTheme.typography.bodyLarge)
-                        Text(viewModel.developerName, overflow = TextOverflow.Ellipsis, maxLines = 1, style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            "${viewModel.title} v${viewModel.version}",
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        Text(
+                            viewModel.developerName,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 }
             } else {
                 when (imageState) {
                     is LockerItemViewModel.ImageState.Loaded -> {
                         Image(
-                                modifier = Modifier
-                                        .height(130.dp)
-                                        .clip(RoundedCornerShape(6.dp))
-                                        .align(Alignment.CenterHorizontally),
-                                bitmap = (imageState as LockerItemViewModel.ImageState.Loaded).image,
-                                contentDescription = "Watchface screenshot",
-                                contentScale = ContentScale.FillHeight
+                            modifier =
+                                Modifier
+                                    .height(130.dp)
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .align(Alignment.CenterHorizontally),
+                            bitmap = (imageState as LockerItemViewModel.ImageState.Loaded).image,
+                            contentDescription = "Watchface screenshot",
+                            contentScale = ContentScale.FillHeight
                         )
                     }
 
                     is LockerItemViewModel.ImageState.Error -> {
-                        Box(modifier = Modifier.fillMaxWidth().height(130.dp).clip(RoundedCornerShape(6.dp)).background(AppTheme.materialColors.surfaceColorAtElevation(elevation = 1.dp))) {
-                            RebbleIcons.unknownApp(modifier = Modifier.size(56.dp).align(Alignment.Center))
+                        Box(
+                            modifier =
+                                Modifier.fillMaxWidth().height(
+                                    130.dp
+                                ).clip(
+                                    RoundedCornerShape(6.dp)
+                                ).background(
+                                    AppTheme.materialColors.surfaceColorAtElevation(
+                                        elevation = 1.dp
+                                    )
+                                )
+                        ) {
+                            RebbleIcons.unknownApp(
+                                modifier = Modifier.size(56.dp).align(Alignment.Center)
+                            )
                         }
                     }
 
                     is LockerItemViewModel.ImageState.Loading -> {
-                        Box(modifier = Modifier.fillMaxWidth().height(130.dp).clip(RoundedCornerShape(6.dp)).background(AppTheme.materialColors.surfaceColorAtElevation(elevation = 1.dp))) {
-                            CircularProgressIndicator(modifier = Modifier.size(56.dp).align(Alignment.Center))
+                        Box(
+                            modifier =
+                                Modifier.fillMaxWidth().height(
+                                    130.dp
+                                ).clip(
+                                    RoundedCornerShape(6.dp)
+                                ).background(
+                                    AppTheme.materialColors.surfaceColorAtElevation(
+                                        elevation = 1.dp
+                                    )
+                                )
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(56.dp).align(Alignment.Center)
+                            )
                         }
                     }
                 }
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(viewModel.title, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(), overflow = TextOverflow.Ellipsis, maxLines = 1, style = MaterialTheme.typography.bodyLarge)
-                    Text(viewModel.developerName, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(), overflow = TextOverflow.Ellipsis, maxLines = 1, style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        viewModel.title,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        viewModel.developerName,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
             Row(
-                    modifier = Modifier.align(Alignment.CenterHorizontally).padding(vertical = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                modifier =
+                    Modifier.align(
+                        Alignment.CenterHorizontally
+                    ).padding(vertical = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 IconButton(
-                        onClick = { /*TODO*/ },
-                        colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)
+                    onClick = { /*TODO*/ },
+                    colors =
+                        IconButtonDefaults.iconButtonColors(
+                            contentColor = MaterialTheme.colorScheme.primary
+                        )
                 ) {
                     RebbleIcons.rebbleStore()
                 }
                 TextButton(
-                        onClick = { /*TODO*/ },
-                        colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.primary, containerColor = Color.Transparent),
-                        shape = RoundedCornerShape(100)
+                    onClick = { /*TODO*/ },
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            contentColor = MaterialTheme.colorScheme.primary,
+                            containerColor = Color.Transparent
+                        ),
+                    shape = RoundedCornerShape(100)
                 ) {
                     Row(
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.wrapContentWidth(unbounded = true).align(Alignment.CenterVertically)
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier =
+                            Modifier.wrapContentWidth(
+                                unbounded = true
+                            ).align(Alignment.CenterVertically)
                     ) {
                         RebbleIcons.heartEmpty()
                         Text(viewModel.hearts.toString(), fontWeight = FontWeight.Bold)
                     }
                 }
                 IconButton(
-                        onClick = { /*TODO*/ },
-                        colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)
+                    onClick = { /*TODO*/ },
+                    colors =
+                        IconButtonDefaults.iconButtonColors(
+                            contentColor = MaterialTheme.colorScheme.primary
+                        )
                 ) {
                     RebbleIcons.share()
                 }
             }
             HorizontalDivider(thickness = 2.dp)
             if (viewModel.entry.entry.type == "watchface") {
-                val color = if (watchIsConnected && supportedState) {ListItemDefaults.contentColor} else {ListItemDefaults.contentColor.copy(alpha = 0.38f)}
+                val color =
+                    if (watchIsConnected && supportedState) {
+                        ListItemDefaults.contentColor
+                    } else {
+                        ListItemDefaults.contentColor.copy(alpha = 0.38f)
+                    }
                 ListItem(
-                    colors = ListItemDefaults.colors(
+                    colors =
+                        ListItemDefaults.colors(
                             leadingIconColor = color,
                             headlineColor = color,
-                            trailingIconColor = color,
-                    ),
-                    modifier = Modifier.clickable(enabled = watchIsConnected && supportedState) {
-                        viewModel.applyWatchface()
-                    },
+                            trailingIconColor = color
+                        ),
+                    modifier =
+                        Modifier.clickable(enabled = watchIsConnected && supportedState) {
+                            viewModel.applyWatchface()
+                        },
                     leadingContent = { RebbleIcons.sendToWatchUnchecked() },
-                    headlineContent = { Text("Apply on watch") },
+                    headlineContent = { Text("Apply on watch") }
                 )
                 HorizontalDivider(thickness = 2.dp)
             }
             ListItem(
-                    leadingContent = { RebbleIcons.permissions() },
-                    headlineContent = { Text("Manage permissions") },
-                    trailingContent = { RebbleIcons.caretRight() },
+                leadingContent = { RebbleIcons.permissions() },
+                headlineContent = { Text("Manage permissions") },
+                trailingContent = { RebbleIcons.caretRight() }
             )
             ListItem(
-                    leadingContent = { RebbleIcons.settings() },
-                    headlineContent = { Text("Settings") },
-                    trailingContent = { RebbleIcons.caretRight() },
+                leadingContent = { RebbleIcons.settings() },
+                headlineContent = { Text("Settings") },
+                trailingContent = { RebbleIcons.caretRight() }
             )
             HorizontalDivider(thickness = 2.dp)
             ListItem(
-                    leadingContent = { RebbleIcons.deleteTrash() },
-                    headlineContent = { Text("Delete from locker") },
+                leadingContent = { RebbleIcons.deleteTrash() },
+                headlineContent = { Text("Delete from locker") }
             )
         }
     }
