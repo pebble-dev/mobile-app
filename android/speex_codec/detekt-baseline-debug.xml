@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>MagicNumber:SpeexCodec.kt$SpeexCodec.Preprocessor.VAD$4</ID>
+    <ID>MagicNumber:SpeexCodec.kt$SpeexDecodeResult.Companion$2</ID>
+    <ID>MaxLineLength:SpeexCodec.kt$SpeexCodec$class</ID>
+    <ID>MaxLineLength:SpeexCodec.kt$SpeexCodec$fun</ID>
+    <ID>MaxLineLength:SpeexCodec.kt$SpeexCodec$private val speexPreprocessState: Long = initPreprocessState(preprocessors.fold(0) { acc, preprocessor -&gt; acc or preprocessor.flagValue }, sampleRate.toInt(), frameSize)</ID>
+    <ID>NewLineAtEndOfFile:SpeexCodec.kt$com.example.speex_codec.SpeexCodec.kt</ID>
+    <ID>PackageNaming:SpeexCodec.kt$package com.example.speex_codec</ID>
+    <ID>UnusedPrivateProperty:SpeexCodec.kt$SpeexCodec$private val gain: Float = 1.5f</ID>
+  </CurrentIssues>
+</SmellBaseline>

@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>NewLineAtEndOfFile:PPoGPebblePacketAssemblerTest.kt$io.rebble.cobble.bluetooth.ble.PPoGPebblePacketAssemblerTest.kt</ID>
+  </CurrentIssues>
+</SmellBaseline>
