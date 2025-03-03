@@ -57,7 +57,7 @@ between friends?), then hit finish.
 
 ## Building the app for iOS
 
-1. Install Java JDK 21 with `brew install openjdk@21` and follow the instructions afterwards
+1. Install Java JDK 17 with `brew install openjdk@17` and follow the instructions afterwards
 2. Download Xcode, launch it once and add a development account in some project. Execute `sudo xcode-select` to select your Xcode application
 3. Download Android-Studio, start it once, set the `ANDROID_HOME` variable, in the "SDK Tools", download the SDK Commandline-Tools
 
