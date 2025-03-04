@@ -3,10 +3,8 @@ package io.rebble.cobble.shared.ui.view.home.watches
 import android.shared.generated.resources.Res
 import android.shared.generated.resources.connected
 import android.shared.generated.resources.disconnected
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -16,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.rebble.cobble.shared.data.WatchItem
+import io.rebble.cobble.shared.ui.common.AppIconContainer
 import io.rebble.cobble.shared.ui.common.RebbleIcons
 import org.jetbrains.compose.resources.stringResource
 
@@ -32,22 +31,12 @@ fun WatchesListItem(watch: WatchItem,
             horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                    modifier = Modifier
-                            .size(60.dp)
-                            .background(
-                                    color = if (watch.isConnected) {
-                                                CONNECTED_BACKGROUND
-                                            } else {
-                                                MaterialTheme.colorScheme.primaryContainer
-                                            },
-
-                                    shape = RoundedCornerShape(8.dp)
-                            ),
-                    contentAlignment = Alignment.Center
-            ) {
-                RebbleIcons.deadWatchGhost80()
-            }
+            AppIconContainer(color = if (watch.isConnected) {
+                                        CONNECTED_BACKGROUND
+                                    } else {
+                                        MaterialTheme.colorScheme.primaryContainer
+                                    },
+                            content = { RebbleIcons.deadWatchGhost80() })
 
             Spacer(modifier = Modifier.width(12.dp))
 

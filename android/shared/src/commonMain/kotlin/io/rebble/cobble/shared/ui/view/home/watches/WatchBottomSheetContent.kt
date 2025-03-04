@@ -2,10 +2,8 @@ package io.rebble.cobble.shared.ui.view.home.watches
 
 import android.shared.generated.resources.*
 import android.shared.generated.resources.Res
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -16,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.rebble.cobble.shared.data.WatchItem
+import io.rebble.cobble.shared.ui.common.AppIconContainer
 import io.rebble.cobble.shared.ui.common.RebbleIcons
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -56,22 +55,12 @@ fun WatchBottomSheetContent(watch: WatchItem,
                             .padding(12.dp),
                     verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(
-                        modifier = Modifier
-                                .size(60.dp)
-                                .background(
-                                        color = if (watch.isConnected) {
-                                                    CONNECTED_BACKGROUND
-                                                } else {
-                                                    MaterialTheme.colorScheme.primaryContainer
-                                                },
-
-                                        shape = RoundedCornerShape(8.dp)
-                                ),
-                        contentAlignment = Alignment.Center
-                ) {
-                    RebbleIcons.deadWatchGhost80() //TODO Switch with watch icon
-                }
+                AppIconContainer(color = if (watch.isConnected) {
+                                            CONNECTED_BACKGROUND
+                                        } else {
+                                            MaterialTheme.colorScheme.primaryContainer
+                                        },
+                                content = { RebbleIcons.deadWatchGhost80() } ) //TODO Switch With Watch Icon
 
                 Spacer(modifier = Modifier.width(12.dp))
 

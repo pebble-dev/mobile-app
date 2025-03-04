@@ -5,11 +5,9 @@ import android.shared.generated.resources.Res
 import android.shared.generated.resources.bg_service_stopped
 import android.shared.generated.resources.my_watches
 import android.shared.generated.resources.nothing_connected
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.rebble.cobble.shared.ui.common.AppIconContainer
 import io.rebble.cobble.shared.ui.common.RebbleIcons
 import io.rebble.cobble.shared.ui.viewmodel.WatchesListViewModel
 import org.jetbrains.compose.resources.stringResource
@@ -64,17 +63,8 @@ fun WatchesPage(viewModel: WatchesListViewModel = viewModel{ WatchesListViewMode
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(25.dp)
             ) {
-                Box(
-                        modifier = Modifier
-                                .size(60.dp)
-                                .background(
-                                        color = MaterialTheme.colorScheme.primaryContainer,
-                                        shape = RoundedCornerShape(8.dp)
-                                ),
-                        contentAlignment = Alignment.Center
-                ) {
-                    RebbleIcons.disconnectFromWatch()
-                }
+                AppIconContainer(color = MaterialTheme.colorScheme.primaryContainer,
+                                content = { RebbleIcons.disconnectFromWatch() })
 
                 Column {
                     Text(
