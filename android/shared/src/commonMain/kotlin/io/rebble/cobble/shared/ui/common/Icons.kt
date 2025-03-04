@@ -3,8 +3,10 @@ package io.rebble.cobble.shared.ui.common
 import android.shared.generated.resources.RebbleIcons
 import android.shared.generated.resources.Res
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.Font
@@ -43,15 +45,15 @@ object RebbleIcons {
     @Composable
     fun rocket(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe80d), modifier = modifier)
     @Composable
-    fun unpairFromWatch(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe80e), modifier = modifier)
+    fun unpairFromWatch(modifier:  Modifier = Modifier.width(24.dp), tint: Color = LocalContentColor.current) = TextIcon(font(), Char(0xe80e), modifier = modifier, tint = tint)
     @Composable
-    fun applyUpdate(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe80f), modifier = modifier)
+    fun applyUpdate(modifier:  Modifier = Modifier.width(24.dp), tint: Color = LocalContentColor.current) = TextIcon(font(), Char(0xe80f), modifier = modifier, tint = tint)
     @Composable
-    fun checkForUpdates(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe810), modifier = modifier)
+    fun checkForUpdates(modifier:  Modifier = Modifier.width(24.dp), tint: Color = LocalContentColor.current) = TextIcon(font(), Char(0xe810), modifier = modifier, tint = tint)
     @Composable
-    fun disconnectFromWatch(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe811), modifier = modifier)
+    fun disconnectFromWatch(modifier:  Modifier = Modifier.width(24.dp), tint: Color = LocalContentColor.current) = TextIcon(font(), Char(0xe811), modifier = modifier, tint = tint)
     @Composable
-    fun connectToWatch(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe812), modifier = modifier)
+    fun connectToWatch(modifier:  Modifier = Modifier.width(24.dp), tint: Color = LocalContentColor.current) = TextIcon(font(), Char(0xe812), modifier = modifier, tint = tint)
     @Composable
     fun devices(modifier:  Modifier = Modifier.width(24.dp)) = TextIcon(font(), Char(0xe813), modifier = modifier)
     @Composable

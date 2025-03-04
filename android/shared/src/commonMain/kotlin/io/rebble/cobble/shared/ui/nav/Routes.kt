@@ -6,5 +6,6 @@ object Routes {
         const val LOCKER_APPS = "locker_apps"
         const val LOCKER_WATCHFACES = "locker_watchfaces"
         const val TEST_PAGE = "test_page"
+        const val WATCHES_PAGE = "watches_page"
     }
 }

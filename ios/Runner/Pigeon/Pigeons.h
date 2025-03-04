@@ -622,6 +622,7 @@ NSObject<FlutterMessageCodec> *KMPApiGetCodec(void);
 @protocol KMPApi
 - (void)updateTokenToken:(StringWrapper *)token error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)openLockerViewWithError:(FlutterError *_Nullable *_Nonnull)error;
+- (void)openWatchesViewWithError:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void KMPApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<KMPApi> *_Nullable api);

@@ -3,7 +3,7 @@
     <string name="bootUrlWarningTitle">Boot URL change requested</string>
     <string name="bootUrlWarningBody">An external source requested to change the boot URL, ensure you trust this source as changing to a malicious source shares all web services data with it!\n%s</string>
 
-    <string name="connected">Watch connected</string>
+    <string name="connected">Connected</string>
     <string name="connecting">Watch connecting</string>
     <string name="bluetooth_off">Bluetooth is off</string>
     <string name="warnings">Warnings</string>
@@ -12,6 +12,11 @@
     <string name="connect_watch">Connect to watch</string>
     <string name="disconnect_watch">Disconnect from watch</string>
     <string name="check_for_updates">Check for updates</string>
+    <string name="update_available">Update Available</string>
     <string name="download_update">Download Update</string>
     <string name="forget_watch">Forget Watch</string>
+    <string name="my_watches">My watches</string>
+    <string name="nothing_connected">Nothing Connected</string>
+    <string name="bg_service_stopped">Background service stopped</string>
+    <string name="other_watches">Other Watches</string>
 </resources>

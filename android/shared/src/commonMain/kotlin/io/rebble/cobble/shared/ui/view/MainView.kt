@@ -46,6 +46,9 @@ fun MainView(navController: NavHostController = rememberNavController()) {
                         composable(Routes.Home.TEST_PAGE) {
                             HomeScaffold(HomePage.TestPage, onNavChange = navController::navigate)
                         }
+                        composable(Routes.Home.WATCHES_PAGE) {
+                            HomeScaffold(HomePage.WatchesPage, onNavChange = navController::navigate)
+                        }
                         dialog("${Routes.DIALOG_APP_INSTALL}?uri={uri}", arguments = listOf(navArgument("uri") {
                             nullable = false
                             type = NavType.StringType

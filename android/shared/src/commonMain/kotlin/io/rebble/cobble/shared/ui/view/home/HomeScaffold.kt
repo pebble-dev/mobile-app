@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -15,11 +17,13 @@ import io.rebble.cobble.shared.ui.common.RebbleIcons
 import io.rebble.cobble.shared.ui.nav.Routes
 import io.rebble.cobble.shared.ui.view.home.locker.Locker
 import io.rebble.cobble.shared.ui.view.home.locker.LockerTabs
+import io.rebble.cobble.shared.ui.view.home.watches.WatchesPage
 import kotlinx.coroutines.launch
 
 open class HomePage {
     class Locker(val tab: LockerTabs) : HomePage()
     object TestPage : HomePage()
+    object WatchesPage : HomePage()
 }
 
 @Composable
@@ -28,6 +32,7 @@ fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
     val scope = rememberCoroutineScope()
     val searchingState = remember { mutableStateOf(false) }
     Scaffold(
+        contentWindowInsets = WindowInsets(0.dp), // Needed in scaffold for edgetoedge to work
         snackbarHost = { SnackbarHost(snackbarHostState) },
         /*topBar = {
             TopAppBar(
@@ -51,6 +56,13 @@ fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
                     icon = { RebbleIcons.locker() },
                     label = { Text("Locker") }
                 )
+
+                NavigationBarItem(
+                    selected = page is HomePage.WatchesPage,
+                    onClick = { onNavChange(Routes.Home.WATCHES_PAGE) },
+                    icon = { RebbleIcons.devices() },
+                    label = { Text("Devices") }
+                )
             }
         },
         floatingActionButton = {
@@ -65,6 +77,18 @@ fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
                             content = {
                                 RebbleIcons.search()
                             },
+                    )
+                }
+                is HomePage.WatchesPage -> {
+                    FloatingActionButton(
+                            modifier = Modifier
+                                    .padding(16.dp),
+                            onClick = {
+                                searchingState.value = false //TODO Change this so that it actually goes into pairing mode.
+                            },
+                            content = {
+                                Icon(Icons.Filled.Add, "Pair a watch")
+                            }
                     )
                 }
             }
@@ -83,6 +107,9 @@ fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
                             snackbarHostState.showSnackbar(message = it)
                         }
                     })
+                }
+                is HomePage.WatchesPage -> {
+                    WatchesPage()
                 }
             }
         }

@@ -37,4 +37,12 @@ class KMPApiBridge @Inject constructor(
             activity.startActivity(intent)
         }
     }
+    override fun openWatchesView() {
+        activity?.let {
+            Timber.d("Opening watches view")
+            val intent = Intent(activity.context, MainActivity::class.java)
+            intent.putExtra("navigationPath", Routes.Home.WATCHES_PAGE)
+            activity.startActivity(intent)
+        }
+    }
 }
