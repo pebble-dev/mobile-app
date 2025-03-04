@@ -15,11 +15,13 @@ import io.rebble.cobble.shared.ui.common.RebbleIcons
 import io.rebble.cobble.shared.ui.nav.Routes
 import io.rebble.cobble.shared.ui.view.home.locker.Locker
 import io.rebble.cobble.shared.ui.view.home.locker.LockerTabs
+import io.rebble.cobble.shared.ui.view.home.settings.Settings
 import kotlinx.coroutines.launch
 
 open class HomePage {
     class Locker(val tab: LockerTabs) : HomePage()
     object TestPage : HomePage()
+    object Settings: HomePage()
 }
 
 @Composable
@@ -50,6 +52,13 @@ fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
                     onClick = { onNavChange(Routes.Home.LOCKER_WATCHFACES) },
                     icon = { RebbleIcons.locker() },
                     label = { Text("Locker") }
+                )
+
+                NavigationBarItem(
+                        selected = page is HomePage.Settings,
+                        onClick = { onNavChange(Routes.Home.SETTINGS) },
+                        icon = { RebbleIcons.settings() },
+                        label = { Text("Settings") }
                 )
             }
         },
@@ -84,6 +93,7 @@ fun HomeScaffold(page: HomePage, onNavChange: (String) -> Unit) {
                         }
                     })
                 }
+                is HomePage.Settings -> Settings(onNavigate = onNavChange)
             }
         }
     }
