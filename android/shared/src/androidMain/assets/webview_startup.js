@@ -731,3 +731,5 @@ Pebble.appGlanceReload = function(appGlanceSlices, appGlanceReloadSuccessCallbac
         appGlanceReloadFailureCallback(appGlanceSlices, callbackPayload);
     }
 }
+
+window.cobble = true;
