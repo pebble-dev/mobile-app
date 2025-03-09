@@ -47,7 +47,7 @@ class PKJSApp(val uuid: Uuid): KoinComponent {
                 Logging.v("Ignoring app message for different app: ${it.uuid.get()} != $uuid")
                 return@onEach
             }
-            Logging.d("Received app message: $it")
+            Logging.d("Received app message: ${it::class.simpleName} ${it.transactionId}")
             withTimeout(1000) {
                 device.outgoingAppMessages.emit(OutgoingMessage.Ack(AppMessage.AppMessageACK(it.transactionId.get())))
             }
@@ -59,11 +59,12 @@ class PKJSApp(val uuid: Uuid): KoinComponent {
         }.catch {
             Logging.e("Error receiving app message", it)
         }.launchIn(scope)
-        jsRunner?.outgoingAppMessages?.onEach {
-            Logging.d("Sending app message: $it")
-            val appMessage = AppMessage.fromJSDataString(it, appInfo)
+        jsRunner?.outgoingAppMessages?.onEach { (tIDDeferred, data) ->
+            Logging.d("Sending app message: $data")
+            val appMessage = AppMessage.fromJSDataString(data, appInfo)
             val tID = device.appMessageTransactionSequence.next()
             appMessage.transactionId.set(tID)
+            tIDDeferred.complete(tID)
             device.appMessageService.send(appMessage)
         }?.catch {
             Logging.e("Error sending app message", it)

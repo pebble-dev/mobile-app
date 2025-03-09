@@ -9,15 +9,15 @@ import io.rebble.cobble.shared.data.js.fromDevice
 import io.rebble.cobble.shared.database.dao.LockerDao
 import io.rebble.cobble.shared.domain.state.ConnectionStateManager
 import io.rebble.cobble.shared.domain.state.watchOrNull
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import kotlin.time.Duration.Companion.seconds
 
-class WebViewPrivatePKJSInterface(private val jsRunner: WebViewJsRunner, private val scope: CoroutineScope, private val outgoingAppMessages: MutableSharedFlow<String>): PrivatePKJSInterface, KoinComponent {
+class WebViewPrivatePKJSInterface(private val jsRunner: WebViewJsRunner, private val scope: CoroutineScope, private val outgoingAppMessages: MutableSharedFlow<Pair<CompletableDeferred<UByte>, String>>): PrivatePKJSInterface, KoinComponent {
     private val lockerDao: LockerDao by inject()
 
     @JavascriptInterface
@@ -118,10 +118,17 @@ class WebViewPrivatePKJSInterface(private val jsRunner: WebViewJsRunner, private
     }
 
     @JavascriptInterface
-    fun sendAppMessageString(jsonAppMessage: String) {
+    fun sendAppMessageString(jsonAppMessage: String): Int {
         Logging.v("sendAppMessageString")
-        if (!outgoingAppMessages.tryEmit(jsonAppMessage)) {
+        val completable = CompletableDeferred<UByte>()
+        if (!outgoingAppMessages.tryEmit(Pair(completable, jsonAppMessage))) {
             Logging.e("Failed to emit outgoing AppMessage")
+            error("Failed to emit outgoing AppMessage")
+        }
+        return runBlocking {
+            withTimeout(10.seconds) {
+                completable.await().toInt()
+            }
         }
     }
 
