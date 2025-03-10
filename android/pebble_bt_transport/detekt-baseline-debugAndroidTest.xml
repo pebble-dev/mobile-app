@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>IgnoredReturnValue:GattServerTest.kt$GattServerTest$onEach { message -&gt; Timber.d("Received appfetch message: $message") if (message is AppFetchRequest) { val appUuid = message.uuid.get().toString() appFetchService.send(AppFetchResponse(AppFetchResponseStatus.START)) putBytesService.sendAppPart( message.appId.get(), pbwBinaryBlob!!, WatchType.BASALT, watchVersion!!, pbwManifest!!.application, ObjectType.APP_EXECUTABLE ) if (pbwManifest!!.resources != null) { putBytesService.sendAppPart( message.appId.get(), pbwResBlob!!, WatchType.BASALT, watchVersion!!, pbwManifest!!.resources!!, ObjectType.APP_RESOURCE ) } } }</ID>
+    <ID>InjectDispatcher:GattServerTest.kt$GattServerTest$IO</ID>
+    <ID>LongMethod:GattServerTest.kt$GattServerTest$@OptIn(FlowPreview::class) @Test fun connectToWatchAndInstallApp()</ID>
+    <ID>MayBeConst:PebbleLEConnectorTest.kt$PebbleLEConnectorTest.Companion$private val DEVICE_ADDRESS_LE = "71:D2:AE:CE:30:C1"</ID>
+    <ID>NewLineAtEndOfFile:GattServerTest.kt$io.rebble.cobble.bluetooth.ble.GattServerTest.kt</ID>
+    <ID>NewLineAtEndOfFile:PebbleLEConnectorTest.kt$io.rebble.cobble.bluetooth.ble.PebbleLEConnectorTest.kt</ID>
+    <ID>NewLineAtEndOfFile:utils.kt$io.rebble.cobble.bluetooth.ble.utils.kt</ID>
+    <ID>UnusedPrivateProperty:GattServerTest.kt$GattServerTest$val appUuid = message.uuid.get().toString()</ID>
+    <ID>UnusedPrivateProperty:GattServerTest.kt$GattServerTest$val notifService = NotificationService(blobService)</ID>
+    <ID>UnusedPrivateProperty:GattServerTest.kt$GattServerTest$val protocolIO = ProtocolIO( protocolInputStream.buffered(8192), protocolOutputStream.buffered(8192), protocolHandler, MutableSharedFlow() )</ID>
+    <ID>UnusedPrivateProperty:GattServerTest.kt$GattServerTest$val sendLoop = connectionScope.launch { protocolHandler.startPacketSendingLoop { Timber.d("Sending packet") server.sendMessageToDevice(device.address, it.asByteArray()) } }</ID>
+    <ID>UnusedPrivateProperty:GattServerTest.kt$GattServerTest$val sendLoop = connectionScope.launch { protocolHandler.startPacketSendingLoop { server.sendMessageToDevice(device.address, it.asByteArray()) return@startPacketSendingLoop true } }</ID>
+  </CurrentIssues>
+</SmellBaseline>

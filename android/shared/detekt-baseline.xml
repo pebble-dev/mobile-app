@@ -1,0 +1,615 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:PhoneCalendarSyncer.kt$PhoneCalendarSyncer$existingPin != null &amp;&amp; existingPin.duration == newPin.duration &amp;&amp; existingPin.isAllDay == newPin.isAllDay &amp;&amp; existingPin.attributesJson == newPin.attributesJson &amp;&amp; existingPin.actionsJson == newPin.actionsJson</ID>
+    <ID>CyclomaticComplexMethod:AppInstallDialog.kt$@Composable fun AppInstallDialog(uri: String, onDismissRequest: () -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:LockerItemViewModel.kt$LockerItemViewModel$fun applyWatchface()</ID>
+    <ID>CyclomaticComplexMethod:LockerSyncJob.kt$LockerSyncJob$suspend fun syncToDevice(): Boolean</ID>
+    <ID>CyclomaticComplexMethod:PhoneCalendarSyncer.kt$PhoneCalendarSyncer$suspend fun syncDeviceCalendarsToDb(): Boolean</ID>
+    <ID>CyclomaticComplexMethod:VoiceSessionHandler.kt$VoiceSessionHandler$private suspend fun handleSpeechStream(voiceSession: VoiceSession)</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:RunningFirmwareVersionParsed.kt$val (major, minor, patch, suffix) = match.destructured</ID>
+    <ID>EmptyClassBlock:CalendarList.kt$CalendarList${ }</ID>
+    <ID>EmptyFunctionBlock:AlertingApps.kt${ }</ID>
+    <ID>ExplicitItLambdaParameter:Locker.kt${ index, it -&gt; NavigationBarItem( selected = page == it, onClick = { onTabChanged(it) }, icon = { Text(it.label) }, ) }</ID>
+    <ID>ForbiddenComment:ASRClient.kt$ASRClient$//TODO: Implement response handling</ID>
+    <ID>ForbiddenComment:CalendarActionHandler.kt$CalendarActionHandler$//TODO: Handle mute action</ID>
+    <ID>ForbiddenComment:LockerItemViewModel.kt$LockerItemViewModel$//TODO: also display when chalk connected</ID>
+    <ID>ForbiddenComment:PKJSInterface.kt$PKJSInterface$* Get account token * Sideloaded apps: hash of token and app UUID * Appstore apps: hash of token and developer ID * //TODO: offline token</ID>
+    <ID>ForbiddenComment:PebbleDevice.kt$PebbleDevice$//TODO: Move to per-protocol handler services, so we can have multiple PebbleDevices, this is the first of many</ID>
+    <ID>ForbiddenComment:StoreViewModel.kt$StoreViewModel$// TODO: Use an actual locale</ID>
+    <ID>ForbiddenComment:StoreViewModel.kt$StoreViewModel.&lt;no name provided&gt;$/* // TODO: "setVisibleApp" -&gt; { val paramData = Json.decodeFromString&lt;JsFrame&lt;SetVisibleApp&gt;&gt;(parametersArgs) println(paramData) } */</ID>
+    <ID>ForbiddenComment:SystemHandler.kt$SystemHandler$//FIXME: Possible race condition here</ID>
+    <ID>FunctionNaming:AlertingApps.kt$@Composable fun AlertingApps()</ID>
+    <ID>FunctionNaming:AppIconContainer.kt$@Composable fun AppIconContainer(color: Color = Color.Unspecified, modifier: Modifier = Modifier, content: @Composable () -&gt; Unit)</ID>
+    <ID>FunctionNaming:AppInstallDialog.kt$@Composable fun AppInstallDialog(uri: String, onDismissRequest: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:Converters.kt$Converters$@TypeConverter fun InstantToLong(instant: Instant?): Long?</ID>
+    <ID>FunctionNaming:Converters.kt$Converters$@TypeConverter fun LongToInstant(long: Long?): Instant?</ID>
+    <ID>FunctionNaming:Converters.kt$Converters$@TypeConverter fun StringToUuid(string: String?): Uuid?</ID>
+    <ID>FunctionNaming:Converters.kt$Converters$@TypeConverter fun UuidToString(uuid: Uuid?): String?</ID>
+    <ID>FunctionNaming:Font0.commonMain.kt$@InternalResourceApi internal fun _collectCommonMainFont0Resources(map: MutableMap&lt;String, FontResource&gt;)</ID>
+    <ID>FunctionNaming:Font0.commonMain.kt$private fun init_PebbleWatchIcons(): FontResource</ID>
+    <ID>FunctionNaming:Font0.commonMain.kt$private fun init_RebbleIcons(): FontResource</ID>
+    <ID>FunctionNaming:HomeScaffold.kt$@Composable fun HomeScaffold(page: HomePage, onNavChange: (String) -&gt; Unit)</ID>
+    <ID>FunctionNaming:Locker.kt$@Composable fun Locker(page: LockerTabs, lockerDao: LockerDao = getKoin().get(), viewModel: LockerViewModel = viewModel { LockerViewModel(lockerDao) }, onTabChanged: (LockerTabs) -&gt; Unit)</ID>
+    <ID>FunctionNaming:LockerAppList.kt$@OptIn(ExperimentalFoundationApi::class) @Composable fun LockerAppList(viewModel: LockerViewModel, onOpenModalSheet: (LockerItemViewModel) -&gt; Unit)</ID>
+    <ID>FunctionNaming:LockerItemSheet.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun LockerItemSheet(onDismissRequest: () -&gt; Unit, watchIsConnected: Boolean, viewModel: LockerItemViewModel)</ID>
+    <ID>FunctionNaming:LockerListItem.kt$@Composable fun LockerListItem(httpClient: HttpClient, entry: SyncedLockerEntryWithPlatforms, onOpenModalSheet: (LockerItemViewModel) -&gt; Unit, dragHandle: (@Composable () -&gt; Unit)? = null)</ID>
+    <ID>FunctionNaming:LockerWatchfaceItem.kt$@Composable fun LockerWatchfaceItem(entry: SyncedLockerEntryWithPlatforms, watchConnected: Boolean, onOpenModalSheet: (LockerItemViewModel) -&gt; Unit)</ID>
+    <ID>FunctionNaming:LockerWatchfaceList.kt$@Composable fun LockerWatchfaceList(viewModel: LockerViewModel, onOpenModalSheet: (LockerItemViewModel) -&gt; Unit)</ID>
+    <ID>FunctionNaming:MainView.kt$@Composable fun MainView(navController: NavHostController = rememberNavController())</ID>
+    <ID>FunctionNaming:Store.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun Store(page: StoreTabs, viewModel: StoreViewModel = viewModel { StoreViewModel() }, onTabChanged: (StoreTabs) -&gt; Unit)</ID>
+    <ID>FunctionNaming:TestPage.kt$@Composable fun TestPage(onShowSnackbar: (String) -&gt; Unit)</ID>
+    <ID>FunctionNaming:TextIcon.kt$@Composable fun TextIcon(font: FontFamily, char: Char, contentDescription: String = "Icon", modifier: Modifier = Modifier, tint: Color = LocalContentColor.current)</ID>
+    <ID>IteratorNotThrowingNoSuchElementException:AppMessageTransactionSequence.kt$AppMessageTransactionSequence$&lt;no name provided&gt; : Iterator</ID>
+    <ID>LongMethod:AppInstallDialog.kt$@Composable fun AppInstallDialog(uri: String, onDismissRequest: () -&gt; Unit)</ID>
+    <ID>LongMethod:HomeScaffold.kt$@Composable fun HomeScaffold(page: HomePage, onNavChange: (String) -&gt; Unit)</ID>
+    <ID>LongMethod:Locker.kt$@Composable fun Locker(page: LockerTabs, lockerDao: LockerDao = getKoin().get(), viewModel: LockerViewModel = viewModel { LockerViewModel(lockerDao) }, onTabChanged: (LockerTabs) -&gt; Unit)</ID>
+    <ID>LongMethod:LockerItemSheet.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun LockerItemSheet(onDismissRequest: () -&gt; Unit, watchIsConnected: Boolean, viewModel: LockerItemViewModel)</ID>
+    <ID>LongMethod:LockerItemViewModel.kt$LockerItemViewModel$fun applyWatchface()</ID>
+    <ID>LongMethod:LockerSyncJob.kt$LockerSyncJob$suspend fun syncToDevice(): Boolean</ID>
+    <ID>LongMethod:PbwApp.kt$PbwApp$suspend fun installToLockerCache(): Boolean</ID>
+    <ID>LongMethod:PhoneCalendarSyncer.kt$PhoneCalendarSyncer$suspend fun syncDeviceCalendarsToDb(): Boolean</ID>
+    <ID>LongMethod:Store.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun Store(page: StoreTabs, viewModel: StoreViewModel = viewModel { StoreViewModel() }, onTabChanged: (StoreTabs) -&gt; Unit)</ID>
+    <ID>LongMethod:VoiceSessionHandler.kt$VoiceSessionHandler$private suspend fun handleSpeechStream(voiceSession: VoiceSession)</ID>
+    <ID>LongParameterList:PutBytesController.kt$PutBytesController$( appId: UInt, pbwFile: File, watchType: WatchType, manifestEntry: PbwBlob, type: ObjectType, progressMultiplier: Double )</ID>
+    <ID>LoopWithTooManyJumpStatements:SystemHandler.kt$SystemHandler$while</ID>
+    <ID>MagicNumber:AppDatabase.kt$AppDatabase$10</ID>
+    <ID>MagicNumber:AppDatabase.kt$AppDatabase$11</ID>
+    <ID>MagicNumber:AppDatabase.kt$AppDatabase$12</ID>
+    <ID>MagicNumber:AppDatabase.kt$AppDatabase$13</ID>
+    <ID>MagicNumber:AppDatabase.kt$AppDatabase$3</ID>
+    <ID>MagicNumber:AppDatabase.kt$AppDatabase$4</ID>
+    <ID>MagicNumber:AppDatabase.kt$AppDatabase$5</ID>
+    <ID>MagicNumber:AppDatabase.kt$AppDatabase$6</ID>
+    <ID>MagicNumber:AppDatabase.kt$AppDatabase$7</ID>
+    <ID>MagicNumber:AppDatabase.kt$AppDatabase$8</ID>
+    <ID>MagicNumber:AppDatabase.kt$AppDatabase$9</ID>
+    <ID>MagicNumber:AppIconContainer.kt$0xFF008DFF</ID>
+    <ID>MagicNumber:AppIconContainer.kt$0xFF00A982</ID>
+    <ID>MagicNumber:AppIconContainer.kt$0xFF41CBF7</ID>
+    <ID>MagicNumber:AppIconContainer.kt$0xFF6B1D97</ID>
+    <ID>MagicNumber:AppIconContainer.kt$0xFFFFFF00</ID>
+    <ID>MagicNumber:AppInstallHandler.kt$AppInstallHandler$2_000</ID>
+    <ID>MagicNumber:AppLogController.kt$AppLogController$1000</ID>
+    <ID>MagicNumber:AppMessageTransactionSequence.kt$AppMessageTransactionSequence.&lt;no name provided&gt;$0x100</ID>
+    <ID>MagicNumber:AppMessageTransactionSequence.kt$AppMessageTransactionSequence.&lt;no name provided&gt;$0xff</ID>
+    <ID>MagicNumber:AppstoreClient.kt$AppstoreClient$200</ID>
+    <ID>MagicNumber:AudioStreamHandler.kt$AudioStreamHandler$3000</ID>
+    <ID>MagicNumber:AuthClient.kt$AuthClient$200</ID>
+    <ID>MagicNumber:CalendarEvent.kt$300</ID>
+    <ID>MagicNumber:CalendarTimelineActionId.kt$CalendarTimelineActionId.DeclineEvent$4</ID>
+    <ID>MagicNumber:CalendarTimelineActionId.kt$CalendarTimelineActionId.MaybeEvent$3</ID>
+    <ID>MagicNumber:Color.kt$4</ID>
+    <ID>MagicNumber:Color.kt$6</ID>
+    <ID>MagicNumber:Color.kt$85</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe800</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe801</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe802</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe803</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe804</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe805</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe806</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe807</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe808</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe809</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe80a</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe80b</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe80c</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe80d</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe80e</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe80f</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe810</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe811</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe812</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe813</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe814</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe815</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe816</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe817</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe818</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe819</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe81a</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe81b</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe81c</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe81d</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe81e</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe81f</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe821</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe822</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe823</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe824</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe825</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe826</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe827</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe828</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe829</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe82a</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe82b</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe82c</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe82d</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe82e</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe82f</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe830</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe831</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe832</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe833</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe834</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe835</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe836</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe837</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe838</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe839</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe83a</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe83b</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe83c</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe83d</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe83e</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe83f</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe840</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe841</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe842</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe843</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe844</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe845</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe846</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe847</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe848</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe849</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe84a</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe84b</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe84c</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe84d</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe84e</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe84f</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe850</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe851</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe852</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe853</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe854</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe855</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe856</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe857</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe858</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe859</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe85a</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe85b</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe85c</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe85d</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe85e</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe85f</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe860</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe861</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe862</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe863</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe864</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe865</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe866</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe868</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe869</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe86a</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe86b</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe86c</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe86d</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe86e</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe86f</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe870</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe871</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe872</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe873</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe874</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe875</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe876</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe877</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe878</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe879</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe87a</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe87b</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe87c</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe87d</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe87e</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe87f</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe880</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe881</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe882</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe883</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe884</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe885</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe886</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe887</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe888</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe889</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe88a</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe88b</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe88c</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe88d</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe88e</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe88f</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe890</ID>
+    <ID>MagicNumber:Icons.kt$RebbleIcons$0xe891</ID>
+    <ID>MagicNumber:LockerItemSheet.kt$100</ID>
+    <ID>MagicNumber:LockerItemViewModel.kt$LockerItemViewModel$10</ID>
+    <ID>MagicNumber:NextSyncAction.kt$NextSyncAction.Companion$3</ID>
+    <ID>MagicNumber:NextSyncAction.kt$NextSyncAction.Companion$4</ID>
+    <ID>MagicNumber:NextSyncAction.kt$NextSyncAction.DeleteThenIgnore$4</ID>
+    <ID>MagicNumber:NextSyncAction.kt$NextSyncAction.Ignore$3</ID>
+    <ID>MagicNumber:PKJSApp.kt$PKJSApp$1000</ID>
+    <ID>MagicNumber:PebbleDevice.kt$PebbleDevice$8</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.ClassicFlyBlue$8</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.ClassicFreshGreen$9</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.ClassicHotPink$10</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.ClassicOrange$4</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.ClassicPink$5</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.ClassicRed$3</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.ClassicSteelGunmetal$7</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.ClassicSteelSilver$6</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.Pebble2HRAqua$30</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.Pebble2HRBlack$25</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.Pebble2HRFlame$28</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.Pebble2HRLime$27</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.Pebble2HRWhite$29</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.Pebble2SEBlack$24</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.Pebble2SEWhite$26</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.Time2Gold$33</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.Time2Gunmetal$31</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.Time2Silver$32</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.TimeBlack$12</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.TimeRed$13</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.TimeRoundBlack14$18</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.TimeRoundBlack20$20</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.TimeRoundBlackGoldPolish20$35</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.TimeRoundBlackSilverPolish20$34</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.TimeRoundRainbowBlack20$23</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.TimeRoundRainbowSilver14$22</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.TimeRoundRoseGold14$21</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.TimeRoundSilver14$17</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.TimeRoundSilver20$19</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.TimeSteelGold$16</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.TimeSteelGunmetal$15</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.TimeSteelSilver$14</ID>
+    <ID>MagicNumber:PebbleWatchModel.kt$PebbleWatchModel.TimeWhite$11</ID>
+    <ID>MagicNumber:StoreViewModel.kt$StoreViewModel.&lt;no name provided&gt;$30</ID>
+    <ID>MagicNumber:SystemHandler.kt$SystemHandler$3</ID>
+    <ID>MagicNumber:SystemHandler.kt$SystemHandler$3000</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$11</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$12</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$13</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$14</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$15</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$16</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$17</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$18</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$19</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$20</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$21</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$22</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$23</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$24</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$25</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$26</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$27</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$28</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$29</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$3</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$31</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$36</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$37</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$38</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$4</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$47</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$48</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$5</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$6</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$7</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$8</ID>
+    <ID>MagicNumber:TimelineAttribute.kt$TimelineAttribute.Companion$9</ID>
+    <ID>MagicNumber:TimelineClient.kt$TimelineClient$200</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.Activity$100</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.AlarmClock$13</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.AmericanFootball$20</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.ArrowDown$99</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.ArrowUp$98</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.AudioCassette$12</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.Basketball$74</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.BirthdayEvent$23</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.CarRental$24</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.CheckInternetConnection$44</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.CloudyDay$25</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.CricketGame$26</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.DaySeparator$56</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.DinnerReservation$27</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.DismissedPhoneCall$75</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.DuringPhoneCall$49</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.DuringPhoneCallCentered$95</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.GenericConfirmation$55</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.GenericEmail$19</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.GenericQuestion$63</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.GenericSms$45</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.GenericWarning$28</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.GlucoseMonitor$29</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.HeavyRain$52</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.HeavySnow$53</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.HockeyGame$30</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.HotelReservation$31</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.IncomingPhoneCall$78</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.LightRain$32</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.LightSnow$33</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.Location$82</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.MovieEvent$34</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.MusicEvent$35</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NewsEvent$36</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NoEvents$57</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationAmazon$111</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationBlackberryMessenger$58</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationFacebook$11</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationFacebookMessenger$10</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationFacetime$110</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationFlag$4</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationGmail$9</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationGoogleHangouts$8</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationGoogleInbox$61</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationGoogleMaps$112</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationGoogleMessenger$76</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationGooglePhotos$113</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationHipChat$77</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationInstagram$59</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationIosPhotos$114</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationKakaoTalk$79</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationKik$80</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationLighthouse$81</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationLine$67</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationLinkedIn$115</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationMailbox$60</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationOutlook$64</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationReminder$3</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationSkype$68</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationSlack$116</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationSnapchat$69</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationTelegram$7</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationTwitter$6</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationViber$70</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationWeChat$71</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationWhatsapp$5</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.NotificationYahooMail$72</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.PartlyCloudy$37</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.PayBill$38</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.RadioShow$39</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.RainingAndSnowing$65</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.ReachedFitnessGoal$66</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.ResultDeleted$43</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.ResultDismissed$51</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.ResultFailed$62</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.ResultMute$46</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.ResultSent$47</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.ResultUnmute$86</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.ResultUnmuteAlt$94</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.RewardAverage$104</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.RewardBad$102</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.RewardGood$103</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.ScheduledEvent$40</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.ScheduledFlight$54</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.Settings$83</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.Sleep$101</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.SoccerGame$41</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.StocksEvent$42</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.Sunrise$84</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.Sunset$85</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.ThumbsUp$97</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.TideIsHigh$50</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.TimelineBaseball$22</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.TimelineCalendar$21</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.TimelineEmptyCalendar$96</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.TimelineSports$17</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.TimelineSun$16</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.TimelineWeather$14</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.TvShow$73</ID>
+    <ID>MagicNumber:TimelineIcon.kt$TimelineIcon.WatchDisconnected$48</ID>
+    <ID>MatchingDeclarationName:GlobalErrorHandler.kt$GlobalExceptionHandler : CoroutineExceptionHandler</ID>
+    <ID>MatchingDeclarationName:HomeScaffold.kt$HomePage</ID>
+    <ID>MatchingDeclarationName:Icons.kt$RebbleIcons</ID>
+    <ID>MatchingDeclarationName:Locker.kt$LockerTabs</ID>
+    <ID>MatchingDeclarationName:Store.kt$StoreTabs</ID>
+    <ID>MaxLineLength:AppInstallDialog.kt$val progress = (appInstallState as AppInstallDialogViewModel.AppInstallState.Installing).progress.toFloat()</ID>
+    <ID>MaxLineLength:AppInstallDialog.kt$}</ID>
+    <ID>MaxLineLength:AppInstallDialogViewModel.kt$AppInstallDialogViewModel$device.putBytesController.status.drop(1).takeWhile { it.state != PutBytesController.State.IDLE }.timeout(15.seconds)</ID>
+    <ID>MaxLineLength:AppInstallHandler.kt$AppInstallHandler$Logging.e("Watch $targetWatchType is not compatible with app $appUuid Compatible apps: ${appInfo.targetPlatforms}")</ID>
+    <ID>MaxLineLength:AppInstallHandler.kt$expect suspend fun downloadPbw(context: PlatformContext, httpClient: HttpClient, lockerDao: LockerDao, appUuid: String): String?</ID>
+    <ID>MaxLineLength:AppMessageHandler.kt$AppMessageHandler$"Wanted to send a message to the app $app, but ${pebbleDevice.currentActiveApp.value} is active on the watch."</ID>
+    <ID>MaxLineLength:AppMessageHandler.kt$AppMessageHandler$lastReceivedMessage = AppMessageTimestamp(message.uuid.get(), Clock.System.now().toEpochMilliseconds())</ID>
+    <ID>MaxLineLength:AudioStreamHandler.kt$AudioStreamHandler$Logging.e("Received audio stream data transfer for different session ID (expected ${pebbleDevice.activeVoiceSession.value?.sessionId}, got ${message.sessionId.get()})")</ID>
+    <ID>MaxLineLength:AudioStreamHandler.kt$AudioStreamHandler$pebbleDevice.activeVoiceSession.value?.audioStreamFrames?.emit(AudioStreamFrame.Stop(message.sessionId.get().toInt()))</ID>
+    <ID>MaxLineLength:AudioStreamHandler.kt$AudioStreamHandler$pebbleDevice.activeVoiceSession.value?.audioStreamFrames?.emitAll(message.frames.list.map { AudioStreamFrame.AudioData(it.data.get().asByteArray()) }.asFlow())</ID>
+    <ID>MaxLineLength:DictationService.kt$DictationService$fun handleSpeechStream(speexEncoderInfo: SpeexEncoderInfo, audioStreamFrames: Flow&lt;AudioStreamFrame&gt;): Flow&lt;DictationServiceResponse&gt;</ID>
+    <ID>MaxLineLength:EventRecurrenceRule.kt$EventRecurrenceRule.Frequency.Yearly$class</ID>
+    <ID>MaxLineLength:Icons.kt$RebbleIcons$fun</ID>
+    <ID>MaxLineLength:Locker.kt$LockerItemSheet(onDismissRequest = { viewModel.closeModalSheet() }, watchIsConnected = watchIsConnected, viewModel = sheetViewModel)</ID>
+    <ID>MaxLineLength:Locker.kt$fun</ID>
+    <ID>MaxLineLength:LockerAppList.kt$.</ID>
+    <ID>MaxLineLength:LockerItemSheet.kt$Box</ID>
+    <ID>MaxLineLength:LockerItemSheet.kt$Text("${viewModel.title} v${viewModel.version}", overflow = TextOverflow.Ellipsis, maxLines = 1, style = MaterialTheme.typography.bodyLarge)</ID>
+    <ID>MaxLineLength:LockerItemSheet.kt$Text(viewModel.developerName, overflow = TextOverflow.Ellipsis, maxLines = 1, style = MaterialTheme.typography.bodyMedium)</ID>
+    <ID>MaxLineLength:LockerItemSheet.kt$Text(viewModel.developerName, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(), overflow = TextOverflow.Ellipsis, maxLines = 1, style = MaterialTheme.typography.bodyMedium)</ID>
+    <ID>MaxLineLength:LockerItemSheet.kt$Text(viewModel.title, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(), overflow = TextOverflow.Ellipsis, maxLines = 1, style = MaterialTheme.typography.bodyLarge)</ID>
+    <ID>MaxLineLength:LockerItemSheet.kt$colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.primary, containerColor = Color.Transparent)</ID>
+    <ID>MaxLineLength:LockerItemSheet.kt$val color = if (watchIsConnected &amp;&amp; supportedState) {ListItemDefaults.contentColor} else {ListItemDefaults.contentColor.copy(alpha = 0.38f)}</ID>
+    <ID>MaxLineLength:LockerItemViewModel.kt$LockerItemViewModel$class</ID>
+    <ID>MaxLineLength:LockerItemViewModel.kt$LockerItemViewModel$get() = entry.platforms.any { it.name == "chalk" } &amp;&amp; entry.platforms.size == 1 //TODO: also display when chalk connected</ID>
+    <ID>MaxLineLength:LockerItemViewModel.kt$LockerItemViewModel$val</ID>
+    <ID>MaxLineLength:LockerItemViewModel.kt$LockerItemViewModel$val availablePlatform = platform?.let { entry.platforms.firstOrNull { it.name == platform.watchType.codename } }</ID>
+    <ID>MaxLineLength:LockerItemViewModel.kt$LockerItemViewModel$val compatibleVariants = platform?.watchType?.getCompatibleAppVariants()?.map { it.codename } ?: emptyList()</ID>
+    <ID>MaxLineLength:LockerItemViewModel.kt$LockerItemViewModel$val oldest = lockerDao.getSyncedEntries().filter { it.type == "watchface" &amp;&amp; it.nextSyncAction == NextSyncAction.Nothing }.minByOrNull { it.lastOpened ?: Instant.DISTANT_PAST }</ID>
+    <ID>MaxLineLength:LockerListItem.kt$IconButton</ID>
+    <ID>MaxLineLength:LockerListItem.kt$fun</ID>
+    <ID>MaxLineLength:LockerSyncJob.kt$LockerSyncJob$Logging.i("Synced locker: ${newEntries.size} new, ${changedEntries.size} changed, ${removedEntries.size} removed")</ID>
+    <ID>MaxLineLength:LockerSyncJob.kt$LockerSyncJob$old.entry.nextSyncAction != NextSyncAction.Ignore &amp;&amp; old.entry.id == new.id &amp;&amp; old.entry.version != new.version</ID>
+    <ID>MaxLineLength:LockerSyncJob.kt$LockerSyncJob$val removedEntries = storedLocker.filter { old -&gt; locker.none { nw -&gt; nw.id == old.entry.id } &amp;&amp; !old.entry.local }</ID>
+    <ID>MaxLineLength:LockerWatchfaceItem.kt$Box</ID>
+    <ID>MaxLineLength:LockerWatchfaceItem.kt$Column</ID>
+    <ID>MaxLineLength:LockerWatchfaceItem.kt$IconButton</ID>
+    <ID>MaxLineLength:LockerWatchfaceItem.kt$Text(viewModel.developerName, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(), overflow = TextOverflow.Ellipsis, maxLines = 1, style = MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:LockerWatchfaceItem.kt$Text(viewModel.title, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(), overflow = TextOverflow.Ellipsis, maxLines = 1, style = MaterialTheme.typography.bodyLarge)</ID>
+    <ID>MaxLineLength:LockerWatchfaceItem.kt$fun</ID>
+    <ID>MaxLineLength:LockerWatchfaceItem.kt$val viewModel: LockerItemViewModel = viewModel(key = "locker-watchface-${entry.entry.id}") { LockerItemViewModel(koin.get(), entry) }</ID>
+    <ID>MaxLineLength:LockerWatchfaceList.kt$.</ID>
+    <ID>MaxLineLength:NotificationChannelDao.kt$NotificationChannelDao$@Query("UPDATE NotificationChannel SET shouldNotify = :shouldNotify WHERE packageId = :packageId AND channelId = :channelId")</ID>
+    <ID>MaxLineLength:NullDictationService.kt$NullDictationService$override</ID>
+    <ID>MaxLineLength:PKJSApp.kt$AppMessageTuple.createShort(keyId.toUInt(), if (objectEntry.value.jsonPrimitive.boolean) 1.toShort() else 0.toShort())</ID>
+    <ID>MaxLineLength:PKJSApp.kt$AppMessageTuple.createUByteArray(keyId.toUInt(), objectEntry.value.jsonArray.map { it.jsonPrimitive.long.toUByte() }.toUByteArray())</ID>
+    <ID>MaxLineLength:PKJSApp.kt$PKJSApp$is AppMessage.AppMessagePush -&gt; jsRunner?.signalNewAppMessageData(it.dictionary.list.toJSDataString(appInfo.appKeys))</ID>
+    <ID>MaxLineLength:PebbleDevice.kt$PebbleDevice$ConnectionStateManager.connectionState.first { it is ConnectionState.Connected &amp;&amp; it.watch.address == address }</ID>
+    <ID>MaxLineLength:PebbleDevice.kt$PebbleDevice$private val negotiationHandlers: Set&lt;CobbleHandler&gt; by inject(named("negotiationDeviceHandlers")) { parametersOf(this as PebbleDevice) }</ID>
+    <ID>MaxLineLength:PersistedNotificationDao.kt$PersistedNotificationDao$@Query("SELECT * FROM PersistedNotification WHERE sbnKey = :key AND packageName = :packageName AND title = :title AND text = :text")</ID>
+    <ID>MaxLineLength:PhoneCalendarSyncer.kt$PhoneCalendarSyncer$Logging.d("New Pin: {itemId: ${pin.itemId}, layout: ${pin.layout}, duration: ${pin.duration}, nextSyncAction: ${pin.nextSyncAction}} (existed: ${existingPin != null})")</ID>
+    <ID>MaxLineLength:PhoneCalendarSyncer.kt$PhoneCalendarSyncer$Logging.d("Synced ${allCalendars.size} calendars to DB, changes: $anyChanges, total pins: ${timelinePinDao.getPinsForWatchapp(calendarWatchappId).size}")</ID>
+    <ID>MaxLineLength:PhoneCalendarUtils.kt$expect suspend fun getCalendarEvents(platformContext: PlatformContext, calendar: Calendar, startDate: Instant, endDate: Instant): List&lt;CalendarEvent&gt;</ID>
+    <ID>MaxLineLength:PlatformNotificationActionExecutor.kt$PlatformNotificationActionExecutor$suspend fun handleMetaNotificationAction(action: MetaNotificationAction, itemId: Uuid, attributes: List&lt;TimelineItem.Attribute&gt;): TimelineService.ActionResponse</ID>
+    <ID>MaxLineLength:PlatformNotificationActionExecutor.kt$PlatformNotificationActionExecutor$suspend fun handlePlatformAction(actionId: Int, itemId: Uuid, attributes: List&lt;TimelineItem.Attribute&gt;): TimelineService.ActionResponse</ID>
+    <ID>MaxLineLength:PutBytesController.kt$PutBytesController$fun</ID>
+    <ID>MaxLineLength:Store.kt$fun</ID>
+    <ID>MaxLineLength:Store.kt$imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown</ID>
+    <ID>MaxLineLength:SyncedLockerEntry.kt$* Compare the data of this [SyncedLockerEntryPlatform] with another [SyncedLockerEntryPlatform] ignoring auto-generated fields.</ID>
+    <ID>MaxLineLength:SystemHandler.kt$SystemHandler$Logging.i("Time Zone ${timezone.id} exceeds maximum value length and has been truncated to ${normalizedZone}")</ID>
+    <ID>MaxLineLength:SystemHandler.kt$SystemHandler$if</ID>
+    <ID>MaxLineLength:TextIcon.kt$fun</ID>
+    <ID>MaxLineLength:TimelineAttribute.kt$TimelineAttribute.Companion$fun subtitleTemplateString(templateString: String)</ID>
+    <ID>MaxLineLength:VoiceSessionHandler.kt$VoiceSessionHandler$if</ID>
+    <ID>MaxLineLength:VoiceSessionHandler.kt$VoiceSessionHandler$val</ID>
+    <ID>MaxLineLength:VoiceSessionHandler.kt$VoiceSessionHandler$val voiceSession = VoiceSession(appUuid, message.sessionId.get().toInt(), encoderInfo, dictationService)</ID>
+    <ID>MaxLineLength:WatchTimelineSyncer.kt$WatchTimelineSyncer$for</ID>
+    <ID>MayBeConst:PebbleBridge.kt$PebbleBridge.Companion$internal val className = "PebbleBridge"</ID>
+    <ID>MayBeConst:RWS.kt$RWS$private val domainSuffix = "rebble.io"</ID>
+    <ID>NestedBlockDepth:VoiceSessionHandler.kt$VoiceSessionHandler$private suspend fun listenForVoiceSessions()</ID>
+    <ID>NestedBlockDepth:WatchTimelineSyncer.kt$WatchTimelineSyncer$private suspend fun performSync(): BlobResponse.BlobStatus</ID>
+    <ID>NewLineAtEndOfFile:ASRClient.kt$io.rebble.cobble.shared.api.ASRClient.kt</ID>
+    <ID>NewLineAtEndOfFile:ActivePebbleWatchInfo.kt$io.rebble.cobble.shared.data.js.ActivePebbleWatchInfo.kt</ID>
+    <ID>NewLineAtEndOfFile:AlertingApps.kt$io.rebble.cobble.shared.ui.view.screens.AlertingApps.kt</ID>
+    <ID>NewLineAtEndOfFile:AppCompatibility.kt$io.rebble.cobble.shared.util.AppCompatibility.kt</ID>
+    <ID>NewLineAtEndOfFile:AppDatabase.kt$io.rebble.cobble.shared.database.AppDatabase.kt</ID>
+    <ID>NewLineAtEndOfFile:AppIconContainer.kt$io.rebble.cobble.shared.ui.common.AppIconContainer.kt</ID>
+    <ID>NewLineAtEndOfFile:AppInstallDialog.kt$io.rebble.cobble.shared.ui.view.dialogs.AppInstallDialog.kt</ID>
+    <ID>NewLineAtEndOfFile:AppInstallDialogViewModel.kt$io.rebble.cobble.shared.ui.viewmodel.AppInstallDialogViewModel.kt</ID>
+    <ID>NewLineAtEndOfFile:AppInstallHandler.kt$io.rebble.cobble.shared.handlers.AppInstallHandler.kt</ID>
+    <ID>NewLineAtEndOfFile:AppInstallUtils.kt$io.rebble.cobble.shared.util.AppInstallUtils.kt</ID>
+    <ID>NewLineAtEndOfFile:AppLogController.kt$io.rebble.cobble.shared.middleware.AppLogController.kt</ID>
+    <ID>NewLineAtEndOfFile:AppLogHandler.kt$io.rebble.cobble.shared.handlers.AppLogHandler.kt</ID>
+    <ID>NewLineAtEndOfFile:AppMessageHandler.kt$io.rebble.cobble.shared.handlers.AppMessageHandler.kt</ID>
+    <ID>NewLineAtEndOfFile:AppMessageTransactionSequence.kt$io.rebble.cobble.shared.domain.appmessage.AppMessageTransactionSequence.kt</ID>
+    <ID>NewLineAtEndOfFile:AppRunStateHandler.kt$io.rebble.cobble.shared.handlers.AppRunStateHandler.kt</ID>
+    <ID>NewLineAtEndOfFile:AppstoreClient.kt$io.rebble.cobble.shared.api.AppstoreClient.kt</ID>
+    <ID>NewLineAtEndOfFile:AudioStreamHandler.kt$io.rebble.cobble.shared.handlers.AudioStreamHandler.kt</ID>
+    <ID>NewLineAtEndOfFile:CachedPackageInfoDao.kt$io.rebble.cobble.shared.database.dao.CachedPackageInfoDao.kt</ID>
+    <ID>NewLineAtEndOfFile:Calendar.kt$io.rebble.cobble.shared.database.entity.Calendar.kt</ID>
+    <ID>NewLineAtEndOfFile:CalendarAction.kt$io.rebble.cobble.shared.domain.calendar.CalendarAction.kt</ID>
+    <ID>NewLineAtEndOfFile:CalendarActionHandler.kt$io.rebble.cobble.shared.handlers.CalendarActionHandler.kt</ID>
+    <ID>NewLineAtEndOfFile:CalendarDao.kt$io.rebble.cobble.shared.database.dao.CalendarDao.kt</ID>
+    <ID>NewLineAtEndOfFile:CalendarEvent.kt$io.rebble.cobble.shared.data.CalendarEvent.kt</ID>
+    <ID>NewLineAtEndOfFile:CalendarList.kt$io.rebble.cobble.shared.domain.calendar.CalendarList.kt</ID>
+    <ID>NewLineAtEndOfFile:CalendarModule.kt$io.rebble.cobble.shared.di.CalendarModule.kt</ID>
+    <ID>NewLineAtEndOfFile:CalendarSync.kt$io.rebble.cobble.shared.domain.calendar.CalendarSync.kt</ID>
+    <ID>NewLineAtEndOfFile:CalendarTimelineActionId.kt$io.rebble.cobble.shared.domain.calendar.CalendarTimelineActionId.kt</ID>
+    <ID>NewLineAtEndOfFile:CobbleHandler.kt$io.rebble.cobble.shared.handlers.CobbleHandler.kt</ID>
+    <ID>NewLineAtEndOfFile:Color.kt$io.rebble.cobble.shared.domain.common.Color.kt</ID>
+    <ID>NewLineAtEndOfFile:ConnectionState.kt$io.rebble.cobble.shared.domain.state.ConnectionState.kt</ID>
+    <ID>NewLineAtEndOfFile:Converters.kt$io.rebble.cobble.shared.database.Converters.kt</ID>
+    <ID>NewLineAtEndOfFile:CurrentToken.kt$io.rebble.cobble.shared.domain.state.CurrentToken.kt</ID>
+    <ID>NewLineAtEndOfFile:DataStoreModule.kt$io.rebble.cobble.shared.di.DataStoreModule.kt</ID>
+    <ID>NewLineAtEndOfFile:DatabaseModule.kt$io.rebble.cobble.shared.di.DatabaseModule.kt</ID>
+    <ID>NewLineAtEndOfFile:DependenciesModule.kt$io.rebble.cobble.shared.di.DependenciesModule.kt</ID>
+    <ID>NewLineAtEndOfFile:DeviceLogController.kt$io.rebble.cobble.shared.middleware.DeviceLogController.kt</ID>
+    <ID>NewLineAtEndOfFile:DictationService.kt$io.rebble.cobble.shared.domain.voice.DictationService.kt</ID>
+    <ID>NewLineAtEndOfFile:DictationServiceResponse.kt$io.rebble.cobble.shared.domain.voice.DictationServiceResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:EventAttendee.kt$io.rebble.cobble.shared.data.EventAttendee.kt</ID>
+    <ID>NewLineAtEndOfFile:File.kt$io.rebble.cobble.shared.util.File.kt</ID>
+    <ID>NewLineAtEndOfFile:GlobalErrorHandler.kt$io.rebble.cobble.shared.errors.GlobalErrorHandler.kt</ID>
+    <ID>NewLineAtEndOfFile:Icons.kt$io.rebble.cobble.shared.ui.common.Icons.kt</ID>
+    <ID>NewLineAtEndOfFile:JsRunner.kt$io.rebble.cobble.shared.js.JsRunner.kt</ID>
+    <ID>NewLineAtEndOfFile:JsRunnerFactory.kt$io.rebble.cobble.shared.js.JsRunnerFactory.kt</ID>
+    <ID>NewLineAtEndOfFile:KMPPrefs.kt$io.rebble.cobble.shared.datastore.KMPPrefs.kt</ID>
+    <ID>NewLineAtEndOfFile:LibPebbleModule.kt$io.rebble.cobble.shared.di.LibPebbleModule.kt</ID>
+    <ID>NewLineAtEndOfFile:LockerAppList.kt$io.rebble.cobble.shared.ui.view.home.locker.LockerAppList.kt</ID>
+    <ID>NewLineAtEndOfFile:LockerDao.kt$io.rebble.cobble.shared.database.dao.LockerDao.kt</ID>
+    <ID>NewLineAtEndOfFile:LockerEntry.kt$io.rebble.cobble.shared.domain.api.appstore.LockerEntry.kt</ID>
+    <ID>NewLineAtEndOfFile:LockerItemSheet.kt$io.rebble.cobble.shared.ui.view.home.locker.LockerItemSheet.kt</ID>
+    <ID>NewLineAtEndOfFile:LockerItemViewModel.kt$io.rebble.cobble.shared.ui.viewmodel.LockerItemViewModel.kt</ID>
+    <ID>NewLineAtEndOfFile:LockerListItem.kt$io.rebble.cobble.shared.ui.view.home.locker.LockerListItem.kt</ID>
+    <ID>NewLineAtEndOfFile:LockerSyncJob.kt$io.rebble.cobble.shared.jobs.LockerSyncJob.kt</ID>
+    <ID>NewLineAtEndOfFile:LockerViewModel.kt$io.rebble.cobble.shared.ui.viewmodel.LockerViewModel.kt</ID>
+    <ID>NewLineAtEndOfFile:LockerWatchfaceItem.kt$io.rebble.cobble.shared.ui.view.home.locker.LockerWatchfaceItem.kt</ID>
+    <ID>NewLineAtEndOfFile:LockerWatchfaceList.kt$io.rebble.cobble.shared.ui.view.home.locker.LockerWatchfaceList.kt</ID>
+    <ID>NewLineAtEndOfFile:Logging.kt$io.rebble.cobble.shared.Logging.kt</ID>
+    <ID>NewLineAtEndOfFile:MetaNotificationAction.kt$io.rebble.cobble.shared.domain.notifications.MetaNotificationAction.kt</ID>
+    <ID>NewLineAtEndOfFile:NextSyncAction.kt$io.rebble.cobble.shared.database.NextSyncAction.kt</ID>
+    <ID>NewLineAtEndOfFile:NotificationActionHandler.kt$io.rebble.cobble.shared.domain.notifications.NotificationActionHandler.kt</ID>
+    <ID>NewLineAtEndOfFile:NotificationChannelDao.kt$io.rebble.cobble.shared.database.dao.NotificationChannelDao.kt</ID>
+    <ID>NewLineAtEndOfFile:NullDictationService.kt$io.rebble.cobble.shared.domain.voice.NullDictationService.kt</ID>
+    <ID>NewLineAtEndOfFile:PKJSApp.kt$io.rebble.cobble.shared.js.PKJSApp.kt</ID>
+    <ID>NewLineAtEndOfFile:PKJSInterface.kt$io.rebble.cobble.shared.js.PKJSInterface.kt</ID>
+    <ID>NewLineAtEndOfFile:PKJSLifecycleHandler.kt$io.rebble.cobble.shared.handlers.PKJSLifecycleHandler.kt</ID>
+    <ID>NewLineAtEndOfFile:PbwApp.kt$io.rebble.cobble.shared.domain.pbw.PbwApp.kt</ID>
+    <ID>NewLineAtEndOfFile:PebbleDevice.kt$io.rebble.cobble.shared.domain.common.PebbleDevice.kt</ID>
+    <ID>NewLineAtEndOfFile:PebbleWatchModel.kt$io.rebble.cobble.shared.domain.common.PebbleWatchModel.kt</ID>
+    <ID>NewLineAtEndOfFile:PersistedNotification.kt$io.rebble.cobble.shared.database.entity.PersistedNotification.kt</ID>
+    <ID>NewLineAtEndOfFile:PersistedNotificationDao.kt$io.rebble.cobble.shared.database.dao.PersistedNotificationDao.kt</ID>
+    <ID>NewLineAtEndOfFile:PhoneCalendarSyncer.kt$io.rebble.cobble.shared.domain.calendar.PhoneCalendarSyncer.kt</ID>
+    <ID>NewLineAtEndOfFile:PhoneCalendarUtils.kt$io.rebble.cobble.shared.domain.calendar.PhoneCalendarUtils.kt</ID>
+    <ID>NewLineAtEndOfFile:PlatformCalendarActionExecutor.kt$io.rebble.cobble.shared.domain.calendar.PlatformCalendarActionExecutor.kt</ID>
+    <ID>NewLineAtEndOfFile:PlatformContext.kt$io.rebble.cobble.shared.PlatformContext.kt</ID>
+    <ID>NewLineAtEndOfFile:PlatformNotificationActionExecutor.kt$io.rebble.cobble.shared.domain.notifications.PlatformNotificationActionExecutor.kt</ID>
+    <ID>NewLineAtEndOfFile:PrivatePKJSInterface.kt$io.rebble.cobble.shared.js.PrivatePKJSInterface.kt</ID>
+    <ID>NewLineAtEndOfFile:PutBytesController.kt$io.rebble.cobble.shared.middleware.PutBytesController.kt</ID>
+    <ID>NewLineAtEndOfFile:RunningFirmwareVersionParsed.kt$io.rebble.cobble.shared.util.RunningFirmwareVersionParsed.kt</ID>
+    <ID>NewLineAtEndOfFile:SecureStorage.kt$io.rebble.cobble.shared.datastore.SecureStorage.kt</ID>
+    <ID>NewLineAtEndOfFile:StateModule.kt$io.rebble.cobble.shared.di.StateModule.kt</ID>
+    <ID>NewLineAtEndOfFile:Store.kt$io.rebble.cobble.shared.ui.view.home.store.Store.kt</ID>
+    <ID>NewLineAtEndOfFile:StoreViewModel.kt$io.rebble.cobble.shared.ui.viewmodel.StoreViewModel.kt</ID>
+    <ID>NewLineAtEndOfFile:SyncedLockerEntry.kt$io.rebble.cobble.shared.database.entity.SyncedLockerEntry.kt</ID>
+    <ID>NewLineAtEndOfFile:SystemAppIDs.kt$io.rebble.cobble.shared.domain.common.SystemAppIDs.kt</ID>
+    <ID>NewLineAtEndOfFile:TestPage.kt$io.rebble.cobble.shared.ui.view.home.TestPage.kt</ID>
+    <ID>NewLineAtEndOfFile:TextIcon.kt$io.rebble.cobble.shared.ui.common.TextIcon.kt</ID>
+    <ID>NewLineAtEndOfFile:Theme.kt$io.rebble.cobble.shared.ui.Theme.kt</ID>
+    <ID>NewLineAtEndOfFile:TimelineAction.kt$io.rebble.cobble.shared.data.TimelineAction.kt</ID>
+    <ID>NewLineAtEndOfFile:TimelineActionManager.kt$io.rebble.cobble.shared.domain.timeline.TimelineActionManager.kt</ID>
+    <ID>NewLineAtEndOfFile:TimelineAttribute.kt$io.rebble.cobble.shared.data.TimelineAttribute.kt</ID>
+    <ID>NewLineAtEndOfFile:TimelineClient.kt$io.rebble.cobble.shared.api.TimelineClient.kt</ID>
+    <ID>NewLineAtEndOfFile:TimelineIcon.kt$io.rebble.cobble.shared.domain.timeline.TimelineIcon.kt</ID>
+    <ID>NewLineAtEndOfFile:TimelinePin.kt$io.rebble.cobble.shared.database.entity.TimelinePin.kt</ID>
+    <ID>NewLineAtEndOfFile:TimelinePinDao.kt$io.rebble.cobble.shared.database.dao.TimelinePinDao.kt</ID>
+    <ID>NewLineAtEndOfFile:TimelineTokenResponse.kt$io.rebble.cobble.shared.domain.api.timeline.TimelineTokenResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:VoiceSession.kt$io.rebble.cobble.shared.domain.voice.VoiceSession.kt</ID>
+    <ID>NewLineAtEndOfFile:VoiceSessionHandler.kt$io.rebble.cobble.shared.handlers.VoiceSessionHandler.kt</ID>
+    <ID>NewLineAtEndOfFile:WatchTimelineSyncer.kt$io.rebble.cobble.shared.domain.timeline.WatchTimelineSyncer.kt</ID>
+    <ID>NewLineAtEndOfFile:createDataStore.kt$io.rebble.cobble.shared.datastore.createDataStore.kt</ID>
+    <ID>ReturnCount:AppInstallHandler.kt$AppInstallHandler$private suspend fun onNewAppFetchRequest(message: AppFetchRequest)</ID>
+    <ID>ReturnCount:AudioStreamHandler.kt$AudioStreamHandler$private suspend fun listenForAudioStream()</ID>
+    <ID>ReturnCount:LockerSyncJob.kt$LockerSyncJob$suspend fun syncToDevice(): Boolean</ID>
+    <ID>ReturnCount:PbwApp.kt$PbwApp$suspend fun installToLockerCache(): Boolean</ID>
+    <ID>ReturnCount:WatchTimelineSyncer.kt$WatchTimelineSyncer$private suspend fun performSync(): BlobResponse.BlobStatus</ID>
+    <ID>ReturnCount:WatchTimelineSyncer.kt$WatchTimelineSyncer$suspend fun syncPinDatabaseWithWatch(): Boolean</ID>
+    <ID>SwallowedException:AppInstallDialogViewModel.kt$AppInstallDialogViewModel$e: TimeoutCancellationException</ID>
+    <ID>SwallowedException:CalendarActionHandler.kt$CalendarActionHandler$e: NoSuchElementException</ID>
+    <ID>TooGenericExceptionCaught:AppInstallDialogViewModel.kt$AppInstallDialogViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:AppInstallHandler.kt$AppInstallHandler$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:AppLogController.kt$AppLogController$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:PutBytesController.kt$PutBytesController$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:StoreViewModel.kt$StoreViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:SystemHandler.kt$SystemHandler$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:WatchTimelineSyncer.kt$WatchTimelineSyncer$e: Exception</ID>
+    <ID>TooManyFunctions:Icons.kt$RebbleIcons</ID>
+    <ID>TooManyFunctions:LockerDao.kt$LockerDao</ID>
+    <ID>TooManyFunctions:StoreViewModel.kt$StoreViewModel : ViewModel</ID>
+    <ID>TooManyFunctions:TimelineAttribute.kt$TimelineAttribute$Companion</ID>
+    <ID>TooManyFunctions:TimelinePinDao.kt$TimelinePinDao</ID>
+    <ID>TopLevelPropertyNaming:createDataStore.kt$internal const val dataStoreFileName = "dice.preferences_pb"</ID>
+    <ID>UnusedParameter:CalendarActionHandler.kt$CalendarActionHandler$itemId: Uuid</ID>
+    <ID>UnusedPrivateProperty:ASRClient.kt$ASRClient$private val scope = CoroutineScope(Dispatchers.IO)</ID>
+    <ID>UnusedPrivateProperty:CalendarSync.kt$CalendarSync$private val calendarEnableChangeFlow: MutableSharedFlow&lt;List&lt;Calendar&gt;&gt; = MutableSharedFlow()</ID>
+    <ID>UnusedPrivateProperty:DeviceLogController.kt$DeviceLogController$private val scope = CoroutineScope(Dispatchers.IO)</ID>
+    <ID>UnusedPrivateProperty:EventRecurrenceRule.kt$EventRecurrenceRule.Frequency.Monthly$weekOfMonth: Int?</ID>
+    <ID>UnusedPrivateProperty:EventRecurrenceRule.kt$EventRecurrenceRule.Frequency.Yearly$weekOfMonth: Int?</ID>
+    <ID>UnusedPrivateProperty:LockerSyncJob.kt$LockerSyncJob$val newPlat = new.hardwarePlatforms.map { it.toEntity(new.id) }</ID>
+    <ID>UnusedPrivateProperty:PhoneCalendarSyncer.kt$PhoneCalendarSyncer$private val prefs: KMPPrefs by inject()</ID>
+    <ID>UseCheckOrError:PutBytesController.kt$PutBytesController$throw IllegalStateException("Put bytes operation already in progress")</ID>
+    <ID>UtilityClassWithPublicConstructor:PebbleBridge.kt$PebbleBridge</ID>
+    <ID>VariableNaming:JsRunner.kt$JsRunner$protected val _outgoingAppMessages = MutableSharedFlow&lt;String&gt;(extraBufferCapacity = 1)</ID>
+  </CurrentIssues>
+</SmellBaseline>
