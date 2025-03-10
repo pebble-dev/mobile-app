@@ -5,18 +5,13 @@
 
 version: 2
 updates:
-  - package-ecosystem: "pub" # See documentation for possible values
-    directory: "/" # Location of package manifests
-    schedule:
-      interval: "weekly"
-    target-branch: "rws"
   - package-ecosystem: "gradle"
     directory: "/android"
     schedule:
       interval: "weekly"
-    target-branch: "rws"
+    target-branch: "master"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-    target-branch: "rws"
+    target-branch: "master"
