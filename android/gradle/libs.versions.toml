@@ -29,7 +29,8 @@ protoliteWellKnownTypes = "18.0.0"
 room = "2.7.0-alpha11"
 room-sqlite = "2.5.0-alpha11"
 datastore = "1.1.1"
-androidxTest = "1.7.2"
+androidXTestRunner = "1.5.0"
+androidXTestRules = "1.5.0"
 timberVersion = "5.0.1"
 uuidVersion = "0.8.4"
 compose-lib = "1.7.0"
@@ -65,9 +66,8 @@ androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx
 androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "androidxLifecycle" }
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidxLifecycle" }
 androidx-lifecycle-service = { module = "androidx.lifecycle:lifecycle-service", version.ref = "androidxLifecycle" }
-androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidxTest" }
-androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTest" }
-androidx-test-monitor = { module = "androidx.test:monitor", version.ref = "androidxTest" }
+androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidXTestRules" }
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidXTestRunner" }
 androidx-security-crypto-ktx = { module = "androidx.security:security-crypto-ktx", version.ref = "securityCrypto" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workManagerVersion" }
 ble-core = { module = "no.nordicsemi.android.kotlin.ble:core", version.ref = "ble" }
