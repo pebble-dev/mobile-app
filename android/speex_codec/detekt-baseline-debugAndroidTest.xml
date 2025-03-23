@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>NewLineAtEndOfFile:ExampleInstrumentedTest.kt$com.example.speex_codec.ExampleInstrumentedTest.kt</ID>
+    <ID>PackageNaming:ExampleInstrumentedTest.kt$package com.example.speex_codec</ID>
+  </CurrentIssues>
+</SmellBaseline>

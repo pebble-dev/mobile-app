@@ -1,0 +1,701 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ClassNaming:AppDatabase_AutoMigration_10_11_Impl.kt$AppDatabase_AutoMigration_10_11_Impl : Migration</ID>
+    <ID>ClassNaming:AppDatabase_AutoMigration_11_12_Impl.kt$AppDatabase_AutoMigration_11_12_Impl : Migration</ID>
+    <ID>ClassNaming:AppDatabase_AutoMigration_12_13_Impl.kt$AppDatabase_AutoMigration_12_13_Impl : Migration</ID>
+    <ID>ClassNaming:AppDatabase_AutoMigration_1_2_Impl.kt$AppDatabase_AutoMigration_1_2_Impl : Migration</ID>
+    <ID>ClassNaming:AppDatabase_AutoMigration_2_3_Impl.kt$AppDatabase_AutoMigration_2_3_Impl : Migration</ID>
+    <ID>ClassNaming:AppDatabase_AutoMigration_3_4_Impl.kt$AppDatabase_AutoMigration_3_4_Impl : Migration</ID>
+    <ID>ClassNaming:AppDatabase_AutoMigration_4_5_Impl.kt$AppDatabase_AutoMigration_4_5_Impl : Migration</ID>
+    <ID>ClassNaming:AppDatabase_AutoMigration_5_6_Impl.kt$AppDatabase_AutoMigration_5_6_Impl : Migration</ID>
+    <ID>ClassNaming:AppDatabase_AutoMigration_6_7_Impl.kt$AppDatabase_AutoMigration_6_7_Impl : Migration</ID>
+    <ID>ClassNaming:AppDatabase_AutoMigration_7_8_Impl.kt$AppDatabase_AutoMigration_7_8_Impl : Migration</ID>
+    <ID>ClassNaming:AppDatabase_AutoMigration_8_9_Impl.kt$AppDatabase_AutoMigration_8_9_Impl : Migration</ID>
+    <ID>ClassNaming:AppDatabase_AutoMigration_9_10_Impl.kt$AppDatabase_AutoMigration_9_10_Impl : Migration</ID>
+    <ID>ClassNaming:AppDatabase_Impl.kt$AppDatabase_Impl : AppDatabase</ID>
+    <ID>ClassNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl : CachedPackageInfoDao</ID>
+    <ID>ClassNaming:CalendarDao_Impl.kt$CalendarDao_Impl : CalendarDao</ID>
+    <ID>ClassNaming:LockerDao_Impl.kt$LockerDao_Impl : LockerDao</ID>
+    <ID>ClassNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl : NotificationChannelDao</ID>
+    <ID>ClassNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl : PersistedNotificationDao</ID>
+    <ID>ClassNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl : TimelinePinDao</ID>
+    <ID>ComplexCondition:CallNotificationProcessor.kt$CallNotificationProcessor$(state is CallState.RINGING &amp;&amp; state.notification.packageName == sbn.packageName) || (state is CallState.ONGOING &amp;&amp; state.notification.packageName == sbn.packageName)</ID>
+    <ID>ConstructorParameterNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$__db: RoomDatabase</ID>
+    <ID>ConstructorParameterNaming:CalendarDao_Impl.kt$CalendarDao_Impl$__db: RoomDatabase</ID>
+    <ID>ConstructorParameterNaming:LockerDao_Impl.kt$LockerDao_Impl$__db: RoomDatabase</ID>
+    <ID>ConstructorParameterNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$__db: RoomDatabase</ID>
+    <ID>ConstructorParameterNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$__db: RoomDatabase</ID>
+    <ID>ConstructorParameterNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$__db: RoomDatabase</ID>
+    <ID>CyclomaticComplexMethod:AndroidCalendarActionExecutor.kt$AndroidCalendarActionExecutor$override suspend fun handlePlatformAction(action: CalendarAction, pin: TimelinePin): TimelineService.ActionResponse</ID>
+    <ID>CyclomaticComplexMethod:MusicHandler.kt$MusicHandler$private fun listenForIncomingMessages(connectionScope: CoroutineScope)</ID>
+    <ID>CyclomaticComplexMethod:NotificationListener.kt$NotificationListener$@OptIn(ExperimentalStdlibApi::class) override fun onNotificationPosted(sbn: StatusBarNotification?)</ID>
+    <ID>CyclomaticComplexMethod:NotificationProcessor.kt$NotificationProcessor$private fun determineIcon(packageId: String, category: String)</ID>
+    <ID>CyclomaticComplexMethod:PhoneCalendarUtils.android.kt$private fun resolveAttendees(eventId: Long, ownerEmail: String, contentResolver: ContentResolver): List&lt;EventAttendee&gt;</ID>
+    <ID>CyclomaticComplexMethod:PhoneCalendarUtils.android.kt$private fun resolveCalendarEvent(contentResolver: ContentResolver, cursor: Cursor, ownerEmail: String): CalendarEvent?</ID>
+    <ID>CyclomaticComplexMethod:PhoneCalendarUtils.android.kt$private fun resolveCalendarInstance(contentResolver: ContentResolver, cursor: Cursor, ownerEmail: String): CalendarEvent?</ID>
+    <ID>CyclomaticComplexMethod:SpeechRecognizerDictationService.kt$SpeechRecognizerDictationService$override fun handleSpeechStream(speexEncoderInfo: SpeexEncoderInfo, audioStreamFrames: Flow&lt;AudioStreamFrame&gt;)</ID>
+    <ID>CyclomaticComplexMethod:SpeechRecognizerError.kt$SpeechRecognizerError.Companion$fun fromInt(value: Int): SpeechRecognizerError</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:NotificationProcessor.kt$NotificationProcessor$val (packageId, notifId, tagId, title, text, category, color, messages, actions, sbn) = notification</ID>
+    <ID>EmptyDefaultConstructor:AndroidNotificationActionExecutor.kt$AndroidNotificationActionExecutor$()</ID>
+    <ID>EmptyFunctionBlock:AppDatabase_Impl.kt$AppDatabase_Impl.&lt;no name provided&gt;${ }</ID>
+    <ID>EmptyFunctionBlock:SpeechRecognizerDictationService.kt$SpeechRecognizerDictationService.&lt;no name provided&gt;${ }</ID>
+    <ID>ForbiddenComment:NotificationListener.kt$NotificationListener$// ignore local notifications TODO: respect user preference</ID>
+    <ID>ForbiddenComment:NotificationListener.kt$NotificationListener$//TODO: switch to main prefs once we switch notif pages to flutter</ID>
+    <ID>ForbiddenComment:RecognitionSupport.kt$&lt;no name provided&gt;$//TODO: override locale depending on user choice</ID>
+    <ID>ForbiddenComment:SystemHandler.android.kt$//TODO: Check for SMS</ID>
+    <ID>ForbiddenComment:WebViewJsRunner.kt$WebViewJsRunner$//TODO: Close config screens</ID>
+    <ID>ForbiddenComment:WebViewJsRunner.kt$WebViewJsRunner$//TODO: use WebViewAssetLoader instead</ID>
+    <ID>ForbiddenComment:WebViewJsRunner.kt$WebViewJsRunner.&lt;no name provided&gt;$//TODO: forward to developer log</ID>
+    <ID>FunctionNaming:LockerDao_Impl.kt$LockerDao_Impl$private fun __NextSyncAction_enumToString(_value: NextSyncAction): String</ID>
+    <ID>FunctionNaming:LockerDao_Impl.kt$LockerDao_Impl$private fun __NextSyncAction_stringToEnum(_value: String): NextSyncAction</ID>
+    <ID>FunctionNaming:LockerDao_Impl.kt$LockerDao_Impl$private fun __fetchRelationshipSyncedLockerEntryPlatformAsioRebbleCobbleSharedDatabaseEntitySyncedLockerEntryPlatform(_connection: SQLiteConnection, _map: ArrayMap&lt;String, MutableList&lt;SyncedLockerEntryPlatform&gt;&gt;)</ID>
+    <ID>FunctionNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$private fun __Layout_enumToString(_value: TimelineItem.Layout): String</ID>
+    <ID>FunctionNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$private fun __Layout_stringToEnum(_value: String): TimelineItem.Layout</ID>
+    <ID>FunctionNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$private fun __NextSyncAction_enumToString(_value: NextSyncAction): String</ID>
+    <ID>FunctionNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$private fun __NextSyncAction_stringToEnum(_value: String): NextSyncAction</ID>
+    <ID>FunctionNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$private fun __Type_enumToString(_value: TimelineItem.Type): String</ID>
+    <ID>FunctionNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$private fun __Type_stringToEnum(_value: String): TimelineItem.Type</ID>
+    <ID>FunctionNaming:WebViewPrivatePKJSInterface.kt$WebViewPrivatePKJSInterface$@JavascriptInterface fun privateFnLocalStorageReadAll_AtPreregistrationStage(baseUriReference: String): String</ID>
+    <ID>FunctionParameterNaming:LockerDao_Impl.kt$LockerDao_Impl$_connection: SQLiteConnection</ID>
+    <ID>FunctionParameterNaming:LockerDao_Impl.kt$LockerDao_Impl$_map: ArrayMap&lt;String, MutableList&lt;SyncedLockerEntryPlatform&gt;&gt;</ID>
+    <ID>FunctionParameterNaming:LockerDao_Impl.kt$LockerDao_Impl$_value: NextSyncAction</ID>
+    <ID>FunctionParameterNaming:LockerDao_Impl.kt$LockerDao_Impl$_value: String</ID>
+    <ID>FunctionParameterNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$_value: NextSyncAction</ID>
+    <ID>FunctionParameterNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$_value: String</ID>
+    <ID>FunctionParameterNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$_value: TimelineItem.Layout</ID>
+    <ID>FunctionParameterNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$_value: TimelineItem.Type</ID>
+    <ID>ImplicitDefaultLocale:JsTokenUtil.kt$JsTokenUtil$String.format("%02X", it)</ID>
+    <ID>InjectDispatcher:RecognitionSupport.kt$IO</ID>
+    <ID>InjectDispatcher:SpeechRecognizerDictationService.kt$SpeechRecognizerDictationService$IO</ID>
+    <ID>InjectDispatcher:WebViewPKJSInterface.kt$WebViewPKJSInterface$IO</ID>
+    <ID>LargeClass:LockerDao_Impl.kt$LockerDao_Impl : LockerDao</ID>
+    <ID>LongMethod:AndroidCalendarActionExecutor.kt$AndroidCalendarActionExecutor$override suspend fun handlePlatformAction(action: CalendarAction, pin: TimelinePin): TimelineService.ActionResponse</ID>
+    <ID>LongMethod:AndroidNotificationActionExecutor.kt$AndroidNotificationActionExecutor$override suspend fun handleMetaNotificationAction(action: MetaNotificationAction, itemId: Uuid, attributes: List&lt;TimelineItem.Attribute&gt;): TimelineService.ActionResponse</ID>
+    <ID>LongMethod:AndroidPlatformAppMessageIPC.kt$AndroidPlatformAppMessageIPC$override fun outgoingMessages(): Flow&lt;OutgoingMessage&gt;</ID>
+    <ID>LongMethod:AppDatabase_Impl.kt$AppDatabase_Impl.&lt;no name provided&gt;$public override fun onValidateSchema(connection: SQLiteConnection): RoomOpenDelegate.ValidationResult</ID>
+    <ID>LongMethod:LockerDao_Impl.kt$LockerDao_Impl$private fun __fetchRelationshipSyncedLockerEntryPlatformAsioRebbleCobbleSharedDatabaseEntitySyncedLockerEntryPlatform(_connection: SQLiteConnection, _map: ArrayMap&lt;String, MutableList&lt;SyncedLockerEntryPlatform&gt;&gt;)</ID>
+    <ID>LongMethod:LockerDao_Impl.kt$LockerDao_Impl$public override fun getAllEntriesFlow(): Flow&lt;List&lt;SyncedLockerEntryWithPlatforms&gt;&gt;</ID>
+    <ID>LongMethod:LockerDao_Impl.kt$LockerDao_Impl$public override suspend fun getAllEntries(): List&lt;SyncedLockerEntryWithPlatforms&gt;</ID>
+    <ID>LongMethod:LockerDao_Impl.kt$LockerDao_Impl$public override suspend fun getEntriesForSync(): List&lt;SyncedLockerEntryWithPlatforms&gt;</ID>
+    <ID>LongMethod:LockerDao_Impl.kt$LockerDao_Impl$public override suspend fun getEntry(id: String): SyncedLockerEntryWithPlatforms?</ID>
+    <ID>LongMethod:LockerDao_Impl.kt$LockerDao_Impl$public override suspend fun getEntryByUuid(uuid: String): SyncedLockerEntryWithPlatforms?</ID>
+    <ID>LongMethod:LockerDao_Impl.kt$LockerDao_Impl$public override suspend fun getSyncedEntries(): List&lt;SyncedLockerEntry&gt;</ID>
+    <ID>LongMethod:SpeechRecognizerDictationService.kt$SpeechRecognizerDictationService$override fun handleSpeechStream(speexEncoderInfo: SpeexEncoderInfo, audioStreamFrames: Flow&lt;AudioStreamFrame&gt;)</ID>
+    <ID>LongMethod:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$public override suspend fun `get`(itemId: UUID): TimelinePin?</ID>
+    <ID>LongMethod:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$public override suspend fun getAllPinsWithNextSyncAction(vararg nextSyncActions: NextSyncAction): List&lt;TimelinePin&gt;</ID>
+    <ID>LongMethod:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$public override suspend fun getPinsForWatchapp(parentId: UUID): List&lt;TimelinePin&gt;</ID>
+    <ID>LongMethod:TimelinePinDao_Impl.kt$TimelinePinDao_Impl.&lt;no name provided&gt;$protected override fun bind(statement: SQLiteStatement, entity: TimelinePin)</ID>
+    <ID>LongParameterList:NotificationProcessor.kt$NotificationProcessor$(packageId: String, category: String, title: String, text: String, messages: List&lt;NotificationMessage&gt;, color: Int)</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_10_11_Impl.kt$AppDatabase_AutoMigration_10_11_Impl$10</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_10_11_Impl.kt$AppDatabase_AutoMigration_10_11_Impl$11</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_11_12_Impl.kt$AppDatabase_AutoMigration_11_12_Impl$11</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_11_12_Impl.kt$AppDatabase_AutoMigration_11_12_Impl$12</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_12_13_Impl.kt$AppDatabase_AutoMigration_12_13_Impl$12</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_12_13_Impl.kt$AppDatabase_AutoMigration_12_13_Impl$13</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_2_3_Impl.kt$AppDatabase_AutoMigration_2_3_Impl$3</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_3_4_Impl.kt$AppDatabase_AutoMigration_3_4_Impl$3</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_3_4_Impl.kt$AppDatabase_AutoMigration_3_4_Impl$4</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_4_5_Impl.kt$AppDatabase_AutoMigration_4_5_Impl$4</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_4_5_Impl.kt$AppDatabase_AutoMigration_4_5_Impl$5</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_5_6_Impl.kt$AppDatabase_AutoMigration_5_6_Impl$5</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_5_6_Impl.kt$AppDatabase_AutoMigration_5_6_Impl$6</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_6_7_Impl.kt$AppDatabase_AutoMigration_6_7_Impl$6</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_6_7_Impl.kt$AppDatabase_AutoMigration_6_7_Impl$7</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_7_8_Impl.kt$AppDatabase_AutoMigration_7_8_Impl$7</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_7_8_Impl.kt$AppDatabase_AutoMigration_7_8_Impl$8</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_8_9_Impl.kt$AppDatabase_AutoMigration_8_9_Impl$8</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_8_9_Impl.kt$AppDatabase_AutoMigration_8_9_Impl$9</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_9_10_Impl.kt$AppDatabase_AutoMigration_9_10_Impl$10</ID>
+    <ID>MagicNumber:AppDatabase_AutoMigration_9_10_Impl.kt$AppDatabase_AutoMigration_9_10_Impl$9</ID>
+    <ID>MagicNumber:AppDatabase_Impl.kt$AppDatabase_Impl.&lt;no name provided&gt;$13</ID>
+    <ID>MagicNumber:AppInstallHandler.android.kt$200</ID>
+    <ID>MagicNumber:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl.&lt;no name provided&gt;$3</ID>
+    <ID>MagicNumber:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl.&lt;no name provided&gt;$4</ID>
+    <ID>MagicNumber:CalendarDao_Impl.kt$CalendarDao_Impl.&lt;no name provided&gt;$3</ID>
+    <ID>MagicNumber:CalendarDao_Impl.kt$CalendarDao_Impl.&lt;no name provided&gt;$4</ID>
+    <ID>MagicNumber:CalendarDao_Impl.kt$CalendarDao_Impl.&lt;no name provided&gt;$5</ID>
+    <ID>MagicNumber:CalendarDao_Impl.kt$CalendarDao_Impl.&lt;no name provided&gt;$6</ID>
+    <ID>MagicNumber:CalendarDao_Impl.kt$CalendarDao_Impl.&lt;no name provided&gt;$7</ID>
+    <ID>MagicNumber:CalendarDao_Impl.kt$CalendarDao_Impl.&lt;no name provided&gt;$8</ID>
+    <ID>MagicNumber:CalendarHandler.kt$CalendarHandler$1000</ID>
+    <ID>MagicNumber:CallNotificationProcessor.kt$CallNotificationProcessor$1000</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl$3</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl$4</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl$5</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl$6</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl$7</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl$8</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl$999</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$10</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$11</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$12</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$13</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$14</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$15</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$16</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$17</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$18</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$19</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$20</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$21</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$3</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$4</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$5</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$6</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$7</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$8</ID>
+    <ID>MagicNumber:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$9</ID>
+    <ID>MagicNumber:Logging.android.kt$3</ID>
+    <ID>MagicNumber:MusicHandler.kt$MusicHandler$100f</ID>
+    <ID>MagicNumber:MusicHandler.kt$MusicHandler$200</ID>
+    <ID>MagicNumber:MusicHandler.kt$MusicHandler$4</ID>
+    <ID>MagicNumber:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$3</ID>
+    <ID>MagicNumber:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl.&lt;no name provided&gt;$3</ID>
+    <ID>MagicNumber:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl.&lt;no name provided&gt;$4</ID>
+    <ID>MagicNumber:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl.&lt;no name provided&gt;$5</ID>
+    <ID>MagicNumber:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl.&lt;no name provided&gt;$6</ID>
+    <ID>MagicNumber:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl.&lt;no name provided&gt;$7</ID>
+    <ID>MagicNumber:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl.&lt;no name provided&gt;$8</ID>
+    <ID>MagicNumber:NotificationProcessor.kt$NotificationProcessor$10</ID>
+    <ID>MagicNumber:NotificationProcessor.kt$NotificationProcessor$1000</ID>
+    <ID>MagicNumber:PebbleKitProvider.kt$PebbleKitProvider$3</ID>
+    <ID>MagicNumber:PebbleKitProvider.kt$PebbleKitProvider$4</ID>
+    <ID>MagicNumber:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$3</ID>
+    <ID>MagicNumber:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$4</ID>
+    <ID>MagicNumber:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl.&lt;no name provided&gt;$3</ID>
+    <ID>MagicNumber:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl.&lt;no name provided&gt;$4</ID>
+    <ID>MagicNumber:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl.&lt;no name provided&gt;$5</ID>
+    <ID>MagicNumber:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl.&lt;no name provided&gt;$6</ID>
+    <ID>MagicNumber:SpeechRecognizerError.kt$SpeechRecognizerError.Companion$10</ID>
+    <ID>MagicNumber:SpeechRecognizerError.kt$SpeechRecognizerError.Companion$11</ID>
+    <ID>MagicNumber:SpeechRecognizerError.kt$SpeechRecognizerError.Companion$12</ID>
+    <ID>MagicNumber:SpeechRecognizerError.kt$SpeechRecognizerError.Companion$13</ID>
+    <ID>MagicNumber:SpeechRecognizerError.kt$SpeechRecognizerError.Companion$14</ID>
+    <ID>MagicNumber:SpeechRecognizerError.kt$SpeechRecognizerError.Companion$15</ID>
+    <ID>MagicNumber:SpeechRecognizerError.kt$SpeechRecognizerError.Companion$3</ID>
+    <ID>MagicNumber:SpeechRecognizerError.kt$SpeechRecognizerError.Companion$4</ID>
+    <ID>MagicNumber:SpeechRecognizerError.kt$SpeechRecognizerError.Companion$5</ID>
+    <ID>MagicNumber:SpeechRecognizerError.kt$SpeechRecognizerError.Companion$6</ID>
+    <ID>MagicNumber:SpeechRecognizerError.kt$SpeechRecognizerError.Companion$7</ID>
+    <ID>MagicNumber:SpeechRecognizerError.kt$SpeechRecognizerError.Companion$8</ID>
+    <ID>MagicNumber:SpeechRecognizerError.kt$SpeechRecognizerError.Companion$9</ID>
+    <ID>MagicNumber:TimelinePinDao_Impl.kt$TimelinePinDao_Impl.&lt;no name provided&gt;$10</ID>
+    <ID>MagicNumber:TimelinePinDao_Impl.kt$TimelinePinDao_Impl.&lt;no name provided&gt;$11</ID>
+    <ID>MagicNumber:TimelinePinDao_Impl.kt$TimelinePinDao_Impl.&lt;no name provided&gt;$12</ID>
+    <ID>MagicNumber:TimelinePinDao_Impl.kt$TimelinePinDao_Impl.&lt;no name provided&gt;$13</ID>
+    <ID>MagicNumber:TimelinePinDao_Impl.kt$TimelinePinDao_Impl.&lt;no name provided&gt;$14</ID>
+    <ID>MagicNumber:TimelinePinDao_Impl.kt$TimelinePinDao_Impl.&lt;no name provided&gt;$15</ID>
+    <ID>MagicNumber:TimelinePinDao_Impl.kt$TimelinePinDao_Impl.&lt;no name provided&gt;$3</ID>
+    <ID>MagicNumber:TimelinePinDao_Impl.kt$TimelinePinDao_Impl.&lt;no name provided&gt;$4</ID>
+    <ID>MagicNumber:TimelinePinDao_Impl.kt$TimelinePinDao_Impl.&lt;no name provided&gt;$5</ID>
+    <ID>MagicNumber:TimelinePinDao_Impl.kt$TimelinePinDao_Impl.&lt;no name provided&gt;$6</ID>
+    <ID>MagicNumber:TimelinePinDao_Impl.kt$TimelinePinDao_Impl.&lt;no name provided&gt;$7</ID>
+    <ID>MagicNumber:TimelinePinDao_Impl.kt$TimelinePinDao_Impl.&lt;no name provided&gt;$8</ID>
+    <ID>MagicNumber:TimelinePinDao_Impl.kt$TimelinePinDao_Impl.&lt;no name provided&gt;$9</ID>
+    <ID>MaxLineLength:ActiveMediaSessionProvider.kt$ActiveMediaSessionProvider$Timber.d("Active Sessions %s", activeSessions.map { "${it.packageName} ${it.playbackState} ${it.playbackInfo}" })</ID>
+    <ID>MaxLineLength:ActiveMediaSessionProvider.kt$ActiveMediaSessionProvider$Timber.d("Reported session %s", activeSessions.map { "${reportedController?.packageName} ${reportedController?.playbackState} ${reportedController?.playbackInfo}" })</ID>
+    <ID>MaxLineLength:ActiveMediaSessionProvider.kt$ActiveMediaSessionProvider$private val mediaSessionManager: MediaSessionManager = context.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager</ID>
+    <ID>MaxLineLength:AndroidCalendarActionExecutor.kt$AndroidCalendarActionExecutor$class</ID>
+    <ID>MaxLineLength:AndroidCalendarActionExecutor.kt$AndroidCalendarActionExecutor$if</ID>
+    <ID>MaxLineLength:AndroidCalendarActionExecutor.kt$AndroidCalendarActionExecutor$override suspend</ID>
+    <ID>MaxLineLength:AndroidCalendarActionExecutor.kt$AndroidCalendarActionExecutor$val</ID>
+    <ID>MaxLineLength:AndroidJobScheduler.kt$AndroidJobScheduler$private fun buildLockerSyncJob()</ID>
+    <ID>MaxLineLength:AndroidNotificationActionExecutor.kt$AndroidNotificationActionExecutor$Logging.d("Intent sent: $intent, resultCode: $resultCode, resultData: $resultData, resultExtras: $resultExtras")</ID>
+    <ID>MaxLineLength:AndroidNotificationActionExecutor.kt$AndroidNotificationActionExecutor$override suspend</ID>
+    <ID>MaxLineLength:AndroidNotificationActionExecutor.kt$AndroidNotificationActionExecutor$private val activeNotifsState: MutableStateFlow&lt;Map&lt;UUID, StatusBarNotification&gt;&gt; by inject(named("activeNotifsState"))</ID>
+    <ID>MaxLineLength:AppDatabase_AutoMigration_1_2_Impl.kt$AppDatabase_AutoMigration_1_2_Impl$connection.execSQL("CREATE TABLE IF NOT EXISTS `PersistedNotification` (`sbnKey` TEXT NOT NULL, `packageName` TEXT NOT NULL, `postTime` INTEGER NOT NULL, `title` TEXT NOT NULL, `text` TEXT NOT NULL, `groupKey` TEXT, PRIMARY KEY(`sbnKey`))")</ID>
+    <ID>MaxLineLength:AppDatabase_AutoMigration_2_3_Impl.kt$AppDatabase_AutoMigration_2_3_Impl$connection.execSQL("CREATE TABLE IF NOT EXISTS `CachedPackageInfo` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `flags` INTEGER NOT NULL, `updated` INTEGER NOT NULL, PRIMARY KEY(`id`))")</ID>
+    <ID>MaxLineLength:AppDatabase_AutoMigration_3_4_Impl.kt$AppDatabase_AutoMigration_3_4_Impl$connection.execSQL("CREATE TABLE IF NOT EXISTS `NotificationChannel` (`packageId` TEXT NOT NULL, `channelId` TEXT NOT NULL, `name` TEXT, `description` TEXT, `shouldNotify` INTEGER NOT NULL, PRIMARY KEY(`packageId`, `channelId`))")</ID>
+    <ID>MaxLineLength:AppDatabase_AutoMigration_5_6_Impl.kt$AppDatabase_AutoMigration_5_6_Impl$connection.execSQL("CREATE INDEX IF NOT EXISTS `index_SyncedLockerEntryPlatform_lockerEntryId` ON `SyncedLockerEntryPlatform` (`lockerEntryId`)")</ID>
+    <ID>MaxLineLength:AppDatabase_AutoMigration_5_6_Impl.kt$AppDatabase_AutoMigration_5_6_Impl$connection.execSQL("CREATE TABLE IF NOT EXISTS `SyncedLockerEntryPlatform` (`platformEntryId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `lockerEntryId` TEXT NOT NULL, `sdkVersion` TEXT NOT NULL, `processInfoFlags` INTEGER NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `icon` TEXT NOT NULL, FOREIGN KEY(`lockerEntryId`) REFERENCES `SyncedLockerEntry`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")</ID>
+    <ID>MaxLineLength:AppDatabase_AutoMigration_5_6_Impl.kt$AppDatabase_AutoMigration_5_6_Impl$connection.execSQL("CREATE TABLE IF NOT EXISTS `SyncedLockerEntry` (`id` TEXT NOT NULL, `uuid` TEXT NOT NULL, `version` TEXT NOT NULL, `title` TEXT NOT NULL, `type` TEXT NOT NULL, `hearts` INTEGER NOT NULL, `developerName` TEXT NOT NULL, `configurable` INTEGER NOT NULL, `timelineEnabled` INTEGER NOT NULL, `removeLink` TEXT NOT NULL, `shareLink` TEXT NOT NULL, `pbwLink` TEXT NOT NULL, `pbwReleaseId` TEXT NOT NULL, `nextSyncAction` TEXT NOT NULL, PRIMARY KEY(`id`))")</ID>
+    <ID>MaxLineLength:AppDatabase_AutoMigration_5_6_Impl.kt$AppDatabase_AutoMigration_5_6_Impl$connection.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_SyncedLockerEntry_uuid` ON `SyncedLockerEntry` (`uuid`)")</ID>
+    <ID>MaxLineLength:AppDatabase_AutoMigration_7_8_Impl.kt$AppDatabase_AutoMigration_7_8_Impl$connection.execSQL("CREATE INDEX IF NOT EXISTS `index_SyncedLockerEntryPlatform_lockerEntryId` ON `SyncedLockerEntryPlatform` (`lockerEntryId`)")</ID>
+    <ID>MaxLineLength:AppDatabase_AutoMigration_7_8_Impl.kt$AppDatabase_AutoMigration_7_8_Impl$connection.execSQL("CREATE TABLE IF NOT EXISTS `_new_SyncedLockerEntryPlatform` (`platformEntryId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `lockerEntryId` TEXT NOT NULL, `sdkVersion` TEXT NOT NULL, `processInfoFlags` INTEGER NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `icon` TEXT, `list` TEXT, `screenshot` TEXT, FOREIGN KEY(`lockerEntryId`) REFERENCES `SyncedLockerEntry`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")</ID>
+    <ID>MaxLineLength:AppDatabase_AutoMigration_7_8_Impl.kt$AppDatabase_AutoMigration_7_8_Impl$connection.execSQL("INSERT INTO `_new_SyncedLockerEntryPlatform` (`platformEntryId`,`lockerEntryId`,`sdkVersion`,`processInfoFlags`,`name`,`description`,`icon`) SELECT `platformEntryId`,`lockerEntryId`,`sdkVersion`,`processInfoFlags`,`name`,`description`,`icon` FROM `SyncedLockerEntryPlatform`")</ID>
+    <ID>MaxLineLength:AppDatabase_Impl.kt$AppDatabase_Impl.&lt;no name provided&gt;$connection.execSQL("CREATE INDEX IF NOT EXISTS `index_SyncedLockerEntryPlatform_lockerEntryId` ON `SyncedLockerEntryPlatform` (`lockerEntryId`)")</ID>
+    <ID>MaxLineLength:AppDatabase_Impl.kt$AppDatabase_Impl.&lt;no name provided&gt;$connection.execSQL("CREATE TABLE IF NOT EXISTS `CachedPackageInfo` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `flags` INTEGER NOT NULL, `updated` INTEGER NOT NULL, PRIMARY KEY(`id`))")</ID>
+    <ID>MaxLineLength:AppDatabase_Impl.kt$AppDatabase_Impl.&lt;no name provided&gt;$connection.execSQL("CREATE TABLE IF NOT EXISTS `Calendar` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `platformId` TEXT NOT NULL, `name` TEXT NOT NULL, `ownerName` TEXT NOT NULL, `ownerId` TEXT NOT NULL, `color` INTEGER NOT NULL, `enabled` INTEGER NOT NULL)")</ID>
+    <ID>MaxLineLength:AppDatabase_Impl.kt$AppDatabase_Impl.&lt;no name provided&gt;$connection.execSQL("CREATE TABLE IF NOT EXISTS `NotificationChannel` (`packageId` TEXT NOT NULL, `channelId` TEXT NOT NULL, `name` TEXT, `description` TEXT, `conversationId` TEXT, `shouldNotify` INTEGER NOT NULL, PRIMARY KEY(`packageId`, `channelId`))")</ID>
+    <ID>MaxLineLength:AppDatabase_Impl.kt$AppDatabase_Impl.&lt;no name provided&gt;$connection.execSQL("CREATE TABLE IF NOT EXISTS `PersistedNotification` (`sbnKey` TEXT NOT NULL, `packageName` TEXT NOT NULL, `postTime` INTEGER NOT NULL, `title` TEXT NOT NULL, `text` TEXT NOT NULL, `groupKey` TEXT, PRIMARY KEY(`sbnKey`))")</ID>
+    <ID>MaxLineLength:AppDatabase_Impl.kt$AppDatabase_Impl.&lt;no name provided&gt;$connection.execSQL("CREATE TABLE IF NOT EXISTS `SyncedLockerEntryPlatform` (`platformEntryId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `lockerEntryId` TEXT NOT NULL, `sdkVersion` TEXT NOT NULL, `processInfoFlags` INTEGER NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `icon` TEXT, `list` TEXT, `screenshot` TEXT, FOREIGN KEY(`lockerEntryId`) REFERENCES `SyncedLockerEntry`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")</ID>
+    <ID>MaxLineLength:AppDatabase_Impl.kt$AppDatabase_Impl.&lt;no name provided&gt;$connection.execSQL("CREATE TABLE IF NOT EXISTS `SyncedLockerEntry` (`id` TEXT NOT NULL, `uuid` TEXT NOT NULL, `version` TEXT NOT NULL, `title` TEXT NOT NULL, `type` TEXT NOT NULL, `hearts` INTEGER NOT NULL, `developerName` TEXT NOT NULL, `developerId` TEXT, `configurable` INTEGER NOT NULL, `timelineEnabled` INTEGER NOT NULL, `removeLink` TEXT NOT NULL, `shareLink` TEXT NOT NULL, `pbwLink` TEXT NOT NULL, `pbwReleaseId` TEXT NOT NULL, `pbwIconResourceId` INTEGER NOT NULL DEFAULT 0, `nextSyncAction` TEXT NOT NULL, `order` INTEGER NOT NULL DEFAULT -1, `lastOpened` INTEGER, `local` INTEGER NOT NULL DEFAULT 0, `userToken` TEXT DEFAULT null, PRIMARY KEY(`id`))")</ID>
+    <ID>MaxLineLength:AppDatabase_Impl.kt$AppDatabase_Impl.&lt;no name provided&gt;$connection.execSQL("CREATE TABLE IF NOT EXISTS `TimelinePin` (`itemId` TEXT NOT NULL, `parentId` TEXT NOT NULL, `backingId` TEXT, `timestamp` INTEGER NOT NULL, `duration` INTEGER, `type` TEXT NOT NULL, `isVisible` INTEGER NOT NULL, `isFloating` INTEGER NOT NULL, `isAllDay` INTEGER NOT NULL, `persistQuickView` INTEGER NOT NULL, `layout` TEXT NOT NULL, `attributesJson` TEXT, `actionsJson` TEXT, `nextSyncAction` TEXT, PRIMARY KEY(`itemId`))")</ID>
+    <ID>MaxLineLength:AppDatabase_Impl.kt$AppDatabase_Impl.&lt;no name provided&gt;$connection.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_SyncedLockerEntry_uuid` ON `SyncedLockerEntry` (`uuid`)")</ID>
+    <ID>MaxLineLength:AppDatabase_Impl.kt$AppDatabase_Impl.&lt;no name provided&gt;$connection.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '40a219d017357252022cfbee3971fefb')")</ID>
+    <ID>MaxLineLength:AppInstallHandler.android.kt$actual suspend</ID>
+    <ID>MaxLineLength:CalendarDao_Impl.kt$CalendarDao_Impl.&lt;no name provided&gt;$"INSERT OR REPLACE INTO `Calendar` (`id`,`platformId`,`name`,`ownerName`,`ownerId`,`color`,`enabled`) VALUES (nullif(?, 0),?,?,?,?,?,?)"</ID>
+    <ID>MaxLineLength:CalendarDao_Impl.kt$CalendarDao_Impl.&lt;no name provided&gt;$"UPDATE OR ABORT `Calendar` SET `id` = ?,`platformId` = ?,`name` = ?,`ownerName` = ?,`ownerId` = ?,`color` = ?,`enabled` = ? WHERE `id` = ?"</ID>
+    <ID>MaxLineLength:CalendarHandler.kt$CalendarHandler$private val calendarChangeFlow = MutableSharedFlow&lt;Unit&gt;(extraBufferCapacity = 4, onBufferOverflow = BufferOverflow.DROP_OLDEST)</ID>
+    <ID>MaxLineLength:CalendarSyncWorker.kt$CalendarSyncWorker$class</ID>
+    <ID>MaxLineLength:CallNotificationProcessor.kt$CallNotificationProcessor$Logging.d("Processing call notification from ${sbn.packageName} with actions: ${sbn.notification.actions.joinToString { it.title.toString() }}")</ID>
+    <ID>MaxLineLength:CallNotificationProcessor.kt$CallNotificationProcessor$}</ID>
+    <ID>MaxLineLength:DiscordCallNotificationInterpreter.kt$DiscordCallNotificationInterpreter$val</ID>
+    <ID>MaxLineLength:JsTokenUtil.kt$JsTokenUtil$RWS.authClientFlow.filterNotNull().first().getCurrentAccount().uid.toString().let { generateToken(uuid, it) }</ID>
+    <ID>MaxLineLength:LockerDao_Impl.kt$LockerDao_Impl$SyncedLockerEntry(_tmpId,_tmpUuid,_tmpVersion,_tmpTitle,_tmpType,_tmpHearts,_tmpDeveloperName,_tmpDeveloperId,_tmpConfigurable,_tmpTimelineEnabled,_tmpRemoveLink,_tmpShareLink,_tmpPbwLink,_tmpPbwReleaseId,_tmpPbwIconResourceId,_tmpNextSyncAction,_tmpOrder,_tmpLastOpened,_tmpLocal,_tmpUserToken)</ID>
+    <ID>MaxLineLength:LockerDao_Impl.kt$LockerDao_Impl$SyncedLockerEntryPlatform(_tmpPlatformEntryId,_tmpLockerEntryId,_tmpSdkVersion,_tmpProcessInfoFlags,_tmpName,_tmpDescription,_tmpImages)</ID>
+    <ID>MaxLineLength:LockerDao_Impl.kt$LockerDao_Impl$__fetchRelationshipSyncedLockerEntryPlatformAsioRebbleCobbleSharedDatabaseEntitySyncedLockerEntryPlatform</ID>
+    <ID>MaxLineLength:LockerDao_Impl.kt$LockerDao_Impl$_stringBuilder.append("SELECT `platformEntryId`,`lockerEntryId`,`sdkVersion`,`processInfoFlags`,`name`,`description`,`icon`,`list`,`screenshot` FROM `SyncedLockerEntryPlatform` WHERE `lockerEntryId` IN (")</ID>
+    <ID>MaxLineLength:LockerDao_Impl.kt$LockerDao_Impl$fun</ID>
+    <ID>MaxLineLength:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$"INSERT OR REPLACE INTO `SyncedLockerEntryPlatform` (`platformEntryId`,`lockerEntryId`,`sdkVersion`,`processInfoFlags`,`name`,`description`,`icon`,`list`,`screenshot`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?)"</ID>
+    <ID>MaxLineLength:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$"INSERT OR REPLACE INTO `SyncedLockerEntry` (`id`,`uuid`,`version`,`title`,`type`,`hearts`,`developerName`,`developerId`,`configurable`,`timelineEnabled`,`removeLink`,`shareLink`,`pbwLink`,`pbwReleaseId`,`pbwIconResourceId`,`nextSyncAction`,`order`,`lastOpened`,`local`,`userToken`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"</ID>
+    <ID>MaxLineLength:LockerDao_Impl.kt$LockerDao_Impl.&lt;no name provided&gt;$"UPDATE OR ABORT `SyncedLockerEntry` SET `id` = ?,`uuid` = ?,`version` = ?,`title` = ?,`type` = ?,`hearts` = ?,`developerName` = ?,`developerId` = ?,`configurable` = ?,`timelineEnabled` = ?,`removeLink` = ?,`shareLink` = ?,`pbwLink` = ?,`pbwReleaseId` = ?,`pbwIconResourceId` = ?,`nextSyncAction` = ?,`order` = ?,`lastOpened` = ?,`local` = ?,`userToken` = ? WHERE `id` = ?"</ID>
+    <ID>MaxLineLength:MusicHandler.kt$MusicHandler$Timber.d("Update current track %s %s %s %s", it.title.get(), it.artist.get(), it.album.get(), it.trackLength.get())</ID>
+    <ID>MaxLineLength:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$NotificationChannel(_tmpPackageId,_tmpChannelId,_tmpName,_tmpDescription,_tmpConversationId,_tmpShouldNotify)</ID>
+    <ID>MaxLineLength:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl.&lt;no name provided&gt;$"INSERT OR IGNORE INTO `NotificationChannel` (`packageId`,`channelId`,`name`,`description`,`conversationId`,`shouldNotify`) VALUES (?,?,?,?,?,?)"</ID>
+    <ID>MaxLineLength:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl.&lt;no name provided&gt;$"INSERT OR REPLACE INTO `NotificationChannel` (`packageId`,`channelId`,`name`,`description`,`conversationId`,`shouldNotify`) VALUES (?,?,?,?,?,?)"</ID>
+    <ID>MaxLineLength:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl.&lt;no name provided&gt;$"UPDATE OR ABORT `NotificationChannel` SET `packageId` = ?,`channelId` = ?,`name` = ?,`description` = ?,`conversationId` = ?,`shouldNotify` = ? WHERE `packageId` = ? AND `channelId` = ?"</ID>
+    <ID>MaxLineLength:NotificationExtensions.kt$get() = remoteInputs?.firstOrNull { it.allowFreeFormInput &amp;&amp; (it.allowedDataTypes?.contains("text/plain") != false || it.allowedDataTypes.isEmpty()) }</ID>
+    <ID>MaxLineLength:NotificationExtensions.kt$val cache = CachedPackageInfo(packageName, packageManager.getApplicationLabel(info).toString(), info.flags, Clock.System.now())</ID>
+    <ID>MaxLineLength:NotificationListener.kt$NotificationListener$/*if (sensitiveLogging) { channels.forEach { if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.R) { Timber.v("Channel: ${it.id}, ${it.name}, ${it.description} ${it.conversationId}") } else { Timber.v("Channel: ${it.id}, ${it.name}, ${it.description} (no conversationId as old android)") } } }*/</ID>
+    <ID>MaxLineLength:NotificationListener.kt$NotificationListener$Logging.w("No companion devices, listener service has reduced permissions, skipping channel fetch")</ID>
+    <ID>MaxLineLength:NotificationListener.kt$NotificationListener$if (NotificationCompat.getLocalOnly(sbn.notification)) return@launch</ID>
+    <ID>MaxLineLength:NotificationListener.kt$NotificationListener$if (sbn.notification.flags and Notification.FLAG_ONGOING_EVENT != 0) return@launch</ID>
+    <ID>MaxLineLength:NotificationListener.kt$NotificationListener$override</ID>
+    <ID>MaxLineLength:NotificationListener.kt$NotificationListener$private val activeNotifsState: MutableStateFlow&lt;Map&lt;Uuid, StatusBarNotification&gt;&gt; by inject(named("activeNotifsState"))</ID>
+    <ID>MaxLineLength:NotificationProcessor.kt$NotificationProcessor$NotificationCompat.getShowWhen(it.notification) == NotificationCompat.getShowWhen(notif.notification)</ID>
+    <ID>MaxLineLength:NotificationProcessor.kt$NotificationProcessor$Timber.e(e, "Notification processing timed out (package: ${notification.packageId} id: ${notification.notifId})")</ID>
+    <ID>MaxLineLength:NotificationProcessor.kt$NotificationProcessor$Timber.e(result.exceptionOrNull(), "Failed to send notification to display actor, isClosedForSend: ${displayActor.isClosedForSend}")</ID>
+    <ID>MaxLineLength:NotificationProcessor.kt$NotificationProcessor$if</ID>
+    <ID>MaxLineLength:NotificationProcessor.kt$NotificationProcessor$it.notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT) == notif.notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT)</ID>
+    <ID>MaxLineLength:NotificationProcessor.kt$NotificationProcessor$it.notification.extras.getCharSequence(Notification.EXTRA_TEXT) == notif.notification.extras.getCharSequence(Notification.EXTRA_TEXT)</ID>
+    <ID>MaxLineLength:NotificationProcessor.kt$NotificationProcessor$it.notification.extras.getCharSequence(Notification.EXTRA_TITLE) == notif.notification.extras.getCharSequence(Notification.EXTRA_TITLE)</ID>
+    <ID>MaxLineLength:NotificationProcessor.kt$NotificationProcessor$it.notification.extras.getParcelableArray(Notification.EXTRA_MESSAGES)?.size == notif.notification.extras.getParcelableArray(Notification.EXTRA_MESSAGES)?.size</ID>
+    <ID>MaxLineLength:NotificationProcessor.kt$NotificationProcessor$private</ID>
+    <ID>MaxLineLength:NotificationProcessor.kt$NotificationProcessor$private val activeNotifsState: MutableStateFlow&lt;Map&lt;UUID, StatusBarNotification&gt;&gt; by inject(named("activeNotifsState"))</ID>
+    <ID>MaxLineLength:NotificationProcessor.kt$NotificationProcessor$private val blobDBService: BlobDBService? get() = ConnectionStateManager.connectionState.value.watchOrNull?.blobDBService</ID>
+    <ID>MaxLineLength:NotificationProcessor.kt$NotificationProcessor$val deleted = persistedNotifDao.deleteOlderThan(System.currentTimeMillis() - 7.days.inWholeMilliseconds)</ID>
+    <ID>MaxLineLength:NotificationProcessor.kt$NotificationProcessor$val itemId = uuidFrom(NotificationActionHandler.NOTIFICATION_UUID_PREFIX + (uuid4().toString()).substring(NotificationActionHandler.NOTIFICATION_UUID_PREFIX.length))</ID>
+    <ID>MaxLineLength:NotificationProcessor.kt$NotificationProcessor$val pebbleActions = buildPebbleActions(actions, channel?.name ?: tagId, channel?.conversationId != null)</ID>
+    <ID>MaxLineLength:Permissions.kt$checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) == android.content.pm.PackageManager.PERMISSION_GRANTED</ID>
+    <ID>MaxLineLength:Permissions.kt$checkSelfPermission(android.Manifest.permission.READ_CONTACTS) == android.content.pm.PackageManager.PERMISSION_GRANTED</ID>
+    <ID>MaxLineLength:Permissions.kt$checkSelfPermission(android.Manifest.permission.READ_PHONE_STATE) == android.content.pm.PackageManager.PERMISSION_GRANTED</ID>
+    <ID>MaxLineLength:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl.&lt;no name provided&gt;$"INSERT OR REPLACE INTO `PersistedNotification` (`sbnKey`,`packageName`,`postTime`,`title`,`text`,`groupKey`) VALUES (?,?,?,?,?,?)"</ID>
+    <ID>MaxLineLength:PhoneCalendarUtils.android.kt$"${CalendarContract.Reminders.EVENT_ID} = ? AND ${CalendarContract.Reminders.METHOD} IN (${CalendarContract.Reminders.METHOD_ALERT}, ${CalendarContract.Reminders.METHOD_DEFAULT})"</ID>
+    <ID>MaxLineLength:PhoneCalendarUtils.android.kt$+</ID>
+    <ID>MaxLineLength:PhoneCalendarUtils.android.kt$CalendarContract.Attendees.ATTENDEE_STATUS_ACCEPTED -&gt; EventAttendee.AttendanceStatus.Accepted</ID>
+    <ID>MaxLineLength:PhoneCalendarUtils.android.kt$CalendarContract.Attendees.ATTENDEE_STATUS_DECLINED -&gt; EventAttendee.AttendanceStatus.Declined</ID>
+    <ID>MaxLineLength:PhoneCalendarUtils.android.kt$CalendarContract.Attendees.ATTENDEE_STATUS_TENTATIVE -&gt; EventAttendee.AttendanceStatus.Tentative</ID>
+    <ID>MaxLineLength:PhoneCalendarUtils.android.kt$private</ID>
+    <ID>MaxLineLength:PhoneCalendarUtils.android.kt$return</ID>
+    <ID>MaxLineLength:PhoneCalendarUtils.android.kt$rrule.byDay.mapNotNull { wdNum -&gt; DayOfWeek.values().find { it.ordinal == wdNum.weekday.ordinal } }.toSet()</ID>
+    <ID>MaxLineLength:SpeechRecognizerDictationService.kt$SpeechRecognizerDictationService$SpeechRecognizerError.ERROR_NETWORK -&gt; emit(DictationServiceResponse.Error(Result.FailServiceUnavailable))</ID>
+    <ID>MaxLineLength:SpeechRecognizerDictationService.kt$SpeechRecognizerDictationService$SpeechRecognizerError.ERROR_NO_MATCH -&gt; emit(DictationServiceResponse.Transcription(emptyList()))</ID>
+    <ID>MaxLineLength:SpeechRecognizerDictationService.kt$SpeechRecognizerDictationService$SpeechRecognizerError.ERROR_SPEECH_TIMEOUT -&gt; emit(DictationServiceResponse.Error(Result.FailTimeout))</ID>
+    <ID>MaxLineLength:SpeechRecognizerDictationService.kt$SpeechRecognizerDictationService$override</ID>
+    <ID>MaxLineLength:SpeechRecognizerDictationService.kt$SpeechRecognizerDictationService$val decoder = SpeexCodec(speexEncoderInfo.sampleRate, speexEncoderInfo.bitRate, speexEncoderInfo.frameSize, setOf(SpeexCodec.Preprocessor.DENOISE, SpeexCodec.Preprocessor.AGC))</ID>
+    <ID>MaxLineLength:SpeechRecognizerDictationService.kt$SpeechRecognizerDictationService$val recognizerIntent = buildRecognizerIntent(recognizerReadPipe, AudioFormat.ENCODING_PCM_16BIT, speexEncoderInfo.sampleRate.toInt())</ID>
+    <ID>MaxLineLength:SpeechRecognizerDictationService.kt$SpeechRecognizerDictationService.Companion$fun</ID>
+    <ID>MaxLineLength:SystemHandler.android.kt$if (!sensorManager?.getSensorList(Sensor.TYPE_ACCELEROMETER).isNullOrEmpty()) add(PhoneAppVersion.PlatformFlag.Accelerometer)</ID>
+    <ID>MaxLineLength:SystemHandler.android.kt$if (!sensorManager?.getSensorList(Sensor.TYPE_GYROSCOPE).isNullOrEmpty()) add(PhoneAppVersion.PlatformFlag.Gyroscope)</ID>
+    <ID>MaxLineLength:SystemHandler.android.kt$if (!sensorManager?.getSensorList(Sensor.TYPE_MAGNETIC_FIELD).isNullOrEmpty()) add(PhoneAppVersion.PlatformFlag.Compass)</ID>
+    <ID>MaxLineLength:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$TimelinePin(_tmpItemId,_tmpParentId,_tmpBackingId,_tmpTimestamp,_tmpDuration,_tmpType,_tmpIsVisible,_tmpIsFloating,_tmpIsAllDay,_tmpPersistQuickView,_tmpLayout,_tmpAttributesJson,_tmpActionsJson,_tmpNextSyncAction)</ID>
+    <ID>MaxLineLength:TimelinePinDao_Impl.kt$TimelinePinDao_Impl.&lt;no name provided&gt;$"INSERT OR REPLACE INTO `TimelinePin` (`itemId`,`parentId`,`backingId`,`timestamp`,`duration`,`type`,`isVisible`,`isFloating`,`isAllDay`,`persistQuickView`,`layout`,`attributesJson`,`actionsJson`,`nextSyncAction`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"</ID>
+    <ID>MaxLineLength:TimelinePinDao_Impl.kt$TimelinePinDao_Impl.&lt;no name provided&gt;$"UPDATE OR ABORT `TimelinePin` SET `itemId` = ?,`parentId` = ?,`backingId` = ?,`timestamp` = ?,`duration` = ?,`type` = ?,`isVisible` = ?,`isFloating` = ?,`isAllDay` = ?,`persistQuickView` = ?,`layout` = ?,`attributesJson` = ?,`actionsJson` = ?,`nextSyncAction` = ? WHERE `itemId` = ?"</ID>
+    <ID>MaxLineLength:WebViewJsRunner.kt$WebViewJsRunner$class</ID>
+    <ID>MaxLineLength:WebViewJsRunner.kt$WebViewJsRunner.&lt;no name provided&gt;$override</ID>
+    <ID>MaxLineLength:WebViewPrivatePKJSInterface.kt$WebViewPrivatePKJSInterface$class</ID>
+    <ID>MaxLineLength:androidJobExceptionHandler.kt$fun</ID>
+    <ID>MemberNameEqualsClassName:File.android.kt$File$val file = Uri.parse(uri).toFile()</ID>
+    <ID>NestedBlockDepth:LockerDao_Impl.kt$LockerDao_Impl$private fun __fetchRelationshipSyncedLockerEntryPlatformAsioRebbleCobbleSharedDatabaseEntitySyncedLockerEntryPlatform(_connection: SQLiteConnection, _map: ArrayMap&lt;String, MutableList&lt;SyncedLockerEntryPlatform&gt;&gt;)</ID>
+    <ID>NewLineAtEndOfFile:AndroidCalendarActionExecutor.kt$io.rebble.cobble.shared.domain.calendar.AndroidCalendarActionExecutor.kt</ID>
+    <ID>NewLineAtEndOfFile:AndroidJobScheduler.kt$io.rebble.cobble.shared.jobs.AndroidJobScheduler.kt</ID>
+    <ID>NewLineAtEndOfFile:AndroidLockerSyncJob.kt$io.rebble.cobble.shared.jobs.AndroidLockerSyncJob.kt</ID>
+    <ID>NewLineAtEndOfFile:AndroidModule.kt$io.rebble.cobble.shared.di.AndroidModule.kt</ID>
+    <ID>NewLineAtEndOfFile:AndroidNotificationActionExecutor.kt$io.rebble.cobble.shared.domain.notifications.AndroidNotificationActionExecutor.kt</ID>
+    <ID>NewLineAtEndOfFile:AndroidPlatformAppMessageIPC.kt$io.rebble.cobble.shared.handlers.AndroidPlatformAppMessageIPC.kt</ID>
+    <ID>NewLineAtEndOfFile:AndroidPlatformContext.kt$io.rebble.cobble.shared.AndroidPlatformContext.kt</ID>
+    <ID>NewLineAtEndOfFile:AndroidSecureStorage.kt$io.rebble.cobble.shared.datastore.AndroidSecureStorage.kt</ID>
+    <ID>NewLineAtEndOfFile:AppDatabase.android.kt$io.rebble.cobble.shared.database.AppDatabase.android.kt</ID>
+    <ID>NewLineAtEndOfFile:AppInstallHandler.android.kt$io.rebble.cobble.shared.handlers.AppInstallHandler.android.kt</ID>
+    <ID>NewLineAtEndOfFile:AppInstallUtils.android.kt$io.rebble.cobble.shared.util.AppInstallUtils.android.kt</ID>
+    <ID>NewLineAtEndOfFile:BroadcastReceiver.kt$io.rebble.cobble.shared.util.coroutines.BroadcastReceiver.kt</ID>
+    <ID>NewLineAtEndOfFile:CalendarHandler.kt$io.rebble.cobble.shared.handlers.CalendarHandler.kt</ID>
+    <ID>NewLineAtEndOfFile:CalendarSyncWorker.kt$io.rebble.cobble.shared.jobs.CalendarSyncWorker.kt</ID>
+    <ID>NewLineAtEndOfFile:CallNotificationInterpreter.kt$io.rebble.cobble.shared.domain.notifications.calls.CallNotificationInterpreter.kt</ID>
+    <ID>NewLineAtEndOfFile:CallNotificationProcessor.kt$io.rebble.cobble.shared.domain.notifications.CallNotificationProcessor.kt</ID>
+    <ID>NewLineAtEndOfFile:DependenciesModule.android.kt$io.rebble.cobble.shared.di.DependenciesModule.android.kt</ID>
+    <ID>NewLineAtEndOfFile:DiscordCallNotificationInterpreter.kt$io.rebble.cobble.shared.domain.notifications.calls.DiscordCallNotificationInterpreter.kt</ID>
+    <ID>NewLineAtEndOfFile:File.android.kt$io.rebble.cobble.shared.util.File.android.kt</ID>
+    <ID>NewLineAtEndOfFile:FlowablePreference.kt$io.rebble.cobble.shared.datastore.FlowablePreference.kt</ID>
+    <ID>NewLineAtEndOfFile:FlutterPreferences.kt$io.rebble.cobble.shared.datastore.FlutterPreferences.kt</ID>
+    <ID>NewLineAtEndOfFile:Intent.kt$io.rebble.cobble.shared.util.Intent.kt</ID>
+    <ID>NewLineAtEndOfFile:JsRunnerFactory.android.kt$io.rebble.cobble.shared.js.JsRunnerFactory.android.kt</ID>
+    <ID>NewLineAtEndOfFile:JsTokenUtil.kt$io.rebble.cobble.shared.js.JsTokenUtil.kt</ID>
+    <ID>NewLineAtEndOfFile:LockerSyncJob.android.kt$io.rebble.cobble.shared.jobs.LockerSyncJob.android.kt</ID>
+    <ID>NewLineAtEndOfFile:Logging.android.kt$io.rebble.cobble.shared.Logging.android.kt</ID>
+    <ID>NewLineAtEndOfFile:MusicHandler.kt$io.rebble.cobble.shared.handlers.music.MusicHandler.kt</ID>
+    <ID>NewLineAtEndOfFile:NotificationExtensions.kt$io.rebble.cobble.shared.domain.notifications.NotificationExtensions.kt</ID>
+    <ID>NewLineAtEndOfFile:NotificationGroup.kt$io.rebble.cobble.shared.domain.notifications.NotificationGroup.kt</ID>
+    <ID>NewLineAtEndOfFile:NotificationId.kt$io.rebble.cobble.shared.util.NotificationId.kt</ID>
+    <ID>NewLineAtEndOfFile:NotificationListener.kt$io.rebble.cobble.shared.domain.notifications.NotificationListener.kt</ID>
+    <ID>NewLineAtEndOfFile:NotificationMessage.kt$io.rebble.cobble.shared.domain.notifications.NotificationMessage.kt</ID>
+    <ID>NewLineAtEndOfFile:NotificationProcessor.kt$io.rebble.cobble.shared.domain.notifications.NotificationProcessor.kt</ID>
+    <ID>NewLineAtEndOfFile:NullDictationService.android.kt$io.rebble.cobble.shared.domain.voice.NullDictationService.android.kt</ID>
+    <ID>NewLineAtEndOfFile:PebbleDictionaryConverter.kt$io.rebble.cobble.shared.util.PebbleDictionaryConverter.kt</ID>
+    <ID>NewLineAtEndOfFile:PebbleKitProvider.kt$io.rebble.cobble.shared.providers.PebbleKitProvider.kt</ID>
+    <ID>NewLineAtEndOfFile:PermissionChangeBus.kt$io.rebble.cobble.shared.domain.PermissionChangeBus.kt</ID>
+    <ID>NewLineAtEndOfFile:Permissions.kt$io.rebble.cobble.shared.util.Permissions.kt</ID>
+    <ID>NewLineAtEndOfFile:PhoneCalendarUtils.android.kt$io.rebble.cobble.shared.domain.calendar.PhoneCalendarUtils.android.kt</ID>
+    <ID>NewLineAtEndOfFile:RecognitionSupport.kt$io.rebble.cobble.shared.domain.voice.speechrecognizer.RecognitionSupport.kt</ID>
+    <ID>NewLineAtEndOfFile:SpeechRecognizerDictationService.kt$io.rebble.cobble.shared.domain.voice.speechrecognizer.SpeechRecognizerDictationService.kt</ID>
+    <ID>NewLineAtEndOfFile:SpeechRecognizerError.kt$io.rebble.cobble.shared.domain.voice.speechrecognizer.SpeechRecognizerError.kt</ID>
+    <ID>NewLineAtEndOfFile:SystemHandler.android.kt$io.rebble.cobble.shared.handlers.SystemHandler.android.kt</ID>
+    <ID>NewLineAtEndOfFile:UnboundWatchBeforeConnecting.kt$io.rebble.cobble.shared.workarounds.UnboundWatchBeforeConnecting.kt</ID>
+    <ID>NewLineAtEndOfFile:WatchTimelineSyncer.android.kt$io.rebble.cobble.shared.domain.timeline.WatchTimelineSyncer.android.kt</ID>
+    <ID>NewLineAtEndOfFile:WebViewJsRunner.kt$io.rebble.cobble.shared.js.WebViewJsRunner.kt</ID>
+    <ID>NewLineAtEndOfFile:WebViewPKJSInterface.kt$io.rebble.cobble.shared.js.WebViewPKJSInterface.kt</ID>
+    <ID>NewLineAtEndOfFile:WebViewPrivatePKJSInterface.kt$io.rebble.cobble.shared.js.WebViewPrivatePKJSInterface.kt</ID>
+    <ID>NewLineAtEndOfFile:WhatsAppCallNotificationInterpreter.kt$io.rebble.cobble.shared.domain.notifications.calls.WhatsAppCallNotificationInterpreter.kt</ID>
+    <ID>NewLineAtEndOfFile:ZipUtils.kt$io.rebble.cobble.shared.util.ZipUtils.kt</ID>
+    <ID>NewLineAtEndOfFile:androidJobExceptionHandler.kt$io.rebble.cobble.shared.jobs.androidJobExceptionHandler.kt</ID>
+    <ID>NewLineAtEndOfFile:createDataStore.android.kt$io.rebble.cobble.shared.datastore.createDataStore.android.kt</ID>
+    <ID>NewLineAtEndOfFile:koin.android.kt$io.rebble.cobble.shared.di.koin.android.kt</ID>
+    <ID>NoNameShadowing:NotificationProcessor.kt$NotificationProcessor${ NotificationMessage(it.person?.name.toString(), it.text.toString(), it.timestamp) }</ID>
+    <ID>NoNameShadowing:PhoneCalendarUtils.android.kt$eventId</ID>
+    <ID>ReturnCount:AndroidCalendarActionExecutor.kt$AndroidCalendarActionExecutor$override suspend fun handlePlatformAction(action: CalendarAction, pin: TimelinePin): TimelineService.ActionResponse</ID>
+    <ID>ReturnCount:AndroidNotificationActionExecutor.kt$AndroidNotificationActionExecutor$override suspend fun handlePlatformAction(actionId: Int, itemId: Uuid, attributes: List&lt;TimelineItem.Attribute&gt;): TimelineService.ActionResponse</ID>
+    <ID>ReturnCount:AppDatabase_Impl.kt$AppDatabase_Impl.&lt;no name provided&gt;$public override fun onValidateSchema(connection: SQLiteConnection): RoomOpenDelegate.ValidationResult</ID>
+    <ID>ReturnCount:AppInstallHandler.android.kt$actual suspend fun downloadPbw(context: PlatformContext, httpClient: HttpClient, lockerDao: LockerDao, appUuid: String): String?</ID>
+    <ID>ReturnCount:AppInstallUtils.android.kt$actual fun getPbwJsFilePath(context: PlatformContext, pbwAppInfo: PbwAppInfo, pbwFile: File): String?</ID>
+    <ID>ReturnCount:LockerDao_Impl.kt$LockerDao_Impl$private fun __fetchRelationshipSyncedLockerEntryPlatformAsioRebbleCobbleSharedDatabaseEntitySyncedLockerEntryPlatform(_connection: SQLiteConnection, _map: ArrayMap&lt;String, MutableList&lt;SyncedLockerEntryPlatform&gt;&gt;)</ID>
+    <ID>ReturnCount:NotificationListener.kt$NotificationListener$@OptIn(ExperimentalStdlibApi::class) override fun onNotificationPosted(sbn: StatusBarNotification?)</ID>
+    <ID>ReturnCount:PhoneCalendarUtils.android.kt$private fun resolveCalendarEvent(contentResolver: ContentResolver, cursor: Cursor, ownerEmail: String): CalendarEvent?</ID>
+    <ID>ReturnCount:PhoneCalendarUtils.android.kt$private fun resolveCalendarInstance(contentResolver: ContentResolver, cursor: Cursor, ownerEmail: String): CalendarEvent?</ID>
+    <ID>ReturnCount:PhoneCalendarUtils.android.kt$suspend fun getCalendarEventById( platformContext: PlatformContext, eventId: String ): CalendarEvent?</ID>
+    <ID>ReturnCount:PhoneCalendarUtils.android.kt$suspend fun getCalendarInstanceById( platformContext: PlatformContext, instanceId: String, startDate: Instant, endDate: Instant ): CalendarEvent?</ID>
+    <ID>ReturnCount:WhatsAppCallNotificationInterpreter.kt$WhatsAppCallNotificationInterpreter$override fun processCallNotification(sbn: StatusBarNotification): CallNotification?</ID>
+    <ID>SuspendFunWithFlowReturnType:AndroidNotificationActionExecutor.kt$AndroidNotificationActionExecutor$suspend</ID>
+    <ID>SwallowedException:ActiveMediaSessionProvider.kt$ActiveMediaSessionProvider$e: SecurityException</ID>
+    <ID>SwallowedException:BroadcastReceiver.kt$e: IllegalArgumentException</ID>
+    <ID>SwallowedException:JsTokenUtil.kt$JsTokenUtil$e: TimeoutCancellationException</ID>
+    <ID>SwallowedException:NotificationExtensions.kt$e: NameNotFoundException</ID>
+    <ID>ThrowingExceptionsWithoutMessageOrCause:Logging.android.kt$Throwable()</ID>
+    <ID>ThrowsCount:PebbleDictionaryConverter.kt$@OptIn(ExperimentalUnsignedTypes::class) fun PebbleDictionary.toPacket(uuid: UUID, transactionId: Int): AppMessage.AppMessagePush</ID>
+    <ID>TooGenericExceptionCaught:NotificationListener.kt$NotificationListener$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:WebViewJsRunner.kt$WebViewJsRunner$e: Exception</ID>
+    <ID>TooManyFunctions:AppDatabase_Impl.kt$AppDatabase_Impl : AppDatabase</ID>
+    <ID>TooManyFunctions:LockerDao_Impl.kt$LockerDao_Impl : LockerDao</ID>
+    <ID>TooManyFunctions:NotificationListener.kt$NotificationListener : NotificationListenerServiceKoinComponent</ID>
+    <ID>TooManyFunctions:NotificationProcessor.kt$NotificationProcessor : KoinComponent</ID>
+    <ID>TooManyFunctions:TimelinePinDao_Impl.kt$TimelinePinDao_Impl : TimelinePinDao</ID>
+    <ID>TooManyFunctions:WebViewJsRunner.kt$WebViewJsRunner : JsRunner</ID>
+    <ID>TooManyFunctions:WebViewPrivatePKJSInterface.kt$WebViewPrivatePKJSInterface : PrivatePKJSInterfaceKoinComponent</ID>
+    <ID>UnsafeCallOnNullableType:AndroidPlatformAppMessageIPC.kt$AndroidPlatformAppMessageIPC$it.getStringExtra(Constants.APP_UUID)!!</ID>
+    <ID>UnsafeCallOnNullableType:AndroidPlatformAppMessageIPC.kt$AndroidPlatformAppMessageIPC$it.getStringExtra(Constants.MSG_DATA)!!</ID>
+    <ID>UnsafeCallOnNullableType:NullDictationService.android.kt$context.getExternalFilesDir(null)!!</ID>
+    <ID>UnsafeCallOnNullableType:Permissions.kt$getSystemService()!!</ID>
+    <ID>UnusedParameter:WebViewPrivatePKJSInterface.kt$WebViewPrivatePKJSInterface$baseUriReference: String</ID>
+    <ID>UnusedParameter:WebViewPrivatePKJSInterface.kt$WebViewPrivatePKJSInterface$key: String</ID>
+    <ID>UnusedParameter:WebViewPrivatePKJSInterface.kt$WebViewPrivatePKJSInterface$value: String</ID>
+    <ID>UnusedPrivateProperty:NotificationListener.kt$NotificationListener$private val activeNotifsState: MutableStateFlow&lt;Map&lt;Uuid, StatusBarNotification&gt;&gt; by inject(named("activeNotifsState"))</ID>
+    <ID>UnusedPrivateProperty:PhoneCalendarUtils.android.kt$val method = cursor.getNullableColumnIndex(CalendarContract.Reminders.METHOD) ?.let { cursor.getInt(it) } ?: return@generateSequence null</ID>
+    <ID>UseAnyOrNoneInsteadOfFind:NotificationProcessor.kt$NotificationProcessor$find { it.groupKey == notificationGroup.groupKey &amp;&amp; it.packageName == notif.packageName &amp;&amp; it.id == notif.id &amp;&amp; NotificationCompat.getShowWhen(it.notification) == NotificationCompat.getShowWhen(notif.notification) &amp;&amp; it.notification.extras.keySet() == notif.notification.extras.keySet() &amp;&amp; it.notification.extras.getCharSequence(Notification.EXTRA_TITLE) == notif.notification.extras.getCharSequence(Notification.EXTRA_TITLE) &amp;&amp; it.notification.extras.getCharSequence(Notification.EXTRA_TEXT) == notif.notification.extras.getCharSequence(Notification.EXTRA_TEXT) &amp;&amp; it.notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT) == notif.notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT) &amp;&amp; it.notification.extras.getParcelableArray(Notification.EXTRA_MESSAGES)?.size == notif.notification.extras.getParcelableArray(Notification.EXTRA_MESSAGES)?.size }</ID>
+    <ID>UseCheckNotNull:WebViewJsRunner.kt$WebViewJsRunner$check(webView != null) { "WebView not initialized" }</ID>
+    <ID>UseCheckOrError:AndroidPlatformAppMessageIPC.kt$AndroidPlatformAppMessageIPC$throw IllegalStateException("Unknown action: ${it.action}")</ID>
+    <ID>UseCheckOrError:PebbleKitProvider.kt$PebbleKitProvider$throw IllegalStateException("Context should not be null when initializing")</ID>
+    <ID>UseOrEmpty:CallNotificationProcessor.kt$CallNotificationProcessor$state.notification.contactName ?: ""</ID>
+    <ID>UseOrEmpty:MusicHandler.kt$MusicHandler$metadata.getString(MediaMetadata.METADATA_KEY_ALBUM) ?: ""</ID>
+    <ID>UseOrEmpty:MusicHandler.kt$MusicHandler$metadata.getString(MediaMetadata.METADATA_KEY_ARTIST) ?: ""</ID>
+    <ID>UseOrEmpty:MusicHandler.kt$MusicHandler$metadata.getString(MediaMetadata.METADATA_KEY_TITLE) ?: ""</ID>
+    <ID>UseOrEmpty:NotificationListener.kt$NotificationListener$channel.description ?: ""</ID>
+    <ID>UseOrEmpty:NotificationProcessor.kt$NotificationProcessor$messages ?: listOf()</ID>
+    <ID>UseOrEmpty:NotificationProcessor.kt$NotificationProcessor$notification.actions?.toList() ?: listOf()</ID>
+    <ID>UseOrEmpty:NotificationProcessor.kt$NotificationProcessor$notification.category ?: ""</ID>
+    <ID>UseOrEmpty:NotificationProcessor.kt$NotificationProcessor$notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString() ?: notification.extras.getCharSequence(Notification.EXTRA_TEXT)?.toString() ?: ""</ID>
+    <ID>UseOrEmpty:NotificationProcessor.kt$NotificationProcessor$notification.extras.getCharSequence(Notification.EXTRA_TITLE)?.toString() ?: notification.extras.getCharSequence(Notification.EXTRA_CONVERSATION_TITLE)?.toString() ?: ""</ID>
+    <ID>UseOrEmpty:PebbleKitProvider.kt$PebbleKitProvider$groupValues?.elementAtOrNull(4) ?: ""</ID>
+    <ID>UseOrEmpty:PhoneCalendarUtils.android.kt$contentResolver.query( reminderUri, reminderProjection, "${CalendarContract.Reminders.EVENT_ID} = ? AND ${CalendarContract.Reminders.METHOD} IN (${CalendarContract.Reminders.METHOD_ALERT}, ${CalendarContract.Reminders.METHOD_DEFAULT})", arrayOf(eventId.toString()), null )?.use { cursor -&gt; return@use generateSequence { if (cursor.moveToNext()) { val id = cursor.getNullableColumnIndex(CalendarContract.Reminders._ID) ?.let { cursor.getLong(it) } ?: return@generateSequence null val eventId = cursor.getNullableColumnIndex(CalendarContract.Reminders.EVENT_ID) ?.let { cursor.getLong(it) } ?: return@generateSequence null val minutes = cursor.getNullableColumnIndex(CalendarContract.Reminders.MINUTES) ?.let { cursor.getInt(it) } ?: return@generateSequence null val method = cursor.getNullableColumnIndex(CalendarContract.Reminders.METHOD) ?.let { cursor.getInt(it) } ?: return@generateSequence null EventReminder( minutesBefore = minutes, ) } else { null } }.toList() } ?: listOf()</ID>
+    <ID>UseOrEmpty:PhoneCalendarUtils.android.kt$contentResolver.query(attendeeUri, attendeeProjection, "${CalendarContract.Attendees.EVENT_ID} = ?", arrayOf(eventId.toString()), null)?.use { cursor -&gt; return@use generateSequence { if (cursor.moveToNext()) { val id = cursor.getNullableColumnIndex(CalendarContract.Attendees._ID) ?.let { cursor.getLong(it) } ?: return@generateSequence null val eventId = cursor.getNullableColumnIndex(CalendarContract.Attendees.EVENT_ID) ?.let { cursor.getLong(it) } ?: return@generateSequence null val name = cursor.getNullableColumnIndex(CalendarContract.Attendees.ATTENDEE_NAME) ?.let { cursor.getString(it) } ?: return@generateSequence null val email = cursor.getNullableColumnIndex(CalendarContract.Attendees.ATTENDEE_EMAIL) ?.let { cursor.getString(it) } ?: return@generateSequence null val type = cursor.getNullableColumnIndex(CalendarContract.Attendees.ATTENDEE_TYPE) ?.let { cursor.getInt(it) } ?: return@generateSequence null val status = cursor.getNullableColumnIndex(CalendarContract.Attendees.ATTENDEE_STATUS) ?.let { cursor.getInt(it) } ?: return@generateSequence null val relationship = cursor.getNullableColumnIndex(CalendarContract.Attendees.ATTENDEE_RELATIONSHIP) ?.let { cursor.getInt(it) } ?: return@generateSequence null EventAttendee( name = name, email = email, role = when (type) { CalendarContract.Attendees.TYPE_REQUIRED -&gt; EventAttendee.Role.Required CalendarContract.Attendees.TYPE_OPTIONAL -&gt; EventAttendee.Role.Optional CalendarContract.Attendees.TYPE_RESOURCE -&gt; EventAttendee.Role.Resource else -&gt; EventAttendee.Role.None }, isOrganizer = relationship == CalendarContract.Attendees.RELATIONSHIP_ORGANIZER, isCurrentUser = email == ownerEmail, attendanceStatus = when (status) { CalendarContract.Attendees.ATTENDEE_STATUS_ACCEPTED -&gt; EventAttendee.AttendanceStatus.Accepted CalendarContract.Attendees.ATTENDEE_STATUS_DECLINED -&gt; EventAttendee.AttendanceStatus.Declined CalendarContract.Attendees.ATTENDEE_STATUS_INVITED -&gt; EventAttendee.AttendanceStatus.Invited CalendarContract.Attendees.ATTENDEE_STATUS_TENTATIVE -&gt; EventAttendee.AttendanceStatus.Tentative else -&gt; EventAttendee.AttendanceStatus.None } ) } else { null } }.toList() } ?: listOf()</ID>
+    <ID>UseOrEmpty:PhoneCalendarUtils.android.kt$contentResolver.query(builtUri, instanceProjection, "${CalendarContract.Instances.CALENDAR_ID} = ?" + " AND IFNULL(" + CalendarContract.Instances.STATUS + ", " + CalendarContract.Instances.STATUS_TENTATIVE + ") != " + CalendarContract.Instances.STATUS_CANCELED + " AND IFNULL(" + CalendarContract.Instances.SELF_ATTENDEE_STATUS + ", " + CalendarContract.Attendees.ATTENDEE_STATUS_NONE + ") != " + CalendarContract.Attendees.ATTENDEE_STATUS_DECLINED, arrayOf(calendar.platformId), "BEGIN ASC" )?.use { cursor -&gt; Logging.d("Found ${cursor.count} events for calendar ${calendar.name}") val list = mutableListOf&lt;CalendarEvent&gt;() while (cursor.moveToNext()) { val event = resolveCalendarInstance(contentResolver, cursor, calendar.ownerId) if (event != null) { list.add(event) } } list } ?: listOf()</ID>
+    <ID>UseOrEmpty:PhoneCalendarUtils.android.kt$contentResolver.query(calendarUri, calendarProjection, null, null, null)?.use { cursor -&gt; return@use generateSequence { if (cursor.moveToNext()) { val id = cursor.getNullableColumnIndex(CalendarContract.Calendars._ID) ?.let { cursor.getLong(it) } ?: return@generateSequence null val accountName = cursor.getNullableColumnIndex(CalendarContract.Calendars.ACCOUNT_NAME) ?.let { cursor.getString(it) } ?: return@generateSequence null val displayName = cursor.getNullableColumnIndex(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME) ?.let { cursor.getString(it) } ?: return@generateSequence null val ownerAccount = cursor.getNullableColumnIndex(CalendarContract.Calendars.OWNER_ACCOUNT) ?.let { cursor.getString(it) } ?: return@generateSequence null val color = cursor.getNullableColumnIndex(CalendarContract.Calendars.CALENDAR_COLOR) ?.let { cursor.getInt(it) } ?: return@generateSequence null Calendar( id = 0, platformId = id.toString(), name = displayName, ownerName = accountName, ownerId = ownerAccount, color = color, enabled = true ) } else { null } }.toList() } ?: listOf()</ID>
+    <ID>UseOrEmpty:PhoneCalendarUtils.android.kt$cursor.getNullableColumnIndex(CalendarContract.Events.DESCRIPTION) ?.let { cursor.getString(it) } ?: ""</ID>
+    <ID>UseOrEmpty:PhoneCalendarUtils.android.kt$cursor.getNullableColumnIndex(CalendarContract.Instances.DESCRIPTION) ?.let { cursor.getString(it) } ?: ""</ID>
+    <ID>UseOrEmpty:WebViewPKJSInterface.kt$WebViewPKJSInterface$JsTokenUtil.getAccountToken(uuidFrom(jsRunner.appInfo.uuid)) ?: ""</ID>
+    <ID>UseRequireNotNull:AndroidLockerSyncJob.kt$AndroidLockerSyncJob$require(params != null) { "Job parameters must not be null" }</ID>
+    <ID>VarCouldBeVal:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$var _argIndex: Int = 1</ID>
+    <ID>VarCouldBeVal:CalendarDao_Impl.kt$CalendarDao_Impl$var _argIndex: Int = 1</ID>
+    <ID>VarCouldBeVal:LockerDao_Impl.kt$LockerDao_Impl$var _argIndex: Int = 1</ID>
+    <ID>VarCouldBeVal:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$var _argIndex: Int = 1</ID>
+    <ID>VarCouldBeVal:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$var _argIndex: Int = 1</ID>
+    <ID>VariableNaming:AppDatabase_Impl.kt$AppDatabase_Impl$val _autoMigrationSpecsSet: MutableSet&lt;KClass&lt;out AutoMigrationSpec&gt;&gt; = mutableSetOf()</ID>
+    <ID>VariableNaming:AppDatabase_Impl.kt$AppDatabase_Impl$val _autoMigrations: MutableList&lt;Migration&gt; = mutableListOf()</ID>
+    <ID>VariableNaming:AppDatabase_Impl.kt$AppDatabase_Impl$val _openDelegate: RoomOpenDelegate = object : RoomOpenDelegate(13, "40a219d017357252022cfbee3971fefb", "a982cec26164134e93f2babd2dc6cbb3") { public override fun createAllTables(connection: SQLiteConnection) { connection.execSQL("CREATE TABLE IF NOT EXISTS `Calendar` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `platformId` TEXT NOT NULL, `name` TEXT NOT NULL, `ownerName` TEXT NOT NULL, `ownerId` TEXT NOT NULL, `color` INTEGER NOT NULL, `enabled` INTEGER NOT NULL)") connection.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_Calendar_platformId` ON `Calendar` (`platformId`)") connection.execSQL("CREATE TABLE IF NOT EXISTS `TimelinePin` (`itemId` TEXT NOT NULL, `parentId` TEXT NOT NULL, `backingId` TEXT, `timestamp` INTEGER NOT NULL, `duration` INTEGER, `type` TEXT NOT NULL, `isVisible` INTEGER NOT NULL, `isFloating` INTEGER NOT NULL, `isAllDay` INTEGER NOT NULL, `persistQuickView` INTEGER NOT NULL, `layout` TEXT NOT NULL, `attributesJson` TEXT, `actionsJson` TEXT, `nextSyncAction` TEXT, PRIMARY KEY(`itemId`))") connection.execSQL("CREATE TABLE IF NOT EXISTS `PersistedNotification` (`sbnKey` TEXT NOT NULL, `packageName` TEXT NOT NULL, `postTime` INTEGER NOT NULL, `title` TEXT NOT NULL, `text` TEXT NOT NULL, `groupKey` TEXT, PRIMARY KEY(`sbnKey`))") connection.execSQL("CREATE TABLE IF NOT EXISTS `CachedPackageInfo` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `flags` INTEGER NOT NULL, `updated` INTEGER NOT NULL, PRIMARY KEY(`id`))") connection.execSQL("CREATE TABLE IF NOT EXISTS `NotificationChannel` (`packageId` TEXT NOT NULL, `channelId` TEXT NOT NULL, `name` TEXT, `description` TEXT, `conversationId` TEXT, `shouldNotify` INTEGER NOT NULL, PRIMARY KEY(`packageId`, `channelId`))") connection.execSQL("CREATE TABLE IF NOT EXISTS `SyncedLockerEntry` (`id` TEXT NOT NULL, `uuid` TEXT NOT NULL, `version` TEXT NOT NULL, `title` TEXT NOT NULL, `type` TEXT NOT NULL, `hearts` INTEGER NOT NULL, `developerName` TEXT NOT NULL, `developerId` TEXT, `configurable` INTEGER NOT NULL, `timelineEnabled` INTEGER NOT NULL, `removeLink` TEXT NOT NULL, `shareLink` TEXT NOT NULL, `pbwLink` TEXT NOT NULL, `pbwReleaseId` TEXT NOT NULL, `pbwIconResourceId` INTEGER NOT NULL DEFAULT 0, `nextSyncAction` TEXT NOT NULL, `order` INTEGER NOT NULL DEFAULT -1, `lastOpened` INTEGER, `local` INTEGER NOT NULL DEFAULT 0, `userToken` TEXT DEFAULT null, PRIMARY KEY(`id`))") connection.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_SyncedLockerEntry_uuid` ON `SyncedLockerEntry` (`uuid`)") connection.execSQL("CREATE TABLE IF NOT EXISTS `SyncedLockerEntryPlatform` (`platformEntryId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `lockerEntryId` TEXT NOT NULL, `sdkVersion` TEXT NOT NULL, `processInfoFlags` INTEGER NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `icon` TEXT, `list` TEXT, `screenshot` TEXT, FOREIGN KEY(`lockerEntryId`) REFERENCES `SyncedLockerEntry`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )") connection.execSQL("CREATE INDEX IF NOT EXISTS `index_SyncedLockerEntryPlatform_lockerEntryId` ON `SyncedLockerEntryPlatform` (`lockerEntryId`)") connection.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)") connection.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '40a219d017357252022cfbee3971fefb')") } public override fun dropAllTables(connection: SQLiteConnection) { connection.execSQL("DROP TABLE IF EXISTS `Calendar`") connection.execSQL("DROP TABLE IF EXISTS `TimelinePin`") connection.execSQL("DROP TABLE IF EXISTS `PersistedNotification`") connection.execSQL("DROP TABLE IF EXISTS `CachedPackageInfo`") connection.execSQL("DROP TABLE IF EXISTS `NotificationChannel`") connection.execSQL("DROP TABLE IF EXISTS `SyncedLockerEntry`") connection.execSQL("DROP TABLE IF EXISTS `SyncedLockerEntryPlatform`") } public override fun onCreate(connection: SQLiteConnection) { } public override fun onOpen(connection: SQLiteConnection) { connection.execSQL("PRAGMA foreign_keys = ON") internalInitInvalidationTracker(connection) } public override fun onPreMigrate(connection: SQLiteConnection) { dropFtsSyncTriggers(connection) } public override fun onPostMigrate(connection: SQLiteConnection) { } public override fun onValidateSchema(connection: SQLiteConnection): RoomOpenDelegate.ValidationResult { val _columnsCalendar: MutableMap&lt;String, TableInfo.Column&gt; = mutableMapOf() _columnsCalendar.put("id", TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY)) _columnsCalendar.put("platformId", TableInfo.Column("platformId", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsCalendar.put("name", TableInfo.Column("name", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsCalendar.put("ownerName", TableInfo.Column("ownerName", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsCalendar.put("ownerId", TableInfo.Column("ownerId", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsCalendar.put("color", TableInfo.Column("color", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsCalendar.put("enabled", TableInfo.Column("enabled", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) val _foreignKeysCalendar: MutableSet&lt;TableInfo.ForeignKey&gt; = mutableSetOf() val _indicesCalendar: MutableSet&lt;TableInfo.Index&gt; = mutableSetOf() _indicesCalendar.add(TableInfo.Index("index_Calendar_platformId", true, listOf("platformId"), listOf("ASC"))) val _infoCalendar: TableInfo = TableInfo("Calendar", _columnsCalendar, _foreignKeysCalendar, _indicesCalendar) val _existingCalendar: TableInfo = read(connection, "Calendar") if (!_infoCalendar.equals(_existingCalendar)) { return RoomOpenDelegate.ValidationResult(false, """ |Calendar(io.rebble.cobble.shared.database.entity.Calendar). | Expected: |""".trimMargin() + _infoCalendar + """ | | Found: |""".trimMargin() + _existingCalendar) } val _columnsTimelinePin: MutableMap&lt;String, TableInfo.Column&gt; = mutableMapOf() _columnsTimelinePin.put("itemId", TableInfo.Column("itemId", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY)) _columnsTimelinePin.put("parentId", TableInfo.Column("parentId", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsTimelinePin.put("backingId", TableInfo.Column("backingId", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsTimelinePin.put("timestamp", TableInfo.Column("timestamp", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsTimelinePin.put("duration", TableInfo.Column("duration", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsTimelinePin.put("type", TableInfo.Column("type", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsTimelinePin.put("isVisible", TableInfo.Column("isVisible", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsTimelinePin.put("isFloating", TableInfo.Column("isFloating", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsTimelinePin.put("isAllDay", TableInfo.Column("isAllDay", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsTimelinePin.put("persistQuickView", TableInfo.Column("persistQuickView", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsTimelinePin.put("layout", TableInfo.Column("layout", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsTimelinePin.put("attributesJson", TableInfo.Column("attributesJson", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsTimelinePin.put("actionsJson", TableInfo.Column("actionsJson", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsTimelinePin.put("nextSyncAction", TableInfo.Column("nextSyncAction", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY)) val _foreignKeysTimelinePin: MutableSet&lt;TableInfo.ForeignKey&gt; = mutableSetOf() val _indicesTimelinePin: MutableSet&lt;TableInfo.Index&gt; = mutableSetOf() val _infoTimelinePin: TableInfo = TableInfo("TimelinePin", _columnsTimelinePin, _foreignKeysTimelinePin, _indicesTimelinePin) val _existingTimelinePin: TableInfo = read(connection, "TimelinePin") if (!_infoTimelinePin.equals(_existingTimelinePin)) { return RoomOpenDelegate.ValidationResult(false, """ |TimelinePin(io.rebble.cobble.shared.database.entity.TimelinePin). | Expected: |""".trimMargin() + _infoTimelinePin + """ | | Found: |""".trimMargin() + _existingTimelinePin) } val _columnsPersistedNotification: MutableMap&lt;String, TableInfo.Column&gt; = mutableMapOf() _columnsPersistedNotification.put("sbnKey", TableInfo.Column("sbnKey", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY)) _columnsPersistedNotification.put("packageName", TableInfo.Column("packageName", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsPersistedNotification.put("postTime", TableInfo.Column("postTime", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsPersistedNotification.put("title", TableInfo.Column("title", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsPersistedNotification.put("text", TableInfo.Column("text", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsPersistedNotification.put("groupKey", TableInfo.Column("groupKey", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY)) val _foreignKeysPersistedNotification: MutableSet&lt;TableInfo.ForeignKey&gt; = mutableSetOf() val _indicesPersistedNotification: MutableSet&lt;TableInfo.Index&gt; = mutableSetOf() val _infoPersistedNotification: TableInfo = TableInfo("PersistedNotification", _columnsPersistedNotification, _foreignKeysPersistedNotification, _indicesPersistedNotification) val _existingPersistedNotification: TableInfo = read(connection, "PersistedNotification") if (!_infoPersistedNotification.equals(_existingPersistedNotification)) { return RoomOpenDelegate.ValidationResult(false, """ |PersistedNotification(io.rebble.cobble.shared.database.entity.PersistedNotification). | Expected: |""".trimMargin() + _infoPersistedNotification + """ | | Found: |""".trimMargin() + _existingPersistedNotification) } val _columnsCachedPackageInfo: MutableMap&lt;String, TableInfo.Column&gt; = mutableMapOf() _columnsCachedPackageInfo.put("id", TableInfo.Column("id", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY)) _columnsCachedPackageInfo.put("name", TableInfo.Column("name", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsCachedPackageInfo.put("flags", TableInfo.Column("flags", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsCachedPackageInfo.put("updated", TableInfo.Column("updated", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) val _foreignKeysCachedPackageInfo: MutableSet&lt;TableInfo.ForeignKey&gt; = mutableSetOf() val _indicesCachedPackageInfo: MutableSet&lt;TableInfo.Index&gt; = mutableSetOf() val _infoCachedPackageInfo: TableInfo = TableInfo("CachedPackageInfo", _columnsCachedPackageInfo, _foreignKeysCachedPackageInfo, _indicesCachedPackageInfo) val _existingCachedPackageInfo: TableInfo = read(connection, "CachedPackageInfo") if (!_infoCachedPackageInfo.equals(_existingCachedPackageInfo)) { return RoomOpenDelegate.ValidationResult(false, """ |CachedPackageInfo(io.rebble.cobble.shared.database.entity.CachedPackageInfo). | Expected: |""".trimMargin() + _infoCachedPackageInfo + """ | | Found: |""".trimMargin() + _existingCachedPackageInfo) } val _columnsNotificationChannel: MutableMap&lt;String, TableInfo.Column&gt; = mutableMapOf() _columnsNotificationChannel.put("packageId", TableInfo.Column("packageId", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY)) _columnsNotificationChannel.put("channelId", TableInfo.Column("channelId", "TEXT", true, 2, null, TableInfo.CREATED_FROM_ENTITY)) _columnsNotificationChannel.put("name", TableInfo.Column("name", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsNotificationChannel.put("description", TableInfo.Column("description", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsNotificationChannel.put("conversationId", TableInfo.Column("conversationId", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsNotificationChannel.put("shouldNotify", TableInfo.Column("shouldNotify", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) val _foreignKeysNotificationChannel: MutableSet&lt;TableInfo.ForeignKey&gt; = mutableSetOf() val _indicesNotificationChannel: MutableSet&lt;TableInfo.Index&gt; = mutableSetOf() val _infoNotificationChannel: TableInfo = TableInfo("NotificationChannel", _columnsNotificationChannel, _foreignKeysNotificationChannel, _indicesNotificationChannel) val _existingNotificationChannel: TableInfo = read(connection, "NotificationChannel") if (!_infoNotificationChannel.equals(_existingNotificationChannel)) { return RoomOpenDelegate.ValidationResult(false, """ |NotificationChannel(io.rebble.cobble.shared.database.entity.NotificationChannel). | Expected: |""".trimMargin() + _infoNotificationChannel + """ | | Found: |""".trimMargin() + _existingNotificationChannel) } val _columnsSyncedLockerEntry: MutableMap&lt;String, TableInfo.Column&gt; = mutableMapOf() _columnsSyncedLockerEntry.put("id", TableInfo.Column("id", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntry.put("uuid", TableInfo.Column("uuid", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntry.put("version", TableInfo.Column("version", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntry.put("title", TableInfo.Column("title", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntry.put("type", TableInfo.Column("type", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntry.put("hearts", TableInfo.Column("hearts", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntry.put("developerName", TableInfo.Column("developerName", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntry.put("developerId", TableInfo.Column("developerId", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntry.put("configurable", TableInfo.Column("configurable", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntry.put("timelineEnabled", TableInfo.Column("timelineEnabled", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntry.put("removeLink", TableInfo.Column("removeLink", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntry.put("shareLink", TableInfo.Column("shareLink", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntry.put("pbwLink", TableInfo.Column("pbwLink", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntry.put("pbwReleaseId", TableInfo.Column("pbwReleaseId", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntry.put("pbwIconResourceId", TableInfo.Column("pbwIconResourceId", "INTEGER", true, 0, "0", TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntry.put("nextSyncAction", TableInfo.Column("nextSyncAction", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntry.put("order", TableInfo.Column("order", "INTEGER", true, 0, "-1", TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntry.put("lastOpened", TableInfo.Column("lastOpened", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntry.put("local", TableInfo.Column("local", "INTEGER", true, 0, "0", TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntry.put("userToken", TableInfo.Column("userToken", "TEXT", false, 0, "null", TableInfo.CREATED_FROM_ENTITY)) val _foreignKeysSyncedLockerEntry: MutableSet&lt;TableInfo.ForeignKey&gt; = mutableSetOf() val _indicesSyncedLockerEntry: MutableSet&lt;TableInfo.Index&gt; = mutableSetOf() _indicesSyncedLockerEntry.add(TableInfo.Index("index_SyncedLockerEntry_uuid", true, listOf("uuid"), listOf("ASC"))) val _infoSyncedLockerEntry: TableInfo = TableInfo("SyncedLockerEntry", _columnsSyncedLockerEntry, _foreignKeysSyncedLockerEntry, _indicesSyncedLockerEntry) val _existingSyncedLockerEntry: TableInfo = read(connection, "SyncedLockerEntry") if (!_infoSyncedLockerEntry.equals(_existingSyncedLockerEntry)) { return RoomOpenDelegate.ValidationResult(false, """ |SyncedLockerEntry(io.rebble.cobble.shared.database.entity.SyncedLockerEntry). | Expected: |""".trimMargin() + _infoSyncedLockerEntry + """ | | Found: |""".trimMargin() + _existingSyncedLockerEntry) } val _columnsSyncedLockerEntryPlatform: MutableMap&lt;String, TableInfo.Column&gt; = mutableMapOf() _columnsSyncedLockerEntryPlatform.put("platformEntryId", TableInfo.Column("platformEntryId", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntryPlatform.put("lockerEntryId", TableInfo.Column("lockerEntryId", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntryPlatform.put("sdkVersion", TableInfo.Column("sdkVersion", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntryPlatform.put("processInfoFlags", TableInfo.Column("processInfoFlags", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntryPlatform.put("name", TableInfo.Column("name", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntryPlatform.put("description", TableInfo.Column("description", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntryPlatform.put("icon", TableInfo.Column("icon", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntryPlatform.put("list", TableInfo.Column("list", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY)) _columnsSyncedLockerEntryPlatform.put("screenshot", TableInfo.Column("screenshot", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY)) val _foreignKeysSyncedLockerEntryPlatform: MutableSet&lt;TableInfo.ForeignKey&gt; = mutableSetOf() _foreignKeysSyncedLockerEntryPlatform.add(TableInfo.ForeignKey("SyncedLockerEntry", "CASCADE", "NO ACTION", listOf("lockerEntryId"), listOf("id"))) val _indicesSyncedLockerEntryPlatform: MutableSet&lt;TableInfo.Index&gt; = mutableSetOf() _indicesSyncedLockerEntryPlatform.add(TableInfo.Index("index_SyncedLockerEntryPlatform_lockerEntryId", false, listOf("lockerEntryId"), listOf("ASC"))) val _infoSyncedLockerEntryPlatform: TableInfo = TableInfo("SyncedLockerEntryPlatform", _columnsSyncedLockerEntryPlatform, _foreignKeysSyncedLockerEntryPlatform, _indicesSyncedLockerEntryPlatform) val _existingSyncedLockerEntryPlatform: TableInfo = read(connection, "SyncedLockerEntryPlatform") if (!_infoSyncedLockerEntryPlatform.equals(_existingSyncedLockerEntryPlatform)) { return RoomOpenDelegate.ValidationResult(false, """ |SyncedLockerEntryPlatform(io.rebble.cobble.shared.database.entity.SyncedLockerEntryPlatform). | Expected: |""".trimMargin() + _infoSyncedLockerEntryPlatform + """ | | Found: |""".trimMargin() + _existingSyncedLockerEntryPlatform) } return RoomOpenDelegate.ValidationResult(true, null) } }</ID>
+    <ID>VariableNaming:AppDatabase_Impl.kt$AppDatabase_Impl$val _shadowTablesMap: MutableMap&lt;String, String&gt; = mutableMapOf()</ID>
+    <ID>VariableNaming:AppDatabase_Impl.kt$AppDatabase_Impl$val _typeConvertersMap: MutableMap&lt;KClass&lt;*&gt;, List&lt;KClass&lt;*&gt;&gt;&gt; = mutableMapOf()</ID>
+    <ID>VariableNaming:AppDatabase_Impl.kt$AppDatabase_Impl$val _viewTables: MutableMap&lt;String, Set&lt;String&gt;&gt; = mutableMapOf()</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$private val __converters: Converters = Converters()</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$private val __db: RoomDatabase</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$private val __insertAdapterOfCachedPackageInfo: EntityInsertAdapter&lt;CachedPackageInfo&gt;</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$val _cursorIndexOfFlags: Int = getColumnIndexOrThrow(_stmt, "flags")</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$val _cursorIndexOfId: Int = getColumnIndexOrThrow(_stmt, "id")</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$val _cursorIndexOfName: Int = getColumnIndexOrThrow(_stmt, "name")</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$val _cursorIndexOfUpdated: Int = getColumnIndexOrThrow(_stmt, "updated")</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$val _item: CachedPackageInfo</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$val _result: CachedPackageInfo?</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$val _result: MutableList&lt;CachedPackageInfo&gt; = mutableListOf()</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$val _sql: String = "SELECT * FROM CachedPackageInfo WHERE id = ?"</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$val _sql: String = "SELECT * FROM CachedPackageInfo"</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$val _stmt: SQLiteStatement = _connection.prepare(_sql)</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$val _tmp: Long?</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$val _tmpFlags: Int</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$val _tmpId: String</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$val _tmpName: String</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$val _tmpUpdated: Instant</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$val _tmp_1: Instant? = __converters.LongToInstant(_tmp)</ID>
+    <ID>VariableNaming:CachedPackageInfoDao_Impl.kt$CachedPackageInfoDao_Impl$var _argIndex: Int = 1</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$private val __db: RoomDatabase</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$private val __deleteAdapterOfCalendar: EntityDeleteOrUpdateAdapter&lt;Calendar&gt;</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$private val __insertAdapterOfCalendar: EntityInsertAdapter&lt;Calendar&gt;</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$private val __updateAdapterOfCalendar: EntityDeleteOrUpdateAdapter&lt;Calendar&gt;</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _cursorIndexOfColor: Int = getColumnIndexOrThrow(_stmt, "color")</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _cursorIndexOfEnabled: Int = getColumnIndexOrThrow(_stmt, "enabled")</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _cursorIndexOfId: Int = getColumnIndexOrThrow(_stmt, "id")</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _cursorIndexOfName: Int = getColumnIndexOrThrow(_stmt, "name")</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _cursorIndexOfOwnerId: Int = getColumnIndexOrThrow(_stmt, "ownerId")</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _cursorIndexOfOwnerName: Int = getColumnIndexOrThrow(_stmt, "ownerName")</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _cursorIndexOfPlatformId: Int = getColumnIndexOrThrow(_stmt, "platformId")</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _item: Calendar</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _result: Calendar?</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _result: MutableList&lt;Calendar&gt; = mutableListOf()</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _sql: String = "DELETE FROM Calendar"</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _sql: String = "SELECT * FROM Calendar WHERE id = ?"</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _sql: String = "SELECT * FROM Calendar"</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _sql: String = "UPDATE Calendar SET enabled = ? WHERE id = ?"</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _stmt: SQLiteStatement = _connection.prepare(_sql)</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _tmp: Int</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _tmp: Int = if (enabled) 1 else 0</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _tmpColor: Int</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _tmpEnabled: Boolean</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _tmpId: Int</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _tmpName: String</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _tmpOwnerId: String</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _tmpOwnerName: String</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$val _tmpPlatformId: String</ID>
+    <ID>VariableNaming:CalendarDao_Impl.kt$CalendarDao_Impl$var _argIndex: Int = 1</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$private val __converters: Converters = Converters()</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$private val __db: RoomDatabase</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$private val __insertAdapterOfSyncedLockerEntry: EntityInsertAdapter&lt;SyncedLockerEntry&gt;</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$private val __insertAdapterOfSyncedLockerEntryPlatform: EntityInsertAdapter&lt;SyncedLockerEntryPlatform&gt;</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$private val __updateAdapterOfSyncedLockerEntry: EntityDeleteOrUpdateAdapter&lt;SyncedLockerEntry&gt;</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val __mapKeySet: Set&lt;String&gt; = _map.keys</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _collectionPlatforms: ArrayMap&lt;String, MutableList&lt;SyncedLockerEntryPlatform&gt;&gt; = ArrayMap&lt;String, MutableList&lt;SyncedLockerEntryPlatform&gt;&gt;()</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfConfigurable: Int = getColumnIndexOrThrow(_stmt, "configurable")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfDescription: Int = 5</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfDeveloperId: Int = getColumnIndexOrThrow(_stmt, "developerId")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfDeveloperName: Int = getColumnIndexOrThrow(_stmt, "developerName")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfHearts: Int = getColumnIndexOrThrow(_stmt, "hearts")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfIcon: Int = 6</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfId: Int = getColumnIndexOrThrow(_stmt, "id")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfLastOpened: Int = getColumnIndexOrThrow(_stmt, "lastOpened")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfList: Int = 7</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfLocal: Int = getColumnIndexOrThrow(_stmt, "local")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfLockerEntryId: Int = 1</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfName: Int = 4</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfNextSyncAction: Int = getColumnIndexOrThrow(_stmt, "nextSyncAction")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfOrder: Int = getColumnIndexOrThrow(_stmt, "order")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfPbwIconResourceId: Int = getColumnIndexOrThrow(_stmt, "pbwIconResourceId")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfPbwLink: Int = getColumnIndexOrThrow(_stmt, "pbwLink")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfPbwReleaseId: Int = getColumnIndexOrThrow(_stmt, "pbwReleaseId")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfPlatformEntryId: Int = 0</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfProcessInfoFlags: Int = 3</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfRemoveLink: Int = getColumnIndexOrThrow(_stmt, "removeLink")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfScreenshot: Int = 8</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfSdkVersion: Int = 2</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfShareLink: Int = getColumnIndexOrThrow(_stmt, "shareLink")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfTimelineEnabled: Int = getColumnIndexOrThrow(_stmt, "timelineEnabled")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfTitle: Int = getColumnIndexOrThrow(_stmt, "title")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfType: Int = getColumnIndexOrThrow(_stmt, "type")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfUserToken: Int = getColumnIndexOrThrow(_stmt, "userToken")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfUuid: Int = getColumnIndexOrThrow(_stmt, "uuid")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _cursorIndexOfVersion: Int = getColumnIndexOrThrow(_stmt, "version")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _inputSize: Int = __mapKeySet.size</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _inputSize: Int = ids.size</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _item: SyncedLockerEntry</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _item: SyncedLockerEntryWithPlatforms</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _itemKeyIndex: Int = getColumnIndex(_stmt, "lockerEntryId")</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _item_1: SyncedLockerEntryPlatform</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _result: Int</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _result: MutableList&lt;SyncedLockerEntry&gt; = mutableListOf()</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _result: MutableList&lt;SyncedLockerEntryWithPlatforms&gt; = mutableListOf()</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _result: SyncedLockerEntryWithPlatforms?</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _sql: String = "DELETE FROM SyncedLockerEntry"</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _sql: String = "DELETE FROM SyncedLockerEntryPlatform WHERE lockerEntryId = ?"</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _sql: String = "SELECT * FROM SyncedLockerEntry ORDER BY `order`"</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _sql: String = "SELECT * FROM SyncedLockerEntry WHERE id = ?"</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _sql: String = "SELECT * FROM SyncedLockerEntry WHERE nextSyncAction = 'Nothing'"</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _sql: String = "SELECT * FROM SyncedLockerEntry WHERE nextSyncAction in ('Upload', 'Delete')"</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _sql: String = "SELECT * FROM SyncedLockerEntry WHERE uuid = ?"</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _sql: String = "SELECT COUNT(*) FROM SyncedLockerEntry WHERE nextSyncAction = ?"</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _sql: String = "UPDATE SyncedLockerEntry SET `order` = ? WHERE id = ?"</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _sql: String = "UPDATE SyncedLockerEntry SET lastOpened = ? WHERE uuid = ?"</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _sql: String = "UPDATE SyncedLockerEntry SET nextSyncAction = ? WHERE id = ?"</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _sql: String = _stringBuilder.toString()</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _stmt: SQLiteStatement = _connection.prepare(_sql)</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _stringBuilder: StringBuilder = StringBuilder()</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmp: Int</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmp: Long? = __converters.InstantToLong(time)</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpConfigurable: Boolean</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpDescription: String</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpDeveloperId: String?</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpDeveloperName: String</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpEntry: SyncedLockerEntry</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpHearts: Int</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpIcon: String?</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpId: String</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpImages: SyncedLockerEntryPlatformImages</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpKey: String</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpKey_1: String</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpLastOpened: Instant?</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpList: String?</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpLocal: Boolean</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpLockerEntryId: String</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpName: String</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpNextSyncAction: NextSyncAction</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpOrder: Int</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpPbwIconResourceId: Int</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpPbwLink: String</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpPbwReleaseId: String</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpPlatformEntryId: Int</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpPlatformsCollection: MutableList&lt;SyncedLockerEntryPlatform&gt;</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpProcessInfoFlags: Int</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpRelation: MutableList&lt;SyncedLockerEntryPlatform&gt;? = _map.get(_tmpKey)</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpRemoveLink: String</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpScreenshot: String?</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpSdkVersion: String</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpShareLink: String</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpTimelineEnabled: Boolean</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpTitle: String</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpType: String</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpUserToken: String?</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpUuid: String</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmpVersion: String</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmp_1: Int</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmp_2: Long?</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$val _tmp_3: Int</ID>
+    <ID>VariableNaming:LockerDao_Impl.kt$LockerDao_Impl$var _argIndex: Int = 1</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$private val __db: RoomDatabase</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$private val __deleteAdapterOfNotificationChannel: EntityDeleteOrUpdateAdapter&lt;NotificationChannel&gt;</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$private val __insertAdapterOfNotificationChannel: EntityInsertAdapter&lt;NotificationChannel&gt;</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$private val __insertAdapterOfNotificationChannel_1: EntityInsertAdapter&lt;NotificationChannel&gt;</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$private val __updateAdapterOfNotificationChannel: EntityDeleteOrUpdateAdapter&lt;NotificationChannel&gt;</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _cursorIndexOfChannelId: Int = getColumnIndexOrThrow(_stmt, "channelId")</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _cursorIndexOfConversationId: Int = getColumnIndexOrThrow(_stmt, "conversationId")</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _cursorIndexOfDescription: Int = getColumnIndexOrThrow(_stmt, "description")</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _cursorIndexOfName: Int = getColumnIndexOrThrow(_stmt, "name")</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _cursorIndexOfPackageId: Int = getColumnIndexOrThrow(_stmt, "packageId")</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _cursorIndexOfShouldNotify: Int = getColumnIndexOrThrow(_stmt, "shouldNotify")</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _result: NotificationChannel?</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _result: String?</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _sql: String = "SELECT * FROM NotificationChannel WHERE packageId = ? AND channelId = ?"</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _sql: String = "SELECT conversationId FROM NotificationChannel WHERE packageId = ? AND channelId = ?"</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _sql: String = "UPDATE NotificationChannel SET shouldNotify = ? WHERE packageId = ? AND channelId = ?"</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _stmt: SQLiteStatement = _connection.prepare(_sql)</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _tmp: Int</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _tmp: Int = if (shouldNotify) 1 else 0</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _tmpChannelId: String</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _tmpConversationId: String?</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _tmpDescription: String?</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _tmpName: String?</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _tmpPackageId: String</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$val _tmpShouldNotify: Boolean</ID>
+    <ID>VariableNaming:NotificationChannelDao_Impl.kt$NotificationChannelDao_Impl$var _argIndex: Int = 1</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$private val __db: RoomDatabase</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$private val __deleteAdapterOfPersistedNotification: EntityDeleteOrUpdateAdapter&lt;PersistedNotification&gt;</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$private val __insertAdapterOfPersistedNotification: EntityInsertAdapter&lt;PersistedNotification&gt;</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _cursorIndexOfGroupKey: Int = getColumnIndexOrThrow(_stmt, "groupKey")</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _cursorIndexOfPackageName: Int = getColumnIndexOrThrow(_stmt, "packageName")</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _cursorIndexOfPostTime: Int = getColumnIndexOrThrow(_stmt, "postTime")</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _cursorIndexOfSbnKey: Int = getColumnIndexOrThrow(_stmt, "sbnKey")</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _cursorIndexOfText: Int = getColumnIndexOrThrow(_stmt, "text")</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _cursorIndexOfTitle: Int = getColumnIndexOrThrow(_stmt, "title")</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _item: PersistedNotification</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _result: MutableList&lt;PersistedNotification&gt; = mutableListOf()</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _result: PersistedNotification?</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _sql: String = "DELETE FROM PersistedNotification WHERE postTime &lt; ?"</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _sql: String = "DELETE FROM PersistedNotification WHERE sbnKey = ?"</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _sql: String = "SELECT * FROM PersistedNotification WHERE sbnKey = ? AND packageName = ? AND title = ? AND text = ?"</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _sql: String = "SELECT * FROM PersistedNotification WHERE sbnKey = ?"</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _stmt: SQLiteStatement = _connection.prepare(_sql)</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _tmpGroupKey: String?</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _tmpPackageName: String</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _tmpPostTime: Long</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _tmpSbnKey: String</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _tmpText: String</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$val _tmpTitle: String</ID>
+    <ID>VariableNaming:PersistedNotificationDao_Impl.kt$PersistedNotificationDao_Impl$var _argIndex: Int = 1</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$private val __converters: Converters = Converters()</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$private val __db: RoomDatabase</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$private val __deleteAdapterOfTimelinePin: EntityDeleteOrUpdateAdapter&lt;TimelinePin&gt;</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$private val __insertAdapterOfTimelinePin: EntityInsertAdapter&lt;TimelinePin&gt;</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$private val __updateAdapterOfTimelinePin: EntityDeleteOrUpdateAdapter&lt;TimelinePin&gt;</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _cursorIndexOfActionsJson: Int = getColumnIndexOrThrow(_stmt, "actionsJson")</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _cursorIndexOfAttributesJson: Int = getColumnIndexOrThrow(_stmt, "attributesJson")</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _cursorIndexOfBackingId: Int = getColumnIndexOrThrow(_stmt, "backingId")</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _cursorIndexOfDuration: Int = getColumnIndexOrThrow(_stmt, "duration")</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _cursorIndexOfIsAllDay: Int = getColumnIndexOrThrow(_stmt, "isAllDay")</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _cursorIndexOfIsFloating: Int = getColumnIndexOrThrow(_stmt, "isFloating")</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _cursorIndexOfIsVisible: Int = getColumnIndexOrThrow(_stmt, "isVisible")</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _cursorIndexOfItemId: Int = getColumnIndexOrThrow(_stmt, "itemId")</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _cursorIndexOfLayout: Int = getColumnIndexOrThrow(_stmt, "layout")</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _cursorIndexOfNextSyncAction: Int = getColumnIndexOrThrow(_stmt, "nextSyncAction")</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _cursorIndexOfParentId: Int = getColumnIndexOrThrow(_stmt, "parentId")</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _cursorIndexOfPersistQuickView: Int = getColumnIndexOrThrow(_stmt, "persistQuickView")</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _cursorIndexOfTimestamp: Int = getColumnIndexOrThrow(_stmt, "timestamp")</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _cursorIndexOfType: Int = getColumnIndexOrThrow(_stmt, "type")</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _inputSize: Int = itemIds.size</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _inputSize: Int = nextSyncActions.size</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _item: TimelinePin</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _item_1: TimelinePin</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _result: MutableList&lt;TimelinePin&gt; = mutableListOf()</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _result: TimelinePin?</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _sql: String = "DELETE FROM TimelinePin WHERE nextSyncAction = ?"</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _sql: String = "DELETE FROM TimelinePin WHERE parentId = ?"</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _sql: String = "DELETE FROM TimelinePin"</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _sql: String = "SELECT * FROM TimelinePin WHERE itemId = ?"</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _sql: String = "SELECT * FROM TimelinePin WHERE parentId = ?"</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _sql: String = "UPDATE TimelinePin SET nextSyncAction = ? WHERE nextSyncAction = ?"</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _sql: String = "UPDATE TimelinePin SET nextSyncAction = ? WHERE parentId = ?"</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _sql: String = _stringBuilder.toString()</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _stmt: SQLiteStatement = _connection.prepare(_sql)</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _stringBuilder: StringBuilder = StringBuilder()</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp: String?</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp: String? = __converters.UuidToString(_item)</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp: String? = __converters.UuidToString(appId)</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp: String? = __converters.UuidToString(itemId)</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp: String? = __converters.UuidToString(parentId)</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmpActionsJson: String?</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmpAttributesJson: String?</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmpBackingId: String?</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmpDuration: Int?</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmpIsAllDay: Boolean</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmpIsFloating: Boolean</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmpIsVisible: Boolean</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmpItemId: UUID</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmpLayout: TimelineItem.Layout</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmpNextSyncAction: NextSyncAction?</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmpParentId: UUID</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmpPersistQuickView: Boolean</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmpTimestamp: Instant</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmpType: TimelineItem.Type</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp_10: Int</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp_1: String?</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp_1: UUID? = __converters.StringToUuid(_tmp)</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp_2: String?</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp_2: UUID? = __converters.StringToUuid(_tmp_1)</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp_3: String?</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp_3: UUID? = __converters.StringToUuid(_tmp_2)</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp_4: Long?</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp_4: UUID? = __converters.StringToUuid(_tmp_3)</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp_5: Instant? = __converters.LongToInstant(_tmp_4)</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp_5: Long?</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp_6: Instant? = __converters.LongToInstant(_tmp_5)</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp_6: Int</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp_7: Int</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp_8: Int</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$val _tmp_9: Int</ID>
+    <ID>VariableNaming:TimelinePinDao_Impl.kt$TimelinePinDao_Impl$var _argIndex: Int = 1</ID>
+  </CurrentIssues>
+</SmellBaseline>

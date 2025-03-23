@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>InjectDispatcher:WebViewJsRunnerTest.kt$WebViewJsRunnerTest$Default</ID>
+    <ID>MaxLineLength:WebViewJsRunnerTest.kt$WebViewJsRunnerTest$val webViewJsRunner = WebViewJsRunner(context, PebbleDevice(null, "dummy"), coroutineScope, appInfo, printTestPath)</ID>
+    <ID>NewLineAtEndOfFile:WebViewJsRunnerTest.kt$io.rebble.cobble.shared.js.WebViewJsRunnerTest.kt</ID>
+  </CurrentIssues>
+</SmellBaseline>

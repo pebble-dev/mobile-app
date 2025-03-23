@@ -1,0 +1,187 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>EmptyCatchBlock:BlueSerialDriver.kt$BlueSerialDriver${ }</ID>
+    <ID>InjectDispatcher:BlueLEDriver.kt$BlueLEDriver$IO</ID>
+    <ID>InjectDispatcher:BlueSerialDriver.kt$BlueSerialDriver$IO</ID>
+    <ID>InjectDispatcher:ProtocolIO.kt$ProtocolIO$IO</ID>
+    <ID>InjectDispatcher:SocketSerialDriver.kt$SocketSerialDriver$IO</ID>
+    <ID>InjectDispatcher:inputStreamExtension.kt$IO</ID>
+    <ID>LongMethod:BlueLEDriver.kt$BlueLEDriver$@OptIn(FlowPreview::class) @Throws(SecurityException::class) override fun startSingleWatchConnection(device: PebbleDevice): Flow&lt;SingleConnectionStatus&gt;</ID>
+    <ID>LongMethod:PebbleLEConnector.kt$PebbleLEConnector$@Throws(IOException::class, SecurityException::class) suspend fun connect()</ID>
+    <ID>LoopWithTooManyJumpStatements:ReconnectionSocketServer.kt$ReconnectionSocketServer$while</ID>
+    <ID>LoopWithTooManyJumpStatements:SocketSerialDriver.kt$SocketSerialDriver$while</ID>
+    <ID>MagicNumber:BlueLEDriver.kt$BlueLEDriver$1000</ID>
+    <ID>MagicNumber:BlueLEDriver.kt$BlueLEDriver$20000</ID>
+    <ID>MagicNumber:BlueLEDriver.kt$BlueLEDriver$8192</ID>
+    <ID>MagicNumber:ConnectivityWatcher.kt$ConnectivityWatcher.ConnectivityStatus$0b100</ID>
+    <ID>MagicNumber:ConnectivityWatcher.kt$ConnectivityWatcher.ConnectivityStatus$0b1000</ID>
+    <ID>MagicNumber:ConnectivityWatcher.kt$ConnectivityWatcher.ConnectivityStatus$0b10000</ID>
+    <ID>MagicNumber:ConnectivityWatcher.kt$ConnectivityWatcher.ConnectivityStatus$0b100000</ID>
+    <ID>MagicNumber:ConnectivityWatcher.kt$ConnectivityWatcher.ConnectivityStatus$3</ID>
+    <ID>MagicNumber:ConnectivityWatcher.kt$ConnectivityWatcher.PairingErrorCode.AUTHENTICATION_REQUIREMENTS$3</ID>
+    <ID>MagicNumber:ConnectivityWatcher.kt$ConnectivityWatcher.PairingErrorCode.BR_EDR_PAIRING_IN_PROGRESS$13</ID>
+    <ID>MagicNumber:ConnectivityWatcher.kt$ConnectivityWatcher.PairingErrorCode.COMMAND_NOT_SUPPORTED$7</ID>
+    <ID>MagicNumber:ConnectivityWatcher.kt$ConnectivityWatcher.PairingErrorCode.CONFIRM_VALUE_FAILED$4</ID>
+    <ID>MagicNumber:ConnectivityWatcher.kt$ConnectivityWatcher.PairingErrorCode.CROSS_TRANSPORT_KEY_DERIVATION_NOT_ALLOWED$14</ID>
+    <ID>MagicNumber:ConnectivityWatcher.kt$ConnectivityWatcher.PairingErrorCode.DHKEY_CHECK_FAILED$11</ID>
+    <ID>MagicNumber:ConnectivityWatcher.kt$ConnectivityWatcher.PairingErrorCode.ENCRYPTION_KEY_SIZE$6</ID>
+    <ID>MagicNumber:ConnectivityWatcher.kt$ConnectivityWatcher.PairingErrorCode.INVALID_PARAMETERS$10</ID>
+    <ID>MagicNumber:ConnectivityWatcher.kt$ConnectivityWatcher.PairingErrorCode.NUMERIC_COMPARISON_FAILED$12</ID>
+    <ID>MagicNumber:ConnectivityWatcher.kt$ConnectivityWatcher.PairingErrorCode.PAIRING_NOT_SUPPORTED$5</ID>
+    <ID>MagicNumber:ConnectivityWatcher.kt$ConnectivityWatcher.PairingErrorCode.REPEATED_ATTEMPTS$9</ID>
+    <ID>MagicNumber:ConnectivityWatcher.kt$ConnectivityWatcher.PairingErrorCode.UNSPECIFIED_REASON$8</ID>
+    <ID>MagicNumber:LEMeta.kt$LEMeta$12</ID>
+    <ID>MagicNumber:LEMeta.kt$LEMeta$32</ID>
+    <ID>MagicNumber:NordicGattServer.kt$NordicGattServer$1000</ID>
+    <ID>MagicNumber:PPoGPacketWriter.kt$PPoGPacketWriter$3</ID>
+    <ID>MagicNumber:PPoGPebblePacketAssembler.kt$PPoGPebblePacketAssembler$4</ID>
+    <ID>MagicNumber:PPoGServiceConnection.kt$PPoGServiceConnection$1000</ID>
+    <ID>MagicNumber:PPoGSession.kt$PPoGSession$3000L</ID>
+    <ID>MagicNumber:PebbleLEConnector.kt$PebbleLEConnector$3</ID>
+    <ID>MagicNumber:PebbleLEConnector.kt$PebbleLEConnector$4</ID>
+    <ID>MagicNumber:PebbleLEConnector.kt$PebbleLEConnector$8</ID>
+    <ID>MagicNumber:ProtocolIO.kt$ProtocolIO$4</ID>
+    <ID>MagicNumber:ProtocolIO.kt$ProtocolIO$8192</ID>
+    <ID>MagicNumber:ReconnectionSocketServer.kt$ReconnectionSocketServer$2000</ID>
+    <ID>MagicNumber:SocketSerialDriver.kt$SocketSerialDriver$12344</ID>
+    <ID>MagicNumber:SocketSerialDriver.kt$SocketSerialDriver$4</ID>
+    <ID>MagicNumber:SocketSerialDriver.kt$SocketSerialDriver$8000</ID>
+    <ID>MagicNumber:SocketSerialDriver.kt$SocketSerialDriver$8192</ID>
+    <ID>MaxLineLength:BlueGATTConnection.kt$BlueGATTConnection$CharacteristicResult : StatusResult</ID>
+    <ID>MaxLineLength:BlueGATTConnection.kt$BlueGATTConnection$DescriptorResult : StatusResult</ID>
+    <ID>MaxLineLength:BlueGATTConnection.kt$BlueGATTConnection$class</ID>
+    <ID>MaxLineLength:BlueGATTConnection.kt$BlueGATTConnection$device.connectGatt(context, auto, this@BlueGATTConnection, BluetoothDevice.TRANSPORT_LE, BluetoothDevice.PHY_LE_1M)</ID>
+    <ID>MaxLineLength:BlueGATTConnection.kt$BlueGATTConnection$fun</ID>
+    <ID>MaxLineLength:BlueGATTConnection.kt$BlueGATTConnection$override</ID>
+    <ID>MaxLineLength:BlueGATTConnection.kt$BlueGATTConnection$result = descriptorWritten.first { a -&gt; a.descriptor?.uuid == descriptor.uuid &amp;&amp; a.descriptor?.characteristic?.uuid == descriptor.characteristic.uuid }</ID>
+    <ID>MaxLineLength:BlueGATTConnection.kt$BlueGATTConnection$suspend</ID>
+    <ID>MaxLineLength:BlueIO.kt$BluetoothPebbleDevice$val start = "&lt; BluetoothPebbleDevice, address=$address, connectionScopeActive=${connectionScope.value?.isActive}, bluetoothDevice=&lt; BluetoothDevice address=${bluetoothDevice.address}"</ID>
+    <ID>MaxLineLength:BlueLEDriver.kt$BlueLEDriver$PebbleLEConnector.ConnectorState.CONNECTING -&gt; Timber.d("PebbleLEConnector ${connector} is connecting")</ID>
+    <ID>MaxLineLength:BlueLEDriver.kt$BlueLEDriver$val result = PPoGLinkStateManager.getState(device.address).first { it != PPoGLinkState.ReadyForSession }</ID>
+    <ID>MaxLineLength:BlueSerialDriver.kt$BlueSerialDriver$override</ID>
+    <ID>MaxLineLength:ConnectionParamManager.kt$ConnectionParamManager$* Handles negotiating and reading changes to connection parameters, currently this feature is unused by us so it just tells the pebble to disable it</ID>
+    <ID>MaxLineLength:ConnectionParamManager.kt$ConnectionParamManager$if</ID>
+    <ID>MaxLineLength:ConnectionParamManager.kt$ConnectionParamManager$val characteristic = service.getCharacteristic(UUID.fromString(LEConstants.UUIDs.CONNECTION_PARAMETERS_CHARACTERISTIC))</ID>
+    <ID>MaxLineLength:ConnectionParamManager.kt$ConnectionParamManager$val configDescriptor = characteristic.getDescriptor(UUID.fromString(LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR))</ID>
+    <ID>MaxLineLength:ConnectivityWatcher.kt$ConnectivityWatcher$fun</ID>
+    <ID>MaxLineLength:ConnectivityWatcher.kt$ConnectivityWatcher$if</ID>
+    <ID>MaxLineLength:ConnectivityWatcher.kt$ConnectivityWatcher$val configDescriptor = connectivityCharacteristic.getDescriptor(UUID.fromString(LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR))</ID>
+    <ID>MaxLineLength:ConnectivityWatcher.kt$ConnectivityWatcher$val connectivityCharacteristic = pairService.getCharacteristic(UUID.fromString(LEConstants.UUIDs.CONNECTIVITY_CHARACTERISTIC))</ID>
+    <ID>MaxLineLength:ConnectivityWatcher.kt$ConnectivityWatcher.ConnectivityStatus$override fun toString(): String</ID>
+    <ID>MaxLineLength:GattStatus.kt$GattStatus$var</ID>
+    <ID>MaxLineLength:NordicGattServer.kt$NordicGattServer$class</ID>
+    <ID>MaxLineLength:NordicGattServer.kt$NordicGattServer$uuid = UUID.fromString(LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR)</ID>
+    <ID>MaxLineLength:PPoGPacketWriter.kt$PPoGPacketWriter$class</ID>
+    <ID>MaxLineLength:PPoGPacketWriter.kt$PPoGPacketWriter$require(data.size &lt;= (stateManager.mtuSize - 3)) { "Packet too large to send: ${data.size} &gt; ${stateManager.mtuSize}-3" }</ID>
+    <ID>MaxLineLength:PPoGServiceConnection.kt$PPoGServiceConnection$// Make our own connection state flow that debounces the connection state, as we might recreate the connection but only want to cancel everything if it doesn't reconnect</ID>
+    <ID>MaxLineLength:PPoGServiceConnection.kt$PPoGServiceConnection$Timber.e(e, "(${serverConnection.device}) Failed to send PPoG characteristic notification")</ID>
+    <ID>MaxLineLength:PPoGServiceConnection.kt$PPoGServiceConnection$Timber.w("(${serverConnection.device}) Tried to send PPoG packet while notifications are disabled")</ID>
+    <ID>MaxLineLength:PPoGServiceConnection.kt$PPoGServiceConnection$class</ID>
+    <ID>MaxLineLength:PPoGServiceConnection.kt$PPoGServiceConnection$ppogSession.stateManager.stateFlow.first { it == PPoGSession.State.Open }</ID>
+    <ID>MaxLineLength:PPoGServiceConnection.kt$PPoGServiceConnection$private val sessionScope = CoroutineScope(ioDispatcher) + CoroutineName("PPoGSession-${serverConnection.device.address}")</ID>
+    <ID>MaxLineLength:PPoGServiceConnection.kt$PPoGServiceConnection$private var scope = serverConnection.connectionScope + ioDispatcher + CoroutineName("PPoGServiceConnection-${serverConnection.device.address}")</ID>
+    <ID>MaxLineLength:PPoGServiceConnection.kt$PPoGServiceConnection$scope = serverConnection.connectionScope + ioDispatcher + CoroutineName("PPoGServiceConnection-${serverConnection.device.address}")</ID>
+    <ID>MaxLineLength:PPoGServiceConnection.kt$PPoGServiceConnection.Companion$val configurationDescriptorUUID: UUID = UUID.fromString(LEConstants.UUIDs.CHARACTERISTIC_CONFIGURATION_DESCRIPTOR)</ID>
+    <ID>MaxLineLength:PPoGSession.kt$PPoGSession$Timber.d("Windows negotiated, RX: $rxWindow, TX: ${packetWriter.txWindow} (received RX: $receivedRxWindow, TX: $receivedTxWindow)")</ID>
+    <ID>MaxLineLength:PPoGSession.kt$PPoGSession$Timber.v(" &lt;- Pebble packet, length: ${dbgLength.get()}, endpoint: ${ProtocolEndpoint.getByValue(dbgEndpoint.get())}")</ID>
+    <ID>MaxLineLength:PPoGSession.kt$PPoGSession$Timber.w("Received packet ${ppogPacket.type} ${ppogPacket.sequence} in state ${stateManager.state.name}")</ID>
+    <ID>MaxLineLength:PPoGSession.kt$PPoGSession$check(dataChunks.sumOf { it.size } == command.data.size) { "Data chunking failed: chunk total != ${command.data.size}" }</ID>
+    <ID>MaxLineLength:PPoGSession.kt$PPoGSession$packetWriter.sendOrQueuePacket(makeResetAck(0, MAX_SUPPORTED_WINDOW_SIZE, MAX_SUPPORTED_WINDOW_SIZE, ppogVersion))</ID>
+    <ID>MaxLineLength:PPoGSession.kt$PPoGSession$private</ID>
+    <ID>MaxLineLength:PPoGSession.kt$PPoGSession$val resetAckPacket = makeResetAck(sequenceOutCursor, MAX_SUPPORTED_WINDOW_SIZE, MAX_SUPPORTED_WINDOW_SIZE, ppogVersion)</ID>
+    <ID>MaxLineLength:PPoGSession.kt$PPoGSession.PPoGSessionResponse$WritePPoGCharacteristic : PPoGSessionResponse</ID>
+    <ID>MaxLineLength:PPoGSession.kt$PPoGSession.State$AwaitingResetAck : State</ID>
+    <ID>MaxLineLength:PPoGSession.kt$PPoGSession.State$AwaitingResetAckRequested : State</ID>
+    <ID>MaxLineLength:PPoGSession.kt$PPoGSession.State$Open : State</ID>
+    <ID>MaxLineLength:PebbleLEConnector.kt$PebbleLEConnector$bondState.onEach { Timber.v("Bond state: ${it.bondState}") }.first { it.bondState == BluetoothDevice.BOND_BONDED }</ID>
+    <ID>MaxLineLength:PebbleLEConnector.kt$PebbleLEConnector$class</ID>
+    <ID>MaxLineLength:PebbleLEConnector.kt$PebbleLEConnector$private</ID>
+    <ID>MaxLineLength:PebbleLEConnector.kt$PebbleLEConnector$val pairValue = makePairingTriggerValue(needsExplicitBond, autoAcceptFuturePairing = false, watchAsGattServer = false)</ID>
+    <ID>MaxLineLength:PebbleLEConnector.kt$PebbleLEConnector$val pairingTriggerCharacteristic = pairingService.getCharacteristic(UUID.fromString(LEConstants.UUIDs.PAIRING_TRIGGER_CHARACTERISTIC))</ID>
+    <ID>MaxLineLength:PebbleLEConnector.kt$PebbleLEConnector$val writeablePairTrigger = pairingTriggerCharacteristic.properties and BluetoothGattCharacteristic.PROPERTY_WRITE != 0</ID>
+    <ID>MaxLineLength:ProtocolIO.kt$ProtocolIO$Timber.d("Got packet: EP ${ProtocolEndpoint.getByValue(endpoint.toUShort())} | Length ${length.toUShort()}")</ID>
+    <ID>MaxLineLength:ReconnectionSocketServer.kt$ReconnectionSocketServer$class</ID>
+    <ID>MaxLineLength:SocketSerialDriver.kt$SocketSerialDriver$Timber.d("Got packet: EP ${ProtocolEndpoint.getByValue(endpoint.toUShort())} | Length ${length.toUShort()}")</ID>
+    <ID>MayBeConst:PebbleLEConnector.kt$PebbleLEConnector.Companion$private val CONNECTIVITY_UPDATE_TIMEOUT = 10000L</ID>
+    <ID>MayBeConst:PebbleLEConnector.kt$PebbleLEConnector.Companion$private val PENDING_BOND_TIMEOUT = 60000L // Requires user interaction, so needs a longer timeout</ID>
+    <ID>MayBeConst:ReconnectionSocketServer.kt$ReconnectionSocketServer.Companion$private val socketName = "PebbleBluetoothServerSocket"</ID>
+    <ID>NestedBlockDepth:ConnectionParamManager.kt$ConnectionParamManager$suspend fun subscribe(): Boolean</ID>
+    <ID>NestedBlockDepth:ConnectivityWatcher.kt$ConnectivityWatcher$suspend fun subscribe(): Boolean</ID>
+    <ID>NewLineAtEndOfFile:BlueGATTConnection.kt$io.rebble.cobble.bluetooth.ble.BlueGATTConnection.kt</ID>
+    <ID>NewLineAtEndOfFile:BlueIO.kt$io.rebble.cobble.bluetooth.BlueIO.kt</ID>
+    <ID>NewLineAtEndOfFile:BlueLEDriver.kt$io.rebble.cobble.bluetooth.ble.BlueLEDriver.kt</ID>
+    <ID>NewLineAtEndOfFile:BlueSerialDriver.kt$io.rebble.cobble.bluetooth.classic.BlueSerialDriver.kt</ID>
+    <ID>NewLineAtEndOfFile:BluetoothStatus.kt$io.rebble.cobble.bluetooth.BluetoothStatus.kt</ID>
+    <ID>NewLineAtEndOfFile:BroadcastReceiver.kt$io.rebble.cobble.bluetooth.util.BroadcastReceiver.kt</ID>
+    <ID>NewLineAtEndOfFile:ConnectionParamManager.kt$io.rebble.cobble.bluetooth.ble.ConnectionParamManager.kt</ID>
+    <ID>NewLineAtEndOfFile:ConnectivityWatcher.kt$io.rebble.cobble.bluetooth.ble.ConnectivityWatcher.kt</ID>
+    <ID>NewLineAtEndOfFile:EmulatedPebbleDevice.kt$io.rebble.cobble.bluetooth.EmulatedPebbleDevice.kt</ID>
+    <ID>NewLineAtEndOfFile:GattCharacteristicBuilder.kt$io.rebble.cobble.bluetooth.ble.util.GattCharacteristicBuilder.kt</ID>
+    <ID>NewLineAtEndOfFile:GattDescriptorBuilder.kt$io.rebble.cobble.bluetooth.ble.util.GattDescriptorBuilder.kt</ID>
+    <ID>NewLineAtEndOfFile:GattServerManager.kt$io.rebble.cobble.bluetooth.ble.GattServerManager.kt</ID>
+    <ID>NewLineAtEndOfFile:GattServiceBuilder.kt$io.rebble.cobble.bluetooth.ble.util.GattServiceBuilder.kt</ID>
+    <ID>NewLineAtEndOfFile:GattStatus.kt$io.rebble.cobble.bluetooth.ble.GattStatus.kt</ID>
+    <ID>NewLineAtEndOfFile:LEMeta.kt$io.rebble.cobble.bluetooth.ble.LEMeta.kt</ID>
+    <ID>NewLineAtEndOfFile:NordicGattServer.kt$io.rebble.cobble.bluetooth.ble.NordicGattServer.kt</ID>
+    <ID>NewLineAtEndOfFile:PPoGLinkStateManager.kt$io.rebble.cobble.bluetooth.ble.PPoGLinkStateManager.kt</ID>
+    <ID>NewLineAtEndOfFile:PPoGPacketWriter.kt$io.rebble.cobble.bluetooth.ble.PPoGPacketWriter.kt</ID>
+    <ID>NewLineAtEndOfFile:PPoGPebblePacketAssembler.kt$io.rebble.cobble.bluetooth.ble.PPoGPebblePacketAssembler.kt</ID>
+    <ID>NewLineAtEndOfFile:PPoGServiceConnection.kt$io.rebble.cobble.bluetooth.ble.PPoGServiceConnection.kt</ID>
+    <ID>NewLineAtEndOfFile:PPoGSession.kt$io.rebble.cobble.bluetooth.ble.PPoGSession.kt</ID>
+    <ID>NewLineAtEndOfFile:PebbleLEConnector.kt$io.rebble.cobble.bluetooth.ble.PebbleLEConnector.kt</ID>
+    <ID>NewLineAtEndOfFile:ReconnectionSocketServer.kt$io.rebble.cobble.bluetooth.classic.ReconnectionSocketServer.kt</ID>
+    <ID>NewLineAtEndOfFile:ScannedPebbleDevice.kt$io.rebble.cobble.bluetooth.ScannedPebbleDevice.kt</ID>
+    <ID>NewLineAtEndOfFile:TimberLogbackAppender.kt$io.rebble.cobble.TimberLogbackAppender.kt</ID>
+    <ID>NewLineAtEndOfFile:byteArrayChunker.kt$io.rebble.cobble.bluetooth.ble.util.byteArrayChunker.kt</ID>
+    <ID>NewLineAtEndOfFile:inputStreamExtension.kt$io.rebble.cobble.bluetooth.inputStreamExtension.kt</ID>
+    <ID>NoNameShadowing:BluetoothStatus.kt${ it != -1 }</ID>
+    <ID>PrintStackTrace:ProtocolIO.kt$ProtocolIO$e</ID>
+    <ID>PrintStackTrace:SocketSerialDriver.kt$SocketSerialDriver$e</ID>
+    <ID>ReturnCount:ConnectionParamManager.kt$ConnectionParamManager$suspend fun subscribe(): Boolean</ID>
+    <ID>ReturnCount:ConnectivityWatcher.kt$ConnectivityWatcher$suspend fun subscribe(): Boolean</ID>
+    <ID>ReturnCount:PPoGPacketWriter.kt$PPoGPacketWriter$@Throws(SecurityException::class) suspend fun sendNextPacket()</ID>
+    <ID>SuspendFunWithFlowReturnType:PebbleLEConnector.kt$PebbleLEConnector$suspend</ID>
+    <ID>SuspendFunWithFlowReturnType:ReconnectionSocketServer.kt$ReconnectionSocketServer$suspend</ID>
+    <ID>SwallowedException:BlueGATTConnection.kt$BlueGATTConnection$e: TimeoutCancellationException</ID>
+    <ID>SwallowedException:BlueIO.kt$BluetoothPebbleDevice$e: SecurityException</ID>
+    <ID>SwallowedException:BlueLEDriver.kt$BlueLEDriver$e: TimeoutCancellationException</ID>
+    <ID>SwallowedException:BlueSerialDriver.kt$BlueSerialDriver$e: IOException</ID>
+    <ID>SwallowedException:BroadcastReceiver.kt$e: IllegalArgumentException</ID>
+    <ID>SwallowedException:LEMeta.kt$LEMeta$e: BufferUnderflowException</ID>
+    <ID>SwallowedException:PebbleLEConnector.kt$PebbleLEConnector$e: TimeoutCancellationException</ID>
+    <ID>SwallowedException:ReconnectionSocketServer.kt$ReconnectionSocketServer$e: IOException</ID>
+    <ID>ThrowsCount:PebbleLEConnector.kt$PebbleLEConnector$@Throws(IOException::class, SecurityException::class) private suspend fun requestPairing(connectivityRecord: ConnectivityWatcher.ConnectivityStatus)</ID>
+    <ID>TooGenericExceptionCaught:PPoGPacketWriter.kt$PPoGPacketWriter$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:inputStreamExtension.kt$e: Exception</ID>
+    <ID>TooManyFunctions:BlueGATTConnection.kt$BlueGATTConnection : BluetoothGattCallback</ID>
+    <ID>TooManyFunctions:PPoGSession.kt$PPoGSession : Closeable</ID>
+    <ID>UnsafeCallOnNullableType:BlueGATTConnection.kt$BlueGATTConnection$gatt!!</ID>
+    <ID>UnsafeCallOnNullableType:BlueGATTConnection.kt$BlueGATTConnection$res!!</ID>
+    <ID>UnsafeCallOnNullableType:BlueGATTConnection.kt$BlueGATTConnection$this.gatt!!</ID>
+    <ID>UnsafeCallOnNullableType:BlueSerialDriver.kt$BlueSerialDriver$protocolIO!!</ID>
+    <ID>UnsafeCallOnNullableType:BluetoothStatus.kt$it.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)!!</ID>
+    <ID>UnsafeCallOnNullableType:GattServerManager.kt$GattServerManager$_gattServer.value!!</ID>
+    <ID>UnsafeCallOnNullableType:PPoGPebblePacketAssembler.kt$PPoGPebblePacketAssembler$data!!</ID>
+    <ID>UnsafeCallOnNullableType:PPoGSession.kt$PPoGSession$pendingPackets.remove(sequenceInCursor)!!</ID>
+    <ID>UnusedPrivateProperty:LEMeta.kt$LEMeta$private val fullDataSize = 32</ID>
+    <ID>UnusedPrivateProperty:PPoGPebblePacketAssembler.kt$PPoGPebblePacketAssembler$val ep = SUShort(meta)</ID>
+    <ID>UnusedPrivateProperty:PPoGSession.kt$PPoGSession$private val pebblePacketAssembler = PPoGPebblePacketAssembler()</ID>
+    <ID>UnusedPrivateProperty:PPoGSession.kt$PPoGSession.Companion$private const val OUT_OF_ORDER_MAX_DELAY_MS = 50L</ID>
+    <ID>UseAnyOrNoneInsteadOfFind:PPoGPacketWriter.kt$PPoGPacketWriter$find { it.sequence == packet.sequence }</ID>
+    <ID>UseCheckNotNull:GattCharacteristicBuilder.kt$GattCharacteristicBuilder$check(uuid != null) { "UUID must be set" }</ID>
+    <ID>UseCheckNotNull:GattDescriptorBuilder.kt$GattDescriptorBuilder$check(uuid != null) { "UUID must be set" }</ID>
+    <ID>UseCheckNotNull:GattServiceBuilder.kt$GattServiceBuilder$check(uuid != null) { "UUID must be set" }</ID>
+    <ID>UseCheckNotNull:PPoGPacketWriter.kt$PPoGPacketWriter$check(ackedPacket != null) { "Polled inflightPackets to empty" }</ID>
+    <ID>UseCheckNotNull:PPoGServiceConnection.kt$PPoGServiceConnection$check(service.findCharacteristic(metaCharacteristicUUID) != null) { "Meta characteristic missing" }</ID>
+    <ID>UseCheckNotNull:PebbleLEConnector.kt$PebbleLEConnector$check(pairingService != null) { "Pairing service not found" }</ID>
+    <ID>UseCheckNotNull:PebbleLEConnector.kt$PebbleLEConnector$check(pairingTriggerCharacteristic != null) { "Pairing trigger characteristic not found" }</ID>
+    <ID>UseCheckOrError:PPoGServiceConnection.kt$PPoGServiceConnection$throw IllegalStateException("PPOG Characteristic missing")</ID>
+    <ID>UseCheckOrError:PPoGServiceConnection.kt$PPoGServiceConnection$throw IllegalStateException("PPOG Service missing")</ID>
+    <ID>VarCouldBeVal:BlueLEDriver.kt$BlueLEDriver$var gatt: BlueGATTConnection = device.bluetoothDevice.connectGatt(context, workaroundResolver( UnboundWatchBeforeConnecting )) ?: throw IOException("Failed to connect to device")</ID>
+    <ID>VarCouldBeVal:ConnectionParamManager.kt$ConnectionParamManager$private var subscribed = false</ID>
+    <ID>VarCouldBeVal:PPoGSession.kt$PPoGSession.StateManager$private var _state = MutableStateFlow(State.Closed)</ID>
+    <ID>VariableNaming:LEMeta.kt$LEMeta$var _hardwarePlatform: UByte? = null</ID>
+  </CurrentIssues>
+</SmellBaseline>
