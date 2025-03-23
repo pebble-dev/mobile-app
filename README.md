@@ -49,11 +49,15 @@ Then choose a device (I chose Pixel 2), then download R (hey, what's 620MB
 between friends?), then hit finish.
 
 ## Building the app for iOS
+
+1. Install Java JDK 17 with `brew install openjdk@17` and follow the instructions afterwards
+2. Download Xcode, launch it once and add a development account in some project. Execute `sudo xcode-select` to select your Xcode application
+3. Download Android-Studio, start it once, set the `ANDROID_HOME` variable, in the "SDK Tools", download the SDK Commandline-Tools
+
 iOS requires CocoaPods to be installed. To install CocoaPods, run the following commands:
 
 ```
-brew install ruby
-sudo gem install cocoapods
+brew install cocoapods
 ```
 
 After installing CocoaPods, you should build the app using `fvm flutter build ios`, which will also run `pod install` for you ready for building the app in Xcode.
