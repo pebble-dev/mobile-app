@@ -47,6 +47,7 @@ kotlin {
             //XXX: Workaround for https://github.com/Kotlin/kotlinx-atomicfu/issues/469
             implementation(libs.jetbrains.kotlinx.atomicfu)
             implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
             implementation(libs.uuid)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
@@ -83,6 +84,9 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.ktor.client.mock)
+            implementation(libs.assertk)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.turbine)
             implementation(libs.koin.test)
         }
     }
