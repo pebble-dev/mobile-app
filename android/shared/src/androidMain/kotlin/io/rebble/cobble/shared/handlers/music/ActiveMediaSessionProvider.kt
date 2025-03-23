@@ -122,7 +122,7 @@ class ActiveMediaSessionProvider :
             }
         }
 
-        override fun onAudioInfoChanged(info: MediaController.PlaybackInfo?) {
+        override fun onAudioInfoChanged(playbackInfo: MediaController.PlaybackInfo) {
             updateControllerIfNeeded()
         }
     }
