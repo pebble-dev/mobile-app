@@ -102,9 +102,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="content" />
-                <data android:mimeType="*/*" />
-                <data android:pathPattern=".*\\.pbw" />
+                <data android:scheme="content" android:pathSuffix=".pbw" />
             </intent-filter>
         </activity>
 
@@ -169,9 +167,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="content" />
-                <data android:mimeType="*/*" />
-                <data android:pathPattern=".*\\.pbz" />
+                <data android:scheme="content" android:pathSuffix=".pbz" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
