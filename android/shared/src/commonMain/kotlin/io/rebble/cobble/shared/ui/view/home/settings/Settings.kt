@@ -19,7 +19,7 @@ fun Settings(viewModel: SettingsViewModel = viewModel(), onNavigate: (String) ->
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun Settings(settings: List<SettingsViewModel.SettingsNavigationItem>, onNavigate: (String) -> Unit, modifier: Modifier = Modifier) {
+fun Settings(settings: List<SettingsViewModel.SettingsNavigationItem>, onNavigate: (String) -> Unit, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         CenterAlignedTopAppBar(title = { Text("Settings") })
         Column(modifier.verticalScroll(rememberScrollState())) {
