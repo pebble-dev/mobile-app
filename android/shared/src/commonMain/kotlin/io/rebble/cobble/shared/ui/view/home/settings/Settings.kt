@@ -24,22 +24,11 @@ fun Settings(settings: List<SettingsViewModel.SettingsNavigationItem>, onNavigat
         CenterAlignedTopAppBar(title = { Text("Settings") })
         Column(modifier.verticalScroll(rememberScrollState())) {
             settings.forEach { item ->
-                if (item.icon == SettingsViewModel.SettingsNavigationItem.SettingsIcons.DEVELOPER) {
+                if (item.containsTopDivider) {
                     HorizontalDivider(thickness = 2.dp)
                 }
                 SettingsNavigableListItem(
-                        icon = {
-                            when (item.icon) {
-                                SettingsViewModel.SettingsNavigationItem.SettingsIcons.NOTIFICATIONS -> RebbleIcons.notification()
-                                SettingsViewModel.SettingsNavigationItem.SettingsIcons.HEALTH -> RebbleIcons.healthHeart()
-                                SettingsViewModel.SettingsNavigationItem.SettingsIcons.CALENDAR -> RebbleIcons.calendar()
-                                SettingsViewModel.SettingsNavigationItem.SettingsIcons.MESSAGES -> RebbleIcons.smsMessages()
-                                SettingsViewModel.SettingsNavigationItem.SettingsIcons.LANGUAGE -> RebbleIcons.systemLanguage()
-                                SettingsViewModel.SettingsNavigationItem.SettingsIcons.ANALYTICS -> RebbleIcons.analytics()
-                                SettingsViewModel.SettingsNavigationItem.SettingsIcons.ABOUT -> RebbleIcons.aboutApp()
-                                SettingsViewModel.SettingsNavigationItem.SettingsIcons.DEVELOPER -> RebbleIcons.developerSettings()
-                            }
-                        },
+                        icon = item.icon,
                         title = item.title,
                         onClick = { onNavigate(item.navigation) }
                 )
